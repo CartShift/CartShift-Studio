@@ -8,6 +8,7 @@ export const metadata: Metadata = genMeta({
   title: "Terms of Service",
   description: "CartShift Studio terms of service. Read our terms and conditions for using our website and services.",
   url: "/terms",
+  keywords: ['terms of service', 'terms and conditions', 'legal', 'user agreement'],
 });
 
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {

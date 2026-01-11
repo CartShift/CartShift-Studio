@@ -78,22 +78,37 @@ export function GeoLocaleRedirect() {
 
     async function detectAndRedirect() {
       try {
-        // Use ipapi.co for free geo-IP detection (1000 requests/day free)
-        // You can also use other services like ip-api.com, ipinfo.io, etc.
-        const response = await fetch('https://ipapi.co/country/', {
-          method: 'GET',
-          headers: {
-            'Accept': 'text/plain',
-          },
-        });
+        // Try multiple geo-IP services with fallback
+        let countryCode: string | null = null;
 
-        if (!response.ok) {
-          throw new Error('Failed to detect country');
+        // Try browser's timezone first (instant, no API call)
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (timezone?.startsWith('Asia/Jerusalem') || timezone?.startsWith('Asia/Tel_Aviv')) {
+          countryCode = 'IL';
         }
 
-        const countryCode = (await response.text()).trim().toUpperCase();
+        // If timezone detection didn't work, try API (with caching to avoid rate limits)
+        if (!countryCode) {
+          try {
+            const response = await fetch('https://ipapi.co/country/', {
+              method: 'GET',
+              headers: { 'Accept': 'text/plain' },
+              signal: AbortSignal.timeout(3000),
+            });
+            if (response.ok) {
+              countryCode = (await response.text()).trim().toUpperCase();
+            }
+          } catch {
+            // API failed, use default
+          }
+        }
 
-        // Store detection result in both localStorage (persistent) and sessionStorage (session)
+        // Default to non-Israel if detection failed
+        if (!countryCode) {
+          countryCode = 'US';
+        }
+
+        // Store detection result
         localStorage.setItem(GEO_LOCALE_KEY, countryCode);
         localStorage.setItem(GEO_LOCALE_TIMESTAMP_KEY, Date.now().toString());
         sessionStorage.setItem(GEO_LOCALE_KEY, countryCode);
@@ -103,18 +118,12 @@ export function GeoLocaleRedirect() {
 
         // Only redirect if we need to change locale
         if (targetLocale !== locale) {
-          // Build the new path with the target locale
-          // Current pathname includes the locale prefix, e.g., /en/about
-          // We need to replace the locale prefix
           const pathWithoutLocale = pathname.replace(/^\/(en|he)/, '');
           const newPath = `/${targetLocale}${pathWithoutLocale || '/'}`;
-
           router.replace(newPath);
         }
-      } catch (error) {
-        // If detection fails, mark as completed to avoid retrying this session
+      } catch {
         sessionStorage.setItem(GEO_LOCALE_KEY, 'error');
-        console.warn('Geo locale detection failed:', error);
       }
     }
 

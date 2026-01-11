@@ -7,6 +7,7 @@ export const metadata: Metadata = genMeta({
   title: "About CartShift Studio | Expert E-commerce Development Team",
   description: "Meet the team behind CartShift Studio. Expert Shopify and WordPress developers dedicated to building custom e-commerce solutions for your business.",
   url: "/about",
+  keywords: ['about us', 'e-commerce team', 'Shopify developers', 'WordPress experts', 'CartShift Studio team'],
 });
 
 import { setRequestLocale } from 'next-intl/server';

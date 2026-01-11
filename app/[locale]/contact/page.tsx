@@ -8,6 +8,7 @@ export const metadata: Metadata = genMeta({
   title: "Contact CartShift Studio | Free E-commerce Consultation",
   description: "Get in touch with CartShift Studio for a free consultation on your Shopify or WordPress project. Expert advice on e-commerce development.",
   url: "/contact",
+  keywords: ['contact', 'free consultation', 'e-commerce quote', 'Shopify consultation', 'WordPress consultation'],
 });
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {

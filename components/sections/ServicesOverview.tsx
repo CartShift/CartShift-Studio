@@ -83,14 +83,16 @@ export const ServicesOverview: React.FC = () => {
                       </motion.li>
                     ))}
                   </ul>
-                  <Link href={service.href}>
-                    <button className="group/link inline-flex items-center gap-3 px-6 py-3 border-2 border-accent-600 dark:border-accent-500 bg-transparent hover:bg-accent-600 dark:hover:bg-accent-500 text-accent-600 dark:text-accent-400 hover:text-white dark:hover:text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg shine-sweep">
-                      {t('common.learnMore')}
-                      <ArrowRight
-                        className="w-5 h-5 transition-transform group-hover/link:translate-x-1 rtl:group-hover/link:-translate-x-1 rtl:rotate-180"
-                        strokeWidth={2.5}
-                      />
-                    </button>
+                  <Link
+                    href={service.href}
+                    aria-label={`${t('common.learnMore')} ${service.title}`}
+                    className="group/link inline-flex items-center gap-3 px-6 py-3 border-2 border-accent-600 dark:border-accent-500 bg-transparent hover:bg-accent-600 dark:hover:bg-accent-500 text-accent-600 dark:text-accent-400 hover:text-white dark:hover:text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg shine-sweep"
+                  >
+                    {t('common.learnMore')} {service.title}
+                    <ArrowRight
+                      className="w-5 h-5 transition-transform group-hover/link:translate-x-1 rtl:group-hover/link:-translate-x-1 rtl:rotate-180"
+                      strokeWidth={2.5}
+                    />
                   </Link>
                 </CardContent>
               </Card>

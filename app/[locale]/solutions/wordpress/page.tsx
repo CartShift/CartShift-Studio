@@ -8,6 +8,16 @@ export const metadata: Metadata = genMeta({
   title: "WordPress Development | Custom Content Sites & News Platforms",
   description: "Professional WordPress development for content sites, news platforms, and custom websites. Custom themes, performance optimization, and ongoing support. Get started today.",
   url: "/solutions/wordpress",
+  keywords: [
+    "WordPress development",
+    "custom WordPress theme",
+    "WordPress content site",
+    "WordPress news platform",
+    "WordPress performance optimization",
+    "WordPress SEO",
+    "WordPress developer",
+    "WordPress migration",
+  ],
 });
 
 export default async function WordPressPage({ params }: { params: Promise<{ locale: string }> }) {

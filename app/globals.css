@@ -154,7 +154,12 @@ body {
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-brand;
     background-size: 200% auto;
-    animation: gradient 8s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .gradient-text {
+      animation: gradient 8s linear infinite;
+    }
   }
 
   .fashion-gradient {
@@ -346,8 +351,13 @@ body {
   }
 
   .animate-gradient-x {
-    animation: gradient-x 3s ease infinite;
     background-size: 200% 200%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .animate-gradient-x {
+      animation: gradient-x 3s ease infinite;
+    }
   }
 
   .text-glow {
@@ -1491,10 +1501,15 @@ body {
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    animation: liquid-glass-border-rotate 4s linear infinite;
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: -1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .liquid-glass-animated-border::before {
+      animation: liquid-glass-border-rotate 4s linear infinite;
+    }
   }
 
   .liquid-glass-animated-border:hover::before {

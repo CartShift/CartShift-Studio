@@ -8,6 +8,17 @@ export const metadata: Metadata = genMeta({
   title: "Shopify Development Agency | Store Setup, Custom Features & Migration Services",
   description: "Expert Shopify development services: store setup, custom features, performance optimization, and migration. Trusted by 100+ e-commerce businesses. Free consultation.",
   url: "/solutions/shopify",
+  keywords: [
+    "Shopify development",
+    "Shopify store setup",
+    "custom Shopify theme",
+    "Shopify migration",
+    "Shopify developer",
+    "Shopify SEO",
+    "Shopify performance optimization",
+    "Shopify app development",
+    "hire Shopify developer",
+  ],
 });
 
 export default async function ShopifyPage({ params }: { params: Promise<{ locale: string }> }) {

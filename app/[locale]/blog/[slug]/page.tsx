@@ -19,25 +19,29 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const post = await getPostBySlug(slug);
 
   if (!post) {
-    return {
-      title: "Post Not Found",
-    };
+    return { title: "Post Not Found" };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cart-shift.com";
+  const keywords = [
+    post.category.toLowerCase(),
+    ...post.title.toLowerCase().split(' ').filter(w => w.length > 4).slice(0, 5),
+    'e-commerce',
+    'online store',
+  ];
 
   return genMeta({
     title: `${post.title} | CartShift Studio Blog`,
     description: post.excerpt,
-    url: `${baseUrl}/blog/${post.slug}`,
+    url: `/blog/${post.slug}`,
     type: "article",
     publishedTime: post.date,
     author: "CartShift Studio",
-  });
+    keywords,
+  }, locale as 'en' | 'he');
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
@@ -59,6 +63,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ local
     url: articleUrl,
     author: "CartShift Studio",
     category: post.category,
+    wordCount: post.wordCount,
+    readingTime: post.readingTime,
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([

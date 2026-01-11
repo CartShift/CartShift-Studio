@@ -1,50 +1,34 @@
 "use client";
 
-import Script from "next/script";
+import { GoogleAnalytics as NextGoogleAnalytics, sendGAEvent } from "@next/third-parties/google";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export function GoogleAnalytics() {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
-
-  if (!gaId) {
-    return null;
-  }
-
-  return (
-    <>
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-      />
-      <Script
-        id="google-analytics"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${gaId}', {
-              page_path: window.location.pathname,
-            });
-          `,
-        }}
-      />
-    </>
-  );
+  if (!GA_ID) return null;
+  return <NextGoogleAnalytics gaId={GA_ID} />;
 }
 
-export function trackEvent(action: string, category: string, label?: string, value?: number) {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", action, {
-      event_category: category,
-      event_label: label,
-      value: value,
-    });
-  }
+export function trackEvent(
+  eventName: string,
+  params?: Record<string, string | number | boolean>
+) {
+  if (!GA_ID) return;
+  sendGAEvent("event", eventName, params ?? {});
 }
 
 export function trackFormSubmission(formName: string) {
-  trackEvent("form_submit", "engagement", formName);
+  trackEvent("form_submit", { form_name: formName, engagement_type: "lead" });
 }
 
+export function trackPageView(path: string, title?: string) {
+  trackEvent("page_view", { page_path: path, page_title: title ?? "" });
+}
 
+export function trackClick(elementName: string, section?: string) {
+  trackEvent("click", { element: elementName, section: section ?? "general" });
+}
+
+export function trackConversion(conversionType: string, value?: number) {
+  trackEvent("conversion", { type: conversionType, value: value ?? 0 });
+}

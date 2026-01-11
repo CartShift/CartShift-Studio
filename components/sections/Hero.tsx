@@ -103,16 +103,13 @@ export const Hero: React.FC = () => {
               {t('hero.titleLine2')}
             </h1>
 
-            <motion.p
-              className="text-lg md:text-xl text-surface-600 dark:text-surface-300 leading-relaxed max-w-xl"
-              variants={heroContent}
-              custom={0.4}
-            >
+            {/* LCP element - render immediately without animation delay */}
+            <p className="text-lg md:text-xl text-surface-600 dark:text-surface-300 leading-relaxed max-w-xl">
               {t('hero.description')}
-            </motion.p>
+            </p>
 
             <motion.div
-              className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
+              className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-5"
               variants={heroContent}
               custom={0.6}
             >
@@ -125,7 +122,7 @@ export const Hero: React.FC = () => {
               >
                 <Button
                   size="lg"
-                  className="group text-base md:text-lg px-8 md:px-10 py-4 md:py-5 shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
+                  className="group text-base md:text-lg px-8 md:px-10 py-5 md:py-5 min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
                 >
                   <span className="relative z-10 flex items-center gap-3 justify-center">
                     {t('hero.primaryCta')}
@@ -145,7 +142,7 @@ export const Hero: React.FC = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-base md:text-lg px-8 md:px-10 py-4 md:py-5 shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
+                  className="text-base md:text-lg px-8 md:px-10 py-5 md:py-5 min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
                 >
                   {t('hero.secondaryCta')}
                 </Button>
@@ -225,6 +222,7 @@ export const Hero: React.FC = () => {
                 height={661}
                 className="w-full h-auto"
                 priority
+                fetchPriority="high"
               />
             </div>
           </motion.div>

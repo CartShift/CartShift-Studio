@@ -7,7 +7,7 @@ import { StatsCounter } from "@/components/sections/StatsCounter";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { BlogTeaser } from "@/components/sections/BlogTeaser";
 import { CTABanner } from "@/components/sections/CTABanner";
-import { generateMetadata as genMeta, generateWebSiteSchema, generateReviewSchema } from "@/lib/seo";
+import { generateMetadata as genMeta, generateWebSiteSchema, generateReviewSchema, generateProfessionalServiceSchema } from "@/lib/seo";
 import { setRequestLocale } from "next-intl/server";
 import Script from "next/script";
 import type { Metadata } from "next";
@@ -16,6 +16,16 @@ export const metadata: Metadata = genMeta({
   title: "CartShift Studio | Shopify & WordPress E-commerce Development Agency",
   description: "Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.",
   url: "/",
+  keywords: [
+    "Shopify development agency",
+    "WordPress e-commerce",
+    "custom Shopify store",
+    "e-commerce development",
+    "Shopify migration",
+    "WooCommerce development",
+    "online store design",
+    "Shopify experts",
+  ],
 });
 
 export default async function Home({
@@ -26,6 +36,7 @@ export default async function Home({
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
   const websiteSchema = generateWebSiteSchema();
+  const professionalServiceSchema = generateProfessionalServiceSchema();
 
   const reviewSchema = generateReviewSchema([
     {
@@ -56,6 +67,11 @@ export default async function Home({
         id="review-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+      />
+      <Script
+        id="professional-service-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(professionalServiceSchema) }}
       />
       <Hero />
       <HomepageIntro />

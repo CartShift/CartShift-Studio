@@ -10,6 +10,14 @@ export const metadata: Metadata = genMeta({
   title: "Pricing & Packages | Shopify & WordPress Development",
   description: "Transparent pricing for Shopify and WordPress development. Packages starting at $500. No hidden fees. Get a custom quote.",
   url: "/pricing",
+  keywords: [
+    "Shopify development pricing",
+    "WordPress development cost",
+    "e-commerce development packages",
+    "Shopify store cost",
+    "web development pricing",
+    "affordable Shopify developer",
+  ],
 });
 
 const pricingFaqs = [

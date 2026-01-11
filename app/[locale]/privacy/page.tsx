@@ -8,6 +8,7 @@ export const metadata: Metadata = genMeta({
   title: "Privacy Policy",
   description: "CartShift Studio privacy policy. Learn how we collect, use, and protect your personal information.",
   url: "/privacy",
+  keywords: ['privacy policy', 'data protection', 'GDPR', 'cookie policy'],
 });
 
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {

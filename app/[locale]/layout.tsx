@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { LocaleAttributes } from '@/components/providers/LocaleAttributes';
 import { GeoLocaleRedirect } from '@/components/providers/GeoLocaleRedirect';
@@ -51,15 +52,64 @@ export const metadata: Metadata = {
   },
   description:
     'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.',
+  keywords: [
+    'Shopify development',
+    'WordPress development',
+    'e-commerce agency',
+    'Shopify store setup',
+    'WooCommerce development',
+    'e-commerce migration',
+    'custom Shopify theme',
+    'Shopify SEO',
+    'online store development',
+  ],
   metadataBase: new URL(siteUrl),
   alternates: {
     canonical: siteUrl,
     languages: {
-      en: siteUrl,
-      he: siteUrl,
-      'x-default': siteUrl,
+      en: `${siteUrl}/en`,
+      he: `${siteUrl}/he`,
+      'x-default': `${siteUrl}/en`,
     },
   },
+  openGraph: {
+    type: 'website',
+    siteName: 'CartShift Studio',
+    title: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
+    description: 'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
+    url: siteUrl,
+    images: [
+      {
+        url: `${siteUrl}/images/CarShift-Icon-Colored.png`,
+        width: 512,
+        height: 512,
+        alt: 'CartShift Studio - E-commerce Development Agency',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CartShift Studio | E-commerce Development Agency',
+    description: 'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
+    images: [`${siteUrl}/images/CarShift-Icon-Colored.png`],
+    creator: '@cartshiftstudio',
+    site: '@cartshiftstudio',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+  },
+  category: 'technology',
 };
 
 export function generateStaticParams() {
@@ -114,7 +164,9 @@ export default async function LocaleLayout({
               <LocaleAttributes />
               <GeoLocaleRedirect />
               <GoogleAnalytics />
-              <ConditionalLayout>{children}</ConditionalLayout>
+              <AnalyticsProvider>
+                <ConditionalLayout>{children}</ConditionalLayout>
+              </AnalyticsProvider>
             </NextIntlClientProvider>
           </MotionConfig>
         </MotionProvider>

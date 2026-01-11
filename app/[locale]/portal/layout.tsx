@@ -1,4 +1,5 @@
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { setRequestLocale } from 'next-intl/server';
 import { PortalProviders } from '@/components/portal/providers/PortalProviders';
 
@@ -19,9 +20,11 @@ export default async function PortalLayout({
   return (
     <>
       <GoogleAnalytics />
-      <PortalProviders>
-        {children}
-      </PortalProviders>
+      <AnalyticsProvider enableScrollTracking={false}>
+        <PortalProviders>
+          {children}
+        </PortalProviders>
+      </AnalyticsProvider>
     </>
   );
 }

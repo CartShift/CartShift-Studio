@@ -56,8 +56,9 @@ export const CookieConsent: React.FC = () => {
                   <Link
                     href="/privacy"
                     className="text-accent-600 dark:text-accent-400 hover:underline"
+                    aria-label={`${content.learnMore} - Privacy Policy`}
                   >
-                    {content.learnMore}
+                    {content.learnMore} about our Privacy Policy
                   </Link>
                 </p>
               </div>

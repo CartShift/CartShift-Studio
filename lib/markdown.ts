@@ -18,6 +18,7 @@ export interface BlogPost {
   category: string;
   content: string;
   readingTime?: number;
+  wordCount?: number;
   translation?: {
     title: string;
     excerpt: string;
@@ -204,9 +205,9 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       );
     }
 
-    // Calculate reading time
+    // Calculate reading time and word count
     const wordsPerMinute = 200;
-    const wordCount = contentEn.split(/\s+/).length;
+    const wordCount = contentEn.split(/\s+/).filter(Boolean).length;
     const readingTime = Math.ceil(wordCount / wordsPerMinute);
 
     return {
@@ -217,6 +218,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       category: data.category || 'General',
       content: contentHtmlEn,
       readingTime,
+      wordCount,
       translation: {
         title: data.title_he || data.title || '',
         excerpt: data.excerpt_he || data.excerpt || '',

@@ -950,6 +950,7 @@
       "title": "Stay Updated",
       "description": "Get e-commerce tips and news delivered to your inbox.",
       "placeholder": "Your email",
+      "subscribe": "Subscribe",
       "success": "Thanks for subscribing!",
       "sslSecured": "SSL Secured",
       "shopifyPartner": "Shopify Partner"

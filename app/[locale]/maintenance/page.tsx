@@ -8,6 +8,7 @@ export const metadata: Metadata = genMeta({
   title: "Maintenance & Support Plans | Keep Your Store Running",
   description: "Monthly support plans for Shopify stores. Updates, backups, monitoring, and dedicated support. Plans starting at $299/month.",
   url: "/maintenance",
+  keywords: ['maintenance plans', 'Shopify support', 'e-commerce maintenance', 'website support', 'monthly support'],
 });
 
 const maintenanceFaqs = [

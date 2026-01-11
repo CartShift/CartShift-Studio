@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
@@ -15,6 +15,7 @@ export const Footer: React.FC = () => {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentYear, setCurrentYear] = useState(2026);
 
   const footerLinks = {
     solutions: [
@@ -36,6 +37,10 @@ export const Footer: React.FC = () => {
     { name: 'Twitter', href: 'https://twitter.com/cartshiftstudio', icon: 'twitter' },
     { name: 'GitHub', href: 'https://github.com/cartshiftstudio', icon: 'github' },
   ];
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,8 +163,10 @@ export const Footer: React.FC = () => {
                     className="!px-2 !py-2"
                     loading={loading}
                     disabled={loading}
+                    aria-label={t('footer.newsletter.subscribe')}
                   >
-                    <Icon name="mail" size={20} />
+                    <Icon name="mail" size={20} aria-hidden="true" />
+                    <span className="sr-only">{t('footer.newsletter.subscribe')}</span>
                   </Button>
                 </div>
                 {error && <p className="text-error text-sm">{error}</p>}
@@ -172,7 +179,7 @@ export const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
               <p className="text-xs md:text-sm text-surface-500 dark:text-surface-500 leading-relaxed text-center md:text-start">
-                © {new Date().getFullYear()} CartShift Studio. {t('footer.rights')}
+                © {currentYear} CartShift Studio. {t('footer.rights')}
               </p>
               <div className="flex items-center gap-3 text-xs md:text-sm">
                 <Link
