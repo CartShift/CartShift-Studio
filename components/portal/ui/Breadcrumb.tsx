@@ -5,6 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { ChevronRight, Home } from 'lucide-react';
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useLocale } from 'next-intl';
 import { isRTLLocale } from '@/lib/locale-config';
 
@@ -46,7 +47,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
         {/* Home icon */}
         <li className="flex items-center">
           <Link
-            href="/portal/"
+            href={getPortalPath('/')}
             className="p-1 rounded-md text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
             aria-label="Portal home"
           >

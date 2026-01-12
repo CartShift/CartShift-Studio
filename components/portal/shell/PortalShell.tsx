@@ -54,13 +54,17 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
     return !mainPagePaths.has(currentPath);
   })();
 
-  // Loading state
-  if (state.loading || state.isAuthorized === null) {
+  // Only show loading state on initial load, not during subsequent navigations
+  // Once authorized, keep showing the shell to enable smooth client-side navigation
+  const showLoadingState =
+    !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
+
+  if (showLoadingState) {
     return <PortalLoadingState />;
   }
 
-  // Access denied state
-  if (state.isAuthorized === false) {
+  // Access denied state - only if explicitly denied (not null/loading)
+  if (state.isAuthorized === false && !state.hasEverBeenAuthorized) {
     return <PortalAccessDenied />;
   }
 

@@ -259,8 +259,13 @@ export async function getFreshDownloadUrl(storagePath: string): Promise<string |
     const storageRef = ref(storage, storagePath);
     const downloadUrl = await getDownloadURL(storageRef);
     return downloadUrl;
-  } catch (error) {
-    console.error('Error getting fresh download URL:', error);
+  } catch (error: unknown) {
+    const firebaseError = error as { code?: string; message?: string };
+    if (firebaseError.code === 'storage/unauthorized') {
+      console.error('Storage permission denied for path:', storagePath, firebaseError.message);
+    } else {
+      console.error('Error getting fresh download URL:', storagePath, error);
+    }
     return null;
   }
 }

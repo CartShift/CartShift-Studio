@@ -5,6 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { motion } from '@/lib/motion';
 import { useTranslations } from 'next-intl';
 import { SidebarBrandProps } from './types';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
   const t = useTranslations();
@@ -12,7 +13,7 @@ export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
   return (
     <div className="h-20 flex items-center px-4 border-b border-surface-200/50 dark:border-surface-800/30 flex-shrink-0">
       <Link
-        href="/portal/dashboard/"
+        href={getPortalPath('/dashboard/')}
         className="flex items-center gap-3 group w-full min-w-0"
       >
         <div className="w-9 h-9 flex-shrink-0 relative group-hover:scale-110 transition-transform duration-300">

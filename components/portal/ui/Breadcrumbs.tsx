@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { isRTLLocale } from '@/lib/locale-config';
 import { getRequest } from '@/lib/services/portal-requests';
 import { getPricingRequest } from '@/lib/services/pricing-requests';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const breadcrumbItemVariants = cva(
   "truncate max-w-[200px] transition-colors",
@@ -182,7 +183,7 @@ export function Breadcrumbs({
 
       items.push({
         label,
-        href: currentPath,
+        href: getPortalPath(currentPath),
         isLast,
       });
     }

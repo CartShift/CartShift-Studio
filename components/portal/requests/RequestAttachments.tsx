@@ -33,7 +33,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
   const [files, setFiles] = useState<FileAttachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ url: string; name: string; storagePath?: string } | null>(null);
 
   useEffect(() => {
     if (!orgId) return;
@@ -108,7 +108,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                   <div className="flex items-center gap-4 flex-1">
                     {latest.mimeType.startsWith('image/') ? (
                       <button
-                        onClick={() => setPreviewImage({ url: latest.url, name: fileName })}
+                        onClick={() => setPreviewImage({ url: latest.url, name: fileName, storagePath: latest.storagePath })}
                         className="w-12 h-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 flex-shrink-0 group-hover:border-blue-100 dark:group-hover:border-blue-900/30 transition-all hover:scale-105 cursor-pointer"
                         title="Click to preview"
                       >
@@ -220,6 +220,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
       <ImagePreviewModal
         imageUrl={previewImage?.url || ''}
         imageName={previewImage?.name || ''}
+        storagePath={previewImage?.storagePath}
         isOpen={!!previewImage}
         onClose={() => setPreviewImage(null)}
       />

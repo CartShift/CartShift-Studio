@@ -11,6 +11,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { NavGroup } from './types';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export const navItemVariants = cva('portal-nav-item group relative transition-all duration-200', {
   variants: {
@@ -37,7 +38,7 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.workboard'),
           icon: Kanban,
-          href: '/portal/agency/workboard/',
+          href: getPortalPath('/agency/workboard/'),
         },
       ],
     },
@@ -46,17 +47,17 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.clients'),
           icon: Users,
-          href: '/portal/agency/clients/',
+          href: getPortalPath('/agency/clients/'),
         },
         {
           label: t('portal.sidebar.nav.requests'),
           icon: ClipboardList,
-          href: '/portal/requests/',
+          href: getPortalPath('/requests/'),
         },
         {
           label: t('portal.sidebar.nav.consultations'),
           icon: Calendar,
-          href: '/portal/agency/consultations/',
+          href: getPortalPath('/agency/consultations/'),
         },
       ],
     },
@@ -65,12 +66,12 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.pricing'),
           icon: DollarSign,
-          href: '/portal/agency/pricing/',
+          href: getPortalPath('/agency/pricing/'),
         },
         {
           label: t('portal.sidebar.nav.testimonials'),
           icon: Star,
-          href: '/portal/agency/testimonials/',
+          href: getPortalPath('/agency/testimonials/'),
         },
       ],
     },
@@ -79,7 +80,7 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.settings'),
           icon: Settings,
-          href: '/portal/agency/settings/',
+          href: getPortalPath('/agency/settings/'),
         },
       ],
     },
@@ -93,12 +94,12 @@ export function getClientNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.dashboard'),
           icon: LayoutDashboard,
-          href: '/portal/dashboard/',
+          href: getPortalPath('/dashboard/'),
         },
         {
           label: t('portal.sidebar.nav.requests'),
           icon: ClipboardList,
-          href: '/portal/requests/',
+          href: getPortalPath('/requests/'),
         },
       ],
     },
@@ -107,17 +108,17 @@ export function getClientNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.team'),
           icon: Users,
-          href: '/portal/team/',
+          href: getPortalPath('/team/'),
         },
         {
           label: t('portal.sidebar.nav.files'),
           icon: FolderOpen,
-          href: '/portal/files/',
+          href: getPortalPath('/files/'),
         },
         {
           label: t('portal.sidebar.nav.consultations'),
           icon: Calendar,
-          href: '/portal/consultations/',
+          href: getPortalPath('/consultations/'),
         },
       ],
     },
@@ -126,12 +127,12 @@ export function getClientNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.pricing'),
           icon: DollarSign,
-          href: '/portal/pricing/',
+          href: getPortalPath('/pricing/'),
         },
         {
           label: t('portal.sidebar.nav.review'),
           icon: Star,
-          href: '/portal/review/',
+          href: getPortalPath('/review/'),
         },
       ],
     },
@@ -140,7 +141,7 @@ export function getClientNavGroups(t: (key: string) => string): NavGroup[] {
         {
           label: t('portal.sidebar.nav.settings'),
           icon: Settings,
-          href: '/portal/settings/',
+          href: getPortalPath('/settings/'),
         },
       ],
     },

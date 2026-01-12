@@ -7,6 +7,7 @@ import { AlertCircle, RefreshCw, ArrowLeft, Headphones, Home } from 'lucide-reac
 import { PortalButton } from './PortalButton';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const errorStateVariants = cva(
   "flex items-center",
@@ -113,7 +114,7 @@ export function ErrorState({
             </PortalButton>
           )}
           {showHomeLink && (
-            <Link href="/portal/">
+            <Link href={getPortalPath('/')}>
               <PortalButton variant="outline">
                 <Home size={16} className="me-2" />
                 {t('portal.errorState.home')}

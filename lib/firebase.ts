@@ -2,7 +2,7 @@
 
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -88,7 +88,14 @@ export function getFirestoreDb(): Firestore {
 
   if (!dbInstance) {
     const firebaseApp = getFirebaseApp();
-    dbInstance = getFirestore(firebaseApp);
+
+    try {
+      dbInstance = initializeFirestore(firebaseApp, {
+        ignoreUndefinedProperties: true,
+      });
+    } catch (error) {
+      dbInstance = getFirestore(firebaseApp);
+    }
   }
   return dbInstance;
 }

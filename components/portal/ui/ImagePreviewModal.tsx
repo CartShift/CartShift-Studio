@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Download, ZoomIn, ZoomOut } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { createPortal } from 'react-dom';
-import { useState } from 'react';
+import { getFreshDownloadUrl } from '@/lib/services/portal-files';
 
 interface ImagePreviewModalProps {
   imageUrl: string;
   imageName: string;
+  storagePath?: string;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -16,15 +17,41 @@ interface ImagePreviewModalProps {
 export function ImagePreviewModal({
   imageUrl,
   imageName,
+  storagePath,
   isOpen,
   onClose,
 }: ImagePreviewModalProps) {
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [currentImageUrl, setCurrentImageUrl] = useState(imageUrl);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setCurrentImageUrl(imageUrl);
+    setImageError(false);
+  }, [imageUrl, isOpen]);
+
+  const handleImageError = async () => {
+    if (imageError || !storagePath) {
+      setImageError(true);
+      return;
+    }
+
+    setImageError(true);
+    try {
+      const freshUrl = await getFreshDownloadUrl(storagePath);
+      if (freshUrl) {
+        setCurrentImageUrl(freshUrl);
+        setImageError(false);
+      }
+    } catch (error) {
+      console.error('Error getting fresh download URL for preview:', error);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -97,7 +124,7 @@ export function ImagePreviewModal({
 
                   {/* Download Button */}
                   <a
-                    href={imageUrl}
+                    href={currentImageUrl}
                     download={imageName}
                     className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10"
                     title="Download"
@@ -118,18 +145,25 @@ export function ImagePreviewModal({
 
               {/* Image Container */}
               <div className="flex-1 flex items-center justify-center overflow-auto rounded-2xl bg-surface-950/50 border border-white/10">
-                <motion.img
-                  src={imageUrl}
-                  alt={imageName}
-                  className="max-w-full max-h-full object-contain rounded-xl"
-                  style={{
-                    transform: `scale(${zoom})`,
-                    transition: 'transform 0.2s ease-out'
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                />
+                {imageError && !storagePath ? (
+                  <div className="text-white/60 text-center p-8">
+                    <p className="text-sm">Failed to load image</p>
+                  </div>
+                ) : (
+                  <motion.img
+                    src={currentImageUrl}
+                    alt={imageName}
+                    className="max-w-full max-h-full object-contain rounded-xl"
+                    style={{
+                      transform: `scale(${zoom})`,
+                      transition: 'transform 0.2s ease-out'
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    onError={handleImageError}
+                  />
+                )}
               </div>
             </motion.div>
           </div>

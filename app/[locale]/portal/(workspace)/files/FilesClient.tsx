@@ -38,7 +38,7 @@ export default function FilesClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [deletingFile, setDeletingFile] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ url: string; name: string; storagePath?: string } | null>(null);
   const t = useTranslations();
   const locale = useLocale();
 
@@ -217,7 +217,7 @@ export default function FilesClient() {
                       <div className="flex items-center gap-4">
                         {file.mimeType.startsWith('image/') ? (
                           <button
-                            onClick={() => setPreviewImage({ url: file.url, name: file.originalName })}
+                            onClick={() => setPreviewImage({ url: file.url, name: file.originalName, storagePath: file.storagePath })}
                             className="w-12 h-12 rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex-shrink-0 shadow-sm hover:scale-105 transition-all cursor-pointer"
                             title="Click to preview"
                           >
@@ -338,6 +338,7 @@ export default function FilesClient() {
       <ImagePreviewModal
         imageUrl={previewImage?.url || ''}
         imageName={previewImage?.name || ''}
+        storagePath={previewImage?.storagePath}
         isOpen={!!previewImage}
         onClose={() => setPreviewImage(null)}
       />

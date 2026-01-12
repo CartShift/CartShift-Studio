@@ -4,6 +4,7 @@ import { AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { PortalButton } from '../ui/PortalButton';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export function PortalAccessDenied() {
   const t = useTranslations();
@@ -23,7 +24,7 @@ export function PortalAccessDenied() {
           </p>
         </div>
         <div className="pt-4 flex flex-col gap-3">
-          <Link href="/portal/">
+          <Link href={getPortalPath('/')}>
             <PortalButton
               variant="primary"
               className="w-full h-12 font-outfit shadow-xl shadow-blue-500/20"

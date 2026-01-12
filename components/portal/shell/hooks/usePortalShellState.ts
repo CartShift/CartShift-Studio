@@ -35,6 +35,7 @@ export function usePortalShellState({
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   // Notification State
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -53,6 +54,7 @@ export function usePortalShellState({
   const notificationButtonRef = useRef<HTMLButtonElement>(null);
   const notificationDropdownRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
+  const hasEverBeenAuthorizedRef = useRef(false);
 
   // Hooks
   const pathname = usePathname();
@@ -72,6 +74,11 @@ export function usePortalShellState({
     let internalMounted = true;
 
     if (!loading) {
+      // Mark initial load as complete once auth is no longer loading
+      if (!initialLoadComplete) {
+        setInitialLoadComplete(true);
+      }
+
       if (!isAuthenticated) {
         if (!isLoggingOut()) {
           router.push(getPortalPath('/login/'));
@@ -83,13 +90,19 @@ export function usePortalShellState({
         try {
           if (effectiveOrgId && userData) {
             if (userData.isAgency || userData.accountType === 'AGENCY') {
-              if (internalMounted) setIsAuthorized(true);
+              if (internalMounted) {
+                setIsAuthorized(true);
+                hasEverBeenAuthorizedRef.current = true;
+              }
               return;
             }
 
             if (effectiveOrgId === 'template') {
               console.warn('[PortalShell] effectiveOrgId is "template". Skipping access check.');
-              if (internalMounted) setIsAuthorized(true);
+              if (internalMounted) {
+                setIsAuthorized(true);
+                hasEverBeenAuthorizedRef.current = true;
+              }
               return;
             }
 
@@ -104,12 +117,22 @@ export function usePortalShellState({
               );
             }
 
-            if (internalMounted) setIsAuthorized(member !== null);
+            if (internalMounted) {
+              const authorized = member !== null;
+              setIsAuthorized(authorized);
+              if (authorized) hasEverBeenAuthorizedRef.current = true;
+            }
           } else if (isAgencyPage && userData) {
-            if (internalMounted)
-              setIsAuthorized(Boolean(userData.isAgency) || userData.accountType === 'AGENCY');
+            const authorized = Boolean(userData.isAgency) || userData.accountType === 'AGENCY';
+            if (internalMounted) {
+              setIsAuthorized(authorized);
+              if (authorized) hasEverBeenAuthorizedRef.current = true;
+            }
           } else {
-            if (internalMounted) setIsAuthorized(true);
+            if (internalMounted) {
+              setIsAuthorized(true);
+              hasEverBeenAuthorizedRef.current = true;
+            }
           }
         } catch (error) {
           console.error('[PortalShell] Error checking access:', error);
@@ -166,7 +189,7 @@ export function usePortalShellState({
 
     const unsubscribeNotifications = subscribeToNotifications(
       userId,
-      (data) => {
+      data => {
         if (internalMounted) {
           setNotifications(data);
         }
@@ -174,7 +197,7 @@ export function usePortalShellState({
       { limit: 10 }
     );
 
-    const unsubscribeUnreadCount = subscribeToUnreadCount(userId, (count) => {
+    const unsubscribeUnreadCount = subscribeToUnreadCount(userId, count => {
       if (internalMounted) {
         setUnreadCount(count);
       }
@@ -393,6 +416,8 @@ export function usePortalShellState({
     isAuthorized,
     isExpanded,
     isAgency,
+    initialLoadComplete,
+    hasEverBeenAuthorized: hasEverBeenAuthorizedRef.current,
 
     // Refs
     notificationRef,

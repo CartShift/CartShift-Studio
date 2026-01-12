@@ -432,6 +432,12 @@ export default function RequestsClient() {
                               // Layout animation started
                             }
                           }}
+                          onClick={() => {
+                            if (isAgency && req.orgId) {
+                              switchOrg(req.orgId);
+                            }
+                            router.push(getPortalPath(`/requests/${req.id}/`));
+                          }}
                           className={cn(
                             "bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-4 shadow-sm active:scale-[0.98] cursor-pointer relative",
                             isNewlyPinned && "border-amber-400 dark:border-amber-500 bg-amber-50/30 dark:bg-amber-500/5 ring-4 ring-amber-400/20 dark:ring-amber-500/20",
@@ -576,6 +582,13 @@ export default function RequestsClient() {
                               if (isNewlyPinned) {
                                 // Layout animation started
                               }
+                            }}
+                            onClick={() => {
+                              if (isSelectionMode) return;
+                              if (isAgency && req.orgId) {
+                                switchOrg(req.orgId);
+                              }
+                              router.push(getPortalPath(`/requests/${req.id}/`));
                             }}
                             className={cn(
                               'hover:bg-surface-50/50 dark:hover:bg-surface-800/30 group cursor-pointer relative',
