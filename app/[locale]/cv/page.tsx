@@ -8,6 +8,7 @@ import {
   Phone,
   Mail,
   Linkedin,
+  Github,
   Download,
   Briefcase,
   Code,
@@ -45,6 +46,57 @@ const languagePercentages: Record<string, number> = {
   hebrew: 100,
   english: 95,
   german: 30,
+};
+
+// Simple Icons CDN mapping for technology logos
+const skillIconMap: Record<string, string> = {
+  // Frontend & Core
+  'Next.js 15': 'nextdotjs',
+  'React': 'react',
+  'TypeScript': 'typescript',
+  'JavaScript': 'javascript',
+  'Vue.js': 'vuedotjs',
+  'HTML5/CSS3': 'html5',
+  'Tailwind CSS': 'tailwindcss',
+  'Framer Motion': 'framer',
+  // Backend & Runtime
+  'Node.js': 'nodedotjs',
+  'PHP': 'php',
+  'Python': 'python',
+  'Java': 'openjdk',
+  'C#': 'csharp',
+  'C++': 'cplusplus',
+  'GraphQL': 'graphql',
+  'REST APIs': 'swagger',
+  // Cloud & DevOps
+  'Google Cloud Platform': 'googlecloud',
+  'Firebase': 'firebase',
+  'Vercel': 'vercel',
+  'Docker': 'docker',
+  'CI/CD': 'githubactions',
+  'Git': 'git',
+  'GitHub Actions': 'githubactions',
+  // E-Commerce & CMS
+  'Shopify': 'shopify',
+  'Shopify APIs': 'shopify',
+  'WordPress': 'wordpress',
+  'HubSpot': 'hubspot',
+  'Laravel': 'laravel',
+  'Stripe': 'stripe',
+  // Data & Storage
+  'PostgreSQL': 'postgresql',
+  'Firestore': 'firebase',
+  'MongoDB': 'mongodb',
+  'SQL': 'mysql',
+  'Redis': 'redis',
+  'PL/SQL': 'oracle',
+  // AI & Automation
+  'OpenAI API': 'openai',
+  'Claude API': 'anthropic',
+  'LangChain': 'langchain',
+  'Webhooks': 'webhook',
+  'Puppeteer': 'puppeteer',
+  'Playwright': 'playwright',
 };
 
 // Pre-defined particle positions to avoid hydration mismatch
@@ -212,7 +264,7 @@ export default function CVPage() {
               </motion.div>
 
               {/* Content */}
-              <div className="flex-1 text-center lg:text-left">
+              <div className="flex-1 text-center lg:text-start">
                 <motion.h1
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -253,6 +305,12 @@ export default function CVPage() {
                      className="flex items-center gap-1.5 hover:text-primary-400 transition-colors">
                     <Linkedin className="w-3.5 h-3.5" />
                     <span>{t('linkedin')}</span>
+                  </a>
+                  <span className="hidden sm:inline text-surface-600">•</span>
+                  <a href="https://github.com/yotamon" target="_blank" rel="noopener noreferrer"
+                     className="flex items-center gap-1.5 hover:text-primary-400 transition-colors">
+                    <Github className="w-3.5 h-3.5" />
+                    <span>{t('github')}</span>
                   </a>
                 </motion.div>
               </div>
@@ -406,7 +464,7 @@ export default function CVPage() {
                               )}
                             </div>
                           </div>
-                          <div className={`flex flex-col ${isRTL ? 'lg:items-start' : 'lg:items-end'} text-sm`}>
+                          <div className="flex flex-col lg:items-end text-sm">
                             <span className={`${isSelfEmployment ? 'text-surface-400' : 'text-primary-400'} font-semibold`}>
                               {t(`experience.${expKey}.duration`)}
                             </span>
@@ -501,18 +559,29 @@ export default function CVPage() {
                       <h3 className="font-bold text-sm sm:text-base text-white">{t(`skills.${skill.key}.category`)}</h3>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      {items.map((item, iIndex) => (
-                        <motion.span
-                          key={iIndex}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.1 + iIndex * 0.03, duration: 0.3 }}
-                          className="px-2 py-1 bg-white/[0.04] border border-white/[0.06] rounded-md text-xs text-surface-300 cursor-default"
-                        >
-                          {item}
-                        </motion.span>
-                      ))}
+                      {items.map((item, iIndex) => {
+                        const iconSlug = skillIconMap[item];
+                        return (
+                          <motion.span
+                            key={iIndex}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 + iIndex * 0.03, duration: 0.3 }}
+                            className="flex items-center gap-1.5 px-2 py-1 bg-white/[0.04] border border-white/[0.06] rounded-md text-xs text-surface-300 cursor-default hover:bg-white/[0.08] transition-colors"
+                          >
+                            {iconSlug && (
+                              <img
+                                src={`https://cdn.simpleicons.org/${iconSlug}/9ca3af`}
+                                alt=""
+                                className="w-3 h-3 opacity-70"
+                                loading="lazy"
+                              />
+                            )}
+                            {item}
+                          </motion.span>
+                        );
+                      })}
                     </div>
                   </div>
                 </motion.div>
