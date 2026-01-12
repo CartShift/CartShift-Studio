@@ -1,0 +1,221 @@
+{
+  "cv": {
+    "title": "Yotam Faraggi - CV",
+    "name": "Yotam Faraggi",
+    "subtitle": "R&D Lead & Senior Full Stack Developer | E-Commerce & AI Solutions",
+    "location": "Berlin, Germany",
+    "phone": "+49 157 76211298",
+    "email": "yotamon@gmail.com",
+    "linkedin": "linkedin.com/in/yotam-faraggi",
+    "saveAsPdf": "Save as PDF",
+    "sections": {
+      "summary": "Professional Summary",
+      "experience": "Professional Experience",
+      "skills": "Technical Skills",
+      "education": "Education",
+      "languages": "Languages"
+    },
+    "summary": {
+      "text": "R&D Lead and Full Stack Developer with 10+ years of experience building and scaling e-commerce platforms and enterprise systems end-to-end. Led digital transformation initiatives and built HIPAA-compliant healthcare solutions serving thousands of users. Proven expertise in architecting resilient multi-layer systems and creating seamless integrations between Shopify, HubSpot, and cloud platforms. Specialized in developing customer-centric solutions with meticulous UX focus that drive conversion and retention. Pioneer in integrating production-ready AI agents and automation to reduce manual workflows and accelerate decision-making. Strong ability to align technical solutions with business objectives and deliver measurable outcomes."
+    },
+    "experience": {
+      "cartshift": {
+        "company": "CartShift Studio",
+        "title": "Founder & Lead Developer",
+        "duration": "November 2025 - Present",
+        "durationYears": "Current",
+        "location": "Berlin, Germany",
+        "description": "Founded and leading a specialized freelance agency delivering end-to-end e-commerce web development solutions for international clients.",
+        "highlights": [
+          "Building custom Shopify storefronts and headless e-commerce solutions with Next.js and modern tech stack",
+          "Implementing AI-powered automation tools to streamline client workflows and boost operational efficiency",
+          "Delivering full-cycle development from strategy and design to deployment and optimization"
+        ]
+      },
+      "curalife": {
+        "company": "Curalife",
+        "title": "Full Stack Developer & R&D Lead",
+        "duration": "July 2021 - November 2025",
+        "durationYears": "4 years 5 months",
+        "location": "Tel Aviv, Israel",
+        "description": "Spearheaded the company's entire digital R&D initiatives, architecting scalable e-commerce infrastructure and building innovative solutions that enhanced customer experience and operational efficiency.",
+        "highlights": [
+          "Built a complete HIPAA-compliant telemedicine funnel (Next.js 15, React, TypeScript, GCP) processing thousands of patient registrations with 99.9% uptime",
+          "Designed and implemented multi-layer architecture with resilient API client, reducing integration failures by 85% across Shopify and HubSpot systems",
+          "Led migration to modern tech stack, improving page load times by 60% and boosting mobile conversion rates",
+          "Deployed secure GCP infrastructure ensuring full HIPAA compliance and user privacy protection"
+        ]
+      },
+      "paragonex": {
+        "company": "ParagonEX",
+        "title": "Software & Integration Developer",
+        "duration": "August 2019 - July 2021",
+        "durationYears": "2 years",
+        "location": "Tel Aviv Area, Israel",
+        "description": "Delivered full-stack solutions for fintech platforms, optimizing performance and building robust integrations for the affiliate department.",
+        "highlights": [
+          "Developed and optimized high-traffic WordPress solutions using Sage and Laravel, serving 50K+ monthly users",
+          "Built custom integration layer connecting affiliate systems with core platform, increasing partner onboarding speed by 40%",
+          "Implemented Webpack build optimization reducing bundle size by 35% and improving load times"
+        ]
+      },
+      "ecommerce_venture": {
+        "company": "Self-Employed",
+        "title": "E-Commerce Founder & Developer",
+        "duration": "April 2018 - July 2019",
+        "durationYears": "1 year 4 months",
+        "highlights": []
+      },
+      "hot": {
+        "company": "HOT",
+        "title": "Integration Developer",
+        "duration": "February 2017 - March 2018",
+        "durationYears": "1 year 2 months",
+        "location": "Israel",
+        "highlights": [
+          "Built enterprise integration solutions using Oracle OSB (11g-12g), WebLogic, and IBM DataPower for Israel's largest cable provider",
+          "Developed high-throughput web services handling 10K+ daily transactions with JMS Queues",
+          "Implemented complex data transformations using XSL and XQuery, reducing processing time by 50%"
+        ]
+      },
+      "leumi": {
+        "company": "Leumi Bank",
+        "title": "Integration Developer",
+        "duration": "March 2016 - December 2016",
+        "durationYears": "10 months",
+        "location": "Lod, Israel",
+        "highlights": [
+          "Developed critical banking integrations using IBM WebSphere ESB (WMB 7.0/IIB 9.0) for one of Israel's largest banks",
+          "Built and maintained high-availability web services with IBM DataPower ensuring 99.99% uptime",
+          "Designed secure message routing with MQ Queues processing thousands of daily banking transactions"
+        ]
+      },
+      "elbit": {
+        "company": "Elbit Systems Ltd",
+        "title": "Software Developer",
+        "duration": "December 2013 - September 2014",
+        "durationYears": "10 months",
+        "highlights": [
+          "Contributed to mission-critical \"Command and Control\" system for military helicopters",
+          "Developed real-time components in C++, COM, and VB ensuring sub-millisecond response times",
+          "Managed Oracle and SQL databases supporting critical defense operations"
+        ]
+      },
+      "entrepreneurship": {
+        "company": "Self-Employed",
+        "title": "Entrepreneur & Freelance Developer",
+        "duration": "October 2014 - February 2016",
+        "durationYears": "1 year 5 months",
+        "highlights": []
+      },
+      "airforce": {
+        "company": "Israeli Air Force - \"Mamram\"",
+        "title": "Software Programmer",
+        "duration": "March 2011 - September 2014",
+        "durationYears": "3 years 7 months",
+        "highlights": [
+          "Core member of integration team connecting aircraft systems with ground control infrastructure",
+          "Led successful migration from legacy C++ system to modern IBM ESB web services, reducing maintenance overhead by 60%",
+          "Developed multi-platform solutions with C#, SQL, PL/SQL, JavaScript, AngularJS for mission-critical operations"
+        ]
+      }
+    },
+    "skills": {
+      "core": {
+        "category": "Frontend & Core",
+        "items": [
+          "Next.js 15",
+          "React",
+          "TypeScript",
+          "JavaScript",
+          "Vue.js",
+          "HTML5/CSS3",
+          "Tailwind CSS",
+          "Framer Motion"
+        ]
+      },
+      "backend": {
+        "category": "Backend & Runtime",
+        "items": [
+          "Node.js",
+          "PHP",
+          "Python",
+          "Java",
+          "C#",
+          "C++",
+          "GraphQL",
+          "REST APIs"
+        ]
+      },
+      "cloud": {
+        "category": "Cloud & DevOps",
+        "items": [
+          "Google Cloud Platform",
+          "Firebase",
+          "Vercel",
+          "Docker",
+          "CI/CD",
+          "Git",
+          "GitHub Actions"
+        ]
+      },
+      "ecommerce": {
+        "category": "E-Commerce & CMS",
+        "items": [
+          "Shopify",
+          "Shopify APIs",
+          "WordPress",
+          "HubSpot",
+          "Laravel",
+          "Stripe"
+        ]
+      },
+      "database": {
+        "category": "Data & Storage",
+        "items": [
+          "PostgreSQL",
+          "Firestore",
+          "MongoDB",
+          "SQL",
+          "Redis",
+          "PL/SQL"
+        ]
+      },
+      "apis": {
+        "category": "AI & Automation",
+        "items": [
+          "OpenAI API",
+          "Claude API",
+          "LangChain",
+          "Webhooks",
+          "Puppeteer",
+          "Playwright"
+        ]
+      }
+    },
+    "education": {
+      "university": "Bar-Ilan University",
+      "program": "Mathematics Program for Talented Youth",
+      "years": "2006 - 2008",
+      "description": "Distinguished graduate of the competitive Mathematics Program for Talented Youth. Foundation in algorithmic thinking, problem-solving, and mathematical modeling."
+    },
+    "languageSkills": {
+      "hebrew": {
+        "name": "Hebrew",
+        "level": "Native (C2)"
+      },
+      "english": {
+        "name": "English",
+        "level": "Fluent (C1)"
+      },
+      "german": {
+        "name": "German",
+        "level": "Elementary (A2)"
+      },
+      "portuguese": {
+        "name": "Portuguese",
+        "level": "Elementary (A1)"
+      }
+    }
+  }
+}
