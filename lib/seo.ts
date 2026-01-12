@@ -243,6 +243,47 @@ export function generateProfessionalServiceSchema() {
   };
 }
 
+export interface SoftwareApplicationSchemaConfig {
+  name: string;
+  description: string;
+  operatingSystem?: string;
+  applicationCategory?: string;
+  offers?: {
+    price: string;
+    priceCurrency: string;
+  };
+}
+
+export function generateSoftwareApplicationSchema(config: SoftwareApplicationSchemaConfig) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: config.name,
+    description: config.description,
+    applicationCategory: config.applicationCategory || "BusinessApplication",
+    operatingSystem: config.operatingSystem || "Any",
+    url: siteUrl + "/tools/store-analyzer",
+    provider: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "CartShift Studio",
+    },
+    offers: config.offers ? {
+      "@type": "Offer",
+      price: config.offers.price,
+      priceCurrency: config.offers.priceCurrency,
+    } : undefined,
+    featureList: [
+      "Performance Analysis",
+      "SEO Audit",
+      "Product UX Review",
+      "Cart & Checkout Analysis",
+      "Trust Signal Assessment",
+      "Mobile Responsiveness Check",
+    ],
+  };
+}
+
 export function generateArticleSchema(post: {
   title: string;
   description: string;
@@ -488,37 +529,6 @@ export function generatePersonSchema(person: {
       "@id": `${siteUrl}/#organization`,
       name: "CartShift Studio",
       url: siteUrl,
-    },
-  };
-}
-
-export function generateSoftwareApplicationSchema(app: {
-  name: string;
-  description: string;
-  operatingSystem?: string;
-  applicationCategory?: string;
-  offers?: {
-    price: string;
-    priceCurrency: string;
-  };
-}) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: app.name,
-    description: app.description,
-    ...(app.operatingSystem && { operatingSystem: app.operatingSystem }),
-    ...(app.applicationCategory && { applicationCategory: app.applicationCategory }),
-    ...(app.offers && {
-      offers: {
-        "@type": "Offer",
-        price: app.offers.price,
-        priceCurrency: app.offers.priceCurrency,
-      },
-    }),
-    author: {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
     },
   };
 }

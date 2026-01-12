@@ -8,6 +8,7 @@ import { Search, X, Clock, ArrowRight } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { isRTLLocale } from '@/lib/locale-config';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const mobileSearchItemVariants = cva(
   "w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-start group",
@@ -89,15 +90,15 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
     const normalizedQuery = searchQuery.toLowerCase().trim();
 
     if (normalizedQuery.includes('dashboard')) {
-      router.push('/portal/dashboard/');
+      router.push(getPortalPath('/dashboard/'));
     } else if (normalizedQuery.includes('request')) {
-      router.push('/portal/requests/');
+      router.push(getPortalPath('/requests/'));
     } else if (normalizedQuery.includes('setting')) {
-      router.push('/portal/settings/');
+      router.push(getPortalPath('/settings/'));
     } else if (normalizedQuery.includes('file')) {
-      router.push('/portal/files/');
+      router.push(getPortalPath('/files/'));
     } else if (normalizedQuery.includes('team')) {
-      router.push('/portal/team/');
+      router.push(getPortalPath('/team/'));
     }
 
     onClose();
@@ -105,8 +106,8 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
   };
 
   const quickLinks = [
-    { label: t('portal.sidebar.nav.dashboard' as any), href: '/portal/dashboard/', icon: '📊' },
-    { label: t('portal.sidebar.nav.requests' as any), href: '/portal/requests/', icon: '📋' },
+    { label: t('portal.sidebar.nav.dashboard' as any), href: getPortalPath('/dashboard/'), icon: '📊' },
+    { label: t('portal.sidebar.nav.requests' as any), href: getPortalPath('/requests/'), icon: '📋' },
   ];
 
   return (

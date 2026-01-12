@@ -11,6 +11,7 @@ import { Request, CLIENT_STATUS_MAP } from '@/lib/types/portal';
 import { subscribeToOrgRequests, subscribeToAllRequests } from '@/lib/services/portal-requests';
 import { PortalBadge } from './PortalBadge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const searchInputVariants = cva(
   "w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium",
@@ -147,7 +148,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   const handleSelect = (req: Request) => {
     setIsOpen(false);
     setQuery('');
-    router.push(`/portal/requests/${req.id}`);
+    router.push(getPortalPath(`/requests/${req.id}/`));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

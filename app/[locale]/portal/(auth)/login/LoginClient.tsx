@@ -4,18 +4,21 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter, useSearchParams } from '@/i18n/navigation';
+import { useSearchParams } from '@/i18n/navigation';
 import { PortalButton } from '@/components/portal/ui/PortalButton';
 import { PortalInput } from '@/components/portal/ui/PortalInput';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
 import { FormError } from '@/components/portal/ui/FormError';
 import { ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
-import { loginWithEmail } from '@/lib/services/auth';
+import { loginWithEmail, signInWithGoogle } from '@/lib/services/auth';
 import { Suspense, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { Mail, Lock } from 'lucide-react';
+import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
+import { toast } from 'sonner';
 
 type LoginData = z.infer<ReturnType<typeof getLoginSchema>>;
 
@@ -29,8 +32,9 @@ const getLoginSchema = (t: (path: string) => string) =>
 function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+  const { navigateToPortal, getPortalHref } = usePortalNavigation();
   const searchParams = useSearchParams();
   const t = useTranslations();
   const redirectPath = searchParams.get('redirect');
@@ -46,14 +50,40 @@ function LoginForm() {
     mode: 'onBlur',
   });
 
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    setError(null);
+    try {
+      await signInWithGoogle();
+      toast.success(t('portal.auth.login.success' as any));
+      navigateToPortal(redirectPath || '/');
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string; message?: string };
+      const errorMessage =
+        firebaseError.code === 'auth/popup-closed-by-user'
+          ? t('portal.auth.errors.popupClosed' as any)
+          : firebaseError.code === 'auth/popup-blocked'
+            ? t('portal.auth.errors.popupBlocked' as any)
+            : firebaseError.code === 'auth/cancelled-popup-request'
+              ? t('portal.auth.errors.popupCancelled' as any)
+              : firebaseError.code === 'auth/account-exists-with-different-credential'
+                ? t('portal.auth.errors.accountExists' as any)
+                : firebaseError.message || t('portal.auth.errors.generic' as any);
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   const onSubmit = async (data: LoginData) => {
     setLoading(true);
     setError(null);
     try {
       await loginWithEmail(data.email, data.password);
-      router.push(redirectPath || '/portal/');
+      toast.success(t('portal.auth.login.success' as any));
+      navigateToPortal(redirectPath || '/');
     } catch (error: unknown) {
-      console.error('Login error:', error);
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/user-not-found'
@@ -67,6 +97,7 @@ function LoginForm() {
                 ? t('portal.auth.errors.too-many-requests' as any)
                 : firebaseError.message || t('portal.auth.errors.generic' as any);
       setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -114,7 +145,7 @@ function LoginForm() {
                   {t('portal.auth.login.password')}
                 </label>
                 <Link
-                  href="/portal/forgot-password"
+                  href={getPortalHref('/forgot-password/')}
                   className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                 >
                   {t('portal.auth.login.forgotPassword')}
@@ -183,6 +214,9 @@ function LoginForm() {
             variant="outline"
             className="w-full h-11 border-surface-200 dark:border-surface-800"
             type="button"
+            onClick={handleGoogleSignIn}
+            isLoading={googleLoading}
+            disabled={loading || googleLoading}
           >
             <svg className="w-5 h-5 me-3" viewBox="0 0 24 24">
               <path
@@ -211,10 +245,18 @@ function LoginForm() {
           <Link
             href={
               redirectPath
-                ? `/portal/signup?redirect=${encodeURIComponent(redirectPath)}`
-                : '/portal/signup/'
+                ? `${getPortalPath('/signup/')}?redirect=${encodeURIComponent(redirectPath)}`
+                : getPortalHref('/signup/')
             }
-            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            prefetch={false}
+            onClick={e => {
+              e.preventDefault();
+              const path = redirectPath
+                ? `/signup/?redirect=${encodeURIComponent(redirectPath)}`
+                : '/signup/';
+              navigateToPortal(path);
+            }}
           >
             {t('portal.auth.login.createOne')}
           </Link>

@@ -59,24 +59,24 @@ These APIs will be automatically enabled when you deploy:
 **Manual enable (if needed)**:
    - Firestore API: https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=cartshiftstudio
 
-### 4. Configure Gmail for Email Notifications (Optional)
-**Status**: ⚠️ Not configured yet
+### 4. Configure Resend for Email Notifications
+**Status**: ⚠️ Configure when ready
 
-If you want email notifications from the contact form:
+Email notifications use **Resend** (modern email API, 3,000/month free):
 
-1. **Enable Gmail API**:
-   - Visit: https://console.cloud.google.com/apis/library/gmail.googleapis.com?project=cartshift-studio
-   - Click "Enable"
+1. **Create Resend Account**:
+   - Sign up at: https://resend.com
+   - Create an API key in the dashboard
 
-2. **Create App Password**:
-   - Go to: https://myaccount.google.com/apppasswords
-   - Generate an app password for "Mail"
-   - Save the password
+2. **Verify Domain (Recommended)**:
+   - Add your domain in Resend dashboard
+   - Configure DNS records provided
 
-3. **Set Firebase Functions Config** (after functions are deployed):
+3. **Set Firebase Functions Secrets**:
 ```bash
-firebase functions:secrets:set GMAIL_USER="your-email@gmail.com"
-firebase functions:secrets:set GMAIL_APP_PASSWORD="your-app-password"
+firebase functions:secrets:set RESEND_API_KEY
+# Paste your API key when prompted
+
 firebase functions:secrets:set CONTACT_EMAIL="hello@cart-shift.com"
 ```
 

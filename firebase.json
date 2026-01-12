@@ -17,6 +17,10 @@
     ],
     "rewrites": [
       {
+        "source": "/api/analyze-store",
+        "function": "analyzeStore"
+      },
+      {
         "source": "/",
         "destination": "/en/index.html"
       },
@@ -75,6 +79,190 @@
       {
         "source": "/portal/invite/**",
         "destination": "/en/portal/invite/template/index.html"
+      },
+      {
+        "source": "/en/login/**",
+        "destination": "/en/portal/login/index.html"
+      },
+      {
+        "source": "/he/login/**",
+        "destination": "/he/portal/login/index.html"
+      },
+      {
+        "source": "/en/signup/**",
+        "destination": "/en/portal/signup/index.html"
+      },
+      {
+        "source": "/he/signup/**",
+        "destination": "/he/portal/signup/index.html"
+      },
+      {
+        "source": "/en/oauth-callback/**",
+        "destination": "/en/portal/oauth-callback/index.html"
+      },
+      {
+        "source": "/he/oauth-callback/**",
+        "destination": "/he/portal/oauth-callback/index.html"
+      },
+      {
+        "source": "/en/invite/**",
+        "destination": "/en/portal/invite/template/index.html"
+      },
+      {
+        "source": "/he/invite/**",
+        "destination": "/he/portal/invite/template/index.html"
+      },
+      {
+        "source": "/en/dashboard/**",
+        "destination": "/en/portal/dashboard/index.html"
+      },
+      {
+        "source": "/he/dashboard/**",
+        "destination": "/he/portal/dashboard/index.html"
+      },
+      {
+        "source": "/en/requests/new/**",
+        "destination": "/en/portal/requests/new/index.html"
+      },
+      {
+        "source": "/he/requests/new/**",
+        "destination": "/he/portal/requests/new/index.html"
+      },
+      {
+        "source": "/en/requests/:requestId",
+        "destination": "/en/portal/requests/request/index.html"
+      },
+      {
+        "source": "/en/requests/:requestId/**",
+        "destination": "/en/portal/requests/request/index.html"
+      },
+      {
+        "source": "/he/requests/:requestId",
+        "destination": "/he/portal/requests/request/index.html"
+      },
+      {
+        "source": "/he/requests/:requestId/**",
+        "destination": "/he/portal/requests/request/index.html"
+      },
+      {
+        "source": "/en/requests/**",
+        "destination": "/en/portal/requests/index.html"
+      },
+      {
+        "source": "/he/requests/**",
+        "destination": "/he/portal/requests/index.html"
+      },
+      {
+        "source": "/en/consultations/**",
+        "destination": "/en/portal/consultations/index.html"
+      },
+      {
+        "source": "/he/consultations/**",
+        "destination": "/he/portal/consultations/index.html"
+      },
+      {
+        "source": "/en/team/**",
+        "destination": "/en/portal/team/index.html"
+      },
+      {
+        "source": "/he/team/**",
+        "destination": "/he/portal/team/index.html"
+      },
+      {
+        "source": "/en/files/**",
+        "destination": "/en/portal/files/index.html"
+      },
+      {
+        "source": "/he/files/**",
+        "destination": "/he/portal/files/index.html"
+      },
+      {
+        "source": "/en/pricing/new/**",
+        "destination": "/en/portal/pricing/new/index.html"
+      },
+      {
+        "source": "/he/pricing/new/**",
+        "destination": "/he/portal/pricing/new/index.html"
+      },
+      {
+        "source": "/en/pricing/:pricingId",
+        "destination": "/en/portal/pricing/pricing/index.html"
+      },
+      {
+        "source": "/en/pricing/:pricingId/**",
+        "destination": "/en/portal/pricing/pricing/index.html"
+      },
+      {
+        "source": "/he/pricing/:pricingId",
+        "destination": "/he/portal/pricing/pricing/index.html"
+      },
+      {
+        "source": "/he/pricing/:pricingId/**",
+        "destination": "/he/portal/pricing/pricing/index.html"
+      },
+      {
+        "source": "/en/settings/**",
+        "destination": "/en/portal/settings/index.html"
+      },
+      {
+        "source": "/he/settings/**",
+        "destination": "/he/portal/settings/index.html"
+      },
+      {
+        "source": "/en/agency/workboard/**",
+        "destination": "/en/portal/agency/workboard/index.html"
+      },
+      {
+        "source": "/he/agency/workboard/**",
+        "destination": "/he/portal/agency/workboard/index.html"
+      },
+      {
+        "source": "/en/agency/clients/new/**",
+        "destination": "/en/portal/agency/clients/new/index.html"
+      },
+      {
+        "source": "/he/agency/clients/new/**",
+        "destination": "/he/portal/agency/clients/new/index.html"
+      },
+      {
+        "source": "/en/agency/clients/*/**",
+        "destination": "/en/portal/agency/clients/template/index.html"
+      },
+      {
+        "source": "/he/agency/clients/*/**",
+        "destination": "/he/portal/agency/clients/template/index.html"
+      },
+      {
+        "source": "/en/agency/clients/**",
+        "destination": "/en/portal/agency/clients/index.html"
+      },
+      {
+        "source": "/he/agency/clients/**",
+        "destination": "/he/portal/agency/clients/index.html"
+      },
+      {
+        "source": "/en/agency/consultations/**",
+        "destination": "/en/portal/agency/consultations/index.html"
+      },
+      {
+        "source": "/he/agency/consultations/**",
+        "destination": "/he/portal/agency/consultations/index.html"
+      },
+      {
+        "source": "/en/agency/pricing/**",
+        "destination": "/en/portal/agency/pricing/index.html"
+      },
+      {
+        "source": "/he/agency/pricing/**",
+        "destination": "/he/portal/agency/pricing/index.html"
+      },
+      {
+        "source": "/en/agency/settings/**",
+        "destination": "/en/portal/agency/settings/index.html"
+      },
+      {
+        "source": "/he/agency/settings/**",
+        "destination": "/he/portal/agency/settings/index.html"
       },
       {
         "source": "/en/portal/dashboard/**",

@@ -10,6 +10,7 @@ import { PortalInput } from '@/components/portal/ui/PortalInput';
 import { X } from 'lucide-react';
 import { createOrganization } from '@/lib/services/portal-organizations';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 import { useTranslations } from 'next-intl';
 
@@ -83,7 +84,7 @@ export const CreateOrganizationForm = ({ onSuccess, onCancel }: CreateOrganizati
 
       onSuccess(org.id);
       // Redirect to clean URL - org is stored in context/session
-      router.push('/portal/dashboard/');
+      router.push(getPortalPath('/dashboard/'));
     } catch (error: unknown) {
       console.error('Create organization error:', error);
       setError(

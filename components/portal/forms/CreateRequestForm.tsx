@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { uploadMultipleFiles, formatFileSize } from '@/lib/services/portal-files';
 import { updateRequest } from '@/lib/services/portal-requests';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 type RequestFormData = {
   title: string;
@@ -125,7 +126,7 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
 
       // Short delay before redirecting for better UX
       setTimeout(() => {
-        router.push(`/portal/requests/${request.id}`);
+        router.push(getPortalPath(`/requests/${request.id}/`));
       }, 1500);
     } catch (error: unknown) {
       console.error('Create request error:', error);

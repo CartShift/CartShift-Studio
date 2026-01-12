@@ -8,12 +8,12 @@ import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 
 const themeToggleVariants = cva(
-  "relative p-2.5 rounded-xl transition-all duration-300 shadow-premium border",
+  "relative p-2 rounded-xl transition-all duration-200",
   {
     variants: {
       isDark: {
-        true: "bg-white/5 border-white/10 hover:bg-white/10",
-        false: "bg-white/5 border-white/10 hover:bg-white/10",
+        true: "hover:bg-surface-700/50 text-surface-300",
+        false: "hover:bg-surface-200/60 text-surface-600",
       }
     },
     defaultVariants: {

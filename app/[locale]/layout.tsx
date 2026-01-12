@@ -4,6 +4,7 @@ import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { LocaleAttributes } from '@/components/providers/LocaleAttributes';
 import { GeoLocaleRedirect } from '@/components/providers/GeoLocaleRedirect';
+import { PortalSubdomainRedirect } from '@/components/providers/PortalSubdomainRedirect';
 import { generateOrganizationSchema } from '@/lib/seo';
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout';
 import { MotionProvider } from '@/lib/motion';
@@ -163,6 +164,7 @@ export default async function LocaleLayout({
             <NextIntlClientProvider messages={messages} locale={locale}>
               <LocaleAttributes />
               <GeoLocaleRedirect />
+              <PortalSubdomainRedirect />
               <GoogleAnalytics />
               <AnalyticsProvider>
                 <ConditionalLayout>{children}</ConditionalLayout>

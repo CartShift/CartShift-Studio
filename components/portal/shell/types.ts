@@ -35,7 +35,6 @@ export interface SidebarNavigationProps {
   navGroups: NavGroup[];
   isExpanded: boolean;
   isMobile: boolean;
-  locale: string;
   onItemClick: () => void;
 }
 

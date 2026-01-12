@@ -28,6 +28,7 @@ import { UploadFileForm } from '@/components/portal/forms/UploadFileForm';
 import { useTranslations, useLocale } from 'next-intl';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { ImagePreviewModal } from '@/components/portal/ui/ImagePreviewModal';
+import { PortalFileImage } from '@/components/portal/ui/PortalFileImage';
 
 export default function FilesClient() {
   const orgId = useResolvedOrgId();
@@ -220,8 +221,9 @@ export default function FilesClient() {
                             className="w-12 h-12 rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex-shrink-0 shadow-sm hover:scale-105 transition-all cursor-pointer"
                             title="Click to preview"
                           >
-                            <img
+                            <PortalFileImage
                               src={file.url}
+                              storagePath={file.storagePath}
                               alt={file.originalName}
                               className="w-full h-full object-cover"
                             />

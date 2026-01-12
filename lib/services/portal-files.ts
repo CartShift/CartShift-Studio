@@ -251,3 +251,16 @@ export function subscribeToRequestFiles(
     }
   };
 }
+
+export async function getFreshDownloadUrl(storagePath: string): Promise<string | null> {
+  try {
+    await waitForAuth();
+    const storage = getFirebaseStorage();
+    const storageRef = ref(storage, storagePath);
+    const downloadUrl = await getDownloadURL(storageRef);
+    return downloadUrl;
+  } catch (error) {
+    console.error('Error getting fresh download URL:', error);
+    return null;
+  }
+}

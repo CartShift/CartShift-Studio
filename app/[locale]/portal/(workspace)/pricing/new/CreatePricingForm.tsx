@@ -36,6 +36,7 @@ import {
   PricingLineItem,
 } from '@/lib/types/pricing';
 import { Request, RequestStatus } from '@/lib/types/portal';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface LineItemInput {
   description: string;
@@ -230,7 +231,7 @@ export default function CreatePricingForm() {
       setSubmitStatus('success');
 
       setTimeout(() => {
-        router.push('/portal/pricing/');
+        router.push(getPortalPath('/pricing/'));
       }, 1500);
     } catch (error) {
       console.error('Failed to create pricing request:', error);

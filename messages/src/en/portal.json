@@ -539,7 +539,8 @@
         "google": "Google SSO",
         "noAccount": "Don't have an account yet?",
         "createOne": "Create one here",
-        "secure": "Secure Enterprise Access"
+        "secure": "Secure Enterprise Access",
+        "success": "Successfully signed in"
       },
       "signup": {
         "title": "Create your account",
@@ -564,12 +565,17 @@
         "passwordTooShort": "Password must be at least 6 characters",
         "passwordRequirements": "Password must contain both letters and numbers",
         "matchPassword": "Passwords don't match",
+        "nameTooShort": "Name must be at least 2 characters",
         "invalidCode": "Invalid invite code",
         "inviteNotFound": "Invite not found",
         "alreadyAccepted": "This invite has already been accepted",
         "expired": "This invite has expired",
         "mismatch": "This invite was sent to a different email address",
-        "genericInvite": "Failed to load invite"
+        "genericInvite": "Failed to load invite",
+        "popupClosed": "Sign-in popup was closed. Please try again.",
+        "popupBlocked": "Sign-in popup was blocked. Please allow popups and try again.",
+        "popupCancelled": "Sign-in was cancelled. Please try again.",
+        "accountExists": "An account already exists with this email using a different sign-in method."
       },
       "showPassword": "Show password",
       "hidePassword": "Hide password",
@@ -1444,6 +1450,8 @@
     "pricing": {
       "title": "Pricing Offers",
       "subtitle": "Create and manage pricing proposals for clients.",
+      "selectClient": "Select Client",
+      "selectClientDesc": "Choose a client to create an offer for",
       "newOffer": "New Offer",
       "editOffer": "Edit Pricing Offer",
       "editOfferDescription": "Update your pricing proposal.",

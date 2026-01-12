@@ -22,8 +22,8 @@ service firebase.storage {
     function isOrgMember(orgId) {
       return isAuthenticated() && (
         isAgencyUser() ||
-        firestore.exists(/databases/(default)/documents/portal_organizations/$(orgId)) &&
-        firestore.get(/databases/(default)/documents/portal_organizations/$(orgId)).data.get('createdBy', '') == getUserId() ||
+        (firestore.exists(/databases/(default)/documents/portal_organizations/$(orgId)) &&
+         firestore.get(/databases/(default)/documents/portal_organizations/$(orgId)).data.get('createdBy', '') == getUserId()) ||
         firestore.exists(/databases/(default)/documents/portal_members/$(orgId + '_' + getUserId()))
       );
     }

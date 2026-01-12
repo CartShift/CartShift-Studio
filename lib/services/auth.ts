@@ -1,14 +1,22 @@
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   sendPasswordResetEmail,
   updateProfile,
   type User,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb } from '@/lib/firebase';
 import { ACCOUNT_TYPE } from '@/lib/types/portal';
+
+// Google Auth Provider instance
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account',
+});
 
 /**
  * Get the Firebase Auth instance from the centralized Firebase configuration
@@ -48,6 +56,58 @@ export async function loginWithEmail(email: string, password: string): Promise<U
     if (authError.code) {
       // Firebase Auth error codes
       const errorMessage = authError.message || 'Authentication failed';
+      const enhancedError = new Error(errorMessage) as Error & { code: string };
+      enhancedError.code = authError.code;
+      throw enhancedError;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Sign in with Google using Firebase popup authentication
+ * Creates a portal user document if it doesn't exist (for new Google sign-ins)
+ */
+export async function signInWithGoogle(): Promise<User> {
+  try {
+    const authInstance = getAuthInstance();
+
+    if (!authInstance) {
+      throw new Error(
+        'Firebase Auth is not properly initialized. Please check your environment variables.'
+      );
+    }
+
+    const userCredential = await signInWithPopup(authInstance, googleProvider);
+    const user = userCredential.user;
+
+    // Ensure auth token is ready before accessing Firestore
+    await user.getIdToken(true);
+
+    // Check if portal user document exists, if not create one
+    const db = getFirestoreDb();
+    const userDocRef = doc(db, 'portal_users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      // Create a new portal user document for first-time Google sign-ins
+      await setDoc(userDocRef, {
+        email: user.email,
+        name: user.displayName || null,
+        photoUrl: user.photoURL || null,
+        accountType: ACCOUNT_TYPE.CLIENT,
+        isAgency: false,
+        organizations: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    return user;
+  } catch (error: unknown) {
+    const authError = error as { code?: string; message?: string };
+    if (authError.code) {
+      const errorMessage = authError.message || 'Google sign-in failed';
       const enhancedError = new Error(errorMessage) as Error & { code: string };
       enhancedError.code = authError.code;
       throw enhancedError;

@@ -12,7 +12,9 @@
     "company": "Company",
     "login": "Login",
     "portal": "Portal",
-    "settings": "Settings"
+    "settings": "Settings",
+    "tools": "Tools",
+    "clientPortal": "Client Portal"
   },
   "floatingActions": {
     "bookCall": "Book a Call",

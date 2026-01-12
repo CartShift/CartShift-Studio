@@ -16,6 +16,7 @@ import {
 import { Notification } from '@/lib/types/portal';
 import { isRTLLocale } from '@/lib/locale-config';
 import { NotificationPosition } from '../types';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface UsePortalShellStateOptions {
   orgIdProp?: string;
@@ -73,7 +74,7 @@ export function usePortalShellState({
     if (!loading) {
       if (!isAuthenticated) {
         if (!isLoggingOut()) {
-          router.push('/portal/login/');
+          router.push(getPortalPath('/login/'));
         }
         return;
       }
@@ -367,7 +368,7 @@ export function usePortalShellState({
   const handleOrgSwitch = useCallback(
     (orgId: string) => {
       switchOrg(orgId);
-      router.push('/portal/dashboard/');
+      router.push(getPortalPath('/dashboard/'));
     },
     [switchOrg, router]
   );

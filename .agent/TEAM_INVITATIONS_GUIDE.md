@@ -1,94 +1,80 @@
 # Team Invitation System - Implementation Guide
 
-## Current Status
+## Current Status ✅
 
-The team invitation functionality currently:
+The team invitation functionality now includes:
 - ✅ Creates invite records in Firestore
 - ✅ Validates that the user isn't already a member
 - ✅ Prevents duplicate invites
 - ✅ Sets 7-day expiration
-- ❌ **Does NOT send actual emails**
+- ✅ **Automatic email sending via Resend**
+- ✅ Copy link button for manual sharing
 
-## Why Emails Aren't Sent
+## Email System (Resend)
 
-Sending emails requires:
-1. **Email Service Provider** (SendGrid, AWS SES, Resend, etc.)
-2. **API Keys** and configuration
-3. **Email templates**
-4. **Server-side function** (Firebase Cloud Functions, Next.js API route, etc.)
+The email system uses **Resend** for transactional emails. When an invite is created in `portal_invites`, a Cloud Function automatically sends an invitation email.
 
-This is intentionally not implemented by default to avoid:
-- Requiring external service accounts
-- Adding costs during development
-- Needing to configure email providers
+### Setup Required
 
-## Implementation Options
+1. **Get Resend API Key:**
+   - Sign up at https://resend.com (free tier: 3,000 emails/month)
+   - Create an API key in the dashboard
 
-### Option 1: Manual Invite Links (Simplest - No Email Service)
+2. **Add to Firebase Secrets:**
+   ```bash
+   firebase functions:secrets:set RESEND_API_KEY
+   # Paste your API key when prompted
+   ```
 
-**Best for:** Development, MVP, internal teams
+3. **Verify Domain (Recommended for Production):**
+   - Add your domain in Resend dashboard
+   - Configure DNS records
+   - Update `from` address in `functions/emails/email-service.js`
 
-**How it works:**
-1. Generate a unique invite code when creating invite
-2. Show the invite link in the UI
-3. User manually copies and shares the link
-4. Recipient clicks link and accepts invite
+### Email Templates
 
-**Implementation:** ✅ I'll create this for you!
+Templates are located in `functions/emails/`:
+- `base.html` - Base layout wrapper
+- `team_invite.html` - Team invitation
+- `new_request.html` - New request notification
+- `status_update.html` - Status change notification
+- `quote_received.html` - Quote received
+- `payment_receipt.html` - Payment confirmation
+- `milestone_completed.html` - Milestone completion
+- `new_comment.html` - New comment notification
 
-### Option 2: Email via Third-Party Service
+### How It Works
 
-**Best for:** Production applications
+1. When an invite is created in Firestore (`portal_invites` collection)
+2. The `onTeamInviteCreated` Cloud Function triggers
+3. It builds the email using the `team_invite.html` template
+4. Sends via Resend API with retry logic
+5. Logs failures to `email_failures` collection
 
-**Popular services:**
-- **Resend** (https://resend.com) - Modern, developer-friendly, free tier
-- **SendGrid** (https://sendgrid.com) - Established, robust, free tier
-- **AWS SES** - Cheapest at scale, requires AWS account
-- **Mailgun** - Good deliverability, free tier
+### Testing
 
-**Steps:**
-1. Sign up for a service
-2. Get API key
-3. Create email template
-4. Call API when invite is created
+To test emails:
+1. Create an invite from the Team page
+2. Check Resend dashboard for delivery status
+3. Check `email_failures` collection for any errors
 
-### Option 3: Firebase Cloud Function with Email
+## Architecture
 
-**Best for:** Full Firebase integration
+```
+User invites team member
+        ↓
+Firestore: portal_invites (create)
+        ↓
+Cloud Function: onTeamInviteCreated
+        ↓
+email-service.js → Resend API
+        ↓
+Email delivered to recipient
+```
 
-**Steps:**
-1. Enable Billing on Firebase project
-2. Install Firebase Functions
-3. Use nodemailer or email service in function
-4. Trigger on invite creation
+## Fallback: Manual Sharing
 
-### Option 4: Next.js API Route with Email
-
-**Best for:** Next.js apps with server routes
-
-**Note:** Won't work with `output: "export"` (static mode)
-Would require switching to regular Next.js deployment
-
-## Recommended Solution: Manual Invite Links + Optional Email
-
-I'll implement:
-1. ✅ **Invite Code System** - Generate unique codes
-2. ✅ **Copy Link Button** - Easy sharing
-3. ✅ **Invite Acceptance Page** - `/portal/invite/[code]`
-4. ✅ **Email Template** - Ready to integrate with any service
-5. 📄 **Email Service Integration Guide** - Step-by-step for when you're ready
-
-This gives you:
-- **Working invites TODAY** (manual sharing)
-- **Easy upgrade path** to automatic emails later
-- **No external dependencies** needed now
-- **Production-ready architecture**
-
-## What I'll Build Next
-
-1. **Invite Code Generation** - Secure, unique codes
-2. **Invite Link UI** - Copy/share from Team page
-3. **Invite Acceptance Flow** - Beautiful landing page
-4. **Email Template** - HTML template for when you add email service
-
-Sound good? Let me build this!
+If Resend is not configured, invites still work via manual link sharing:
+- Copy link button is always available
+- User can share via any channel (Slack, WhatsApp, etc.)
+- System logs `no_api_key` when email is skipped

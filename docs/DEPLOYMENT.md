@@ -54,26 +54,37 @@ Update `.firebaserc` with your project ID:
 }
 ```
 
-## Gmail API Setup (for Email)
+## Email Setup (Resend)
 
-### 1. Enable Gmail API
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your Firebase project
-3. Enable Gmail API
-4. Create OAuth 2.0 credentials (if needed)
+### 1. Create Resend Account
+1. Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month)
+2. Go to API Keys and create a new key
+3. Copy the API key (starts with `re_`)
 
-### 2. Create App Password
-1. Go to your Google Account settings
-2. Security → 2-Step Verification → App passwords
-3. Generate an app password for "Mail"
-4. Save this password
+### 2. Verify Your Domain (Recommended)
+1. In Resend dashboard, go to Domains
+2. Add your domain (e.g., `cart-shift.com`)
+3. Add the DNS records Resend provides
+4. Wait for verification (usually < 1 hour)
 
-### 3. Set Firebase Functions Config
+### 3. Set Firebase Functions Secrets
 ```bash
-firebase functions:secrets:set GMAIL_USER="your-email@gmail.com"
-firebase functions:secrets:set GMAIL_APP_PASSWORD="your-app-password"
+firebase functions:secrets:set RESEND_API_KEY
+# Paste your API key when prompted
+
 firebase functions:secrets:set CONTACT_EMAIL="hello@cart-shift.com"
 ```
+
+### Email Templates
+Templates are in `functions/emails/`:
+- `base.html` - Base layout
+- `new_request.html` - New request notification
+- `status_update.html` - Status changes
+- `quote_received.html` - Quote notifications
+- `payment_receipt.html` - Payment confirmations
+- `team_invite.html` - Team invitations
+- `milestone_completed.html` - Milestone completions
+- `new_comment.html` - Comment notifications
 
 ## Deployment Steps
 
@@ -179,23 +190,11 @@ NEXT_PUBLIC_FIREBASE_FUNCTION_URL=https://us-central1-your-project.cloudfunction
 
 ### Firebase Functions Config
 ```bash
-firebase functions:secrets:set GMAIL_USER="your-email@gmail.com"
-firebase functions:secrets:set GMAIL_APP_PASSWORD="your-app-password"
+firebase functions:secrets:set RESEND_API_KEY
+# Paste your Resend API key when prompted
+
 firebase functions:secrets:set CONTACT_EMAIL="hello@yourdomain.com"
 ```
-
-## Alternative: Google Cloud SendGrid
-
-If you prefer SendGrid on Google Cloud:
-
-1. **Enable SendGrid API**
-   - Create SendGrid account
-   - Get API key
-   - Update Cloud Function to use SendGrid
-
-2. **Update Function**
-   - Modify `functions/index.js` to use SendGrid
-   - Set API key in Firebase config
 
 ## Troubleshooting
 

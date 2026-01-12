@@ -530,7 +530,7 @@ export default function AgencyTestimonialsClient() {
   // Close export menu when clicking outside
   useEffect(() => {
     if (!showExportMenu) return undefined;
-    
+
     const handleClickOutside = () => setShowExportMenu(false);
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
@@ -658,7 +658,9 @@ export type Testimonial = typeof testimonials[number];
                     <FileJson className="w-4 h-4 text-blue-500" />
                     <div>
                       <div className="font-medium">{t('agency.testimonials.export.json')}</div>
-                      <div className="text-xs text-surface-500">{t('agency.testimonials.export.jsonDesc')}</div>
+                      <div className="text-xs text-surface-500">
+                        {t('agency.testimonials.export.jsonDesc')}
+                      </div>
                     </div>
                   </button>
                   <button
@@ -668,7 +670,9 @@ export type Testimonial = typeof testimonials[number];
                     <Code2 className="w-4 h-4 text-purple-500" />
                     <div>
                       <div className="font-medium">{t('agency.testimonials.export.code')}</div>
-                      <div className="text-xs text-surface-500">{t('agency.testimonials.export.codeDesc')}</div>
+                      <div className="text-xs text-surface-500">
+                        {t('agency.testimonials.export.codeDesc')}
+                      </div>
                     </div>
                   </button>
                 </div>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter, useSearchParams } from '@/i18n/navigation';
+import { useSearchParams } from '@/i18n/navigation';
 import { PortalButton } from '@/components/portal/ui/PortalButton';
 import { PortalInput } from '@/components/portal/ui/PortalInput';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
@@ -14,13 +14,15 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { User, Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 type SignupData = z.infer<ReturnType<typeof getSignupSchema>>;
 
 const getSignupSchema = (t: (path: string) => string) =>
   z
     .object({
-      name: z.string().min(2, 'Name must be at least 2 characters'),
+      name: z.string().min(2, t('portal.auth.errors.nameTooShort')),
       email: z.string().email(t('portal.auth.errors.invalidEmail')),
       password: z
         .string()
@@ -40,7 +42,7 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const router = useRouter();
+  const { navigateToPortal, getPortalHref } = usePortalNavigation();
   const searchParams = useSearchParams();
   const t = useTranslations();
   const redirectPath = searchParams.get('redirect');
@@ -92,7 +94,7 @@ function SignupForm() {
     setError(null);
     try {
       await signUpWithEmail(data.email, data.password, data.name);
-      router.push(redirectPath || '/portal/');
+      navigateToPortal(redirectPath || '/');
     } catch (error: unknown) {
       console.error('Signup error:', error);
       const firebaseError = error as { code?: string; message?: string };
@@ -253,8 +255,8 @@ function SignupForm() {
           <Link
             href={
               redirectPath
-                ? `/portal/login?redirect=${encodeURIComponent(redirectPath)}`
-                : '/portal/login/'
+                ? `${getPortalPath('/login/')}?redirect=${encodeURIComponent(redirectPath)}`
+                : getPortalHref('/login/')
             }
             className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >

@@ -72,12 +72,12 @@ const ILFlag = () => (
 );
 
 const triggerVariants = cva(
-  "flex items-center gap-2 px-3 py-2 rounded-full transition-colors border",
+  "flex items-center gap-1.5 px-2.5 py-2 rounded-xl transition-all duration-200",
   {
     variants: {
       isOpen: {
-        true: "bg-surface-200 dark:bg-white/15 border-surface-300 dark:border-white/30",
-        false: "bg-surface-100 dark:bg-white/10 border-surface-200 dark:border-white/20 hover:border-surface-300 dark:hover:border-white/30",
+        true: "bg-surface-200/80 dark:bg-surface-600/50 text-surface-900 dark:text-white",
+        false: "hover:bg-surface-200/60 dark:hover:bg-surface-700/50 text-surface-700 dark:text-surface-300",
       }
     },
     defaultVariants: {

@@ -10,7 +10,6 @@ export function SidebarNavigation({
   navGroups,
   isExpanded,
   isMobile,
-  locale,
   onItemClick,
 }: SidebarNavigationProps) {
   const pathname = usePathname();
@@ -22,19 +21,15 @@ export function SidebarNavigation({
           {groupIndex > 0 && (
             <div className="mx-4 my-2 border-t border-surface-200/50 dark:border-surface-800/30" />
           )}
-          {group.items.map((item) => {
+          {group.items.map(item => {
             const isActive = pathname?.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                prefetch={false}
-                onClick={(e) => {
+                prefetch={true}
+                onClick={() => {
                   if (isMobile) onItemClick();
-                  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-                    e.preventDefault();
-                    window.location.href = `/${locale}${item.href}`;
-                  }
                 }}
                 className={cn(navItemVariants({ isActive, isCollapsed: !isExpanded }))}
                 title={!isExpanded ? item.label : undefined}

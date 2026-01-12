@@ -28,7 +28,7 @@
 
 ### 1.3 Email Notifications
 - [x] Audit existing Cloud Functions ✅
-- [x] Set up Gmail API credentials ✅ (Using GMAIL_USER/APP_PASSWORD secrets)
+- [x] Set up email service ✅ (Using Resend API with RESEND_API_KEY secret)
 - [x] Create email templates (HTML) ✅ (Base, New Request, Status Update, Comment, Quote, Receipt)
 - [x] Implement notification logic ✅ (Firestore triggers for requests and comments)
 - [x] Implement: Quote sent → Client ✅

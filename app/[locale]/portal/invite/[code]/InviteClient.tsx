@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const INVITES_COLLECTION = 'portal_invites';
 const MEMBERS_COLLECTION = 'portal_members';
@@ -158,7 +159,7 @@ export default function InviteClient() {
         if (invite.orgId) {
           switchOrg(invite.orgId);
         }
-        router.push('/portal/dashboard');
+        router.push(getPortalPath('/dashboard/'));
       }, 2000);
     } catch (error: unknown) {
       console.error('Error accepting invite:', error);
@@ -186,7 +187,7 @@ export default function InviteClient() {
             <p className="text-muted-foreground">{t('portal.invite.guestIntro')}</p>
             <div className="space-y-2">
               <Link
-                href={`/portal/signup?redirect=/portal/invite/${code}`}
+                href={getPortalPath(`/signup?redirect=/invite/${code}/`)}
                 className="block"
               >
                 <PortalButton className="w-full shadow-lg shadow-blue-500/20">
@@ -194,7 +195,7 @@ export default function InviteClient() {
                 </PortalButton>
               </Link>
               <Link
-                href={`/portal/login?redirect=/portal/invite/${code}`}
+                href={getPortalPath(`/login?redirect=/invite/${code}/`)}
                 className="block"
               >
                 <PortalButton variant="outline" className="w-full">
@@ -216,7 +217,7 @@ export default function InviteClient() {
             <XCircle className="w-12 h-12 text-destructive mx-auto" />
             <h1 className="text-2xl font-bold">{t('portal.invite.error')}</h1>
             <p className="text-muted-foreground">{error}</p>
-            <Link href="/portal/login">
+            <Link href={getPortalPath('/login/')}>
               <PortalButton>{t('portal.invite.signIn')}</PortalButton>
             </Link>
           </div>
@@ -307,7 +308,7 @@ export default function InviteClient() {
                   </p>
                   <div className="space-y-2">
                     <Link
-                      href={`/portal/signup?email=${encodeURIComponent(invite.email)}&redirect=/portal/invite/${invite.id}`}
+                      href={getPortalPath(`/signup?email=${encodeURIComponent(invite.email)}&redirect=/invite/${invite.id}/`)}
                       className="block"
                     >
                       <PortalButton className="w-full shadow-lg shadow-blue-500/20">
@@ -315,7 +316,7 @@ export default function InviteClient() {
                       </PortalButton>
                     </Link>
                     <Link
-                      href={`/portal/login?redirect=/portal/invite/${invite.id}`}
+                      href={getPortalPath(`/login?redirect=/invite/${invite.id}/`)}
                       className="block"
                     >
                       <PortalButton variant="outline" className="w-full">

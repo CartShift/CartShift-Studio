@@ -71,7 +71,7 @@ function WhyShareCard() {
 // Stats Card (Visual Appeal)
 function StatsCard() {
   const t = useTranslations('portal');
-  
+
   return (
     <PortalCard variant="glass" className="overflow-hidden">
       <div className="text-center space-y-4 py-4">

@@ -44,6 +44,7 @@ import { useOrg } from '@/lib/context/OrgContext';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { PinButton } from '@/components/portal/PinnedRequests';
 import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
@@ -234,7 +235,7 @@ export default function RequestsClient() {
     if (isAgency) {
       switchOrg(targetOrgId);
     }
-    router.push(`/portal/pricing/new?requestIds=${selectedRequestIds.join(',')}`);
+    router.push(getPortalPath(`/pricing/new?requestIds=${selectedRequestIds.join(',')}`));
   };
 
   if (error) {
@@ -704,7 +705,7 @@ export default function RequestsClient() {
                                 type="button"
                                 onClick={e => {
                                   e.stopPropagation();
-                                  router.push(`/portal/requests/${req.id}/`);
+                                  router.push(getPortalPath(`/requests/${req.id}/`));
                                 }}
                                 className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20"
                               >

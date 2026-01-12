@@ -43,6 +43,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function SettingsClient() {
   const orgId = useResolvedOrgId();
@@ -173,7 +174,7 @@ export default function SettingsClient() {
               : 'You do not have permission to access this organization';
           showFeedback('error', message);
           redirectTimeout = setTimeout(() => {
-            router.push('/portal/');
+            router.push(getPortalPath('/'));
           }, 2000);
         } else {
           const errorMsg = t('portal.settings.general.error');
@@ -1069,7 +1070,7 @@ export default function SettingsClient() {
           onSuccess={newOrgId => {
             setShowCreateOrgModal(false);
             switchOrg(newOrgId);
-            router.push('/portal/dashboard');
+            router.push(getPortalPath('/dashboard/'));
           }}
           onCancel={() => setShowCreateOrgModal(false)}
         />

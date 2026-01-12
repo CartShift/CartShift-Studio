@@ -36,6 +36,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale, getDateLocaleString } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function AgencyClientDetailClient({
   clientId: initialClientId,
@@ -210,7 +211,7 @@ export default function AgencyClientDetailClient({
           {error ||
             'Unable to load client information. The client may not exist or you may not have permission to view it.'}
         </p>
-        <Link href="/portal/agency/clients/">
+        <Link href={getPortalPath('/agency/clients/')}>
           <PortalButton variant="outline" className="mt-4">
             <ArrowLeft size={16} />
             {t('agency.clients.detail.backToClients')}
@@ -226,7 +227,7 @@ export default function AgencyClientDetailClient({
       <div className="flex flex-col gap-6">
         {/* Back button */}
         <Link
-          href="/portal/agency/clients/"
+          href={getPortalPath('/agency/clients/')}
           className="inline-flex items-center gap-2 text-surface-500 hover:text-blue-600 transition-colors w-fit group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -329,7 +330,7 @@ export default function AgencyClientDetailClient({
                   className="border-blue-200 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950"
                   onClick={() => {
                     switchOrg(clientId);
-                    router.push('/portal/dashboard/');
+                    router.push(getPortalPath('/dashboard/'));
                   }}
                 >
                   <ExternalLink size={16} />
@@ -339,7 +340,7 @@ export default function AgencyClientDetailClient({
                   className="shadow-lg shadow-blue-500/20"
                   onClick={() => {
                     switchOrg(clientId);
-                    router.push('/portal/requests/');
+                    router.push(getPortalPath('/requests/'));
                   }}
                 >
                   <FileText size={16} />
@@ -443,7 +444,7 @@ export default function AgencyClientDetailClient({
               <button
                 onClick={() => {
                   switchOrg(clientId);
-                  router.push('/portal/requests/');
+                  router.push(getPortalPath('/requests/'));
                 }}
                 className="text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest flex items-center gap-2 group"
               >
@@ -466,7 +467,7 @@ export default function AgencyClientDetailClient({
                       key={request.id}
                       onClick={() => {
                         switchOrg(clientId);
-                        router.push(`/portal/requests/${request.id}/`);
+                        router.push(getPortalPath(`/requests/${request.id}/`));
                       }}
                       className="w-full text-start block p-6 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition-colors group"
                     >
@@ -743,7 +744,7 @@ export default function AgencyClientDetailClient({
                     <button
                       onClick={() => {
                         switchOrg(clientId);
-                        router.push('/portal/team/');
+                        router.push(getPortalPath('/team/'));
                       }}
                       className="w-full text-center block text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest pt-2"
                     >

@@ -37,6 +37,7 @@ import { useOrg } from '@/lib/context/OrgContext';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 // Centralized utilities
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 // mapStatusColor moved to lib/utils/portal-helpers.ts
 
@@ -338,7 +339,7 @@ export default function AgencyPricingClient() {
                       <button
                         onClick={() => {
                           switchOrg(req.orgId);
-                          router.push(`/portal/pricing/${req.id}/`);
+                          router.push(getPortalPath(`/pricing/${req.id}/`));
                         }}
                         className="flex flex-col max-w-md text-start"
                       >
@@ -412,7 +413,7 @@ export default function AgencyPricingClient() {
                         <button
                           onClick={() => {
                             switchOrg(req.orgId);
-                            router.push(`/portal/pricing/${req.id}/`);
+                            router.push(getPortalPath(`/pricing/${req.id}/`));
                           }}
                           className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20"
                         >
@@ -496,12 +497,11 @@ export default function AgencyPricingClient() {
           <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
             <div className="p-6 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('portal.pricing.selectClient')}
+                <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
+                  {t('pricing.selectClient')}
                 </h2>
                 <p className="text-sm text-surface-500 mt-1">
-                  {t('portal.pricing.selectClientDesc' as never) ||
-                    'Choose a client to create an offer for'}
+                  {t('pricing.selectClientDesc')}
                 </p>
               </div>
               <button
@@ -540,7 +540,7 @@ export default function AgencyPricingClient() {
                     onClick={() => {
                       setShowNewOfferModal(false);
                       switchOrg(org.id);
-                      router.push('/portal/pricing/new');
+                      router.push(getPortalPath('/pricing/new/'));
                     }}
                     className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors group text-start"
                   >

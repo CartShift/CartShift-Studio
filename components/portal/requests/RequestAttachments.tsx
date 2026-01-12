@@ -17,6 +17,7 @@ import {
 import { FileAttachment, Request } from '@/lib/types/portal';
 import { subscribeToRequestFiles, deleteFile, formatFileSize, getFileIcon } from '@/lib/services/portal-files';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { PortalFileImage } from '@/components/portal/ui/PortalFileImage';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { ImagePreviewModal } from '@/components/portal/ui/ImagePreviewModal';
@@ -111,8 +112,9 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                         className="w-12 h-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 flex-shrink-0 group-hover:border-blue-100 dark:group-hover:border-blue-900/30 transition-all hover:scale-105 cursor-pointer"
                         title="Click to preview"
                       >
-                        <img
+                        <PortalFileImage
                           src={latest.url}
+                          storagePath={latest.storagePath}
                           alt={fileName}
                           className="w-full h-full object-cover"
                         />

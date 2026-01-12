@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { handleOAuthCallback } from '@/lib/services/portal-google-calendar';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function OAuthCallbackClient() {
   const t = useTranslations();
@@ -42,7 +43,7 @@ export default function OAuthCallbackClient() {
         setStatus('success');
         // Redirect back to settings integrations tab after a short delay
         setTimeout(() => {
-          router.push(`/${locale}/portal/agency/settings?tab=integrations`);
+          router.push(getPortalPath('/agency/settings?tab=integrations', locale));
         }, 2000);
       } else {
         setStatus('error');
@@ -94,7 +95,7 @@ export default function OAuthCallbackClient() {
             </h1>
             <p className="text-surface-500 dark:text-surface-400 mb-4">{errorMessage}</p>
             <button
-              onClick={() => router.push(`/${locale}/portal/agency/settings`)}
+              onClick={() => router.push(getPortalPath('/agency/settings', locale))}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Back to Settings

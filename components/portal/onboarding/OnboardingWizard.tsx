@@ -18,6 +18,7 @@ import {
 import { createOrganization, updateOrganization } from '@/lib/services/portal-organizations';
 import { useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 type Step = 'welcome' | 'info' | 'completion';
 
@@ -89,7 +90,7 @@ export function OnboardingWizard() {
   const handleComplete = () => {
     if (createdOrgId) {
       // Redirect to clean URL - the org is now stored in context/session
-      router.push('/portal/dashboard/');
+      router.push(getPortalPath('/dashboard/'));
     }
   };
 

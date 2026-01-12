@@ -34,6 +34,7 @@ import { useOrg } from '@/lib/context/OrgContext';
 import { WorkboardSkeleton } from '@/components/portal/skeletons/WorkboardSkeleton';
 import { useOptimisticAction } from '@/lib/hooks/useOptimisticMutation';
 import { useToast } from '@/components/portal/ui';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface Column {
   id: string;
@@ -270,9 +271,9 @@ export default function AgencyWorkboardClient() {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">{t('portal.agency.accessDeniedTitle')}</h2>
+        <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">{t('agency.accessDeniedTitle')}</h2>
         <p className="text-surface-500 max-w-sm mx-auto mb-8">
-          {t('portal.agency.notRegisteredAsAdmin', { email: user?.email || '' })}
+          {t('agency.notRegisteredAsAdmin', { email: user?.email || '' })}
         </p>
         <PortalButton
           onClick={handleRepair}
@@ -337,18 +338,18 @@ export default function AgencyWorkboardClient() {
                 {columnRequests.map(req => (
                   <DraggableCard key={req.id} id={req.id}>
                     <div
-                      onClick={() => {
-                        switchOrg(req.orgId);
-                        router.push(`/portal/requests/${req.id}/`);
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
+                        onClick={() => {
                           switchOrg(req.orgId);
-                          router.push(`/portal/requests/${req.id}/`);
-                        }
-                      }}
+                          router.push(getPortalPath(`/requests/${req.id}/`));
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            switchOrg(req.orgId);
+                            router.push(getPortalPath(`/requests/${req.id}/`));
+                          }
+                        }}
                       aria-label={`${t('agency.workboard.viewRequest')}: ${req.title}`}
                     >
                       <RequestCard request={req} locale={locale} isMounted={isMounted} />

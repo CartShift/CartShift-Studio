@@ -26,11 +26,7 @@ import { PortalHeader } from '../ui/PortalHeader';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { OnboardingTour } from '../OnboardingTour';
 
-export function PortalShell({
-  children,
-  orgId,
-  isAgency: isAgencyPage = false,
-}: PortalShellProps) {
+export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }: PortalShellProps) {
   const t = useTranslations();
   const locale = useLocale();
 
@@ -51,7 +47,7 @@ export function PortalShell({
     const currentPath = normalizePath(state.pathname);
 
     const mainPagePaths = new Set(
-      navGroups.flatMap((group) => group.items.map((item) => normalizePath(item.href)))
+      navGroups.flatMap(group => group.items.map(item => normalizePath(item.href)))
     );
     mainPagePaths.add('/portal');
 
@@ -121,7 +117,6 @@ export function PortalShell({
           navGroups={navGroups}
           isExpanded={state.isExpanded}
           isMobile={state.isMobile}
-          locale={state.locale}
           onItemClick={() => state.setIsMobileMenuOpen(false)}
         />
 

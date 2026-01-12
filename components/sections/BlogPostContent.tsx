@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useTranslations, useLocale } from 'next-intl';
@@ -47,6 +47,38 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   const [mobileTocOpen, setMobileTocOpen] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const processedContentRef = useRef<string>('');
+
+  // Determine if this post is e-commerce related (show Store Analyzer CTA)
+  const ecommerceCategories = [
+    'shopify',
+    'woocommerce',
+    'e-commerce',
+    'ecommerce',
+    'conversion',
+    'שופיפיי',
+    'ווקומרס',
+    'איקומרס',
+    'המרות',
+  ];
+  const ecommerceKeywords = [
+    'store',
+    'shop',
+    'checkout',
+    'cart',
+    'product',
+    'sales',
+    'conversion',
+    'revenue',
+    'חנות',
+    'מכירות',
+    'עגלה',
+    'קופה',
+  ];
+  const isEcommerceRelated =
+    ecommerceCategories.some(cat => category.toLowerCase().includes(cat)) ||
+    ecommerceKeywords.some(
+      keyword => title.toLowerCase().includes(keyword) || content.toLowerCase().includes(keyword)
+    );
 
   useEffect(() => {
     const article = articleRef.current;
@@ -555,7 +587,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
 
                 {/* Main Article Card */}
                 <Card className="overflow-hidden">
-                  <CardContent className="p-6 sm:p-8 md:p-10 lg:p-12">
+                  <CardContent>
                     <article
                       ref={articleRef}
                       className="prose-article"
@@ -563,6 +595,141 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     />
                   </CardContent>
                 </Card>
+
+                {/* Store Analyzer CTA - shown for e-commerce related posts */}
+                {isEcommerceRelated && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="mt-10 relative group"
+                  >
+                    {/* Animated gradient border */}
+                    <div className="absolute -inset-[1px] bg-gradient-to-r from-accent-500 via-primary-500 to-accent-500 rounded-2xl opacity-60 group-hover:opacity-100 blur-sm transition-opacity duration-500 animate-gradient-x" />
+                    <div className="absolute -inset-[1px] bg-gradient-to-r from-accent-500 via-primary-500 to-accent-500 rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity duration-500 animate-gradient-x" />
+
+                    <div className="relative rounded-2xl p-6 md:p-8 bg-white dark:bg-surface-900 overflow-hidden">
+                      {/* Background decorative elements */}
+                      <div className="absolute top-0 end-0 w-40 h-40 bg-gradient-to-br from-accent-500/5 to-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                      <div className="absolute bottom-0 start-0 w-32 h-32 bg-gradient-to-tr from-primary-500/5 to-accent-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+
+                      <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
+                        {/* Icon */}
+                        <div className="flex-shrink-0">
+                          <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-accent-500 to-primary-600 flex items-center justify-center shadow-lg shadow-accent-500/20">
+                            <svg
+                              className="w-7 h-7 md:w-8 md:h-8 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 text-xs font-semibold mb-3">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path
+                                fillRule="evenodd"
+                                d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            {t('blogPost.storeAnalyzerCta.badge')}
+                          </span>
+                          <h3 className="text-lg md:text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
+                            {t('blogPost.storeAnalyzerCta.title')}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-primary-600 dark:from-accent-400 dark:to-primary-400">
+                              {t('blogPost.storeAnalyzerCta.titleSpan')}
+                            </span>
+                          </h3>
+                          <p className="text-surface-600 dark:text-surface-300 text-sm md:text-base mb-4 leading-relaxed">
+                            {t('blogPost.storeAnalyzerCta.description')}
+                          </p>
+
+                          {/* Stats */}
+                          <div className="flex items-center gap-4 text-xs text-surface-500 dark:text-surface-400 mb-4 md:mb-0">
+                            <span className="flex items-center gap-1.5">
+                              <svg
+                                className="w-4 h-4 text-accent-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span className="font-semibold text-surface-700 dark:text-surface-200">
+                                {t('blogPost.storeAnalyzerCta.stats.analyzed')}
+                              </span>
+                              {t('blogPost.storeAnalyzerCta.stats.analyzedLabel')}
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <svg
+                                className="w-4 h-4 text-primary-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span className="font-semibold text-surface-700 dark:text-surface-200">
+                                {t('blogPost.storeAnalyzerCta.stats.avgTime')}
+                              </span>
+                              {t('blogPost.storeAnalyzerCta.stats.avgTimeLabel')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* CTA Button */}
+                        <div className="flex-shrink-0">
+                          <Link href="/tools/store-analyzer">
+                            <Button
+                              variant="secondary"
+                              size="lg"
+                              className="w-full md:w-auto font-semibold shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-shadow group/btn"
+                            >
+                              <span className="flex items-center gap-2">
+                                {t('blogPost.storeAnalyzerCta.button')}
+                                <svg
+                                  className="w-4 h-4 rtl:rotate-180 group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1 transition-transform"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                  />
+                                </svg>
+                              </span>
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Related Services Box */}
                 {category && (
@@ -891,4 +1058,3 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
     </>
   );
 };
-

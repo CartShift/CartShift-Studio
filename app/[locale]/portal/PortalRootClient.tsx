@@ -1,44 +1,44 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from '@/i18n/navigation';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
 import { isLoggingOut } from '@/lib/services/auth';
 import { OnboardingWizard } from '@/components/portal/onboarding/OnboardingWizard';
 
 export default function PortalRootClient() {
-  const router = useRouter();
   const t = useTranslations();
   const { userData, loading, isAuthenticated } = usePortalAuth();
+  const { navigateToPortal, navigateToLogin } = usePortalNavigation();
 
   useEffect(() => {
     if (loading) return;
 
     if (!isAuthenticated) {
       if (!isLoggingOut()) {
-        router.push('/portal/login/');
+        navigateToLogin();
       }
       return;
     }
 
     if (userData) {
       if (userData.isAgency) {
-        router.replace('/portal/requests/');
+        navigateToPortal('/requests/', { replace: true });
         return;
       }
 
       if (userData.organizations && userData.organizations.length > 0) {
         // Redirect to clean URL - org is stored in context/session
-        router.replace('/portal/dashboard/');
+        navigateToPortal('/dashboard/', { replace: true });
         return;
       }
 
       // User has no organizations - stay on this page to show onboarding
       // Don't redirect to /portal/org/ as that would create a loop
     }
-  }, [router, userData, loading, isAuthenticated]);
+  }, [userData, loading, isAuthenticated, navigateToPortal, navigateToLogin]);
 
   // Show loading while authenticating
   if (loading || !userData) {

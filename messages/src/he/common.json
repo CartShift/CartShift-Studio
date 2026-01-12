@@ -12,7 +12,9 @@
     "company": "חברה",
     "login": "התחברות",
     "portal": "פורטל",
-    "settings": "הגדרות"
+    "settings": "הגדרות",
+    "tools": "כלים",
+    "clientPortal": "פורטל לקוחות"
   },
   "floatingActions": {
     "bookCall": "קבעו פגישה",
