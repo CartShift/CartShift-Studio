@@ -121,6 +121,7 @@
       "noItems": "No items",
       "unknownUser": "Unknown User",
       "unnamedUser": "Unnamed User",
+      "anonymous": "Anonymous",
       "paymentFailed": "Payment failed",
       "paymentFailedRetry": "Failed to complete payment. Please try again.",
       "notAuthenticated": "Not authenticated",

@@ -177,6 +177,14 @@
         "destination": "/he/portal/files/index.html"
       },
       {
+        "source": "/en/review/**",
+        "destination": "/en/portal/review/index.html"
+      },
+      {
+        "source": "/he/review/**",
+        "destination": "/he/portal/review/index.html"
+      },
+      {
         "source": "/en/pricing/new/**",
         "destination": "/en/portal/pricing/new/index.html"
       },
@@ -301,6 +309,10 @@
         "destination": "/en/portal/files/index.html"
       },
       {
+        "source": "/en/portal/review/**",
+        "destination": "/en/portal/review/index.html"
+      },
+      {
         "source": "/en/portal/pricing/new/**",
         "destination": "/en/portal/pricing/new/index.html"
       },
@@ -387,6 +399,10 @@
       {
         "source": "/he/portal/files/**",
         "destination": "/he/portal/files/index.html"
+      },
+      {
+        "source": "/he/portal/review/**",
+        "destination": "/he/portal/review/index.html"
       },
       {
         "source": "/he/portal/pricing/new/**",

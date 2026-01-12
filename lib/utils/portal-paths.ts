@@ -13,6 +13,7 @@ export const PORTAL_PATHS = [
   '/pricing',
   '/settings',
   '/consultations',
+  '/review',
   '/agency',
   '/login',
   '/signup',
@@ -28,8 +29,9 @@ export function isPortalPath(pathWithoutLocale: string): boolean {
 }
 
 /**
- * Generate the correct portal URL based on current domain context.
- * On subdomain: /dashboard/, on main domain: /portal/dashboard/
+ * Generate portal URL path.
+ * Always returns /portal/... prefix for SSR consistency.
+ * The PortalSubdomainRedirect component handles cleanup on subdomain.
  */
 export function getPortalPath(path: string): string {
   let normalized = path
@@ -40,10 +42,8 @@ export function getPortalPath(path: string): string {
   if (!normalized.startsWith('/')) normalized = '/' + normalized;
   if (!normalized.endsWith('/') && !normalized.includes('?')) normalized += '/';
 
-  if (isBrowser() && isPortalSubdomain()) {
-    return normalized === '/' ? '/dashboard/' : normalized;
-  }
-
+  // Always return /portal/... for consistency and stability.
+  // We rely on Firebase hosting rewrites for mapping but keep internal links explicit.
   return normalized === '/' ? '/portal/' : `/portal${normalized}`;
 }
 

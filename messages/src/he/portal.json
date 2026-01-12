@@ -121,6 +121,7 @@
       "noItems": "אין פריטים",
       "unknownUser": "משתמש לא ידוע",
       "unnamedUser": "משתמש ללא שם",
+      "anonymous": "אנונימי",
       "paymentFailed": "התשלום נכשל",
       "paymentFailedRetry": "השלמת התשלום נכשלה. אנא נסו שוב.",
       "notAuthenticated": "לא מאומת",

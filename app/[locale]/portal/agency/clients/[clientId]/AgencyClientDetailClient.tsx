@@ -728,7 +728,7 @@ export default function AgencyClientDetailClient({
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-surface-900 dark:text-white truncate">
-                          {member.name || t('portal.common.anonymous' as any)}
+                          {member.name || t('common.anonymous')}
                         </p>
                         <p className="text-xs text-surface-500 truncate">{member.email}</p>
                       </div>
