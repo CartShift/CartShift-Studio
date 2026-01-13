@@ -219,7 +219,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           <section className="relative min-h-screen flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-8">
             {/* Animated Background */}
             <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-surface-950 via-surface-900 to-surface-950" />
               <div className="absolute top-0 start-1/4 w-[600px] h-[600px] bg-primary-500/10 rounded-full blur-[120px] animate-pulse" />
               <div
                 className="absolute bottom-0 end-1/4 w-[500px] h-[500px] bg-accent-500/10 rounded-full blur-[100px] animate-pulse"
@@ -329,7 +329,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/50 via-accent-500/50 to-primary-500/50 rounded-2xl blur-xl opacity-50" />
 
                     {/* Form Card */}
-                    <div className="relative bg-[#12121a]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 lg:p-8">
+                    <div className="relative bg-surface-950/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 lg:p-8">
                       <div className="flex items-center gap-3 mb-6">
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/25">
                           <BarChart3 className="w-6 h-6 text-white" />
@@ -374,7 +374,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
           {/* Features Section */}
           <section className="relative py-20 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface-950 via-surface-900 to-surface-950" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -425,7 +425,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
           {/* How It Works */}
           <section className="relative py-20 overflow-hidden">
-            <div className="absolute inset-0 bg-[#0a0a0f]" />
+            <div className="absolute inset-0 bg-surface-950" />
 
             <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -497,7 +497,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
           {/* CTA Section */}
           <section className="relative py-20 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-primary-500/10 via-[#0f0f1a] to-[#0a0a0f]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary-500/10 via-surface-900 to-surface-950" />
 
             <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <motion.div

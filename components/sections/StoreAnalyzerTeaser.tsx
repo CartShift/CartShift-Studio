@@ -18,7 +18,7 @@ export const StoreAnalyzerTeaser: React.FC = () => {
   const t = useTranslations();
 
   return (
-    <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-surface-100 via-surface-50 to-surface-100 dark:from-surface-950 dark:via-[#0a0a0f] dark:to-surface-900">
+    <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-surface-100 via-surface-50 to-surface-100 dark:from-surface-950 dark:via-surface-950 dark:to-surface-900">
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Gradient orbs */}

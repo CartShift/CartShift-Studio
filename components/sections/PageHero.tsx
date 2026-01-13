@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { ParallaxLayer } from '@/components/ui/Parallax';
 import { Sparkles } from 'lucide-react';
 
@@ -25,8 +25,8 @@ export const PageHero: React.FC<PageHeroProps> = ({
   compact = false,
 }) => {
   return (
-    <section className="relative min-h-[50vh] flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#f0f4f8] dark:bg-surface-950">
-      <div className="absolute inset-0 bg-gradient-to-br from-surface-100 via-[#e8f0f8] to-surface-200 dark:from-surface-950 dark:to-surface-900 dark:opacity-40"></div>
+    <section className="relative min-h-[50vh] flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-surface-100 dark:bg-surface-950">
+      <div className="absolute inset-0 bg-gradient-to-br from-surface-100 via-surface-100 to-surface-200 dark:from-surface-950 dark:to-surface-900 dark:opacity-40"></div>
       <div className="absolute top-0 start-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.06] dark:opacity-10"></div>
 
       <ParallaxLayer depth={0.6} baseSpeed={0.25}>
@@ -121,8 +121,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
         </div>
       </div>
 
-      <div className="absolute bottom-0 start-0 end-0 h-32 bg-gradient-to-t from-[#f0f4f8] dark:from-surface-950 to-transparent z-20"></div>
+      <div className="absolute bottom-0 start-0 end-0 h-32 bg-gradient-to-t from-surface-100 dark:from-surface-950 to-transparent z-20"></div>
     </section>
   );
 };
-

@@ -110,15 +110,17 @@ const config: Config = {
       boxShadow: {
         soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
         medium: '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        glow: '0 0 20px rgba(192, 38, 211, 0.4), 0 0 40px rgba(192, 38, 211, 0.2)', // Based on accent-600
-        'glow-primary': '0 0 20px rgba(2, 132, 199, 0.4), 0 0 40px rgba(2, 132, 199, 0.2)', // Based on primary-600
+        glow: '0 0 20px rgb(var(--color-accent-600) / 0.4), 0 0 40px rgb(var(--color-accent-600) / 0.2)', // Based on accent-600
+        'glow-primary':
+          '0 0 20px rgb(var(--color-primary-600) / 0.4), 0 0 40px rgb(var(--color-primary-600) / 0.2)', // Based on primary-600
         bold: '0 10px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-cosmos': 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)', // Deep dark blue/purple
-        'gradient-brand': 'linear-gradient(135deg, #0284c7 0%, #c026d3 100%)', // Primary to Accent
+        'gradient-brand':
+          'linear-gradient(135deg, rgb(var(--color-primary-600)) 0%, rgb(var(--color-accent-600)) 100%)', // Primary to Accent
       },
       animation: {
         gradient: 'gradient 8s linear infinite',

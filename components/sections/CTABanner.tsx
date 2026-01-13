@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -14,7 +14,7 @@ export const CTABanner: React.FC = () => {
   const isRtl = direction === 'rtl';
 
   return (
-    <section className="relative py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#e8eef4] dark:bg-surface-950">
+    <section className="relative py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-surface-100 dark:bg-surface-950">
       {/* Animated mesh gradient background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500/8 via-transparent to-accent-500/8 dark:from-primary-500/5 dark:to-accent-500/5"></div>
@@ -95,9 +95,7 @@ export const CTABanner: React.FC = () => {
             <div className="relative z-10 space-y-6 md:space-y-8">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-surface-900 dark:text-white leading-[1.1] tracking-tight">
                 {t('ctaBanner.titlePart1')}{' '}
-                <span className="gradient-text text-glow-subtle">
-                  {t('ctaBanner.titlePart2')}
-                </span>
+                <span className="gradient-text text-glow-subtle">{t('ctaBanner.titlePart2')}</span>
               </h2>
 
               <motion.p
@@ -145,4 +143,3 @@ export const CTABanner: React.FC = () => {
     </section>
   );
 };
-

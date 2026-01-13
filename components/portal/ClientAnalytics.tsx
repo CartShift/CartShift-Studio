@@ -175,50 +175,18 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
     };
   }, [requests]);
 
-  const cards: AnalyticCard[] = [
-    {
-      title: t('portal.analytics.totalRequests'),
-      value: analytics.total,
-      subtitle: `${analytics.recent} ${t('portal.analytics.inLast30Days')}`,
-      icon: FileText,
-      trend:
-        analytics.trend !== 0
-          ? { value: Math.abs(analytics.trend), positive: analytics.trend > 0 }
-          : undefined,
-      intent: 'blue',
-    },
-    {
-      title: t('portal.analytics.activeRequests'),
-      value: analytics.active,
-      subtitle: t('portal.analytics.activeRequestsSubtitle'),
-      icon: Activity,
-      intent: 'amber',
-    },
-    {
-      title: t('portal.analytics.completed'),
-      value: analytics.completed,
-      subtitle: t('portal.analytics.completedSubtitle'),
-      icon: CheckCircle2,
-      intent: 'green',
-    },
-    {
-      title: t('portal.analytics.avgResolution'),
-      value: analytics.avgResolution > 0 ? `${analytics.avgResolution}` : '-',
-      subtitle: t('portal.analytics.days'),
-      icon: Clock,
-      intent: 'purple',
-    },
-  ];
-
-  // Add spend card if there's any spend data
-  if (analytics.totalSpend > 0) {
-    cards.push({
-      title: t('portal.analytics.totalSpend'),
-      value: formatCurrency(analytics.totalSpend),
-      subtitle: t('portal.analytics.totalSpendSubtitle'),
-      icon: DollarSign,
-      intent: 'emerald',
-    });
+  if (requests.length === 0) {
+    return (
+      <div className={cn('py-8', className)}>
+        <PortalEmptyState
+          icon={Activity}
+          title={t('portal.analytics.noDataYet')}
+          description={t('portal.analytics.noDataDescription')}
+          variant="plain"
+          className="bg-transparent border-0"
+        />
+      </div>
+    );
   }
 
   if (requests.length === 0) {

@@ -210,7 +210,7 @@ export default function CVPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0a0f]" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-surface-50 dark:bg-surface-950" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Premium animated background */}
       <div className="fixed inset-0 pointer-events-none">
         {/* Main gradient mesh */}
@@ -495,7 +495,7 @@ export default function CVPageContent() {
                         className={`absolute inset-0 ${isSelfEmployment ? 'bg-slate-300 dark:bg-surface-600' : 'bg-primary-500 dark:bg-primary-400'} rounded-full ${isSelfEmployment ? '' : 'animate-ping opacity-20'}`}
                       />
                       <div
-                        className={`absolute inset-0 ${isSelfEmployment ? 'bg-slate-300 dark:bg-surface-600' : 'bg-gradient-to-br from-primary-500 to-accent-600'} rounded-full shadow-sm ring-2 ring-slate-50 dark:ring-[#0a0a0f]`}
+                        className={`absolute inset-0 ${isSelfEmployment ? 'bg-slate-300 dark:bg-surface-600' : 'bg-gradient-to-br from-primary-500 to-accent-600'} rounded-full shadow-sm ring-2 ring-surface-50 dark:ring-surface-950`}
                       />
                     </div>
 

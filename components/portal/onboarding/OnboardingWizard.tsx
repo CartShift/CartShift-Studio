@@ -2,19 +2,11 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { OnboardingStep } from './OnboardingStep';
 import { PortalButton } from '../ui/PortalButton';
 import { PortalInput } from '../ui/PortalInput';
-import {
-  ArrowRight,
-  ArrowLeft,
-  Building2,
-  Sparkles,
-  Check,
-  Users,
-  Briefcase,
-} from 'lucide-react';
+import { ArrowRight, ArrowLeft, Building2, Sparkles, Check, Users, Briefcase } from 'lucide-react';
 import { createOrganization, updateOrganization } from '@/lib/services/portal-organizations';
 import { useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -79,9 +71,7 @@ export function OnboardingWizard() {
       setStep('completion');
     } catch (err) {
       console.error('Failed to create organization:', err);
-      setError(
-        t('onboarding.error' as any)
-      );
+      setError(t('onboarding.error' as any));
     } finally {
       setIsSubmitting(false);
     }
@@ -99,7 +89,7 @@ export function OnboardingWizard() {
       <div className="w-full max-w-2xl">
         {/* Progress Dots */}
         <div className="flex justify-center gap-2 mb-12">
-          {['welcome', 'info', 'completion'].map((s) => {
+          {['welcome', 'info', 'completion'].map(s => {
             const steps: Step[] = ['welcome', 'info', 'completion'];
             const currentIndex = steps.indexOf(step);
             const sIndex = steps.indexOf(s as Step);
@@ -111,7 +101,9 @@ export function OnboardingWizard() {
                 initial={false}
                 animate={{
                   width: isActive ? 32 : 8,
-                  backgroundColor: isActive ? '#3b82f6' : '#e2e8f0', // blue-500 : surface-200
+                  backgroundColor: isActive
+                    ? 'rgb(var(--color-primary-500))'
+                    : 'rgb(var(--color-surface-200))',
                 }}
                 className="h-2 rounded-full"
               />
@@ -162,9 +154,7 @@ export function OnboardingWizard() {
               key="info"
               isActive={step === 'info'}
               title={t('onboarding.info.title' as any)}
-              description={
-                t('onboarding.info.subtitle' as any)
-              }
+              description={t('onboarding.info.subtitle' as any)}
             >
               <div className="space-y-6">
                 <div>

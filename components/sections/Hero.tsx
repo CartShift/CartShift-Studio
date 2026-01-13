@@ -62,9 +62,9 @@ export const Hero: React.FC = () => {
   const isRtl = direction === 'rtl';
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-24 md:pb-40 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#f0f4f8] dark:bg-surface-950">
+    <section className="relative min-h-[100dvh] flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-24 md:pb-40 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-surface-100 dark:bg-surface-950">
       {/* Background Ambience */}
-      <div className="absolute inset-0 bg-gradient-to-br from-surface-100 via-[#e8f0f8] to-surface-200 dark:from-surface-950 dark:to-surface-900"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-surface-100 via-surface-100 to-surface-200 dark:from-surface-950 dark:to-surface-900"></div>
       <div className="absolute top-0 start-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.06] dark:opacity-5"></div>
 
       {/* Animated Orbs with Parallax - Dramatic 3D depth */}
@@ -238,7 +238,7 @@ export const Hero: React.FC = () => {
       </motion.div>
 
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 start-0 end-0 h-40 bg-gradient-to-t from-[#f0f4f8] dark:from-surface-950 via-[#f0f4f8]/60 dark:via-surface-950/50 to-transparent z-20"></div>
+      <div className="absolute bottom-0 start-0 end-0 h-40 bg-gradient-to-t from-surface-100 dark:from-surface-950 via-surface-100/60 dark:via-surface-950/50 to-transparent z-20"></div>
     </section>
   );
 };
