@@ -25,16 +25,24 @@ export const PortalTeaser: React.FC = () => {
   const t = useTranslations();
 
   return (
-    <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-surface-900 via-surface-900 to-surface-950 dark:from-surface-900 dark:via-surface-900 dark:to-surface-950">
+    <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-surface-100 via-surface-50 to-surface-100 dark:from-surface-900 dark:via-surface-900 dark:to-surface-950">
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Gradient orbs */}
         <div className="absolute top-1/4 start-0 w-[600px] h-[600px] bg-gradient-to-br from-primary-500/10 to-transparent rounded-full blur-3xl -translate-x-1/2" />
         <div className="absolute bottom-0 end-0 w-[500px] h-[500px] bg-gradient-to-tl from-accent-500/10 to-transparent rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
-        {/* Grid pattern overlay */}
+        {/* Grid pattern overlay - Light mode */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04] dark:opacity-0"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        {/* Grid pattern overlay - Dark mode */}
+        <div
+          className="absolute inset-0 opacity-0 dark:opacity-[0.03]"
           style={{
             backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
             backgroundSize: '60px 60px',
@@ -52,21 +60,21 @@ export const PortalTeaser: React.FC = () => {
             transition={{ duration: 0.6 }}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-6">
-              <LayoutDashboard className="w-4 h-4 text-primary-400" />
-              <span className="text-sm font-semibold text-primary-400">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-500/10 border border-primary-200 dark:border-primary-500/20 mb-6">
+              <LayoutDashboard className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
                 {t('portalTeaser.badge')}
               </span>
             </div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-surface-900 dark:text-white leading-tight mb-6">
               {t('portalTeaser.title')}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-accent-600 to-primary-600 dark:from-primary-400 dark:via-accent-400 dark:to-primary-400">
                 {t('portalTeaser.titleSpan')}
               </span>
             </h2>
 
-            <p className="text-lg text-surface-300 leading-relaxed mb-8 max-w-xl">
+            <p className="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-8 max-w-xl">
               {t('portalTeaser.description')}
             </p>
 
@@ -79,16 +87,19 @@ export const PortalTeaser: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-xl bg-surface-100/50 dark:bg-white/5 border border-surface-200/50 dark:border-white/5 hover:border-surface-300 dark:hover:border-white/10 transition-colors"
                 >
-                  <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500/20 to-accent-500/20 flex items-center justify-center">
-                    <feature.icon className="w-4 h-4 text-primary-400" strokeWidth={2} />
+                  <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-500/20 dark:to-accent-500/20 flex items-center justify-center">
+                    <feature.icon
+                      className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                      strokeWidth={2}
+                    />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-white mb-0.5">
+                    <h4 className="text-sm font-semibold text-surface-900 dark:text-white mb-0.5">
                       {t(`portalTeaser.features.${feature.key}.title`)}
                     </h4>
-                    <p className="text-xs text-surface-400 leading-snug">
+                    <p className="text-xs text-surface-500 dark:text-surface-400 leading-snug">
                       {t(`portalTeaser.features.${feature.key}.description`)}
                     </p>
                   </div>
@@ -110,7 +121,7 @@ export const PortalTeaser: React.FC = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 hover:border-white/30"
+                  className="w-full sm:w-auto border-surface-300 dark:border-white/20 text-surface-700 dark:text-white hover:bg-surface-100 dark:hover:bg-white/10 hover:border-surface-400 dark:hover:border-white/30"
                 >
                   {t('portalTeaser.secondaryCta')}
                 </Button>
@@ -127,16 +138,16 @@ export const PortalTeaser: React.FC = () => {
             className="relative"
           >
             {/* Mock Portal Dashboard */}
-            <div className="relative rounded-2xl bg-surface-800/80 border border-surface-700/50 shadow-2xl overflow-hidden backdrop-blur-sm">
+            <div className="relative rounded-2xl bg-white/80 dark:bg-surface-800/80 border border-surface-200/80 dark:border-surface-700/50 shadow-2xl overflow-hidden backdrop-blur-sm">
               {/* Window Header */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-surface-700/50 bg-surface-800/50">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-surface-200/80 dark:border-surface-700/50 bg-surface-100/50 dark:bg-surface-800/50">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-red-500/80" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                   <div className="w-3 h-3 rounded-full bg-green-500/80" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <div className="px-4 py-1 rounded-md bg-surface-700/50 text-xs text-surface-400">
+                  <div className="px-4 py-1 rounded-md bg-surface-200/50 dark:bg-surface-700/50 text-xs text-surface-600 dark:text-surface-400">
                     portal.cartshift.co
                   </div>
                 </div>
@@ -153,10 +164,14 @@ export const PortalTeaser: React.FC = () => {
                   ].map((stat, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-xl bg-surface-700/30 border border-surface-600/30 text-center"
+                      className="p-3 rounded-xl bg-surface-100/50 dark:bg-surface-700/30 border border-surface-200/50 dark:border-surface-600/30 text-center"
                     >
-                      <div className="text-xl md:text-2xl font-bold text-white">{stat.value}</div>
-                      <div className="text-xs text-surface-400">{stat.label}</div>
+                      <div className="text-xl md:text-2xl font-bold text-surface-900 dark:text-white">
+                        {stat.value}
+                      </div>
+                      <div className="text-xs text-surface-500 dark:text-surface-400">
+                        {stat.label}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -186,13 +201,13 @@ export const PortalTeaser: React.FC = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.4 + i * 0.1 }}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-surface-700/20 border border-surface-600/20 hover:border-surface-500/30 transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-lg bg-surface-100/50 dark:bg-surface-700/20 border border-surface-200/50 dark:border-surface-600/20 hover:border-surface-300 dark:hover:border-surface-500/30 transition-colors"
                     >
                       <div className={`w-2 h-2 rounded-full ${request.color}`} />
-                      <span className="flex-1 text-sm text-surface-200 truncate">
+                      <span className="flex-1 text-sm text-surface-700 dark:text-surface-200 truncate">
                         {request.title}
                       </span>
-                      <ArrowRight className="w-4 h-4 text-surface-500 rtl:rotate-180" />
+                      <ArrowRight className="w-4 h-4 text-surface-400 dark:text-surface-500 rtl:rotate-180" />
                     </motion.div>
                   ))}
                 </div>
@@ -205,11 +220,11 @@ export const PortalTeaser: React.FC = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.6, type: 'spring' }}
-              className="absolute -top-4 -end-4 p-3 rounded-xl bg-green-500/20 border border-green-500/30 backdrop-blur-sm"
+              className="absolute -top-4 -end-4 p-3 rounded-xl bg-green-100 dark:bg-green-500/20 border border-green-200 dark:border-green-500/30 backdrop-blur-sm"
             >
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-xs font-medium text-green-400">
+                <div className="w-2 h-2 rounded-full bg-green-500 dark:bg-green-400 animate-pulse" />
+                <span className="text-xs font-medium text-green-700 dark:text-green-400">
                   {t('portalTeaser.preview.liveUpdates')}
                 </span>
               </div>

@@ -7,6 +7,7 @@ import { StatsCounter } from '@/components/sections/StatsCounter';
 import { Testimonials } from '@/components/sections/Testimonials';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { PortalTeaser } from '@/components/sections/PortalTeaser';
+import { StoreAnalyzerTeaser } from '@/components/sections/StoreAnalyzerTeaser';
 import { CTABanner } from '@/components/sections/CTABanner';
 import {
   generateMetadata as genMeta,
@@ -83,6 +84,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <WhyChoose />
       <StatsCounter />
       <Testimonials />
+      <StoreAnalyzerTeaser />
       <PortalTeaser />
       <BlogTeaser />
       <CTABanner />

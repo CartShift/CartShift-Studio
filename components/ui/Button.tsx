@@ -7,91 +7,95 @@ import { cn } from '@/lib/utils';
 import { Check, X, Loader2 } from 'lucide-react';
 
 export const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 rounded-xl font-outfit font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-surface-950 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 overflow-hidden touch-manipulation active:scale-[0.97]",
+  'relative inline-flex items-center justify-center gap-2 rounded-xl font-outfit font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-surface-950 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 overflow-hidden touch-manipulation active:scale-[0.97]',
   {
     variants: {
       variant: {
         primary: [
-          "bg-gradient-to-b from-primary-500 to-primary-600 text-white",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_12px_rgba(2,132,199,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]",
-          "hover:from-primary-400 hover:to-primary-600",
-          "hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_24px_rgba(2,132,199,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]",
-          "active:shadow-[0_0_0_rgba(0,0,0,0),0_2px_8px_rgba(2,132,199,0.2),inset_0_1px_2px_rgba(0,0,0,0.1)]",
-          "shine-sweep",
+          'bg-gradient-to-b from-primary-500 to-primary-600 text-white',
+          'shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_12px_rgba(var(--color-primary-600-rgb),0.25),inset_0_1px_0_rgba(255,255,255,0.15)]',
+          'hover:from-primary-400 hover:to-primary-600',
+          'hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_24px_rgba(var(--color-primary-600-rgb),0.35),inset_0_1px_0_rgba(255,255,255,0.2)]',
+          'active:shadow-[0_0_0_rgba(0,0,0,0),0_2px_8px_rgba(var(--color-primary-600-rgb),0.2),inset_0_1px_2px_rgba(0,0,0,0.1)]',
+          'shine-sweep',
         ],
         secondary: [
-          "bg-surface-100 dark:bg-white/[0.08] text-surface-700 dark:text-white",
-          "border border-surface-200/80 dark:border-white/[0.08]",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
-          "hover:bg-surface-200/80 dark:hover:bg-white/[0.12]",
-          "hover:border-surface-300 dark:hover:border-white/[0.12]",
-          "hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]",
+          'bg-surface-100 dark:bg-white/[0.08] text-surface-700 dark:text-white',
+          'border border-surface-200/80 dark:border-white/[0.08]',
+          'shadow-[0_1px_2px_rgba(0,0,0,0.04)]',
+          'hover:bg-surface-200/80 dark:hover:bg-white/[0.12]',
+          'hover:border-surface-300 dark:hover:border-white/[0.12]',
+          'hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]',
         ],
         outline: [
-          "bg-transparent text-surface-700 dark:text-surface-200",
-          "border-2 border-surface-200 dark:border-white/[0.12]",
-          "hover:bg-surface-50 dark:hover:bg-white/[0.04]",
-          "hover:border-surface-300 dark:hover:border-white/[0.18]",
+          'bg-transparent text-surface-700 dark:text-surface-200',
+          'border-2 border-surface-200 dark:border-white/[0.12]',
+          'hover:bg-surface-50 dark:hover:bg-white/[0.04]',
+          'hover:border-surface-300 dark:hover:border-white/[0.18]',
         ],
         ghost: [
-          "bg-transparent text-surface-600 dark:text-surface-300",
-          "hover:bg-surface-100/80 dark:hover:bg-white/[0.06]",
-          "hover:text-surface-900 dark:hover:text-white",
+          'bg-transparent text-surface-600 dark:text-surface-300',
+          'hover:bg-surface-100/80 dark:hover:bg-white/[0.06]',
+          'hover:text-surface-900 dark:hover:text-white',
         ],
         danger: [
-          "bg-gradient-to-b from-rose-500 to-rose-600 text-white",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_12px_rgba(244,63,94,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]",
-          "hover:from-rose-400 hover:to-rose-600",
-          "hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_24px_rgba(244,63,94,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]",
+          'bg-gradient-to-b from-rose-500 to-rose-600 text-white',
+          'shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_12px_rgba(244,63,94,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]',
+          'hover:from-rose-400 hover:to-rose-600',
+          'hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_24px_rgba(244,63,94,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]',
         ],
         success: [
-          "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_12px_rgba(16,185,129,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]",
-          "hover:from-emerald-400 hover:to-emerald-600",
-          "hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_24px_rgba(16,185,129,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]",
+          'bg-gradient-to-b from-emerald-500 to-emerald-600 text-white',
+          'shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_12px_rgba(16,185,129,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]',
+          'hover:from-emerald-400 hover:to-emerald-600',
+          'hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_24px_rgba(16,185,129,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]',
         ],
         gradient: [
-          "bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 bg-[length:200%_100%] text-white",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_16px_rgba(192,38,211,0.2),inset_0_1px_0_rgba(255,255,255,0.2)]",
-          "hover:bg-[position:100%_0] hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_28px_rgba(192,38,211,0.3)]",
-          "transition-[background-position,box-shadow,transform] duration-500",
+          'bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 bg-[length:200%_100%] text-white',
+          'shadow-[0_1px_2px_rgba(0,0,0,0.1),0_4px_16px_rgba(var(--color-accent-600-rgb),0.2),inset_0_1px_0_rgba(255,255,255,0.2)]',
+          'hover:bg-[position:100%_0] hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_28px_rgba(var(--color-accent-600-rgb),0.3)]',
+          'transition-[background-position,box-shadow,transform] duration-500',
         ],
         glass: [
-          "bg-white/10 dark:bg-white/[0.06] backdrop-blur-md text-surface-900 dark:text-white",
-          "border border-white/30 dark:border-white/[0.1]",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.3)]",
-          "hover:bg-white/20 dark:hover:bg-white/[0.1]",
-          "hover:shadow-[0_4px_16px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4)]",
+          'bg-white/10 dark:bg-white/[0.06] backdrop-blur-md text-surface-900 dark:text-white',
+          'border border-white/30 dark:border-white/[0.1]',
+          'shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.3)]',
+          'hover:bg-white/20 dark:hover:bg-white/[0.1]',
+          'hover:shadow-[0_4px_16px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4)]',
         ],
       },
       size: {
-        xs: "h-7 px-2.5 text-xs gap-1",
-        sm: "h-9 px-4 text-sm gap-1.5",
-        md: "h-11 px-6 text-base gap-2",
-        lg: "h-14 px-8 text-lg gap-2.5",
-        icon: "h-10 w-10 p-0",
-        "icon-sm": "h-8 w-8 p-0",
-        "icon-lg": "h-12 w-12 p-0",
+        xs: 'h-7 px-2.5 text-xs gap-1',
+        sm: 'h-9 px-4 text-sm gap-1.5',
+        md: 'h-11 px-6 text-base gap-2',
+        lg: 'h-14 px-8 text-lg gap-2.5',
+        icon: 'h-10 w-10 p-0',
+        'icon-sm': 'h-8 w-8 p-0',
+        'icon-lg': 'h-12 w-12 p-0',
       },
       btnState: {
-        idle: "",
-        loading: "cursor-wait opacity-90",
-        success: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white border-none shadow-none",
-        error: "bg-gradient-to-b from-rose-500 to-rose-600 text-white border-none shadow-none",
+        idle: '',
+        loading: 'cursor-wait opacity-90',
+        success:
+          'bg-gradient-to-b from-emerald-500 to-emerald-600 text-white border-none shadow-none',
+        error: 'bg-gradient-to-b from-rose-500 to-rose-600 text-white border-none shadow-none',
       },
     },
     defaultVariants: {
-      variant: "primary",
-      size: "md",
-      btnState: "idle",
+      variant: 'primary',
+      size: 'md',
+      btnState: 'idle',
     },
   }
 );
 
-export interface ButtonProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd'
->, VariantProps<typeof buttonVariants> {
+export interface ButtonProps
+  extends
+    Omit<
+      React.ButtonHTMLAttributes<HTMLButtonElement>,
+      'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd'
+    >,
+    VariantProps<typeof buttonVariants> {
   loading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -113,7 +117,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const currentState = loading ? 'loading' : (btnState || 'idle');
+    const currentState = loading ? 'loading' : btnState || 'idle';
 
     const isDisabled =
       disabled ||
@@ -132,7 +136,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             variant,
             size,
             btnState: currentState as any,
-            className
+            className,
           })
         )}
         disabled={isDisabled}
@@ -177,7 +181,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             )}
           </AnimatePresence>
 
-          {(currentState === 'idle') && (
+          {currentState === 'idle' && (
             <>
               {leftIcon}
               {children}
@@ -200,4 +204,3 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
-

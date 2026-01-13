@@ -1,22 +1,21 @@
-"use client";
+'use client';
 
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import type { ThemeProviderProps } from "next-themes";
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import type { ThemeProviderProps } from 'next-themes';
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-	return (
-		<NextThemesProvider
-			attribute="class"
-			defaultTheme="system"
-			enableSystem={true}
-			enableColorScheme={true}
-			storageKey="theme"
-			themes={["light", "dark"]}
-			disableTransitionOnChange={false}
-			{...props}
-		>
-			{children}
-		</NextThemesProvider>
-	);
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem={true}
+      enableColorScheme={true}
+      storageKey="theme"
+      themes={['light', 'dark']}
+      disableTransitionOnChange={false}
+      {...props}
+    >
+      {children}
+    </NextThemesProvider>
+  );
 }
-

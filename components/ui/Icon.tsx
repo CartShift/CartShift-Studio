@@ -6,6 +6,7 @@ import { logWarn } from '@/lib/logger';
 import {
   ShoppingCart,
   Globe,
+  BarChart3,
   Target,
   Handshake,
   Zap,
@@ -71,6 +72,7 @@ interface IconProps {
 const iconComponents: Record<string, React.ComponentType<LucideProps>> = {
   'shopping-cart': ShoppingCart,
   globe: Globe,
+  'bar-chart': BarChart3,
   target: Target,
   handshake: Handshake,
   bolt: Zap,
@@ -166,4 +168,3 @@ export const Icon: React.FC<IconProps> = ({ name, className = '', size = 24 }) =
 
   return <IconComponent size={size} className={cn(className)} aria-hidden="true" />;
 };
-

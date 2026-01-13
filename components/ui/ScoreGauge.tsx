@@ -9,11 +9,7 @@ interface ScoreGaugeProps {
   showLabel?: boolean;
 }
 
-export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
-  score,
-  size = 'md',
-  showLabel = true,
-}) => {
+export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score, size = 'md', showLabel = true }) => {
   const [animatedScore, setAnimatedScore] = useState(0);
 
   const sizes = {
@@ -47,10 +43,13 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
   }, [score]);
 
   const getScoreColor = (s: number) => {
-    if (s >= 80) return { stroke: '#10b981', bg: 'text-emerald-500', label: 'Excellent' };
-    if (s >= 60) return { stroke: '#22c55e', bg: 'text-green-500', label: 'Good' };
-    if (s >= 40) return { stroke: '#f59e0b', bg: 'text-amber-500', label: 'Needs Work' };
-    return { stroke: '#ef4444', bg: 'text-red-500', label: 'Critical' };
+    if (s >= 80)
+      return { stroke: 'rgb(var(--color-success))', bg: 'text-emerald-500', label: 'Excellent' };
+    if (s >= 60)
+      return { stroke: 'rgb(var(--color-success))', bg: 'text-green-500', label: 'Good' };
+    if (s >= 40)
+      return { stroke: 'rgb(var(--color-warning))', bg: 'text-amber-500', label: 'Needs Work' };
+    return { stroke: 'rgb(var(--color-error))', bg: 'text-red-500', label: 'Critical' };
   };
 
   const colorInfo = getScoreColor(score);

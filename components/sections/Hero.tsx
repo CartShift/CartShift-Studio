@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from '@/lib/motion';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { ParallaxLayer } from '@/components/ui/Parallax';
 import { BackgroundShapes } from '@/components/ui/BackgroundShapes';
@@ -20,6 +21,7 @@ import { getScheduleUrl } from '@/lib/schedule';
 import { trackBookCallClick } from '@/lib/analytics';
 import { ArrowRight, ArrowDown, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import { HeroIllustration } from './HeroIllustration';
 
 const platformIcons = [
   {
@@ -138,15 +140,15 @@ export const Hero: React.FC = () => {
                   </span>
                 </Button>
               </a>
-              <a href="/about" className="w-full sm:w-auto">
+              <Link href="/tools/store-analyzer" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"
                   className="text-base md:text-lg px-8 md:px-10 py-5 md:py-5 min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
                 >
-                  {t('hero.secondaryCta')}
+                  {t('hero.analyzerCta')}
                 </Button>
-              </a>
+              </Link>
             </motion.div>
 
             <motion.div
@@ -213,18 +215,7 @@ export const Hero: React.FC = () => {
             variants={heroImage}
             className="relative hidden lg:block"
           >
-            <div className="absolute inset-0 bg-gradient-brand opacity-15 blur-3xl rounded-full"></div>
-            <div className="relative">
-              <Image
-                src="/images/website-builders-illustration.svg"
-                alt="Website builders illustration"
-                width={876}
-                height={661}
-                className="w-full h-auto"
-                priority
-                fetchPriority="high"
-              />
-            </div>
+            <HeroIllustration />
           </motion.div>
         </div>
       </div>

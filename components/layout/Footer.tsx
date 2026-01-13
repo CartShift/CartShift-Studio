@@ -24,6 +24,10 @@ export const Footer: React.FC = () => {
       { name: t('nav.pricing'), href: '/pricing' },
       { name: t('nav.maintenance'), href: '/maintenance' },
     ],
+    tools: [
+      { name: t('analyzer.hero.title') || 'Store Analyzer', href: '/tools/store-analyzer' },
+      { name: t('nav.clientPortal') || 'Client Portal', href: '/tools/client-portal' },
+    ],
     company: [
       { name: t('footer.links.about'), href: '/about' },
       { name: t('nav.work'), href: '/work' },
@@ -68,7 +72,7 @@ export const Footer: React.FC = () => {
     <footer className="relative border-t border-surface-300/60 dark:border-white/10 bg-white dark:bg-surface-950">
       <div className="absolute inset-0 bg-gradient-to-t from-surface-200/80 dark:from-black/50 via-white/60 dark:via-surface-950/50 to-transparent"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
           <div className="lg:col-span-1 text-start">
             <Logo size="lg" className="mb-6" />
             <p className="text-surface-600 dark:text-surface-400 max-w-md mb-6 text-sm md:text-base leading-relaxed">
@@ -110,6 +114,24 @@ export const Footer: React.FC = () => {
 
           <div className="text-start">
             <h3 className="text-surface-900 dark:text-white font-bold mb-6 text-base md:text-lg leading-tight">
+              {t('nav.tools') || 'Free Tools'}
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.tools.map(link => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 transition-colors font-medium text-sm md:text-base"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="text-start">
+            <h3 className="text-surface-900 dark:text-white font-bold mb-6 text-base md:text-lg leading-tight">
               {t('footer.company')}
             </h3>
             <ul className="space-y-3">
@@ -133,9 +155,7 @@ export const Footer: React.FC = () => {
             {subscribed ? (
               <div className="flex items-center gap-2 text-success">
                 <Icon name="check" size={20} />
-                <span className="text-sm font-medium">
-                  {t('footer.newsletter.success')}
-                </span>
+                <span className="text-sm font-medium">{t('footer.newsletter.success')}</span>
               </div>
             ) : (
               <form onSubmit={handleNewsletterSubmit} className="space-y-3">
@@ -213,4 +233,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-

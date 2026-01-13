@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   brand: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2563eb', // Blue-600
+    color: '#0284c7', // Brand Primary
     marginBottom: 8,
   },
   brandSub: {
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2563eb',
+    color: '#0284c7', // Brand Primary
   },
   footer: {
     position: 'absolute',
@@ -164,7 +164,7 @@ export const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
   request,
   organization,
   invoiceId = `INV-${request.id.substring(0, 8).toUpperCase()}`,
-  date = new Date()
+  date = new Date(),
 }) => {
   const currency = request.currency || 'USD';
   const lineItems = request.lineItems || [
@@ -173,10 +173,10 @@ export const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
       description: request.title,
       quantity: 1,
       unitPrice: request.totalAmount || 0,
-    }
+    },
   ];
 
-  const subtotal = lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+  const subtotal = lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
   const tax = 0; // Assuming 0 for now or add logic later
   const total = subtotal + tax;
 
@@ -194,9 +194,9 @@ export const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             <Text style={styles.invoiceMeta}>#{invoiceId}</Text>
             <Text style={styles.invoiceMeta}>Date: {format(date, 'MMM d, yyyy')}</Text>
             {request.paidAt && (
-               <Text style={{ ...styles.invoiceMeta, color: '#059669', fontWeight: 'bold' }}>
-                 PAID on {format(request.paidAt.toDate(), 'MMM d, yyyy')}
-               </Text>
+              <Text style={{ ...styles.invoiceMeta, color: '#059669', fontWeight: 'bold' }}>
+                PAID on {format(request.paidAt.toDate(), 'MMM d, yyyy')}
+              </Text>
             )}
           </View>
         </View>
@@ -230,7 +230,9 @@ export const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             <View key={i} style={styles.tableRow}>
               <Text style={[styles.td, styles.colDesc]}>{item.description}</Text>
               <Text style={[styles.td, styles.colQty]}>{item.quantity}</Text>
-              <Text style={[styles.td, styles.colPrice]}>{formatCurrency(item.unitPrice, currency)}</Text>
+              <Text style={[styles.td, styles.colPrice]}>
+                {formatCurrency(item.unitPrice, currency)}
+              </Text>
               <Text style={[styles.td, styles.colTotal]}>
                 {formatCurrency(item.quantity * item.unitPrice, currency)}
               </Text>
@@ -259,9 +261,7 @@ export const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         {/* Footer */}
         <View style={styles.footer}>
           <Text>Thank you for your business.</Text>
-          <Text style={{ marginTop: 4 }}>
-            CartShift Studio | Premium E-commerce Solutions
-          </Text>
+          <Text style={{ marginTop: 4 }}>CartShift Studio | Premium E-commerce Solutions</Text>
         </View>
       </Page>
     </Document>

@@ -18,13 +18,14 @@
     "deploy": "pnpm run build && firebase deploy",
     "deploy:hosting": "pnpm run export && firebase deploy --only hosting",
     "deploy:functions": "cd functions && pnpm install && cd .. && firebase deploy --only functions",
-    "analyze": "ANALYZE=true next build",
+    "analyze": "cross-env ANALYZE=true next build",
     "normalize-db": "tsx scripts/normalize-db.ts",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "i18n:split": "node scripts/split-translations.js",
-    "i18n:merge": "node scripts/merge-translations.js"
+    "i18n:merge": "node scripts/merge-translations.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -43,7 +44,6 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dompurify": "^3.3.1",
-    "eslint-config-next": "^16.0.10",
     "firebase": "^11.10.0",
     "firebase-functions": "^7.0.2",
     "framer-motion": "^11.3.0",
@@ -71,6 +71,8 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
@@ -83,11 +85,14 @@
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/ui": "^4.0.16",
     "autoprefixer": "^10.4.19",
+    "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.10",
     "firebase-admin": "^13.6.0",
+    "husky": "^9.0.0",
     "jsdom": "^27.4.0",
     "jsonlint": "^1.6.3",
+    "lint-staged": "^15.2.0",
     "mini-css-extract-plugin": "^2.9.4",
     "postcss": "^8.4.39",
     "prettier": "^3.2.5",
@@ -95,6 +100,15 @@
     "tsx": "^4.21.0",
     "typescript": "^5.5.3",
     "vitest": "^4.0.16"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   },
   "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }

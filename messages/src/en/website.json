@@ -6,9 +6,25 @@
     "description": "No tech drama. We design and build fast, beautiful websites that guide visitors to buy, book, or reach out. And we keep improving after launch.",
     "primaryCta": "Get a Free Consultation",
     "secondaryCta": "See Our Work",
+    "analyzerCta": "Analyze My Store (Free)",
     "scrollIndicator": "Scroll to explore",
     "intro": {
       "title": "Your E-commerce Development Partner",
+      "mission": "Our Mission",
+      "features": {
+        "shopify": {
+          "label": "Shopify Experts",
+          "desc": "Custom themes & complex integrations for high-growth stores."
+        },
+        "technical": {
+          "label": "Technical Excellence",
+          "desc": "Clean, maintainable code that prioritizes speed and stability."
+        },
+        "conversion": {
+          "label": "Conversion Focused",
+          "desc": "Every design decision is backed by data and user behavior."
+        }
+      },
       "paragraphs": [
         "CartShift Studio is a specialized e-commerce development agency that transforms online businesses through expert Shopify and WordPress solutions. With years of experience building high-converting stores and content-driven websites, we've helped 50+ businesses launch, optimize, and scale their online presence.",
         "Whether you're launching your first Shopify store, migrating from another platform, or need a custom WordPress website for your content business, we combine technical expertise with a deep understanding of what drives conversions and growth. Our approach is simple: we listen to your goals, build solutions that actually work, and stick around to help you improve.",
@@ -27,6 +43,12 @@
     },
     "platforms": {
       "label": "We Build On"
+    },
+    "illustration": {
+      "revenue": "Revenue",
+      "conversion": "Conversion",
+      "activeUsers": "Active Users",
+      "newOrder": "New Order"
     }
   },
   "heroForm": {
@@ -514,6 +536,31 @@
       "liveUpdates": "Live updates"
     }
   },
+  "storeAnalyzerTeaser": {
+    "badge": "Free Store Analyzer",
+    "title": "Boost your store's",
+    "titleSpan": "performance",
+    "description": "Get a comprehensive audit of your e-commerce store in less than 60 seconds. We analyze performance, SEO, accessibility, and trust signals to help you convert more visitors.",
+    "cta": "Analyze My Store",
+    "features": {
+      "performance": {
+        "title": "Speed Analysis",
+        "description": "Load time & Core Web Vitals"
+      },
+      "seo": {
+        "title": "SEO Audit",
+        "description": "Indexing & search visibility"
+      },
+      "trust": {
+        "title": "Trust Signals",
+        "description": "Security & credibility checks"
+      },
+      "conversion": {
+        "title": "Conversion",
+        "description": "UX & best practices"
+      }
+    }
+  },
   "blogPost": {
     "cta": {
       "title": "Need help with your ",
@@ -975,12 +1022,7 @@
     "wordpress": {
       "title": "Custom Web Design",
       "description": "A website as unique as your brand. Flexible, easy to manage, and built to stand out.",
-      "features": [
-        "Custom Design",
-        "Easy to Edit",
-        "Online Store Ready",
-        "SEO Optimized"
-      ]
+      "features": ["Custom Design", "Easy to Edit", "Online Store Ready", "SEO Optimized"]
     }
   },
   "ctaBanner": {

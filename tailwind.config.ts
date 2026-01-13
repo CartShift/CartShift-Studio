@@ -11,55 +11,55 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        'xs': '375px',      // iPhone SE / small phones
-        '3xl': '1920px',    // Large desktops
+        xs: '375px', // iPhone SE / small phones
+        '3xl': '1920px', // Large desktops
       },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7', // Brand Primary
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
+          50: 'rgb(var(--color-primary-50) / <alpha-value>)',
+          100: 'rgb(var(--color-primary-100) / <alpha-value>)',
+          200: 'rgb(var(--color-primary-200) / <alpha-value>)',
+          300: 'rgb(var(--color-primary-300) / <alpha-value>)',
+          400: 'rgb(var(--color-primary-400) / <alpha-value>)',
+          500: 'rgb(var(--color-primary-500) / <alpha-value>)',
+          600: 'rgb(var(--color-primary-600) / <alpha-value>)', // Brand Primary
+          700: 'rgb(var(--color-primary-700) / <alpha-value>)',
+          800: 'rgb(var(--color-primary-800) / <alpha-value>)',
+          900: 'rgb(var(--color-primary-900) / <alpha-value>)',
+          950: 'rgb(var(--color-primary-950) / <alpha-value>)',
         },
         accent: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3', // Brand Accent
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
-          950: '#4a044e',
+          50: 'rgb(var(--color-accent-50) / <alpha-value>)',
+          100: 'rgb(var(--color-accent-100) / <alpha-value>)',
+          200: 'rgb(var(--color-accent-200) / <alpha-value>)',
+          300: 'rgb(var(--color-accent-300) / <alpha-value>)',
+          400: 'rgb(var(--color-accent-400) / <alpha-value>)',
+          500: 'rgb(var(--color-accent-500) / <alpha-value>)',
+          600: 'rgb(var(--color-accent-600) / <alpha-value>)', // Brand Accent
+          700: 'rgb(var(--color-accent-700) / <alpha-value>)',
+          800: 'rgb(var(--color-accent-800) / <alpha-value>)',
+          900: 'rgb(var(--color-accent-900) / <alpha-value>)',
+          950: 'rgb(var(--color-accent-950) / <alpha-value>)',
         },
         surface: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          850: '#172033', // Intermediate dark shade
-          900: '#0f172a', // Dark surface base
-          950: '#020617', // Darker surface base
+          50: 'rgb(var(--color-surface-50) / <alpha-value>)',
+          100: 'rgb(var(--color-surface-100) / <alpha-value>)',
+          200: 'rgb(var(--color-surface-200) / <alpha-value>)',
+          300: 'rgb(var(--color-surface-300) / <alpha-value>)',
+          400: 'rgb(var(--color-surface-400) / <alpha-value>)',
+          500: 'rgb(var(--color-surface-500) / <alpha-value>)',
+          600: 'rgb(var(--color-surface-600) / <alpha-value>)',
+          700: 'rgb(var(--color-surface-700) / <alpha-value>)',
+          800: 'rgb(var(--color-surface-800) / <alpha-value>)',
+          850: 'rgb(var(--color-surface-850) / <alpha-value>)', // Intermediate dark shade
+          900: 'rgb(var(--color-surface-900) / <alpha-value>)', // Dark surface base
+          950: 'rgb(var(--color-surface-950) / <alpha-value>)', // Darker surface base
         },
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
+        success: 'rgb(var(--color-success) / <alpha-value>)',
+        error: 'rgb(var(--color-error) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
@@ -86,21 +86,21 @@ const config: Config = {
         'section-y': '5rem',
         'section-y-md': '6rem',
         'section-y-lg': '8rem',
-        'tap': '44px',      // Minimum touch target size (WCAG)
-        'tap-sm': '40px',   // Compact touch target
+        tap: '44px', // Minimum touch target size (WCAG)
+        'tap-sm': '40px', // Compact touch target
         'safe-top': 'env(safe-area-inset-top)',
         'safe-bottom': 'env(safe-area-inset-bottom)',
         'safe-left': 'env(safe-area-inset-left)',
         'safe-right': 'env(safe-area-inset-right)',
       },
       minHeight: {
-        'tap': '44px',
+        tap: '44px',
         'tap-sm': '40px',
         'screen-safe': 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
         'screen-dvh': '100dvh',
       },
       minWidth: {
-        'tap': '44px',
+        tap: '44px',
         'tap-sm': '40px',
       },
       borderRadius: {
