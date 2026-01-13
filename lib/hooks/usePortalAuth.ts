@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import { usePathname } from 'next/navigation';
 import { getAuthInstance, isLoggingOut } from '@/lib/services/auth';
 import { onAuthStateChanged, type User } from 'firebase/auth';
@@ -52,10 +52,15 @@ export function usePortalAuth() {
           // Only use cache if it's less than 1 hour old to avoid very stale data
           const cacheTime = parsed._cacheTime;
           if (cacheTime && Date.now() - cacheTime < 1000 * 60 * 60) {
-            setUserData(parsed);
-            // Set loading to false temporarily to show cached data
-            // Real data will update this shortly
-            setLoading(false);
+            // Use startTransition to ensure state updates happen after mount
+            startTransition(() => {
+              if (isMountedRef.current) {
+                setUserData(parsed);
+                // Set loading to false temporarily to show cached data
+                // Real data will update this shortly
+                setLoading(false);
+              }
+            });
           }
         }
       } catch (e) {
@@ -63,8 +68,15 @@ export function usePortalAuth() {
       }
     };
 
-    // Use setTimeout to defer cache loading to next tick, avoiding render-phase updates
-    const cacheTimeout = setTimeout(loadCache, 0);
+    // Use requestAnimationFrame to defer cache loading until after mount, avoiding render-phase updates
+    let rafId: number | null = null;
+    if (typeof window !== 'undefined') {
+      rafId = requestAnimationFrame(() => {
+        if (isMountedRef.current) {
+          loadCache();
+        }
+      });
+    }
 
     try {
       const auth = getAuthInstance();
@@ -214,7 +226,9 @@ export function usePortalAuth() {
     // Cleanup subscriptions on unmount
     return () => {
       isMountedRef.current = false;
-      clearTimeout(cacheTimeout);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
       if (unsubscribeAuth) {
         unsubscribeAuth();
       }

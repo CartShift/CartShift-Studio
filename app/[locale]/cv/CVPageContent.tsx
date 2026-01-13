@@ -225,7 +225,7 @@ export default function CVPageContent() {
       </div>
 
       <div
-        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 lg:pt-36 pb-24 lg:pb-48"
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-24 lg:pb-48"
       >
         {/* Hero Header Section */}
         <motion.header
@@ -400,9 +400,9 @@ export default function CVPageContent() {
 
             <div className="space-y-4 sm:space-y-6">
               {experienceKeys.map((expKey, index) => {
-                const highlights = t.raw(`experience.${expKey}.highlights`) as string[];
-                const hasDescription = t.has(`experience.${expKey}.description`);
-                const hasLocation = t.has(`experience.${expKey}.location`);
+                const highlights = t.raw(`experience.${expKey}.highlights` as any) as string[];
+                const hasDescription = t.has(`experience.${expKey}.description` as any);
+                const hasLocation = t.has(`experience.${expKey}.location` as any);
                 const isSelfEmployment = expKey === 'cartshift' || expKey === 'entrepreneurship' || expKey === 'ecommerce_venture';
                 const isCurrentPosition = expKey === 'cartshift';
 
@@ -439,7 +439,7 @@ export default function CVPageContent() {
                           <div>
                             <div className="flex items-center gap-2 flex-wrap mb-1">
                               <h3 className={`${isSelfEmployment ? 'text-base sm:text-lg font-semibold text-slate-700 dark:text-surface-300' : 'text-lg sm:text-xl font-bold text-slate-900 dark:text-white'}`}>
-                                {t(`experience.${expKey}.title`)}
+                                {t(`experience.${expKey}.title` as any)}
                               </h3>
                               {/* Open for Work badge - only on current position */}
                               {isCurrentPosition && (
@@ -463,23 +463,23 @@ export default function CVPageContent() {
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                               <span className={`${isSelfEmployment ? 'text-sm text-slate-500 dark:text-surface-400' : 'text-sm sm:text-base font-semibold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent'}`}>
-                                {t(`experience.${expKey}.company`)}
+                                {t(`experience.${expKey}.company` as any)}
                               </span>
                               {hasLocation && (
                                 <span className="text-slate-500 dark:text-surface-500 text-sm flex items-center gap-1">
                                   <MapPin className="w-3 h-3" />
-                                  {t(`experience.${expKey}.location`)}
+                                  {t(`experience.${expKey}.location` as any)}
                                 </span>
                               )}
                             </div>
                           </div>
                           <div className="flex flex-col lg:items-end text-sm">
                             <span className={`${isSelfEmployment ? 'text-slate-500 dark:text-surface-400' : 'text-primary-600 dark:text-primary-400'} font-semibold`}>
-                              {t(`experience.${expKey}.duration`)}
+                              {t(`experience.${expKey}.duration` as any)}
                             </span>
                             {!isSelfEmployment && (
                               <span className="text-slate-500 dark:text-surface-500">
-                                {t(`experience.${expKey}.durationYears`)}
+                                {t(`experience.${expKey}.durationYears` as any)}
                               </span>
                             )}
                           </div>
@@ -487,7 +487,7 @@ export default function CVPageContent() {
 
                         {hasDescription && !isSelfEmployment && (
                           <p className="text-slate-600 dark:text-surface-300/80 mb-4 text-sm sm:text-base leading-relaxed">
-                            {t(`experience.${expKey}.description`)}
+                            {t(`experience.${expKey}.description` as any)}
                           </p>
                         )}
 
@@ -537,7 +537,7 @@ export default function CVPageContent() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {skillCategories.map((skill, index) => {
-              const items = t.raw(`skills.${skill.key}.items`) as string[];
+              const items = t.raw(`skills.${skill.key}.items` as any) as string[];
               const IconComponent = skill.icon;
 
               return (
@@ -565,7 +565,7 @@ export default function CVPageContent() {
                       >
                         <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </motion.div>
-                      <h3 className="font-bold text-sm sm:text-base text-slate-800 dark:text-white">{t(`skills.${skill.key}.category`)}</h3>
+                      <h3 className="font-bold text-sm sm:text-base text-slate-800 dark:text-white">{t(`skills.${skill.key}.category` as any)}</h3>
                     </div>
                             <div className="flex flex-wrap gap-1.5">
                       {items.map((item, iIndex) => {
@@ -671,10 +671,10 @@ export default function CVPageContent() {
                     >
                       <div className="flex justify-between items-center mb-1.5">
                         <span className="text-slate-800 dark:text-white text-sm font-medium">
-                          {t(`languageSkills.${langKey}.name`)}
+                          {t(`languageSkills.${langKey}.name` as any)}
                         </span>
                         <span className="text-primary-600 dark:text-primary-400 text-xs font-medium">
-                          {t(`languageSkills.${langKey}.level`)}
+                          {t(`languageSkills.${langKey}.level` as any)}
                         </span>
                       </div>
                       <div className="h-2 bg-slate-200 dark:bg-surface-800/50 rounded-full overflow-hidden">

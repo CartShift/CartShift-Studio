@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
 import { PortalBadge } from '@/components/portal/ui/PortalBadge';
 import { PortalButton } from '@/components/portal/ui/PortalButton';
@@ -14,6 +14,8 @@ import {
   TrendingUp,
   Loader2,
   ShieldCheck,
+  DollarSign,
+  Clock,
 } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
@@ -21,15 +23,27 @@ import { cn } from '@/lib/utils';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
+import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
+
+// Format currency with abbreviations for large numbers
+function formatRevenue(amountInCents: number, currency: Currency = 'USD'): string {
+  const config = CURRENCY_CONFIG[currency];
+  const amount = amountInCents / 100;
+
+  if (amount >= 1000000) {
+    return `${config.symbol}${(amount / 1000000).toFixed(1)}M`;
+  }
+  if (amount >= 1000) {
+    return `${config.symbol}${(amount / 1000).toFixed(1)}K`;
+  }
+  return `${config.symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
 
 export default function AgencyClientsClient() {
   const t = useTranslations('portal');
   const router = useRouter();
-  const { userData, loading: authLoading, isAuthenticated, user } = usePortalAuth();
-  const {
-    organizations,
-    loading: clientsLoading,
-  } = useAgencyClients();
+  const { loading: authLoading, isAuthenticated, user } = usePortalAuth();
+  const { organizations, loading: clientsLoading, userData } = useAgencyClients();
 
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,6 +56,12 @@ export default function AgencyClientsClient() {
     }
   }, [authLoading, clientsLoading]);
 
+  // Calculate totals for the header stats
+  const totals = useMemo(() => {
+    const totalRevenue = organizations.reduce((sum, org) => sum + (org.totalRevenue || 0), 0);
+    const pendingRevenue = organizations.reduce((sum, org) => sum + (org.pendingRevenue || 0), 0);
+    return { totalRevenue, pendingRevenue };
+  }, [organizations]);
 
   const handleRepair = async () => {
     if (!user) return;
@@ -64,14 +84,14 @@ export default function AgencyClientsClient() {
         await setDoc(userRef, {
           ...updateData,
           email: user.email,
-          name: user.displayName || t('portal.common.agencyAdmin' as any),
+          name: user.displayName || t('common.agencyAdmin'),
           createdAt: new Date(),
         });
       }
       window.location.reload();
     } catch (err) {
       console.error('Repair failed:', err);
-      alert(t('portal.agency.repairFailed'));
+      alert(t('agency.repairFailed'));
     } finally {
       setIsRepairing(false);
     }
@@ -96,9 +116,11 @@ export default function AgencyClientsClient() {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">{t('portal.agency.accessDeniedTitle')}</h2>
+        <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">
+          {t('agency.accessDeniedTitle')}
+        </h2>
         <p className="text-surface-500 max-w-sm mx-auto mb-8">
-          {t('portal.agency.notRegisteredAsAdmin', { email: user?.email || '' })}
+          {t('agency.notRegisteredAsAdmin', { email: user?.email || '' })}
         </p>
         <PortalButton
           onClick={handleRepair}
@@ -130,6 +152,66 @@ export default function AgencyClientsClient() {
             {t('agency.clients.onboard')}
           </PortalButton>
         </Link>
+      </div>
+
+      {/* Revenue Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+              <DollarSign className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+              {t('sales.metrics.totalRevenue')}
+            </span>
+          </div>
+          <p className="text-2xl font-black">{formatRevenue(totals.totalRevenue)}</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+              <Clock className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+              {t('sales.metrics.pendingRevenue')}
+            </span>
+          </div>
+          <p className="text-2xl font-black">{formatRevenue(totals.pendingRevenue)}</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+              <Users className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+              {t('sales.metrics.activeClients')}
+            </span>
+          </div>
+          <p className="text-2xl font-black">{filteredOrgs.length}</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+              {t('sales.metrics.avgDealSize')}
+            </span>
+          </div>
+          <p className="text-2xl font-black">
+            {organizations.filter(o => o.paidCount && o.paidCount > 0).length > 0
+              ? formatRevenue(
+                  Math.round(
+                    totals.totalRevenue /
+                      organizations.reduce((sum, o) => sum + (o.paidCount || 0), 0) || 0
+                  )
+                )
+              : '-'}
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center gap-4 bg-white dark:bg-surface-900/50 p-4 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-sm">
@@ -222,6 +304,36 @@ export default function AgencyClientsClient() {
                         : t('agency.clients.enterprise')}
                     </span>
                   </div>
+
+                  {/* Revenue Highlight */}
+                  {(org.totalRevenue ?? 0) > 0 && (
+                    <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10 border border-emerald-100 dark:border-emerald-500/20">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <DollarSign
+                            size={16}
+                            className="text-emerald-600 dark:text-emerald-400"
+                          />
+                          <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">
+                            {t('sales.metrics.totalRevenue')}
+                          </span>
+                        </div>
+                        <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                          {formatRevenue(org.totalRevenue || 0)}
+                        </span>
+                      </div>
+                      {(org.pendingRevenue ?? 0) > 0 && (
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/50 dark:border-emerald-500/20">
+                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                            {t('sales.metrics.pending')}
+                          </span>
+                          <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                            +{formatRevenue(org.pendingRevenue || 0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-2 gap-4 pt-6 border-t border-surface-50 dark:border-surface-800/50">
                     <div>

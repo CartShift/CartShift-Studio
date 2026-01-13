@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { togglePinRequest, isRequestPinnedByUser } from '@/lib/services/portal-requests';
 import { usePortalAuth } from './usePortalAuth';
 import { useRequests } from './useRequests';
@@ -30,11 +30,12 @@ export function usePinnedRequests(_orgId?: string) {
   const orgId = _orgId || resolvedOrgId;
   const userId = userData?.id;
   const queryClient = useQueryClient();
-  const [updateCounter, setUpdateCounter] = useState(0);
 
   // Sync with global loading state
   useEffect(() => {
-    const listener = () => setUpdateCounter(prev => prev + 1);
+    const listener = () => {
+      // Trigger re-render when loading state changes
+    };
     loadingStateListeners.add(listener);
     return () => {
       loadingStateListeners.delete(listener);
@@ -95,7 +96,7 @@ export function usePinnedRequests(_orgId?: string) {
     });
 
     try {
-      const newPinnedState = await togglePinRequest(requestId, userId);
+      await togglePinRequest(requestId, userId);
 
       // Invalidate queries to sync with server
       if (isAgency) {

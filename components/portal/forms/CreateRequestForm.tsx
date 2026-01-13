@@ -11,6 +11,7 @@ import { CreateRequestData, PRIORITY_CONFIG } from '@/lib/types/portal';
 import { createRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { trackPortalRequestCreate } from '@/lib/analytics';
+import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import {
   AlertCircle,
   CheckCircle2,
@@ -51,7 +52,9 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { user, userData } = usePortalAuth();
+  const { user, userData, isAgency } = usePortalAuth();
+  const { organizations: clients } = useAgencyClients();
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
   const t = useTranslations();
 
   const requestSchema = useMemo(
@@ -98,7 +101,8 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
       const userName = userData?.name || user.displayName || user.email?.split('@')[0] || t('portal.common.unknown');
 
       // 1. Create the request
-      const request = await createRequest(orgId, user.uid, userName, {
+      const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
+      const request = await createRequest(targetOrgId, user.uid, userName, {
         title: data.title,
         description: data.description,
         type: data.type as CreateRequestData['type'],
@@ -108,7 +112,7 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
       // 2. Upload files if any
       if (selectedFiles.length > 0) {
         setUploadProgress(10); // Start progress
-        const uploadedFiles = await uploadMultipleFiles(orgId, user.uid, userName, selectedFiles, {
+        const uploadedFiles = await uploadMultipleFiles(targetOrgId, user.uid, userName, selectedFiles, {
           requestId: request.id,
         });
 
@@ -183,6 +187,27 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-6">
+        {isAgency && clients.length > 0 && (
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black text-surface-400 uppercase tracking-widest px-1">
+              {t('portal.requests.form.clientLabel')}
+            </label>
+            <select
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 transition-all text-surface-900 dark:text-white text-sm font-bold font-outfit focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            >
+              <option value="">
+                {t('portal.requests.form.clientSelect')}
+              </option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <PortalInput
           label={t('portal.requests.form.titleLabel')}
           placeholder={t('portal.requests.form.titlePlaceholder')}

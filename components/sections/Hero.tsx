@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
   const isRtl = direction === 'rtl';
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center py-16 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#f0f4f8] dark:bg-surface-950">
+    <section className="relative min-h-[100dvh] flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-24 md:pb-40 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#f0f4f8] dark:bg-surface-950">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-gradient-to-br from-surface-100 via-[#e8f0f8] to-surface-200 dark:from-surface-950 dark:to-surface-900"></div>
       <div className="absolute top-0 start-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.06] dark:opacity-5"></div>
@@ -79,7 +79,7 @@ export const Hero: React.FC = () => {
       {/* Floating geometric shapes */}
       <BackgroundShapes />
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full">
+      <div className="max-w-7xl mx-auto relative z-10 w-full pb-4 md:pb-20 lg:pb-0">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <motion.div
             initial="hidden"
@@ -153,7 +153,7 @@ export const Hero: React.FC = () => {
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
-              className="pt-8 md:pt-10 border-t border-surface-300/60 dark:border-white/5 flex flex-wrap gap-8 md:gap-12"
+              className="pt-8 md:pt-10 border-t border-surface-300/60 dark:border-white/5 flex flex-wrap gap-8 md:gap-12 mb-4 md:mb-6 lg:mb-0"
             >
               <div className="flex flex-col">
                 <span className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-surface-900 dark:text-white mb-1">
@@ -179,7 +179,7 @@ export const Hero: React.FC = () => {
                   variants={staggerContainer}
                   className="flex flex-wrap items-center gap-3 md:gap-4"
                 >
-                  {platformIcons.map((platform) => (
+                  {platformIcons.map(platform => (
                     <motion.div
                       key={platform.name}
                       variants={platformIcon}
@@ -231,13 +231,13 @@ export const Hero: React.FC = () => {
 
       {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-10 inset-x-0 flex justify-center z-20"
+        className="absolute bottom-8 md:bottom-12 lg:bottom-16 inset-x-0 flex justify-center z-30 pointer-events-none"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.8 }}
       >
         <motion.div
-          className="flex flex-col items-center gap-2 text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors cursor-pointer"
+          className="flex flex-col items-center gap-2 text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors cursor-pointer pointer-events-auto"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >

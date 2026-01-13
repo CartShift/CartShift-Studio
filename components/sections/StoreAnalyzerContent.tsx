@@ -216,7 +216,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           className="relative"
         >
           {/* Hero Section */}
-          <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-28 pb-8">
+          <section className="relative min-h-screen flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-8">
             {/* Animated Background */}
             <div className="absolute inset-0">
               <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f]" />
@@ -531,7 +531,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="min-h-screen flex items-center justify-center bg-[#0a0a0f] pt-20 md:pt-24"
+          className="min-h-screen flex items-center justify-center bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32"
         >
           <AnalyzingState progress={analyzingProgress} currentStep={currentStep} variant="dark" />
         </motion.div>
@@ -543,7 +543,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="min-h-screen bg-[#0a0a0f] pt-24 md:pt-28 pb-12"
+          className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32 pb-12"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnalysisResults results={results} onReset={handleReset} variant="dark" />

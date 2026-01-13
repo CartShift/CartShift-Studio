@@ -68,7 +68,7 @@ export default async function CVPage({ params }: Props) {
       url: `${siteUrl}/${locale}/cv`,
       image: `${siteUrl}/images/yotam-programmer.png`,
       sameAs: [
-        `https://${t('linkedin').replace(/^https?:\/\//, '')}`,
+        'https://linkedin.com/in/yotam-faraggi',
         'https://github.com/yotamon',
       ],
       address: {

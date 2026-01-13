@@ -30,6 +30,7 @@ import {
   Check,
   ArrowLeft,
 } from 'lucide-react';
+import { EmbeddedCalculator } from '@/components/portal/pricing/EmbeddedCalculator';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import {
@@ -467,6 +468,20 @@ export default function EditPricingForm() {
             </PortalCard>
           )}
 
+          {/* Embedded Calculator */}
+          <EmbeddedCalculator
+            onAddItem={item => {
+              append({
+                id: generateLineItemId(),
+                description: item.description,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+              });
+            }}
+            currency={watchedCurrency}
+            defaultExpanded={false}
+          />
+
           {/* Line Items */}
           <PortalCard className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -717,4 +732,3 @@ export default function EditPricingForm() {
     </div>
   );
 }
-

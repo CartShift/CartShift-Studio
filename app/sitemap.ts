@@ -6,11 +6,6 @@ export const dynamic = "force-static";
 
 const locales = ["en", "he"] as const;
 
-type AlternateRef = {
-  hreflang: string;
-  href: string;
-};
-
 function generateAlternates(baseUrl: string, path: string): { languages: Record<string, string> } {
   return {
     languages: {

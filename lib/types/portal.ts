@@ -7,14 +7,14 @@ import { Timestamp } from 'firebase/firestore';
 export const REQUEST_STATUS = {
   NEW: 'NEW',
   NEEDS_INFO: 'NEEDS_INFO',
-  QUOTED: 'QUOTED',           // Agency added pricing, awaiting client response
-  ACCEPTED: 'ACCEPTED',       // Client accepted the quote
-  DECLINED: 'DECLINED',       // Client declined the quote
+  QUOTED: 'QUOTED', // Agency added pricing, awaiting client response
+  ACCEPTED: 'ACCEPTED', // Client accepted the quote
+  DECLINED: 'DECLINED', // Client declined the quote
   QUEUED: 'QUEUED',
   IN_PROGRESS: 'IN_PROGRESS',
   IN_REVIEW: 'IN_REVIEW',
   DELIVERED: 'DELIVERED',
-  PAID: 'PAID',               // Client paid for billable request
+  PAID: 'PAID', // Client paid for billable request
   CLOSED: 'CLOSED',
   CANCELED: 'CANCELED',
 } as const;
@@ -77,7 +77,10 @@ export type ConsultationType = (typeof CONSULTATION_TYPE)[keyof typeof CONSULTAT
 export type ConsultationStatus = (typeof CONSULTATION_STATUS)[keyof typeof CONSULTATION_STATUS];
 
 // Account type configuration for UI
-export const ACCOUNT_TYPE_CONFIG: Record<AccountType, { label: string; labelHe: string; color: string; badgeVariant: 'blue' | 'purple' }> = {
+export const ACCOUNT_TYPE_CONFIG: Record<
+  AccountType,
+  { label: string; labelHe: string; color: string; badgeVariant: 'blue' | 'purple' }
+> = {
   CLIENT: { label: 'Client', labelHe: 'לקוח', color: 'blue', badgeVariant: 'blue' },
   AGENCY: { label: 'Agency', labelHe: 'סוכנות', color: 'purple', badgeVariant: 'purple' },
 };
@@ -148,8 +151,8 @@ export interface Organization {
   updatedAt: Timestamp;
 
   // Shopify Integration
-  shopifyDomain?: string;              // e.g., "mystore.myshopify.com"
-  shopifyCollaboratorCode?: string;    // 4-digit collaborator code
+  shopifyDomain?: string; // e.g., "mystore.myshopify.com"
+  shopifyCollaboratorCode?: string; // 4-digit collaborator code
   shopifyAccessStatus?: 'pending' | 'requested' | 'connected' | 'revoked';
   shopifyAccessRequestedAt?: Timestamp;
   shopifyConnectedAt?: Timestamp;
@@ -173,8 +176,8 @@ export interface PortalUser {
   email: string;
   name?: string;
   photoUrl?: string;
-  accountType: AccountType;  // New: PRIMARY account type field
-  isAgency: boolean;         // Kept for backward compatibility (derived from accountType)
+  accountType: AccountType; // New: PRIMARY account type field
+  isAgency: boolean; // Kept for backward compatibility (derived from accountType)
   status?: 'active' | 'inactive' | 'suspended';
   organizations: string[]; // org IDs
   notificationPreferences?: {
@@ -215,40 +218,43 @@ export interface Milestone {
 }
 
 // Milestone status configuration for UI
-export const MILESTONE_STATUS_CONFIG: Record<MilestoneStatus, {
-  label: string;
-  labelHe: string;
-  color: string;
-  bgColor: string;
-  icon: string;
-}> = {
+export const MILESTONE_STATUS_CONFIG: Record<
+  MilestoneStatus,
+  {
+    label: string;
+    labelHe: string;
+    color: string;
+    bgColor: string;
+    icon: string;
+  }
+> = {
   pending: {
     label: 'Pending',
     labelHe: 'ממתין',
     color: 'text-surface-500',
     bgColor: 'bg-surface-100 dark:bg-surface-800',
-    icon: 'circle'
+    icon: 'circle',
   },
   in_progress: {
     label: 'In Progress',
     labelHe: 'בתהליך',
     color: 'text-blue-600 dark:text-blue-400',
     bgColor: 'bg-blue-100 dark:bg-blue-900/30',
-    icon: 'loader'
+    icon: 'loader',
   },
   completed: {
     label: 'Completed',
     labelHe: 'הושלם',
     color: 'text-green-600 dark:text-green-400',
     bgColor: 'bg-green-100 dark:bg-green-900/30',
-    icon: 'check-circle'
+    icon: 'check-circle',
   },
   blocked: {
     label: 'Blocked',
     labelHe: 'חסום',
     color: 'text-red-600 dark:text-red-400',
     bgColor: 'bg-red-100 dark:bg-red-900/30',
-    icon: 'alert-circle'
+    icon: 'alert-circle',
   },
 };
 
@@ -289,7 +295,7 @@ export interface Request {
   // Pricing fields (optional - for billable requests)
   isBillable?: boolean;
   lineItems?: PricingLineItem[];
-  totalAmount?: number;         // in cents
+  totalAmount?: number; // in cents
   currency?: Currency;
   validUntil?: Timestamp;
   quotedAt?: Timestamp;
@@ -300,12 +306,12 @@ export interface Request {
   declinedAt?: Timestamp;
 
   // Payment info
-  paymentId?: string;           // PayPal transaction ID
+  paymentId?: string; // PayPal transaction ID
   paidAt?: Timestamp;
   paymentMethod?: 'paypal';
 
   // Pricing offer reference
-  pricingOfferId?: string;      // Link to PricingRequest that includes this request
+  pricingOfferId?: string; // Link to PricingRequest that includes this request
 }
 
 export interface Comment {
@@ -336,7 +342,7 @@ export interface FileAttachment {
   size: number;
   url: string;
   storagePath: string;
-  version: number;          // New: Version number
+  version: number; // New: Version number
   previousVersionId?: string; // New: Reference to previous version
   uploadedBy: string;
   uploadedByName: string;
@@ -385,31 +391,31 @@ export interface ActivityLog {
 
 export interface Consultation {
   id: string;
-  orgId: string;                    // Client organization
+  orgId: string; // Client organization
   type: ConsultationType;
   status: ConsultationStatus;
   title: string;
   description?: string;
-  scheduledAt: Timestamp;           // Meeting date/time
-  duration: number;                 // Minutes
-  participants: string[];           // User IDs
+  scheduledAt: Timestamp; // Meeting date/time
+  duration: number; // Minutes
+  participants: string[]; // User IDs
   createdBy: string;
   createdByName: string;
 
   // Booking integration
-  externalCalendarLink?: string;    // Google Meet / Zoom link
-  externalEventId?: string;         // For sync if needed
+  externalCalendarLink?: string; // Google Meet / Zoom link
+  externalEventId?: string; // For sync if needed
 
   // Notes & follow-up
   agendaItems?: string[];
-  meetingNotes?: string;            // Post-meeting notes
+  meetingNotes?: string; // Post-meeting notes
   actionItems?: string[];
 
   // Billing (optional)
   isBillable?: boolean;
-  hourlyRate?: number;              // In cents
+  hourlyRate?: number; // In cents
   currency?: Currency;
-  pricingRequestId?: string;        // Link to pricing offer
+  pricingRequestId?: string; // Link to pricing offer
 
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -417,14 +423,17 @@ export interface Consultation {
 }
 
 // Consultation type configuration for UI
-export const CONSULTATION_TYPE_CONFIG: Record<ConsultationType, {
-  label: string;
-  labelHe: string;
-  color: string;
-  bgColor: string;
-  icon: string;
-  googleCalendarColorId?: string;
-}> = {
+export const CONSULTATION_TYPE_CONFIG: Record<
+  ConsultationType,
+  {
+    label: string;
+    labelHe: string;
+    color: string;
+    bgColor: string;
+    icon: string;
+    googleCalendarColorId?: string;
+  }
+> = {
   onboarding: {
     label: 'Onboarding Call',
     labelHe: 'שיחת הכרות',
@@ -460,12 +469,15 @@ export const CONSULTATION_TYPE_CONFIG: Record<ConsultationType, {
 };
 
 // Consultation status configuration for UI
-export const CONSULTATION_STATUS_CONFIG: Record<ConsultationStatus, {
-  label: string;
-  labelHe: string;
-  color: string;
-  bgColor: string;
-}> = {
+export const CONSULTATION_STATUS_CONFIG: Record<
+  ConsultationStatus,
+  {
+    label: string;
+    labelHe: string;
+    color: string;
+    bgColor: string;
+  }
+> = {
   scheduled: {
     label: 'Scheduled',
     labelHe: 'מתוכנן',
@@ -491,7 +503,6 @@ export const CONSULTATION_STATUS_CONFIG: Record<ConsultationStatus, {
     bgColor: 'bg-red-100 dark:bg-red-500/20',
   },
 };
-
 
 // ============================================
 // FORM DATA TYPES
@@ -688,3 +699,87 @@ export const CLIENT_STATUS_CONFIG: Record<ClientStatus, StatusConfig> = {
   },
 };
 
+// ============================================
+// SALES & REVENUE ANALYTICS TYPES
+// ============================================
+
+/**
+ * Revenue data for a single client organization
+ */
+export interface ClientRevenueData {
+  orgId: string;
+  orgName: string;
+  totalRevenue: number; // Total paid amount in cents
+  pendingRevenue: number; // Accepted but not paid yet
+  proposalCount: number; // Total pricing requests created
+  paidCount: number; // Number of paid pricing requests
+  conversionRate: number; // % of proposals that got paid
+  lastPaymentAt?: Timestamp;
+  firstPaymentAt?: Timestamp;
+  currency: Currency;
+}
+
+/**
+ * Aggregated sales performance metrics
+ */
+export interface SalesMetrics {
+  // Revenue metrics
+  totalRevenue: number; // All-time revenue in cents
+  revenueThisMonth: number; // Current month
+  revenueLastMonth: number; // Previous month
+  revenueGrowth: number; // % change month-over-month
+  pendingRevenue: number; // Accepted proposals awaiting payment
+
+  // Client metrics
+  totalClients: number; // Total client organizations
+  activeClients: number; // Clients with activity in last 30 days
+  newClientsThisMonth: number; // New clients this month
+
+  // Proposal/Deal metrics
+  totalProposals: number; // All pricing requests
+  proposalsThisMonth: number;
+  acceptedProposals: number; // Accepted
+  paidProposals: number; // Paid
+  declinedProposals: number;
+  conversionRate: number; // % proposals that become paid
+
+  // Performance indicators
+  avgDealSize: number; // Average paid proposal value
+  avgTimeToClose: number; // Days from sent to paid
+
+  // Currency for display
+  primaryCurrency: Currency;
+}
+
+/**
+ * Time-series data point for charts
+ */
+export interface RevenueDataPoint {
+  date: string; // ISO date string
+  revenue: number; // Revenue in cents
+  count: number; // Number of deals
+}
+
+/**
+ * Monthly revenue breakdown
+ */
+export interface MonthlyRevenue {
+  month: string; // 'YYYY-MM' format
+  revenue: number;
+  proposalsSent: number;
+  proposalsPaid: number;
+  newClients: number;
+}
+
+/**
+ * Top performing client for leaderboard
+ */
+export interface TopClient {
+  orgId: string;
+  orgName: string;
+  totalRevenue: number;
+  dealCount: number;
+  avgDealSize: number;
+  trend: 'up' | 'down' | 'stable';
+  currency: Currency;
+}

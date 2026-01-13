@@ -454,6 +454,12 @@
     "readTime": "5 min read",
     "posts": [
       {
+        "title": "Why Your E-Commerce Store Isn't Converting (And How to Find Out)",
+        "excerpt": "Traffic but no sales? Discover the 12 hidden conversion killers that could be costing you thousands, and learn how to diagnose exactly what's wrong with your store.",
+        "href": "/blog/why-your-store-isnt-converting",
+        "date": "2025-01-13"
+      },
+      {
         "title": "E-commerce Conversion Rate Optimization: 20 Proven Strategies That Work",
         "excerpt": "Discover 20 proven strategies to increase your e-commerce conversion rate. Learn how to turn more visitors into customers and boost your revenue.",
         "href": "/blog/ecommerce-conversion-rate-optimization",
@@ -470,12 +476,6 @@
         "excerpt": "Slow sites bleed revenue. Here are the practical fixes we use to cut load times and lift conversions.",
         "href": "/blog/speed-up-shopify-store",
         "date": "2024-12-01"
-      },
-      {
-        "title": "Shopify vs. WordPress: The Real Tradeoffs",
-        "excerpt": "Two great platforms, different jobs. We'll help you choose based on goals, budget, and how you plan to grow.",
-        "href": "/blog/shopify-vs-woocommerce",
-        "date": "2024-11-15"
       }
     ]
   },
@@ -911,11 +911,11 @@
         "rating": 5
       },
       {
-        "quote": "They don't just ship a site. They stick around, iterate, and help us grow month after month. Our online reservations doubled within 90 days of the new website launch.",
-        "author": "Emily Rodriguez",
-        "company": "Terra Kitchen Group",
-        "role": "Operations Director",
-        "industry": "Food & Beverage",
+        "quote": "The new design perfectly captures the essence of our community. It's not just a website; it's a home for Israelis in London.",
+        "author": "Carmel Faraggi",
+        "company": "Alondon",
+        "role": "Editorial Board",
+        "industry": "Digital Publishing",
         "rating": 5
       },
       {

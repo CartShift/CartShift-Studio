@@ -14,6 +14,7 @@ import {
   Plus,
   X,
   ChevronRight,
+  Calculator,
 } from 'lucide-react';
 import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
@@ -102,7 +103,8 @@ export default function AgencyPricingClient() {
       console.error('Failed to subscribe to pricing requests:', err);
       setError(t('portal.common.error'));
       setLoading(false);
-      return undefined;
+      // Return void explicitly for catch block
+      return;
     }
   }, [t]);
 
@@ -126,7 +128,7 @@ export default function AgencyPricingClient() {
     const orgName = organizations[req.orgId]?.name || '';
     const matchesSearch =
       req.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      req.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (req.id?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
       orgName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
@@ -176,14 +178,23 @@ export default function AgencyPricingClient() {
             {t('portal.pricing.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.agency.pricing.subtitle' as never) ||
+            {t('portal.agency.pricing.subtitle') ||
               'Manage pricing offers across all clients'}
           </p>
         </div>
-        <PortalButton onClick={() => setShowNewOfferModal(true)}>
-          <Plus size={18} className="me-2" />
-          {t('portal.pricing.newOffer')}
-        </PortalButton>
+        <div className="flex gap-2">
+          <PortalButton
+            variant="outline"
+            onClick={() => router.push(getPortalPath('/agency/calculator/'))}
+          >
+            <Calculator size={18} className="me-2" />
+            {t('portal.pricing.calculator')}
+          </PortalButton>
+          <PortalButton onClick={() => setShowNewOfferModal(true)}>
+            <Plus size={18} className="me-2" />
+            {t('portal.pricing.newOffer')}
+          </PortalButton>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -195,7 +206,7 @@ export default function AgencyPricingClient() {
             </div>
             <div>
               <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest">
-                {t('portal.common.total' as never)}
+                {t('portal.common.total')}
               </p>
               <p className="text-2xl font-black text-blue-700 dark:text-blue-400">
                 {statsData.total}
@@ -290,7 +301,7 @@ export default function AgencyPricingClient() {
               >
                 {filter === 'All'
                   ? t('portal.common.all')
-                  : t(`portal.pricing.status.${filter.toLowerCase()}` as never)}
+                  : t(`portal.pricing.status.${filter.toLowerCase()}`)}
               </button>
             ))}
           </div>
@@ -376,7 +387,7 @@ export default function AgencyPricingClient() {
                             PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
                           )}
                         >
-                          {t(`portal.pricing.status.${req.status.toLowerCase()}` as never)}
+                          {t(`portal.pricing.status.${req.status.toLowerCase()}`)}
                         </PortalBadge>
                       </div>
                     </td>
@@ -498,10 +509,10 @@ export default function AgencyPricingClient() {
             <div className="p-6 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('pricing.selectClient')}
+                  {t('portal.pricing.selectClient')}
                 </h2>
                 <p className="text-sm text-surface-500 mt-1">
-                  {t('pricing.selectClientDesc')}
+                  {t('portal.pricing.selectClientDesc')}
                 </p>
               </div>
               <button

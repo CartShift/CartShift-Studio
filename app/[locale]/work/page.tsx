@@ -17,7 +17,6 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
   const caseStudies = getAllCaseStudies(locale);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray, FieldArrayWithId } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,11 +8,10 @@ import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
 import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
 import { createPricingRequest, sendPricingRequest } from '@/lib/services/pricing-requests';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
+import { useOrg } from '@/lib/context/OrgContext';
 import {
   AlertCircle,
   CheckCircle2,
@@ -22,9 +21,12 @@ import {
   Save,
   Loader2,
   CalendarIcon,
-  FileText,
-  Check,
 } from 'lucide-react';
+import {
+  RequestPricingCalculator,
+  LineItemOutput,
+} from '@/components/portal/pricing/RequestPricingCalculator';
+import { EmbeddedCalculator } from '@/components/portal/pricing/EmbeddedCalculator';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import {
@@ -43,6 +45,7 @@ interface LineItemInput {
   quantity: number;
   unitPrice: number;
   notes?: string;
+  requestId?: string; // Link to a request if generated from calculator
 }
 
 interface PricingFormData {
@@ -57,7 +60,7 @@ interface PricingFormData {
 }
 
 export default function CreatePricingForm() {
-  const orgId = useResolvedOrgId();
+  const { orgId, loading: orgLoading } = useOrg();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userData } = usePortalAuth();
@@ -71,11 +74,24 @@ export default function CreatePricingForm() {
   const [availableRequests, setAvailableRequests] = useState<Request[]>([]);
   const [selectedRequestIds, setSelectedRequestIds] = useState<string[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
+  const [requestsError, setRequestsError] = useState<string | null>(null);
+
+  // Track if line items are from calculator (to sync)
+  const [lineItemsFromCalculator, setLineItemsFromCalculator] = useState(false);
+
+  // Quick add request modal state
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
 
   // Fetch requests that can be included in pricing offers
   useEffect(() => {
     async function fetchRequests() {
-      if (!orgId || typeof orgId !== 'string') return;
+      if (!orgId || typeof orgId !== 'string') {
+        setLoadingRequests(false);
+        return;
+      }
+
+      setLoadingRequests(true);
+      setRequestsError(null);
 
       try {
         const requests = await getRequestsByOrg(orgId);
@@ -95,12 +111,14 @@ export default function CreatePricingForm() {
         setAvailableRequests(eligible);
       } catch (error) {
         console.error('Failed to fetch requests:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load requests';
+        setRequestsError(errorMessage);
+        setAvailableRequests([]);
       } finally {
         setLoadingRequests(false);
       }
     }
 
-    fetchRequests();
     fetchRequests();
   }, [orgId]);
 
@@ -117,12 +135,6 @@ export default function CreatePricingForm() {
       }
     }
   }, [searchParams, loadingRequests, availableRequests]);
-
-  const toggleRequestSelection = (requestId: string) => {
-    setSelectedRequestIds(prev =>
-      prev.includes(requestId) ? prev.filter(id => id !== requestId) : [...prev, requestId]
-    );
-  };
 
   const pricingSchema = useMemo(
     () =>
@@ -156,6 +168,7 @@ export default function CreatePricingForm() {
     handleSubmit,
     control,
     watch,
+    reset,
     formState: { errors },
   } = useForm<PricingFormData>({
     resolver: zodResolver(pricingSchema),
@@ -170,6 +183,45 @@ export default function CreatePricingForm() {
     },
   });
 
+  // Load calculator data from session storage
+  useEffect(() => {
+    const storedItems = sessionStorage.getItem('calculatorLineItems');
+    if (storedItems) {
+      try {
+        const items = JSON.parse(storedItems);
+        if (Array.isArray(items) && items.length > 0) {
+          // Convert from cents to base unit for the form
+          const formItems = items.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice / 100,
+            notes: '',
+          }));
+
+          const firstItem = formItems[0];
+
+          // Use reset to update the whole form
+          const currentValues = watch();
+          // Title can be more descriptive if multiple items
+          const suggestedTitle =
+            formItems.length === 1 ? firstItem.description : t('portal.pricing.calculatorTitle');
+
+          // Preserve other values but update line items
+          reset({
+            ...currentValues,
+            title: suggestedTitle,
+            lineItems: formItems,
+          });
+
+          // Clear storage so it doesn't persist
+          sessionStorage.removeItem('calculatorLineItems');
+        }
+      } catch (e) {
+        console.error('Failed to parse calculator items:', e);
+      }
+    }
+  }, [watch, reset, t]);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'lineItems',
@@ -177,6 +229,45 @@ export default function CreatePricingForm() {
 
   const watchedLineItems = watch('lineItems');
   const watchedCurrency = watch('currency');
+
+  // Handle line items generated from calculator
+  const handleCalculatorLineItems = useCallback(
+    (items: LineItemOutput[]) => {
+      if (items.length > 0) {
+        // Replace all line items with calculator-generated ones
+        const newLineItems = items.map(item => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          notes: item.notes,
+          requestId: item.requestId,
+        }));
+
+        // Get current form values and update
+        const currentValues = watch();
+        reset({
+          ...currentValues,
+          lineItems: newLineItems,
+          // Auto-generate title from first request if not set
+          title:
+            currentValues.title ||
+            (items.length === 1
+              ? items[0].description.split(' (')[0]
+              : t('portal.pricing.calculatorTitle')),
+        });
+        setLineItemsFromCalculator(true);
+      } else if (lineItemsFromCalculator) {
+        // If no items from calculator and we were tracking, reset to empty
+        const currentValues = watch();
+        reset({
+          ...currentValues,
+          lineItems: [{ description: '', quantity: 1, unitPrice: 0 }],
+        });
+        setLineItemsFromCalculator(false);
+      }
+    },
+    [watch, reset, t, lineItemsFromCalculator]
+  );
 
   const totalAmount = useMemo(() => {
     const items: PricingLineItem[] = (watchedLineItems || []).map(
@@ -211,17 +302,22 @@ export default function CreatePricingForm() {
         notes: item.notes,
       }));
 
-      const request = await createPricingRequest(orgId, userData.id, userData.name || t('portal.common.unknown'), {
-        title: data.title,
-        description: data.description,
-        lineItems,
-        currency: data.currency,
-        validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
-        clientName: data.clientName,
-        clientEmail: data.clientEmail,
-        agencyNotes: data.agencyNotes,
-        requestIds: selectedRequestIds.length > 0 ? selectedRequestIds : undefined,
-      });
+      const request = await createPricingRequest(
+        orgId,
+        userData.id,
+        userData.name || t('portal.common.unknown'),
+        {
+          title: data.title,
+          description: data.description,
+          lineItems,
+          currency: data.currency,
+          validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
+          clientName: data.clientName,
+          clientEmail: data.clientEmail,
+          agencyNotes: data.agencyNotes,
+          requestIds: selectedRequestIds.length > 0 ? selectedRequestIds : undefined,
+        }
+      );
 
       // If sending, update status to SENT
       if (shouldSend) {
@@ -242,6 +338,16 @@ export default function CreatePricingForm() {
       setIsSending(false);
     }
   };
+
+  if (orgLoading) {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   if (submitStatus === 'success') {
     return (
@@ -271,7 +377,7 @@ export default function CreatePricingForm() {
             {t('portal.pricing.newOffer')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            Create a new pricing proposal for your client.
+            {t('portal.pricing.form.createNewDescription' as never) || 'Create a new pricing proposal for your client.'}
           </p>
         </div>
       </div>
@@ -281,7 +387,7 @@ export default function CreatePricingForm() {
         <div className="lg:col-span-2 space-y-6">
           <PortalCard className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              Offer Details
+              {t('portal.pricing.form.offerDetails' as never) || 'Offer Details'}
             </h3>
 
             <div className="space-y-4">
@@ -322,113 +428,76 @@ export default function CreatePricingForm() {
             </div>
           </PortalCard>
 
-          {/* Request Selection */}
-          <PortalCard className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('portal.pricing.form.selectRequests')}
-                </h3>
-                <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
-                  {t('portal.pricing.form.selectRequestsDescription' as never) ||
-                    'Choose requests to include in this pricing offer'}
-                </p>
+          {/* Request Selection & Pricing Calculator */}
+          <RequestPricingCalculator
+            availableRequests={availableRequests}
+            selectedRequestIds={selectedRequestIds}
+            onSelectionChange={setSelectedRequestIds}
+            onLineItemsChange={handleCalculatorLineItems}
+            currency={watchedCurrency}
+            isLoading={loadingRequests}
+            error={requestsError}
+            onQuickAddRequest={() => router.push(getPortalPath('/requests/new'))}
+          />
+
+          {/* Manual Line Items - For additional items or when no requests selected */}
+          {(!lineItemsFromCalculator || selectedRequestIds.length === 0) && (
+            <>
+              {/* Embedded Calculator for manual items */}
+              <EmbeddedCalculator
+                onAddItem={item => {
+                  append({
+                    description: item.description,
+                    quantity: item.quantity,
+                    unitPrice: item.unitPrice,
+                  });
+                  setLineItemsFromCalculator(false);
+                }}
+                currency={watchedCurrency}
+                defaultExpanded={
+                  selectedRequestIds.length === 0 &&
+                  fields.length <= 1 &&
+                  !watchedLineItems?.[0]?.description
+                }
+              />
+            </>
+          )}
+
+          {/* Line Items (Editable) */}
+          <PortalCard padding="none">
+            <div className="p-6 pb-0">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
+                    {t('portal.pricing.form.lineItems')}
+                  </h3>
+                  {lineItemsFromCalculator && selectedRequestIds.length > 0 && (
+                    <p className="text-xs text-surface-500 mt-1">
+                      {t('portal.pricing.form.lineItemsFromCalculator' as never) ||
+                        'Generated from selected requests - edit as needed'}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    append({ description: '', quantity: 1, unitPrice: 0 });
+                    setLineItemsFromCalculator(false);
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                >
+                  <Plus size={16} />
+                  {t('portal.pricing.form.addItem')}
+                </button>
               </div>
-              {selectedRequestIds.length > 0 && (
-                <PortalBadge variant="blue">
-                  {selectedRequestIds.length}{' '}
-                  {t('portal.pricing.form.selected')}
-                </PortalBadge>
-              )}
             </div>
 
-            {loadingRequests ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-              </div>
-            ) : availableRequests.length === 0 ? (
-              <div className="text-center py-8 text-surface-500 dark:text-surface-400">
-                <FileText className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p className="font-medium">
-                  {t('portal.pricing.form.noRequestsAvailable')}
-                </p>
-                <p className="text-sm mt-1">
-                  {t('portal.pricing.form.allRequestsInOffers' as never) ||
-                    'All requests are already in pricing offers or paid'}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {availableRequests.map(request => {
-                  const isSelected = selectedRequestIds.includes(request.id);
-                  return (
-                    <button
-                      key={request.id}
-                      type="button"
-                      onClick={() => toggleRequestSelection(request.id)}
-                      className={cn(
-                        'w-full text-start p-4 rounded-xl border-2 transition-all duration-200',
-                        isSelected
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-surface-900 dark:text-white truncate">
-                              {request.title}
-                            </h4>
-                            <PortalBadge variant="gray" className="text-xs">
-                              {request.type}
-                            </PortalBadge>
-                          </div>
-                          {request.description && (
-                            <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 line-clamp-2">
-                              {request.description}
-                            </p>
-                          )}
-                        </div>
-                        <div
-                          className={cn(
-                            'flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center transition-all',
-                            isSelected
-                              ? 'bg-blue-500 text-white'
-                              : 'border-2 border-surface-300 dark:border-surface-600'
-                          )}
-                        >
-                          {isSelected && <Check size={14} />}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </PortalCard>
-
-          {/* Line Items */}
-          <PortalCard className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.form.lineItems')}
-              </h3>
-              <button
-                type="button"
-                onClick={() => append({ description: '', quantity: 1, unitPrice: 0 })}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
-              >
-                <Plus size={16} />
-                {t('portal.pricing.form.addItem')}
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* Header */}
-              <div className="grid grid-cols-12 gap-3 px-1 text-xs font-black text-surface-400 uppercase tracking-wider">
-                <div className="col-span-5">{t('portal.pricing.form.itemDescription')}</div>
+            <div className="px-6 space-y-3">
+              {/* Header - Hidden on mobile, visible on larger screens */}
+              <div className="hidden sm:grid grid-cols-12 gap-3 px-1 text-xs font-black text-surface-400 uppercase tracking-wider">
+                <div className="col-span-5 md:col-span-6">{t('portal.pricing.form.itemDescription')}</div>
                 <div className="col-span-2 text-center">{t('portal.pricing.form.quantity')}</div>
-                <div className="col-span-3">{t('portal.pricing.form.unitPrice')}</div>
+                <div className="col-span-3 md:col-span-2">{t('portal.pricing.form.unitPrice')}</div>
                 <div className="col-span-2"></div>
               </div>
 
@@ -436,56 +505,71 @@ export default function CreatePricingForm() {
                 (field: FieldArrayWithId<PricingFormData, 'lineItems', 'id'>, index: number) => (
                   <div
                     key={field.id}
-                    className="grid grid-cols-12 gap-3 items-start p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl"
+                    className="flex flex-col sm:grid sm:grid-cols-12 gap-3 items-start p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl"
                   >
-                    <div className="col-span-5">
+                    {/* Description - Full width on mobile */}
+                    <div className="w-full sm:col-span-5 md:col-span-6">
+                      <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
+                        {t('portal.pricing.form.itemDescription')}
+                      </label>
                       <input
                         {...register(`lineItems.${index}.description`)}
                         type="text"
-                        placeholder="Service or product..."
+                        placeholder={t('portal.pricing.form.itemDescriptionPlaceholder' as never) || 'Service or product...'}
                         className={cn(
                           'portal-input w-full text-sm',
                           errors.lineItems?.[index]?.description && 'border-red-500'
                         )}
                       />
                     </div>
-                    <div className="col-span-2">
-                      <input
-                        {...register(`lineItems.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
-                        type="number"
-                        min={1}
-                        className="portal-input w-full text-sm text-center"
-                      />
-                    </div>
-                    <div className="col-span-3">
-                      <div className="relative">
-                        <span className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm">
-                          {CURRENCY_CONFIG[watchedCurrency]?.symbol || '$'}
-                        </span>
+                    {/* Quantity and Price row on mobile */}
+                    <div className="flex gap-3 w-full sm:contents">
+                      <div className="flex-1 sm:col-span-2">
+                        <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
+                          {t('portal.pricing.form.quantity')}
+                        </label>
                         <input
-                          {...register(`lineItems.${index}.unitPrice`, {
+                          {...register(`lineItems.${index}.quantity`, {
                             valueAsNumber: true,
                           })}
                           type="number"
-                          min={0}
-                          step={0.01}
-                          className="portal-input w-full text-sm ps-7"
-                          placeholder="0.00"
+                          min={1}
+                          className="portal-input w-full text-sm text-center"
                         />
                       </div>
-                    </div>
-                    <div className="col-span-2 flex justify-end">
-                      {fields.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => remove(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      )}
+                      <div className="flex-1 sm:col-span-3 md:col-span-2">
+                        <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
+                          {t('portal.pricing.form.unitPrice')}
+                        </label>
+                        <div className="relative">
+                          <span className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm">
+                            {CURRENCY_CONFIG[watchedCurrency]?.symbol || '$'}
+                          </span>
+                          <input
+                            {...register(`lineItems.${index}.unitPrice`, {
+                              valueAsNumber: true,
+                            })}
+                            type="number"
+                            min={0}
+                            step={0.01}
+                            className="portal-input w-full text-sm ps-7"
+                            placeholder="0.00"
+                          />
+                        </div>
+                      </div>
+                      {/* Delete button */}
+                      <div className="sm:col-span-2 flex items-end sm:items-start justify-end">
+                        {fields.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => remove(index)}
+                            aria-label={t('portal.common.delete')}
+                            className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )
@@ -502,7 +586,7 @@ export default function CreatePricingForm() {
             </div>
 
             {/* Total */}
-            <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 flex items-center justify-between">
+            <div className="mx-6 mt-6 pt-6 pb-6 border-t border-surface-200 dark:border-surface-800 flex items-center justify-between">
               <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
                 {t('portal.pricing.form.total')}
               </span>
@@ -518,7 +602,7 @@ export default function CreatePricingForm() {
           {/* Currency & Validity */}
           <PortalCard className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              Settings
+              {t('portal.pricing.form.settings' as never) || 'Settings'}
             </h3>
 
             <div className="space-y-4">
@@ -557,7 +641,7 @@ export default function CreatePricingForm() {
           {/* Client Info */}
           <PortalCard className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              Client Info
+              {t('portal.pricing.form.clientInfo' as never) || 'Client Info'}
             </h3>
 
             <div className="space-y-4">

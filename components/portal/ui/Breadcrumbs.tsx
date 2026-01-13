@@ -12,25 +12,23 @@ import { getRequest } from '@/lib/services/portal-requests';
 import { getPricingRequest } from '@/lib/services/pricing-requests';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
-const breadcrumbItemVariants = cva(
-  "truncate max-w-[200px] transition-colors",
-  {
-    variants: {
-      active: {
-        true: "font-semibold text-surface-900 dark:text-white",
-        false: "text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 hover:underline underline-offset-4 decoration-2 decoration-surface-300 dark:decoration-surface-700 max-w-[150px]",
-      },
-      truncated: {
-        true: "text-surface-400 px-1",
-        false: "",
-      },
+const breadcrumbItemVariants = cva('truncate max-w-[200px] transition-colors', {
+  variants: {
+    active: {
+      true: 'font-semibold text-surface-900 dark:text-white',
+      false:
+        'text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 hover:underline underline-offset-4 decoration-2 decoration-surface-300 dark:decoration-surface-700 max-w-[150px]',
     },
-    defaultVariants: {
-      active: false,
-      truncated: false,
+    truncated: {
+      true: 'text-surface-400 px-1',
+      false: '',
     },
-  }
-);
+  },
+  defaultVariants: {
+    active: false,
+    truncated: false,
+  },
+});
 
 interface BreadcrumbsProps {
   className?: string;
@@ -45,11 +43,7 @@ interface BreadcrumbItem {
   isLast: boolean;
 }
 
-export function Breadcrumbs({
-  className,
-  customLabels = {},
-  maxItems = 4,
-}: BreadcrumbsProps) {
+export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: BreadcrumbsProps) {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations();
@@ -111,7 +105,7 @@ export function Breadcrumbs({
       try {
         const pricing = await getPricingRequest(pricingId!);
         if (!cancelled && pricing?.title) {
-          setDynamicLabels((prev) => ({ ...prev, [pricingId!]: pricing.title }));
+          setDynamicLabels(prev => ({ ...prev, [pricingId!]: pricing.title }));
         }
       } catch (error) {
         console.error('[Breadcrumbs] Error fetching pricing offer title:', error);
@@ -153,6 +147,8 @@ export function Breadcrumbs({
       workboard: t('portal.breadcrumbs.workboard'),
       clients: t('portal.breadcrumbs.clients'),
       new: t('portal.breadcrumbs.new'),
+      calculator: t('portal.breadcrumbs.calculator'),
+      sales: t('portal.breadcrumbs.sales'),
       ...customLabels,
     };
 
@@ -205,8 +201,6 @@ export function Breadcrumbs({
       aria-label="Breadcrumb"
       className={cn('flex items-center gap-1.5 text-sm overflow-x-auto scrollbar-hide', className)}
     >
-
-
       {breadcrumbs.map((item, index) => (
         <div key={index} className="flex items-center gap-1.5 flex-shrink-0">
           {index > 0 && (
@@ -221,17 +215,11 @@ export function Breadcrumbs({
           {item.label === '...' ? (
             <span className={breadcrumbItemVariants({ truncated: true })}>...</span>
           ) : item.isLast ? (
-            <span
-              className={breadcrumbItemVariants({ active: true })}
-              aria-current="page"
-            >
+            <span className={breadcrumbItemVariants({ active: true })} aria-current="page">
               {item.label}
             </span>
           ) : (
-            <Link
-              href={item.href}
-              className={breadcrumbItemVariants({ active: false })}
-            >
+            <Link href={item.href} className={breadcrumbItemVariants({ active: false })}>
               {item.label}
             </Link>
           )}

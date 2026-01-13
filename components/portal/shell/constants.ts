@@ -9,6 +9,7 @@ import {
   Calendar,
   Star,
   Settings,
+  TrendingUp,
 } from 'lucide-react';
 import { NavGroup } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -39,6 +40,11 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
           label: t('portal.sidebar.nav.workboard'),
           icon: Kanban,
           href: getPortalPath('/agency/workboard/'),
+        },
+        {
+          label: t('portal.sidebar.nav.sales'),
+          icon: TrendingUp,
+          href: getPortalPath('/agency/sales/'),
         },
       ],
     },

@@ -53,7 +53,7 @@ export default function PrivacyContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-surface-100 via-white to-white dark:from-surface-900 dark:via-surface-950 dark:to-surface-950 pt-24 pb-16 md:pt-32 md:pb-20">
+      <div className="relative overflow-hidden bg-gradient-to-b from-surface-100 via-white to-white dark:from-surface-900 dark:via-surface-950 dark:to-surface-950 pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-20">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-accent-500/5 to-purple-500/5 blur-3xl" />
           <div className="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-accent-500/5 to-emerald-500/5 blur-3xl" />
@@ -87,7 +87,9 @@ export default function PrivacyContent() {
           <div className="flex items-center gap-4 mt-6 pt-6 border-t border-surface-200/60 dark:border-surface-800">
             <div className="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-500">
               <Icon name="calendar" size={16} />
-              <span>{t('lastUpdated')}: {LAST_UPDATED}</span>
+              <span>
+                {t('lastUpdated')}: {LAST_UPDATED}
+              </span>
             </div>
           </div>
         </div>
@@ -103,40 +105,85 @@ export default function PrivacyContent() {
                 {t('toc')}
               </h3>
               <nav className="space-y-1">
-                <a href="#collect" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">1</span>
+                <a
+                  href="#collect"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    1
+                  </span>
                   <span className="truncate">{t('sections.collect.title')}</span>
                 </a>
-                <a href="#use" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">2</span>
+                <a
+                  href="#use"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    2
+                  </span>
                   <span className="truncate">{t('sections.use.title')}</span>
                 </a>
-                <a href="#sharing" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">3</span>
+                <a
+                  href="#sharing"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    3
+                  </span>
                   <span className="truncate">{t('sections.sharing.title')}</span>
                 </a>
-                <a href="#cookies" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">4</span>
+                <a
+                  href="#cookies"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    4
+                  </span>
                   <span className="truncate">{t('sections.cookies.title')}</span>
                 </a>
-                <a href="#security" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">5</span>
+                <a
+                  href="#security"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    5
+                  </span>
                   <span className="truncate">{t('sections.security.title')}</span>
                 </a>
-                <a href="#rights" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">6</span>
+                <a
+                  href="#rights"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    6
+                  </span>
                   <span className="truncate">{t('sections.rights.title')}</span>
                 </a>
-                <a href="#thirdParty" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">7</span>
+                <a
+                  href="#thirdParty"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    7
+                  </span>
                   <span className="truncate">{t('sections.thirdParty.title')}</span>
                 </a>
-                <a href="#contact" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">8</span>
+                <a
+                  href="#contact"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    8
+                  </span>
                   <span className="truncate">{t('sections.contact.title')}</span>
                 </a>
-                <a href="#changes" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">9</span>
+                <a
+                  href="#changes"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    9
+                  </span>
                   <span className="truncate">{t('sections.changes.title')}</span>
                 </a>
               </nav>
@@ -181,7 +228,10 @@ export default function PrivacyContent() {
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.use.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success/10 dark:bg-success/20 flex items-center justify-center mt-0.5">
                       <Icon name="check" size={12} className="text-success" />
                     </span>
@@ -217,9 +267,16 @@ export default function PrivacyContent() {
               </p>
               <ul className="space-y-3 mb-4">
                 {(t.raw('sections.cookies.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-500/10 dark:bg-accent-500/20 flex items-center justify-center mt-0.5">
-                      <Icon name="check" size={12} className="text-accent-600 dark:text-accent-400" />
+                      <Icon
+                        name="check"
+                        size={12}
+                        className="text-accent-600 dark:text-accent-400"
+                      />
                     </span>
                     <span>{item}</span>
                   </li>
@@ -234,7 +291,11 @@ export default function PrivacyContent() {
             <Section id="security" number={5} title={t('sections.security.title')}>
               <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/60 dark:border-amber-500/20">
                 <div className="flex items-start gap-3">
-                  <Icon name="lock" size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <Icon
+                    name="lock"
+                    size={20}
+                    className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                  />
                   <p className="text-surface-700 dark:text-surface-300">
                     {t('sections.security.content')}
                   </p>
@@ -249,9 +310,16 @@ export default function PrivacyContent() {
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.rights.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center mt-0.5">
-                      <Icon name="check" size={12} className="text-purple-600 dark:text-purple-400" />
+                      <Icon
+                        name="check"
+                        size={12}
+                        className="text-purple-600 dark:text-purple-400"
+                      />
                     </span>
                     <span>{item}</span>
                   </li>
@@ -266,7 +334,10 @@ export default function PrivacyContent() {
               </p>
               <ul className="space-y-3 mb-4">
                 {(t.raw('sections.thirdParty.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center mt-0.5">
                       <Icon name="external-link" size={12} className="text-surface-500" />
                     </span>
@@ -288,7 +359,9 @@ export default function PrivacyContent() {
                 <div className="flex items-center gap-3">
                   <Icon name="mail" size={20} className="text-accent-600 dark:text-accent-400" />
                   <div>
-                    <span className="text-sm text-surface-500 dark:text-surface-500">{t('sections.contact.email')}:</span>
+                    <span className="text-sm text-surface-500 dark:text-surface-500">
+                      {t('sections.contact.email')}:
+                    </span>
                     <a
                       href="mailto:hello@cart-shift.com"
                       className="block text-accent-600 dark:text-accent-400 font-medium hover:underline"

@@ -33,7 +33,7 @@ export default function TermsContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-surface-100 via-white to-white dark:from-surface-900 dark:via-surface-950 dark:to-surface-950 pt-24 pb-16 md:pt-32 md:pb-20">
+      <div className="relative overflow-hidden bg-gradient-to-b from-surface-100 via-white to-white dark:from-surface-900 dark:via-surface-950 dark:to-surface-950 pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-20">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-1/2 -left-1/4 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-purple-500/5 to-accent-500/5 blur-3xl" />
           <div className="absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-purple-500/5 to-pink-500/5 blur-3xl" />

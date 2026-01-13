@@ -5,9 +5,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const cardVariants = cva(
-  "liquid-glass liquid-glass-intense liquid-glass-highlight rounded-2xl md:rounded-3xl p-6 md:p-8 relative overflow-hidden transition-all duration-300",
+  "liquid-glass liquid-glass-intense liquid-glass-highlight rounded-2xl md:rounded-3xl relative overflow-hidden transition-all duration-300",
   {
     variants: {
+      padding: {
+        none: "",
+        sm: "p-4",
+        default: "p-6 md:p-8",
+      },
       glow: {
         glow: "liquid-glass-glow",
         none: "",
@@ -24,6 +29,7 @@ const cardVariants = cva(
       },
     },
     defaultVariants: {
+      padding: "default",
       glow: "none",
       accent: false,
       hover: false,
@@ -41,11 +47,12 @@ export const Card: React.FC<CardProps> = ({
   hover,
   glow,
   accent,
+  padding,
   ...props
 }) => {
   return (
     <div
-      className={cn(cardVariants({ glow, accent, hover, className }))}
+      className={cn(cardVariants({ glow, accent, hover, padding, className }))}
       {...props}
     >
       {glow === 'glow' && (

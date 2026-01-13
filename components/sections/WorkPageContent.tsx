@@ -100,7 +100,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
                   <Link href={`/work/${caseStudy.slug}`}>
-                    <Card hover className="h-full group relative overflow-hidden p-0">
+                    <Card hover padding="none" className="h-full group relative overflow-hidden">
                       <div
                         className={`relative aspect-[4/3] overflow-hidden ${
                           platformType === 'shopify'

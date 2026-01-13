@@ -49,7 +49,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
-  const { userData, loading: authLoading, isAgency } = usePortalAuth();
+  const { loading: authLoading, isAgency } = usePortalAuth();
   const { requests, loading: requestsLoading, error: requestsError } = useRequests();
   const { pinnedIds } = usePinnedRequests(orgId as string);
   const { switchOrg } = useOrg();
@@ -59,7 +59,6 @@ export default function RequestsClient() {
   // Agency: fetch all organizations to display client names
   const {
     organizations: organizationsList,
-    loading: clientsLoading,
   } = useAgencyClients();
 
   // Build org lookup map for agency users

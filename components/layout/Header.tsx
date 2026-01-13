@@ -178,7 +178,7 @@ export const Header: React.FC = () => {
         'fixed top-0 start-0 end-0 z-50 transition-all duration-500',
         isAtTop
           ? 'bg-transparent border-transparent'
-          : 'bg-white/70 dark:bg-surface-950/70 backdrop-blur-xl border-b border-surface-200/50 dark:border-white/5 shadow-premium'
+          : 'bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl border-b border-surface-200/50 dark:border-white/5 shadow-premium'
       )}
     >
       {/* Top highlight line when scrolled */}

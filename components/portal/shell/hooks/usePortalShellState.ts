@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, startTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useLocale } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -162,9 +162,13 @@ export function usePortalShellState({
   // Mobile detection effect
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      // Use startTransition to ensure state updates happen after mount
+      startTransition(() => {
+        setIsMobile(window.innerWidth < 768);
+      });
     };
-    checkMobile();
+    // Defer initial check to ensure component is mounted
+    requestAnimationFrame(checkMobile);
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);

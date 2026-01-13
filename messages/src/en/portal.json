@@ -1,5 +1,14 @@
 {
   "portal": {
+    "sales": {
+      "metrics": {
+        "totalRevenue": "Total Revenue",
+        "pendingRevenue": "Pending Revenue",
+        "activeClients": "Active Clients",
+        "avgDealSize": "Avg. Deal Size",
+        "pending": "Pending"
+      }
+    },
     "quickActions": {
       "title": "Quick Actions",
       "subtitle": "Common tasks for you",
@@ -139,7 +148,13 @@
       "viewDetails": "View Details",
       "pin": "Pin",
       "unpin": "Unpin",
-      "search": "Search"
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "search": "Search",
+      "accessDenied": "Access Denied",
+      "goBack": "Go Back",
+      "hours": "hours",
+      "estimated": "Est."
     },
     "access": {
       "restrictedTitle": "Access Restricted",
@@ -344,6 +359,7 @@
         "titlePlaceholder": "Summarize your request in a few words...",
         "categoryLabel": "Work Category",
         "categorySelect": "Select category...",
+        "type": "Request Type",
         "priorityLabel": "Importance Level",
         "detailsLabel": "Execution Details",
         "detailsPlaceholder": "Help our specialists understand the objective. Include:\n• Desired outcome\n• Examples or references\n• Technical constraints",
@@ -362,6 +378,8 @@
           "descShort": "Please provide more details (at least 20 characters)",
           "typeRequired": "Please select a request type"
         },
+        "clientLabel": "Client",
+        "clientSelect": "Select client...",
         "failedToSubmit": "Failed to submit form",
         "failedToSave": "Failed to save settings"
       },
@@ -436,12 +454,12 @@
         "noAttachmentsDesc": "Files shared in discussion will appear here."
       },
       "types": {
-        "audit": "Strategic Audit",
-        "conversion": "Conversion Tweak",
-        "performance": "Performance Fix",
-        "feature": "New Store Feature",
-        "migration": "Platform Migration",
-        "general": "General Task"
+        "feature": "New Feature",
+        "bug": "Bug Fix",
+        "optimization": "Optimization",
+        "content": "Content",
+        "design": "Design",
+        "other": "Other"
       },
       "milestones": {
         "title": "Project Milestones",
@@ -897,6 +915,7 @@
       "signOut": "Sign Out",
       "nav": {
         "workboard": "Workboard",
+        "sales": "Sales Dashboard",
         "clients": "Clients",
         "settings": "Settings",
         "dashboard": "Dashboard",
@@ -952,7 +971,9 @@
       "agency": "Agency",
       "workboard": "Workboard",
       "clients": "Clients",
-      "new": "New"
+      "new": "New",
+      "calculator": "Calculator",
+      "sales": "Sales Dashboard"
     },
     "toast": {
       "dismiss": "Dismiss",
@@ -1066,6 +1087,7 @@
       "errors": {
         "sameOrgRequired": "Please select requests from the same client organization."
       },
+      "agencyOnly": "This feature is only available for agency administrators.",
       "pricing": {
         "subtitle": "Manage pricing offers across all client organizations.",
         "revenue": "Revenue"
@@ -1475,7 +1497,9 @@
         "titlePlaceholder": "e.g., Website Redesign Proposal",
         "descriptionLabel": "Description",
         "descriptionPlaceholder": "Describe what this offer includes...",
+        "createNewDescription": "Create a new pricing proposal for your client.",
         "lineItems": "Line Items",
+        "lineItemsFromCalculator": "Generated from selected requests - edit as needed",
         "addItem": "Add Item",
         "itemDescription": "Description",
         "quantity": "Qty",
@@ -1539,6 +1563,78 @@
         "pending": "Pending Review",
         "accepted": "Ready to Pay",
         "paid": "Completed"
+      },
+      "calculator": "Calculator",
+      "calculatorTitle": "Pricing Calculator",
+      "calculatorSubtitle": "Estimate pricing based on request type and effort",
+      "globalSettings": "Quote Settings",
+      "globalSettingsDesc": "Currency and modifiers apply to all items",
+      "globalModifiers": "Global Modifiers",
+      "selectAndPrice": "Select & Price Requests",
+      "selectAndPriceDesc": "Choose requests to include in your pricing offer",
+      "quickAddRequest": "Quick Add",
+      "applyToAll": "Apply to All",
+      "request": "Request",
+      "requests": "Requests",
+      "itemBuilder": "Add Item",
+      "itemBuilderDesc": "Configure and add items to your quote",
+      "itemPrice": "Item Price",
+      "customPrice": "Custom Price",
+      "overriddenPrice": "Custom Price",
+      "calculatedPrice": "Calculated",
+      "resetToCalculated": "Reset",
+      "effortLevel": "Effort Level",
+      "effort": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "complex": "Complex"
+      },
+      "modifiers": {
+        "title": "Modifiers",
+        "urgent": "Urgent Work",
+        "urgentDesc": "+50% surcharge",
+        "bundle": "Bundle Discount",
+        "bundleDesc": "-10% for 3+ items",
+        "recurring": "Recurring Client",
+        "recurringDesc": "-5% loyalty discount"
+      },
+      "result": {
+        "basePrice": "Base Price",
+        "adjustments": "Adjustments",
+        "estimatedTotal": "Estimated Total",
+        "breakdown": "View Breakdown"
+      },
+      "actions": {
+        "reset": "Reset",
+        "createOffer": "Create Pricing Offer",
+        "applyToForm": "Apply to Form",
+        "addToQuote": "Add to Quote",
+        "clearQuote": "Clear Quote"
+      },
+      "quote": {
+        "items": "Items in Quote",
+        "total": "Quote Total",
+        "empty": "No items added yet",
+        "remove": "Remove",
+        "currencyLocked": "Currency is locked to match current quote items",
+        "jobsCount": "{count, plural, =1 {1 Job} other {# Jobs}}",
+        "base": "base",
+        "totalHours": "total",
+        "reviewItems": "Review items before creating offer"
+      },
+      "tips": {
+        "title": "Quick Tips",
+        "tip1": "Use 'Complex' effort for multi-week projects",
+        "tip2": "Bundle discount applies when 3+ items are quoted together",
+        "tip3": "Recurring client discount builds long-term relationships"
+      },
+      "effortGuide": {
+        "title": "Effort Guide"
+      },
+      "valueProps": {
+        "title": "Why Price Right",
+        "description": "Accurate estimates build trust and reduce negotiation time. Use this calculator to align expectations early."
       }
     },
     "googleCalendar": {
@@ -1651,6 +1747,44 @@
       "statsCard": {
         "avgRating": "Average Client Rating",
         "joinCommunity": "Join our community of happy clients"
+      }
+    },
+    "sales": {
+      "metrics": {
+        "totalRevenue": "Total Revenue",
+        "thisMonth": "This Month",
+        "pendingRevenue": "Pending Revenue",
+        "pending": "Pending",
+        "activeClients": "Active Clients",
+        "total": "total",
+        "conversionRate": "Conversion Rate",
+        "proposals": "proposals",
+        "avgDealSize": "Avg Deal Size",
+        "avgCloseTime": "Avg Close Time",
+        "newClients": "New This Month",
+        "allTime": "All time"
+      },
+      "performance": {
+        "title": "Performance Overview",
+        "subtitle": "Key metrics to track your sales success"
+      },
+      "chart": {
+        "monthlyRevenue": "Monthly Revenue",
+        "last6Months": "Last 6 months trend"
+      },
+      "topClients": {
+        "title": "Top Clients",
+        "subtitle": "By total revenue",
+        "noData": "No revenue data yet"
+      },
+      "proposals": {
+        "title": "Proposal Analytics",
+        "subtitle": "Track your proposal pipeline",
+        "total": "Total",
+        "thisMonth": "This Month",
+        "accepted": "Accepted",
+        "paid": "Paid",
+        "declined": "Declined"
       }
     }
   }

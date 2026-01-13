@@ -43,7 +43,7 @@ export default function OAuthCallbackClient() {
         setStatus('success');
         // Redirect back to settings integrations tab after a short delay
         setTimeout(() => {
-          router.push(getPortalPath('/agency/settings?tab=integrations', locale));
+          router.push(getPortalPath('/agency/settings?tab=integrations'));
         }, 2000);
       } else {
         setStatus('error');
@@ -95,7 +95,7 @@ export default function OAuthCallbackClient() {
             </h1>
             <p className="text-surface-500 dark:text-surface-400 mb-4">{errorMessage}</p>
             <button
-              onClick={() => router.push(getPortalPath('/agency/settings', locale))}
+              onClick={() => router.push(getPortalPath('/agency/settings'))}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Back to Settings

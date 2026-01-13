@@ -168,7 +168,7 @@ export default function AgencyWorkboardClient() {
         await setDoc(userRef, {
           ...updateData,
           email: user.email,
-          name: user.displayName || t('portal.common.agencyAdmin' as any),
+          name: user.displayName || t('common.agencyAdmin'),
           createdAt: new Date(),
         });
       }
@@ -414,7 +414,7 @@ function RequestCard({
           }
           className="text-[9px] px-1.5 h-4 font-black uppercase tracking-tighter shrink-0"
         >
-          {t(`requests.priority.${(req.priority || 'NORMAL').toLowerCase()}` as any)}
+          {t(`requests.priority.${(req.priority || 'NORMAL').toLowerCase()}` as never)}
         </PortalBadge>
       </div>
 

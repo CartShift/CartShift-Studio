@@ -1,5 +1,14 @@
 {
   "portal": {
+    "sales": {
+      "metrics": {
+        "totalRevenue": "סה״כ הכנסות",
+        "pendingRevenue": "הכנסות בהמתנה",
+        "activeClients": "לקוחות פעילים",
+        "avgDealSize": "גודל עסקה ממוצע",
+        "pending": "בהמתנה"
+      }
+    },
     "quickActions": {
       "title": "פעולות מהירות",
       "subtitle": "משימות נפוצות עבורך",
@@ -139,7 +148,13 @@
       "viewDetails": "צפה בפרטים",
       "pin": "הצמד",
       "unpin": "בטל הצמדה",
-      "search": "חיפוש"
+      "expand": "הרחב",
+      "collapse": "כווץ",
+      "search": "חיפוש",
+      "accessDenied": "הגישה נדחתה",
+      "goBack": "חזרה",
+      "hours": "שעות",
+      "estimated": "משוער"
     },
     "access": {
       "restrictedTitle": "הגישה מוגבלת",
@@ -350,6 +365,7 @@
         "titlePlaceholder": "תמצו את הבקשה שלכם בכמה מילים...",
         "categoryLabel": "קטגוריית עבודה",
         "categorySelect": "בחרו קטגוריה...",
+        "type": "סוג בקשה",
         "priorityLabel": "רמת חשיבות",
         "detailsLabel": "פרטי ביצוע",
         "detailsPlaceholder": "עזרו למומחים שלנו להבין את היעד. כללו:\n• תוצאה רצויה\n• דוגמאות או רפרנסים\n• מגבלות טכניות",
@@ -367,7 +383,9 @@
           "titleLong": "הכותרת ארוכה מדי",
           "descShort": "אנא ספקו פרטים נוספים (לפחות 20 תווים)",
           "typeRequired": "אנא בחרו סוג בקשה"
-        }
+        },
+        "clientLabel": "לקוח",
+        "clientSelect": "בחר לקוח..."
       },
       "detail": {
         "loading": "פותח את הבקשה שלך...",
@@ -476,12 +494,12 @@
         "submit": "העלה קובץ"
       },
       "types": {
-        "audit": "ביקורת אסטרטגית",
-        "conversion": "שיפור המרה",
-        "performance": "תיקון ביצועים",
-        "feature": "פיצ׳ר חדש לחנות",
-        "migration": "מיגרציית פלטפורמה",
-        "general": "משימה כללית"
+        "feature": "פיצ׳ר חדש",
+        "bug": "תיקון באג",
+        "optimization": "אופטימיזציה",
+        "content": "תוכן",
+        "design": "עיצוב",
+        "other": "אחר"
       }
     },
     "loading": {
@@ -910,6 +928,7 @@
       "signOut": "התנתק",
       "nav": {
         "workboard": "לוח עבודה",
+        "sales": "לוח מכירות",
         "clients": "לקוחות",
         "settings": "הגדרות",
         "dashboard": "לוח בקרה",
@@ -965,7 +984,9 @@
       "agency": "סוכנות",
       "workboard": "לוח עבודה",
       "clients": "לקוחות",
-      "new": "חדש"
+      "new": "חדש",
+      "calculator": "מחשבון",
+      "sales": "לוח מכירות"
     },
     "toast": {
       "dismiss": "סגור",
@@ -1079,6 +1100,7 @@
       "errors": {
         "sameOrgRequired": "אנא בחרו בקשות מאותו ארגון לקוח."
       },
+      "agencyOnly": "פיצ׳ר זה זמין רק למנהלי סוכנות.",
       "pricing": {
         "subtitle": "ניהול הצעות מחיר בכל ארגוני הלקוחות.",
         "revenue": "הכנסות"
@@ -1463,6 +1485,8 @@
     "pricing": {
       "title": "הצעות מחיר",
       "subtitle": "צור ונהל הצעות מחיר ללקוחות.",
+      "selectClient": "בחר לקוח",
+      "selectClientDesc": "בחר לקוח כדי ליצור עבורו הצעת מחיר",
       "newOffer": "הצעה חדשה",
       "editOffer": "עריכת הצעת מחיר",
       "editOfferDescription": "עדכן את הצעת המחיר שלך.",
@@ -1485,7 +1509,9 @@
         "titlePlaceholder": "לדוגמה, הצעה לעיצוב מחדש של האתר",
         "descriptionLabel": "תיאור",
         "descriptionPlaceholder": "תאר מה כוללת הצעה זו...",
+        "createNewDescription": "צרו הצעת מחיר חדשה ללקוח שלכם.",
         "lineItems": "פריטים",
+        "lineItemsFromCalculator": "נוצר מבקשות נבחרות - ניתן לערוך לפי הצורך",
         "addItem": "הוסף פריט",
         "itemDescription": "תיאור",
         "quantity": "כמות",
@@ -1548,6 +1574,78 @@
         "pending": "ממתין לאישור",
         "accepted": "מוכן לתשלום",
         "paid": "הושלם"
+      },
+      "calculator": "מחשבון",
+      "calculatorTitle": "מחשבון תמחור",
+      "calculatorSubtitle": "הערכת מחיר לפי סוג בקשה ורמת מאמץ",
+      "globalSettings": "הגדרות הצעה",
+      "globalSettingsDesc": "מטבע ומודיפיירים חלים על כל הפריטים",
+      "globalModifiers": "מודיפיירים גלובליים",
+      "selectAndPrice": "בחר ותמחר בקשות",
+      "selectAndPriceDesc": "בחר בקשות לכלול בהצעת המחיר שלך",
+      "quickAddRequest": "הוסף מהיר",
+      "applyToAll": "החל על הכל",
+      "request": "בקשה",
+      "requests": "בקשות",
+      "itemBuilder": "הוסף פריט",
+      "itemBuilderDesc": "הגדר והוסף פריטים להצעה",
+      "itemPrice": "מחיר פריט",
+      "customPrice": "מחיר מותאם אישית",
+      "overriddenPrice": "מחיר מותאם",
+      "calculatedPrice": "מחושב",
+      "resetToCalculated": "איפוס",
+      "effortLevel": "רמת מאמץ",
+      "effort": {
+        "low": "נמוך",
+        "medium": "בינוני",
+        "high": "גבוה",
+        "complex": "מורכב"
+      },
+      "modifiers": {
+        "title": "מודיפיירים",
+        "urgent": "עבודה דחופה",
+        "urgentDesc": "תוספת 50%",
+        "bundle": "הנחת חבילה",
+        "bundleDesc": "הנחה 10% מ-3 פריטים",
+        "recurring": "לקוח חוזר",
+        "recurringDesc": "הנחת נאמנות 5%"
+      },
+      "result": {
+        "basePrice": "מחיר בסיס",
+        "adjustments": "התאמות",
+        "estimatedTotal": "סה״כ משוער",
+        "breakdown": "צפה בפירוט"
+      },
+      "actions": {
+        "reset": "אפס",
+        "createOffer": "צור הצעת מחיר",
+        "applyToForm": "החל על הטופס",
+        "addToQuote": "הוסף להצעה",
+        "clearQuote": "נקה הצעה"
+      },
+      "quote": {
+        "items": "פריטים בהצעה",
+        "total": "סה״כ הצעה",
+        "empty": "טרם נוספו פריטים",
+        "remove": "הסר",
+        "currencyLocked": "המטבע נעול כדי להתאים לפריטים הקיימים בהצעה",
+        "jobsCount": "{count, plural, =1 {עבודה אחת} other {# עבודות}}",
+        "base": "בסיס",
+        "totalHours": "סה\"כ",
+        "reviewItems": "סקור את הפריטים לפני יצירת הצעה"
+      },
+      "tips": {
+        "title": "טיפים מהירים",
+        "tip1": "השתמשו ב'מורכב' לפרויקטים של מספר שבועות",
+        "tip2": "הנחת חבילה חלה כאשר 3+ פריטים בהצעה",
+        "tip3": "הנחת לקוח חוזר בונה מערכות יחסים ארוכות טווח"
+      },
+      "effortGuide": {
+        "title": "מדריך רמות מאמץ"
+      },
+      "valueProps": {
+        "title": "למה לתמחר נכון",
+        "description": "הערכות מדויקות בונות אמון ומפחיתות את זמן המשא ומתן. השתמשו במחשבון זה ליישור ציפיות מוקדם."
       }
     },
     "googleCalendar": {
@@ -1660,6 +1758,44 @@
       "statsCard": {
         "avgRating": "דירוג ממוצע של לקוחות",
         "joinCommunity": "הצטרפו לקהילת הלקוחות המרוצים שלנו"
+      }
+    },
+    "sales": {
+      "metrics": {
+        "totalRevenue": "סה״כ הכנסות",
+        "thisMonth": "החודש",
+        "pendingRevenue": "הכנסות בהמתנה",
+        "pending": "ממתין",
+        "activeClients": "לקוחות פעילים",
+        "total": "סה״כ",
+        "conversionRate": "אחוז המרה",
+        "proposals": "הצעות",
+        "avgDealSize": "גודל עסקה ממוצע",
+        "avgCloseTime": "זמן סגירה ממוצע",
+        "newClients": "חדשים החודש",
+        "allTime": "כל הזמנים"
+      },
+      "performance": {
+        "title": "סקירת ביצועים",
+        "subtitle": "מדדי מפתח למעקב אחר הצלחת המכירות"
+      },
+      "chart": {
+        "monthlyRevenue": "הכנסות חודשיות",
+        "last6Months": "מגמת 6 החודשים האחרונים"
+      },
+      "topClients": {
+        "title": "לקוחות מובילים",
+        "subtitle": "לפי סה״כ הכנסות",
+        "noData": "אין נתוני הכנסות עדיין"
+      },
+      "proposals": {
+        "title": "ניתוח הצעות מחיר",
+        "subtitle": "מעקב אחר צנרת ההצעות",
+        "total": "סה״כ",
+        "thisMonth": "החודש",
+        "accepted": "התקבלו",
+        "paid": "שולמו",
+        "declined": "נדחו"
       }
     }
   }

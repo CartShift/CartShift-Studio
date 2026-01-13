@@ -48,8 +48,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       rating: 5,
     },
     {
-      author: 'Michael Chen',
-      text: 'They handled our migration flawlessly and made the store noticeably faster. Customers felt the difference immediately.',
+      author: 'Carmel Faraggi',
+      text: "The new design perfectly captures the essence of our community. It's not just a website; it's a home for Israelis in London.",
       rating: 5,
     },
     {
