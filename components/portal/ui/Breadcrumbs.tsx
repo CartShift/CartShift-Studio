@@ -2,33 +2,11 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { usePathname } from '@/i18n/navigation';
-import { Link } from '@/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { ChevronRight } from 'lucide-react';
-import { cva } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { isRTLLocale } from '@/lib/locale-config';
 import { getRequest } from '@/lib/services/portal-requests';
 import { getPricingRequest } from '@/lib/services/pricing-requests';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-
-const breadcrumbItemVariants = cva('truncate max-w-[200px] transition-colors', {
-  variants: {
-    active: {
-      true: 'font-semibold text-surface-900 dark:text-white',
-      false:
-        'text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 hover:underline underline-offset-4 decoration-2 decoration-surface-300 dark:decoration-surface-700 max-w-[150px]',
-    },
-    truncated: {
-      true: 'text-surface-400 px-1',
-      false: '',
-    },
-  },
-  defaultVariants: {
-    active: false,
-    truncated: false,
-  },
-});
+import { Breadcrumb, type BreadcrumbItem } from '@/components/ui/Breadcrumb';
 
 interface BreadcrumbsProps {
   className?: string;
@@ -37,17 +15,10 @@ interface BreadcrumbsProps {
   maxItems?: number;
 }
 
-interface BreadcrumbItem {
-  label: string;
-  href: string;
-  isLast: boolean;
-}
-
 export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: BreadcrumbsProps) {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations();
-  const isRTL = isRTLLocale(locale);
 
   // State for dynamically fetched labels (e.g., request title)
   const [dynamicLabels, setDynamicLabels] = useState<Record<string, string>>({});
@@ -164,8 +135,6 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
       // Skip org ID (looks like a random ID)
       if (segments[i - 1] === 'org' && segment.length > 10) continue;
 
-      const isLast = i === segments.length - 1;
-
       // Get label: dynamic (e.g., request title) > custom > translation > formatted segment
       let label = dynamicLabels[segment] || customLabels[segment] || segmentLabels[segment];
 
@@ -180,7 +149,6 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
       items.push({
         label,
         href: getPortalPath(currentPath),
-        isLast,
       });
     }
 
@@ -188,7 +156,7 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
     if (items.length > maxItems) {
       const first = items.slice(0, 1);
       const last = items.slice(-maxItems + 2);
-      return [...first, { label: '...', href: '', isLast: false }, ...last];
+      return [...first, { label: '...', href: '' }, ...last];
     }
 
     return items;
@@ -197,36 +165,6 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
   if (breadcrumbs.length === 0) return null;
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={cn('flex items-center gap-1.5 text-sm overflow-x-auto scrollbar-hide', className)}
-    >
-      {breadcrumbs.map((item, index) => (
-        <div key={index} className="flex items-center gap-1.5 flex-shrink-0">
-          {index > 0 && (
-            <ChevronRight
-              size={14}
-              className={cn(
-                'text-surface-300 dark:text-surface-700 flex-shrink-0',
-                isRTL && 'rotate-180'
-              )}
-            />
-          )}
-          {item.label === '...' ? (
-            <span className={breadcrumbItemVariants({ truncated: true })}>...</span>
-          ) : item.isLast ? (
-            <span className={breadcrumbItemVariants({ active: true })} aria-current="page">
-              {item.label}
-            </span>
-          ) : (
-            <Link href={item.href} className={breadcrumbItemVariants({ active: false })}>
-              {item.label}
-            </Link>
-          )}
-        </div>
-      ))}
-    </nav>
+    <Breadcrumb items={breadcrumbs} className={className} />
   );
 }
-
-export { breadcrumbItemVariants };

@@ -1759,44 +1759,6 @@
         "avgRating": "דירוג ממוצע של לקוחות",
         "joinCommunity": "הצטרפו לקהילת הלקוחות המרוצים שלנו"
       }
-    },
-    "sales": {
-      "metrics": {
-        "totalRevenue": "סה״כ הכנסות",
-        "thisMonth": "החודש",
-        "pendingRevenue": "הכנסות בהמתנה",
-        "pending": "ממתין",
-        "activeClients": "לקוחות פעילים",
-        "total": "סה״כ",
-        "conversionRate": "אחוז המרה",
-        "proposals": "הצעות",
-        "avgDealSize": "גודל עסקה ממוצע",
-        "avgCloseTime": "זמן סגירה ממוצע",
-        "newClients": "חדשים החודש",
-        "allTime": "כל הזמנים"
-      },
-      "performance": {
-        "title": "סקירת ביצועים",
-        "subtitle": "מדדי מפתח למעקב אחר הצלחת המכירות"
-      },
-      "chart": {
-        "monthlyRevenue": "הכנסות חודשיות",
-        "last6Months": "מגמת 6 החודשים האחרונים"
-      },
-      "topClients": {
-        "title": "לקוחות מובילים",
-        "subtitle": "לפי סה״כ הכנסות",
-        "noData": "אין נתוני הכנסות עדיין"
-      },
-      "proposals": {
-        "title": "ניתוח הצעות מחיר",
-        "subtitle": "מעקב אחר צנרת ההצעות",
-        "total": "סה״כ",
-        "thisMonth": "החודש",
-        "accepted": "התקבלו",
-        "paid": "שולמו",
-        "declined": "נדחו"
-      }
     }
   }
 }

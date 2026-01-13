@@ -15,7 +15,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
+import { getFirestoreDb, getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
 import { getPortalUser } from './portal-users';
 import {
@@ -138,6 +138,7 @@ export async function getUserOrganizations(userId: string): Promise<Organization
 }
 
 export async function getAllOrganizations(): Promise<Organization[]> {
+  await waitForAuth();
   const auth = getFirebaseAuth();
   const currentUser = auth.currentUser;
 

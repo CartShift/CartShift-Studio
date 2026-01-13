@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Calculator,
 } from 'lucide-react';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
 import { PortalCard } from '@/components/portal/ui/PortalCard';
 import { PortalButton } from '@/components/portal/ui/PortalButton';
@@ -57,7 +58,16 @@ export default function AgencyPricingClient() {
   const locale = useLocale();
   const router = useRouter();
   const { switchOrg } = useOrg();
-  const { isAuthenticated, loading: authLoading } = usePortalAuth();
+  const { isAuthenticated, loading: authLoading, user } = usePortalAuth();
+
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; requestId: string | null }>({
+    isOpen: false,
+    requestId: null,
+  });
+
+  // Type helper for translations
+  type PricingStatusKey = Lowercase<PricingStatus>;
 
   const filters = [
     'All',
@@ -69,7 +79,7 @@ export default function AgencyPricingClient() {
   ];
 
   useEffect(() => {
-    if (authLoading || !isAuthenticated) {
+    if (authLoading || !isAuthenticated || !user) {
       return;
     }
 
@@ -86,7 +96,7 @@ export default function AgencyPricingClient() {
       }
     }
     fetchOrganizations();
-  }, [authLoading, isAuthenticated]);
+  }, [authLoading, isAuthenticated, user]);
 
   useEffect(() => {
     setLoading(true);
@@ -114,12 +124,23 @@ export default function AgencyPricingClient() {
   }, [activeFilter, searchQuery]);
 
   const handleSend = async (requestId: string) => {
+    setConfirmModal({ isOpen: true, requestId });
+  };
+
+  const processSend = async () => {
+    const requestId = confirmModal.requestId;
+    if (!requestId) return;
+
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    setProcessingId(requestId);
+
     try {
-      if (!confirm('Send this pricing offer to the client?')) return;
       await sendPricingRequest(requestId);
     } catch (err) {
       console.error('Failed to send pricing request:', err);
-      alert('Failed to send. Please try again.');
+      // You might want to show a toast here instead of alert, but keeping logic simpler for now or rely on global error handler
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -301,7 +322,7 @@ export default function AgencyPricingClient() {
               >
                 {filter === 'All'
                   ? t('portal.common.all')
-                  : t(`portal.pricing.status.${filter.toLowerCase()}`)}
+                  : t(`portal.pricing.status.${filter.toLowerCase() as PricingStatusKey}`)}
               </button>
             ))}
           </div>
@@ -387,7 +408,7 @@ export default function AgencyPricingClient() {
                             PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
                           )}
                         >
-                          {t(`portal.pricing.status.${req.status.toLowerCase()}`)}
+                          {t(`portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}`)}
                         </PortalBadge>
                       </div>
                     </td>
@@ -576,6 +597,17 @@ export default function AgencyPricingClient() {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, requestId: null })}
+        onConfirm={processSend}
+        title={t('portal.pricing.form.sendConfirm')}
+        description={t('portal.pricing.form.sendConfirm')}
+        confirmText={t('portal.pricing.form.sendToClient')}
+        cancelText={t('portal.common.cancel')}
+        isLoading={!!processingId}
+      />
     </div>
   );
 }

@@ -4,19 +4,40 @@ import React from "react";
 import { Link } from '@/i18n/navigation';
 import { generateBreadcrumbSchema } from "@/lib/seo";
 import Script from "next/script";
+import { ChevronRight, Home } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 export interface BreadcrumbItem {
-  name: string;
-  url: string;
+  label: string;
+  href?: string;
 }
 
 interface BreadcrumbProps {
   items: BreadcrumbItem[];
   className?: string;
+  showHome?: boolean;
+  homeHref?: string;
 }
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = "" }) => {
-  const breadcrumbSchema = generateBreadcrumbSchema(items);
+// Helper for RTL
+const isRTLLocale = (locale: string) => locale === 'he' || locale === 'ar';
+
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({
+  items,
+  className = "",
+  showHome = false,
+  homeHref = "/"
+}) => {
+  // Map items to the schema format
+  const schemaItems = items.map(item => ({
+    name: item.label,
+    url: item.href || ''
+  }));
+
+  const breadcrumbSchema = generateBreadcrumbSchema(schemaItems);
+  const locale = useLocale();
+  const isRTL = isRTLLocale(locale);
 
   return (
     <>
@@ -27,47 +48,71 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = "" })
       />
       <nav
         aria-label="Breadcrumb"
-        className={`flex items-center gap-2 text-sm ${className}`}
+        className={cn("flex items-center text-sm", className)}
       >
-        <ol className="flex items-center gap-2" itemScope itemType="https://schema.org/BreadcrumbList">
-          {items.map((item, index) => (
-            <li
-              key={index}
-              itemProp="itemListElement"
-              itemScope
-              itemType="https://schema.org/ListItem"
-              className="flex items-center"
-            >
-              {index < items.length - 1 ? (
-                <>
-                  <Link
-                    href={item.url}
-                    itemProp="item"
-                    className="text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
-                  >
-                    <span itemProp="name">{item.name}</span>
-                  </Link>
-                  <meta itemProp="position" content={String(index + 1)} />
-                  <svg
-                    className="w-4 h-4 text-surface-400 dark:text-surface-500 rtl:rotate-180"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </>
-              ) : (
-                <span
-                  itemProp="name"
-                  className="text-surface-900 dark:text-white font-medium"
-                  aria-current="page"
-                >
-                  {item.name}
-                </span>
-              )}
+        <ol className="flex items-center gap-1.5 flex-wrap" itemScope itemType="https://schema.org/BreadcrumbList">
+          {showHome && (
+            <li className="flex items-center">
+              <Link
+                href={homeHref}
+                className="p-1 rounded-md text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                aria-label="Home"
+              >
+                <Home size={16} />
+              </Link>
             </li>
-          ))}
+          )}
+
+          {items.map((item, index) => {
+            const isLast = index === items.length - 1;
+            // Schema.org formatting
+            const position = index + 1 + (showHome ? 1 : 0);
+
+            return (
+              <li
+                key={index}
+                className="flex items-center gap-1.5"
+                itemProp="itemListElement"
+                itemScope
+                itemType="https://schema.org/ListItem"
+              >
+                {/* Separator (except for first item if no Home, but here we render separator BEFORE item if it's not the absolute first element)
+                    Actually, standard breadcrumb logic: Item > Item > Item.
+                    If showHome is true, we need separator before the first item.
+                    If showHome is false, we don't need separator before first item.
+                */}
+                {(showHome || index > 0) && (
+                  <ChevronRight
+                    size={14}
+                    className={cn(
+                      'text-surface-300 dark:text-surface-600 flex-shrink-0',
+                      isRTL && 'rotate-180'
+                    )}
+                    aria-hidden="true"
+                  />
+                )}
+
+                {isLast || !item.href ? (
+                  <span
+                    itemProp="name"
+                    className="font-medium truncate max-w-[200px] text-surface-900 dark:text-white"
+                    aria-current="page"
+                  >
+                    {item.label}
+                  </span>
+                ) : (
+                  <Link
+                    href={item.href}
+                    itemProp="item"
+                    className="font-medium truncate max-w-[200px] text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
+                  >
+                    <span itemProp="name">{item.label}</span>
+                  </Link>
+                )}
+                <meta itemProp="position" content={String(position)} />
+              </li>
+            );
+          })}
         </ol>
       </nav>
     </>
