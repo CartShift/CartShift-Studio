@@ -8,31 +8,31 @@
 
   /* === DESIGN SYSTEM TOKENS === */
 
-  /* Primary Palette (Sky/Blue) */
-  --color-primary-50: 240 249 255;
-  --color-primary-100: 224 242 254;
-  --color-primary-200: 186 230 253;
-  --color-primary-300: 125 211 252;
-  --color-primary-400: 56 189 248;
-  --color-primary-500: 14 165 233;
-  --color-primary-600: 2 132 199; /* Brand Primary */
-  --color-primary-700: 3 105 161;
-  --color-primary-800: 7 89 133;
-  --color-primary-900: 12 74 110;
-  --color-primary-950: 8 47 73;
+  /* Primary Palette (WordPress Blue) */
+  --color-primary-50: 244 248 250;
+  --color-primary-100: 222 234 240;
+  --color-primary-200: 188 214 225;
+  --color-primary-300: 144 186 205;
+  --color-primary-400: 100 158 185;
+  --color-primary-500: 55 131 165;
+  --color-primary-600: 33 117 155; /* Brand Primary */
+  --color-primary-700: 30 105 140;
+  --color-primary-800: 25 88 116;
+  --color-primary-900: 20 70 93;
+  --color-primary-950: 13 47 62;
 
-  /* Accent Palette (Fuchsia/Purple) */
-  --color-accent-50: 253 244 255;
-  --color-accent-100: 250 232 255;
-  --color-accent-200: 245 208 254;
-  --color-accent-300: 240 171 252;
-  --color-accent-400: 232 121 249;
-  --color-accent-500: 217 70 239;
-  --color-accent-600: 192 38 211; /* Brand Accent */
-  --color-accent-700: 162 28 175;
-  --color-accent-800: 134 25 143;
-  --color-accent-900: 112 26 117;
-  --color-accent-950: 74 4 78;
+  /* Accent Palette (Shopify Green) */
+  --color-accent-50: 250 252 246;
+  --color-accent-100: 239 245 228;
+  --color-accent-200: 224 236 200;
+  --color-accent-300: 203 223 164;
+  --color-accent-400: 182 210 127;
+  --color-accent-500: 161 197 90;
+  --color-accent-600: 150 191 72; /* Brand Accent */
+  --color-accent-700: 135 172 65;
+  --color-accent-800: 113 143 54;
+  --color-accent-900: 90 115 43;
+  --color-accent-950: 60 76 29;
 
   /* Surface Palette (Slate) */
   --color-surface-50: 248 250 252;
@@ -57,6 +57,22 @@
   --glass-border: rgba(148, 163, 184, 0.25);
   --section-alt: rgb(var(--color-surface-200));
   --card-bg: rgba(255, 255, 255, 0.85);
+
+  /* Defaults for Theme Generator */
+  --radius: 0.75rem; /* 12px default */
+  --font-en: var(--font-outfit);
+  --font-he: 'Assistant', sans-serif;
+  --font-main: var(--font-en);
+}
+
+:root[lang='he'],
+[lang='he'] :root {
+  --font-main: var(--font-he);
+}
+
+:root[lang='en'],
+[lang='en'] :root {
+  --font-main: var(--font-en);
 }
 
 .dark:root {

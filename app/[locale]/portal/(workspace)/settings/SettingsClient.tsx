@@ -104,6 +104,7 @@ export default function SettingsClient() {
   }, []);
 
   useEffect(() => {
+    // Keep this effect stable to avoid re-trigger loops; translations/router are stable enough
     let redirectTimeout: NodeJS.Timeout | undefined;
     let mounted = true;
 
@@ -194,18 +195,20 @@ export default function SettingsClient() {
 
     fetchOrganization();
 
-    if (userData && mounted) {
-      setProfileFormData({
-        name: userData.name || '',
-        photoUrl: userData.photoUrl || '',
-      });
-    }
-
     return () => {
       mounted = false;
       if (redirectTimeout) clearTimeout(redirectTimeout);
     };
-  }, [orgId, userData, t, router, showFeedback]);
+    // We intentionally keep dependencies minimal to avoid infinite loops
+  }, [orgId]);
+
+  useEffect(() => {
+    if (!userData) return;
+    setProfileFormData({
+      name: userData.name || '',
+      photoUrl: userData.photoUrl || '',
+    });
+  }, [userData]);
 
   useEffect(() => {
     return () => {
@@ -490,7 +493,10 @@ export default function SettingsClient() {
                               onError={handleLogoError}
                             />
                           ) : (
-                            <Building2 size={32} className="text-surface-300 dark:text-surface-600" />
+                            <Building2
+                              size={32}
+                              className="text-surface-300 dark:text-surface-600"
+                            />
                           )}
                         </div>
                         {uploadingOrgLogo && (

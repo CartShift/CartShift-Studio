@@ -195,7 +195,8 @@
       "accessDenied": "Access Denied",
       "goBack": "Go Back",
       "hours": "hours",
-      "estimated": "Est."
+      "estimated": "Est.",
+      "connected": "Connected"
     },
     "access": {
       "restrictedTitle": "Access Restricted",
@@ -748,7 +749,49 @@
         "profile": "My Profile",
         "notifications": "Notifications",
         "security": "Security",
-        "billing": "Billing"
+        "billing": "Billing",
+        "branding": "Branding"
+      },
+      "branding": {
+        "title": "Agency Branding",
+        "subtitle": "Customize your portal's look, feel, and identity.",
+        "logo": {
+          "title": "Logo",
+          "description": "Displayed on login screens and headers.",
+          "upload": "Upload Logo",
+          "remove": "Remove"
+        },
+        "icon": {
+          "title": "Icon / Mark",
+          "description": "Used for collapsed sidebars and favicons.",
+          "upload": "Upload Icon",
+          "remove": "Remove"
+        },
+        "colors": {
+          "title": "Colors",
+          "description": "Define your brand's color palette.",
+          "primary": "Primary Color",
+          "primaryDesc": "Used for active states, primary buttons, and links.",
+          "accent": "Accent Color",
+          "accentDesc": "Used for secondary actions and highlights."
+        },
+        "typography": {
+          "title": "Typography",
+          "description": "Choose a font family for your portal.",
+          "fontFamily": "Font Family",
+          "english": "English Font",
+          "hebrew": "Hebrew Font"
+        },
+        "borderRadius": {
+          "title": "Border Radius",
+          "description": "Adjust the roundness of UI elements.",
+          "sharp": "Sharp",
+          "soft": "Soft",
+          "round": "Round"
+        },
+        "darkmode": {
+          "invertLogo": "Invert logo color in dark mode (Black → White)"
+        }
       },
       "profile": {
         "title": "Personal Profile",
@@ -1493,6 +1536,8 @@
         "sending": "Sending...",
         "roles": {
           "admin": "Admin - Full access",
+          "sales_manager": "Sales Manager - Pipeline & Deals",
+          "developer": "Developer - Technical Access",
           "member": "Member - Standard access",
           "viewer": "Viewer - Read-only access"
         },
@@ -1692,7 +1737,10 @@
       "calendars": "Calendars",
       "feature1": "Auto-create calendar events for consultations",
       "feature2": "Get Google Meet links automatically",
-      "feature3": "View your availability in the portal"
+      "feature3": "View your availability in the portal",
+      "connected": "Connected",
+      "targetCalendar": "Target Calendar",
+      "targetCalendarDescription": "Events will be created in this calendar, and availability checks will check against it."
     },
     "testimonial": {
       "pageTitle": "Share Your Experience",

@@ -14,38 +14,38 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useTranslations } from 'next-intl';
 
 const modalContainerVariants = cva(
-  "fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity",
+  'fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity',
   {
     variants: {
       isOpen: {
-        true: "bg-black/50 backdrop-blur-sm opacity-100",
-        false: "bg-black/0 backdrop-blur-none opacity-0 pointer-events-none",
-      }
+        true: 'bg-black/50 backdrop-blur-sm opacity-100',
+        false: 'bg-black/0 backdrop-blur-none opacity-0 pointer-events-none',
+      },
     },
     defaultVariants: {
       isOpen: true,
-    }
+    },
   }
 );
 
 const modalContentVariants = cva(
-  "bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full border border-surface-200 dark:border-surface-800 transition-all",
+  'bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full border border-surface-200 dark:border-surface-800 transition-all',
   {
     variants: {
       isOpen: {
-        true: "scale-100 opacity-100",
-        false: "scale-95 opacity-0",
-      }
+        true: 'scale-100 opacity-100',
+        false: 'scale-95 opacity-0',
+      },
     },
     defaultVariants: {
       isOpen: true,
-    }
+    },
   }
 );
 
 type InviteFormData = {
   email: string;
-  role: 'admin' | 'member' | 'viewer';
+  role: 'admin' | 'sales_manager' | 'developer' | 'member' | 'viewer';
 };
 
 interface InviteTeamMemberFormProps {
@@ -70,7 +70,7 @@ export const InviteTeamMemberForm = ({
     () =>
       z.object({
         email: z.string().email(t('portal.team.inviteForm.errors.email')),
-        role: z.enum(['admin', 'member', 'viewer']),
+        role: z.enum(['admin', 'sales_manager', 'developer', 'member', 'viewer']),
       }),
     [t]
   );
@@ -121,11 +121,26 @@ export const InviteTeamMemberForm = ({
     }
   };
 
-  const roleOptions = [
-    { value: 'admin', label: t('portal.team.inviteForm.roles.admin') },
-    { value: 'member', label: t('portal.team.inviteForm.roles.member') },
-    { value: 'viewer', label: t('portal.team.inviteForm.roles.viewer') },
-  ];
+  const roleOptions = useMemo(() => {
+    const options = [
+      { value: 'admin', label: t('portal.team.inviteForm.roles.admin') },
+      { value: 'member', label: t('portal.team.inviteForm.roles.member') },
+      { value: 'viewer', label: t('portal.team.inviteForm.roles.viewer') },
+    ];
+
+    if (isAgency) {
+      // Specific order for agency: Admin, Sales, Dev, Member, Viewer
+      return [
+        { value: 'admin', label: t('portal.team.inviteForm.roles.admin') },
+        { value: 'sales_manager', label: t('portal.team.inviteForm.roles.sales_manager') },
+        { value: 'developer', label: t('portal.team.inviteForm.roles.developer') },
+        { value: 'member', label: t('portal.team.inviteForm.roles.member') },
+        { value: 'viewer', label: t('portal.team.inviteForm.roles.viewer') },
+      ];
+    }
+
+    return options;
+  }, [isAgency, t]);
 
   return (
     <div className={cn(modalContainerVariants({ isOpen: true }))}>

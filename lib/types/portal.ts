@@ -38,6 +38,8 @@ export const REQUEST_TYPE = {
 export const USER_ROLE = {
   OWNER: 'owner',
   ADMIN: 'admin',
+  SALES_MANAGER: 'sales_manager',
+  DEVELOPER: 'developer',
   MEMBER: 'member',
   VIEWER: 'viewer',
 } as const;
@@ -156,6 +158,19 @@ export interface Organization {
   shopifyAccessStatus?: 'pending' | 'requested' | 'connected' | 'revoked';
   shopifyAccessRequestedAt?: Timestamp;
   shopifyConnectedAt?: Timestamp;
+
+  // Branding Customization
+  branding?: {
+    primaryColor?: string; // Hex code, e.g. #21759b
+    accentColor?: string; // Hex code, e.g. #96bf48
+    logoUrl?: string; // Full logo for headers/login
+    iconUrl?: string; // Small icon for sidebar/favicon
+    fontFamily?: 'inter' | 'roboto' | 'outfit' | 'playfair'; // Deprecated
+    fontFamilyEn?: string; // English font family
+    fontFamilyHe?: string; // Hebrew font family
+    borderRadius?: '0px' | '0.5rem' | '1rem'; // UI roundness
+    invertLogoInDarkMode?: boolean; // Automatically filter invert logo in dark mode
+  };
 }
 
 export interface OrganizationMember {
@@ -178,6 +193,7 @@ export interface PortalUser {
   photoUrl?: string;
   accountType: AccountType; // New: PRIMARY account type field
   isAgency: boolean; // Kept for backward compatibility (derived from accountType)
+  agencyRole?: UserRole; // Specific role for agency users
   status?: 'active' | 'inactive' | 'suspended';
   organizations: string[]; // org IDs
   notificationPreferences?: {

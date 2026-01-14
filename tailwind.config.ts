@@ -61,12 +61,7 @@ const config: Config = {
         error: 'rgb(var(--color-error) / <alpha-value>)',
         warning: 'rgb(var(--color-warning) / <alpha-value>)',
       },
-      fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-jetbrains)', 'monospace'],
-        outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-      },
+
       fontSize: {
         // Fluid typography with clamp() for responsive scaling
         'fluid-xs': ['clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)', { lineHeight: '1.5' }],
@@ -104,8 +99,49 @@ const config: Config = {
         'tap-sm': '40px',
       },
       borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
         '4xl': '2rem',
         '5xl': '2.5rem',
+      },
+      fontFamily: {
+        item: ['var(--font-item)', 'sans-serif'],
+        sans: ['var(--font-main)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-main)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'monospace'],
+
+        // English
+        outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        roboto: ['var(--font-roboto)', 'system-ui', 'sans-serif'],
+        playfair: ['var(--font-playfair)', 'serif'],
+        'plus-jakarta': ['var(--font-plus-jakarta)', 'sans-serif'],
+        montserrat: ['var(--font-montserrat)', 'sans-serif'],
+        lato: ['var(--font-lato)', 'sans-serif'],
+        'open-sans': ['var(--font-open-sans)', 'sans-serif'],
+        raleway: ['var(--font-raleway)', 'sans-serif'],
+        nunito: ['var(--font-nunito)', 'sans-serif'],
+        merriweather: ['var(--font-merriweather)', 'serif'],
+        oswald: ['var(--font-oswald)', 'sans-serif'],
+        quicksand: ['var(--font-quicksand)', 'sans-serif'],
+        'work-sans': ['var(--font-work-sans)', 'sans-serif'],
+        'dm-sans': ['var(--font-dm-sans)', 'sans-serif'],
+        'crimson-text': ['var(--font-crimson-text)', 'serif'],
+
+        // Hebrew
+        assistant: ['var(--font-assistant)', 'sans-serif'],
+        heebo: ['var(--font-heebo)', 'sans-serif'],
+        rubik: ['var(--font-rubik)', 'sans-serif'],
+        varela: ['var(--font-varela)', 'sans-serif'],
+        secular: ['var(--font-secular)', 'sans-serif'],
+        amatic: ['var(--font-amatic)', 'cursive'],
+        'frank-ruhl': ['var(--font-frank-ruhl)', 'serif'],
+        miriam: ['var(--font-miriam)', 'sans-serif'],
+        alef: ['var(--font-alef)', 'sans-serif'],
+        tinos: ['var(--font-tinos)', 'serif'],
+        arimo: ['var(--font-arimo)', 'sans-serif'],
+        'suez-one': ['var(--font-suez-one)', 'serif'],
       },
       boxShadow: {
         soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',

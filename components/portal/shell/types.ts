@@ -5,6 +5,7 @@ export interface NavItem {
   label: string;
   icon: LucideIcon;
   href: string;
+  roles?: readonly import('@/lib/types/portal').UserRole[];
 }
 
 export interface NavGroup {
@@ -36,6 +37,7 @@ export interface SidebarNavigationProps {
   isExpanded: boolean;
   isMobile: boolean;
   onItemClick: () => void;
+  userRole?: import('@/lib/types/portal').UserRole;
 }
 
 export interface OrganizationSwitcherProps {

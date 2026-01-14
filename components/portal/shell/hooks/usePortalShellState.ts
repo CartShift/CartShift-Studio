@@ -48,6 +48,9 @@ export function usePortalShellState({
 
   // Access State
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [memberRole, setMemberRole] = useState<import('@/lib/types/portal').UserRole | undefined>(
+    undefined
+  );
 
   // Refs
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -92,6 +95,15 @@ export function usePortalShellState({
             if (userData.isAgency || userData.accountType === 'AGENCY') {
               if (internalMounted) {
                 setIsAuthorized(true);
+                // Agency users viewing ANY org act with their agency role or as Admin/Owner
+                // If they are explicitly a member, use that role, otherwise use Agency Role?
+                // For simplified permissions, agency admins viewing clients have OWNER/ADMIN equivalent access.
+                // But let's verify if they have a specific member record first.
+                // Actually, logic below checks member for typical users.
+
+                // For now, if account is agency, we assume authorized for the org (if allowed by rules)
+                // And set role from USER data if available, or OWNER default.
+                setMemberRole(userData.agencyRole || 'owner');
                 hasEverBeenAuthorizedRef.current = true;
               }
               return;
@@ -101,6 +113,7 @@ export function usePortalShellState({
               console.warn('[PortalShell] effectiveOrgId is "template". Skipping access check.');
               if (internalMounted) {
                 setIsAuthorized(true);
+                setMemberRole('owner'); // Template is usually owner context
                 hasEverBeenAuthorizedRef.current = true;
               }
               return;
@@ -120,17 +133,22 @@ export function usePortalShellState({
             if (internalMounted) {
               const authorized = member !== null;
               setIsAuthorized(authorized);
+              if (member) setMemberRole(member.role);
               if (authorized) hasEverBeenAuthorizedRef.current = true;
             }
           } else if (isAgencyPage && userData) {
             const authorized = Boolean(userData.isAgency) || userData.accountType === 'AGENCY';
             if (internalMounted) {
               setIsAuthorized(authorized);
-              if (authorized) hasEverBeenAuthorizedRef.current = true;
+              if (authorized) {
+                setMemberRole(userData.agencyRole || 'owner');
+                hasEverBeenAuthorizedRef.current = true;
+              }
             }
           } else {
             if (internalMounted) {
               setIsAuthorized(true);
+              // Default role if no org context? Maybe none.
               hasEverBeenAuthorizedRef.current = true;
             }
           }
@@ -447,5 +465,6 @@ export function usePortalShellState({
     handleMarkAllAsRead,
     handleSignOut,
     handleOrgSwitch,
+    memberRole,
   };
 }

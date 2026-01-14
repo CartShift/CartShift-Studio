@@ -70,5 +70,23 @@ service firebase.storage {
       // Delete still requires admin
       allow delete: if canAdminOrg(orgId);
     }
+
+    // Agency icons/logos - PUBLIC READ for UI display
+    match /agencies/{agencyId}/{allPaths=**} {
+      // Public read access - essential for displaying agency icons
+      allow read: if true;
+
+      // Only the agency user themselves can upload icons
+      allow create, update: if isAuthenticated() &&
+        getUserId() == agencyId &&
+        isAgencyUser() &&
+        request.resource.size < 2 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+
+      // Delete still requires the agency user themselves
+      allow delete: if isAuthenticated() &&
+        getUserId() == agencyId &&
+        isAgencyUser();
+    }
   }
 }

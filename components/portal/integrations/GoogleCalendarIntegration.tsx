@@ -156,7 +156,7 @@ export default function GoogleCalendarIntegration({
             {isConnected && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">
                 <Check size={10} />
-                {t('connected' as any)}
+                {t('googleCalendar.connected')}
               </span>
             )}
           </div>
@@ -191,7 +191,7 @@ export default function GoogleCalendarIntegration({
               {/* Calendar Selection */}
               <div>
                 <span className="text-xs font-bold text-surface-500 uppercase tracking-wider block mb-2">
-                  Target Calendar
+                  {t('googleCalendar.targetCalendar')}
                 </span>
                 {loadingCalendars ? (
                   <div className="flex items-center gap-2 text-sm text-surface-500">
@@ -225,8 +225,7 @@ export default function GoogleCalendarIntegration({
                   </div>
                 )}
                 <p className="text-[10px] text-surface-400 mt-1">
-                  Events will be created in this calendar, and availability checks will check
-                  against it.
+                  {t('googleCalendar.targetCalendarDescription')}
                 </p>
               </div>
               {connection.lastSynced && (

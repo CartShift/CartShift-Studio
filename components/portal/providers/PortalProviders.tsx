@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { ToastProvider } from '@/components/portal/ui';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { OrgProvider } from '@/lib/context/OrgContext';
+import { ImpersonationProvider } from '@/lib/context/ImpersonationContext';
 import { useDirection } from '@/lib/i18n-utils';
 
 interface PortalProvidersProps {
@@ -16,11 +17,13 @@ export function PortalProviders({ children }: PortalProvidersProps) {
 
   return (
     <QueryProvider>
-      <OrgProvider>
-        <ToastProvider position={toastPosition} maxToasts={5}>
-          {children}
-        </ToastProvider>
-      </OrgProvider>
+      <ImpersonationProvider>
+        <OrgProvider>
+          <ToastProvider position={toastPosition} maxToasts={5}>
+            {children}
+          </ToastProvider>
+        </OrgProvider>
+      </ImpersonationProvider>
     </QueryProvider>
   );
 }

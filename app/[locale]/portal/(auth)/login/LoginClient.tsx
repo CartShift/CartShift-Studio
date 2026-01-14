@@ -19,6 +19,7 @@ import { Mail, Lock } from 'lucide-react';
 import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { toast } from 'sonner';
+import { useBranding } from '@/components/providers/BrandingProvider';
 
 type LoginData = z.infer<ReturnType<typeof getLoginSchema>>;
 
@@ -38,6 +39,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const t = useTranslations();
   const redirectPath = searchParams.get('redirect');
+  const { branding } = useBranding();
 
   const loginSchema = useMemo(() => getLoginSchema((path: string) => t(path as any)), [t]);
 
@@ -107,15 +109,26 @@ function LoginForm() {
     <div className="w-full max-w-[400px] space-y-6">
       {/* Logo */}
       <div className="flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 relative">
-          <Image
-            src="/images/CarShift-Icon-Colored.png"
-            alt="CartShift Studio"
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
+        {branding?.logoUrl ? (
+          <div className="relative h-16 w-full flex justify-center">
+            <img
+              src={branding.logoUrl}
+              alt="Logo"
+              className={`h-full max-w-[240px] object-contain ${branding.invertLogoInDarkMode ? 'dark:brightness-0 dark:invert' : ''}`}
+            />
+          </div>
+        ) : (
+          <div className="w-12 h-12 relative">
+            <Image
+              src="/images/CarShift-Icon-Colored.png"
+              alt="CartShift Studio"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+        )}
+
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
             {t('portal.auth.login.title')}

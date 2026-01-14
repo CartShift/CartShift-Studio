@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { useTranslations } from 'next-intl';
 import {
   ShoppingBag,
@@ -69,7 +69,9 @@ export default function ShopifyStoreIntegration({
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shopifyDomain, setShopifyDomain] = useState(organization.shopifyDomain || '');
-  const [collaboratorCode, setCollaboratorCode] = useState(organization.shopifyCollaboratorCode || '');
+  const [collaboratorCode, setCollaboratorCode] = useState(
+    organization.shopifyCollaboratorCode || ''
+  );
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -97,7 +99,11 @@ export default function ShopifyStoreIntegration({
     setError(null);
 
     // Validate
-    const cleanDomain = shopifyDomain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const cleanDomain = shopifyDomain
+      .toLowerCase()
+      .trim()
+      .replace(/^https?:\/\//, '')
+      .replace(/\/$/, '');
 
     if (cleanDomain && !validateDomain(cleanDomain)) {
       setError(t('errors.invalidDomain'));
@@ -186,9 +192,7 @@ export default function ShopifyStoreIntegration({
               <h3 className="text-sm font-bold text-surface-600 dark:text-surface-400">
                 {t('agency.notConnected')}
               </h3>
-              <p className="text-xs text-surface-400">
-                {t('agency.notConnectedDesc')}
-              </p>
+              <p className="text-xs text-surface-400">{t('agency.notConnectedDesc')}</p>
             </div>
           </div>
         </div>
@@ -203,14 +207,15 @@ export default function ShopifyStoreIntegration({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative p-6 rounded-2xl border-2 transition-all",
+          'relative p-6 rounded-2xl border-2 transition-all',
           statusConfig.border,
-          statusConfig.bg.replace('bg-', 'bg-gradient-to-br from-').replace('/30', '/10') + ' to-white/50 dark:to-surface-900/50'
+          statusConfig.bg.replace('bg-', 'bg-gradient-to-br from-').replace('/30', '/10') +
+            ' to-white/50 dark:to-surface-900/50'
         )}
       >
         {/* Header */}
         <div className="flex items-start gap-4 mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#95BF47] to-[#5E8E3E] flex items-center justify-center shadow-lg">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-lg">
             <ShoppingBag className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -218,11 +223,19 @@ export default function ShopifyStoreIntegration({
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
                 {t('title')}
               </h3>
-              <span className={cn(
-                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
-                statusConfig.bg, statusConfig.color, statusConfig.border, "border"
-              )}>
-                <StatusIcon size={10} className={accessStatus === 'requested' ? 'animate-spin' : ''} />
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider',
+                  statusConfig.bg,
+                  statusConfig.color,
+                  statusConfig.border,
+                  'border'
+                )}
+              >
+                <StatusIcon
+                  size={10}
+                  className={accessStatus === 'requested' ? 'animate-spin' : ''}
+                />
                 {t(`status.${accessStatus}`)}
               </span>
             </div>
@@ -242,7 +255,7 @@ export default function ShopifyStoreIntegration({
               href={`https://${organization.shopifyDomain}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1"
             >
               {organization.shopifyDomain}
               <ExternalLink size={12} />
@@ -261,7 +274,11 @@ export default function ShopifyStoreIntegration({
                   onClick={handleCopyCode}
                   className="p-1.5 rounded-md hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                 >
-                  {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} className="text-surface-400" />}
+                  {copied ? (
+                    <Check size={14} className="text-green-500" />
+                  ) : (
+                    <Copy size={14} className="text-surface-400" />
+                  )}
                 </button>
               </div>
             </div>
@@ -276,7 +293,7 @@ export default function ShopifyStoreIntegration({
                 <PortalButton
                   variant="primary"
                   size="sm"
-                  className="gap-2 shadow-lg shadow-[#95BF47]/20"
+                  className="gap-2 shadow-lg shadow-accent-600/20"
                 >
                   <ShoppingBag size={16} />
                   {t('agency.requestAccess')}
@@ -305,7 +322,11 @@ export default function ShopifyStoreIntegration({
                 disabled={saving}
                 className="gap-2 bg-green-600 hover:bg-green-700 shadow-lg shadow-green-500/20"
               >
-                {saving ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                {saving ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <CheckCircle2 size={14} />
+                )}
                 {t('agency.markConnected')}
               </PortalButton>
               <a href={partnerLink || '#'} target="_blank" rel="noopener noreferrer">
@@ -347,20 +368,20 @@ export default function ShopifyStoreIntegration({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "relative p-6 rounded-2xl border-2 transition-all",
+        'relative p-6 rounded-2xl border-2 transition-all',
         hasConnection
-          ? "bg-gradient-to-br from-[#95BF47]/10 to-emerald-50/50 dark:from-[#95BF47]/5 dark:to-emerald-900/10 border-[#95BF47]/30 dark:border-[#95BF47]/20"
-          : "bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800 hover:border-[#95BF47]/50 dark:hover:border-[#95BF47]/30"
+          ? 'bg-gradient-to-br from-accent-600/10 to-emerald-50/50 dark:from-accent-600/5 dark:to-emerald-900/10 border-accent-600/30 dark:border-accent-600/20'
+          : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800 hover:border-accent-600/50 dark:hover:border-accent-600/30'
       )}
     >
       {/* Header */}
       <div className="flex items-start gap-4 mb-6">
         <div
           className={cn(
-            "w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg",
+            'w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg',
             hasConnection
-              ? "bg-gradient-to-br from-[#95BF47] to-[#5E8E3E]"
-              : "bg-gradient-to-br from-[#95BF47] to-[#5E8E3E] opacity-80"
+              ? 'bg-gradient-to-br from-accent-600 to-accent-700'
+              : 'bg-gradient-to-br from-accent-600 to-accent-700 opacity-80'
           )}
         >
           <ShoppingBag className="w-7 h-7 text-white" />
@@ -371,14 +392,19 @@ export default function ShopifyStoreIntegration({
               {t('title')}
             </h3>
             {hasConnection && (
-              <span className={cn(
-                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
-                ACCESS_STATUS_CONFIG[accessStatus].bg,
-                ACCESS_STATUS_CONFIG[accessStatus].color,
-                ACCESS_STATUS_CONFIG[accessStatus].border,
-                "border"
-              )}>
-                <StatusIcon size={10} className={accessStatus === 'requested' ? 'animate-spin' : ''} />
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider',
+                  ACCESS_STATUS_CONFIG[accessStatus].bg,
+                  ACCESS_STATUS_CONFIG[accessStatus].color,
+                  ACCESS_STATUS_CONFIG[accessStatus].border,
+                  'border'
+                )}
+              >
+                <StatusIcon
+                  size={10}
+                  className={accessStatus === 'requested' ? 'animate-spin' : ''}
+                />
                 {t(`status.${accessStatus}`)}
               </span>
             )}
@@ -409,30 +435,32 @@ export default function ShopifyStoreIntegration({
                   <input
                     type="text"
                     value={shopifyDomain}
-                    onChange={(e) => setShopifyDomain(e.target.value)}
+                    onChange={e => setShopifyDomain(e.target.value)}
                     placeholder="yourstore.myshopify.com"
-                    className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#95BF47]/30 focus:border-[#95BF47] transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-600/30 focus:border-accent-600 transition-all"
                   />
                 </div>
-                <p className="text-[10px] text-surface-400 mt-1.5">
-                  {t('form.storeUrlHint')}
-                </p>
+                <p className="text-[10px] text-surface-400 mt-1.5">{t('form.storeUrlHint')}</p>
               </div>
 
               {/* Collaborator Code Input */}
               <div>
                 <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
                   {t('form.collaboratorCode')}
-                  <span className="text-surface-400 normal-case font-normal ms-1">({t('form.optional')})</span>
+                  <span className="text-surface-400 normal-case font-normal ms-1">
+                    ({t('form.optional')})
+                  </span>
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={collaboratorCode}
-                    onChange={(e) => setCollaboratorCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    onChange={e =>
+                      setCollaboratorCode(e.target.value.replace(/\D/g, '').slice(0, 4))
+                    }
                     placeholder="1234"
                     maxLength={4}
-                    className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#95BF47]/30 focus:border-[#95BF47] transition-all font-mono text-lg tracking-[0.5em]"
+                    className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-600/30 focus:border-accent-600 transition-all font-mono text-lg tracking-[0.5em]"
                   />
                 </div>
                 <p className="text-[10px] text-surface-400 mt-1.5">
@@ -465,7 +493,7 @@ export default function ShopifyStoreIntegration({
             exit={{ opacity: 0, height: 0 }}
             className="mb-6"
           >
-            <div className="p-4 rounded-xl bg-white/80 dark:bg-surface-800/50 border border-[#95BF47]/20 dark:border-[#95BF47]/10 space-y-3">
+            <div className="p-4 rounded-xl bg-white/80 dark:bg-surface-800/50 border border-accent-600/20 dark:border-accent-600/10 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
                   {t('storeUrl')}
@@ -474,7 +502,7 @@ export default function ShopifyStoreIntegration({
                   href={`https://${organization.shopifyDomain}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-medium text-[#5E8E3E] dark:text-[#95BF47] hover:underline flex items-center gap-1"
+                  className="text-sm font-medium text-accent-700 dark:text-accent-600 hover:underline flex items-center gap-1"
                 >
                   {organization.shopifyDomain}
                   <ExternalLink size={12} />
@@ -528,15 +556,15 @@ export default function ShopifyStoreIntegration({
             <div className="p-4 rounded-xl bg-surface-50/80 dark:bg-surface-800/30 border border-dashed border-surface-200 dark:border-surface-700">
               <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-400">
                 <li className="flex items-center gap-2">
-                  <Check size={14} className="text-[#95BF47]" />
+                  <Check size={14} className="text-accent-600" />
                   {t('features.feature1')}
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check size={14} className="text-[#95BF47]" />
+                  <Check size={14} className="text-accent-600" />
                   {t('features.feature2')}
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check size={14} className="text-[#95BF47]" />
+                  <Check size={14} className="text-accent-600" />
                   {t('features.feature3')}
                 </li>
               </ul>
@@ -554,7 +582,7 @@ export default function ShopifyStoreIntegration({
               size="sm"
               onClick={handleSave}
               disabled={saving}
-              className="gap-2 shadow-lg shadow-[#95BF47]/20 bg-[#95BF47] hover:bg-[#7BA93D]"
+              className="gap-2 shadow-lg shadow-accent-600/20 bg-accent-600 hover:bg-accent-700"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
               {saving ? t('form.saving') : t('form.save')}
@@ -580,7 +608,7 @@ export default function ShopifyStoreIntegration({
             variant="outline"
             size="sm"
             onClick={() => setEditing(true)}
-            className="gap-2 border-[#95BF47]/30 text-[#5E8E3E] dark:text-[#95BF47] hover:bg-[#95BF47]/10"
+            className="gap-2 border-accent-600/30 text-accent-700 dark:text-accent-600 hover:bg-accent-600/10"
           >
             {t('actions.edit')}
           </PortalButton>
@@ -589,7 +617,7 @@ export default function ShopifyStoreIntegration({
             variant="primary"
             size="sm"
             onClick={() => setEditing(true)}
-            className="gap-2 shadow-lg shadow-[#95BF47]/20 bg-[#95BF47] hover:bg-[#7BA93D]"
+            className="gap-2 shadow-lg shadow-accent-600/20 bg-accent-600 hover:bg-accent-700"
           >
             <ShoppingBag size={16} />
             {t('actions.connect')}

@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   DollarSign,
   Clock,
+  Eye,
 } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
@@ -23,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
+import { useImpersonation } from '@/lib/context/ImpersonationContext';
 import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
 
 // Format currency with abbreviations for large numbers
@@ -44,6 +46,7 @@ export default function AgencyClientsClient() {
   const router = useRouter();
   const { loading: authLoading, isAuthenticated, user } = usePortalAuth();
   const { organizations, loading: clientsLoading, userData } = useAgencyClients();
+  const { viewAsClient } = useImpersonation();
 
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -280,6 +283,11 @@ export default function AgencyClientsClient() {
                               label: t('agency.clients.detail.overview'),
                               icon: <ArrowUpRight size={16} />,
                               onClick: () => router.push(`/portal/agency/clients/${org.id}/`),
+                            },
+                            {
+                              label: 'View as Client',
+                              icon: <Eye size={16} />,
+                              onClick: () => viewAsClient(org.id),
                             },
                           ]}
                         />

@@ -17,7 +17,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 export const navItemVariants = cva('portal-nav-item group relative transition-all duration-200', {
   variants: {
     isActive: {
-      true: 'portal-nav-item-active text-blue-600 dark:text-blue-400 font-bold bg-blue-50/50 dark:bg-blue-500/10',
+      true: 'portal-nav-item-active text-primary-600 dark:text-primary-400 font-bold bg-primary-50/50 dark:bg-primary-500/10',
       false:
         'text-surface-600 dark:text-surface-400 hover:bg-surface-100/60 dark:hover:bg-surface-800/40 hover:text-surface-900 dark:hover:text-white',
     },
@@ -32,6 +32,8 @@ export const navItemVariants = cva('portal-nav-item group relative transition-al
   },
 });
 
+import { PERMISSIONS } from '@/lib/utils/permissions';
+
 export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
   return [
     {
@@ -40,11 +42,13 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
           label: t('portal.sidebar.nav.workboard'),
           icon: Kanban,
           href: getPortalPath('/agency/workboard/'),
+          // Accessible by all agency members
         },
         {
           label: t('portal.sidebar.nav.sales'),
           icon: TrendingUp,
           href: getPortalPath('/agency/sales/'),
+          roles: PERMISSIONS.VIEW_SALES_DASHBOARD,
         },
       ],
     },
@@ -54,16 +58,19 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
           label: t('portal.sidebar.nav.clients'),
           icon: Users,
           href: getPortalPath('/agency/clients/'),
+          roles: PERMISSIONS.MANAGE_CLIENTS,
         },
         {
           label: t('portal.sidebar.nav.requests'),
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
+          // Accessible by all
         },
         {
           label: t('portal.sidebar.nav.consultations'),
           icon: Calendar,
           href: getPortalPath('/agency/consultations/'),
+          roles: PERMISSIONS.MANAGE_CLIENTS,
         },
       ],
     },
@@ -73,11 +80,13 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
           label: t('portal.sidebar.nav.pricing'),
           icon: DollarSign,
           href: getPortalPath('/agency/pricing/'),
+          roles: PERMISSIONS.MANAGE_PRICING,
         },
         {
           label: t('portal.sidebar.nav.testimonials'),
           icon: Star,
           href: getPortalPath('/agency/testimonials/'),
+          roles: PERMISSIONS.MANAGE_CLIENTS,
         },
       ],
     },
@@ -87,6 +96,7 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
           label: t('portal.sidebar.nav.settings'),
           icon: Settings,
           href: getPortalPath('/agency/settings/'),
+          roles: PERMISSIONS.MANAGE_SETTINGS,
         },
       ],
     },

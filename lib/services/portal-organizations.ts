@@ -562,6 +562,7 @@ export async function acceptInvite(
         name: userName || null,
         accountType: ACCOUNT_TYPE.AGENCY,
         isAgency: true,
+        agencyRole: invite.role, // Save the role assigned in the invite
         updatedAt: serverTimestamp(),
       },
       { merge: true }
@@ -611,7 +612,7 @@ export async function cancelInvite(inviteId: string): Promise<void> {
 export async function inviteTeamMember(
   orgId: string,
   email: string,
-  role: 'admin' | 'member' | 'viewer',
+  role: UserRole,
   invitedBy: string = 'current-user-id',
   invitedByName: string = 'Current User'
 ): Promise<Invite> {
@@ -623,7 +624,7 @@ export async function inviteTeamMember(
 
 export async function inviteAgencyMember(
   email: string,
-  role: 'admin' | 'member' | 'viewer',
+  role: UserRole,
   invitedBy: string,
   invitedByName: string
 ): Promise<Invite> {

@@ -17,6 +17,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { BrandingProvider } from '@/components/providers/BrandingProvider';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
@@ -40,8 +41,11 @@ function loadMessages(locale: 'en' | 'he') {
       const trimmed = fallbackContents.trim();
       return JSON.parse(trimmed);
     } catch (fallbackError) {
-      const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
-      throw new Error(`Failed to load both ${locale} and fallback (en) messages. ${locale} error: ${errorMessage}. Fallback error: ${fallbackMessage}`);
+      const fallbackMessage =
+        fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+      throw new Error(
+        `Failed to load both ${locale} and fallback (en) messages. ${locale} error: ${errorMessage}. Fallback error: ${fallbackMessage}`
+      );
     }
   }
 }
@@ -77,7 +81,8 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'CartShift Studio',
     title: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
-    description: 'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
+    description:
+      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
     url: siteUrl,
     images: [
       {
@@ -91,7 +96,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'CartShift Studio | E-commerce Development Agency',
-    description: 'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
+    description:
+      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
     images: [`${siteUrl}/images/CarShift-Icon-Colored.png`],
     creator: '@cartshiftstudio',
     site: '@cartshiftstudio',
@@ -152,25 +158,27 @@ export default async function LocaleLayout({
         dangerouslySetInnerHTML={{ __html: schemaJson }}
       />
       <ThemeProvider>
-        <MotionProvider>
-          <MotionConfig
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-              mass: 0.8
-            }}
-          >
-            <NextIntlClientProvider messages={messages} locale={locale}>
-              <LocaleAttributes />
-              <GeoLocaleRedirect />
-              <GoogleAnalytics />
-              <AnalyticsProvider>
-                <ConditionalLayout>{children}</ConditionalLayout>
-              </AnalyticsProvider>
-            </NextIntlClientProvider>
-          </MotionConfig>
-        </MotionProvider>
+        <BrandingProvider>
+          <MotionProvider>
+            <MotionConfig
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30,
+                mass: 0.8,
+              }}
+            >
+              <NextIntlClientProvider messages={messages} locale={locale}>
+                <LocaleAttributes />
+                <GeoLocaleRedirect />
+                <GoogleAnalytics />
+                <AnalyticsProvider>
+                  <ConditionalLayout>{children}</ConditionalLayout>
+                </AnalyticsProvider>
+              </NextIntlClientProvider>
+            </MotionConfig>
+          </MotionProvider>
+        </BrandingProvider>
       </ThemeProvider>
     </>
   );

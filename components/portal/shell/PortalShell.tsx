@@ -25,6 +25,7 @@ import { MobileSearch } from '../ui/MobileSearch';
 import { PortalHeader } from '../ui/PortalHeader';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { OnboardingTour } from '../OnboardingTour';
+import { ImpersonationBanner } from '../ui/ImpersonationBanner';
 
 export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }: PortalShellProps) {
   const t = useTranslations();
@@ -122,6 +123,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           isExpanded={state.isExpanded}
           isMobile={state.isMobile}
           onItemClick={() => state.setIsMobileMenuOpen(false)}
+          userRole={state.memberRole}
         />
 
         <SidebarFooter
@@ -142,6 +144,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
             : 'md:ps-[var(--sidebar-width-collapsed)]'
         )}
       >
+        <ImpersonationBanner />
+
         <PortalHeader
           onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
           onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
