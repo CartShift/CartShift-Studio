@@ -35,9 +35,7 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
   const content = isHe && post.translation?.content ? post.translation.content : post.content;
 
   // Format date correctly based on locale
-  const formattedDate = new Date(post.date).toLocaleDateString(
-    getDateLocaleString(locale)
-  );
+  const formattedDate = new Date(post.date).toLocaleDateString(getDateLocaleString(locale));
   const readingTimeText = post.readingTime
     ? isHe
       ? ` • ${post.readingTime} דקות קריאה`
@@ -57,9 +55,9 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
   }));
 
   const breadcrumbItems = [
-    { name: t('navigation.home'), url: '/' },
-    { name: t('navigation.blog'), url: '/blog' },
-    { name: title, url: `/blog/${post.slug}` },
+    { label: t('navigation.home'), href: '/' },
+    { label: t('navigation.blog'), href: '/blog' },
+    { label: title, href: `/blog/${post.slug}` },
   ];
 
   return (
@@ -88,4 +86,3 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
     </>
   );
 };
-

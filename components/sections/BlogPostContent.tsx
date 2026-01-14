@@ -159,7 +159,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
       const extractedHeadings = Array.from(h2Elements).map((h2, index) => {
         const rawText = h2.textContent || '';
         // Remove leading numbers like "1.", "2.", "1)", etc. from the heading text
-        const text = rawText.replace(/^\d+[\.\)\:]\s*/, '').trim();
+        const text = rawText.replace(/^\d+[.):]\s*/, '').trim();
         let id = text
           .toLowerCase()
           .replace(/[^a-z0-9\u0590-\u05FF]+/g, '-')
@@ -259,7 +259,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
         const matchingHeading = Array.from(h2Elements).find(h2 => {
           const rawText = h2.textContent || '';
           // Remove leading numbers like "1.", "2.", "1)", etc. - same as in processHeadings
-          const text = rawText.replace(/^\d+[\.\)\:]\s*/, '').trim();
+          const text = rawText.replace(/^\d+[.):]\s*/, '').trim();
           const id = text
             .toLowerCase()
             .replace(/[^a-z0-9\u0590-\u05FF]+/g, '-')

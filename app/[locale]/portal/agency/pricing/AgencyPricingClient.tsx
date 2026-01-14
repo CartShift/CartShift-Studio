@@ -23,6 +23,7 @@ import { PortalButton } from '@/components/portal/ui/PortalButton';
 import { PortalBadge } from '@/components/portal/ui/PortalBadge';
 import {
   PricingRequest,
+  PricingStatus,
   PRICING_STATUS_CONFIG,
   PRICING_STATUS,
   formatCurrency,
@@ -199,8 +200,7 @@ export default function AgencyPricingClient() {
             {t('portal.pricing.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.agency.pricing.subtitle') ||
-              'Manage pricing offers across all clients'}
+            {t('portal.agency.pricing.subtitle') || 'Manage pricing offers across all clients'}
           </p>
         </div>
         <div className="flex gap-2">
@@ -408,7 +408,9 @@ export default function AgencyPricingClient() {
                             PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
                           )}
                         >
-                          {t(`portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}`)}
+                          {t(
+                            `portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}`
+                          )}
                         </PortalBadge>
                       </div>
                     </td>
@@ -522,7 +524,6 @@ export default function AgencyPricingClient() {
         )}
       </PortalCard>
 
-
       {/* New Offer - Organization Selection Modal */}
       {showNewOfferModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
@@ -563,9 +564,7 @@ export default function AgencyPricingClient() {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {Object.values(organizations)
-                .filter(org =>
-                  org.name.toLowerCase().includes(orgSearchQuery.toLowerCase())
-                )
+                .filter(org => org.name.toLowerCase().includes(orgSearchQuery.toLowerCase()))
                 .map(org => (
                   <button
                     key={org.id}
@@ -581,18 +580,17 @@ export default function AgencyPricingClient() {
                       <p className="font-bold text-surface-900 dark:text-white font-outfit group-hover:text-blue-600 transition-colors">
                         {org.name}
                       </p>
-                      <p className="text-xs text-surface-500">
-                        {org.id.slice(0, 8)}...
-                      </p>
+                      <p className="text-xs text-surface-500">{org.id.slice(0, 8)}...</p>
                     </div>
-                    <ChevronRight size={16} className="text-surface-300 group-hover:text-blue-500" />
+                    <ChevronRight
+                      size={16}
+                      className="text-surface-300 group-hover:text-blue-500"
+                    />
                   </button>
                 ))}
-                {Object.values(organizations).length === 0 && (
-                   <div className="text-center py-8 text-surface-500">
-                      No organizations found.
-                   </div>
-                )}
+              {Object.values(organizations).length === 0 && (
+                <div className="text-center py-8 text-surface-500">No organizations found.</div>
+              )}
             </div>
           </div>
         </div>

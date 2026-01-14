@@ -92,7 +92,7 @@ export function GeoLocaleRedirect() {
           try {
             const response = await fetch('https://ipapi.co/country/', {
               method: 'GET',
-              headers: { 'Accept': 'text/plain' },
+              headers: { Accept: 'text/plain' },
               signal: AbortSignal.timeout(3000),
             });
             if (response.ok) {
@@ -128,8 +128,7 @@ export function GeoLocaleRedirect() {
     }
 
     detectAndRedirect();
-    // Only run on mount or when pathname changes significantly (not on every render)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only run on mount
   }, []);
 
   return null;

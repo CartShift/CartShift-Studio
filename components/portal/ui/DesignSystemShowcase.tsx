@@ -6,27 +6,12 @@ import {
   PortalCardTitle,
   PortalCardDescription,
   PortalCardContent,
-  PortalCardFooter
+  PortalCardFooter,
 } from './PortalCard';
 import { PortalButton } from './PortalButton';
 import { PortalBadge } from './PortalBadge';
-import {
-  Skeleton,
-  SkeletonCard,
-  SkeletonStats,
-  SkeletonList
-} from './Skeleton';
-import {
-  Zap,
-  ArrowRight,
-  Check,
-  Star,
-  Bell,
-  Settings,
-  Download,
-  Plus,
-  Trash2
-} from 'lucide-react';
+import { Skeleton, SkeletonCard, SkeletonStats, SkeletonList } from './Skeleton';
+import { Zap, ArrowRight, Check, Star, Bell, Settings, Download, Plus, Trash2 } from 'lucide-react';
 
 /**
  * Design System Showcase Component
@@ -37,12 +22,10 @@ export function DesignSystemShowcase() {
     <div className="p-8 space-y-12 bg-surface-50 dark:bg-surface-950 min-h-screen">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-outfit font-bold text-gradient-brand">
-          Portal Design System
-        </h1>
+        <h1 className="text-4xl font-outfit font-bold text-gradient-brand">Portal Design System</h1>
         <p className="text-surface-500 dark:text-surface-400 max-w-2xl mx-auto">
-          A premium, modern design system with glassmorphism, gradients,
-          micro-animations, and beautiful visual effects.
+          A premium, modern design system with glassmorphism, gradients, micro-animations, and
+          beautiful visual effects.
         </p>
       </div>
 
@@ -60,12 +43,14 @@ export function DesignSystemShowcase() {
             </PortalCardHeader>
             <PortalCardContent>
               <PortalCardDescription>
-                The standard card with subtle shadows and clean borders.
-                Perfect for most content sections.
+                The standard card with subtle shadows and clean borders. Perfect for most content
+                sections.
               </PortalCardDescription>
             </PortalCardContent>
             <PortalCardFooter>
-              <PortalBadge variant="blue" size="sm">Default</PortalBadge>
+              <PortalBadge variant="blue" size="sm">
+                Default
+              </PortalBadge>
             </PortalCardFooter>
           </PortalCard>
 
@@ -76,12 +61,14 @@ export function DesignSystemShowcase() {
             </PortalCardHeader>
             <PortalCardContent>
               <PortalCardDescription>
-                Beautiful glassmorphism effect with blur and subtle transparency.
-                Great for overlays and featured content.
+                Beautiful glassmorphism effect with blur and subtle transparency. Great for overlays
+                and featured content.
               </PortalCardDescription>
             </PortalCardContent>
             <PortalCardFooter>
-              <PortalBadge variant="purple" size="sm">Glass</PortalBadge>
+              <PortalBadge variant="purple" size="sm">
+                Glass
+              </PortalBadge>
             </PortalCardFooter>
           </PortalCard>
 
@@ -92,12 +79,13 @@ export function DesignSystemShowcase() {
             </PortalCardHeader>
             <PortalCardContent>
               <PortalCardDescription>
-                Deep shadows for a floating effect.
-                Excellent for important or featured sections.
+                Deep shadows for a floating effect. Excellent for important or featured sections.
               </PortalCardDescription>
             </PortalCardContent>
             <PortalCardFooter>
-              <PortalBadge variant="green" size="sm">Elevated</PortalBadge>
+              <PortalBadge variant="green" size="sm">
+                Elevated
+              </PortalBadge>
             </PortalCardFooter>
           </PortalCard>
 
@@ -108,12 +96,14 @@ export function DesignSystemShowcase() {
             </PortalCardHeader>
             <PortalCardContent>
               <PortalCardDescription>
-                Premium gradient background with accent border.
-                Perfect for CTAs and premium features.
+                Premium gradient background with accent border. Perfect for CTAs and premium
+                features.
               </PortalCardDescription>
             </PortalCardContent>
             <PortalCardFooter>
-              <PortalBadge variant="gradient" size="sm" glow>Gradient</PortalBadge>
+              <PortalBadge variant="gradient" size="sm" glow>
+                Gradient
+              </PortalBadge>
             </PortalCardFooter>
           </PortalCard>
 
@@ -124,12 +114,14 @@ export function DesignSystemShowcase() {
             </PortalCardHeader>
             <PortalCardContent>
               <PortalCardDescription>
-                Designed for clickable items like list entries.
-                Has active press state and cursor pointer.
+                Designed for clickable items like list entries. Has active press state and cursor
+                pointer.
               </PortalCardDescription>
             </PortalCardContent>
             <PortalCardFooter>
-              <PortalBadge variant="orange" size="sm">Interactive</PortalBadge>
+              <PortalBadge variant="orange" size="sm">
+                Interactive
+              </PortalBadge>
             </PortalCardFooter>
           </PortalCard>
 
@@ -140,12 +132,14 @@ export function DesignSystemShowcase() {
             </PortalCardHeader>
             <PortalCardContent>
               <PortalCardDescription>
-                Cards can have accent colors at the top.
-                Available: primary, accent, gradient, success, warning.
+                Cards can have accent colors at the top. Available: primary, accent, gradient,
+                success, warning.
               </PortalCardDescription>
             </PortalCardContent>
             <PortalCardFooter>
-              <PortalBadge variant="emerald" size="sm" dot dotPulse>Active</PortalBadge>
+              <PortalBadge variant="emerald" size="sm" dot dotPulse>
+                Active
+              </PortalBadge>
             </PortalCardFooter>
           </PortalCard>
         </div>
@@ -161,15 +155,11 @@ export function DesignSystemShowcase() {
           <PortalButton variant="primary" leftIcon={<Zap size={16} />}>
             Primary
           </PortalButton>
-          <PortalButton variant="secondary">
-            Secondary
-          </PortalButton>
+          <PortalButton variant="secondary">Secondary</PortalButton>
           <PortalButton variant="outline" rightIcon={<ArrowRight size={16} />}>
             Outline
           </PortalButton>
-          <PortalButton variant="ghost">
-            Ghost
-          </PortalButton>
+          <PortalButton variant="ghost">Ghost</PortalButton>
           <PortalButton variant="success" leftIcon={<Check size={16} />}>
             Success
           </PortalButton>
@@ -179,32 +169,40 @@ export function DesignSystemShowcase() {
           <PortalButton variant="gradient" rightIcon={<Star size={16} />}>
             Gradient
           </PortalButton>
-          <PortalButton variant="glass">
-            Glass
-          </PortalButton>
+          <PortalButton variant="glass">Glass</PortalButton>
         </div>
 
         {/* Button Sizes */}
         <div className="flex flex-wrap items-center gap-4">
           <PortalButton size="xs">Extra Small</PortalButton>
+          <PortalButton size="xs">Extra Small</PortalButton>
           <PortalButton size="sm">Small</PortalButton>
           <PortalButton size="md">Medium</PortalButton>
           <PortalButton size="lg">Large</PortalButton>
-          <PortalButton size="xl">Extra Large</PortalButton>
         </div>
 
         {/* Icon Buttons */}
         <div className="flex flex-wrap items-center gap-4">
-          <PortalButton size="icon-sm" variant="ghost"><Bell size={16} /></PortalButton>
-          <PortalButton size="icon" variant="secondary"><Settings size={18} /></PortalButton>
-          <PortalButton size="icon-lg" variant="primary"><Download size={20} /></PortalButton>
-          <PortalButton size="icon" variant="gradient"><Plus size={18} /></PortalButton>
+          <PortalButton size="icon-sm" variant="ghost">
+            <Bell size={16} />
+          </PortalButton>
+          <PortalButton size="icon" variant="secondary">
+            <Settings size={18} />
+          </PortalButton>
+          <PortalButton size="icon-lg" variant="primary">
+            <Download size={20} />
+          </PortalButton>
+          <PortalButton size="icon" variant="gradient">
+            <Plus size={18} />
+          </PortalButton>
         </div>
 
         {/* Loading State */}
         <div className="flex flex-wrap gap-4">
           <PortalButton isLoading>Loading...</PortalButton>
-          <PortalButton variant="secondary" isLoading>Processing</PortalButton>
+          <PortalButton variant="secondary" isLoading>
+            Processing
+          </PortalButton>
         </div>
       </section>
 
@@ -234,31 +232,57 @@ export function DesignSystemShowcase() {
           <PortalBadge variant="solid-yellow">Solid Yellow</PortalBadge>
           <PortalBadge variant="solid-red">Solid Red</PortalBadge>
           <PortalBadge variant="solid-purple">Solid Purple</PortalBadge>
-          <PortalBadge variant="gradient" glow>Gradient</PortalBadge>
+          <PortalBadge variant="gradient" glow>
+            Gradient
+          </PortalBadge>
         </div>
 
         {/* Sizes */}
         <div className="flex flex-wrap items-center gap-3">
-          <PortalBadge variant="blue" size="xs">Extra Small</PortalBadge>
-          <PortalBadge variant="blue" size="sm">Small</PortalBadge>
-          <PortalBadge variant="blue" size="md">Medium</PortalBadge>
-          <PortalBadge variant="blue" size="lg">Large</PortalBadge>
+          <PortalBadge variant="blue" size="xs">
+            Extra Small
+          </PortalBadge>
+          <PortalBadge variant="blue" size="sm">
+            Small
+          </PortalBadge>
+          <PortalBadge variant="blue" size="md">
+            Medium
+          </PortalBadge>
+          <PortalBadge variant="blue" size="lg">
+            Large
+          </PortalBadge>
         </div>
 
         {/* With Dots */}
         <div className="flex flex-wrap gap-3">
-          <PortalBadge variant="green" dot>Active</PortalBadge>
-          <PortalBadge variant="yellow" dot dotPulse>Processing</PortalBadge>
-          <PortalBadge variant="red" dot>Offline</PortalBadge>
-          <PortalBadge variant="blue" dot dotPulse>Live</PortalBadge>
+          <PortalBadge variant="green" dot>
+            Active
+          </PortalBadge>
+          <PortalBadge variant="yellow" dot dotPulse>
+            Processing
+          </PortalBadge>
+          <PortalBadge variant="red" dot>
+            Offline
+          </PortalBadge>
+          <PortalBadge variant="blue" dot dotPulse>
+            Live
+          </PortalBadge>
         </div>
 
         {/* Glow Effect */}
         <div className="flex flex-wrap gap-3 p-4 bg-surface-900 rounded-xl">
-          <PortalBadge variant="blue" glow>Glow Blue</PortalBadge>
-          <PortalBadge variant="green" glow>Glow Green</PortalBadge>
-          <PortalBadge variant="purple" glow>Glow Purple</PortalBadge>
-          <PortalBadge variant="gradient" glow>Glow Gradient</PortalBadge>
+          <PortalBadge variant="blue" glow>
+            Glow Blue
+          </PortalBadge>
+          <PortalBadge variant="green" glow>
+            Glow Green
+          </PortalBadge>
+          <PortalBadge variant="purple" glow>
+            Glow Purple
+          </PortalBadge>
+          <PortalBadge variant="gradient" glow>
+            Glow Gradient
+          </PortalBadge>
         </div>
       </section>
 
@@ -314,15 +338,9 @@ export function DesignSystemShowcase() {
           {/* Text Gradients */}
           <PortalCard>
             <PortalCardContent>
-              <p className="text-xl font-bold text-gradient-primary mb-2">
-                text-gradient-primary
-              </p>
-              <p className="text-xl font-bold text-gradient-accent mb-2">
-                text-gradient-accent
-              </p>
-              <p className="text-xl font-bold text-gradient-brand">
-                text-gradient-brand
-              </p>
+              <p className="text-xl font-bold text-gradient-primary mb-2">text-gradient-primary</p>
+              <p className="text-xl font-bold text-gradient-accent mb-2">text-gradient-accent</p>
+              <p className="text-xl font-bold text-gradient-brand">text-gradient-brand</p>
             </PortalCardContent>
           </PortalCard>
 
@@ -341,8 +359,8 @@ export function DesignSystemShowcase() {
           <PortalCard className="border-glow">
             <PortalCardContent>
               <p className="text-sm text-surface-500">
-                Hover this card to see the gradient border glow effect.
-                Apply with <code className="text-primary-500">border-glow</code> class.
+                Hover this card to see the gradient border glow effect. Apply with{' '}
+                <code className="text-primary-500">border-glow</code> class.
               </p>
             </PortalCardContent>
           </PortalCard>

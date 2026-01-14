@@ -71,8 +71,8 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
+    "@next/eslint-plugin-next": "^16.1.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
@@ -88,6 +88,10 @@
     "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.10",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "firebase-admin": "^13.6.0",
     "husky": "^9.0.0",
     "jsdom": "^27.4.0",
@@ -99,6 +103,7 @@
     "tailwindcss": "^3.4.4",
     "tsx": "^4.21.0",
     "typescript": "^5.5.3",
+    "typescript-eslint": "^8.53.0",
     "vitest": "^4.0.16"
   },
   "lint-staged": {

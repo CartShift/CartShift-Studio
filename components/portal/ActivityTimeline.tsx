@@ -86,7 +86,8 @@ const activityIconVariants = cva(
         DECLINED_QUOTE: 'text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/30',
         STARTED_WORK: 'text-blue-500 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20',
         PAID_REQUEST: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30',
-        ADDED_COMMENT: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-900/30',
+        ADDED_COMMENT:
+          'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-900/30',
         DEFAULT: 'text-surface-400 dark:text-surface-500 bg-surface-100 dark:bg-surface-900/30',
       },
     },
@@ -110,7 +111,6 @@ const ACTION_ICONS: Record<string, typeof Plus> = {
 
 export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   activities,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   orgId: _orgId, // Deprecated - kept for backwards compatibility
   maxItems = 10,
   className,
@@ -206,9 +206,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
               )}
 
               <Link
-                href={
-                  activity.requestId ? `/portal/requests/${activity.requestId}` : '#'
-                }
+                href={activity.requestId ? `/portal/requests/${activity.requestId}` : '#'}
                 className={cn(
                   'flex items-start gap-4 p-4 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-all cursor-pointer group hover-lift-sm',
                   isHe && 'flex-row-reverse text-end'

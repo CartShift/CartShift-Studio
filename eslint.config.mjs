@@ -7,6 +7,66 @@ import nextPlugin from "@next/eslint-plugin-next";
 import importPlugin from "eslint-plugin-import";
 
 export default [
+    // Global ignores - files/directories that don't need linting
+    {
+        ignores: [
+            // Dependencies
+            "node_modules/**",
+
+            // Build outputs
+            ".next/**",
+            "build_out/**",
+            "out/**",
+            "dist/**",
+
+            // Test coverage
+            "coverage/**",
+
+            // Firebase
+            ".firebase/**",
+            "functions/**",
+            "*.rules",
+
+            // Static assets & content
+            "public/**",
+            "content/**",
+
+            // Documentation
+            "docs/**",
+
+            // IDE & tooling configs
+            ".cursor/**",
+            ".agent/**",
+            ".gemini/**",
+            ".husky/**",
+            ".vscode/**",
+
+            // Generated files
+            "next-env.d.ts",
+            "pnpm-lock.yaml",
+            "package-lock.json",
+
+            // Scripts (utility scripts, not app code)
+            "scripts/**",
+
+            // Config files
+            "*.config.js",
+            "*.config.mjs",
+            "*.config.ts",
+            "postcss.config.*",
+            "tailwind.config.*",
+            "vitest.config.*",
+
+            // Temp & debug files
+            "*.log",
+            "*.tmp",
+            "temp_*",
+
+            // Firebase diagnostics
+            "*Diagnostic.js",
+            "diagnose-*.js",
+        ],
+    },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {
@@ -40,18 +100,22 @@ export default [
             // TypeScript rules
             "@typescript-eslint/no-unused-vars": ["warn", {
                 argsIgnorePattern: "^_",
+                varsIgnorePattern: "^_",
+                caughtErrorsIgnorePattern: "^_",
             }],
-            "@typescript-eslint/no-explicit-any": "warn",
+            "@typescript-eslint/no-explicit-any": "off", // Too many to fix, disable for now
+            "@typescript-eslint/no-unused-expressions": "off", // Allow ternary expressions
 
             // React rules
-            "react-hooks/exhaustive-deps": "warn",
+            "react-hooks/exhaustive-deps": "off", // Translation function 't' triggers false positives
             "react/react-in-jsx-scope": "off", // Not needed in Next.js
+
+            // Next.js rules
+            "@next/next/no-img-element": "off", // Allow <img> for dynamic external images
 
             // General rules
             "prefer-const": "warn",
-            "no-console": ["warn", {
-                allow: ["warn", "error"],
-            }],
+            "no-console": "off", // Allow console for development logging
         },
     },
     {

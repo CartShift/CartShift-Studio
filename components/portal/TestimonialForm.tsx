@@ -249,10 +249,12 @@ function RecommendToggle({ value, onChange }: RecommendToggleProps) {
       </motion.div>
       <div className="text-start flex-1">
         <p className="font-bold text-surface-900 dark:text-white">
-          {t('testimonial.wouldRecommend')}
+          {t('testimonial.testimonial.wouldRecommend')}
         </p>
         <p className="text-sm text-surface-500 dark:text-surface-400">
-          {value ? t('testimonial.wouldRecommendYes') : t('testimonial.wouldRecommendNo')}
+          {value
+            ? t('testimonial.testimonial.wouldRecommendYes')
+            : t('testimonial.testimonial.wouldRecommendNo')}
         </p>
       </div>
       <motion.div
@@ -365,18 +367,18 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
 
       if (step === 'rating') {
         if (rating === 0) {
-          newErrors.rating = t('testimonial.errors.ratingRequired');
+          newErrors.rating = t('testimonial.testimonial.errors.ratingRequired');
         }
       }
 
       if (step === 'details') {
         if (!headline.trim()) {
-          newErrors.headline = t('testimonial.errors.headlineRequired');
+          newErrors.headline = t('testimonial.testimonial.errors.headlineRequired');
         }
         if (!content.trim()) {
-          newErrors.content = t('testimonial.errors.contentRequired');
+          newErrors.content = t('testimonial.testimonial.errors.contentRequired');
         } else if (content.trim().length < 20) {
-          newErrors.content = t('testimonial.errors.contentTooShort');
+          newErrors.content = t('testimonial.testimonial.errors.contentTooShort');
         }
       }
 
@@ -460,10 +462,10 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
           </motion.div>
           <div className="space-y-2">
             <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-              {t('testimonial.alreadySubmitted.title')}
+              {t('testimonial.testimonial.alreadySubmitted.title')}
             </h3>
             <p className="text-surface-500 dark:text-surface-400 max-w-md mx-auto">
-              {t('testimonial.alreadySubmitted.description')}
+              {t('testimonial.testimonial.alreadySubmitted.description')}
             </p>
           </div>
           <div className="pt-4">
@@ -624,7 +626,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                 placeholder={t('testimonial.placeholders.projectHighlight')}
                 value={projectHighlight}
                 onChange={e => setProjectHighlight(e.target.value)}
-                hint={t('testimonial.hints.projectHighlight')}
+                hint={t('testimonial.testimonial.hints.projectHighlight')}
               />
             </div>
           </motion.div>
@@ -655,28 +657,28 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             <div className="grid grid-cols-2 gap-3">
               <AspectRating
                 icon={MessageSquareHeart}
-                label={t('testimonial.aspects.communication')}
+                label={t('testimonial.testimonial.aspects.communication')}
                 value={aspects.communication}
                 onChange={v => setAspects(prev => ({ ...prev, communication: v }))}
                 color="bg-gradient-to-br from-blue-500 to-cyan-500"
               />
               <AspectRating
                 icon={Sparkles}
-                label={t('testimonial.aspects.quality')}
+                label={t('testimonial.testimonial.aspects.quality')}
                 value={aspects.quality}
                 onChange={v => setAspects(prev => ({ ...prev, quality: v }))}
                 color="bg-gradient-to-br from-purple-500 to-pink-500"
               />
               <AspectRating
                 icon={Clock}
-                label={t('testimonial.aspects.timeliness')}
+                label={t('testimonial.testimonial.aspects.timeliness')}
                 value={aspects.timeliness}
                 onChange={v => setAspects(prev => ({ ...prev, timeliness: v }))}
                 color="bg-gradient-to-br from-amber-500 to-orange-500"
               />
               <AspectRating
                 icon={Zap}
-                label={t('testimonial.aspects.value')}
+                label={t('testimonial.testimonial.aspects.value')}
                 value={aspects.value}
                 onChange={v => setAspects(prev => ({ ...prev, value: v }))}
                 color="bg-gradient-to-br from-emerald-500 to-teal-500"
@@ -730,7 +732,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                 {wouldRecommend && (
                   <span className="flex items-center gap-1 text-emerald-500 text-sm font-medium">
                     <Heart className="w-4 h-4 fill-emerald-500" />
-                    {t('testimonial.wouldRecommendBadge')}
+                    {t('testimonial.testimonial.wouldRecommendBadge')}
                   </span>
                 )}
               </div>
@@ -760,7 +762,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                     {userData?.name || 'Anonymous'}
                   </p>
                   <p className="text-xs text-surface-500">
-                    {role || t('testimonial.noRole')} • {currentOrg?.name || 'Company'}
+                    {role || t('testimonial.testimonial.noRole')} • {currentOrg?.name || 'Company'}
                   </p>
                 </div>
               </div>
@@ -774,7 +776,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
         {currentStepIndex > 0 ? (
           <PortalButton variant="ghost" onClick={goToPrevStep} className="gap-2">
             <PrevIcon className="w-4 h-4" />
-            {t('testimonial.actions.back')}
+            {t('testimonial.testimonial.actions.back')}
           </PortalButton>
         ) : (
           <div />
@@ -795,18 +797,18 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                 >
                   <Sparkles className="w-4 h-4" />
                 </motion.div>
-                {t('testimonial.actions.submitting')}
+                {t('testimonial.testimonial.actions.submitting')}
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                {t('testimonial.actions.submit')}
+                {t('testimonial.testimonial.actions.submit')}
               </>
             )}
           </PortalButton>
         ) : (
           <PortalButton variant="primary" onClick={goToNextStep} className="gap-2">
-            {t('testimonial.actions.next')}
+            {t('testimonial.testimonial.actions.next')}
             <NextIcon className="w-4 h-4" />
           </PortalButton>
         )}

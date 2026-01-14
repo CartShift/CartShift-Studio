@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section } from '@/components/ui/Section';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -25,15 +25,12 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
     filters: { all: string; shopify: string; wordpress: string };
     cta: { title: string; titleSpan: string; description: string; button: string };
     viewProject: string;
-    comingSoon: string;
   };
 
   const filteredCaseStudies =
     activeFilter === 'all'
       ? caseStudies
-      : caseStudies.filter(cs =>
-          cs.platform.toLowerCase().includes(activeFilter)
-        );
+      : caseStudies.filter(cs => cs.platform.toLowerCase().includes(activeFilter));
 
   const filters: Array<{ key: 'all' | 'shopify' | 'wordpress'; label: string }> = [
     { key: 'all', label: work.filters.all },
@@ -42,8 +39,8 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
   ];
 
   const breadcrumbItems = [
-    { name: t('navigation.home'), url: '/' },
-    { name: work.hero.title, url: '/work' },
+    { label: t('navigation.home'), href: '/' },
+    { label: work.hero.title, href: '/work' },
   ];
 
   const getPlatformType = (platform: string): 'shopify' | 'wordpress' => {
@@ -113,11 +110,13 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
                         {/* Featured Result Badge */}
                         {topResult && (
                           <div className="absolute top-3 start-3 rtl:start-auto rtl:end-3">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold backdrop-blur-sm ${
-                              platformType === 'shopify'
-                                ? 'bg-green-500/90 text-white'
-                                : 'bg-blue-500/90 text-white'
-                            }`}>
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold backdrop-blur-sm ${
+                                platformType === 'shopify'
+                                  ? 'bg-green-500/90 text-white'
+                                  : 'bg-blue-500/90 text-white'
+                              }`}
+                            >
                               {topResult.improvement} {topResult.metric}
                             </span>
                           </div>
@@ -219,18 +218,6 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
               {(work as any).empty?.description || 'Try changing the filter to see more projects.'}
             </p>
           </div>
-        )}
-
-        {filteredCaseStudies.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mt-12 text-center"
-          >
-            <p className="text-surface-500 dark:text-surface-500 italic">{work.comingSoon}</p>
-          </motion.div>
         )}
       </Section>
 

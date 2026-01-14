@@ -187,9 +187,9 @@ export const ClientPortalPageContent: React.FC = () => {
   };
 
   const breadcrumbItems = [
-    { name: t('navigation.home'), url: '/' },
-    { name: t('nav.tools'), url: '#' },
-    { name: t('nav.clientPortal'), url: '/tools/client-portal' },
+    { label: t('navigation.home'), href: '/' },
+    { label: t('nav.tools'), href: '#' },
+    { label: t('nav.clientPortal'), href: '/tools/client-portal' },
   ];
 
   return (

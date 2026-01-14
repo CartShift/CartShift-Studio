@@ -1,57 +1,18 @@
 'use client';
 
-import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import React, { useMemo } from 'react';
 import { motion } from '@/lib/motion';
 import { AnimatedNumber } from '@/components/portal/ui/AnimatedNumber';
 import { useTranslations } from 'next-intl';
-import {
-  FileText,
-  Clock,
-  CheckCircle2,
-  DollarSign,
-  TrendingUp,
-  Activity,
-  LucideIcon,
-} from 'lucide-react';
+import { FileText, Clock, CheckCircle2, DollarSign, TrendingUp, Activity } from 'lucide-react';
 import { PortalEmptyState } from '@/components/portal/ui/PortalEmptyState';
 import { Request, REQUEST_STATUS, RequestStatus } from '@/lib/types/portal';
 import { Timestamp } from 'firebase/firestore';
 
-const analyticCardVariants = cva(
-  'relative p-5 rounded-2xl bg-white dark:bg-surface-900/80 border border-surface-200/50 dark:border-white/[0.06] overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300',
-  {
-    variants: {
-      intent: {
-        blue: 'text-blue-600 dark:text-blue-400 [--icon-bg:linear-gradient(135deg,#3b82f6,#6366f1)] [--glow-color:rgba(59,130,246,0.2)]',
-        amber:
-          'text-amber-600 dark:text-amber-400 [--icon-bg:linear-gradient(135deg,#f59e0b,#ea580c)] [--glow-color:rgba(245,158,11,0.2)]',
-        green:
-          'text-green-600 dark:text-green-400 [--icon-bg:linear-gradient(135deg,#22c55e,#10b981)] [--glow-color:rgba(34,197,94,0.2)]',
-        purple:
-          'text-purple-600 dark:text-purple-400 [--icon-bg:linear-gradient(135deg,#a855f7,#ec4899)] [--glow-color:rgba(168,85,247,0.2)]',
-        emerald:
-          'text-emerald-600 dark:text-emerald-400 [--icon-bg:linear-gradient(135deg,#10b981,#14b8a6)] [--glow-color:rgba(16,185,129,0.2)]',
-      },
-    },
-    defaultVariants: {
-      intent: 'blue',
-    },
-  }
-);
-
 interface ClientAnalyticsProps {
   requests: Request[];
   className?: string;
-}
-
-interface AnalyticCard extends VariantProps<typeof analyticCardVariants> {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-  icon: LucideIcon;
-  trend?: { value: number; positive: boolean };
 }
 
 // Calculate days between two timestamps

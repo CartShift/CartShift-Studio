@@ -60,6 +60,7 @@ import {
   FileText,
   DollarSign,
   AlertTriangle,
+  LogIn,
   type LucideProps,
 } from 'lucide-react';
 
@@ -129,6 +130,7 @@ const iconComponents: Record<string, React.ComponentType<LucideProps>> = {
   'file-text': FileText,
   'dollar-sign': DollarSign,
   'alert-triangle': AlertTriangle,
+  'log-in': LogIn,
 };
 
 export const Icon: React.FC<IconProps> = ({ name, className = '', size = 24 }) => {

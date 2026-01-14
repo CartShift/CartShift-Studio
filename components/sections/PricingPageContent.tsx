@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { FAQ } from '@/components/ui/FAQ';
@@ -181,8 +181,8 @@ export const PricingPageContent: React.FC = () => {
   }));
 
   const breadcrumbItems = [
-    { name: t('navigation.home'), url: '/' },
-    { name: pricing.hero.title, url: '/pricing' },
+    { label: t('navigation.home'), href: '/' },
+    { label: pricing.hero.title, href: '/pricing' },
   ];
 
   return (
@@ -326,4 +326,3 @@ export const PricingPageContent: React.FC = () => {
     </>
   );
 };
-

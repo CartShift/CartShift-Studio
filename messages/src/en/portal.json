@@ -6,7 +6,48 @@
         "pendingRevenue": "Pending Revenue",
         "activeClients": "Active Clients",
         "avgDealSize": "Avg. Deal Size",
-        "pending": "Pending"
+        "pending": "Pending",
+        "allTime": "All time",
+        "thisMonth": "This Month",
+        "total": "total",
+        "conversionRate": "Conversion Rate",
+        "proposals": "proposals",
+        "newClients": "New Clients",
+        "avgCloseTime": "Avg. Close Time"
+      },
+      "dashboard": {
+        "loading": "Loading sales data...",
+        "title": "Sales Dashboard",
+        "subtitle": "Track revenue, performance metrics, and client insights",
+        "refresh": "Refresh",
+        "exportReport": "Export Report"
+      },
+      "empty": {
+        "title": "No Sales Data Yet",
+        "subtitle": "Start creating pricing offers to track your sales performance.",
+        "hint": "Accepted quotes will appear here as revenue."
+      },
+      "performance": {
+        "title": "Performance Overview",
+        "subtitle": "Key metrics at a glance"
+      },
+      "chart": {
+        "monthlyRevenue": "Monthly Revenue",
+        "last6Months": "Last 6 months"
+      },
+      "topClients": {
+        "title": "Top Clients",
+        "subtitle": "By revenue",
+        "noData": "No client data yet"
+      },
+      "proposals": {
+        "title": "Proposal Activity",
+        "subtitle": "Status breakdown",
+        "total": "Total",
+        "thisMonth": "This Month",
+        "accepted": "Accepted",
+        "paid": "Paid",
+        "declined": "Declined"
       }
     },
     "quickActions": {

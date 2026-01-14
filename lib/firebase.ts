@@ -29,7 +29,7 @@ function validateFirebaseConfig() {
 
   const requiredFields = ['apiKey', 'authDomain', 'projectId', 'appId'];
   const missingFields = requiredFields.filter(
-    (field) => !firebaseConfig[field as keyof typeof firebaseConfig]
+    field => !firebaseConfig[field as keyof typeof firebaseConfig]
   );
 
   if (missingFields.length > 0) {
@@ -37,9 +37,7 @@ function validateFirebaseConfig() {
       'Firebase configuration is incomplete. Missing fields:',
       missingFields.join(', ')
     );
-    console.error(
-      'Please ensure all NEXT_PUBLIC_FIREBASE_* environment variables are set.'
-    );
+    console.error('Please ensure all NEXT_PUBLIC_FIREBASE_* environment variables are set.');
   }
 }
 
@@ -60,7 +58,7 @@ function getFirebaseApp(): FirebaseApp {
       if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
         throw new Error(
           'Firebase configuration is incomplete. Please check your environment variables: ' +
-          'NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, NEXT_PUBLIC_FIREBASE_PROJECT_ID'
+            'NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, NEXT_PUBLIC_FIREBASE_PROJECT_ID'
         );
       }
       app = initializeApp(firebaseConfig);
@@ -93,7 +91,7 @@ export function getFirestoreDb(): Firestore {
       dbInstance = initializeFirestore(firebaseApp, {
         ignoreUndefinedProperties: true,
       });
-    } catch (error) {
+    } catch (_error) {
       dbInstance = getFirestore(firebaseApp);
     }
   }
@@ -112,7 +110,7 @@ export async function waitForAuth(): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async user => {
       unsubscribe();
       if (user) {
         try {
@@ -144,4 +142,5 @@ export function getFirebaseStorage(): FirebaseStorage {
 // Export singleton instances - use getter functions if these fail on SSR
 export const auth = typeof window !== 'undefined' ? getFirebaseAuth() : (null as unknown as Auth);
 export const db = typeof window !== 'undefined' ? getFirestoreDb() : (null as unknown as Firestore);
-export const storage = typeof window !== 'undefined' ? getFirebaseStorage() : (null as unknown as FirebaseStorage);
+export const storage =
+  typeof window !== 'undefined' ? getFirebaseStorage() : (null as unknown as FirebaseStorage);

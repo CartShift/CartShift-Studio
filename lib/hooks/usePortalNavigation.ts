@@ -22,7 +22,11 @@ export function usePortalNavigation() {
   const navigateToPortal = useCallback(
     (path: string, options?: { replace?: boolean }) => {
       const target = getPortalPath(path);
-      options?.replace ? router.replace(target) : router.push(target);
+      if (options?.replace) {
+        router.replace(target);
+      } else {
+        router.push(target);
+      }
     },
     [router]
   );
@@ -45,10 +49,11 @@ export function usePortalNavigation() {
 
   const isOnPortalPage = useCallback((): boolean => {
     if (!pathname) return false;
-    const normalized = pathname
-      .replace(/^\/[a-z]{2}\//, '/')
-      .replace('/portal/', '/')
-      .replace(/\/$/, '') || '/';
+    const normalized =
+      pathname
+        .replace(/^\/[a-z]{2}\//, '/')
+        .replace('/portal/', '/')
+        .replace(/\/$/, '') || '/';
     return PORTAL_PATHS.some(p => normalized === p || normalized.startsWith(p + '/'));
   }, [pathname]);
 

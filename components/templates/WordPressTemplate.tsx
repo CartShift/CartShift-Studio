@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import React from "react";
-import { PageHero } from "@/components/sections/PageHero";
-import { WordPressPageContent } from "@/components/sections/WordPressPageContent";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { useTranslations } from "next-intl";
+import React from 'react';
+import { PageHero } from '@/components/sections/PageHero';
+import { WordPressPageContent } from '@/components/sections/WordPressPageContent';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
+import { useTranslations } from 'next-intl';
 
 export const WordPressTemplate: React.FC = () => {
   const t = useTranslations();
 
   const breadcrumbItems = [
-    { name: t("navigation.home"), url: "/" },
-    { name: t("navigation.solutions"), url: "/" },
-    { name: t("navigation.wordpress"), url: "/solutions/wordpress" },
+    { label: t('navigation.home'), href: '/' },
+    { label: t('navigation.solutions'), href: '/' },
+    { label: t('navigation.wordpress'), href: '/solutions/wordpress' },
   ];
 
   return (
     <>
       <PageHero
-        title={t("wordpress.hero.title")}
-        subtitle={t("wordpress.hero.subtitle")}
-        description={t("wordpress.hero.description")}
-        badge={t("wordpress.hero.badge")}
+        title={t('wordpress.hero.title')}
+        subtitle={t('wordpress.hero.subtitle')}
+        description={t('wordpress.hero.description')}
+        badge={t('wordpress.hero.badge')}
         seoH1="WordPress E-commerce Development Services | Custom Websites & Content Sites"
       />
       <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
@@ -33,4 +33,3 @@ export const WordPressTemplate: React.FC = () => {
     </>
   );
 };
-

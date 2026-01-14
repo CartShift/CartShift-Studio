@@ -42,9 +42,9 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
   };
 
   const breadcrumbItems = [
-    { name: t('nav.home'), url: '/' },
-    { name: workT.hero.title, url: '/work' },
-    { name: caseStudy.title, url: `/work/${caseStudy.slug}` },
+    { label: t('nav.home'), href: '/' },
+    { label: workT.hero.title, href: '/work' },
+    { label: caseStudy.title, href: `/work/${caseStudy.slug}` },
   ];
 
   const platformColor = caseStudy.platform.toLowerCase().includes('shopify') ? 'green' : 'blue';

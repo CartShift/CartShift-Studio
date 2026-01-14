@@ -51,7 +51,7 @@ function preprocessMarkdown(content: string): string {
   processed = processed.replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2');
 
   // Ensure proper spacing around lists (empty line before list start)
-  processed = processed.replace(/([^\n\-\*\+\d])\n([-*+]|\d+\.)\s/g, '$1\n\n$2 ');
+  processed = processed.replace(/([^\n\-*+\d])\n([-*+]|\d+\.)\s/g, '$1\n\n$2 ');
 
   return processed;
 }

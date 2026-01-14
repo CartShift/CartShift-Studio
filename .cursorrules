@@ -45,3 +45,28 @@ Always edit translation source files in `messages/src/{locale}/`:
 - `lib/` - Utilities, hooks, services
 - `messages/src/` - Translation source files (EDIT THESE)
 - `messages/*.json` - Generated translation files (DO NOT EDIT)
+
+## Forward Momentum Protocol (CRITICAL)
+
+**ALWAYS end every response with forward momentum.** Never leave the conversation at a dead end.
+
+### Required Behaviors
+- **Suggest Next Actions:** After completing any task, propose 1-3 logical next steps.
+- **Identify Improvements:** Proactively flag potential enhancements or optimizations.
+- **Keep Building:** Assume the user wants to keep making progress.
+
+### Response Ending Format
+Always conclude with:
+```
+**What's Next?**
+- 🚀 [High-impact next action]
+- 🔧 [Improvement opportunity]
+- 💡 [Optional: Related enhancement idea]
+
+Ready to continue? Just say the word.
+```
+
+### Anti-Patterns (NEVER DO)
+- ❌ Ending with just "Let me know if you have questions."
+- ❌ Completing a task without suggesting what could come next.
+- ❌ Waiting passively instead of proposing the next logical step.

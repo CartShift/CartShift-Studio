@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
@@ -21,7 +21,7 @@ import {
   TrendingUp,
   Zap,
   Shield,
-  Target
+  Target,
 } from 'lucide-react';
 
 type IndustrySlug = 'fashion' | 'food' | 'health' | 'tech' | 'arts' | 'local';
@@ -96,9 +96,9 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
   }));
 
   const breadcrumbItems = [
-    { name: t('navigation.home'), url: '/' },
-    { name: t('industries.title'), url: '#' },
-    { name: content.title, url: `/industries/${industry}` },
+    { label: t('navigation.home'), href: '/' },
+    { label: t('industries.title'), href: '#' },
+    { label: content.title, href: `/industries/${industry}` },
   ];
 
   return (
@@ -138,29 +138,33 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {genericBenefits.map((benefit: { icon: any; title: string; description: string }, index: number) => {
-            const BenefitIcon = benefit.icon;
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700 transition-colors"
-              >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${config.bgGradient} flex items-center justify-center mb-4`}>
-                  <BenefitIcon size={24} className="text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-2 font-display">
-                  {benefit.title}
-                </h3>
-                <p className="text-sm text-surface-600 dark:text-surface-400">
-                  {benefit.description}
-                </p>
-              </motion.div>
-            );
-          })}
+          {genericBenefits.map(
+            (benefit: { icon: any; title: string; description: string }, index: number) => {
+              const BenefitIcon = benefit.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="p-6 rounded-2xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700 transition-colors"
+                >
+                  <div
+                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${config.bgGradient} flex items-center justify-center mb-4`}
+                  >
+                    <BenefitIcon size={24} className="text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-2 font-display">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-sm text-surface-600 dark:text-surface-400">
+                    {benefit.description}
+                  </p>
+                </motion.div>
+              );
+            }
+          )}
         </div>
       </Section>
 
@@ -173,9 +177,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              ...industriesContent.services,
-            ].map((service, index) => (
+            {[...industriesContent.services].map((service, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: isHe ? 20 : -20 }}
@@ -209,12 +211,12 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="p-6"
             >
-              <div className={`text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r ${config.bgGradient} bg-clip-text text-transparent`}>
+              <div
+                className={`text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r ${config.bgGradient} bg-clip-text text-transparent`}
+              >
                 {stat.value}
               </div>
-              <div className="text-sm text-surface-500">
-                {stat.label}
-              </div>
+              <div className="text-sm text-surface-500">{stat.label}</div>
             </motion.div>
           ))}
         </div>

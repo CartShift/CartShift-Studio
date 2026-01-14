@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { FAQ } from '@/components/ui/FAQ';
@@ -158,8 +158,8 @@ export const MaintenancePageContent: React.FC = () => {
   }));
 
   const breadcrumbItems = [
-    { name: t('navigation.home'), url: '/' },
-    { name: maintenance.hero.title, url: '/maintenance' },
+    { label: t('navigation.home'), href: '/' },
+    { label: maintenance.hero.title, href: '/maintenance' },
   ];
 
   return (
@@ -316,4 +316,3 @@ export const MaintenancePageContent: React.FC = () => {
     </>
   );
 };
-

@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import React from "react";
-import { PageHero } from "@/components/sections/PageHero";
-import { ShopifyPageContent } from "@/components/sections/ShopifyPageContent";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { useTranslations } from "next-intl";
+import React from 'react';
+import { PageHero } from '@/components/sections/PageHero';
+import { ShopifyPageContent } from '@/components/sections/ShopifyPageContent';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
+import { useTranslations } from 'next-intl';
 
 export const ShopifyTemplate: React.FC = () => {
   const t = useTranslations();
 
   const breadcrumbItems = [
-    { name: t("navigation.home"), url: "/" },
-    { name: t("navigation.solutions"), url: "/" },
-    { name: t("navigation.shopify"), url: "/solutions/shopify" },
+    { label: t('navigation.home'), href: '/' },
+    { label: t('navigation.solutions'), href: '/' },
+    { label: t('navigation.shopify'), href: '/solutions/shopify' },
   ];
 
   return (
     <>
       <PageHero
-        title={t("shopify.hero.title")}
-        subtitle={t("shopify.hero.subtitle")}
-        description={t("shopify.hero.description")}
-        badge={t("shopify.hero.badge")}
+        title={t('shopify.hero.title')}
+        subtitle={t('shopify.hero.subtitle')}
+        description={t('shopify.hero.description')}
+        badge={t('shopify.hero.badge')}
         seoH1="Shopify Development Services | Custom Store Setup & Optimization"
       />
       <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
@@ -33,4 +33,3 @@ export const ShopifyTemplate: React.FC = () => {
     </>
   );
 };
-

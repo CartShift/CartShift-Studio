@@ -6,7 +6,48 @@
         "pendingRevenue": "הכנסות בהמתנה",
         "activeClients": "לקוחות פעילים",
         "avgDealSize": "גודל עסקה ממוצע",
-        "pending": "בהמתנה"
+        "pending": "בהמתנה",
+        "allTime": "כל הזמנים",
+        "thisMonth": "החודש",
+        "total": "סה״כ",
+        "conversionRate": "שיעור המרה",
+        "proposals": "הצעות",
+        "newClients": "לקוחות חדשים",
+        "avgCloseTime": "זמן סגירה ממוצע"
+      },
+      "dashboard": {
+        "loading": "טוען נתוני מכירות...",
+        "title": "דשבורד מכירות",
+        "subtitle": "עקוב אחר הכנסות, מדדי ביצוע ותובנות לקוחות",
+        "refresh": "רענן",
+        "exportReport": "ייצא דו״ח"
+      },
+      "empty": {
+        "title": "אין נתוני מכירות עדיין",
+        "subtitle": "התחל ליצור הצעות מחיר כדי לעקוב אחר ביצועי המכירות שלך.",
+        "hint": "הצעות מחיר שאושרו יופיעו כאן כהכנסות."
+      },
+      "performance": {
+        "title": "סקירת ביצועים",
+        "subtitle": "מדדים מרכזיים במבט אחד"
+      },
+      "chart": {
+        "monthlyRevenue": "הכנסות חודשיות",
+        "last6Months": "6 חודשים אחרונים"
+      },
+      "topClients": {
+        "title": "לקוחות מובילים",
+        "subtitle": "לפי הכנסות",
+        "noData": "אין נתוני לקוחות עדיין"
+      },
+      "proposals": {
+        "title": "פעילות הצעות מחיר",
+        "subtitle": "פילוח לפי סטטוס",
+        "total": "סה״כ",
+        "thisMonth": "החודש",
+        "accepted": "אושרו",
+        "paid": "שולמו",
+        "declined": "נדחו"
       }
     },
     "quickActions": {

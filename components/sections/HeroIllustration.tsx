@@ -438,7 +438,7 @@ export const HeroIllustration: React.FC = () => {
               key={i}
               x={item.x}
               y={item.y}
-              className={`${item.color} text-[24px] font-mono font-bold opacity-60 dark:opacity-40`}
+              className={`${item.color} text-[24px] font-mono font-bold opacity-60 dark:opacity-40 dark:filter-neon`}
               initial={{ y: item.y }}
               animate={{
                 y: [item.y, item.y - 20, item.y],
@@ -451,8 +451,6 @@ export const HeroIllustration: React.FC = () => {
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}
-              // Filter only in dark mode to prevent muddiness in light mode
-              className="dark:filter-neon"
             >
               {item.char}
             </motion.text>

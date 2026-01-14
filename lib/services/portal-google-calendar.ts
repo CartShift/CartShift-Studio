@@ -5,29 +5,18 @@
  * Uses client-side OAuth with Firebase for token storage.
  */
 
-import {
-  doc,
-  getDoc,
-  setDoc,
-  deleteDoc,
-  serverTimestamp,
-  Timestamp,
-} from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db, getFirebaseAuth } from '@/lib/firebase';
 import { buildFirebaseFunctionUrl } from './firebase';
-import {
-    ConsultationType,
-    CONSULTATION_TYPE_CONFIG
-} from '@/lib/types/portal';
+import { ConsultationType, CONSULTATION_TYPE_CONFIG } from '@/lib/types/portal';
 
 // Collection for storing integration credentials
 const INTEGRATIONS_COLLECTION = 'agency_integrations';
 
 // Google OAuth configuration
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
-const GOOGLE_REDIRECT_URI = typeof window !== 'undefined'
-  ? `${window.location.origin}/portal/oauth-callback`
-  : '';
+const GOOGLE_REDIRECT_URI =
+  typeof window !== 'undefined' ? `${window.location.origin}/portal/oauth-callback` : '';
 
 // Required scopes for Calendar API
 const GOOGLE_CALENDAR_SCOPES = [
@@ -129,9 +118,8 @@ export async function handleOAuthCallback(
   state: string
 ): Promise<{ success: boolean; error?: string }> {
   // Verify state matches
-  const storedState = typeof window !== 'undefined'
-    ? sessionStorage.getItem('google_oauth_state')
-    : null;
+  const storedState =
+    typeof window !== 'undefined' ? sessionStorage.getItem('google_oauth_state') : null;
 
   if (!storedState || storedState !== state) {
     return { success: false, error: 'Invalid state parameter. Please try again.' };
@@ -181,7 +169,7 @@ export async function handleOAuthCallback(
         const error = await response.json();
         errorMessage = error.message || error.error || errorMessage;
         console.error('[Google Calendar] OAuth callback error:', error);
-      } catch (e) {
+      } catch (_e) {
         const errorText = await response.text();
         console.error('[Google Calendar] OAuth callback error (non-JSON):', errorText);
         errorMessage = errorText || errorMessage;
@@ -224,20 +212,24 @@ async function storeGoogleTokens(tokens: {
 
   const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
 
-  await setDoc(integrationRef, {
-    userId: user.uid,
-    provider: 'google_calendar',
-    accessToken: tokens.access_token,
-    refreshToken: tokens.refresh_token || null,
-    tokenExpiry: Timestamp.fromDate(new Date(Date.now() + tokens.expires_in * 1000)),
-    scope: tokens.scope,
-    email: tokens.email || null,
-    status: 'connected',
-    connectedAt: serverTimestamp(),
-    lastSynced: null,
-    syncedCalendarIds: [],
-    selectedCalendarId: 'primary', // Default to primary
-  }, { merge: true });
+  await setDoc(
+    integrationRef,
+    {
+      userId: user.uid,
+      provider: 'google_calendar',
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token || null,
+      tokenExpiry: Timestamp.fromDate(new Date(Date.now() + tokens.expires_in * 1000)),
+      scope: tokens.scope,
+      email: tokens.email || null,
+      status: 'connected',
+      connectedAt: serverTimestamp(),
+      lastSynced: null,
+      syncedCalendarIds: [],
+      selectedCalendarId: 'primary', // Default to primary
+    },
+    { merge: true }
+  );
 }
 
 /**
@@ -358,7 +350,7 @@ export async function listCalendars(): Promise<CalendarInfo[]> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -378,7 +370,9 @@ export async function listCalendars(): Promise<CalendarInfo[]> {
 /**
  * Creates a calendar event
  */
-export async function createCalendarEvent(event: CalendarEvent): Promise<{ eventId: string; meetLink?: string }> {
+export async function createCalendarEvent(
+  event: CalendarEvent
+): Promise<{ eventId: string; meetLink?: string }> {
   const connection = await getCalendarConnection();
 
   if (!connection.connected) {
@@ -400,7 +394,7 @@ export async function createCalendarEvent(event: CalendarEvent): Promise<{ event
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         ...event,
@@ -443,13 +437,13 @@ export async function deleteCalendarEvent(eventId: string, calendarId?: string):
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ eventId, calendarId }),
     });
 
     if (!response.ok) {
-        throw new Error('Failed to delete calendar event');
+      throw new Error('Failed to delete calendar event');
     }
   } catch (error) {
     console.error('[Google Calendar] Error deleting event:', error);
@@ -467,7 +461,10 @@ export function isGoogleCalendarConfigured(): boolean {
 /**
  * Checks for busy slots in the user's calendar
  */
-export async function getFreeBusyIntervals(timeMin: Date, timeMax: Date): Promise<{ start: Date; end: Date }[]> {
+export async function getFreeBusyIntervals(
+  timeMin: Date,
+  timeMax: Date
+): Promise<{ start: Date; end: Date }[]> {
   const connection = await getCalendarConnection();
 
   if (!connection.connected) {
@@ -489,7 +486,7 @@ export async function getFreeBusyIntervals(timeMin: Date, timeMax: Date): Promis
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         timeMin: timeMin.toISOString(),
@@ -498,9 +495,9 @@ export async function getFreeBusyIntervals(timeMin: Date, timeMax: Date): Promis
     });
 
     if (!response.ok) {
-        // If we fail to check availability, just return empty to avoid blocking
-        console.warn('[Google Calendar] Failed to check availability');
-        return [];
+      // If we fail to check availability, just return empty to avoid blocking
+      console.warn('[Google Calendar] Failed to check availability');
+      return [];
     }
 
     const data = await response.json();
@@ -538,10 +535,10 @@ export async function tryCreateCalendarEventForConsultation(params: {
       if (typeof window !== 'undefined') {
         const { generateConsultationCalendarLink } = await import('@/lib/schedule');
         const fallbackUrl = generateConsultationCalendarLink(
-            params.title,
-            params.scheduledAt,
-            params.durationMinutes,
-            { description: params.description || '' }
+          params.title,
+          params.scheduledAt,
+          params.durationMinutes,
+          { description: params.description || '' }
         );
         return { success: false, fallbackLink: fallbackUrl };
       }
@@ -558,8 +555,8 @@ export async function tryCreateCalendarEventForConsultation(params: {
 
     // Add Portal Link
     if (typeof window !== 'undefined') {
-        const portalUrl = `${window.location.origin}/portal/consultations`;
-        descriptionParts.push(`🔗 View in Portal: ${portalUrl}`);
+      const portalUrl = `${window.location.origin}/portal/consultations`;
+      descriptionParts.push(`🔗 View in Portal: ${portalUrl}`);
     }
 
     if (params.description) {
@@ -570,10 +567,10 @@ export async function tryCreateCalendarEventForConsultation(params: {
     // Determine Color
     let colorId: string | undefined;
     if (params.type) {
-        const config = CONSULTATION_TYPE_CONFIG[params.type];
-        if (config?.googleCalendarColorId) {
-            colorId = config.googleCalendarColorId;
-        }
+      const config = CONSULTATION_TYPE_CONFIG[params.type];
+      if (config?.googleCalendarColorId) {
+        colorId = config.googleCalendarColorId;
+      }
     }
 
     const eventResult = await createCalendarEvent({
@@ -586,23 +583,23 @@ export async function tryCreateCalendarEventForConsultation(params: {
     });
 
     return {
-        success: true,
-        meetLink: eventResult.meetLink,
-        eventId: eventResult.eventId
+      success: true,
+      meetLink: eventResult.meetLink,
+      eventId: eventResult.eventId,
     };
   } catch (error) {
     console.error('Failed to auto-create calendar event:', error);
 
     // Fallback to link generation on error
     if (typeof window !== 'undefined') {
-        const { generateConsultationCalendarLink } = await import('@/lib/schedule');
-        const fallbackUrl = generateConsultationCalendarLink(
-            params.title,
-            params.scheduledAt,
-            params.durationMinutes,
-            { description: params.description || '' }
-        );
-        return { success: false, fallbackLink: fallbackUrl };
+      const { generateConsultationCalendarLink } = await import('@/lib/schedule');
+      const fallbackUrl = generateConsultationCalendarLink(
+        params.title,
+        params.scheduledAt,
+        params.durationMinutes,
+        { description: params.description || '' }
+      );
+      return { success: false, fallbackLink: fallbackUrl };
     }
     return { success: false };
   }

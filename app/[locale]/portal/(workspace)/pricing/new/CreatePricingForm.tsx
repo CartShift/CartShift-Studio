@@ -79,9 +79,6 @@ export default function CreatePricingForm() {
   // Track if line items are from calculator (to sync)
   const [lineItemsFromCalculator, setLineItemsFromCalculator] = useState(false);
 
-  // Quick add request modal state
-  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
-
   // Fetch requests that can be included in pricing offers
   useEffect(() => {
     async function fetchRequests() {
@@ -377,7 +374,8 @@ export default function CreatePricingForm() {
             {t('portal.pricing.newOffer')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.pricing.form.createNewDescription' as never) || 'Create a new pricing proposal for your client.'}
+            {t('portal.pricing.form.createNewDescription' as never) ||
+              'Create a new pricing proposal for your client.'}
           </p>
         </div>
       </div>
@@ -495,7 +493,9 @@ export default function CreatePricingForm() {
             <div className="px-6 space-y-3">
               {/* Header - Hidden on mobile, visible on larger screens */}
               <div className="hidden sm:grid grid-cols-12 gap-3 px-1 text-xs font-black text-surface-400 uppercase tracking-wider">
-                <div className="col-span-5 md:col-span-6">{t('portal.pricing.form.itemDescription')}</div>
+                <div className="col-span-5 md:col-span-6">
+                  {t('portal.pricing.form.itemDescription')}
+                </div>
                 <div className="col-span-2 text-center">{t('portal.pricing.form.quantity')}</div>
                 <div className="col-span-3 md:col-span-2">{t('portal.pricing.form.unitPrice')}</div>
                 <div className="col-span-2"></div>
@@ -515,7 +515,10 @@ export default function CreatePricingForm() {
                       <input
                         {...register(`lineItems.${index}.description`)}
                         type="text"
-                        placeholder={t('portal.pricing.form.itemDescriptionPlaceholder' as never) || 'Service or product...'}
+                        placeholder={
+                          t('portal.pricing.form.itemDescriptionPlaceholder' as never) ||
+                          'Service or product...'
+                        }
                         className={cn(
                           'portal-input w-full text-sm',
                           errors.lineItems?.[index]?.description && 'border-red-500'
