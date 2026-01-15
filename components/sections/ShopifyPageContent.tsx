@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -169,7 +169,7 @@ export const ShopifyPageContent: React.FC = () => {
             </p>
             <Link href="/contact">
               <Button size="lg" className="group">
-                <span className="relative z-10 flex items-center gap-2">
+                <span className="relative z-dropdown flex items-center gap-2">
                   {t('shopify.cta.button')}
                   <svg
                     className="w-5 h-5 transition-transform rtl:rotate-180"
@@ -193,4 +193,3 @@ export const ShopifyPageContent: React.FC = () => {
     </>
   );
 };
-

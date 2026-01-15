@@ -8,38 +8,33 @@ const badgeVariants = cva(
     variants: {
       variant: {
         blue: [
-          'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300',
-          'border border-blue-200/60 dark:border-blue-400/20',
+          'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200',
+          'border border-blue-200/60 dark:border-blue-400/30',
           'shadow-[0_1px_2px_rgba(59,130,246,0.06)]',
         ],
         green: [
-          'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
-          'border border-emerald-200/60 dark:border-emerald-400/20',
+          'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-200',
+          'border border-emerald-200/60 dark:border-emerald-400/30',
           'shadow-[0_1px_2px_rgba(16,185,129,0.06)]',
         ],
         yellow: [
-          'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300',
-          'border border-amber-200/60 dark:border-amber-400/20',
+          'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-200',
+          'border border-amber-200/60 dark:border-amber-400/30',
           'shadow-[0_1px_2px_rgba(245,158,11,0.06)]',
         ],
         red: [
-          'bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300',
-          'border border-rose-200/60 dark:border-rose-400/20',
+          'bg-rose-50 dark:bg-rose-500/20 text-rose-700 dark:text-rose-200',
+          'border border-rose-200/60 dark:border-rose-400/30',
           'shadow-[0_1px_2px_rgba(244,63,94,0.06)]',
         ],
         purple: [
-          'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300',
-          'border border-purple-200/60 dark:border-purple-400/20',
+          'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-200',
+          'border border-purple-200/60 dark:border-purple-400/30',
           'shadow-[0_1px_2px_rgba(168,85,247,0.06)]',
         ],
         gray: [
           'bg-surface-100/80 dark:bg-white/[0.06] text-surface-600 dark:text-surface-300',
           'border border-surface-200/60 dark:border-white/[0.08]',
-        ],
-        emerald: [
-          'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
-          'border border-emerald-200/60 dark:border-emerald-400/20',
-          'shadow-[0_1px_2px_rgba(16,185,129,0.06)]',
         ],
         orange: [
           'bg-orange-50 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300',
@@ -132,7 +127,6 @@ const dotColorMap: Record<string, string> = {
   red: 'bg-rose-500',
   purple: 'bg-purple-500',
   gray: 'bg-surface-400',
-  emerald: 'bg-emerald-500',
   orange: 'bg-orange-500',
   cyan: 'bg-cyan-500',
   pink: 'bg-pink-500',

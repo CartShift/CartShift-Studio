@@ -14,7 +14,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import {
   CalendarInfo,
   listCalendars,
@@ -286,7 +286,7 @@ export default function GoogleCalendarIntegration({
         {isConnected ? (
           <>
             {onSync && (
-              <PortalButton
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSync}
@@ -295,9 +295,9 @@ export default function GoogleCalendarIntegration({
               >
                 <RefreshCw size={16} className={cn(syncing && 'animate-spin')} />
                 {syncing ? t('googleCalendar.syncing') : t('googleCalendar.syncNow')}
-              </PortalButton>
+              </Button>
             )}
-            <PortalButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={handleDisconnect}
@@ -306,10 +306,10 @@ export default function GoogleCalendarIntegration({
             >
               {disconnecting ? <Loader2 size={16} className="animate-spin" /> : <X size={16} />}
               {t('googleCalendar.disconnect')}
-            </PortalButton>
+            </Button>
           </>
         ) : (
-          <PortalButton
+          <Button
             variant="primary"
             size="sm"
             onClick={handleConnect}
@@ -319,7 +319,7 @@ export default function GoogleCalendarIntegration({
             {connecting ? <Loader2 size={16} className="animate-spin" /> : <Calendar size={16} />}
             {connecting ? t('googleCalendar.connecting') : t('googleCalendar.connect')}
             {!connecting && <ExternalLink size={12} className="opacity-60" />}
-          </PortalButton>
+          </Button>
         )}
       </div>
     </motion.div>

@@ -20,9 +20,9 @@ import {
   ChevronRight,
   ChevronLeft,
 } from 'lucide-react';
-import { PortalCard } from './ui/PortalCard';
-import { PortalButton } from './ui/PortalButton';
-import { PortalInput } from './ui/PortalInput';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { useTestimonials } from '@/lib/hooks/useTestimonials';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -450,7 +450,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
   // Already submitted view
   if (hasSubmitted && testimonial) {
     return (
-      <PortalCard variant="gradient" className="overflow-hidden">
+      <Card variant="gradient" className="overflow-hidden">
         <div className="text-center py-8 space-y-4">
           <motion.div
             className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-xl shadow-emerald-500/30"
@@ -469,7 +469,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             </p>
           </div>
           <div className="pt-4">
-            <PortalCard variant="glass" className="inline-block text-start max-w-md mx-auto">
+            <Card variant="glass" className="inline-block text-start max-w-md mx-auto">
               <div className="flex items-center gap-1 mb-2">
                 {[1, 2, 3, 4, 5].map(star => (
                   <Star
@@ -489,15 +489,15 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
               <p className="text-sm text-surface-500 dark:text-surface-400 line-clamp-2">
                 {testimonial.content}
               </p>
-            </PortalCard>
+            </Card>
           </div>
         </div>
-      </PortalCard>
+      </Card>
     );
   }
 
   return (
-    <PortalCard variant="glass" className="overflow-hidden">
+    <Card variant="glass" className="overflow-hidden">
       {/* Progress Bar */}
       <div className="h-1 bg-surface-200 dark:bg-surface-800 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-6">
         <motion.div
@@ -597,14 +597,14 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             </div>
 
             <div className="space-y-4">
-              <PortalInput
+              <Input
                 label={t('testimonial.fields.role')}
                 placeholder={t('testimonial.placeholders.role')}
                 value={role}
                 onChange={e => setRole(e.target.value)}
               />
 
-              <PortalInput
+              <Input
                 label={t('testimonial.fields.headline')}
                 placeholder={t('testimonial.placeholders.headline')}
                 value={headline}
@@ -621,7 +621,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                 rows={4}
               />
 
-              <PortalInput
+              <Input
                 label={t('testimonial.fields.projectHighlight')}
                 placeholder={t('testimonial.placeholders.projectHighlight')}
                 value={projectHighlight}
@@ -716,7 +716,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             </div>
 
             {/* Preview */}
-            <PortalCard variant="elevated" className="space-y-4">
+            <Card variant="elevated" className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map(star => (
@@ -766,7 +766,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                   </p>
                 </div>
               </div>
-            </PortalCard>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
@@ -774,21 +774,16 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between mt-8 pt-6 border-t border-surface-100 dark:border-surface-800">
         {currentStepIndex > 0 ? (
-          <PortalButton variant="ghost" onClick={goToPrevStep} className="gap-2">
+          <Button variant="ghost" onClick={goToPrevStep} className="gap-2">
             <PrevIcon className="w-4 h-4" />
             {t('testimonial.testimonial.actions.back')}
-          </PortalButton>
+          </Button>
         ) : (
           <div />
         )}
 
         {currentStep === 'confirm' ? (
-          <PortalButton
-            variant="gradient"
-            onClick={handleSubmit}
-            disabled={isCreating}
-            className="gap-2"
-          >
+          <Button variant="gradient" onClick={handleSubmit} disabled={isCreating} className="gap-2">
             {isCreating ? (
               <>
                 <motion.div
@@ -805,15 +800,15 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                 {t('testimonial.testimonial.actions.submit')}
               </>
             )}
-          </PortalButton>
+          </Button>
         ) : (
-          <PortalButton variant="primary" onClick={goToNextStep} className="gap-2">
+          <Button variant="primary" onClick={goToNextStep} className="gap-2">
             {t('testimonial.testimonial.actions.next')}
             <NextIcon className="w-4 h-4" />
-          </PortalButton>
+          </Button>
         )}
       </div>
-    </PortalCard>
+    </Card>
   );
 }
 

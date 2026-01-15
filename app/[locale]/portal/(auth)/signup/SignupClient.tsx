@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from '@/i18n/navigation';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
 import { signUpWithEmail } from '@/lib/services/auth';
 import { Suspense, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
@@ -16,6 +16,11 @@ import Image from 'next/image';
 import { User, Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import {
+  calculatePasswordStrength,
+  PASSWORD_STRENGTH_COLORS,
+  PASSWORD_STRENGTH_LABELS,
+} from '@/lib/utils/validation';
 
 type SignupData = z.infer<ReturnType<typeof getSignupSchema>>;
 
@@ -62,32 +67,10 @@ function SignupForm() {
   // Watch password for strength calculation
   const passwordValue = watch('password', '');
 
-  // Calculate password strength
-  const calculateStrength = (password: string): number => {
-    let strength = 0;
-    if (password.length >= 6) strength += 1;
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    return strength;
-  };
-
-  const strength = calculateStrength(passwordValue || '');
-  const strengthColors = [
-    'bg-red-500',
-    'bg-orange-500',
-    'bg-yellow-500',
-    'bg-lime-500',
-    'bg-green-500',
-  ];
-  const strengthLabels = [
-    t('portal.auth.passwordStrength.veryWeak' as any),
-    t('portal.auth.passwordStrength.weak' as any),
-    t('portal.auth.passwordStrength.fair' as any),
-    t('portal.auth.passwordStrength.strong' as any),
-    t('portal.auth.passwordStrength.veryStrong' as any),
-  ];
+  // Use shared password strength calculator
+  const strength = calculatePasswordStrength(passwordValue || '');
+  const strengthColors = Object.values(PASSWORD_STRENGTH_COLORS);
+  const strengthLabels = Object.values(PASSWORD_STRENGTH_LABELS);
 
   const onSubmit = async (data: SignupData) => {
     setLoading(true);
@@ -135,10 +118,10 @@ function SignupForm() {
         </div>
       </div>
 
-      <PortalCard className="p-8 shadow-xl">
+      <Card className="p-8 shadow-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            <PortalInput
+            <Input
               label={t('portal.auth.signup.fullName')}
               type="text"
               placeholder={t('portal.common.namePlaceholder')}
@@ -148,7 +131,7 @@ function SignupForm() {
               {...register('name')}
             />
 
-            <PortalInput
+            <Input
               label={t('portal.auth.signup.email')}
               type="email"
               placeholder="yours@example.com"
@@ -163,7 +146,7 @@ function SignupForm() {
                 {t('portal.auth.signup.password')}
               </label>
               <div className="relative">
-                <PortalInput
+                <Input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   error={errors.password?.message}
@@ -213,7 +196,7 @@ function SignupForm() {
                 {t('portal.auth.signup.confirmPassword')}
               </label>
               <div className="relative">
-                <PortalInput
+                <Input
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   error={errors.confirmPassword?.message}
@@ -244,10 +227,10 @@ function SignupForm() {
             </div>
           )}
 
-          <PortalButton type="submit" isLoading={loading} className="w-full h-11">
+          <Button type="submit" loading={loading} className="w-full h-11">
             <span>{t('portal.auth.signup.createAccount')}</span>
             <ArrowRight size={16} />
-          </PortalButton>
+          </Button>
         </form>
 
         <p className="text-center text-sm text-surface-500 dark:text-surface-400 mt-6">
@@ -263,7 +246,7 @@ function SignupForm() {
             {t('portal.auth.signup.signIn')}
           </Link>
         </p>
-      </PortalCard>
+      </Card>
 
       {/* Footer */}
       <div className="flex items-center justify-center gap-2 text-surface-400 text-xs mt-8">

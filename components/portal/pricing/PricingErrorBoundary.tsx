@@ -2,7 +2,7 @@
 
 import { Component, ReactNode } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 
 interface PricingErrorBoundaryProps {
   children: ReactNode;
@@ -60,7 +60,7 @@ export class PricingErrorBoundary extends Component<
                 Something went wrong while calculating pricing. Please try again.
               </p>
               <div className="flex gap-2">
-                <PortalButton
+                <Button
                   variant="secondary"
                   size="sm"
                   onClick={this.resetError}
@@ -68,7 +68,7 @@ export class PricingErrorBoundary extends Component<
                 >
                   <RefreshCw size={14} />
                   Try Again
-                </PortalButton>
+                </Button>
               </div>
             </div>
           </div>

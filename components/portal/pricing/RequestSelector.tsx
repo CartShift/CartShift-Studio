@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Package, Check, Flame, FileText, Plus, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Package, Check, Flame, Plus, ChevronUp, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { Request } from '@/lib/types/portal';
 import { TYPE_ICONS, TYPE_COLORS } from './RequestPricingCalculator';
 import { formatCalculatorPrice } from '@/lib/services/pricing-calculator';
@@ -53,7 +53,7 @@ export function RequestSelector({
   };
 
   return (
-    <PortalCard padding="none" className="overflow-hidden">
+    <Card padding="none" className="overflow-hidden">
       <div className="p-4 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -71,12 +71,12 @@ export function RequestSelector({
           </div>
           <div className="flex items-center gap-2">
             {selectedRequestIds.length > 0 && (
-              <PortalBadge variant="blue">
+              <Badge variant="blue">
                 {selectedRequestIds.length} {t('portal.pricing.form.selected')}
-              </PortalBadge>
+              </Badge>
             )}
             {onQuickAddRequest && (
-              <PortalButton
+              <Button
                 type="button"
                 variant="secondary"
                 size="sm"
@@ -86,7 +86,7 @@ export function RequestSelector({
               >
                 <Plus size={14} />
                 {t('portal.pricing.quickAddRequest' as never) || 'Quick Add'}
-              </PortalButton>
+              </Button>
             )}
           </div>
         </div>
@@ -176,14 +176,14 @@ export function RequestSelector({
                       <h4 className="font-bold text-surface-900 dark:text-white truncate text-sm sm:text-base">
                         {request.title}
                       </h4>
-                      <PortalBadge variant="gray" size="sm">
+                      <Badge variant="gray" size="sm">
                         {t(`portal.requests.types.${request.type}`)}
-                      </PortalBadge>
+                      </Badge>
                       {request.priority === 'URGENT' && (
-                        <PortalBadge variant="red" size="sm">
+                        <Badge variant="red" size="sm">
                           <Flame size={10} className="me-0.5" />
                           {t('portal.requests.priority.urgent')}
-                        </PortalBadge>
+                        </Badge>
                       )}
                     </div>
                     {request.description && (
@@ -255,6 +255,6 @@ export function RequestSelector({
           })
         )}
       </div>
-    </PortalCard>
+    </Card>
   );
 }

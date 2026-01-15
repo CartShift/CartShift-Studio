@@ -288,7 +288,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
     <>
       <div className="reading-progress" style={{ width: `${readingProgress}%` }} />
       <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-surface-900">
-        <div className="max-w-7xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-dropdown">
           <div className="grid lg:grid-cols-12 gap-8">
             <aside className="lg:col-span-3 hidden lg:block relative">
               <div className="lg:sticky lg:top-28">
@@ -614,7 +614,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       <div className="absolute top-0 end-0 w-40 h-40 bg-gradient-to-br from-accent-500/5 to-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                       <div className="absolute bottom-0 start-0 w-32 h-32 bg-gradient-to-tr from-primary-500/5 to-accent-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
-                      <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
+                      <div className="relative z-dropdown flex flex-col md:flex-row md:items-center gap-6">
                         {/* Icon */}
                         <div className="flex-shrink-0">
                           <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-accent-500 to-primary-600 flex items-center justify-center shadow-lg shadow-accent-500/20">
@@ -743,7 +743,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     {/* Decorative element */}
                     <div className="absolute top-0 end-0 w-32 h-32 bg-gradient-to-br from-primary-500/10 to-accent-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
-                    <div className="relative z-10">
+                    <div className="relative z-dropdown">
                       <div className="flex items-start gap-4">
                         <div className="p-3 rounded-xl bg-primary-100 dark:bg-primary-900/30">
                           <svg
@@ -901,7 +901,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     />
 
-                    <div className="relative z-10 space-y-5">
+                    <div className="relative z-dropdown space-y-5">
                       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary-100 to-accent-100 dark:from-primary-900/30 dark:to-accent-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold tracking-wide uppercase">
                         <svg
                           className="w-3.5 h-3.5"

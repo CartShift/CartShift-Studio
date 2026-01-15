@@ -133,8 +133,13 @@
       "retry": "נסה שוב",
       "noData": "אין נתונים זמינים",
       "save": "שמור שינויים",
+      "saveChanges": "שמור שינויים",
       "cancel": "ביטול",
       "delete": "מחק",
+      "deleteSuccess": "נמחק בהצלחה",
+      "deleteRequest": "מחק בקשה",
+      "removeLabel": "הסר",
+      "deleteRequest": "מחק בקשה",
       "confirm": "האם אתה בטוח?",
       "edit": "ערוך",
       "create": "צור",
@@ -176,6 +181,7 @@
       "paymentFailedRetry": "השלמת התשלום נכשלה. אנא נסו שוב.",
       "notAuthenticated": "לא מאומת",
       "deleteConfirm": "האם אתה בטוח?",
+      "deleteConfirmTitle": "מחק בקשה?",
       "sentRecently": "נשלח לאחרונה",
       "agencyAdmin": "מנהל סוכנות",
       "agencyFallback": "סוכנות",
@@ -431,8 +437,9 @@
       },
       "detail": {
         "loading": "פותח את הבקשה שלך...",
-        "notFound": "בקשה לא נמצאה",
         "notFoundDesc": "הבקשה שאתם מחפשים אולי נמחקה או הועברה, או שאין לכם הרשאות לצפות בה.",
+        "deleteTitle": "מחק בקשה",
+        "deleteConfirm": "האם אתה בטוח שברצונך למחוק את הבקשה הזו? פעולה זו אינה ניתנת לביטול.",
         "backToRequests": "חזרה לבקשות",
         "designRequest": "בקשת עיצוב",
         "details": "פרטי בקשה",
@@ -705,8 +712,13 @@
         "share": "שיתוף",
         "delete": "מחיקה",
         "deleteConfirm": "האם אתם בטוחים שברצונכם למחוק קובץ זה?",
+        "remove": "הסר",
         "deleted": "הקובץ נמחק בהצלחה",
         "deleteFailed": "מחיקת הקובץ נכשלה"
+      },
+      "imageLabels": {
+        "remove": "הסר תמונה",
+        "change": "שנה תמונה"
       },
       "empty": {
         "title": "אין נכסים מסונכרנים",
@@ -1265,19 +1277,29 @@
           "review": "משוב וסקירה",
           "delivered": "נמסר"
         },
-        "viewRequest": "הצג בקשה"
+        "viewRequest": "הצג בקשה",
+        "filter": {
+          "myRequests": "הבקשות שלי"
+        }
       },
       "clients": {
         "title": "תיק לקוחות",
         "subtitle": "גישה ישירה וניהול לכל הארגונים השותפים.",
         "onboard": "צרף לקוח חדש",
         "searchPlaceholder": "חפש לפי שם חברה...",
+        "deleteTitle": "מחק לקוח",
+        "deleteConfirm": "האם אתה בטוח שברצונך למחוק את {name}? פעולה זו תשבית את סביבת העבודה שלהם.",
         "activeAccounts": "חשבונות פעילים",
         "export": "ייצוא ביצועים",
         "loading": "מאחזר תיק לקוחות...",
         "tickets": "כרטיסים פתוחים",
         "members": "חברים",
         "dashboard": "כנס ללוח הבקרה",
+        "you": "אתה",
+        "viewAsClient": "צפה כלקוח",
+        "filter": {
+          "myClients": "הלקוחות שלי"
+        },
         "emptyTitle": "לא נמצאו לקוחות",
         "emptyDesc": "או שאין לך לקוחות פעילים או שהם לא תואמים לקריטריוני החיפוש שלך.",
         "badge": {
@@ -1322,7 +1344,9 @@
             "plan": "תוכנית",
             "status": "סטטוס",
             "email": "אימייל ליצירת קשר",
-            "phone": "טלפון"
+            "phone": "טלפון",
+            "responsibleAgent": "סוכן אחראי",
+            "unassigned": "לא הוקצה"
           },
           "actions": {
             "createRequest": "צור בקשה עבור לקוח",
@@ -1342,7 +1366,9 @@
             "admin": "מנהל",
             "member": "חבר",
             "emptyTitle": "אין חברי צוות",
-            "emptyDesc": "לקוח זה טרם הזמין חברי צוות."
+            "emptyDesc": "לקוח זה טרם הזמין חברי צוות.",
+            "removeMemberTitle": "הסר חבר צוות",
+            "removeMemberDesc": "האם אתם בטוחים שברצונכם להסיר משתמש זה מארגון הלקוח? הוא יאבד את הגישה לפורטל הלקוח."
           },
           "activity": {
             "emptyTitle": "אין פעילות אחרונה",
@@ -1850,6 +1876,20 @@
           "joinCommunity": "הצטרפו לקהילת הלקוחות המרוצים שלנו"
         }
       }
+    },
+    "impersonation": {
+      "viewingAs": "צופה בתור",
+      "exitView": "צא מצפייה",
+      "client": "לקוח",
+      "viewAsClient": "צפה כלקוח"
+    },
+    "roles": {
+      "owner": "בעלים",
+      "admin": "מנהל",
+      "sales_manager": "מנהל מכירות",
+      "developer": "מפתח",
+      "member": "חבר",
+      "viewer": "צופה"
     }
   }
 }

@@ -9,8 +9,6 @@ import {
   useCallback,
   ReactNode,
 } from 'react';
-import { useRouter } from 'next/navigation';
-import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const STORAGE_KEY = 'cartshift_impersonated_account_id';
 
@@ -29,7 +27,6 @@ const ImpersonationContext = createContext<ImpersonationContextValue | null>(nul
 
 export function ImpersonationProvider({ children }: { children: ReactNode }) {
   const [impersonatedAccountId, setImpersonatedAccountId] = useState<string | null>(null);
-  const router = useRouter();
 
   // Initialize from session storage
   useEffect(() => {

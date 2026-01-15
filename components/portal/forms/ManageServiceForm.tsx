@@ -1,13 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  ModalBackdrop,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from '@/components/ui/ModalBackdrop';
+
 import { useTranslations } from 'next-intl';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 import { Service, Currency, CURRENCY_CONFIG } from '@/lib/types/portal';
 import { createService, updateService } from '@/lib/services/portal-services';
-import { X, Save, AlertCircle } from 'lucide-react';
+import { Save, AlertCircle } from 'lucide-react';
 
 interface ManageServiceFormProps {
   service?: Service; // If provided, we are editing
@@ -63,27 +70,22 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
     }
   };
 
+  // Don't render if document.body is not available
+  if (typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="w-full max-w-lg animate-in zoom-in-95 duration-300">
-        <PortalCard className="relative p-8 shadow-2xl border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950">
-          <button
-            onClick={onCancel}
-            className="absolute end-6 top-6 p-2 rounded-xl text-surface-400 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 transition-all font-outfit"
-          >
-            <X size={20} />
-          </button>
+    <ModalBackdrop isOpen={true} onClick={onCancel}>
+      <ModalContent maxWidth="lg" onClick={e => e.stopPropagation()}>
+        <ModalHeader
+          title={service ? t('editTitle') : t('addTitle')}
+          description={service ? t('editSubtitle') : t('addSubtitle')}
+          onClose={onCancel}
+        />
 
-          <header className="mb-8">
-            <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-              {service ? t('editTitle') : t('addTitle')}
-            </h2>
-            <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 font-medium font-outfit">
-              {service ? t('editSubtitle') : t('addSubtitle')}
-            </p>
-          </header>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit}>
+          <ModalBody className="space-y-6">
             {error && (
               <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl flex items-center gap-3 text-rose-600 dark:text-rose-400 text-sm font-bold font-outfit">
                 <AlertCircle size={18} />
@@ -91,7 +93,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
               </div>
             )}
 
-            <PortalInput
+            <Input
               label={t('fields.name')}
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -100,7 +102,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <PortalInput
+              <Input
                 label={t('fields.basePrice')}
                 type="number"
                 step="0.01"
@@ -127,7 +129,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
               </div>
             </div>
 
-            <PortalInput
+            <Input
               label={t('fields.category')}
               value={formData.category}
               onChange={e => setFormData({ ...formData, category: e.target.value })}
@@ -162,28 +164,28 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
                 {t('fields.active')}
               </label>
             </div>
+          </ModalBody>
 
-            <div className="flex gap-3 pt-4">
-              <PortalButton
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                className="flex-1 font-outfit"
-              >
-                {t('actions.cancel')}
-              </PortalButton>
-              <PortalButton
-                type="submit"
-                isLoading={loading}
-                className="flex-1 font-outfit shadow-xl shadow-blue-500/20"
-              >
-                <Save size={18} className="me-2" />
-                {service ? t('actions.update') : t('actions.create')}
-              </PortalButton>
-            </div>
-          </form>
-        </PortalCard>
-      </div>
-    </div>
+          <ModalFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="flex-1 font-outfit"
+            >
+              {t('actions.cancel')}
+            </Button>
+            <Button
+              type="submit"
+              loading={loading}
+              className="flex-1 font-outfit shadow-xl shadow-blue-500/20"
+            >
+              <Save size={18} className="me-2" />
+              {service ? t('actions.update') : t('actions.create')}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </ModalBackdrop>
   );
 }

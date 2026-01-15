@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
@@ -42,7 +41,7 @@ export const StoreAnalyzerTeaser: React.FC = () => {
         />
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-dropdown">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Visual Side */}
           <motion.div
@@ -56,7 +55,7 @@ export const StoreAnalyzerTeaser: React.FC = () => {
             <div className="relative rounded-2xl bg-white/80 dark:bg-surface-800/80 border border-surface-200/80 dark:border-surface-700/50 shadow-2xl overflow-hidden backdrop-blur-sm group">
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               {/* Window Header */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-surface-200/80 dark:border-surface-700/50 bg-surface-100/50 dark:bg-surface-800/50 relative z-10">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-surface-200/80 dark:border-surface-700/50 bg-surface-100/50 dark:bg-surface-800/50 relative z-dropdown">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-red-500/80" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
@@ -71,7 +70,7 @@ export const StoreAnalyzerTeaser: React.FC = () => {
               </div>
 
               {/* Analyzer Content mockup */}
-              <div className="p-6 space-y-6 relative z-10">
+              <div className="p-6 space-y-6 relative z-dropdown">
                 {/* Score Circle */}
                 <div className="flex justify-center py-4">
                   <div className="relative w-40 h-40 flex items-center justify-center">
@@ -224,6 +223,7 @@ export const StoreAnalyzerTeaser: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/tools/store-analyzer">
                 <Button
+                  as="div"
                   variant="primary"
                   size="lg"
                   className="w-full sm:w-auto group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 border-none shadow-lg shadow-indigo-500/25"

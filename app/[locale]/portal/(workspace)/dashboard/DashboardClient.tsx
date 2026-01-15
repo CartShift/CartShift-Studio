@@ -3,8 +3,8 @@
 import { Suspense, lazy, useMemo } from 'react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { Clock, AlertCircle, Sparkles } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { useTranslations, NextIntlClientProvider } from 'next-intl';
 import { ClientAnalytics } from '@/components/portal/ClientAnalytics';
 import { QuickActions } from '@/components/portal/QuickActions';
@@ -77,9 +77,9 @@ function DashboardClientContent() {
             ? t('portal.access.restrictedMessage')
             : t('portal.common.error')}
         </p>
-        <PortalButton onClick={() => window.location.reload()}>
+        <Button onClick={() => window.location.reload()}>
           {t('portal.dashboard.error.retry')}
-        </PortalButton>
+        </Button>
       </div>
     );
   }
@@ -125,11 +125,7 @@ function DashboardClientContent() {
             </h2>
           </div>
 
-          <PortalCard
-            variant="glass"
-            noPadding
-            className="overflow-hidden"
-          >
+          <Card variant="glass" noPadding className="overflow-hidden">
             <Suspense
               fallback={
                 <div className="p-6 space-y-4">
@@ -147,19 +143,24 @@ function DashboardClientContent() {
             >
               <ActivityTimeline activities={activities} orgId={orgId ?? ''} showFilters />
             </Suspense>
-          </PortalCard>
+          </Card>
         </div>
 
         {/* Sidebar Info */}
         <div className="space-y-6">
           {/* Pinned Requests */}
-          <PinnedRequests requests={requests} orgId={orgId ?? ''} locale={locale} isAgency={userData?.isAgency ?? false} />
+          <PinnedRequests
+            requests={requests}
+            orgId={orgId ?? ''}
+            locale={locale}
+            isAgency={userData?.isAgency ?? false}
+          />
 
           {/* Tips Card */}
           <TipsCard />
 
           {/* Service Status */}
-          <PortalCard variant="elevated" accent="primary" className="shadow-lg">
+          <Card variant="elevated" accent="primary" className="shadow-lg">
             <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 flex items-center gap-2 uppercase tracking-widest">
               <Clock size={14} className="text-blue-500" />
               {t('portal.dashboard.serviceStatus.title')}
@@ -174,7 +175,7 @@ function DashboardClientContent() {
                   {t('portal.dashboard.serviceStatus.active')}
                 </span>
               </div>
-              <PortalCard variant="glass" padding="lg">
+              <Card variant="glass" padding="lg">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
                     {t('portal.dashboard.serviceStatus.dev')}
@@ -196,7 +197,7 @@ function DashboardClientContent() {
                   {t('portal.dashboard.serviceStatus.etaLabel')}: 4-6{' '}
                   {t('portal.dashboard.serviceStatus.days')}
                 </p>
-              </PortalCard>
+              </Card>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
                   {t('portal.dashboard.serviceStatus.avgResponse')}
@@ -206,7 +207,7 @@ function DashboardClientContent() {
                 </span>
               </div>
             </div>
-          </PortalCard>
+          </Card>
         </div>
       </div>
     </div>

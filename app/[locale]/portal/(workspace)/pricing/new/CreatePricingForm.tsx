@@ -6,8 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { createPricingRequest, sendPricingRequest } from '@/lib/services/pricing-requests';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -57,6 +57,7 @@ interface PricingFormData {
   clientName?: string;
   clientEmail?: string;
   agencyNotes?: string;
+  includeTax: boolean;
 }
 
 export default function CreatePricingForm() {
@@ -156,6 +157,7 @@ export default function CreatePricingForm() {
         clientName: z.string().optional(),
         clientEmail: z.string().email().optional().or(z.literal('')),
         agencyNotes: z.string().optional(),
+        includeTax: z.boolean(),
       }),
     []
   );
@@ -177,6 +179,7 @@ export default function CreatePricingForm() {
       clientName: '',
       clientEmail: '',
       agencyNotes: '',
+      includeTax: true, // Default to true for VAT in Israel typically
     },
   });
 
@@ -266,7 +269,7 @@ export default function CreatePricingForm() {
     [watch, reset, t, lineItemsFromCalculator]
   );
 
-  const totalAmount = useMemo(() => {
+  const { totalAmount, subtotal, taxAmount } = useMemo(() => {
     const items: PricingLineItem[] = (watchedLineItems || []).map(
       (item: LineItemInput, index: number) => ({
         id: `temp_${index}`,
@@ -275,8 +278,13 @@ export default function CreatePricingForm() {
         unitPrice: Math.round((item.unitPrice || 0) * 100), // Convert to cents
       })
     );
-    return calculateTotalAmount(items);
-  }, [watchedLineItems]);
+    const taxRate = watch('includeTax') ? 0.17 : 0;
+    const subtotal = calculateTotalAmount(items, 0); // items sum
+    const taxAmount = Math.round(subtotal * taxRate);
+    const totalAmount = subtotal + taxAmount;
+
+    return { totalAmount, subtotal, taxAmount };
+  }, [watchedLineItems, watch('includeTax')]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (!userData?.id || !orgId || typeof orgId !== 'string') {
@@ -349,7 +357,7 @@ export default function CreatePricingForm() {
   if (submitStatus === 'success') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-        <PortalCard className="p-12 flex flex-col items-center justify-center text-center">
+        <Card className="p-12 flex flex-col items-center justify-center text-center">
           <div className="w-20 h-20 rounded-3xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-6">
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
@@ -361,7 +369,7 @@ export default function CreatePricingForm() {
               ? 'Your pricing offer has been sent to the client.'
               : 'Your draft has been saved. You can send it when ready.'}
           </p>
-        </PortalCard>
+        </Card>
       </div>
     );
   }
@@ -383,7 +391,7 @@ export default function CreatePricingForm() {
       <form className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main form */}
         <div className="lg:col-span-2 space-y-6">
-          <PortalCard className="p-6">
+          <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
               {t('portal.pricing.form.offerDetails' as never) || 'Offer Details'}
             </h3>
@@ -424,7 +432,7 @@ export default function CreatePricingForm() {
                 />
               </div>
             </div>
-          </PortalCard>
+          </Card>
 
           {/* Request Selection & Pricing Calculator */}
           <RequestPricingCalculator
@@ -436,6 +444,7 @@ export default function CreatePricingForm() {
             isLoading={loadingRequests}
             error={requestsError}
             onQuickAddRequest={() => router.push(getPortalPath('/requests/new'))}
+            orgId={orgId!}
           />
 
           {/* Manual Line Items - For additional items or when no requests selected */}
@@ -462,7 +471,7 @@ export default function CreatePricingForm() {
           )}
 
           {/* Line Items (Editable) */}
-          <PortalCard padding="none">
+          <Card padding="none">
             <div className="p-6 pb-0">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -589,21 +598,43 @@ export default function CreatePricingForm() {
             </div>
 
             {/* Total */}
-            <div className="mx-6 mt-6 pt-6 pb-6 border-t border-surface-200 dark:border-surface-800 flex items-center justify-between">
-              <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
-                {t('portal.pricing.form.total')}
-              </span>
-              <span className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
-                {formatCurrency(totalAmount, watchedCurrency)}
-              </span>
+            {/* Subtotal, Tax, Total */}
+            <div className="mx-6 mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 space-y-3">
+              <div className="flex items-center justify-between text-sm text-surface-500">
+                <span>{t('portal.pricing.form.subtotal' as any) || 'Subtotal'}</span>
+                <span>{formatCurrency(subtotal, watchedCurrency)}</span>
+              </div>
+
+              <div className="flex items-center justify-between text-sm text-surface-500">
+                <div className="flex items-center gap-2">
+                  <span>{t('portal.pricing.form.tax' as any) || 'VAT (17%)'}</span>
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      {...register('includeTax')}
+                    />
+                  </label>
+                </div>
+                <span>{formatCurrency(taxAmount, watchedCurrency)}</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800/50">
+                <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
+                  {t('portal.pricing.form.total')}
+                </span>
+                <span className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
+                  {formatCurrency(totalAmount, watchedCurrency)}
+                </span>
+              </div>
             </div>
-          </PortalCard>
+          </Card>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Currency & Validity */}
-          <PortalCard className="p-6">
+          <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
               {t('portal.pricing.form.settings' as never) || 'Settings'}
             </h3>
@@ -639,10 +670,10 @@ export default function CreatePricingForm() {
                 </div>
               </div>
             </div>
-          </PortalCard>
+          </Card>
 
           {/* Client Info */}
-          <PortalCard className="p-6">
+          <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
               {t('portal.pricing.form.clientInfo' as never) || 'Client Info'}
             </h3>
@@ -672,10 +703,10 @@ export default function CreatePricingForm() {
                 />
               </div>
             </div>
-          </PortalCard>
+          </Card>
 
           {/* Agency Notes */}
-          <PortalCard className="p-6">
+          <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
               {t('portal.pricing.form.agencyNotes')}
             </h3>
@@ -685,7 +716,7 @@ export default function CreatePricingForm() {
               placeholder={t('portal.pricing.form.agencyNotesPlaceholder')}
               className="portal-input w-full resize-none text-sm"
             />
-          </PortalCard>
+          </Card>
 
           {/* Error */}
           {submitStatus === 'error' && errorMessage && (
@@ -699,7 +730,7 @@ export default function CreatePricingForm() {
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
-            <PortalButton
+            <Button
               type="button"
               onClick={handleSubmit((data: PricingFormData) => onSubmit(data, true))}
               disabled={isSubmitting}
@@ -707,9 +738,9 @@ export default function CreatePricingForm() {
             >
               {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
               {isSending ? t('portal.pricing.form.sending') : t('portal.pricing.form.sendToClient')}
-            </PortalButton>
+            </Button>
 
-            <PortalButton
+            <Button
               type="button"
               variant="outline"
               onClick={handleSubmit((data: PricingFormData) => onSubmit(data, false))}
@@ -722,7 +753,7 @@ export default function CreatePricingForm() {
                 <Save size={18} />
               )}
               {t('portal.pricing.form.saveDraft')}
-            </PortalButton>
+            </Button>
 
             <button
               type="button"

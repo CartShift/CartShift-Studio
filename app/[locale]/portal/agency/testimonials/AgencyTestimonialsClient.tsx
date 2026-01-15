@@ -24,9 +24,9 @@ import {
   Code2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import {
   getAllTestimonials,
   updateTestimonialStatus,
@@ -137,7 +137,7 @@ function TestimonialCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <PortalCard className="p-5 hover:shadow-lg transition-shadow">
+      <Card className="p-5 hover:shadow-lg transition-shadow">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
@@ -161,10 +161,10 @@ function TestimonialCard({
             </div>
           </div>
 
-          <PortalBadge variant={config.variant} className="shrink-0">
+          <Badge variant={config.variant} className="shrink-0">
             <StatusIcon className="w-3.5 h-3.5 me-1" />
             {t(`agency.testimonials.status.${testimonial.status}` as any)}
-          </PortalBadge>
+          </Badge>
         </div>
 
         {/* Rating */}
@@ -205,11 +205,11 @@ function TestimonialCard({
             </span>
           </div>
 
-          <PortalButton variant="ghost" size="sm" onClick={() => onViewDetails(testimonial)}>
+          <Button variant="ghost" size="sm" onClick={() => onViewDetails(testimonial)}>
             {t('agency.testimonials.card.viewDetails')}
-          </PortalButton>
+          </Button>
         </div>
-      </PortalCard>
+      </Card>
     </motion.div>
   );
 }
@@ -383,7 +383,7 @@ function TestimonialDetailModal({
           {/* Actions */}
           {testimonial.status === 'pending' && (
             <div className="flex items-center gap-3 pt-4 border-t border-surface-200 dark:border-surface-700">
-              <PortalButton
+              <Button
                 variant="outline"
                 className="flex-1 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-500/10"
                 onClick={() => handleStatusUpdate('rejected')}
@@ -400,8 +400,8 @@ function TestimonialDetailModal({
                     {t('agency.testimonials.modal.reject')}
                   </>
                 )}
-              </PortalButton>
-              <PortalButton
+              </Button>
+              <Button
                 variant="primary"
                 className="flex-1"
                 onClick={() => handleStatusUpdate('approved')}
@@ -418,7 +418,7 @@ function TestimonialDetailModal({
                     {t('agency.testimonials.modal.approve')}
                   </>
                 )}
-              </PortalButton>
+              </Button>
             </div>
           )}
         </div>
@@ -710,7 +710,7 @@ export type Testimonial = typeof testimonials[number];
       </div>
 
       {/* Filters & Search */}
-      <PortalCard className="p-4">
+      <Card className="p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1">
@@ -744,7 +744,7 @@ export type Testimonial = typeof testimonials[number];
             ))}
           </div>
         </div>
-      </PortalCard>
+      </Card>
 
       {/* Content */}
       {loading ? (
@@ -753,7 +753,7 @@ export type Testimonial = typeof testimonials[number];
           <p className="text-surface-500">{t('agency.testimonials.loading')}</p>
         </div>
       ) : filteredTestimonials.length === 0 ? (
-        <PortalCard className="py-16">
+        <Card className="py-16">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
               <MessageSquareHeart className="w-8 h-8 text-surface-400" />
@@ -763,7 +763,7 @@ export type Testimonial = typeof testimonials[number];
             </h3>
             <p className="text-surface-500 max-w-sm">{t('agency.testimonials.emptyDesc')}</p>
           </div>
-        </PortalCard>
+        </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           <AnimatePresence mode="popLayout">

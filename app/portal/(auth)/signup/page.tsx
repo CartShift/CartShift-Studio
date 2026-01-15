@@ -6,9 +6,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { signUpWithEmail } from '@/lib/services/auth';
 import { useTranslations } from 'next-intl';
@@ -108,16 +108,16 @@ function SignupForm() {
         </div>
       </div>
 
-      <PortalCard className="p-8 shadow-xl">
+      <Card className="p-8 shadow-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <PortalInput
+          <Input
             label={t('portal.auth.signup.fullName')}
             placeholder={t('portal.common.namePlaceholder')}
             error={errors.name?.message}
             {...register('name')}
           />
 
-          <PortalInput
+          <Input
             label={t('portal.auth.signup.email')}
             type="email"
             placeholder="you@example.com"
@@ -125,7 +125,7 @@ function SignupForm() {
             {...register('email')}
           />
 
-          <PortalInput
+          <Input
             label={t('portal.auth.signup.password')}
             type="password"
             placeholder="••••••••"
@@ -133,7 +133,7 @@ function SignupForm() {
             {...register('password')}
           />
 
-          <PortalInput
+          <Input
             label={t('portal.auth.signup.confirmPassword')}
             type="password"
             placeholder="••••••••"
@@ -147,10 +147,10 @@ function SignupForm() {
             </div>
           )}
 
-          <PortalButton type="submit" isLoading={loading} className="w-full h-11">
+          <Button type="submit" loading={loading} className="w-full h-11">
             <span>{t('portal.auth.signup.createAccount')}</span>
             <ArrowRight size={16} />
-          </PortalButton>
+          </Button>
 
           <p className="text-center text-sm text-surface-500 dark:text-surface-400 mt-6">
             {t('portal.auth.signup.alreadyHaveAccount')}{' '}
@@ -166,7 +166,7 @@ function SignupForm() {
             </Link>
           </p>
         </form>
-      </PortalCard>
+      </Card>
 
       {/* Footer */}
       <div className="flex items-center justify-center gap-2 text-surface-400 text-xs mt-8">

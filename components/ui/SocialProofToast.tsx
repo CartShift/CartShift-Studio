@@ -112,7 +112,7 @@ export const SocialProofToast: React.FC = () => {
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: -100 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed bottom-24 md:bottom-8 start-4 z-50 max-w-xs"
+          className="fixed bottom-24 md:bottom-8 start-4 z-toast max-w-xs"
         >
           <div className="relative bg-white dark:bg-surface-800 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
             {/* Dismiss button */}

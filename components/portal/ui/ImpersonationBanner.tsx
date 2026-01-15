@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 
 export function ImpersonationBanner() {
   const { isImpersonating, impersonatedAccountId, exitImpersonation } = useImpersonation();
-  const t = useTranslations();
+  const t = useTranslations('portal');
 
   const { data: org } = useQuery({
     queryKey: ['organization', impersonatedAccountId],
@@ -20,13 +20,13 @@ export function ImpersonationBanner() {
   if (!isImpersonating) return null;
 
   return (
-    <div className="bg-indigo-600 text-white px-4 py-2 flex items-center justify-between shadow-md relative z-[60]">
+    <div className="bg-indigo-600 text-white px-4 py-2 flex items-center justify-between shadow-md relative z-banner-fixed">
       <div className="flex items-center gap-2 text-sm font-medium">
         <Eye size={16} className="animate-pulse" />
         <span>
-          Viewing as{' '}
+          {t('impersonation.viewingAs')}{' '}
           <span className="font-bold underline cursor-help" title={impersonatedAccountId || ''}>
-            {org?.name || 'Client'}
+            {org?.name || t('impersonation.client')}
           </span>
         </span>
       </div>
@@ -34,7 +34,7 @@ export function ImpersonationBanner() {
         onClick={exitImpersonation}
         className="flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors font-medium border border-white/20"
       >
-        <span>Exit View</span>
+        <span>{t('impersonation.exitView')}</span>
         <X size={14} />
       </button>
     </div>

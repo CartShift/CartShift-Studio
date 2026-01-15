@@ -14,7 +14,7 @@ import {
   onSnapshot,
   serverTimestamp,
 } from 'firebase/firestore';
-import { getFirestoreDb, waitForAuth } from '@/lib/firebase';
+import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { deepClean } from '@/lib/utils';
 import {
   PricingRequest,
@@ -45,7 +45,7 @@ export async function createPricingRequest(
     id: generateLineItemId(),
   }));
 
-  const totalAmount = calculateTotalAmount(lineItems);
+  const totalAmount = calculateTotalAmount(lineItems, data.taxRate || 0);
 
   const requestData = {
     orgId,
@@ -53,6 +53,7 @@ export async function createPricingRequest(
     description: data.description?.trim() || null,
     lineItems,
     totalAmount,
+    taxRate: data.taxRate || 0,
     currency: data.currency,
     status: PRICING_STATUS.DRAFT as PricingStatus,
     clientName: data.clientName?.trim() || null,
@@ -203,8 +204,11 @@ export async function updatePricingRequest(
   if (data.description !== undefined) updateData.description = data.description?.trim() || null;
   if (data.lineItems !== undefined) {
     updateData.lineItems = data.lineItems;
-    updateData.totalAmount = calculateTotalAmount(data.lineItems);
+    // Note: If taxRate is not in data, we default to 0 for calculation if we don't read existing.
+    // Ideally, caller should provide both lineItems and taxRate if one changes.
+    updateData.totalAmount = calculateTotalAmount(data.lineItems, data.taxRate || 0);
   }
+  if (data.taxRate !== undefined) updateData.taxRate = data.taxRate;
   if (data.currency !== undefined) updateData.currency = data.currency;
   if (data.validUntil !== undefined) {
     updateData.validUntil = data.validUntil ? Timestamp.fromDate(data.validUntil) : null;
@@ -277,10 +281,19 @@ export async function submitClientEdits(
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, PRICING_REQUESTS_COLLECTION, requestId);
+
+  const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) {
+    throw new Error('Pricing request not found');
+  }
+
+  const existingData = docSnap.data() as PricingRequest;
+  const taxRate = existingData.taxRate || 0;
+
   await updateDoc(docRef, {
     status: PRICING_STATUS.CLIENT_EDITED,
     lineItems,
-    totalAmount: calculateTotalAmount(lineItems),
+    totalAmount: calculateTotalAmount(lineItems, taxRate),
     clientNotes: clientNotes?.trim() || null,
     updatedAt: serverTimestamp(),
   });
@@ -548,6 +561,13 @@ export function subscribeToAllPricingRequests(
   waitForAuth()
     .then(() => {
       if (isUnsubscribed) return;
+
+      const auth = getFirebaseAuth();
+      if (!auth.currentUser) {
+        callback([]);
+        return;
+      }
+
       const db = getFirestoreDb();
       const q = query(collection(db, PRICING_REQUESTS_COLLECTION), orderBy('createdAt', 'desc'));
 
@@ -567,6 +587,8 @@ export function subscribeToAllPricingRequests(
           callback(requests);
         },
         error => {
+          // If permission denied, standard auth guards should have caught this,
+          // but return empty list gracefully
           console.error('Error in all pricing requests snapshot:', error);
           callback([]);
         }

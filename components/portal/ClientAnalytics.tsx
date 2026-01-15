@@ -3,10 +3,10 @@
 import { cn } from '@/lib/utils';
 import React, { useMemo } from 'react';
 import { motion } from '@/lib/motion';
-import { AnimatedNumber } from '@/components/portal/ui/AnimatedNumber';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { useTranslations } from 'next-intl';
 import { FileText, Clock, CheckCircle2, DollarSign, TrendingUp, Activity } from 'lucide-react';
-import { PortalEmptyState } from '@/components/portal/ui/PortalEmptyState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Request, REQUEST_STATUS, RequestStatus } from '@/lib/types/portal';
 import { Timestamp } from 'firebase/firestore';
 
@@ -139,7 +139,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
   if (requests.length === 0) {
     return (
       <div className={cn('py-8', className)}>
-        <PortalEmptyState
+        <EmptyState
           icon={Activity}
           title={t('portal.analytics.noDataYet')}
           description={t('portal.analytics.noDataDescription')}
@@ -153,7 +153,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
   if (requests.length === 0) {
     return (
       <div className={cn('py-8', className)}>
-        <PortalEmptyState
+        <EmptyState
           icon={Activity}
           title={t('portal.analytics.noDataYet')}
           description={t('portal.analytics.noDataDescription')}

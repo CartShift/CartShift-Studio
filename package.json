@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "node scripts/merge-translations.js",
-    "predev": "node scripts/merge-translations.js",
-    "dev": "cmd /c scripts\\dev-smart.bat",
+    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
+    "predev": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
+    "dev": "node dev-pro.mjs",
     "dev:force": "powershell -ExecutionPolicy Bypass -File scripts/dev-force-simple.ps1",
     "dev:force:win": "cmd /c scripts\\dev-force.bat",
     "dev:legacy": "next dev --turbo",
+    "clean:cache": "powershell -ExecutionPolicy Bypass -File scripts/clean-turbopack-cache.ps1",
     "build": "next build",
     "export": "next build",
     "start": "next start",
@@ -116,5 +117,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
+  "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"
 }

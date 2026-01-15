@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from '@/i18n/navigation';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { CreateRequestData, PRIORITY_CONFIG } from '@/lib/types/portal';
 import { createRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -98,7 +98,11 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
     setError(null);
 
     try {
-      const userName = userData?.name || user.displayName || user.email?.split('@')[0] || t('portal.common.unknown');
+      const userName =
+        userData?.name ||
+        user.displayName ||
+        user.email?.split('@')[0] ||
+        t('portal.common.unknown');
 
       // 1. Create the request
       const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
@@ -112,9 +116,15 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
       // 2. Upload files if any
       if (selectedFiles.length > 0) {
         setUploadProgress(10); // Start progress
-        const uploadedFiles = await uploadMultipleFiles(targetOrgId, user.uid, userName, selectedFiles, {
-          requestId: request.id,
-        });
+        const uploadedFiles = await uploadMultipleFiles(
+          targetOrgId,
+          user.uid,
+          userName,
+          selectedFiles,
+          {
+            requestId: request.id,
+          }
+        );
 
         const fileIds = uploadedFiles.map(f => f.id);
 
@@ -194,13 +204,11 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
             </label>
             <select
               value={selectedClientId}
-              onChange={(e) => setSelectedClientId(e.target.value)}
+              onChange={e => setSelectedClientId(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 transition-all text-surface-900 dark:text-white text-sm font-bold font-outfit focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             >
-              <option value="">
-                {t('portal.requests.form.clientSelect')}
-              </option>
-              {clients.map((client) => (
+              <option value="">{t('portal.requests.form.clientSelect')}</option>
+              {clients.map(client => (
                 <option key={client.id} value={client.id}>
                   {client.name}
                 </option>
@@ -208,7 +216,7 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
             </select>
           </div>
         )}
-        <PortalInput
+        <Input
           label={t('portal.requests.form.titleLabel')}
           placeholder={t('portal.requests.form.titlePlaceholder')}
           error={errors.title?.message}
@@ -387,7 +395,7 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
           {t('portal.requests.form.footerNote')}
         </p>
         <div className="flex gap-3 w-full md:w-auto">
-          <PortalButton
+          <Button
             type="button"
             variant="ghost"
             onClick={() => router.back()}
@@ -395,15 +403,15 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
             className="flex-1 md:flex-none font-outfit"
           >
             {t('portal.requests.form.cancel')}
-          </PortalButton>
-          <PortalButton
+          </Button>
+          <Button
             type="submit"
-            isLoading={loading}
+            loading={loading}
             disabled={loading}
             className="flex-1 md:flex-none font-outfit px-10 shadow-xl shadow-blue-500/20"
           >
             {loading ? t('portal.requests.form.submitting') : t('portal.requests.form.submit')}
-          </PortalButton>
+          </Button>
         </div>
       </div>
     </form>

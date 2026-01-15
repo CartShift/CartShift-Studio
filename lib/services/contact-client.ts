@@ -1,79 +1,26 @@
-import { validateContactForm, type ContactFormData } from '@/lib/validation';
-import { sanitizeString } from '@/lib/sanitize';
-import { logError } from '@/lib/error-handler';
-import type { z } from 'zod';
+import { logError } from '@/lib/logger';
 
-export async function submitContactFormClient(
-  data: unknown
-): Promise<{ success: true } | { success: false; error: string; status: number }> {
-  const validation = validateContactForm(data);
-
-  if (!validation.success) {
-    const errorMessages = validation.errors.issues
-      .map((err: z.ZodIssue) => `${err.path.join('.')}: ${err.message}`)
-      .join(', ');
-    return {
-      success: false,
-      error: `Invalid form data: ${errorMessages}`,
-      status: 400,
-    };
-  }
-
-  const sanitizedData: ContactFormData = {
-    name: sanitizeString(validation.data.name),
-    email: sanitizeString(validation.data.email),
-    interest: validation.data.interest ? sanitizeString(validation.data.interest) : undefined,
-    message: validation.data.message ? sanitizeString(validation.data.message) : undefined,
-    company: validation.data.company ? sanitizeString(validation.data.company) : undefined,
-    projectType: validation.data.projectType
-      ? sanitizeString(validation.data.projectType)
-      : undefined,
-  };
-
-  const firebaseUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
-  if (!firebaseUrl) {
-    logError(
-      'NEXT_PUBLIC_FIREBASE_FUNCTION_URL is not configured',
-      new Error('Missing environment variable')
-    );
-    return {
-      success: false,
-      error: 'Configuration error. Please contact support.',
-      status: 500,
-    };
-  }
-
+export async function submitContactForm(data: {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+}) {
   try {
-    const response = await fetch(firebaseUrl, {
+    const response = await fetch('/api/contact', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(sanitizedData),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     });
 
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      throw new Error(
-        `Firebase function returned non-JSON response: ${response.status} ${response.statusText}. Response: ${text}`
-      );
-    }
-
-    const result = await response.json();
-
     if (!response.ok) {
-      throw new Error(result.error || `Firebase function returned ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to submit form');
     }
 
-    return { success: true };
+    return await response.json();
   } catch (error) {
-    logError('Failed to submit contact form', error, { data: sanitizedData });
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : 'Failed to submit form. Please try again later.',
-      status: 500,
-    };
+    logError('Contact form submission failed', error);
+    throw error;
   }
 }

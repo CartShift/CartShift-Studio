@@ -24,7 +24,13 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/components/*": ["./components/*"],
+      "@/app/*": ["./app/*"],
+      "@/i18n/*": ["./i18n/*"],
+      "@/content/*": ["./content/*"],
+      "@/public/*": ["./public/*"]
     }
   },
   "include": [

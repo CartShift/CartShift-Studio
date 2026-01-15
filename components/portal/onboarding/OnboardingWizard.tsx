@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { OnboardingStep } from './OnboardingStep';
-import { PortalButton } from '../ui/PortalButton';
-import { PortalInput } from '../ui/PortalInput';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { ArrowRight, ArrowLeft, Building2, Sparkles, Check, Users, Briefcase } from 'lucide-react';
 import { createOrganization, updateOrganization } from '@/lib/services/portal-organizations';
 import { useRouter } from '@/i18n/navigation';
@@ -136,14 +136,14 @@ export function OnboardingWizard() {
                   </p>
                 </div>
 
-                <PortalButton
+                <Button
                   onClick={handleNext}
                   size="lg"
                   className="w-full md:w-auto min-w-[200px] h-14 text-lg font-bold shadow-lg shadow-blue-500/20"
                 >
                   {t('onboarding.welcome.cta' as any)}
                   <ArrowRight className="ms-2" size={20} />
-                </PortalButton>
+                </Button>
               </div>
             </OnboardingStep>
           )}
@@ -158,7 +158,7 @@ export function OnboardingWizard() {
             >
               <div className="space-y-6">
                 <div>
-                  <PortalInput
+                  <Input
                     label={t('onboarding.form.orgNameLabel' as any)}
                     placeholder={t('onboarding.form.orgNamePlaceholder' as any)}
                     value={formData.name}
@@ -233,24 +233,24 @@ export function OnboardingWizard() {
                 )}
 
                 <div className="flex items-center justify-between pt-4">
-                  <PortalButton
+                  <Button
                     variant="ghost"
                     onClick={handleBack}
                     className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                   >
                     <ArrowLeft className="me-2" size={18} />
                     {t('onboarding.back' as any)}
-                  </PortalButton>
+                  </Button>
 
-                  <PortalButton
+                  <Button
                     onClick={handleSubmit}
-                    isLoading={isSubmitting}
+                    loading={isSubmitting}
                     disabled={!formData.name.trim()}
                     className="min-w-[140px] shadow-lg shadow-blue-500/20"
                   >
                     <span>{t('onboarding.form.createButton' as any)}</span>
                     {!isSubmitting && <ArrowRight className="ms-2" size={18} />}
-                  </PortalButton>
+                  </Button>
                 </div>
               </div>
             </OnboardingStep>
@@ -278,14 +278,14 @@ export function OnboardingWizard() {
                   {t('onboarding.completion.description' as any)}
                 </p>
 
-                <PortalButton
+                <Button
                   onClick={handleComplete}
                   size="lg"
                   className="w-full md:w-auto min-w-[200px] h-14 text-lg font-bold bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-500/20 border-transparent text-white"
                 >
                   {t('onboarding.completion.cta' as any)}
                   <ArrowRight className="ms-2" size={20} />
-                </PortalButton>
+                </Button>
               </div>
             </OnboardingStep>
           )}

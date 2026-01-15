@@ -214,7 +214,7 @@ export const ClientPortalPageContent: React.FC = () => {
           <div className="absolute bottom-0 start-1/4 w-[400px] h-[400px] bg-gradient-to-tr from-accent-500/5 to-transparent rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-dropdown">
           <SectionHeader
             title={portalInfo.features.title}
             subtitle={portalInfo.features.subtitle}

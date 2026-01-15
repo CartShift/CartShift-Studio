@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { Flame, Users, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 interface GlobalModifiersProps {
   urgent: boolean;
@@ -32,7 +32,7 @@ export function GlobalModifiers({
   const t = useTranslations();
 
   return (
-    <PortalCard className={cn('p-4', className)}>
+    <Card className={cn('p-4', className)}>
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex items-center gap-2 sm:me-auto">
           <div className="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center">
@@ -81,7 +81,7 @@ export function GlobalModifiers({
           </button>
 
           {selectedCount > 0 && (
-            <PortalButton
+            <Button
               type="button"
               variant="secondary"
               size="sm"
@@ -89,10 +89,10 @@ export function GlobalModifiers({
               aria-label={t('portal.pricing.applyToAll')}
             >
               {t('portal.pricing.applyToAll' as never)}
-            </PortalButton>
+            </Button>
           )}
         </div>
       </div>
-    </PortalCard>
+    </Card>
   );
 }

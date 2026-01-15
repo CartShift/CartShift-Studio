@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from '@/lib/motion';
 import { Button } from './Button';
 import { Icon } from './Icon';
+import { ModalBackdrop, ModalContent } from './ModalBackdrop';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -17,7 +16,7 @@ interface ConfirmationModalProps {
   isLoading?: boolean;
 }
 
-export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+export function ConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
@@ -27,19 +26,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   cancelText = 'Cancel',
   variant = 'warning',
   isLoading = false,
-}) => {
-  // Prevent scrolling when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
+}: ConfirmationModalProps) {
   const variantStyles = {
     danger: {
       icon: 'alert-triangle',
@@ -50,7 +37,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     warning: {
       icon: 'alert-circle',
       iconColor: 'text-amber-500',
-      buttonVariant: 'secondary' as const, // or warning if available
+      buttonVariant: 'secondary' as const,
       bg: 'bg-amber-50 dark:bg-amber-900/10',
     },
     info: {
@@ -72,73 +59,52 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         : 'secondary';
 
   const confirmButtonClass =
-    variant === 'danger'
-      ? 'bg-red-600 hover:bg-red-700 text-white border-transparent'
-      : '';
+    variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white border-transparent' : '';
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]"
-            onClick={isLoading ? undefined : onClose}
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20, x: '-50%' }}
-            animate={{ opacity: 1, scale: 1, y: '-50%', x: '-50%' }}
-            exit={{ opacity: 0, scale: 0.95, y: 20, x: '-50%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed top-1/2 left-1/2 z-[201] w-full max-w-md p-4"
-            style={{ x: '-50%', y: '-50%' }} // Ensure explicit transform override/merge
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-white dark:bg-surface-800 rounded-2xl shadow-xl overflow-hidden border border-surface-200 dark:border-surface-700">
-              <div className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-full shrink-0 ${currentVariant.bg}`}>
-                    <Icon
-                      name={currentVariant.icon as any}
-                      size={24}
-                      className={currentVariant.iconColor}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
-                      {title}
-                    </h3>
-                    <p className="text-surface-600 dark:text-surface-400 text-sm leading-relaxed">
-                      {description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex justify-end gap-3">
-                  <Button
-                    variant="ghost"
-                    onClick={onClose}
-                    disabled={isLoading}
-                    className="hover:bg-surface-100 dark:hover:bg-surface-700"
-                  >
-                    {cancelText}
-                  </Button>
-                  <Button
-                    variant={confirmButtonVariant}
-                    onClick={onConfirm}
-                    loading={isLoading}
-                    className={confirmButtonClass}
-                  >
-                    {confirmText}
-                  </Button>
-                </div>
+    <ModalBackdrop isOpen={isOpen} onClick={isLoading ? undefined : onClose} zIndex="200">
+      <ModalContent maxWidth="md" onClick={e => e.stopPropagation()}>
+        <div className="bg-white dark:bg-surface-800 rounded-2xl shadow-xl overflow-hidden border border-surface-200 dark:border-surface-700">
+          <div className="p-6">
+            <div className="flex items-start gap-4">
+              <div className={`p-3 rounded-full shrink-0 ${currentVariant.bg}`}>
+                <Icon
+                  name={currentVariant.icon as any}
+                  size={24}
+                  className={currentVariant.iconColor}
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
+                  {title}
+                </h3>
+                <p className="text-surface-600 dark:text-surface-400 text-sm leading-relaxed">
+                  {description}
+                </p>
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                disabled={isLoading}
+                className="hover:bg-surface-100 dark:hover:bg-surface-700"
+              >
+                {cancelText}
+              </Button>
+              <Button
+                variant={confirmButtonVariant}
+                onClick={onConfirm}
+                loading={isLoading}
+                className={confirmButtonClass}
+              >
+                {confirmText}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </ModalContent>
+    </ModalBackdrop>
   );
-};
+}

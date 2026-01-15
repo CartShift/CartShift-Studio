@@ -7,7 +7,7 @@ import { Icon } from '@/components/ui/Icon';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { trackNewsletterSignup } from '@/lib/analytics';
-import { subscribeNewsletterClient } from '@/lib/services/newsletter-client';
+import { subscribeNewsletter } from '@/lib/services/newsletter-client';
 
 export const Footer: React.FC = () => {
   const t = useTranslations();
@@ -52,7 +52,7 @@ export const Footer: React.FC = () => {
     setLoading(true);
 
     try {
-      const result = await subscribeNewsletterClient({ email });
+      const result = await subscribeNewsletter(email);
 
       if (!result.success) {
         throw new Error(result.error || t('portal.common.failedToSubscribe'));
@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="relative border-t border-surface-300/60 dark:border-white/10 bg-white dark:bg-surface-950">
       <div className="absolute inset-0 bg-gradient-to-t from-surface-200/80 dark:from-black/50 via-white/60 dark:via-surface-950/50 to-transparent"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-dropdown">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 xl:gap-12">
           <div className="md:col-span-12 lg:col-span-3 xl:col-span-3 text-start">
             <Logo size="lg" className="mb-6" />

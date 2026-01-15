@@ -11,8 +11,8 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        xs: '375px', // iPhone SE / small phones
-        '3xl': '1920px', // Large desktops
+        xs: '375px',
+        '3xl': '1920px',
       },
       colors: {
         background: 'var(--background)',
@@ -24,7 +24,7 @@ const config: Config = {
           300: 'rgb(var(--color-primary-300) / <alpha-value>)',
           400: 'rgb(var(--color-primary-400) / <alpha-value>)',
           500: 'rgb(var(--color-primary-500) / <alpha-value>)',
-          600: 'rgb(var(--color-primary-600) / <alpha-value>)', // Brand Primary
+          600: 'rgb(var(--color-primary-600) / <alpha-value>)',
           700: 'rgb(var(--color-primary-700) / <alpha-value>)',
           800: 'rgb(var(--color-primary-800) / <alpha-value>)',
           900: 'rgb(var(--color-primary-900) / <alpha-value>)',
@@ -37,7 +37,7 @@ const config: Config = {
           300: 'rgb(var(--color-accent-300) / <alpha-value>)',
           400: 'rgb(var(--color-accent-400) / <alpha-value>)',
           500: 'rgb(var(--color-accent-500) / <alpha-value>)',
-          600: 'rgb(var(--color-accent-600) / <alpha-value>)', // Brand Accent
+          600: 'rgb(var(--color-accent-600) / <alpha-value>)',
           700: 'rgb(var(--color-accent-700) / <alpha-value>)',
           800: 'rgb(var(--color-accent-800) / <alpha-value>)',
           900: 'rgb(var(--color-accent-900) / <alpha-value>)',
@@ -53,9 +53,9 @@ const config: Config = {
           600: 'rgb(var(--color-surface-600) / <alpha-value>)',
           700: 'rgb(var(--color-surface-700) / <alpha-value>)',
           800: 'rgb(var(--color-surface-800) / <alpha-value>)',
-          850: 'rgb(var(--color-surface-850) / <alpha-value>)', // Intermediate dark shade
-          900: 'rgb(var(--color-surface-900) / <alpha-value>)', // Dark surface base
-          950: 'rgb(var(--color-surface-950) / <alpha-value>)', // Darker surface base
+          850: 'rgb(var(--color-surface-850) / <alpha-value>)',
+          900: 'rgb(var(--color-surface-900) / <alpha-value>)',
+          950: 'rgb(var(--color-surface-950) / <alpha-value>)',
         },
         success: 'rgb(var(--color-success) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
@@ -63,7 +63,6 @@ const config: Config = {
       },
 
       fontSize: {
-        // Fluid typography with clamp() for responsive scaling
         'fluid-xs': ['clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)', { lineHeight: '1.5' }],
         'fluid-sm': ['clamp(0.875rem, 0.8rem + 0.375vw, 1rem)', { lineHeight: '1.5' }],
         'fluid-base': ['clamp(1rem, 0.9rem + 0.5vw, 1.125rem)', { lineHeight: '1.6' }],
@@ -74,6 +73,7 @@ const config: Config = {
         'fluid-4xl': ['clamp(2.25rem, 1.75rem + 2.5vw, 3rem)', { lineHeight: '1.1' }],
         'fluid-5xl': ['clamp(3rem, 2rem + 5vw, 4rem)', { lineHeight: '1.1' }],
       },
+
       spacing: {
         18: '4.5rem',
         88: '22rem',
@@ -81,23 +81,88 @@ const config: Config = {
         'section-y': '5rem',
         'section-y-md': '6rem',
         'section-y-lg': '8rem',
-        tap: '44px', // Minimum touch target size (WCAG)
-        'tap-sm': '40px', // Compact touch target
+        tap: '44px',
+        'tap-sm': '40px',
         'safe-top': 'env(safe-area-inset-top)',
         'safe-bottom': 'env(safe-area-inset-bottom)',
         'safe-left': 'env(safe-area-inset-left)',
         'safe-right': 'env(safe-area-inset-right)',
       },
+
+      // OPTIMIZATION: Add hover and shadow utilities
+      boxShadow: {
+        // Card hover effects
+        'card-default': '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
+        'card-dark': '0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.15)',
+        'card-hover-light': '0 8px 24px -4px rgba(0,0,0,0.1), 0 16px 40px -8px rgba(0,0,0,0.08)',
+        'card-hover-dark': '0 8px 24px -4px rgba(0,0,0,0.4), 0 16px 40px -8px rgba(0,0,0,0.3)',
+        'card-lift-light': '0 12px 32px -6px rgba(0,0,0,0.12), 0 20px 48px -12px rgba(0,0,0,0.1)',
+        'card-lift-dark': '0 12px 32px -6px rgba(0,0,0,0.5), 0 20px 48px -12px rgba(0,0,0,0.4)',
+
+        // Button shadows
+        'btn-primary':
+          '0 1px 2px rgba(0,0,0,0.1), 0 4px 12px rgba(var(--color-primary-600-rgb),0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
+        'btn-primary-hover':
+          '0 2px 4px rgba(0,0,0,0.1), 0 8px 24px rgba(var(--color-primary-600-rgb),0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
+        'btn-primary-active':
+          '0 0 0 rgba(0,0,0,0), 0 2px 8px rgba(var(--color-primary-600-rgb),0.2), inset 0 1px 2px rgba(0,0,0,0.1)',
+
+        'btn-secondary': '0 1px 2px rgba(0,0,0,0.04)',
+        'btn-secondary-hover': '0 2px 8px rgba(0,0,0,0.06)',
+
+        'btn-danger':
+          '0 1px 2px rgba(0,0,0,0.1), 0 4px 12px rgba(244,63,94,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
+        'btn-danger-hover':
+          '0 2px 4px rgba(0,0,0,0.1), 0 8px 24px rgba(244,63,94,0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
+
+        'btn-success':
+          '0 1px 2px rgba(0,0,0,0.1), 0 4px 12px rgba(16,185,129,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
+        'btn-success-hover':
+          '0 2px 4px rgba(0,0,0,0.1), 0 8px 24px rgba(16,185,129,0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
+
+        'btn-gradient':
+          '0 1px 2px rgba(0,0,0,0.1), 0 4px 16px rgba(var(--color-accent-600-rgb),0.2), inset 0 1px 0 rgba(255,255,255,0.2)',
+        'btn-gradient-hover':
+          '0 2px 4px rgba(0,0,0,0.1), 0 8px 28px rgba(var(--color-accent-600-rgb),0.3)',
+
+        'btn-glass': '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.3)',
+        'btn-glass-hover': '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.4)',
+
+        // Preserved existing shadows
+        soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        medium: '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        glow: '0 0 20px rgb(var(--color-accent-600) / 0.4), 0 0 40px rgb(var(--color-accent-600) / 0.2)',
+        'glow-primary':
+          '0 0 20px rgb(var(--color-primary-600) / 0.4), 0 0 40px rgb(var(--color-primary-600) / 0.2)',
+        bold: '0 10px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+      },
+
+      zIndex: {
+        base: 0,
+        dropdown: 10,
+        sticky: 20,
+        header: 30,
+        sidebar: 40,
+        modal: 50,
+        'banner-fixed': 60,
+        tooltip: 100,
+        toast: 110,
+        'notification-badge': 120,
+        'always-on-top': 9999,
+      },
+
       minHeight: {
         tap: '44px',
         'tap-sm': '40px',
         'screen-safe': 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
         'screen-dvh': '100dvh',
       },
+
       minWidth: {
         tap: '44px',
         'tap-sm': '40px',
       },
+
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
@@ -105,65 +170,37 @@ const config: Config = {
         '4xl': '2rem',
         '5xl': '2.5rem',
       },
+
+      // OPTIMIZATION: Reduce to only used fonts
       fontFamily: {
-        item: ['var(--font-item)', 'sans-serif'],
-        sans: ['var(--font-main)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-main)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-jetbrains)', 'monospace'],
+        sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
 
         // English
         outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        roboto: ['var(--font-roboto)', 'system-ui', 'sans-serif'],
-        playfair: ['var(--font-playfair)', 'serif'],
-        'plus-jakarta': ['var(--font-plus-jakarta)', 'sans-serif'],
-        montserrat: ['var(--font-montserrat)', 'sans-serif'],
-        lato: ['var(--font-lato)', 'sans-serif'],
-        'open-sans': ['var(--font-open-sans)', 'sans-serif'],
-        raleway: ['var(--font-raleway)', 'sans-serif'],
-        nunito: ['var(--font-nunito)', 'sans-serif'],
-        merriweather: ['var(--font-merriweather)', 'serif'],
-        oswald: ['var(--font-oswald)', 'sans-serif'],
-        quicksand: ['var(--font-quicksand)', 'sans-serif'],
-        'work-sans': ['var(--font-work-sans)', 'sans-serif'],
-        'dm-sans': ['var(--font-dm-sans)', 'sans-serif'],
-        'crimson-text': ['var(--font-crimson-text)', 'serif'],
 
         // Hebrew
-        assistant: ['var(--font-assistant)', 'sans-serif'],
-        heebo: ['var(--font-heebo)', 'sans-serif'],
-        rubik: ['var(--font-rubik)', 'sans-serif'],
-        varela: ['var(--font-varela)', 'sans-serif'],
-        secular: ['var(--font-secular)', 'sans-serif'],
-        amatic: ['var(--font-amatic)', 'cursive'],
-        'frank-ruhl': ['var(--font-frank-ruhl)', 'serif'],
-        miriam: ['var(--font-miriam)', 'sans-serif'],
-        alef: ['var(--font-alef)', 'sans-serif'],
-        tinos: ['var(--font-tinos)', 'serif'],
-        arimo: ['var(--font-arimo)', 'sans-serif'],
-        'suez-one': ['var(--font-suez-one)', 'serif'],
+        rubik: ['var(--font-rubik)', 'system-ui', 'sans-serif'],
       },
-      boxShadow: {
-        soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        medium: '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        glow: '0 0 20px rgb(var(--color-accent-600) / 0.4), 0 0 40px rgb(var(--color-accent-600) / 0.2)', // Based on accent-600
-        'glow-primary':
-          '0 0 20px rgb(var(--color-primary-600) / 0.4), 0 0 40px rgb(var(--color-primary-600) / 0.2)', // Based on primary-600
-        bold: '0 10px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-      },
+
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'gradient-cosmos': 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)', // Deep dark blue/purple
+        'gradient-cosmos': 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
         'gradient-brand':
-          'linear-gradient(135deg, rgb(var(--color-primary-600)) 0%, rgb(var(--color-accent-600)) 100%)', // Primary to Accent
+          'linear-gradient(135deg, rgb(var(--color-primary-600)) 0%, rgb(var(--color-accent-600)) 100%)',
       },
+
+      // OPTIMIZATION: Add all animations centrally
       animation: {
         gradient: 'gradient 8s linear infinite',
         float: 'float 6s ease-in-out infinite',
         'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
         'slow-spin': 'spin 12s linear infinite',
+        'shine-sweep': 'shine-sweep 700ms ease-in-out',
       },
+
       keyframes: {
         gradient: {
           '0%, 100%': { backgroundPosition: '0% 50%' },
@@ -177,9 +214,14 @@ const config: Config = {
           '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
           '50%': { opacity: '1', transform: 'scale(1.05)' },
         },
+        'shine-sweep': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
     },
   },
   plugins: [tailwindcssAnimate],
 };
+
 export default config;

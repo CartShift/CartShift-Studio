@@ -73,5 +73,16 @@
   "stickyCta": {
     "text": "Book a Call",
     "textHe": "קבעו שיחה"
+  },
+  "exitIntent": {
+    "heading": "Before you go...",
+    "subheading": "Get a free consultation for your project",
+    "feature1Title": "Store Performance Analysis",
+    "feature1Description": "Get insights into your store's performance and identify growth opportunities.",
+    "feature2Title": "Expert Consultation",
+    "feature2Description": "Work with our team to optimize your store and boost conversions.",
+    "description": "We'd love to hear about what you're building and see how we can help.",
+    "learnMore": "Learn more about our services",
+    "cta": "Book a Free Call"
   }
 }

@@ -2,7 +2,6 @@
 
 import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
-import { AnimatePresence, motion } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { getLocaleDirection, getLocaleFontFamily } from '@/lib/locale-config';
 
@@ -26,6 +25,7 @@ import { PortalHeader } from '../ui/PortalHeader';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { OnboardingTour } from '../OnboardingTour';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }: PortalShellProps) {
   const t = useTranslations();
@@ -38,8 +38,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
-    ? getAgencyNavGroups((key: string) => t(key as any))
-    : getClientNavGroups((key: string) => t(key as any));
+    ? getAgencyNavGroups((key: string) => t(key as NavTranslationKey))
+    : getClientNavGroups((key: string) => t(key as NavTranslationKey));
 
   // Calculate if breadcrumbs should be shown
   const showBreadcrumbs = (() => {
@@ -79,27 +79,34 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
     >
       <OfflineIndicator />
 
-      {/* Skip to main content link for accessibility */}
+      {/* Skip to main content link for accessibility - enhanced visibility on focus */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-blue-600 focus:text-white focus:rounded-2xl focus:shadow-xl focus:outline-none"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-always-on-top focus:px-6 focus:py-3 focus:bg-blue-600 focus:text-white focus:font-bold focus:rounded-2xl focus:shadow-xl focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 focus:outline-none focus:text-lg"
       >
         {t('portal.accessibility.skipToContent')}
       </a>
 
+      {/* ARIA Live Region for dynamic content announcements (notifications, status changes) */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        id="portal-announcer"
+      >
+        {/* Screen reader announcements are injected here dynamically */}
+      </div>
+
       {/* Mobile Sidebar Backdrop */}
-      <AnimatePresence>
-        {state.isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-surface-950/40 backdrop-blur-md z-[60] md:hidden"
-            onClick={() => state.setIsMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
+      <ModalBackdrop
+        isOpen={state.isMobileMenuOpen}
+        onClick={() => state.setIsMobileMenuOpen(false)}
+        variant="light"
+        blur="md"
+        zIndex="60"
+        preventScroll={false} // Already handled by mobile menu logic
+      />
 
       {/* Sidebar */}
       <PortalSidebar
@@ -149,8 +156,11 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
         <PortalHeader
           onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
           onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
-          userData={state.userData as any}
+          userData={
+            state.userData as typeof import('@/portal/ui/PortalHeader').HeaderUserData | null
+          }
           accountType={state.accountType}
+          userRole={state.memberRole}
           notifications={state.notifications}
           unreadCount={state.unreadCount}
           isNotificationOpen={state.isNotificationOpen}
@@ -160,6 +170,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           handleNotificationClick={state.handleNotificationClick}
           handleMarkAllAsRead={state.handleMarkAllAsRead}
           orgId={state.effectiveOrgId}
+          onSignOut={state.handleSignOut}
         />
 
         {/* Page Content Container */}
@@ -174,19 +185,20 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
       </div>
 
       {/* Portal Elements */}
-      {state.mounted &&
-        createPortal(
-          <NotificationDropdown
-            isOpen={state.isNotificationOpen}
-            notifications={state.notifications}
-            unreadCount={state.unreadCount}
-            onMarkAllAsRead={state.handleMarkAllAsRead}
-            onNotificationClick={state.handleNotificationClick}
-            position={state.notificationPosition}
-            dropdownRef={state.notificationDropdownRef}
-          />,
-          document.body
-        )}
+      {state.mounted && typeof document !== 'undefined' && document.body
+        ? createPortal(
+            <NotificationDropdown
+              isOpen={state.isNotificationOpen}
+              notifications={state.notifications}
+              unreadCount={state.unreadCount}
+              onMarkAllAsRead={state.handleMarkAllAsRead}
+              onNotificationClick={state.handleNotificationClick}
+              position={state.notificationPosition}
+              dropdownRef={state.notificationDropdownRef}
+            />,
+            document.body
+          )
+        : null}
 
       {/* Onboarding Tour for new users */}
       {state.showOnboarding && state.userData?.id && (

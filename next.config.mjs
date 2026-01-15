@@ -15,90 +15,14 @@ const nextConfig = {
   ...(process.env.NODE_ENV === 'production' && { distDir: 'build_out' }),
   assetPrefix: '',
 
-  // Rewrites for DEV mode - route dynamic portal paths to template pages
-  // This allows real orgIds to work in development while keeping dynamicParams = false for production
-  async rewrites() {
-    // Only apply in development - production uses Firebase Hosting rewrites
-    if (process.env.NODE_ENV === 'production') {
-      return [];
-    }
 
-    return [
-      // ============================================================
-      // SPECIFIC REWRITES - Handle detail pages with static fallbacks
-      // ============================================================
-
-      // New Pricing - ANY org context
-      {
-        source: '/:locale/portal/pricing/new/',
-        destination: '/:locale/portal/pricing/new/',
-      },
-
-      // Pricing Detail - ANY pricingId → /pricing/pricing/
-      {
-        source: '/:locale/portal/pricing/:pricingId/',
-        destination: '/:locale/portal/pricing/pricing/',
-      },
-      {
-        source: '/:locale/portal/pricing/:pricingId',
-        destination: '/:locale/portal/pricing/pricing/',
-      },
-
-      // Pricing Edit - ANY pricingId → /pricing/pricing/edit/
-      {
-        source: '/:locale/portal/pricing/:pricingId/edit/',
-        destination: '/:locale/portal/pricing/pricing/edit/',
-      },
-      {
-        source: '/:locale/portal/pricing/:pricingId/edit',
-        destination: '/:locale/portal/pricing/pricing/edit/',
-      },
-
-      // New Request
-      {
-        source: '/:locale/portal/requests/new/',
-        destination: '/:locale/portal/requests/new/',
-      },
-
-      // Request Detail - ANY requestId → /requests/request/
-      {
-        source: '/:locale/portal/requests/:requestId/',
-        destination: '/:locale/portal/requests/request/',
-      },
-      {
-        source: '/:locale/portal/requests/:requestId',
-        destination: '/:locale/portal/requests/request/',
-      },
-
-      // ============================================================
-      // WILDCARD REWRITES - Automatically handles remaining nested routes
-      // ============================================================
-
-      // Portal invite routes - ANY invite code → template
-      {
-        source: '/:locale/portal/invite/:code',
-        destination: '/:locale/portal/invite/template',
-      },
-
-      // Portal agency client routes - ANY path under /portal/agency/clients/[realId]/ → template
-      {
-        source: '/:locale/portal/agency/clients/:clientId/:path*',
-        destination: '/:locale/portal/agency/clients/template/:path*',
-      },
-
-      {
-        source: '/:locale/portal/agency/clients/:clientId',
-        destination: '/:locale/portal/agency/clients/template',
-      },
-    ];
-  },
 
   // Explicitly set the workspace root to avoid lockfile detection issues
   outputFileTracingRoot: __dirname,
 
-  transpilePackages: ['firebase', 'next-intl', '@react-pdf/renderer'],
+  transpilePackages: ['next-intl', '@react-pdf/renderer'],
   images: {
-    unoptimized: true,
+    unoptimized: false,
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -110,8 +34,7 @@ const nextConfig = {
     return 'build-' + Date.now();
   },
   typescript: {
-    // Temporarily ignore TypeScript errors for deployment
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -166,5 +89,81 @@ const nextConfig = {
     return config;
   },
 };
+
+// Rewrites for DEV mode - route dynamic portal paths to template pages
+// This allows real orgIds to work in development while keeping dynamicParams = false for production
+// Only apply in development - production uses Firebase Hosting rewrites
+if (process.env.NODE_ENV !== 'production') {
+  nextConfig.rewrites = async () => {
+    return [
+      // ============================================================
+      // SPECIFIC REWRITES - Handle detail pages with static fallbacks
+      // ============================================================
+
+      // New Pricing - ANY org context
+      // {
+      //   source: '/:locale/portal/pricing/new/',
+      //   destination: '/:locale/portal/pricing/new/',
+      // },
+
+      // Pricing Detail - ANY pricingId → /pricing/pricing/
+      {
+        source: '/:locale/portal/pricing/:pricingId/',
+        destination: '/:locale/portal/pricing/pricing/',
+      },
+      {
+        source: '/:locale/portal/pricing/:pricingId',
+        destination: '/:locale/portal/pricing/pricing/',
+      },
+
+      // Pricing Edit - ANY pricingId → /pricing/pricing/edit/
+      {
+        source: '/:locale/portal/pricing/:pricingId/edit/',
+        destination: '/:locale/portal/pricing/pricing/edit/',
+      },
+      {
+        source: '/:locale/portal/pricing/:pricingId/edit',
+        destination: '/:locale/portal/pricing/pricing/edit/',
+      },
+
+      // New Request
+      // {
+      //   source: '/:locale/portal/requests/new/',
+      //   destination: '/:locale/portal/requests/new/',
+      // },
+
+      // Request Detail - ANY requestId → /requests/request/
+      {
+        source: '/:locale/portal/requests/:requestId/',
+        destination: '/:locale/portal/requests/request/',
+      },
+      {
+        source: '/:locale/portal/requests/:requestId',
+        destination: '/:locale/portal/requests/request/',
+      },
+
+      // ============================================================
+      // WILDCARD REWRITES - Automatically handles remaining nested routes
+      // ============================================================
+
+      // Portal invite routes - ANY invite code → template
+      {
+        source: '/:locale/portal/invite/:code',
+        destination: '/:locale/portal/invite/template',
+      },
+
+      // Portal agency client routes - ANY path under /portal/agency/clients/[realId]/ → template
+      {
+        source: '/:locale/portal/agency/clients/:clientId/:path*',
+        destination: '/:locale/portal/agency/clients/template/:path*',
+      },
+
+      {
+        source: '/:locale/portal/agency/clients/:clientId',
+        destination: '/:locale/portal/agency/clients/template',
+      },
+    ];
+  };
+}
 
 export default withNextIntl(nextConfig);

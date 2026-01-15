@@ -39,7 +39,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
         ></div>
       </ParallaxLayer>
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full">
+      <div className="max-w-7xl mx-auto relative z-dropdown w-full">
         <div className="max-w-4xl mx-auto text-center">
           {badge && (
             <motion.div
@@ -121,7 +121,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
         </div>
       </div>
 
-      <div className="absolute bottom-0 start-0 end-0 h-32 bg-gradient-to-t from-surface-100 dark:from-surface-950 to-transparent z-20"></div>
+      <div className="absolute bottom-0 start-0 end-0 h-32 bg-gradient-to-t from-surface-100 dark:from-surface-950 to-transparent z-sticky"></div>
     </section>
   );
 };

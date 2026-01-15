@@ -15,18 +15,30 @@ import {
   FileText,
   Loader2,
   BarChart3,
+  Settings,
+  Trash2,
 } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Avatar } from '@/components/ui/Avatar';
+import { EditClientModal } from '@/components/portal/modals/EditClientModal';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import {
   subscribeToOrganization,
   getOrganizationMembers,
+  removeMember,
 } from '@/lib/services/portal-organizations';
 import { subscribeToOrgRequests } from '@/lib/services/portal-requests';
 import { subscribeToOrgActivities } from '@/lib/services/portal-activities';
-import { Organization, Request, ActivityLog, OrganizationMember } from '@/lib/types/portal';
+import {
+  Organization,
+  Request,
+  ActivityLog,
+  OrganizationMember,
+  PortalUser,
+} from '@/lib/types/portal';
+import { getPortalUser } from '@/lib/services/portal-users';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -54,9 +66,14 @@ export default function AgencyClientDetailClient({
   const [requests, setRequests] = useState<Request[]>([]);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const [responsibleAgent, setResponsibleAgent] = useState<PortalUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<OrganizationMember | null>(null);
+  const [isRemoveMemberOpen, setIsRemoveMemberOpen] = useState(false);
+  const [isRemovingMember, setIsRemovingMember] = useState(false);
 
   useEffect(() => {
     if (!clientId) {
@@ -107,6 +124,17 @@ export default function AgencyClientDetailClient({
           setError('Client not found or you do not have permission to view it');
         } else {
           setOrganization(org);
+
+          // Fetch responsible agent if exists
+          if (org.responsibleAgencyUserId) {
+            getPortalUser(org.responsibleAgencyUserId)
+              .then(user => {
+                if (mounted && user) setResponsibleAgent(user);
+              })
+              .catch(err => console.error('Failed to fetch responsible agent:', err));
+          } else {
+            setResponsibleAgent(null);
+          }
         }
         setLoading(false);
       });
@@ -184,15 +212,48 @@ export default function AgencyClientDetailClient({
         )
       : 0;
 
-  const recentRequests = requests.slice(0, 5);
   const recentActivities = activities.slice(0, 8);
+  const recentRequests = requests.slice(0, 5);
+
+  const fetchMembers = async () => {
+    if (!clientId) return;
+    try {
+      const membersList = await getOrganizationMembers(clientId);
+      setMembers(membersList);
+    } catch (err) {
+      console.error('[AgencyClientDetail] Error loading members:', err);
+    }
+  };
+
+  const handleRemoveMember = (member: OrganizationMember) => {
+    setMemberToRemove(member);
+    setIsRemoveMemberOpen(true);
+  };
+
+  const confirmRemoveMember = async () => {
+    if (!memberToRemove || !organization) return;
+
+    setIsRemovingMember(true);
+    try {
+      await removeMember(memberToRemove.id, organization.id, memberToRemove.userId);
+      await fetchMembers();
+      setIsRemoveMemberOpen(false);
+      setMemberToRemove(null);
+    } catch (err) {
+      console.error('Failed to remove member:', err);
+      // Ideally show a toast here, but for now we'll just log it
+      // setError('Failed to remove member'); // Don't block the whole page
+    } finally {
+      setIsRemovingMember(false);
+    }
+  };
 
   if (loading) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
         <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
-          {t('agency.clients.detail.loading')}
+          {t('agency.clients.detail.loading' as any)}
         </p>
       </div>
     );
@@ -205,17 +266,17 @@ export default function AgencyClientDetailClient({
           <Briefcase size={32} className="text-red-600" />
         </div>
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-          {error || t('common.error')}
+          {error || t('common.error' as any)}
         </h2>
         <p className="text-surface-500 max-w-md mx-auto text-sm">
           {error ||
             'Unable to load client information. The client may not exist or you may not have permission to view it.'}
         </p>
         <Link href={getPortalPath('/agency/clients/')}>
-          <PortalButton variant="outline" className="mt-4">
+          <Button variant="outline" className="mt-4">
             <ArrowLeft size={16} />
-            {t('agency.clients.detail.backToClients')}
-          </PortalButton>
+            {t('agency.clients.detail.backToClients' as any)}
+          </Button>
         </Link>
       </div>
     );
@@ -223,6 +284,20 @@ export default function AgencyClientDetailClient({
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
+      <ConfirmationModal
+        isOpen={isRemoveMemberOpen}
+        onClose={() => setIsRemoveMemberOpen(false)}
+        onConfirm={confirmRemoveMember}
+        title={t('agency.clients.detail.team.removeMemberTitle' as any) || 'Remove Team Member'}
+        description={
+          t('agency.clients.detail.team.removeMemberDesc' as any) ||
+          `Are you sure you want to remove ${memberToRemove?.name || memberToRemove?.email} from this client? They will lose access to the client portal.`
+        }
+        confirmText={t('common.removeLabel' as any) || 'Remove'}
+        variant="danger"
+        isLoading={isRemovingMember}
+      />
+
       {/* Header */}
       <div className="flex flex-col gap-6">
         {/* Back button */}
@@ -232,12 +307,12 @@ export default function AgencyClientDetailClient({
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-bold uppercase tracking-widest">
-            {t('agency.clients.detail.backToClients')}
+            {t('agency.clients.detail.backToClients' as any)}
           </span>
         </Link>
 
         {/* Client header card */}
-        <PortalCard className="border-surface-200 dark:border-surface-800 shadow-lg overflow-hidden">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-lg overflow-hidden">
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
               <div className="flex items-start gap-6">
@@ -249,7 +324,7 @@ export default function AgencyClientDetailClient({
                     <h1 className="text-2xl font-black tracking-tight text-surface-900 dark:text-white">
                       {organization.name}
                     </h1>
-                    <PortalBadge
+                    <Badge
                       variant={
                         organization.status === 'inactive'
                           ? 'gray'
@@ -261,8 +336,8 @@ export default function AgencyClientDetailClient({
                     >
                       {organization.status
                         ? t(`agency.clients.badge.${organization.status}` as any)
-                        : t('agency.clients.badge.active')}
-                    </PortalBadge>
+                        : t('agency.clients.badge.active' as any)}
+                    </Badge>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 mb-4">
@@ -299,7 +374,7 @@ export default function AgencyClientDetailClient({
                       <span className="text-sm font-bold text-surface-600 dark:text-surface-400 uppercase tracking-widest">
                         {organization.plan
                           ? t(`agency.clients.plans.${organization.plan}` as any)
-                          : t('agency.clients.enterprise')}
+                          : t('agency.clients.enterprise' as any)}
                       </span>
                     </div>
                   </div>
@@ -308,7 +383,7 @@ export default function AgencyClientDetailClient({
                     <div className="flex items-center gap-2 text-xs text-surface-400 font-bold uppercase tracking-widest">
                       <Calendar size={12} />
                       <span>
-                        {t('agency.clients.detail.stats.joinedDate')}:{' '}
+                        {t('agency.clients.detail.stats.joinedDate' as any)}:{' '}
                         {new Date(organization.createdAt.toDate()).toLocaleDateString(
                           getDateLocaleString(locale),
                           {
@@ -325,7 +400,7 @@ export default function AgencyClientDetailClient({
 
               {/* Actions */}
               <div className="flex flex-wrap gap-3">
-                <PortalButton
+                <Button
                   variant="outline"
                   className="border-blue-200 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950"
                   onClick={() => {
@@ -334,9 +409,9 @@ export default function AgencyClientDetailClient({
                   }}
                 >
                   <ExternalLink size={16} />
-                  {t('agency.clients.detail.viewDashboard')}
-                </PortalButton>
-                <PortalButton
+                  {t('agency.clients.detail.viewDashboard' as any)}
+                </Button>
+                <Button
                   className="shadow-lg shadow-blue-500/20"
                   onClick={() => {
                     switchOrg(clientId);
@@ -344,21 +419,21 @@ export default function AgencyClientDetailClient({
                   }}
                 >
                   <FileText size={16} />
-                  {t('agency.clients.detail.actions.viewAllRequests')}
-                </PortalButton>
+                  {t('agency.clients.detail.actions.viewAllRequests' as any)}
+                </Button>
               </div>
             </div>
           </div>
-        </PortalCard>
+        </Card>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
-                {t('agency.clients.detail.stats.totalRequests')}
+                {t('agency.clients.detail.stats.totalRequests' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
                 {requests.length}
@@ -371,13 +446,13 @@ export default function AgencyClientDetailClient({
               <FileText size={24} className="text-blue-600" />
             </div>
           </div>
-        </PortalCard>
+        </Card>
 
-        <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-amber-200 dark:hover:border-amber-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-amber-200 dark:hover:border-amber-900 transition-all group">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
-                {t('agency.clients.detail.stats.activeRequests')}
+                {t('agency.clients.detail.stats.activeRequests' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
                 {activeRequests}
@@ -390,13 +465,13 @@ export default function AgencyClientDetailClient({
               <TrendingUp size={24} className="text-amber-600" />
             </div>
           </div>
-        </PortalCard>
+        </Card>
 
-        <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-emerald-200 dark:hover:border-emerald-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-emerald-200 dark:hover:border-emerald-900 transition-all group">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
-                {t('agency.clients.detail.stats.completedRequests')}
+                {t('agency.clients.detail.stats.completedRequests' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
                 {completedRequests}
@@ -409,26 +484,26 @@ export default function AgencyClientDetailClient({
               <BarChart3 size={24} className="text-emerald-600" />
             </div>
           </div>
-        </PortalCard>
+        </Card>
 
-        <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900 transition-all group">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
-                {t('agency.clients.detail.stats.avgResolution')}
+                {t('agency.clients.detail.stats.avgResolution' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
                 {avgResolution > 0 ? avgResolution : '—'}
               </p>
               <p className="text-xs text-surface-500 font-bold">
-                {avgResolution > 0 ? t('agency.clients.detail.stats.days') : '—'}
+                {avgResolution > 0 ? t('agency.clients.detail.stats.days' as any) : '—'}
               </p>
             </div>
             <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <Clock size={24} className="text-purple-600" />
             </div>
           </div>
-        </PortalCard>
+        </Card>
       </div>
 
       {/* Main Content Grid */}
@@ -439,7 +514,7 @@ export default function AgencyClientDetailClient({
           <div>
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.requests')}
+                {t('agency.clients.detail.sections.requests' as any)}
               </h2>
               <button
                 onClick={() => {
@@ -448,7 +523,7 @@ export default function AgencyClientDetailClient({
                 }}
                 className="text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest flex items-center gap-2 group"
               >
-                <span>{t('agency.clients.detail.requests.viewAll')}</span>
+                <span>{t('agency.clients.detail.requests.viewAll' as any)}</span>
                 <ExternalLink
                   size={12}
                   className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
@@ -456,7 +531,7 @@ export default function AgencyClientDetailClient({
               </button>
             </div>
 
-            <PortalCard
+            <Card
               noPadding
               className="border-surface-200 dark:border-surface-800 shadow-sm overflow-hidden"
             >
@@ -474,7 +549,7 @@ export default function AgencyClientDetailClient({
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <PortalBadge
+                            <Badge
                               variant={
                                 request.status === 'DELIVERED' || request.status === 'CLOSED'
                                   ? 'green'
@@ -488,7 +563,7 @@ export default function AgencyClientDetailClient({
                               className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter"
                             >
                               {request.status}
-                            </PortalBadge>
+                            </Badge>
                             <span className="text-[10px] font-bold text-surface-400 font-mono">
                               #ID-{request.id.slice(0, 6).toUpperCase()}
                             </span>
@@ -521,25 +596,25 @@ export default function AgencyClientDetailClient({
                 <div className="py-16 text-center">
                   <FileText className="w-12 h-12 text-surface-200 dark:text-surface-800 mx-auto mb-3" />
                   <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                    {t('agency.clients.detail.requests.emptyTitle')}
+                    {t('agency.clients.detail.requests.emptyTitle' as any)}
                   </h3>
                   <p className="text-xs text-surface-500">
-                    {t('agency.clients.detail.requests.emptyDesc')}
+                    {t('agency.clients.detail.requests.emptyDesc' as any)}
                   </p>
                 </div>
               )}
-            </PortalCard>
+            </Card>
           </div>
 
           {/* Recent Activity */}
           <div>
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.recentActivity')}
+                {t('agency.clients.detail.sections.recentActivity' as any)}
               </h2>
             </div>
 
-            <PortalCard
+            <Card
               noPadding
               className="border-surface-200 dark:border-surface-800 shadow-sm overflow-hidden"
             >
@@ -584,14 +659,14 @@ export default function AgencyClientDetailClient({
                 <div className="py-16 text-center">
                   <Activity className="w-12 h-12 text-surface-200 dark:text-surface-800 mx-auto mb-3" />
                   <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                    {t('agency.clients.detail.activity.emptyTitle')}
+                    {t('agency.clients.detail.activity.emptyTitle' as any)}
                   </h3>
                   <p className="text-xs text-surface-500">
-                    {t('agency.clients.detail.activity.emptyDesc')}
+                    {t('agency.clients.detail.activity.emptyDesc' as any)}
                   </p>
                 </div>
               )}
-            </PortalCard>
+            </Card>
           </div>
         </div>
 
@@ -601,16 +676,26 @@ export default function AgencyClientDetailClient({
           <div>
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.information')}
+                {t('agency.clients.detail.sections.information' as any)}
               </h2>
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                className="text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest flex items-center gap-2 group"
+              >
+                <span>{t('agency.clients.detail.editClient' as any) || 'Edit'}</span>
+                <Settings
+                  size={14}
+                  className="group-hover:rotate-90 transition-transform duration-500"
+                />
+              </button>
             </div>
 
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="space-y-5">
                 {organization.website && (
                   <div>
                     <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
-                      {t('agency.clients.detail.info.website')}
+                      {t('agency.clients.detail.info.website' as any)}
                     </p>
                     <a
                       href={organization.website}
@@ -633,7 +718,7 @@ export default function AgencyClientDetailClient({
                 {organization.industry && (
                   <div>
                     <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
-                      {t('agency.clients.detail.info.industry')}
+                      {t('agency.clients.detail.info.industry' as any)}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white">
                       {organization.industry}
@@ -643,7 +728,7 @@ export default function AgencyClientDetailClient({
 
                 <div>
                   <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
-                    {t('agency.clients.detail.info.plan')}
+                    {t('agency.clients.detail.info.plan' as any)}
                   </p>
                   <div className="flex items-center gap-2">
                     <ShieldCheck
@@ -662,9 +747,9 @@ export default function AgencyClientDetailClient({
 
                 <div>
                   <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
-                    {t('agency.clients.detail.info.status')}
+                    {t('agency.clients.detail.info.status' as any)}
                   </p>
-                  <PortalBadge
+                  <Badge
                     variant={
                       organization.status === 'inactive'
                         ? 'gray'
@@ -676,11 +761,34 @@ export default function AgencyClientDetailClient({
                   >
                     {organization.status
                       ? t(`agency.clients.badge.${organization.status}` as any)
-                      : t('agency.clients.badge.active')}
-                  </PortalBadge>
+                      : t('agency.clients.badge.active' as any)}
+                  </Badge>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
+                    {t('agency.clients.detail.info.responsibleAgent' as any)}
+                  </p>
+                  {responsibleAgent ? (
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        name={responsibleAgent.name || responsibleAgent.email}
+                        src={responsibleAgent.photoUrl}
+                        size="xs"
+                        className="w-5 h-5"
+                      />
+                      <span className="text-sm font-bold text-surface-900 dark:text-white">
+                        {responsibleAgent.name || responsibleAgent.email}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm font-bold text-surface-400 italic">
+                      {t('agency.clients.detail.info.unassigned' as any)}
+                    </span>
+                  )}
                 </div>
               </div>
-            </PortalCard>
+            </Card>
           </div>
 
           {/* Shopify Store Integration */}
@@ -704,11 +812,11 @@ export default function AgencyClientDetailClient({
           <div>
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.team')}
+                {t('agency.clients.detail.sections.team' as any)}
               </h2>
             </div>
 
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="flex items-center gap-2 mb-5">
                 <Users size={16} className="text-blue-600" />
                 <span className="text-sm font-black text-surface-900 dark:text-white">
@@ -719,8 +827,8 @@ export default function AgencyClientDetailClient({
               {members.length > 0 ? (
                 <div className="space-y-4">
                   {members.slice(0, 5).map((member, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <PortalAvatar
+                    <div key={index} className="flex items-center gap-3 group">
+                      <Avatar
                         name={member.name || member.email}
                         src={member.photoUrl}
                         size="sm"
@@ -728,16 +836,23 @@ export default function AgencyClientDetailClient({
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-surface-900 dark:text-white truncate">
-                          {member.name || t('common.anonymous')}
+                          {member.name || t('common.anonymous' as any)}
                         </p>
                         <p className="text-xs text-surface-500 truncate">{member.email}</p>
                       </div>
-                      <PortalBadge
+                      <Badge
                         variant="blue"
                         className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
                       >
                         {member.role || 'member'}
-                      </PortalBadge>
+                      </Badge>
+                      <button
+                        onClick={() => handleRemoveMember(member)}
+                        className="p-1.5 text-surface-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                        title={t('common.removeLabel' as any) || 'Remove'}
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   ))}
                   {members.length > 5 && (
@@ -748,7 +863,7 @@ export default function AgencyClientDetailClient({
                       }}
                       className="w-full text-center block text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest pt-2"
                     >
-                      {t('agency.clients.detail.team.viewAll')}
+                      {t('agency.clients.detail.team.viewAll' as any)}
                     </button>
                   )}
                 </div>
@@ -756,17 +871,28 @@ export default function AgencyClientDetailClient({
                 <div className="py-8 text-center">
                   <Users className="w-10 h-10 text-surface-200 dark:text-surface-800 mx-auto mb-2" />
                   <h3 className="text-xs font-bold text-surface-900 dark:text-white mb-1">
-                    {t('agency.clients.detail.team.emptyTitle')}
+                    {t('agency.clients.detail.team.emptyTitle' as any)}
                   </h3>
                   <p className="text-[10px] text-surface-500">
-                    {t('agency.clients.detail.team.emptyDesc')}
+                    {t('agency.clients.detail.team.emptyDesc' as any)}
                   </p>
                 </div>
               )}
-            </PortalCard>
+            </Card>
           </div>
         </div>
       </div>
+
+      <EditClientModal
+        organization={organization}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={() => {
+          // You might trigger a refresh if needed, but subscription handles live updates usually for document changes.
+          // However, we might want to ensure local state is consistent if we relied on something not live.
+          // Luckily, we use real-time listeners for 'organization' in this component.
+        }}
+      />
     </div>
   );
 }

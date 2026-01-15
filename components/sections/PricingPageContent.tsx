@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
@@ -44,7 +44,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
     className="relative h-full"
   >
     {popular && (
-      <div className="absolute -top-3 start-1/2 -translate-x-1/2 z-10">
+      <div className="absolute -top-3 start-1/2 -translate-x-1/2 z-dropdown">
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-400 text-yellow-900 text-xs font-bold uppercase tracking-wide">
           <Icon name="star" size={12} />
           {popularBadge || 'Most Popular'}
@@ -100,6 +100,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
       </ul>
       <Link href="/contact" className="block mt-auto" onClick={() => trackPackageClick(name)}>
         <Button
+          as="div"
           variant={popular ? 'secondary' : 'primary'}
           className={`w-full ${popular ? '!bg-white !text-accent-700 hover:!bg-white/90' : ''}`}
         >
@@ -301,7 +302,7 @@ export const PricingPageContent: React.FC = () => {
               {pricing.cta.description}
             </p>
             <Link href="/contact">
-              <Button size="lg" className="group">
+              <Button as="div" size="lg" className="group">
                 <span className="relative z-10 flex items-center gap-2">
                   {pricing.cta.button}
                   <svg

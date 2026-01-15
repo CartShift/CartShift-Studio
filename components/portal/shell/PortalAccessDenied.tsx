@@ -3,7 +3,7 @@
 import { AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { PortalButton } from '../ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export function PortalAccessDenied() {
@@ -25,19 +25,19 @@ export function PortalAccessDenied() {
         </div>
         <div className="pt-4 flex flex-col gap-3">
           <Link href={getPortalPath('/')}>
-            <PortalButton
+            <Button
               variant="primary"
               className="w-full h-12 font-outfit shadow-xl shadow-blue-500/20"
             >
               {t('portal.access.switchWorkspace')}
-            </PortalButton>
+            </Button>
           </Link>
-          <PortalButton
+          <Button
             variant="outline"
             className="w-full h-12 font-outfit border-surface-200 dark:border-surface-800"
           >
             {t('portal.access.contactSupport')}
-          </PortalButton>
+          </Button>
         </div>
       </div>
     </div>

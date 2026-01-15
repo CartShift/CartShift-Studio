@@ -6,7 +6,7 @@
  */
 
 import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { db, getFirebaseAuth } from '@/lib/firebase';
+import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
 import { buildFirebaseFunctionUrl } from './firebase';
 import { ConsultationType, CONSULTATION_TYPE_CONFIG } from '@/lib/types/portal';
 
@@ -204,6 +204,7 @@ async function storeGoogleTokens(tokens: {
   email?: string;
 }): Promise<void> {
   const auth = getFirebaseAuth();
+  const db = getFirestoreDb();
   const user = auth.currentUser;
 
   if (!user) {
@@ -243,6 +244,7 @@ export async function updateCalendarSettings(selectedCalendarId: string): Promis
     throw new Error('User not authenticated');
   }
 
+  const db = getFirestoreDb();
   const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
   await setDoc(integrationRef, { selectedCalendarId }, { merge: true });
 }
@@ -257,6 +259,8 @@ export async function getCalendarConnection(): Promise<GoogleCalendarConnection>
   if (!user) {
     return { connected: false };
   }
+
+  const db = getFirestoreDb();
 
   try {
     const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
@@ -298,6 +302,7 @@ export async function disconnectCalendar(): Promise<void> {
     throw new Error('User not authenticated');
   }
 
+  const db = getFirestoreDb();
   const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
 
   // Get current tokens to revoke

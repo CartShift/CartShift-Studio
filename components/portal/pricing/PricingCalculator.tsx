@@ -24,14 +24,11 @@ import {
 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { usePricingCalculator } from '@/lib/hooks/usePricingCalculator';
 import { RequestType, REQUEST_TYPE, Currency } from '@/lib/types/portal';
-import {
-  EffortLevel,
-  EFFORT_LEVEL_CONFIG,
-} from '@/lib/types/pricing-calculator';
+import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator';
 import { formatCalculatorPrice } from '@/lib/services/pricing-calculator';
 
 // Icon mapping for request types
@@ -80,7 +77,9 @@ const TYPE_COLORS: Record<RequestType, { bg: string; text: string; border: strin
 
 interface PricingCalculatorProps {
   onCreateOffer?: (lineItem: { description: string; quantity: number; unitPrice: number }) => void;
-  onCreateMultipleOffers?: (lineItems: Array<{ description: string; quantity: number; unitPrice: number }>) => void;
+  onCreateMultipleOffers?: (
+    lineItems: Array<{ description: string; quantity: number; unitPrice: number }>
+  ) => void;
   showCreateButton?: boolean;
   className?: string;
   compact?: boolean;
@@ -141,7 +140,7 @@ export function PricingCalculator({
       {/* ============================================ */}
       {/* SECTION 1: GLOBAL SETTINGS */}
       {/* ============================================ */}
-      <PortalCard className="overflow-hidden border-surface-200 dark:border-surface-800">
+      <Card className="overflow-hidden border-surface-200 dark:border-surface-800">
         {/* Global Settings Header */}
         <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-950/30 dark:to-zinc-950/30">
           <div className="flex items-center gap-3">
@@ -169,7 +168,7 @@ export function PricingCalculator({
               </label>
             </div>
             <div className="flex gap-2">
-              {(['ILS', 'USD', 'EUR'] as Currency[]).map((curr) => (
+              {(['ILS', 'USD', 'EUR'] as Currency[]).map(curr => (
                 <button
                   key={curr}
                   onClick={() => setCurrency(curr)}
@@ -230,7 +229,12 @@ export function PricingCalculator({
                 >
                   {modifiers.isUrgent && (
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   )}
                 </div>
@@ -274,7 +278,12 @@ export function PricingCalculator({
                 >
                   {modifiers.isRecurringClient && (
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   )}
                 </div>
@@ -282,12 +291,12 @@ export function PricingCalculator({
             </div>
           </div>
         </div>
-      </PortalCard>
+      </Card>
 
       {/* ============================================ */}
       {/* SECTION 2: ITEM BUILDER */}
       {/* ============================================ */}
-      <PortalCard className="overflow-hidden border-surface-200 dark:border-surface-800">
+      <Card className="overflow-hidden border-surface-200 dark:border-surface-800">
         {/* Item Builder Header */}
         <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
           <div className="flex items-center gap-3">
@@ -312,7 +321,7 @@ export function PricingCalculator({
               {t('portal.requests.form.type')}
             </label>
             <div className="flex flex-wrap gap-2">
-              {requestTypes.map((type) => {
+              {requestTypes.map(type => {
                 const Icon = TYPE_ICONS[type];
                 const colors = TYPE_COLORS[type];
                 const isSelected = requestType === type;
@@ -344,7 +353,7 @@ export function PricingCalculator({
               {t('portal.pricing.effortLevel')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {effortLevels.map((level) => {
+              {effortLevels.map(level => {
                 const config = EFFORT_LEVEL_CONFIG[level];
                 const isSelected = effortLevel === level;
 
@@ -357,15 +366,16 @@ export function PricingCalculator({
                     className={cn(
                       'relative p-4 rounded-xl border-2 transition-all text-start',
                       isSelected
-                        ? cn(
-                            config.bgColor,
-                            'border-current shadow-md',
-                            config.color
-                          )
+                        ? cn(config.bgColor, 'border-current shadow-md', config.color)
                         : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'
                     )}
                   >
-                    <div className={cn('font-bold font-outfit', isSelected ? config.color : 'text-surface-900 dark:text-white')}>
+                    <div
+                      className={cn(
+                        'font-bold font-outfit',
+                        isSelected ? config.color : 'text-surface-900 dark:text-white'
+                      )}
+                    >
                       {isRTL ? config.labelHe : config.label}
                     </div>
                     <div className="text-xs text-surface-500 dark:text-surface-400 mt-1 flex items-center gap-1">
@@ -375,7 +385,10 @@ export function PricingCalculator({
                     {isSelected && (
                       <motion.div
                         layoutId="effort-indicator"
-                        className={cn('absolute inset-0 rounded-xl border-2', config.color.replace('text-', 'border-'))}
+                        className={cn(
+                          'absolute inset-0 rounded-xl border-2',
+                          config.color.replace('text-', 'border-')
+                        )}
                         style={{ pointerEvents: 'none' }}
                       />
                     )}
@@ -403,7 +416,8 @@ export function PricingCalculator({
               </div>
               <div className="text-end">
                 <div className="text-xs text-surface-500 dark:text-surface-400">
-                  {t('portal.common.estimated')} {result.estimatedHours.min}-{result.estimatedHours.max} {t('portal.common.hours')}
+                  {t('portal.common.estimated')} {result.estimatedHours.min}-
+                  {result.estimatedHours.max} {t('portal.common.hours')}
                 </div>
               </div>
             </div>
@@ -411,36 +425,36 @@ export function PricingCalculator({
 
           {/* Action Buttons */}
           <div className="flex gap-3">
-            <PortalButton
+            <Button
               variant="outline"
               onClick={reset}
               className="px-4"
               title={t('portal.pricing.actions.reset')}
             >
               <RotateCcw size={16} />
-            </PortalButton>
+            </Button>
 
-            <PortalButton
+            <Button
               variant="outline"
               className="flex-1 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30"
               onClick={() => addToQuote(locale)}
             >
               <Plus size={16} className={cn(isRTL ? 'ms-2' : 'me-2')} />
               {t('portal.pricing.actions.addToQuote')}
-            </PortalButton>
+            </Button>
 
             {showCreateButton && !quoteHasItems && (
-              <PortalButton
+              <Button
                 onClick={handleSingleOffer}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 {t('portal.pricing.actions.createOffer')}
                 <ArrowRight size={16} className={cn(isRTL ? 'me-2 rotate-180' : 'ms-2')} />
-              </PortalButton>
+              </Button>
             )}
           </div>
         </div>
-      </PortalCard>
+      </Card>
 
       {/* ============================================ */}
       {/* SECTION 3: QUOTE SUMMARY */}
@@ -452,7 +466,7 @@ export function PricingCalculator({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
           >
-            <PortalCard className="overflow-hidden border-blue-200 dark:border-blue-900 shadow-xl shadow-blue-500/5">
+            <Card className="overflow-hidden border-blue-200 dark:border-blue-900 shadow-xl shadow-blue-500/5">
               {/* Quote Header */}
               <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -478,19 +492,25 @@ export function PricingCalculator({
 
               {/* Quote Items List */}
               <div className="divide-y divide-surface-100 dark:divide-surface-800">
-                {quoteItems.map((item) => {
+                {quoteItems.map(item => {
                   const Icon = TYPE_ICONS[item.requestType];
                   const colors = TYPE_COLORS[item.requestType];
                   const itemRatio = quoteResult.totalAdjustedPrice / quoteResult.totalBasePrice;
                   const itemAdjustedPrice = Math.round(item.basePrice * itemRatio);
 
                   return (
-                    <div key={item.id} className="p-4 flex items-center justify-between group hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-colors">
+                    <div
+                      key={item.id}
+                      className="p-4 flex items-center justify-between group hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-colors"
+                    >
                       <div className="flex items-center gap-4">
-                        <div className={cn(
-                          'w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
-                          colors.bg, colors.text
-                        )}>
+                        <div
+                          className={cn(
+                            'w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
+                            colors.bg,
+                            colors.text
+                          )}
+                        >
                           <Icon size={18} />
                         </div>
                         <div>
@@ -498,9 +518,14 @@ export function PricingCalculator({
                             {item.description}
                           </div>
                           <div className="text-xs text-surface-500 flex items-center gap-2">
-                            <span className="capitalize">{t(`portal.pricing.effort.${item.effortLevel}`)}</span>
+                            <span className="capitalize">
+                              {t(`portal.pricing.effort.${item.effortLevel}`)}
+                            </span>
                             <span className="text-surface-300">•</span>
-                            <span>{formatCalculatorPrice(item.basePrice, currency)} {t('portal.pricing.quote.base')}</span>
+                            <span>
+                              {formatCalculatorPrice(item.basePrice, currency)}{' '}
+                              {t('portal.pricing.quote.base')}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -527,18 +552,35 @@ export function PricingCalculator({
               {quoteResult.breakdown.filter(b => b.type !== 'base').length > 0 && (
                 <div className="p-5 bg-surface-50 dark:bg-surface-900/50 border-t border-surface-100 dark:border-surface-800">
                   <div className="space-y-2">
-                    {quoteResult.breakdown.filter(b => b.type !== 'base').map((item) => (
-                      <div key={item.id} className="flex items-center justify-between text-xs font-medium">
-                        <span className="text-surface-500 flex items-center gap-2">
-                          {item.type === 'add' ? <TrendingUp size={12} className="text-rose-500" /> : <TrendingDown size={12} className="text-green-500" />}
-                          {isRTL ? item.labelHe : item.label}
-                          {item.percentage && <span className="opacity-60">({item.type === 'add' ? '+' : '-'}{item.percentage}%)</span>}
-                        </span>
-                        <span className={cn(item.type === 'add' ? 'text-rose-600' : 'text-green-600')}>
-                          {item.type === 'add' ? '+' : '-'}{formatCalculatorPrice(Math.abs(item.amount), currency)}
-                        </span>
-                      </div>
-                    ))}
+                    {quoteResult.breakdown
+                      .filter(b => b.type !== 'base')
+                      .map(item => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between text-xs font-medium"
+                        >
+                          <span className="text-surface-500 flex items-center gap-2">
+                            {item.type === 'add' ? (
+                              <TrendingUp size={12} className="text-rose-500" />
+                            ) : (
+                              <TrendingDown size={12} className="text-green-500" />
+                            )}
+                            {isRTL ? item.labelHe : item.label}
+                            {item.percentage && (
+                              <span className="opacity-60">
+                                ({item.type === 'add' ? '+' : '-'}
+                                {item.percentage}%)
+                              </span>
+                            )}
+                          </span>
+                          <span
+                            className={cn(item.type === 'add' ? 'text-rose-600' : 'text-green-600')}
+                          >
+                            {item.type === 'add' ? '+' : '-'}
+                            {formatCalculatorPrice(Math.abs(item.amount), currency)}
+                          </span>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}
@@ -559,20 +601,21 @@ export function PricingCalculator({
                       {t('portal.pricing.quote.jobsCount', { count: quoteItems.length })}
                     </div>
                     <div className="text-[10px] text-white/60">
-                      {quoteResult.totalEstimatedHours.min}-{quoteResult.totalEstimatedHours.max} {t('portal.common.hours')} {t('portal.pricing.quote.totalHours')}
+                      {quoteResult.totalEstimatedHours.min}-{quoteResult.totalEstimatedHours.max}{' '}
+                      {t('portal.common.hours')} {t('portal.pricing.quote.totalHours')}
                     </div>
                   </div>
                 </div>
 
-                <PortalButton
+                <Button
                   onClick={handleMultipleOffers}
                   className="w-full bg-white text-blue-600 hover:bg-blue-50 border-none shadow-xl h-14 text-lg font-black font-outfit"
                 >
                   {t('portal.pricing.actions.createOffer')}
                   <ArrowRight size={20} className={cn(isRTL ? 'me-2 rotate-180' : 'ms-2')} />
-                </PortalButton>
+                </Button>
               </div>
-            </PortalCard>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>

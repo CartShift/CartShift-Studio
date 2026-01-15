@@ -5,8 +5,8 @@ import { Timestamp } from 'firebase/firestore';
 import { CheckCircle2, Circle, Plus, GripVertical, Trash2, Calendar, Clock } from 'lucide-react';
 import { Milestone, MILESTONE_STATUS, Request, MilestoneStatus } from '@/lib/types/portal';
 import { updateRequestMilestones, updateMilestoneStatus } from '@/lib/services/portal-requests';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
@@ -75,9 +75,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
     } catch (error) {
       console.error('Failed to toggle status:', error);
       // Rollback
-      setMilestones(milestones.map(m =>
-        m.id === ms.id ? { ...m, status: originalStatus } : m
-      ));
+      setMilestones(milestones.map(m => (m.id === ms.id ? { ...m, status: originalStatus } : m)));
     }
   };
 
@@ -89,7 +87,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
       : 0;
 
   return (
-    <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+    <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
@@ -100,14 +98,14 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
           </p>
         </div>
         {isAgency && !isEditing && (
-          <PortalButton
+          <Button
             variant="outline"
             size="sm"
             className="h-9 px-4 font-outfit"
             onClick={() => setIsEditing(true)}
           >
             {t('portal.milestones.managePipeline')}
-          </PortalButton>
+          </Button>
         )}
       </div>
 
@@ -138,15 +136,17 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                     <div
                       onClick={() => handleToggleStatus(ms)}
                       className={cn(
-                        'absolute -start-8 mt-1 w-6.5 h-6.5 rounded-full border-4 border-white dark:border-surface-950 flex items-center justify-center transition-all z-10',
-                        isAgency && !isEditing ? 'cursor-pointer hover:scale-110 active:scale-95' : '',
+                        'absolute -start-8 mt-1 w-6.5 h-6.5 rounded-full border-4 border-white dark:border-surface-950 flex items-center justify-center transition-all z-dropdown',
+                        isAgency && !isEditing
+                          ? 'cursor-pointer hover:scale-110 active:scale-95'
+                          : '',
                         isCompleted
                           ? 'bg-emerald-500 text-white'
                           : isActive
                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                             : 'bg-surface-100 dark:bg-surface-800 text-surface-400'
                       )}
-                      role={isAgency && !isEditing ? "button" : undefined}
+                      role={isAgency && !isEditing ? 'button' : undefined}
                       aria-label="Toggle status"
                     >
                       {isCompleted ? (
@@ -181,7 +181,9 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                         <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-surface-400 uppercase tracking-tight">
                           <Calendar size={12} />
                           {t('portal.milestones.target')}{' '}
-                          {ms.dueDate.toDate ? format(ms.dueDate.toDate(), 'MMM d, yyyy') : t('portal.milestones.tbd')}
+                          {ms.dueDate.toDate
+                            ? format(ms.dueDate.toDate(), 'MMM d, yyyy')
+                            : t('portal.milestones.tbd')}
                         </div>
                       )}
                     </div>
@@ -240,19 +242,19 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
           </button>
 
           <div className="flex gap-3 pt-6 border-t border-surface-100 dark:border-surface-800">
-            <PortalButton variant="outline" className="flex-1" onClick={() => setIsEditing(false)}>
+            <Button variant="outline" className="flex-1" onClick={() => setIsEditing(false)}>
               {t('portal.milestones.discard')}
-            </PortalButton>
-            <PortalButton
+            </Button>
+            <Button
               className="flex-1 shadow-lg shadow-blue-500/20"
               onClick={handleSave}
-              isLoading={isSaving}
+              loading={isSaving}
             >
               {t('portal.milestones.applyPipelineUpdates')}
-            </PortalButton>
+            </Button>
           </div>
         </div>
       )}
-    </PortalCard>
+    </Card>
   );
 }

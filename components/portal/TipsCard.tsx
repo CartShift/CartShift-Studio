@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { Lightbulb, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Card } from '@/components/ui/Card';
 
 export function TipsCard() {
   const t = useTranslations('portal.dashboard.tips');
@@ -36,7 +36,7 @@ export function TipsCard() {
   const NextIcon = isRtl ? ChevronLeft : ChevronRight;
 
   return (
-    <PortalCard className="border-blue-100 dark:border-blue-900/30 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-blue-950/30 dark:to-indigo-950/30 shadow-sm overflow-hidden">
+    <Card className="border-blue-100 dark:border-blue-900/30 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-blue-950/30 dark:to-indigo-950/30 shadow-sm overflow-hidden">
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 p-2 rounded-xl bg-blue-100 dark:bg-blue-900/50">
           <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -95,6 +95,6 @@ export function TipsCard() {
           </div>
         </div>
       </div>
-    </PortalCard>
+    </Card>
   );
 }

@@ -11,6 +11,7 @@ import {
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb } from '@/lib/firebase';
 import { ACCOUNT_TYPE } from '@/lib/types/portal';
+import { validatePassword, isValidEmail } from '@/lib/utils/validation';
 
 // Google Auth Provider instance
 const googleProvider = new GoogleAuthProvider();
@@ -122,29 +123,20 @@ export async function signUpWithEmail(
   name?: string
 ): Promise<User> {
   try {
-    // Validate inputs
+    // Validate inputs using shared validation utilities
     if (!email || !password) {
       throw new Error('Email and password are required');
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       throw new Error('Invalid email format');
     }
 
-    // Validate password strength: at least 6 characters with both letters and numbers
-    if (password.length < 6) {
-      throw new Error('Password must be at least 6 characters');
-    }
-
-    // Check for letters (both uppercase and lowercase)
-    const hasLetters = /[a-zA-Z]/.test(password);
-    // Check for numbers
-    const hasNumbers = /[0-9]/.test(password);
-
-    if (!hasLetters || !hasNumbers) {
-      throw new Error('Password must contain both letters and numbers');
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      throw new Error(passwordValidation.error || 'Password validation failed');
     }
 
     const authInstance = getAuthInstance();
@@ -196,9 +188,6 @@ export async function signUpWithEmail(
   }
 }
 
-// Flag to indicate if a logout process is currently in progress
-// This helps suppress spurious "permission-denied" errors from Firestore listeners
-// that may trigger after the auth token is invalidated but before the listeners are detached.
 // Flag to indicate if a logout process is currently in progress
 // This helps suppress spurious "permission-denied" errors from Firestore listeners
 // that may trigger after the auth token is invalidated but before the listeners are detached.

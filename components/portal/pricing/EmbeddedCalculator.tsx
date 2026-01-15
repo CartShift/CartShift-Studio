@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import { usePricingCalculator } from '@/lib/hooks/usePricingCalculator';
 import { RequestType, REQUEST_TYPE, Currency } from '@/lib/types/portal';
 import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator';
@@ -312,14 +312,14 @@ export function EmbeddedCalculator({
                   </div>
                 </div>
 
-                <PortalButton
+                <Button
                   type="button"
                   onClick={handleAddItem}
                   className="h-12 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
                 >
                   <Plus size={18} className={cn(isRTL ? 'ms-2' : 'me-2')} />
                   {t('portal.pricing.form.addItem')}
-                </PortalButton>
+                </Button>
               </div>
             </div>
           </motion.div>

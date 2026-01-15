@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, startTransition } from 'react';
+import { useState, useEffect, useRef, useCallback, startTransition, useMemo } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useLocale } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -63,7 +63,14 @@ export function usePortalShellState({
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
-  const { userData, loading, isAuthenticated, accountType } = usePortalAuth();
+  const {
+    userData,
+    loading,
+    isAuthenticated,
+    accountType,
+    isImpersonating,
+    impersonatedAccountId,
+  } = usePortalAuth();
   const { orgId: contextOrgId, hasMultipleOrgs, fullOrganizations, switchOrg } = useOrg();
 
   // Derived Values
@@ -71,6 +78,21 @@ export function usePortalShellState({
   const effectiveOrgId = contextOrgId ?? orgIdProp;
   const isExpanded = isMobileMenuOpen || isSidebarOpen;
   const isAgency = isAgencyPage || userData?.isAgency;
+
+  // Calculate Display User Data for Impersonation
+  const displayUserData = useMemo(() => {
+    if (isImpersonating && impersonatedAccountId && userData) {
+      const org = fullOrganizations.find(o => o.id === impersonatedAccountId);
+      if (org) {
+        return {
+          ...userData,
+          name: org.name,
+          photoUrl: org.branding?.iconUrl || org.logoUrl || userData.photoUrl,
+        };
+      }
+    }
+    return userData;
+  }, [userData, isImpersonating, impersonatedAccountId, fullOrganizations]);
 
   // Access check effect
   useEffect(() => {
@@ -91,6 +113,16 @@ export function usePortalShellState({
 
       const checkAccess = async () => {
         try {
+          // Handle Impersonation - Grant Owner permissions visually
+          if (isImpersonating && impersonatedAccountId) {
+            if (internalMounted) {
+              setIsAuthorized(true);
+              setMemberRole(undefined); // Remove specific role so Badge (Client/Agency) is shown
+              hasEverBeenAuthorizedRef.current = true;
+            }
+            return;
+          }
+
           if (effectiveOrgId && userData) {
             if (userData.isAgency || userData.accountType === 'AGENCY') {
               if (internalMounted) {
@@ -168,7 +200,16 @@ export function usePortalShellState({
     return () => {
       internalMounted = false;
     };
-  }, [loading, isAuthenticated, userData, effectiveOrgId, isAgencyPage, router]);
+  }, [
+    loading,
+    isAuthenticated,
+    userData,
+    effectiveOrgId,
+    isAgencyPage,
+    router,
+    isImpersonating,
+    impersonatedAccountId,
+  ]);
 
   // Mount effect
   useEffect(() => {
@@ -330,9 +371,9 @@ export function usePortalShellState({
       updatePosition();
       window.addEventListener('scroll', updatePosition, true);
       window.addEventListener('resize', updatePosition);
-      const timeoutId = setTimeout(updatePosition, 0);
+      const rafId = requestAnimationFrame(updatePosition);
       return () => {
-        clearTimeout(timeoutId);
+        cancelAnimationFrame(rafId);
         window.removeEventListener('scroll', updatePosition, true);
         window.removeEventListener('resize', updatePosition);
       };
@@ -447,7 +488,7 @@ export function usePortalShellState({
     notificationDropdownRef,
 
     // Auth/Org
-    userData,
+    userData: displayUserData,
     loading,
     accountType,
     effectiveOrgId,

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Parallax } from '@/components/ui/Parallax';
@@ -13,7 +13,7 @@ import { logError } from '@/lib/error-handler';
 import { getScheduleUrl } from '@/lib/schedule';
 import { Icon } from '@/components/ui/Icon';
 import { Mail, Clock, CheckCircle, Calendar } from 'lucide-react';
-import { submitContactFormClient } from '@/lib/services/contact-client';
+import { submitContactForm } from '@/lib/services/contact-client';
 
 interface ContactFormData {
   name: string;
@@ -40,7 +40,7 @@ export const ContactPageContent: React.FC = () => {
     setError(null);
 
     try {
-      const result = await submitContactFormClient(data);
+      const result = await submitContactForm(data);
 
       if (!result.success) {
         throw new Error(result.error || t('portal.requests.form.failedToSubmit'));
@@ -64,7 +64,7 @@ export const ContactPageContent: React.FC = () => {
 
   return (
     <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-surface-900">
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-dropdown">
         <div className="grid md:grid-cols-2 gap-8">
           <motion.div
             initial={{ opacity: 0, x: isRtl ? 30 : -30 }} // Logical start
@@ -221,8 +221,7 @@ export const ContactPageContent: React.FC = () => {
                         htmlFor="name"
                         className="block text-sm font-medium text-surface-700 dark:text-surface-200 mb-2"
                       >
-                        {t('contact.form.nameLabel')}{' '}
-                        <span className="text-error">*</span>
+                        {t('contact.form.nameLabel')} <span className="text-error">*</span>
                       </label>
                       <input
                         id="name"
@@ -246,8 +245,7 @@ export const ContactPageContent: React.FC = () => {
                         htmlFor="email"
                         className="block text-sm font-medium text-surface-700 dark:text-surface-200 mb-2"
                       >
-                        {t('contact.form.emailLabel')}{' '}
-                        <span className="text-error">*</span>
+                        {t('contact.form.emailLabel')} <span className="text-error">*</span>
                       </label>
                       <input
                         id="email"
@@ -298,12 +296,13 @@ export const ContactPageContent: React.FC = () => {
                         htmlFor="projectType"
                         className="block text-sm font-medium text-surface-700 dark:text-surface-200 mb-2"
                       >
-                        {t('contact.form.projectTypeLabel')}{' '}
-                        <span className="text-error">*</span>
+                        {t('contact.form.projectTypeLabel')} <span className="text-error">*</span>
                       </label>
                       <select
                         id="projectType"
-                        {...register('projectType', { required: t('contact.form.projectTypeRequired') })}
+                        {...register('projectType', {
+                          required: t('contact.form.projectTypeRequired'),
+                        })}
                         className="w-full px-4 py-4 md:py-3 rounded-xl glass-effect text-surface-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all bg-white dark:bg-surface-900 [&>option]:text-surface-900 dark:[&>option]:text-white touch-manipulation"
                         aria-required="true"
                         aria-invalid={errors.projectType ? 'true' : 'false'}
@@ -312,12 +311,8 @@ export const ContactPageContent: React.FC = () => {
                         }
                       >
                         <option value="">{t('contact.form.selectOption')}</option>
-                        <option value="shopify">
-                          {t('contact.form.options.shopify')}
-                        </option>
-                        <option value="wordpress">
-                          {t('contact.form.options.wordpress')}
-                        </option>
+                        <option value="shopify">{t('contact.form.options.shopify')}</option>
+                        <option value="wordpress">{t('contact.form.options.wordpress')}</option>
                         <option value="consultation">
                           {t('contact.form.options.consultation')}
                         </option>
@@ -339,8 +334,7 @@ export const ContactPageContent: React.FC = () => {
                         htmlFor="message"
                         className="block text-sm font-medium text-surface-700 dark:text-surface-200 mb-2"
                       >
-                        {t('contact.form.messageLabel')}{' '}
-                        <span className="text-error">*</span>
+                        {t('contact.form.messageLabel')} <span className="text-error">*</span>
                       </label>
                       <textarea
                         id="message"
@@ -388,4 +382,3 @@ export const ContactPageContent: React.FC = () => {
     </section>
   );
 };
-

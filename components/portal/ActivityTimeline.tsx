@@ -16,7 +16,7 @@ import {
   Filter,
 } from 'lucide-react';
 
-import { PortalEmptyState } from '@/components/portal/ui/PortalEmptyState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils';
 import { ActivityLog } from '@/lib/types/portal';
 import { Timestamp } from 'firebase/firestore';
@@ -73,7 +73,7 @@ const filterButtonVariants = cva(
 );
 
 const activityIconVariants = cva(
-  'flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center z-10 border border-transparent group-hover:border-surface-200 dark:group-hover:border-surface-700 transition-all',
+  'flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center z-dropdown border border-transparent group-hover:border-surface-200 dark:group-hover:border-surface-700 transition-all',
   {
     variants: {
       action: {
@@ -141,7 +141,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
 
   if (visibleActivities.length === 0 && activeFilter === 'all') {
     return (
-      <PortalEmptyState
+      <EmptyState
         icon={Clock}
         title={tActivity('noActivity')}
         description={tActivity('noActivityDescription')}

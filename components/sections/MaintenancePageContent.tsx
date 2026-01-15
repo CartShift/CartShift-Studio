@@ -39,7 +39,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
     className="relative h-full"
   >
     {popular && (
-      <div className="absolute -top-3 start-1/2 -translate-x-1/2 z-10">
+      <div className="absolute -top-3 start-1/2 -translate-x-1/2 z-dropdown">
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-400 text-yellow-900 text-xs font-bold uppercase tracking-wide">
           <Icon name="star" size={12} />
           Recommended

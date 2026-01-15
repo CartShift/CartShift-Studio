@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/navigation';
 import { AlertCircle, ArrowLeft, Loader2, FileText, ExternalLink, Pencil } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { getPricingRequest } from '@/lib/services/pricing-requests';
 import { getRequest } from '@/lib/services/portal-requests';
 import {
@@ -92,7 +92,7 @@ export default function PricingDetailClient() {
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
         <Link href="/portal/pricing/">
-          <PortalButton>{t('portal.common.back' as any)}</PortalButton>
+          <Button>{t('portal.common.back' as any)}</Button>
         </Link>
       </div>
     );
@@ -106,36 +106,38 @@ export default function PricingDetailClient() {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="flex items-center justify-between">
           <Link href="/portal/pricing/">
-            <PortalButton variant="ghost" className="flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2">
               <ArrowLeft size={18} />
               {t('portal.common.back' as any)}
-            </PortalButton>
+            </Button>
           </Link>
           {isAgency &&
             (pricingRequest.status === PRICING_STATUS.DRAFT ||
               pricingRequest.status === PRICING_STATUS.SENT) && (
               <Link href={`/portal/pricing/${pricingId}/edit`}>
-                <PortalButton variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2">
                   <Pencil size={18} />
                   {t('portal.common.edit' as any)}
-                </PortalButton>
+                </Button>
               </Link>
             )}
         </div>
 
-        <PortalCard className="p-6">
+        <Card className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit mb-2">
                 {pricingRequest.title}
               </h1>
               {pricingRequest.description && (
-                <p className="text-surface-600 dark:text-surface-400">{pricingRequest.description}</p>
+                <p className="text-surface-600 dark:text-surface-400">
+                  {pricingRequest.description}
+                </p>
               )}
             </div>
-            <PortalBadge variant={statusColor}>
+            <Badge variant={statusColor}>
               {t(`portal.pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
-            </PortalBadge>
+            </Badge>
           </div>
 
           <div className="space-y-4 mb-6">
@@ -152,9 +154,9 @@ export default function PricingDetailClient() {
                 <p className="text-xs font-black text-surface-400 uppercase tracking-widest mb-1">
                   {t('portal.common.status' as any)}
                 </p>
-                <PortalBadge variant={statusColor}>
+                <Badge variant={statusColor}>
                   {t(`portal.pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
-                </PortalBadge>
+                </Badge>
               </div>
             </div>
           </div>
@@ -214,21 +216,25 @@ export default function PricingDetailClient() {
                           <h4 className="font-bold text-surface-900 dark:text-white truncate">
                             {request.title}
                           </h4>
-                          <PortalBadge variant="gray" className="text-xs">
-                            {request.type ? t(`portal.requests.type.${request.type.toLowerCase()}` as any) : t('portal.requests.type.design')}
-                          </PortalBadge>
-                          <PortalBadge
-                            variant={isAgency
-                              ? getStatusBadgeVariant(request.status)
-                              : getClientStatusBadgeVariant(request.status)
+                          <Badge variant="gray" className="text-xs">
+                            {request.type
+                              ? t(`portal.requests.type.${request.type.toLowerCase()}` as any)
+                              : t('portal.requests.type.design')}
+                          </Badge>
+                          <Badge
+                            variant={
+                              isAgency
+                                ? getStatusBadgeVariant(request.status)
+                                : getClientStatusBadgeVariant(request.status)
                             }
                             className="text-xs"
                           >
                             {isAgency
                               ? t(`portal.requests.status.${request.status.toLowerCase()}` as any)
-                              : t(`portal.requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any)
-                            }
-                          </PortalBadge>
+                              : t(
+                                  `portal.requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
+                                )}
+                          </Badge>
                         </div>
                         {request.description && (
                           <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 line-clamp-1">
@@ -259,7 +265,7 @@ export default function PricingDetailClient() {
               />
             </div>
           )}
-        </PortalCard>
+        </Card>
       </div>
     </PayPalProvider>
   );

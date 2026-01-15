@@ -3,12 +3,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
-import { Pin, ExternalLink, X, Loader2 } from 'lucide-react';
+import { Pin, ExternalLink, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Request } from '@/lib/types/portal';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
 import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
@@ -39,7 +39,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
   }
 
   return (
-    <PortalCard
+    <Card
       variant="glass"
       accent="warning"
       padding="sm"
@@ -50,9 +50,9 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
           <Pin size={12} className="text-white" />
         </div>
         {t('portal.dashboard.pinned.title')}
-        <PortalBadge variant="yellow" size="xs" className="ms-auto" glow>
+        <Badge variant="yellow" size="xs" className="ms-auto" glow>
           {pinnedRequests.length}
-        </PortalBadge>
+        </Badge>
       </div>
 
       <AnimatePresence mode="popLayout">
@@ -81,19 +81,21 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
                   />
                 </Link>
                 <div className="mt-1 flex items-center gap-2">
-                  <PortalBadge
-                    variant={isAgency
-                      ? getStatusBadgeVariant(request.status)
-                      : getClientStatusBadgeVariant(request.status)
+                  <Badge
+                    variant={
+                      isAgency
+                        ? getStatusBadgeVariant(request.status)
+                        : getClientStatusBadgeVariant(request.status)
                     }
                     size="xs"
                     dot
                   >
                     {isAgency
                       ? t(`portal.requests.status.${request.status.toLowerCase()}` as any)
-                      : t(`portal.requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any)
-                    }
-                  </PortalBadge>
+                      : t(
+                          `portal.requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
+                        )}
+                  </Badge>
                   <span className="text-[10px] text-surface-400 font-mono">
                     #{request.id.slice(-6).toUpperCase()}
                   </span>
@@ -111,7 +113,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
           </motion.div>
         ))}
       </AnimatePresence>
-    </PortalCard>
+    </Card>
   );
 };
 
@@ -150,21 +152,13 @@ export const PinButton: React.FC<PinButtonProps> = ({
         pinned
           ? 'text-amber-500 bg-amber-100 dark:bg-amber-500/20 hover:bg-amber-200 dark:hover:bg-amber-500/30'
           : 'text-surface-400 hover:text-amber-500 hover:bg-surface-100 dark:hover:bg-surface-800',
-        loading && 'opacity-70 cursor-wait',
+        loading && 'opacity-70 cursor-wait animate-pulse',
         className
       )}
       aria-label={pinned ? t('portal.dashboard.pinned.unpin') : t('portal.dashboard.pinned.pin')}
       title={pinned ? t('portal.dashboard.pinned.unpin') : t('portal.dashboard.pinned.pin')}
     >
-      {loading ? (
-        <Loader2
-          size={size === 'sm' ? 14 : 18}
-          className="animate-spin"
-        />
-      ) : (
-        <Pin size={size === 'sm' ? 14 : 18} className={cn(pinned && 'fill-current')} />
-      )}
+      <Pin size={size === 'sm' ? 14 : 18} className={cn(pinned && 'fill-current')} />
     </button>
   );
 };
-

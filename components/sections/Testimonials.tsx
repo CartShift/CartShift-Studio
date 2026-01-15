@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Icon } from '@/components/ui/Icon';
 import { Parallax } from '@/components/ui/Parallax';
@@ -96,10 +96,7 @@ export const Testimonials: React.FC = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(var(--surface-800-rgb),0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(var(--surface-800-rgb),0.03)_1px,transparent_1px)] bg-[size:50px_50px] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)]" />
       </div>
 
-      <SectionHeader
-        title={t('testimonials.title')}
-        subtitle={t('testimonials.subtitle')}
-      />
+      <SectionHeader title={t('testimonials.title')} subtitle={t('testimonials.subtitle')} />
 
       {/* Featured Spotlight Testimonial */}
       <motion.div
@@ -121,7 +118,7 @@ export const Testimonials: React.FC = () => {
           {/* Glow effect */}
           <div className="absolute top-1/2 start-1/2 rtl:translate-x-1/2 ltr:-translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-accent-500/20 dark:bg-accent-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
-          <div className="relative z-10">
+          <div className="relative z-dropdown">
             {/* Star Rating - Animated */}
             <div className="flex gap-1.5 mb-8">
               {[...Array(featuredTestimonial.rating)].map((_, i) => (
@@ -219,4 +216,3 @@ export const Testimonials: React.FC = () => {
     </Section>
   );
 };
-

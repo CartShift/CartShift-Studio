@@ -230,7 +230,7 @@ export const StoreAnalyzerContent: React.FC = () => {
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
             </div>
 
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+            <div className="relative z-dropdown w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
               <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                 {/* Left - Content */}
                 <motion.div
@@ -376,7 +376,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           <section className="relative py-20 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-surface-950 via-surface-900 to-surface-950" />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative z-dropdown max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -403,7 +403,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                     className="group relative"
                   >
                     <div
-                      className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl blur-xl -z-10"
+                      className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl blur-xl -z-dropdown"
                       style={{
                         backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))`,
                       }}
@@ -427,7 +427,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           <section className="relative py-20 overflow-hidden">
             <div className="absolute inset-0 bg-surface-950" />
 
-            <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative z-dropdown max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -499,7 +499,7 @@ export const StoreAnalyzerContent: React.FC = () => {
           <section className="relative py-20 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-primary-500/10 via-surface-900 to-surface-950" />
 
-            <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="relative z-dropdown max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}

@@ -19,12 +19,14 @@ import {
   Clock,
   RotateCcw,
 } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { useRouter } from '@/i18n/navigation';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 import { PinButton } from '@/components/portal/PinnedRequests';
-import { PortalSkeleton } from '@/components/portal/ui/Skeleton';
+import { Skeleton as PortalSkeleton } from '@/components/ui/Skeleton';
 import { RequestMilestones } from '@/components/portal/requests/RequestMilestones';
 import { RequestAttachments } from '@/components/portal/requests/RequestAttachments';
 import { RequestDiscussion } from '@/components/portal/requests/RequestDiscussion';
@@ -107,13 +109,7 @@ function LoadingSkeleton({ requestId }: { requestId: string | null }) {
   );
 }
 
-function ErrorState({
-  error,
-  t
-}: {
-  error: string | null;
-  t: ReturnType<typeof useTranslations>;
-}) {
+function ErrorState({ error, t }: { error: string | null; t: ReturnType<typeof useTranslations> }) {
   return (
     <div className="text-center py-20 px-4">
       <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
@@ -126,9 +122,9 @@ function ErrorState({
         {t('requests.detail.notFoundDesc')}
       </p>
       <Link href="/portal/requests/" className="mt-8 inline-block">
-        <PortalButton variant="outline" className="font-outfit">
+        <Button variant="outline" className="font-outfit">
           {t('requests.detail.backToRequests')}
-        </PortalButton>
+        </Button>
       </Link>
     </div>
   );
@@ -141,6 +137,7 @@ function ErrorState({
 export default function RequestDetailClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
+  const router = useRouter();
 
   // ========== CONSOLIDATED DATA HOOKS ==========
   // All subscriptions, state, and derived permissions are now in useRequestDetail
@@ -171,6 +168,7 @@ export default function RequestDetailClient() {
     isAccepting,
     isDeclining,
     handleStartWork,
+    isStartingWork,
     handlePaymentSuccess,
     handleAssignSpecialist,
     isAssigning,
@@ -181,6 +179,8 @@ export default function RequestDetailClient() {
     handleStatusChange,
     handleSendComment,
     isSubmittingComment,
+    handleDeleteRequest,
+    isDeleting,
   } = useRequestActions({
     request,
     userData,
@@ -209,6 +209,7 @@ export default function RequestDetailClient() {
   // ========== LOCAL UI STATE ==========
   const [activeTab, setActiveTab] = useState<'overview' | 'discussion' | 'history'>('overview');
   const [showRevisionModal, setShowRevisionModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
 
   // ========== RENDER ==========
@@ -220,8 +221,6 @@ export default function RequestDetailClient() {
   if (error || !request) {
     return <ErrorState error={error} t={t} />;
   }
-
-
 
   const handlePricingSubmit = async () => {
     const success = await handleAddPricing(pricingLineItems, pricingCurrency);
@@ -245,11 +244,21 @@ export default function RequestDetailClient() {
     }
   };
 
+  const onDeleteConfirm = async () => {
+    console.log('[RequestDetail] Attempting to delete request...');
+    const success = await handleDeleteRequest();
+    console.log('[RequestDetail] Delete result:', success);
+    if (success) {
+      router.push('/portal/requests/');
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-
-
-      <motion.div layoutId={`request-container-${request.id}`} className="flex flex-col md:flex-row md:items-center gap-6 p-4 rounded-xl">
+      <motion.div
+        layoutId={`request-container-${request.id}`}
+        className="flex flex-col md:flex-row md:items-center gap-6 p-4 rounded-xl"
+      >
         <Link
           href="/portal/requests/"
           className="p-2.5 border border-surface-200 dark:border-surface-800 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors shadow-sm bg-white dark:bg-surface-950"
@@ -258,26 +267,33 @@ export default function RequestDetailClient() {
         </Link>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <motion.h1 layoutId={`request-title-${request.id}`} className="text-2xl font-bold text-surface-900 dark:text-white leading-tight font-outfit">
+            <motion.h1
+              layoutId={`request-title-${request.id}`}
+              className="text-2xl font-bold text-surface-900 dark:text-white leading-tight font-outfit"
+            >
               {request.title}
             </motion.h1>
             <motion.div layoutId={`request-status-${request.id}`}>
-              <PortalBadge
-                variant={isAgency
-                  ? getStatusBadgeVariant(request.status)
-                  : getClientStatusBadgeVariant(request.status)
+              <Badge
+                variant={
+                  isAgency
+                    ? getStatusBadgeVariant(request.status)
+                    : getClientStatusBadgeVariant(request.status)
                 }
               >
                 {isAgency
                   ? t(`requests.status.${request.status.toLowerCase()}` as any)
-                  : t(`requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any)
-                }
-              </PortalBadge>
+                  : t(
+                      `requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
+                    )}
+              </Badge>
             </motion.div>
           </div>
           <div className="flex items-center gap-3 mt-1 underline-offset-4">
             <p className="text-xs font-black text-surface-400 uppercase tracking-widest">
-              {request.type ? t(`requests.type.${request.type.toLowerCase()}` as any) : t('requests.type.design')}
+              {request.type
+                ? t(`requests.type.${request.type.toLowerCase()}` as any)
+                : t('requests.type.design')}
             </p>
           </div>
         </div>
@@ -341,7 +357,7 @@ export default function RequestDetailClient() {
           {activeTab === 'overview' ? (
             <div className="space-y-6 animate-in slide-in-from-start-4 duration-500">
               {/* Details Card */}
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-4">
                   {t('requests.detail.details')}
                 </h3>
@@ -358,7 +374,12 @@ export default function RequestDetailClient() {
                         {t('requests.detail.submissionDate')}
                       </p>
                       <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
-                        {formatPortalDate(request.createdAt, 'MMMM d, yyyy', locale, t('common.recently'))}
+                        {formatPortalDate(
+                          request.createdAt,
+                          'MMMM d, yyyy',
+                          locale,
+                          t('common.recently')
+                        )}
                       </p>
                     </div>
                   </div>
@@ -384,7 +405,7 @@ export default function RequestDetailClient() {
                     </div>
                   </div>
                 </div>
-              </PortalCard>
+              </Card>
 
               {/* Milestones Section */}
               <RequestMilestones request={request} isAgency={isAgency} />
@@ -405,12 +426,12 @@ export default function RequestDetailClient() {
               <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest flex items-center gap-2 px-1">
                 <Clock size={14} className="text-blue-500" /> {t('requests.detail.historyTitle')}
               </h3>
-              <PortalCard
+              <Card
                 noPadding
                 className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950"
               >
                 <ActivityTimeline activities={activities} orgId={orgId as string} />
-              </PortalCard>
+              </Card>
             </div>
           )}
         </div>
@@ -419,21 +440,21 @@ export default function RequestDetailClient() {
         <div className="space-y-6">
           {/* Agency Add Pricing Section - For NEW requests without pricing */}
           {showAgencyActions && request.status === 'NEW' && !request.isBillable && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
               <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest flex items-center gap-2">
                 <DollarSign size={14} className="text-green-500" />
                 {t('requests.detail.addPricing')}
               </h4>
 
               {!showPricingForm ? (
-                <PortalButton
+                <Button
                   variant="outline"
                   className="w-full h-12 border-dashed border-2 border-green-300 dark:border-green-700 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                   onClick={() => setShowPricingForm(true)}
                 >
                   <Plus size={18} className="me-2" />
                   {t('requests.detail.addQuote')}
-                </PortalButton>
+                </Button>
               ) : (
                 <div className="space-y-4">
                   {/* Currency Selector */}
@@ -548,14 +569,10 @@ export default function RequestDetailClient() {
 
                   {/* Actions */}
                   <div className="pt-3 flex gap-2">
-                    <PortalButton
-                      variant="outline"
-                      className="flex-1 h-10"
-                      onClick={resetPricingForm}
-                    >
+                    <Button variant="outline" className="flex-1 h-10" onClick={resetPricingForm}>
                       {t('common.cancel')}
-                    </PortalButton>
-                    <PortalButton
+                    </Button>
+                    <Button
                       variant="primary"
                       className="flex-1 h-10"
                       onClick={handlePricingSubmit}
@@ -567,16 +584,16 @@ export default function RequestDetailClient() {
                         <Check size={16} className="me-2" />
                       )}
                       {t('requests.detail.sendQuote')}
-                    </PortalButton>
+                    </Button>
                   </div>
                 </div>
               )}
-            </PortalCard>
+            </Card>
           )}
 
           {/* Pricing Section - Show if request has pricing */}
           {request.isBillable && request.lineItems && request.lineItems.length > 0 && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
               <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest flex items-center gap-2">
                 <DollarSign size={14} className="text-green-500" />
                 {t('requests.detail.pricingTitle')}
@@ -632,7 +649,7 @@ export default function RequestDetailClient() {
               {/* Client Accept/Decline Buttons - Only for QUOTED status */}
               {showClientActions && request.status === 'QUOTED' && (
                 <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 flex gap-3">
-                  <PortalButton
+                  <Button
                     variant="primary"
                     className="flex-1 h-12"
                     onClick={handleAcceptQuote}
@@ -644,8 +661,8 @@ export default function RequestDetailClient() {
                       <Check size={18} className="me-2" />
                     )}
                     {t('requests.detail.acceptQuote')}
-                  </PortalButton>
-                  <PortalButton
+                  </Button>
+                  <Button
                     variant="outline"
                     className="flex-1 h-12 border-red-200 dark:border-red-900 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                     onClick={handleDeclineQuote}
@@ -657,17 +674,26 @@ export default function RequestDetailClient() {
                       <X size={18} className="me-2" />
                     )}
                     {t('requests.detail.decline')}
-                  </PortalButton>
+                  </Button>
                 </div>
               )}
 
               {/* Agency Start Work Button - Only for ACCEPTED status */}
               {showAgencyActions && request.status === 'ACCEPTED' && (
                 <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800">
-                  <PortalButton variant="primary" className="w-full h-12" onClick={handleStartWork}>
-                    <Zap size={18} className="me-2" />
+                  <Button
+                    variant="primary"
+                    className="w-full h-12"
+                    onClick={handleStartWork}
+                    disabled={isStartingWork}
+                  >
+                    {isStartingWork ? (
+                      <Loader2 size={18} className="me-2 animate-spin" />
+                    ) : (
+                      <Zap size={18} className="me-2" />
+                    )}
                     {t('requests.detail.startWork')}
-                  </PortalButton>
+                  </Button>
                 </div>
               )}
 
@@ -695,11 +721,11 @@ export default function RequestDetailClient() {
                   </PayPalProvider>
                 </div>
               )}
-            </PortalCard>
+            </Card>
           )}
 
           {/* Workflow Actions Card */}
-          <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+          <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
             <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest">
               {t('requests.detail.workflowActions')}
             </h4>
@@ -707,14 +733,14 @@ export default function RequestDetailClient() {
               {showAgencyActions &&
                 request.status !== 'CLOSED' &&
                 request.status !== 'CANCELED' && (
-                  <PortalButton
+                  <Button
                     variant="outline"
                     className="w-full justify-start h-12 border-surface-200 dark:border-surface-800 text-sm font-bold font-outfit"
                     onClick={() => handleStatusChange('CLOSED')}
                   >
                     <CheckCircle2 size={16} className="me-3 text-emerald-500" />{' '}
                     {t('requests.detail.closeRequest')}
-                  </PortalButton>
+                  </Button>
                 )}
               {showAgencyActions && (
                 <div className="relative">
@@ -725,7 +751,7 @@ export default function RequestDetailClient() {
                     onChange={onFileUpload}
                     disabled={isUploading}
                   />
-                  <PortalButton
+                  <Button
                     variant="outline"
                     className="w-full justify-start h-12 border-surface-200 dark:border-surface-800 text-sm font-bold font-outfit"
                     onClick={() => document.getElementById('file-upload')?.click()}
@@ -737,26 +763,50 @@ export default function RequestDetailClient() {
                       <Paperclip size={16} className="me-3 text-blue-500" />
                     )}
                     {t('requests.detail.addAttachment')}
-                  </PortalButton>
+                  </Button>
                 </div>
               )}
               {showClientActions &&
                 request.status !== 'CLOSED' &&
                 request.status !== 'CANCELED' && (
-                  <PortalButton
+                  <Button
                     variant="outline"
                     className="w-full justify-start h-12 border-surface-200 dark:border-surface-800 text-sm font-bold font-outfit"
                     onClick={() => setShowRevisionModal(true)}
                   >
                     <RotateCcw size={16} className="me-3 text-amber-500" />{' '}
                     {t('requests.detail.requestRevision')}
-                  </PortalButton>
+                  </Button>
                 )}
+              {(showAgencyActions || userData?.id === request.createdBy) && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start h-12 border-surface-200 dark:border-surface-800 text-sm font-bold font-outfit text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  <Trash2 size={16} className="me-3" />
+                  {t('common.deleteRequest' as any) || 'Delete Request'}
+                </Button>
+              )}
             </div>
-          </PortalCard>
+          </Card>
+
+          <ConfirmationModal
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={onDeleteConfirm}
+            title={t('requests.detail.deleteTitle' as any) || 'Delete Request'}
+            description={
+              t('requests.detail.deleteConfirm' as any) ||
+              'Are you sure you want to delete this request? This action cannot be undone.'
+            }
+            confirmText={t('common.delete' as any) || 'Delete'}
+            variant="danger"
+            isLoading={isDeleting}
+          />
 
           {/* Assigned Specialist Card */}
-          <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+          <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
             <div className="flex items-center justify-between mb-6">
               <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest">
                 {t('requests.detail.assignedSpecialist')}
@@ -782,14 +832,14 @@ export default function RequestDetailClient() {
                       </option>
                     ))}
                   </select>
-                  <PortalButton
+                  <Button
                     variant="outline"
                     size="sm"
                     className="h-7 px-2 text-[9px] font-black uppercase tracking-widest"
-                    isLoading={isAssigning}
+                    loading={isAssigning}
                   >
                     {t('common.edit')}
-                  </PortalButton>
+                  </Button>
                 </div>
               )}
             </div>
@@ -808,7 +858,7 @@ export default function RequestDetailClient() {
                 </p>
               </div>
             </div>
-          </PortalCard>
+          </Card>
         </div>
       </div>
 
@@ -823,9 +873,7 @@ export default function RequestDetailClient() {
             <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
               {t('requests.detail.requestRevision')}
             </h3>
-            <p className="text-sm text-surface-500">
-              {t('requests.detail.revisionDesc')}
-            </p>
+            <p className="text-sm text-surface-500">{t('requests.detail.revisionDesc')}</p>
             <textarea
               className="portal-input w-full min-h-[120px] resize-none"
               placeholder={t('requests.detail.revisionPlaceholder')}
@@ -833,20 +881,20 @@ export default function RequestDetailClient() {
               onChange={e => setRevisionNotes(e.target.value)}
             />
             <div className="flex justify-end gap-3 pt-2">
-              <PortalButton
+              <Button
                 variant="outline"
                 onClick={() => setShowRevisionModal(false)}
                 disabled={isSubmittingRevision}
               >
                 {t('common.cancel')}
-              </PortalButton>
-              <PortalButton
+              </Button>
+              <Button
                 onClick={handleRevisionSubmit}
-                isLoading={isSubmittingRevision}
+                loading={isSubmittingRevision}
                 disabled={!revisionNotes.trim()}
               >
                 {t('requests.detail.submitRevision')}
-              </PortalButton>
+              </Button>
             </div>
           </motion.div>
         </div>

@@ -4,6 +4,8 @@ import { ChevronLeft, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { SidebarFooterProps } from './types';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export function SidebarFooter({
   isExpanded,
@@ -14,7 +16,14 @@ export function SidebarFooter({
   const t = useTranslations();
 
   return (
-    <div className="flex-shrink-0 p-3 border-t border-surface-200/50 dark:border-surface-800/30 space-y-1">
+    <div className="flex-shrink-0 p-3 border-t border-surface-200/50 dark:border-surface-800/30 space-y-2">
+      {/* Language & Theme Controls - Mobile only */}
+      <div className="flex md:hidden items-center gap-1.5 p-1.5 bg-surface-100/80 dark:bg-surface-800/60 rounded-2xl border border-surface-200/60 dark:border-surface-700/40 backdrop-blur-sm w-fit">
+        <LanguageSwitcher />
+        <div className="w-[1px] h-5 bg-surface-300/60 dark:bg-surface-600/50" />
+        <ThemeToggle />
+      </div>
+
       <button
         onClick={onToggleSidebar}
         className={cn(
@@ -26,9 +35,7 @@ export function SidebarFooter({
         <div className="transition-transform duration-500">
           <ChevronLeft size={20} className="rtl:rotate-180" />
         </div>
-        {isExpanded && (
-          <span className="text-sm font-bold">{t('portal.sidebar.collapse')}</span>
-        )}
+        {isExpanded && <span className="text-sm font-bold">{t('portal.sidebar.collapse')}</span>}
       </button>
 
       <button

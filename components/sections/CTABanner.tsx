@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
@@ -75,7 +74,7 @@ export const CTABanner: React.FC = () => {
       ></div>
 
       {/* Main Content Card with Animated Border */}
-      <div className="max-w-4xl mx-auto relative z-10">
+      <div className="max-w-4xl mx-auto relative z-dropdown">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -92,7 +91,7 @@ export const CTABanner: React.FC = () => {
             {/* Inner decorative orb */}
             <div className="absolute top-0 start-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-b from-primary-500/10 to-transparent rounded-full blur-3xl"></div>
 
-            <div className="relative z-10 space-y-6 md:space-y-8">
+            <div className="relative z-dropdown space-y-6 md:space-y-8">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-surface-900 dark:text-white leading-[1.1] tracking-tight">
                 {t('ctaBanner.titlePart1')}{' '}
                 <span className="gradient-text text-glow-subtle">{t('ctaBanner.titlePart2')}</span>
@@ -117,6 +116,7 @@ export const CTABanner: React.FC = () => {
               >
                 <Link href="/contact">
                   <Button
+                    as="div"
                     size="lg"
                     variant="secondary"
                     className="text-lg md:text-xl px-10 md:px-14 py-5 md:py-6 font-black shadow-glow-primary group w-full sm:w-auto"

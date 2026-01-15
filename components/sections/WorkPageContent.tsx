@@ -61,7 +61,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
         </div>
       </div>
 
-      <div className="sticky top-16 md:top-20 z-30 bg-white/95 dark:bg-surface-800/95 backdrop-blur-lg border-b border-surface-200 dark:border-surface-700">
+      <div className="sticky top-16 md:top-20 z-dropdown bg-white/95 dark:bg-surface-800/95 backdrop-blur-lg border-b border-surface-200 dark:border-surface-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide">
             {filters.map(filter => (
@@ -99,7 +99,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
                   <Link href={`/work/${caseStudy.slug}`}>
                     <Card hover padding="none" className="h-full group relative overflow-hidden">
                       <div
-                        className={`relative aspect-[4/3] overflow-hidden ${
+                        className={`relative aspect-video overflow-hidden ${
                           platformType === 'shopify'
                             ? 'bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-950/30 dark:via-emerald-950/20 dark:to-teal-950/30'
                             : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-purple-950/30'
@@ -237,7 +237,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
             </p>
             <Link href="/contact">
               <Button size="lg" className="group">
-                <span className="relative z-10 flex items-center gap-2">
+                <span className="relative z-dropdown flex items-center gap-2">
                   {work.cta.button}
                   <svg
                     className="w-5 h-5 transition-transform rtl:rotate-180"

@@ -65,7 +65,10 @@ service cloud.firestore {
     }
 
     match /portal_users/{userId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && (
+        getUserId() == userId ||
+        isAgencyUser()
+      );
       allow create: if isAuthenticated() && getUserId() == userId;
       allow update: if isAuthenticated() && getUserId() == userId;
       allow delete: if false;
@@ -80,8 +83,8 @@ service cloud.firestore {
         resource.data.createdBy == getUserId()
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
-      // Allow admins OR members to update (needed for Shopify integration settings)
-      allow update: if canAdminOrg(orgId) || isMemberOfOrg(orgId);
+      // Only admins/owners can update (security fix - was allowing any member)
+      allow update: if canAdminOrg(orgId);
       allow delete: if false;
     }
 
@@ -107,7 +110,11 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', '')) ||
         resource.data.get('isAgency', false) == true
       );
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        isAgencyUser() ||
+        isOrgOwner(request.resource.data.orgId) ||
+        isOrgAdmin(request.resource.data.orgId)
+      );
       allow update: if isAuthenticated() && (
         resource == null ||
         resource.data.get('email', '') == request.auth.token.email ||
@@ -134,7 +141,9 @@ service cloud.firestore {
         resource.data.get('createdBy', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
       );
-      allow delete: if false;
+      allow delete: if isAuthenticated() && isAgencyUser();
+      allow delete: if isAuthenticated() && resource.data.get('createdBy', '') == getUserId();
+      allow delete: if isAuthenticated() && isOrgOwner(resource.data.get('orgId', ''));
     }
 
     match /portal_comments/{commentId} {
@@ -216,7 +225,10 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', '')) ||
         resource.data.get('createdBy', '') == getUserId()
       );
-      allow delete: if false;
+      allow delete: if isAuthenticated() && (
+        isAgencyUser() ||
+        resource.data.get('createdBy', '') == getUserId()
+      );
     }
 
     match /portal_activities/{activityId} {

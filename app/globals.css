@@ -61,7 +61,7 @@
   /* Defaults for Theme Generator */
   --radius: 0.75rem; /* 12px default */
   --font-en: var(--font-outfit);
-  --font-he: 'Assistant', sans-serif;
+  --font-he: var(--font-rubik);
   --font-main: var(--font-en);
 }
 
@@ -82,6 +82,19 @@
   --glass-border: rgba(255, 255, 255, 0.15);
   --section-alt: #1e293b;
   --card-bg: rgba(255, 255, 255, 0.05);
+
+  /* === DARK MODE COLOR ADJUSTMENTS FOR WCAG AA COMPLIANCE === */
+  /* Increased brightness for better contrast on dark backgrounds */
+
+  /* Primary Palette - Lightened for 4.5:1+ contrast ratio */
+  --color-primary-300: 166 204 220; /* Lightened from 144 186 205 */
+  --color-primary-400: 130 178 205; /* Lightened from 100 158 185 - now ~5:1 contrast */
+  --color-primary-500: 86 158 190; /* Lightened from 55 131 165 */
+
+  /* Surface Palette - Lightened for better readability */
+  --color-surface-300: 226 232 240; /* Lightened from 203 213 225 */
+  --color-surface-400: 180 192 210; /* Lightened from 148 163 184 - now ~5.5:1 contrast */
+  --color-surface-500: 140 156 180; /* Lightened from 100 116 139 */
 }
 
 body {
@@ -159,7 +172,7 @@ body {
   }
 
   [dir='rtl'] {
-    font-family: 'Segoe UI', 'Tahoma', 'Arial', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-rubik), system-ui, sans-serif;
     font-feature-settings:
       'kern' 1,
       'liga' 1,
@@ -211,6 +224,60 @@ body {
     overflow: visible;
     clip: auto;
     white-space: normal;
+  }
+
+  /* === STANDARDIZED LINK STYLES (Issue #27) === */
+
+  /* Primary link - used for main actions and navigation */
+  .link-primary {
+    color: rgb(var(--color-primary-600));
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      text-decoration-color 0.2s ease;
+  }
+  .link-primary:hover {
+    color: rgb(var(--color-primary-700));
+    text-decoration: underline;
+    text-decoration-color: rgb(var(--color-primary-500) / 0.5);
+    text-underline-offset: 3px;
+  }
+  .dark .link-primary {
+    color: rgb(var(--color-primary-400));
+  }
+  .dark .link-primary:hover {
+    color: rgb(var(--color-primary-300));
+    text-decoration-color: rgb(var(--color-primary-400) / 0.5);
+  }
+
+  /* Subtle link - used for secondary actions */
+  .link-subtle {
+    color: rgb(var(--color-surface-500));
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .link-subtle:hover {
+    color: rgb(var(--color-surface-700));
+  }
+  .dark .link-subtle {
+    color: rgb(var(--color-surface-400));
+  }
+  .dark .link-subtle:hover {
+    color: rgb(var(--color-surface-200));
+  }
+
+  /* Underline link - classic underline style */
+  .link-underline {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgb(var(--color-primary-500) / 0.4);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s ease;
+  }
+  .link-underline:hover {
+    text-decoration-color: rgb(var(--color-primary-500));
   }
 }
 
@@ -1207,25 +1274,29 @@ body {
     @apply bg-red-500 text-white text-xs rounded-full px-2 py-0.5 font-semibold min-w-[20px] text-center;
   }
 
-  /* Portal Typography */
+  /* Portal Typography Scale - Comprehensive hierarchy */
   .portal-heading-xl {
-    @apply text-2xl md:text-3xl font-bold text-surface-900 dark:text-white tracking-tight;
+    @apply text-2xl md:text-3xl lg:text-4xl font-outfit font-black text-surface-900 dark:text-white tracking-tight leading-tight;
   }
 
   .portal-heading-lg {
-    @apply text-xl md:text-2xl font-bold text-surface-900 dark:text-white tracking-tight;
+    @apply text-xl md:text-2xl font-outfit font-bold text-surface-900 dark:text-white tracking-tight leading-tight;
   }
 
   .portal-heading-md {
-    @apply text-lg md:text-xl font-bold text-surface-900 dark:text-white;
+    @apply text-lg md:text-xl font-outfit font-bold text-surface-900 dark:text-white leading-snug;
   }
 
   .portal-heading-sm {
-    @apply text-base md:text-lg font-semibold text-surface-900 dark:text-white;
+    @apply text-base md:text-lg font-outfit font-semibold text-surface-900 dark:text-white;
+  }
+
+  .portal-body-lg {
+    @apply text-base text-surface-700 dark:text-surface-300 leading-relaxed;
   }
 
   .portal-body {
-    @apply text-sm text-surface-700 dark:text-surface-300;
+    @apply text-sm text-surface-700 dark:text-surface-300 leading-relaxed;
   }
 
   .portal-body-sm {
@@ -1236,33 +1307,31 @@ body {
     @apply text-[11px] text-surface-500 dark:text-surface-500;
   }
 
-  /* Portal Typography */
-  .portal-heading-xl {
-    @apply text-2xl md:text-3xl font-bold text-surface-900 dark:text-white tracking-tight;
+  /* Labels and Captions */
+  .portal-label {
+    @apply text-[10px] font-black uppercase tracking-widest text-surface-400 dark:text-surface-500;
   }
 
-  .portal-heading-lg {
-    @apply text-xl md:text-2xl font-bold text-surface-900 dark:text-white tracking-tight;
+  .portal-label-sm {
+    @apply text-[9px] font-black uppercase tracking-widest text-surface-400 dark:text-surface-500;
   }
 
-  .portal-heading-md {
-    @apply text-lg md:text-xl font-bold text-surface-900 dark:text-white;
+  .portal-caption {
+    @apply text-xs font-medium text-surface-500 dark:text-surface-400;
   }
 
-  .portal-heading-sm {
-    @apply text-base md:text-lg font-semibold text-surface-900 dark:text-white;
+  /* Mono text for IDs, codes */
+  .portal-mono {
+    @apply font-mono text-[11px] font-medium bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-surface-600 dark:text-surface-400;
   }
 
-  .portal-body {
-    @apply text-sm text-surface-700 dark:text-surface-300;
+  /* Link styles */
+  .portal-link {
+    @apply text-blue-600 dark:text-blue-400 font-medium hover:underline underline-offset-2 transition-colors;
   }
 
-  .portal-body-sm {
-    @apply text-xs text-surface-600 dark:text-surface-400;
-  }
-
-  .portal-body-xs {
-    @apply text-[11px] text-surface-500 dark:text-surface-500;
+  .portal-link-subtle {
+    @apply text-surface-500 dark:text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
   }
 
   /* Portal Scrollbar */
@@ -1851,7 +1920,27 @@ body {
   }
 
   .portal-nav-item-active {
-    @apply bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-500/20;
+    @apply relative bg-gradient-to-r from-blue-50 to-blue-50/50 dark:from-blue-500/15 dark:to-blue-500/5 text-blue-600 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-500/20;
+  }
+
+  .portal-nav-item-active::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(180deg, rgb(var(--color-blue-500)), rgb(var(--color-blue-600)));
+  }
+
+  [dir='rtl'] .portal-nav-item-active::before {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .portal-nav-item-active:hover {
+    @apply bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-500/20 dark:to-blue-500/10;
   }
 
   /* Portal Buttons */
@@ -1869,6 +1958,73 @@ body {
 
   .portal-btn-ghost {
     @apply text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-white;
+  }
+
+  /* Portal Icon Utilities - Standardized sizes */
+  .portal-icon-xs {
+    @apply w-4 h-4 flex-shrink-0;
+  }
+
+  .portal-icon-sm {
+    @apply w-5 h-5 flex-shrink-0;
+  }
+
+  .portal-icon-md {
+    @apply w-6 h-6 flex-shrink-0;
+  }
+
+  .portal-icon-lg {
+    @apply w-8 h-8 flex-shrink-0;
+  }
+
+  .portal-icon-xl {
+    @apply w-10 h-10 flex-shrink-0;
+  }
+
+  /* Icon containers with backgrounds */
+  .portal-icon-box {
+    @apply flex items-center justify-center flex-shrink-0 rounded-xl;
+  }
+
+  .portal-icon-box-sm {
+    @apply w-8 h-8 rounded-lg;
+  }
+
+  .portal-icon-box-md {
+    @apply w-10 h-10 rounded-xl;
+  }
+
+  .portal-icon-box-lg {
+    @apply w-12 h-12 rounded-xl;
+  }
+
+  .portal-icon-box-xl {
+    @apply w-16 h-16 rounded-2xl;
+  }
+
+  /* Icon box color variants */
+  .portal-icon-box-blue {
+    @apply bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400;
+  }
+
+  .portal-icon-box-green {
+    @apply bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400;
+  }
+
+  .portal-icon-box-amber {
+    @apply bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400;
+  }
+
+  .portal-icon-box-rose {
+    @apply bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400;
+  }
+
+  .portal-icon-box-purple {
+    @apply bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400;
+  }
+
+  .portal-icon-box-gray {
+    @apply bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400;
   }
 
   /* Portal Inputs */
@@ -1944,6 +2100,78 @@ body {
   /* Avatar Premium Style */
   .portal-avatar {
     @apply relative w-8 h-8 rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-900 flex items-center justify-center text-blue-600 text-sm shadow-sm;
+  }
+
+  /* Portal Table Styles */
+  .portal-table {
+    @apply w-full text-start;
+  }
+
+  .portal-table thead {
+    @apply bg-surface-50/50 dark:bg-surface-900/50;
+  }
+
+  .portal-table th {
+    @apply px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit;
+  }
+
+  .portal-table tbody {
+    @apply divide-y divide-surface-100 dark:divide-surface-800;
+  }
+
+  .portal-table-row {
+    @apply relative transition-all duration-200;
+  }
+
+  .portal-table-row:hover {
+    @apply bg-surface-50/80 dark:bg-surface-800/30;
+  }
+
+  .portal-table-row:hover::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, rgb(var(--color-blue-500)), rgb(var(--color-blue-600)));
+    border-radius: 0 2px 2px 0;
+    opacity: 0;
+    transform: scaleY(0);
+    transition: all 0.2s ease-out;
+  }
+
+  .portal-table-row:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  [dir='rtl'] .portal-table-row:hover::before {
+    border-radius: 2px 0 0 2px;
+  }
+
+  .portal-table td {
+    @apply px-6 py-4;
+  }
+
+  /* Table row selected state */
+  .portal-table-row-selected {
+    @apply bg-blue-50/50 dark:bg-blue-500/10;
+  }
+
+  .portal-table-row-selected::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, rgb(var(--color-blue-500)), rgb(var(--color-blue-600)));
+    border-radius: 0 2px 2px 0;
+  }
+
+  [dir='rtl'] .portal-table-row-selected::before {
+    border-radius: 2px 0 0 2px;
   }
 }
 
@@ -2490,4 +2718,45 @@ body {
     outline-offset: 2px;
     box-shadow: 0 0 0 4px rgb(var(--color-primary-600) / 0.2);
   }
+}
+
+/* === CUSTOM SCROLLBAR STYLING (Issue #41) === */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Global Scrollbar Theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-surface-300) / 0.8);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--color-surface-400));
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-surface-700) / 0.8);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--color-surface-600));
 }

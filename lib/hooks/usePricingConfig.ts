@@ -57,7 +57,8 @@ export function useUpdatePricingConfig(orgId: string) {
       await queryClient.cancelQueries({ queryKey: ['pricing-config', orgId, requestId] });
 
       // Snapshot previous value
-      const previousConfig = queryClient.getQueryData(['pricing-config', orgId, requestId]);
+      const previousConfig =
+        queryClient.getQueryData(['pricing-config', orgId, requestId]) ?? undefined;
 
       // Optimistically update
       queryClient.setQueryData(
@@ -71,7 +72,7 @@ export function useUpdatePricingConfig(orgId: string) {
       return { previousConfig };
     },
 
-    onError: (err, variables, context) => {
+    onError: (_error, variables, context) => {
       // Rollback on error
       if (context?.previousConfig) {
         queryClient.setQueryData(
@@ -86,7 +87,7 @@ export function useUpdatePricingConfig(orgId: string) {
       toast.success('Pricing configuration updated');
     },
 
-    onSettled: (data, error, variables) => {
+    onSettled: (_data, _error, variables) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['pricing-config', orgId, variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['pricing-results', orgId] });
@@ -142,7 +143,7 @@ export function useApplyGlobalModifiers(orgId: string) {
       return { previousConfigs };
     },
 
-    onError: (err, variables, context) => {
+    onError: (_variables, context) => {
       // Rollback all changes
       if (context?.previousConfigs) {
         context.previousConfigs.forEach(({ id, data }) => {
@@ -187,7 +188,7 @@ export function useRemovePricingConfig(orgId: string) {
       return { previousConfig, requestId };
     },
 
-    onError: (err, requestId, context) => {
+    onError: (_requestId, context) => {
       if (context?.previousConfig) {
         queryClient.setQueryData(['pricing-config', orgId, requestId], context.previousConfig);
       }
@@ -198,7 +199,7 @@ export function useRemovePricingConfig(orgId: string) {
       toast.success('Pricing configuration removed');
     },
 
-    onSettled: (data, error, requestId) => {
+    onSettled: _requestId => {
       queryClient.invalidateQueries({ queryKey: ['pricing-config', orgId, requestId] });
     },
   });

@@ -1,9 +1,4 @@
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
 import { PortalUser } from '@/lib/types/portal';
@@ -34,10 +29,7 @@ export async function getPortalUser(userId: string): Promise<PortalUser | null> 
   }
 }
 
-export async function updatePortalUser(
-  userId: string,
-  data: Partial<PortalUser>
-): Promise<void> {
+export async function updatePortalUser(userId: string, data: Partial<PortalUser>): Promise<void> {
   const db = getFirestoreDb();
   const docRef = doc(db, USERS_COLLECTION, userId);
   await updateDoc(docRef, {
@@ -51,4 +43,26 @@ export async function updateNotificationPreferences(
   preferences: PortalUser['notificationPreferences']
 ): Promise<void> {
   return updatePortalUser(userId, { notificationPreferences: preferences });
+}
+
+export async function updateThemePreference(
+  userId: string,
+  theme: 'light' | 'dark' | 'system'
+): Promise<void> {
+  return updatePortalUser(userId, {
+    preferences: {
+      theme,
+    },
+  });
+}
+
+export async function updateLanguagePreference(
+  userId: string,
+  language: 'en' | 'he'
+): Promise<void> {
+  return updatePortalUser(userId, {
+    preferences: {
+      language,
+    },
+  });
 }

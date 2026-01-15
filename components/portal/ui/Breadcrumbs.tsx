@@ -5,6 +5,7 @@ import { usePathname } from '@/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { getRequest } from '@/lib/services/portal-requests';
 import { getPricingRequest } from '@/lib/services/pricing-requests';
+import { getOrganization } from '@/lib/services/portal-organizations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { Breadcrumb, type BreadcrumbItem } from '@/components/ui/Breadcrumb';
 
@@ -23,6 +24,11 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
   // State for dynamically fetched labels (e.g., request title)
   const [dynamicLabels, setDynamicLabels] = useState<Record<string, string>>({});
 
+  // Clear dynamic labels when pathname changes
+  useEffect(() => {
+    setDynamicLabels({});
+  }, [pathname]);
+
   // Extract request ID from path if on a request detail page
   const requestId = useMemo(() => {
     if (!pathname) return null;
@@ -37,12 +43,20 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
     return match ? match[1] : null;
   }, [pathname]);
 
+  // Extract client ID from path if on a client detail page
+  const clientId = useMemo(() => {
+    if (!pathname) return null;
+    const match = pathname.match(/\/agency\/clients\/([^/]+)(?:\/|$)/);
+    return match ? match[1] : null;
+  }, [pathname]);
+
   // Fetch request title when on a request detail page
   useEffect(() => {
-    if (!requestId) {
-      setDynamicLabels({});
-      return;
-    }
+    if (!requestId) return;
+
+    // Skip fetching for special route segments
+    const specialSegments = ['new', 'create', 'edit'];
+    if (specialSegments.includes(requestId)) return;
 
     let cancelled = false;
 
@@ -50,7 +64,7 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
       try {
         const request = await getRequest(requestId!);
         if (!cancelled && request?.title) {
-          setDynamicLabels({ [requestId!]: request.title });
+          setDynamicLabels(prev => ({ ...prev, [requestId!]: request.title }));
         }
       } catch (error) {
         console.error('[Breadcrumbs] Error fetching request title:', error);
@@ -66,9 +80,11 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
 
   // Fetch pricing offer title when on a pricing detail page
   useEffect(() => {
-    if (!pricingId) {
-      return;
-    }
+    if (!pricingId) return;
+
+    // Skip fetching for special route segments
+    const specialSegments = ['new', 'create', 'edit', 'calculator'];
+    if (specialSegments.includes(pricingId)) return;
 
     let cancelled = false;
 
@@ -89,6 +105,30 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
       cancelled = true;
     };
   }, [pricingId]);
+
+  // Fetch client name when on a client detail page
+  useEffect(() => {
+    if (!clientId) return;
+
+    let cancelled = false;
+
+    async function fetchClientName() {
+      try {
+        const client = await getOrganization(clientId!);
+        if (!cancelled && client?.name) {
+          setDynamicLabels(prev => ({ ...prev, [clientId!]: client.name }));
+        }
+      } catch (error) {
+        console.error('[Breadcrumbs] Error fetching client name:', error);
+      }
+    }
+
+    fetchClientName();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientId]);
 
   const breadcrumbs = useMemo((): BreadcrumbItem[] => {
     if (!pathname) return [];
@@ -164,7 +204,5 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
 
   if (breadcrumbs.length === 0) return null;
 
-  return (
-    <Breadcrumb items={breadcrumbs} className={className} />
-  );
+  return <Breadcrumb items={breadcrumbs} className={className} />;
 }

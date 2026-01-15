@@ -9,52 +9,52 @@ import { FileText, ChevronRight, Search } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { Request, CLIENT_STATUS_MAP } from '@/lib/types/portal';
 import { subscribeToOrgRequests, subscribeToAllRequests } from '@/lib/services/portal-requests';
-import { PortalBadge } from './PortalBadge';
+import { Badge } from '@/components/ui/Badge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const searchInputVariants = cva(
-  "w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium",
+  'w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
   {
     variants: {
       isFocused: {
-        true: "focus:ring-blue-500/20 focus:border-blue-500",
-        false: "",
-      }
+        true: 'focus:ring-primary-500/20 focus:border-primary-500',
+        false: '',
+      },
     },
     defaultVariants: {
       isFocused: false,
-    }
+    },
   }
 );
 
 const searchItemVariants = cva(
-  "w-full text-start flex items-center gap-3 p-2.5 rounded-lg transition-colors group/item relative",
+  'w-full text-start flex items-center gap-3 p-2.5 rounded-lg transition-colors group/item relative',
   {
     variants: {
       isActive: {
-        true: "bg-blue-50 dark:bg-blue-900/20",
-        false: "hover:bg-surface-50 dark:hover:bg-surface-800",
-      }
+        true: 'bg-primary-50 dark:bg-primary-900/20',
+        false: 'hover:bg-surface-50 dark:hover:bg-surface-800',
+      },
     },
     defaultVariants: {
       isActive: false,
-    }
+    },
   }
 );
 
 const itemIconVariants = cva(
-  "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+  'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors',
   {
     variants: {
       isActive: {
-        true: "bg-blue-100 dark:bg-blue-900/40 text-blue-600",
-        false: "bg-surface-100 dark:bg-surface-800 text-surface-500",
-      }
+        true: 'bg-primary-100 dark:bg-primary-900/40 text-primary-600',
+        false: 'bg-surface-100 dark:bg-surface-800 text-surface-500',
+      },
     },
     defaultVariants: {
       isActive: false,
-    }
+    },
   }
 );
 
@@ -78,22 +78,37 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Subscribe to data once on mount (or when deps change)
+  // Wait for authentication before subscribing
   useEffect(() => {
-    if ((!orgId && !isAgency)) return;
+    if (!orgId && !isAgency) return;
 
     setLoading(true);
-    let unsubscribe: () => void;
+    let unsubscribe: (() => void) | undefined;
 
     const handleData = (data: Request[]) => {
       setRequests(data);
       setLoading(false);
     };
 
-    if (isAgency) {
-      unsubscribe = subscribeToAllRequests(handleData);
-    } else if (orgId) {
-      unsubscribe = subscribeToOrgRequests(orgId, handleData);
-    }
+    // Wait for auth before subscribing to prevent permission errors
+    const setupSubscription = async () => {
+      try {
+        const { waitForAuth } = await import('@/lib/firebase');
+        await waitForAuth();
+
+        // Check if component is still mounted and conditions still valid
+        if (isAgency) {
+          unsubscribe = subscribeToAllRequests(handleData);
+        } else if (orgId) {
+          unsubscribe = subscribeToOrgRequests(orgId, handleData);
+        }
+      } catch (error) {
+        console.error('[GlobalSearch] Error setting up subscription:', error);
+        setLoading(false);
+      }
+    };
+
+    setupSubscription();
 
     return () => {
       if (unsubscribe) unsubscribe();
@@ -122,11 +137,14 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
     }
 
     const searchTerm = query.toLowerCase().trim();
-    const results = requests.filter(req =>
-      (req.title?.toLowerCase() || '').includes(searchTerm) ||
-      (req.id?.toLowerCase() || '').includes(searchTerm) ||
-      (req.description?.toLowerCase() || '').includes(searchTerm)
-    ).slice(0, 5); // Limit to top 5 results
+    const results = requests
+      .filter(
+        req =>
+          (req.title?.toLowerCase() || '').includes(searchTerm) ||
+          (req.id?.toLowerCase() || '').includes(searchTerm) ||
+          (req.description?.toLowerCase() || '').includes(searchTerm)
+      )
+      .slice(0, 5); // Limit to top 5 results
 
     setFilteredResults(results);
     setIsOpen(true);
@@ -173,11 +191,11 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   };
 
   return (
-    <div ref={containerRef} className={cn("relative group", className)}>
+    <div ref={containerRef} className={cn('relative group', className)}>
       <Search
         className={cn(
-          "absolute start-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none",
-          isFocused ? "text-blue-500" : "text-surface-400"
+          'absolute start-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none',
+          isFocused ? 'text-primary-500' : 'text-surface-400'
         )}
         size={18}
       />
@@ -186,7 +204,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           ref={inputRef}
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           onFocus={() => {
             setIsFocused(true);
             if (query.trim()) setIsOpen(true);
@@ -198,9 +216,9 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           aria-label="Search"
         />
         <div className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
-             <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500">
-               <span className="text-xs">⌘</span>K
-             </kbd>
+          <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500">
+            <span className="text-xs">⌘</span>K
+          </kbd>
         </div>
       </div>
 
@@ -210,7 +228,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="absolute top-full start-0 end-0 mt-2 bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden z-50 p-2"
+            className="absolute top-full start-0 end-0 mt-2 bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden z-modal p-2"
           >
             {filteredResults.length > 0 ? (
               <>
@@ -228,58 +246,73 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
                       className={cn(searchItemVariants({ isActive }))}
                     >
                       {isActive && (
-                          <motion.div
-                              layoutId="active-search-item"
-                              className="absolute start-0 top-2 bottom-2 w-0.5 bg-blue-500 rounded-full"
-                          />
+                        <motion.div
+                          layoutId="active-search-item"
+                          className="absolute start-0 top-2 bottom-2 w-0.5 bg-primary-500 rounded-full"
+                        />
                       )}
                       <div className={cn(itemIconVariants({ isActive }))}>
                         <FileText size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className={cn(
-                              "font-bold text-sm truncate",
-                              isActive ? "text-blue-700 dark:text-blue-300" : "text-surface-900 dark:text-white"
-                          )}>
+                          <span
+                            className={cn(
+                              'font-bold text-sm truncate',
+                              isActive
+                                ? 'text-primary-700 dark:text-primary-300'
+                                : 'text-surface-900 dark:text-white'
+                            )}
+                          >
                             {req.title}
                           </span>
-                          <PortalBadge
-                            variant={isAgency
-                              ? getStatusBadgeVariant(req.status)
-                              : getClientStatusBadgeVariant(req.status)
+                          <Badge
+                            variant={
+                              isAgency
+                                ? getStatusBadgeVariant(req.status)
+                                : getClientStatusBadgeVariant(req.status)
                             }
                             className="text-[9px] h-4 px-1.5"
                           >
                             {isAgency
                               ? t(`portal.requests.status.${req.status.toLowerCase()}` as any)
-                              : t(`portal.requests.clientStatus.${CLIENT_STATUS_MAP[req.status].toLowerCase()}` as any)
-                            }
-                          </PortalBadge>
+                              : t(
+                                  `portal.requests.clientStatus.${CLIENT_STATUS_MAP[req.status].toLowerCase()}` as any
+                                )}
+                          </Badge>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-surface-500">
                           <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1 rounded text-[10px]">
-                              {req.id.slice(0, 8)}
+                            {req.id.slice(0, 8)}
                           </span>
                           {isAgency && (
-                              <span className="truncate max-w-[100px] opacity-75">
-                                  • {req.orgId}
-                              </span>
+                            <span className="truncate max-w-[100px] opacity-75">• {req.orgId}</span>
                           )}
                         </div>
                       </div>
-                      <ChevronRight size={14} className={cn(
-                          "transition-opacity",
-                          isActive ? "text-blue-400 opacity-100" : "text-surface-300 opacity-0 group-hover/item:opacity-100"
-                      )} />
+                      <ChevronRight
+                        size={14}
+                        className={cn(
+                          'transition-opacity',
+                          isActive
+                            ? 'text-primary-400 opacity-100'
+                            : 'text-surface-300 opacity-0 group-hover/item:opacity-100'
+                        )}
+                      />
                     </button>
                   );
                 })}
               </>
             ) : (
-                <div className="p-8 text-center text-surface-500">
-                    <p className="text-sm font-medium">No results found for "{query}"</p>
-                </div>
+              <div className="p-8 flex flex-col items-center justify-center text-center">
+                <Search className="w-8 h-8 text-surface-300 mb-2" />
+                <p className="text-sm font-medium text-surface-600 dark:text-surface-300">
+                  No results found
+                </p>
+                <p className="text-xs text-surface-400">
+                  We couldn't find anything matching "{query}"
+                </p>
+              </div>
             )}
           </motion.div>
         )}

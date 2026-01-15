@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from '@/lib/motion';
+import React, { useMemo } from 'react';
+import { motion, AnimatePresence } from '@/lib/motion';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -13,121 +13,17 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useDirection } from '@/lib/i18n-utils';
+import { useNavigationState, DropdownType } from '@/lib/hooks/useNavigationState';
 
 export const Header: React.FC = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const [companyOpen, setCompanyOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
-  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
-  const [mobileCompanyOpen, setMobileCompanyOpen] = useState(false);
-  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isAtTop, setIsAtTop] = useState(true);
   const t = useTranslations();
   const direction = useDirection();
   const isRtl = direction === 'rtl';
   const { user } = usePortalAuth();
   const isLoggedIn = !!user;
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const companyDropdownRef = useRef<HTMLDivElement>(null);
-  const toolsDropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const companyButtonRef = useRef<HTMLButtonElement>(null);
-  const toolsButtonRef = useRef<HTMLButtonElement>(null);
-  // Smart scroll behavior using framer-motion's useScroll
-  const { scrollY } = useScroll();
 
-  useMotionValueEvent(scrollY, 'change', latest => {
-    const previous = scrollY.getPrevious() ?? 0;
-    const diff = latest - previous;
-
-    // Update at-top state
-    setIsAtTop(latest < 10);
-
-    // Close mobile menu on scroll down
-    if (latest > 50 && diff > 5 && mobileMenuOpen) {
-      setMobileMenuOpen(false);
-    }
-
-    // Smart hide/show
-    if (latest > 100) {
-      if (diff > 10) setIsVisible(false);
-      else if (diff < -10) setIsVisible(true);
-    } else {
-      setIsVisible(true);
-    }
-  });
-
-  // Body scroll lock when mobile menu is open
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    };
-  }, [mobileMenuOpen]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setSolutionsOpen(false);
-      }
-      if (
-        companyDropdownRef.current &&
-        !companyDropdownRef.current.contains(event.target as Node) &&
-        companyButtonRef.current &&
-        !companyButtonRef.current.contains(event.target as Node)
-      ) {
-        setCompanyOpen(false);
-      }
-      if (
-        toolsDropdownRef.current &&
-        !toolsDropdownRef.current.contains(event.target as Node) &&
-        toolsButtonRef.current &&
-        !toolsButtonRef.current.contains(event.target as Node)
-      ) {
-        setToolsOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setSolutionsOpen(false);
-        setCompanyOpen(false);
-        setToolsOpen(false);
-      }
-    };
-
-    if (solutionsOpen || companyOpen || toolsOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [solutionsOpen, companyOpen, toolsOpen]);
-
-  useEffect(() => {
-    if (!mobileMenuOpen) {
-      setMobileSolutionsOpen(false);
-      setMobileCompanyOpen(false);
-      setMobileToolsOpen(false);
-    }
-  }, [mobileMenuOpen]);
+  // Unified navigation state - Issue #1 fix
+  const { state, actions, refs } = useNavigationState();
 
   const navigation = useMemo(
     () => [
@@ -135,6 +31,7 @@ export const Header: React.FC = () => {
       {
         name: t('nav.services'),
         href: '#',
+        dropdownType: 'solutions' as DropdownType,
         submenu: [
           { name: t('servicesOverview.shopify.title'), href: '/solutions/shopify' },
           { name: t('servicesOverview.wordpress.title'), href: '/solutions/wordpress' },
@@ -144,6 +41,7 @@ export const Header: React.FC = () => {
       {
         name: t('nav.company'),
         href: '#',
+        dropdownType: 'company' as DropdownType,
         submenu: [
           { name: t('nav.work'), href: '/work' },
           { name: t('nav.pricing'), href: '/pricing' },
@@ -153,6 +51,7 @@ export const Header: React.FC = () => {
       {
         name: t('nav.tools') || 'Tools',
         href: '#',
+        dropdownType: 'tools' as DropdownType,
         submenu: [
           {
             name: t('analyzer.hero.title') || 'Free Store Analyzer',
@@ -167,26 +66,40 @@ export const Header: React.FC = () => {
     [t]
   );
 
+  // Helper to get the correct ref based on dropdown type
+  const getDropdownRefs = (type: DropdownType) => {
+    switch (type) {
+      case 'solutions':
+        return { container: refs.solutionsRef, button: refs.solutionsButtonRef };
+      case 'company':
+        return { container: refs.companyRef, button: refs.companyButtonRef };
+      case 'tools':
+        return { container: refs.toolsRef, button: refs.toolsButtonRef };
+      default:
+        return { container: refs.solutionsRef, button: refs.solutionsButtonRef };
+    }
+  };
+
   return (
     <>
       <motion.header
         initial={{ y: 0 }}
         animate={{
-          y: isVisible ? 0 : -100,
+          y: state.isHeaderVisible ? 0 : -100,
         }}
         transition={{
           duration: 0.4,
           ease: [0.22, 1, 0.36, 1],
         }}
         className={cn(
-          'fixed top-0 start-0 end-0 z-50 transition-all duration-500',
-          isAtTop
+          'fixed top-0 start-0 end-0 z-modal transition-all duration-500',
+          state.isAtTop
             ? 'bg-transparent border-transparent'
             : 'bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl border-b border-surface-200/50 dark:border-white/5 shadow-premium'
         )}
       >
         {/* Top highlight line when scrolled */}
-        {!isAtTop && (
+        {!state.isAtTop && (
           <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent pointer-events-none" />
         )}
 
@@ -197,39 +110,20 @@ export const Header: React.FC = () => {
 
               <div className="hidden lg:flex items-center gap-8">
                 {navigation.map(item => {
-                  if (item.submenu) {
-                    // Determine which dropdown this is
-                    const isCompany = item.name === t('nav.company');
-                    const isTools = item.name === (t('nav.tools') || 'Tools');
-
-                    // Get the appropriate state and refs based on menu type
-                    const isOpen = isCompany ? companyOpen : isTools ? toolsOpen : solutionsOpen;
-                    const setIsOpen = isCompany
-                      ? setCompanyOpen
-                      : isTools
-                        ? setToolsOpen
-                        : setSolutionsOpen;
-                    const ref = isCompany
-                      ? companyDropdownRef
-                      : isTools
-                        ? toolsDropdownRef
-                        : dropdownRef;
-                    const buttonRefToUse = isCompany
-                      ? companyButtonRef
-                      : isTools
-                        ? toolsButtonRef
-                        : buttonRef;
+                  if (item.submenu && item.dropdownType) {
+                    const isOpen = state.activeDropdown === item.dropdownType;
+                    const dropdownRefs = getDropdownRefs(item.dropdownType);
 
                     return (
                       <div
                         key={item.name}
                         className="relative group/nav"
-                        onMouseEnter={() => setIsOpen(true)}
-                        onMouseLeave={() => setIsOpen(false)}
-                        ref={ref}
+                        onMouseEnter={() => actions.openDropdown(item.dropdownType!)}
+                        onMouseLeave={() => actions.closeDropdown()}
+                        ref={dropdownRefs.container}
                       >
                         <button
-                          ref={buttonRefToUse}
+                          ref={dropdownRefs.button}
                           className={cn(
                             'flex items-center gap-1.5 py-2 text-sm font-semibold tracking-tight transition-colors duration-200 focus:outline-none',
                             isOpen
@@ -238,7 +132,7 @@ export const Header: React.FC = () => {
                           )}
                           aria-expanded={isOpen}
                           aria-haspopup="true"
-                          onClick={() => setIsOpen(!isOpen)}
+                          onClick={() => actions.toggleDropdown(item.dropdownType!)}
                         >
                           {item.name}
                           <motion.span
@@ -301,10 +195,10 @@ export const Header: React.FC = () => {
               </div>
 
               {/* CTA Button */}
-              {/* CTA Button */}
               {!isLoggedIn && (
                 <Link href={getPortalPath('/login/')}>
                   <Button
+                    as="div"
                     variant="ghost"
                     size="sm"
                     className="hidden sm:inline-flex text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 font-medium me-2"
@@ -316,6 +210,7 @@ export const Header: React.FC = () => {
 
               <Link href={isLoggedIn ? getPortalPath('/') : '/tools/store-analyzer'}>
                 <Button
+                  as="div"
                   size="md"
                   className="font-outfit font-black tracking-tight shadow-lg shadow-primary-500/15 hover:shadow-xl hover:shadow-primary-500/25 active:scale-[0.97] px-5 sm:px-6 transition-shadow"
                 >
@@ -337,11 +232,11 @@ export const Header: React.FC = () => {
               <button
                 type="button"
                 className="lg:hidden w-11 h-11 flex items-center justify-center text-surface-600 dark:text-surface-400 bg-surface-100/80 dark:bg-surface-800/60 hover:bg-surface-200/80 dark:hover:bg-surface-700/60 hover:text-surface-900 dark:hover:text-white focus:outline-none rounded-xl border border-surface-200/60 dark:border-surface-700/40 transition-all active:scale-95"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={actions.toggleMobileMenu}
                 aria-label="Toggle menu"
-                aria-expanded={mobileMenuOpen}
+                aria-expanded={state.isMobileMenuOpen}
               >
-                <Icon name={mobileMenuOpen ? 'x' : 'menu'} size={22} />
+                <Icon name={state.isMobileMenuOpen ? 'x' : 'menu'} size={22} />
               </button>
             </div>
           </div>
@@ -350,14 +245,14 @@ export const Header: React.FC = () => {
 
       {/* Mobile drawer - must be outside header to avoid being hidden on scroll */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {state.isMobileMenuOpen && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-surface-950/60 backdrop-blur-sm z-[100] lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={actions.closeMobileMenu}
               aria-hidden="true"
             />
             <motion.div
@@ -371,7 +266,7 @@ export const Header: React.FC = () => {
               <div className="flex items-center justify-between h-20 px-6 border-b border-surface-200 dark:border-surface-800">
                 <Logo size="sm" />
                 <button
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={actions.closeMobileMenu}
                   className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400 transition-colors"
                   aria-label="Close menu"
                 >
@@ -383,27 +278,13 @@ export const Header: React.FC = () => {
               <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                 <div className="space-y-1">
                   {navigation.map(item => {
-                    if (item.submenu) {
-                      // Determine which dropdown this is
-                      const isCompany = item.name === t('nav.company');
-                      const isTools = item.name === (t('nav.tools') || 'Tools');
-
-                      // Get the appropriate state based on menu type
-                      const isExpanded = isCompany
-                        ? mobileCompanyOpen
-                        : isTools
-                          ? mobileToolsOpen
-                          : mobileSolutionsOpen;
-                      const setIsExpanded = isCompany
-                        ? setMobileCompanyOpen
-                        : isTools
-                          ? setMobileToolsOpen
-                          : setMobileSolutionsOpen;
+                    if (item.submenu && item.dropdownType) {
+                      const isExpanded = state.activeMobileDropdown === item.dropdownType;
 
                       return (
                         <div key={item.name} className="space-y-1">
                           <button
-                            onClick={() => setIsExpanded(!isExpanded)}
+                            onClick={() => actions.toggleMobileDropdown(item.dropdownType!)}
                             className="w-full flex items-center justify-between py-3 px-3 -mx-3 rounded-xl text-base font-bold tracking-tight text-surface-900 dark:text-white hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors"
                           >
                             <span>{item.name}</span>
@@ -429,7 +310,7 @@ export const Header: React.FC = () => {
                                       key={subItem.name}
                                       href={subItem.href}
                                       className="block py-2.5 px-3 -mx-3 rounded-lg text-surface-600 dark:text-surface-400 font-semibold hover:bg-surface-100 dark:hover:bg-surface-800/40 hover:text-surface-900 dark:hover:text-white transition-colors"
-                                      onClick={() => setMobileMenuOpen(false)}
+                                      onClick={actions.closeMobileMenu}
                                     >
                                       {subItem.name}
                                     </Link>
@@ -446,7 +327,7 @@ export const Header: React.FC = () => {
                         key={item.name}
                         href={item.href}
                         className="block py-3 px-3 -mx-3 rounded-xl text-base font-bold tracking-tight text-surface-900 dark:text-white hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={actions.closeMobileMenu}
                       >
                         {item.name}
                       </Link>
@@ -466,9 +347,9 @@ export const Header: React.FC = () => {
                   {/* CTA Button */}
                   <Link
                     href={getPortalPath(isLoggedIn ? '/' : '/login/')}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={actions.closeMobileMenu}
                   >
-                    <Button variant="primary" className="w-full h-12 text-base font-bold">
+                    <Button as="div" variant="primary" className="w-full h-12 text-base font-bold">
                       <span className="flex items-center justify-center gap-2">
                         <Icon name={isLoggedIn ? 'layout' : 'log-in'} size={18} />
                         {isLoggedIn ? t('nav.portal') : t('nav.login')}

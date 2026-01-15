@@ -16,6 +16,8 @@ const zlib = require('zlib');
 const gzip = promisify(zlib.gzip);
 const brotliCompress = promisify(zlib.brotliCompress);
 
+const isSilent = process.argv.includes('--silent') || process.env.QUIET === '1';
+
 // Try to use jsonlint if available, otherwise fall back to native JSON.parse
 let jsonlint;
 try {
@@ -158,7 +160,7 @@ async function mergeTranslations(locale) {
 
     // Validate content
     const warnings = validateContent(content);
-    if (warnings.length > 0) {
+    if (warnings.length > 0 && !isSilent) {
       console.warn(`⚠️  Warnings in ${locale}/${file}:`);
       warnings.forEach(w => console.warn(`   - ${w}`));
     }
@@ -200,21 +202,25 @@ async function mergeTranslations(locale) {
   const topLevelKeys = Object.keys(merged).length;
   const totalLeafKeys = countLeafKeys(merged);
 
-  console.log(`✅ ${locale}.json merged`);
-  console.log(`   Files: ${files.join(', ')}`);
-  console.log(`   Keys: ${topLevelKeys} top-level, ${totalLeafKeys} total`);
-  console.log(`   Size: ${(rawSize / 1024).toFixed(1)} KB (gzip: ${(gzipSize / 1024).toFixed(1)} KB, brotli: ${(brotliSize / 1024).toFixed(1)} KB)`);
+  if (!isSilent) {
+    console.log(`✅ ${locale}.json merged`);
+    console.log(`   Files: ${files.join(', ')}`);
+    console.log(`   Keys: ${topLevelKeys} top-level, ${totalLeafKeys} total`);
+    console.log(`   Size: ${(rawSize / 1024).toFixed(1)} KB (gzip: ${(gzipSize / 1024).toFixed(1)} KB, brotli: ${(brotliSize / 1024).toFixed(1)} KB)`);
+  }
 }
 
 async function main() {
-  console.log('🔧 Merging translation files...\n');
+  if (!isSilent) {
+    console.log('🔧 Merging translation files...\n');
+  }
 
   for (const locale of locales) {
     await mergeTranslations(locale);
-    console.log('');
+    if (!isSilent) console.log('');
   }
 
-  console.log('✅ All translations merged successfully!');
+  if (!isSilent) console.log('✅ All translations merged successfully!');
 }
 
 main().catch(error => {

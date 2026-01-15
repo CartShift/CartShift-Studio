@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Smile, Reply } from 'lucide-react';
 import { addReaction, removeReaction } from '@/lib/services/portal-comments';
-import { motion, AnimatePresence } from "@/lib/motion";
-import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
+import { motion, AnimatePresence } from '@/lib/motion';
+import { Avatar } from '@/components/ui/Avatar';
 
 interface CommentItemProps {
   comment: Comment;
@@ -45,7 +45,12 @@ const renderSafeContent = (content: string): React.ReactNode => {
   });
 };
 
-export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }: CommentItemProps) => {
+export const CommentItem = ({
+  comment,
+  currentUserId,
+  onReply,
+  isReply = false,
+}: CommentItemProps) => {
   const [showReactions, setShowReactions] = useState(false);
 
   // Optimistic reactions state
@@ -88,9 +93,9 @@ export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }
   return (
     <div
       className={cn(
-        "group relative flex gap-3 transition-all",
-        isReply ? "mt-3 ms-12" : "mt-6",
-        isAuthor ? "flex-row-reverse" : "flex-row" // Keep threading consistent, but author styling different?
+        'group relative flex gap-3 transition-all',
+        isReply ? 'mt-3 ms-12' : 'mt-6',
+        isAuthor ? 'flex-row-reverse' : 'flex-row' // Keep threading consistent, but author styling different?
         // Actually for threading, usually all aligned left. Let's stick to left alignment for business chat but style current user differently.
       )}
       onMouseEnter={() => {}}
@@ -98,17 +103,17 @@ export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }
         setShowReactions(false);
       }}
     >
-      <div className={cn("flex-shrink-0", isAuthor && "order-last")}>
-        <PortalAvatar
-          src={comment.userPhotoUrl}
+      <div className={cn('flex-shrink-0', isAuthor && 'order-last')}>
+        <Avatar
           name={comment.userName}
-          size="sm"
-          className="shadow-md"
+          src={comment.userPhotoUrl}
+          size="md"
+          className="w-8 h-8 shadow-md"
         />
       </div>
 
       {/* Content */}
-      <div className={cn("flex flex-col max-w-[85%]", isAuthor && "items-end")}>
+      <div className={cn('flex flex-col max-w-[85%]', isAuthor && 'items-end')}>
         <div className="flex items-center gap-2 mb-1 px-1">
           <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
             {comment.userName}
@@ -119,9 +124,9 @@ export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }
         </div>
 
         <div className="relative group/bubble">
-           <div
+          <div
             className={cn(
-              'p-3.5 rounded-2xl text-sm shadow-sm font-medium leading-relaxed relative z-10',
+              'p-3.5 rounded-2xl text-sm shadow-sm font-medium leading-relaxed relative z-dropdown',
               isAuthor
                 ? 'bg-blue-600 text-white rounded-se-none'
                 : 'bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 border border-surface-100 dark:border-surface-700 rounded-ss-none'
@@ -131,10 +136,12 @@ export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }
           </div>
 
           {/* Action strip (Reactions, Reply) */}
-          <div className={cn(
-            "absolute top-full mt-1 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity",
-            isAuthor ? "end-0" : "start-0"
-          )}>
+          <div
+            className={cn(
+              'absolute top-full mt-1 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity',
+              isAuthor ? 'end-0' : 'start-0'
+            )}
+          >
             <button
               onClick={() => setShowReactions(!showReactions)}
               className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-600 transition-colors"
@@ -155,7 +162,7 @@ export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }
                   initial={{ opacity: 0, scale: 0.9, y: 5 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 5 }}
-                  className="absolute bottom-full mb-2 bg-white dark:bg-surface-800 rounded-full shadow-lg border border-surface-100 dark:border-surface-700 p-1 flex items-center gap-0.5 z-20"
+                  className="absolute bottom-full mb-2 bg-white dark:bg-surface-800 rounded-full shadow-lg border border-surface-100 dark:border-surface-700 p-1 flex items-center gap-0.5 z-sticky"
                 >
                   {EMOJI_OPTIONS.map(emoji => (
                     <button
@@ -173,19 +180,21 @@ export const CommentItem = ({ comment, currentUserId, onReply, isReply = false }
 
           {/* Existing Reactions display */}
           {Object.keys(reactions).length > 0 && (
-            <div className={cn(
-              "absolute -bottom-3 flex items-center gap-1",
-               isAuthor ? "end-1" : "start-1"
-            )}>
+            <div
+              className={cn(
+                'absolute -bottom-3 flex items-center gap-1',
+                isAuthor ? 'end-1' : 'start-1'
+              )}
+            >
               {Object.entries(reactions).map(([emoji, users]) => (
                 <button
                   key={emoji}
                   onClick={() => handleReaction(emoji)}
                   className={cn(
-                    "flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] shadow-sm border transition-colors",
+                    'flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] shadow-sm border transition-colors',
                     users.includes(currentUserId)
-                      ? "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300"
-                      : "bg-white dark:bg-surface-800 border-surface-200 dark:border-surface-700 text-surface-500"
+                      ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
+                      : 'bg-white dark:bg-surface-800 border-surface-200 dark:border-surface-700 text-surface-500'
                   )}
                 >
                   <span>{emoji}</span>

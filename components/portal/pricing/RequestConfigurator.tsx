@@ -1,10 +1,10 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { Clock, RotateCcw, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { Clock, RotateCcw, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator';
 import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
 import { formatCalculatorPrice } from '@/lib/services/pricing-calculator';
@@ -159,7 +159,7 @@ export function RequestConfigurator({
                     </div>
                   </div>
                   {config.customPrice !== undefined && (
-                    <PortalButton
+                    <Button
                       type="button"
                       variant="secondary"
                       size="sm"
@@ -169,7 +169,7 @@ export function RequestConfigurator({
                     >
                       <RotateCcw size={14} />
                       {t('portal.pricing.resetToCalculated' as never) || 'Reset'}
-                    </PortalButton>
+                    </Button>
                   )}
                 </div>
 

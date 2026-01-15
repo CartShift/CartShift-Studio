@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import {
   Bell,
   Shield,
@@ -21,7 +21,7 @@ import {
   User as UserIcon,
   Camera,
 } from 'lucide-react';
-import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
+import { Avatar } from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 import { getOrganization, updateOrganization } from '@/lib/services/portal-organizations';
 import { updatePortalUser } from '@/lib/services/portal-users';
@@ -37,7 +37,7 @@ import {
 import { resetPassword } from '@/lib/services/auth';
 import { CreateOrganizationForm } from '@/components/portal/forms/CreateOrganizationForm';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { PortalSwitch } from '@/components/portal/ui/PortalSwitch';
+import { Switch } from '@/components/ui/Switch';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
@@ -87,6 +87,10 @@ export default function SettingsClient() {
   const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Memoize userData fields to ensure stable dependency array
+  const userName = useMemo(() => userData?.name || '', [userData?.name]);
+  const userPhotoUrl = useMemo(() => userData?.photoUrl || '', [userData?.photoUrl]);
+
   const showFeedback = useCallback((type: 'success' | 'error', message: string) => {
     if (type === 'success') {
       if (successTimeoutRef.current) {
@@ -101,26 +105,28 @@ export default function SettingsClient() {
       setErrorMessage(message);
       errorTimeoutRef.current = setTimeout(() => setErrorMessage(null), 5000);
     }
-  }, []);
+  }, []); // Stable callback - doesn't need dependencies as it only uses refs and setters
 
   useEffect(() => {
-    // Keep this effect stable to avoid re-trigger loops; translations/router are stable enough
+    // Early return if orgId is not ready
+    if (!orgId || typeof orgId !== 'string') {
+      setLoading(false);
+      return;
+    }
+
     let redirectTimeout: NodeJS.Timeout | undefined;
     let mounted = true;
 
     async function fetchOrganization(): Promise<void> {
-      if (!orgId || typeof orgId !== 'string') return;
-
       setLoading(true);
 
       const rulesValid = await validateStorageRules();
-      if (!rulesValid) {
-        console.warn(
-          '🔥 [DEBUG] Storage rules validation failed - this may cause permission errors'
-        );
+      if (!rulesValid && process.env.NODE_ENV === 'development') {
+        console.warn('[Settings] Storage rules validation failed');
       }
 
       try {
+        if (!orgId) return;
         const org = await getOrganization(orgId);
         if (!mounted) return;
 
@@ -199,16 +205,23 @@ export default function SettingsClient() {
       mounted = false;
       if (redirectTimeout) clearTimeout(redirectTimeout);
     };
-    // We intentionally keep dependencies minimal to avoid infinite loops
-  }, [orgId]);
+  }, [orgId]); // Only depend on orgId - t, router, and showFeedback are stable
 
   useEffect(() => {
     if (!userData) return;
-    setProfileFormData({
-      name: userData.name || '',
-      photoUrl: userData.photoUrl || '',
+
+    // Only update if values actually changed to prevent infinite loops
+    setProfileFormData(prev => {
+      if (prev.name === userName && prev.photoUrl === userPhotoUrl) {
+        return prev; // Return previous state if unchanged
+      }
+
+      return {
+        name: userName,
+        photoUrl: userPhotoUrl,
+      };
     });
-  }, [userData]);
+  }, [userName, userPhotoUrl]); // Always exactly 2 string elements - stable array size
 
   useEffect(() => {
     return () => {
@@ -425,7 +438,7 @@ export default function SettingsClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <aside className="lg:col-span-1">
-          <nav className="flex lg:flex-col gap-2 lg:gap-1.5 lg:sticky lg:top-24 overflow-x-auto scrollbar-hide pb-2 lg:pb-0 -mx-2 px-2 lg:mx-0 lg:px-0">
+          <nav className="flex lg:flex-col gap-2 lg:gap-1.5 lg:sticky lg:top-24 overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0 lg:overflow-visible pb-1">
             {tabs.map(tab => (
               <button
                 key={tab.id}
@@ -461,7 +474,7 @@ export default function SettingsClient() {
 
           {activeTab === 'general' && (
             <div className="space-y-6">
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="p-2.5 rounded-xl bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 text-surface-400">
                     <Building2 size={20} />
@@ -534,20 +547,20 @@ export default function SettingsClient() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <PortalInput
+                    <Input
                       label={t('portal.settings.general.orgName')}
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
                       placeholder={t('portal.settings.general.orgNamePlaceholder')}
                     />
-                    <PortalInput
+                    <Input
                       label={t('portal.settings.general.industry')}
                       value={formData.industry}
                       onChange={e => setFormData({ ...formData, industry: e.target.value })}
                       placeholder={t('portal.settings.general.industryPlaceholder')}
                     />
                   </div>
-                  <PortalInput
+                  <Input
                     label={t('portal.settings.general.website')}
                     type="url"
                     value={formData.website}
@@ -568,21 +581,21 @@ export default function SettingsClient() {
                   </div>
                 </div>
                 <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800 flex justify-end">
-                  <PortalButton
+                  <Button
                     onClick={handleSave}
-                    isLoading={saving}
+                    loading={saving}
                     className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
                     {saving
                       ? t('portal.settings.general.saving')
                       : t('portal.settings.general.save')}
-                  </PortalButton>
+                  </Button>
                 </div>
-              </PortalCard>
+              </Card>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <PortalCard className="border-emerald-200 dark:border-emerald-900/20 bg-emerald-50/20 dark:bg-emerald-900/5 shadow-sm">
+                <Card className="border-emerald-200 dark:border-emerald-900/20 bg-emerald-50/20 dark:bg-emerald-900/5 shadow-sm">
                   <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-2 font-outfit">
                     <Plus size={20} />
                     {t('portal.settings.general.newWorkspace.title')}
@@ -590,16 +603,16 @@ export default function SettingsClient() {
                   <p className="text-xs text-surface-500 dark:text-surface-400 mb-6 font-medium leading-relaxed">
                     {t('portal.settings.general.newWorkspace.description')}
                   </p>
-                  <PortalButton
+                  <Button
                     onClick={() => setShowCreateOrgModal(true)}
                     className="w-full shadow-lg shadow-emerald-500/10 bg-emerald-600 hover:bg-emerald-700 font-outfit"
                   >
                     <Plus size={18} className="me-2" />
                     {t('portal.settings.general.newWorkspace.button')}
-                  </PortalButton>
-                </PortalCard>
+                  </Button>
+                </Card>
 
-                <PortalCard className="border-blue-200 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm">
+                <Card className="border-blue-200 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm">
                   <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2 font-outfit">
                     <RefreshCw size={20} />
                     {t('portal.settings.general.onboarding.title')}
@@ -607,16 +620,16 @@ export default function SettingsClient() {
                   <p className="text-xs text-surface-500 dark:text-surface-400 mb-6 font-medium leading-relaxed">
                     {t('portal.settings.general.onboarding.description')}
                   </p>
-                  <PortalButton
+                  <Button
                     onClick={handleRestartOnboarding}
-                    isLoading={restartingOnboarding}
+                    loading={restartingOnboarding}
                     variant="outline"
                     className="w-full shadow-lg shadow-blue-500/10 border-blue-300 dark:border-blue-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-outfit"
                   >
                     <RefreshCw size={18} className="me-2" />
                     {t('portal.settings.general.onboarding.button')}
-                  </PortalButton>
-                </PortalCard>
+                  </Button>
+                </Card>
               </div>
 
               {/* Shopify Store Integration */}
@@ -638,7 +651,7 @@ export default function SettingsClient() {
                 </div>
               )}
 
-              <PortalCard className="border-rose-200 dark:border-rose-900/20 bg-rose-50/20 dark:bg-rose-900/5 shadow-sm">
+              <Card className="border-rose-200 dark:border-rose-900/20 bg-rose-50/20 dark:bg-rose-900/5 shadow-sm">
                 <h3 className="text-lg font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-2 font-outfit">
                   <Trash2 size={20} />
                   {t('portal.settings.general.dangerZone.title')}
@@ -646,20 +659,20 @@ export default function SettingsClient() {
                 <p className="text-xs text-surface-500 dark:text-surface-400 mb-6 font-medium leading-relaxed">
                   {t('portal.settings.general.dangerZone.description')}
                 </p>
-                <PortalButton
+                <Button
                   variant="danger"
                   size="sm"
                   className="shadow-lg shadow-rose-500/10 font-outfit"
                 >
                   {t('portal.settings.general.dangerZone.button')}
-                </PortalButton>
-              </PortalCard>
+                </Button>
+              </Card>
             </div>
           )}
 
           {activeTab === 'profile' && (
             <div className="space-y-6">
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <div className="flex items-center gap-3 mb-10">
                   <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-900/30">
                     <UserIcon size={20} />
@@ -678,7 +691,7 @@ export default function SettingsClient() {
                   {/* Avatar Section */}
                   <div className="flex flex-col md:flex-row items-center gap-6 p-6 rounded-3xl bg-surface-50/50 dark:bg-surface-900/30 border border-surface-100 dark:border-surface-800/50">
                     <div className="relative group">
-                      <PortalAvatar
+                      <Avatar
                         src={profileFormData.photoUrl}
                         name={profileFormData.name}
                         size="lg"
@@ -709,7 +722,7 @@ export default function SettingsClient() {
                         {t('portal.settings.profile.avatar.desc')}
                       </p>
                       <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                        <PortalButton
+                        <Button
                           variant="outline"
                           size="sm"
                           className="h-9 px-4 text-xs font-bold border-surface-200 dark:border-surface-800"
@@ -720,7 +733,7 @@ export default function SettingsClient() {
                           {profileFormData.photoUrl
                             ? t('portal.settings.profile.avatar.change')
                             : t('portal.settings.profile.avatar.upload')}
-                        </PortalButton>
+                        </Button>
                         {profileFormData.photoUrl && (
                           <button
                             onClick={removeAvatar}
@@ -735,7 +748,7 @@ export default function SettingsClient() {
 
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <PortalInput
+                      <Input
                         label={t('portal.settings.profile.name')}
                         value={profileFormData.name}
                         onChange={e =>
@@ -744,7 +757,7 @@ export default function SettingsClient() {
                         placeholder={t('portal.settings.profile.namePlaceholder')}
                       />
                       <div className="opacity-60 grayscale pointer-events-none">
-                        <PortalInput
+                        <Input
                           label={t('portal.settings.profile.email')}
                           value={user?.email || ''}
                           readOnly
@@ -756,24 +769,24 @@ export default function SettingsClient() {
                 </div>
 
                 <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800 flex justify-end">
-                  <PortalButton
+                  <Button
                     onClick={handleProfileSave}
-                    isLoading={profileSaving}
+                    loading={profileSaving}
                     className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
                     {profileSaving
                       ? t('portal.settings.general.saving')
                       : t('portal.settings.profile.save')}
-                  </PortalButton>
+                  </Button>
                 </div>
-              </PortalCard>
+              </Card>
             </div>
           )}
 
           {activeTab === 'notifications' && (
             <div className="space-y-6">
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <div className="flex items-center gap-3 mb-10">
                   <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-900/30">
                     <Bell size={20} />
@@ -789,7 +802,7 @@ export default function SettingsClient() {
                 </div>
 
                 <div className="space-y-6">
-                  <PortalSwitch
+                  <Switch
                     label={t('portal.settings.notifications.requestUpdate.label')}
                     description={t('portal.settings.notifications.requestUpdate.desc')}
                     checked={notificationPrefs.emailOnRequestUpdate}
@@ -801,7 +814,7 @@ export default function SettingsClient() {
                     }
                   />
                   <div className="h-px bg-surface-50 dark:bg-surface-900" />
-                  <PortalSwitch
+                  <Switch
                     label={t('portal.settings.notifications.commentAlerts.label')}
                     description={t('portal.settings.notifications.commentAlerts.desc')}
                     checked={notificationPrefs.emailOnNewComment}
@@ -813,7 +826,7 @@ export default function SettingsClient() {
                     }
                   />
                   <div className="h-px bg-surface-50 dark:bg-surface-900" />
-                  <PortalSwitch
+                  <Switch
                     label={t('portal.settings.notifications.statusChange.label')}
                     description={t('portal.settings.notifications.statusChange.desc')}
                     checked={notificationPrefs.emailOnStatusChange}
@@ -825,7 +838,7 @@ export default function SettingsClient() {
                     }
                   />
                   <div className="h-px bg-surface-50 dark:bg-surface-900" />
-                  <PortalSwitch
+                  <Switch
                     label={t('portal.settings.notifications.marketing.label')}
                     description={t('portal.settings.notifications.marketing.desc')}
                     checked={notificationPrefs.marketingEmails}
@@ -851,22 +864,22 @@ export default function SettingsClient() {
                     </div>
                   )}
                 </div>
-              </PortalCard>
+              </Card>
 
-              <PortalCard className="bg-surface-50/50 dark:bg-surface-900/30 border-surface-200 dark:border-surface-800 text-center py-10 rounded-3xl">
+              <Card className="bg-surface-50/50 dark:bg-surface-900/30 border-surface-200 dark:border-surface-800 text-center py-10 rounded-3xl">
                 <p className="text-[11px] font-bold text-surface-500 dark:text-surface-400 max-w-sm mx-auto uppercase tracking-widest leading-relaxed">
                   {t('portal.settings.notifications.pushBeta')} <br />
                   <span className="text-blue-500 mt-2 block">
                     {t('portal.settings.notifications.pushBetaSub')}
                   </span>
                 </p>
-              </PortalCard>
+              </Card>
             </div>
           )}
 
           {activeTab === 'security' && (
             <div className="space-y-6">
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <div className="flex items-center gap-3 mb-10">
                   <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 border border-amber-100 dark:border-amber-900/30">
                     <Shield size={20} />
@@ -891,7 +904,7 @@ export default function SettingsClient() {
                         {t('portal.settings.security.changePassword.desc')}
                       </p>
                     </div>
-                    <PortalButton
+                    <Button
                       variant="outline"
                       size="sm"
                       onClick={handlePasswordReset}
@@ -910,7 +923,7 @@ export default function SettingsClient() {
                       ) : (
                         t('portal.settings.security.changePassword.button')
                       )}
-                    </PortalButton>
+                    </Button>
                   </div>
 
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-surface-50/50 dark:bg-surface-900/20 border border-surface-100/50 dark:border-surface-800/50 opacity-60">
@@ -922,17 +935,17 @@ export default function SettingsClient() {
                         {t('portal.settings.security.mfa.desc')}
                       </p>
                     </div>
-                    <PortalBadge
+                    <Badge
                       variant="gray"
                       className="font-black uppercase tracking-widest text-[9px]"
                     >
                       {t('portal.settings.security.mfa.badge')}
-                    </PortalBadge>
+                    </Badge>
                   </div>
                 </div>
-              </PortalCard>
+              </Card>
 
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <h4 className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-6 px-1">
                   {t('portal.settings.security.session.title')}
                 </h4>
@@ -956,13 +969,13 @@ export default function SettingsClient() {
                     </p>
                   </div>
                 </div>
-              </PortalCard>
+              </Card>
             </div>
           )}
 
           {activeTab === 'billing' && (
             <div className="space-y-6">
-              <PortalCard
+              <Card
                 noPadding
                 className="border-surface-200 dark:border-surface-800 shadow-xl overflow-hidden bg-white dark:bg-surface-950"
               >
@@ -970,9 +983,9 @@ export default function SettingsClient() {
                   <div className="absolute end-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-6">
-                      <PortalBadge className="bg-white/20 text-white border-white/20 uppercase font-black tracking-widest text-[9px] px-3">
+                      <Badge className="bg-white/20 text-white border-white/20 uppercase font-black tracking-widest text-[9px] px-3">
                         {formData.name}
-                      </PortalBadge>
+                      </Badge>
                       <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest bg-blue-500/30 px-3 py-1 rounded-full">
                         {organization?.plan?.toUpperCase() || t('portal.common.free')}
                       </span>
@@ -1038,20 +1051,20 @@ export default function SettingsClient() {
                   </div>
 
                   <div className="pt-8 border-t border-surface-100 dark:border-surface-800 flex flex-wrap gap-4">
-                    <PortalButton className="flex items-center gap-2 font-outfit px-8 shadow-xl shadow-blue-500/10 h-11">
+                    <Button className="flex items-center gap-2 font-outfit px-8 shadow-xl shadow-blue-500/10 h-11">
                       <CreditCard size={18} /> {t('portal.settings.billing.stripeDashboard')}
-                    </PortalButton>
-                    <PortalButton
+                    </Button>
+                    <Button
                       variant="outline"
                       className="flex items-center gap-2 font-outfit px-8 border-surface-200 dark:border-surface-800 h-11"
                     >
                       {t('portal.settings.billing.invoicingHistory')}
-                    </PortalButton>
+                    </Button>
                   </div>
                 </div>
-              </PortalCard>
+              </Card>
 
-              <PortalCard className="border-blue-100 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm rounded-3xl">
+              <Card className="border-blue-100 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm rounded-3xl">
                 <div className="flex items-start gap-4">
                   <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 border border-blue-200/50 dark:border-blue-900/30">
                     <ShieldCheck size={20} />
@@ -1065,7 +1078,7 @@ export default function SettingsClient() {
                     </p>
                   </div>
                 </div>
-              </PortalCard>
+              </Card>
             </div>
           )}
         </div>

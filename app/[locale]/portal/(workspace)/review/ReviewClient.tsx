@@ -3,8 +3,8 @@
 import { motion } from '@/lib/motion';
 import { useTranslations } from 'next-intl';
 import { Star, Heart, TrendingUp, Award, Quote, Sparkles } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
+import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { TestimonialForm } from '@/components/portal/TestimonialForm';
 import { useRouter } from '@/i18n/navigation';
 
@@ -24,7 +24,7 @@ function WhyShareCard() {
   ];
 
   return (
-    <PortalCard variant="gradient" className="overflow-hidden">
+    <Card variant="gradient" className="overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute -top-20 -end-20 w-40 h-40 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl" />
       <div className="absolute -bottom-10 -start-10 w-32 h-32 bg-accent-500/10 dark:bg-accent-500/5 rounded-full blur-2xl" />
@@ -64,7 +64,7 @@ function WhyShareCard() {
           ))}
         </div>
       </div>
-    </PortalCard>
+    </Card>
   );
 }
 
@@ -73,7 +73,7 @@ function StatsCard() {
   const t = useTranslations('portal');
 
   return (
-    <PortalCard variant="glass" className="overflow-hidden">
+    <Card variant="glass" className="overflow-hidden">
       <div className="text-center space-y-4 py-4">
         <motion.div
           className="flex items-center justify-center gap-1"
@@ -124,7 +124,7 @@ function StatsCard() {
           </span>
         </motion.div>
       </div>
-    </PortalCard>
+    </Card>
   );
 }
 
@@ -142,10 +142,7 @@ export default function ReviewClient() {
   return (
     <div className="animate-in fade-in duration-500">
       {/* Page Header */}
-      <PortalPageHeader
-        title={t('testimonial.pageTitle')}
-        description={t('testimonial.pageSubtitle')}
-      />
+      <PageHeader title={t('testimonial.pageTitle')} description={t('testimonial.pageSubtitle')} />
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">

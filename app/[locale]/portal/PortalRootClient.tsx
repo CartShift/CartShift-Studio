@@ -1,23 +1,38 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useRef } from 'react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
 import { isLoggingOut } from '@/lib/services/auth';
 import { OnboardingWizard } from '@/components/portal/onboarding/OnboardingWizard';
+import { PortalLoadingState } from '@/components/portal/shell/PortalLoadingState';
 
 export default function PortalRootClient() {
-  const t = useTranslations();
   const { userData, loading, isAuthenticated } = usePortalAuth();
   const { navigateToPortal, navigateToLogin } = usePortalNavigation();
+
+  // Track redirect to prevent multiple redirects in same cycle
+  const hasRedirectedRef = useRef(false);
+
+  useEffect(() => {
+    // Reset redirect flag on unmount
+    return () => {
+      hasRedirectedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (loading) return;
 
+    // Prevent multiple redirects in same render cycle
+    if (hasRedirectedRef.current) {
+      hasRedirectedRef.current = false;
+      return;
+    }
+
     if (!isAuthenticated) {
       if (!isLoggingOut()) {
+        hasRedirectedRef.current = true;
         navigateToLogin();
       }
       return;
@@ -25,12 +40,14 @@ export default function PortalRootClient() {
 
     if (userData) {
       if (userData.isAgency) {
+        hasRedirectedRef.current = true;
         navigateToPortal('/requests/', { replace: true });
         return;
       }
 
       if (userData.organizations && userData.organizations.length > 0) {
         // Redirect to clean URL - org is stored in context/session
+        hasRedirectedRef.current = true;
         navigateToPortal('/dashboard/', { replace: true });
         return;
       }
@@ -42,33 +59,18 @@ export default function PortalRootClient() {
 
   // Show loading while authenticating
   if (loading || !userData) {
-    return (
-      <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex flex-col items-center justify-center space-y-6">
-        <div className="relative">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-          <div className="absolute inset-0 blur-xl bg-blue-500/20 animate-pulse scale-150 -z-10" />
-        </div>
-        <p className="text-surface-500 font-black font-outfit uppercase tracking-[0.2em] text-[10px]">{t('portal.loading.workspace')}</p>
-      </div>
-    );
+    return <PortalLoadingState />;
   }
 
   // Show organization creation form if user has no organizations
-  if (userData && !userData.isAgency && (!userData.organizations || userData.organizations.length === 0)) {
-    return (
-      <OnboardingWizard />
-    );
+  if (
+    userData &&
+    !userData.isAgency &&
+    (!userData.organizations || userData.organizations.length === 0)
+  ) {
+    return <OnboardingWizard />;
   }
 
   // Fallback loading state (shouldn't normally reach here)
-  return (
-    <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex flex-col items-center justify-center space-y-6">
-      <div className="relative">
-        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-        <div className="absolute inset-0 blur-xl bg-blue-500/20 animate-pulse scale-150 -z-10" />
-      </div>
-      <p className="text-surface-500 font-black font-outfit uppercase tracking-[0.2em] text-[10px]">{t('portal.loading.workspace')}</p>
-    </div>
-  );
+  return <PortalLoadingState />;
 }
-

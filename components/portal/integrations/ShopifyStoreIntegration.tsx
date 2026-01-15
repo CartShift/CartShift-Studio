@@ -19,9 +19,10 @@ import {
   XCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import { updateOrganization } from '@/lib/services/portal-organizations';
 import { Organization } from '@/lib/types/portal';
+import { toast } from 'sonner';
 
 interface ShopifyStoreIntegrationProps {
   organization: Organization;
@@ -96,8 +97,6 @@ export default function ShopifyStoreIntegration({
   };
 
   const handleSave = async () => {
-    setError(null);
-
     // Validate
     const cleanDomain = shopifyDomain
       .toLowerCase()
@@ -106,12 +105,12 @@ export default function ShopifyStoreIntegration({
       .replace(/\/$/, '');
 
     if (cleanDomain && !validateDomain(cleanDomain)) {
-      setError(t('errors.invalidDomain'));
+      toast.error(t('errors.invalidDomain' as any));
       return;
     }
 
     if (collaboratorCode && !validateCode(collaboratorCode)) {
-      setError(t('errors.invalidCode'));
+      toast.error(t('errors.invalidCode' as any));
       return;
     }
 
@@ -123,11 +122,12 @@ export default function ShopifyStoreIntegration({
         shopifyAccessStatus: cleanDomain ? 'pending' : undefined,
       } as Partial<Organization>);
 
+      toast.success('Shopify settings saved successfully');
       setEditing(false);
       onUpdate?.();
     } catch (err) {
       console.error('Failed to save Shopify settings:', err);
-      setError(t('errors.saveFailed'));
+      toast.error(t('errors.saveFailed' as any));
     } finally {
       setSaving(false);
     }
@@ -154,9 +154,11 @@ export default function ShopifyStoreIntegration({
         shopifyAccessStatus: 'requested',
         shopifyAccessRequestedAt: new Date() as unknown as import('firebase/firestore').Timestamp,
       } as Partial<Organization>);
+      toast.success('Access request submitted');
       onUpdate?.();
     } catch (err) {
       console.error('Failed to update status:', err);
+      toast.error('Failed to submit access request');
     } finally {
       setSaving(false);
     }
@@ -169,9 +171,11 @@ export default function ShopifyStoreIntegration({
         shopifyAccessStatus: 'connected',
         shopifyConnectedAt: new Date() as unknown as import('firebase/firestore').Timestamp,
       } as Partial<Organization>);
+      toast.success('Shopify store connected');
       onUpdate?.();
     } catch (err) {
       console.error('Failed to update status:', err);
+      toast.error('Failed to connect Shopify store');
     } finally {
       setSaving(false);
     }
@@ -190,9 +194,9 @@ export default function ShopifyStoreIntegration({
             </div>
             <div>
               <h3 className="text-sm font-bold text-surface-600 dark:text-surface-400">
-                {t('agency.notConnected')}
+                {t('agency.notConnected' as any)}
               </h3>
-              <p className="text-xs text-surface-400">{t('agency.notConnectedDesc')}</p>
+              <p className="text-xs text-surface-400">{t('agency.notConnectedDesc' as any)}</p>
             </div>
           </div>
         </div>
@@ -221,7 +225,7 @@ export default function ShopifyStoreIntegration({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('title')}
+                {t('title' as any)}
               </h3>
               <span
                 className={cn(
@@ -236,7 +240,7 @@ export default function ShopifyStoreIntegration({
                   size={10}
                   className={accessStatus === 'requested' ? 'animate-spin' : ''}
                 />
-                {t(`status.${accessStatus}`)}
+                {t(`status.${accessStatus}` as any)}
               </span>
             </div>
             <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">
@@ -249,7 +253,7 @@ export default function ShopifyStoreIntegration({
         <div className="p-4 rounded-xl bg-white/80 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700 space-y-3 mb-6">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-              {t('storeUrl')}
+              {t('storeUrl' as any)}
             </span>
             <a
               href={`https://${organization.shopifyDomain}`}
@@ -264,7 +268,7 @@ export default function ShopifyStoreIntegration({
           {organization.shopifyCollaboratorCode && (
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-                {t('collaboratorCode')}
+                {t('collaboratorCode' as any)}
               </span>
               <div className="flex items-center gap-2">
                 <code className="px-2 py-1 bg-surface-100 dark:bg-surface-900 rounded text-sm font-mono font-bold text-surface-700 dark:text-surface-300">
@@ -290,17 +294,17 @@ export default function ShopifyStoreIntegration({
           {accessStatus === 'pending' && partnerLink && (
             <>
               <a href={partnerLink} target="_blank" rel="noopener noreferrer">
-                <PortalButton
+                <Button
                   variant="primary"
                   size="sm"
                   className="gap-2 shadow-lg shadow-accent-600/20"
                 >
                   <ShoppingBag size={16} />
-                  {t('agency.requestAccess')}
+                  {t('agency.requestAccess' as any)}
                   <ExternalLink size={12} className="opacity-60" />
-                </PortalButton>
+                </Button>
               </a>
-              <PortalButton
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={handleMarkAsRequested}
@@ -308,14 +312,14 @@ export default function ShopifyStoreIntegration({
                 className="gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-                {t('agency.markRequested')}
-              </PortalButton>
+                {t('agency.markRequested' as any)}
+              </Button>
             </>
           )}
 
           {accessStatus === 'requested' && (
             <>
-              <PortalButton
+              <Button
                 variant="primary"
                 size="sm"
                 onClick={handleMarkAsConnected}
@@ -327,13 +331,13 @@ export default function ShopifyStoreIntegration({
                 ) : (
                   <CheckCircle2 size={14} />
                 )}
-                {t('agency.markConnected')}
-              </PortalButton>
+                {t('agency.markConnected' as any)}
+              </Button>
               <a href={partnerLink || '#'} target="_blank" rel="noopener noreferrer">
-                <PortalButton variant="ghost" size="sm" className="gap-2 text-surface-500">
+                <Button variant="ghost" size="sm" className="gap-2 text-surface-500">
                   <ExternalLink size={14} />
-                  {t('agency.openPartnerDashboard')}
-                </PortalButton>
+                  {t('agency.openPartnerDashboard' as any)}
+                </Button>
               </a>
             </>
           )}
@@ -344,15 +348,15 @@ export default function ShopifyStoreIntegration({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <PortalButton
+              <Button
                 variant="outline"
                 size="sm"
                 className="gap-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
               >
                 <ShoppingBag size={16} />
-                {t('agency.openAdmin')}
+                {t('agency.openAdmin' as any)}
                 <ExternalLink size={12} className="opacity-60" />
-              </PortalButton>
+              </Button>
             </a>
           )}
         </div>
@@ -389,7 +393,7 @@ export default function ShopifyStoreIntegration({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-              {t('title')}
+              {t('title' as any)}
             </h3>
             {hasConnection && (
               <span
@@ -405,12 +409,12 @@ export default function ShopifyStoreIntegration({
                   size={10}
                   className={accessStatus === 'requested' ? 'animate-spin' : ''}
                 />
-                {t(`status.${accessStatus}`)}
+                {t(`status.${accessStatus}` as any)}
               </span>
             )}
           </div>
           <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">
-            {t('description')}
+            {t('description' as any)}
           </p>
         </div>
       </div>
@@ -429,7 +433,7 @@ export default function ShopifyStoreIntegration({
               {/* Store Domain Input */}
               <div>
                 <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-                  {t('form.storeUrl')} *
+                  {t('form.storeUrl' as any)} *
                 </label>
                 <div className="relative">
                   <input
@@ -440,15 +444,17 @@ export default function ShopifyStoreIntegration({
                     className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-600/30 focus:border-accent-600 transition-all"
                   />
                 </div>
-                <p className="text-[10px] text-surface-400 mt-1.5">{t('form.storeUrlHint')}</p>
+                <p className="text-[10px] text-surface-400 mt-1.5">
+                  {t('form.storeUrlHint' as any)}
+                </p>
               </div>
 
               {/* Collaborator Code Input */}
               <div>
                 <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-                  {t('form.collaboratorCode')}
+                  {t('form.collaboratorCode' as any)}
                   <span className="text-surface-400 normal-case font-normal ms-1">
-                    ({t('form.optional')})
+                    ({t('form.optional' as any)})
                   </span>
                 </label>
                 <div className="relative">
@@ -464,7 +470,7 @@ export default function ShopifyStoreIntegration({
                   />
                 </div>
                 <p className="text-[10px] text-surface-400 mt-1.5">
-                  {t('form.collaboratorCodeHint')}
+                  {t('form.collaboratorCodeHint' as any)}
                 </p>
               </div>
 
@@ -472,8 +478,8 @@ export default function ShopifyStoreIntegration({
               <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 flex items-start gap-3">
                 <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-blue-700 dark:text-blue-300">
-                  <p className="font-bold mb-1">{t('form.infoTitle')}</p>
-                  <p className="leading-relaxed">{t('form.infoDesc')}</p>
+                  <p className="font-bold mb-1">{t('form.infoTitle' as any)}</p>
+                  <p className="leading-relaxed">{t('form.infoDesc' as any)}</p>
                 </div>
               </div>
 
@@ -496,7 +502,7 @@ export default function ShopifyStoreIntegration({
             <div className="p-4 rounded-xl bg-white/80 dark:bg-surface-800/50 border border-accent-600/20 dark:border-accent-600/10 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-                  {t('storeUrl')}
+                  {t('storeUrl' as any)}
                 </span>
                 <a
                   href={`https://${organization.shopifyDomain}`}
@@ -511,7 +517,7 @@ export default function ShopifyStoreIntegration({
               {organization.shopifyCollaboratorCode && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-                    {t('collaboratorCode')}
+                    {t('collaboratorCode' as any)}
                   </span>
                   <code className="px-2 py-1 bg-surface-100 dark:bg-surface-900 rounded text-sm font-mono font-bold text-surface-700 dark:text-surface-300">
                     {organization.shopifyCollaboratorCode}
@@ -524,7 +530,7 @@ export default function ShopifyStoreIntegration({
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
                   <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-2">
                     <Clock size={12} />
-                    {t('statusMessages.pending')}
+                    {t('statusMessages.pending' as any)}
                   </p>
                 </div>
               )}
@@ -532,7 +538,7 @@ export default function ShopifyStoreIntegration({
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
                   <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-2">
                     <Loader2 size={12} className="animate-spin" />
-                    {t('statusMessages.requested')}
+                    {t('statusMessages.requested' as any)}
                   </p>
                 </div>
               )}
@@ -540,7 +546,7 @@ export default function ShopifyStoreIntegration({
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
                   <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-2">
                     <Shield size={12} />
-                    {t('statusMessages.connected')}
+                    {t('statusMessages.connected' as any)}
                   </p>
                 </div>
               )}
@@ -557,15 +563,15 @@ export default function ShopifyStoreIntegration({
               <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-400">
                 <li className="flex items-center gap-2">
                   <Check size={14} className="text-accent-600" />
-                  {t('features.feature1')}
+                  {t('features.feature1' as any)}
                 </li>
                 <li className="flex items-center gap-2">
                   <Check size={14} className="text-accent-600" />
-                  {t('features.feature2')}
+                  {t('features.feature2' as any)}
                 </li>
                 <li className="flex items-center gap-2">
                   <Check size={14} className="text-accent-600" />
-                  {t('features.feature3')}
+                  {t('features.feature3' as any)}
                 </li>
               </ul>
             </div>
@@ -577,7 +583,7 @@ export default function ShopifyStoreIntegration({
       <div className="flex items-center gap-3">
         {editing ? (
           <>
-            <PortalButton
+            <Button
               variant="primary"
               size="sm"
               onClick={handleSave}
@@ -585,9 +591,9 @@ export default function ShopifyStoreIntegration({
               className="gap-2 shadow-lg shadow-accent-600/20 bg-accent-600 hover:bg-accent-700"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-              {saving ? t('form.saving') : t('form.save')}
-            </PortalButton>
-            <PortalButton
+              {saving ? t('form.saving' as any) : t('form.save' as any)}
+            </Button>
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => {
@@ -600,29 +606,29 @@ export default function ShopifyStoreIntegration({
               className="gap-2 text-surface-500"
             >
               <X size={16} />
-              {t('form.cancel')}
-            </PortalButton>
+              {t('form.cancel' as any)}
+            </Button>
           </>
         ) : hasConnection ? (
-          <PortalButton
+          <Button
             variant="outline"
             size="sm"
             onClick={() => setEditing(true)}
             className="gap-2 border-accent-600/30 text-accent-700 dark:text-accent-600 hover:bg-accent-600/10"
           >
-            {t('actions.edit')}
-          </PortalButton>
+            {t('actions.edit' as any)}
+          </Button>
         ) : (
-          <PortalButton
+          <Button
             variant="primary"
             size="sm"
             onClick={() => setEditing(true)}
             className="gap-2 shadow-lg shadow-accent-600/20 bg-accent-600 hover:bg-accent-700"
           >
             <ShoppingBag size={16} />
-            {t('actions.connect')}
+            {t('actions.connect' as any)}
             <ArrowRight size={14} className="opacity-60" />
-          </PortalButton>
+          </Button>
         )}
       </div>
     </motion.div>

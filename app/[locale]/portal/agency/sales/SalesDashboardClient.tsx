@@ -10,10 +10,10 @@
 import { useTranslations } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { SalesPerformance } from '@/components/portal/SalesPerformance';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import { Loader2, ShieldCheck, RefreshCw, TrendingUp, Download, BarChart3 } from 'lucide-react';
 import { useSalesAnalytics } from '@/lib/hooks/useSalesAnalytics';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Card } from '@/components/ui/Card';
 import { Link } from '@/i18n/navigation';
 
 export default function SalesDashboardClient() {
@@ -68,7 +68,7 @@ export default function SalesDashboardClient() {
         </div>
 
         <div className="flex items-center gap-3">
-          <PortalButton
+          <Button
             variant="outline"
             onClick={() => refetch()}
             disabled={loading}
@@ -76,18 +76,18 @@ export default function SalesDashboardClient() {
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             {t('sales.dashboard.refresh')}
-          </PortalButton>
+          </Button>
 
-          <PortalButton variant="outline" className="flex items-center gap-2">
+          <Button variant="outline" className="flex items-center gap-2">
             <Download className="w-4 h-4" />
             {t('sales.dashboard.exportReport')}
-          </PortalButton>
+          </Button>
         </div>
       </div>
 
       {/* Empty State or Main Performance Dashboard */}
       {!loading && !hasData ? (
-        <PortalCard variant="default" padding="lg">
+        <Card variant="default" padding="lg">
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 flex items-center justify-center mb-6">
               <BarChart3 className="w-10 h-10 text-emerald-500" />
@@ -102,12 +102,10 @@ export default function SalesDashboardClient() {
               {t('sales.empty.hint')}
             </p>
             <Link href="/portal/agency/pricing">
-              <PortalButton variant="primary">
-                {t('agency.pricing.subtitle')}
-              </PortalButton>
+              <Button variant="primary">{t('agency.pricing.subtitle')}</Button>
             </Link>
           </div>
-        </PortalCard>
+        </Card>
       ) : (
         <SalesPerformance variant="full" />
       )}

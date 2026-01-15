@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, startTransition } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useImpersonation } from '@/lib/context/ImpersonationContext';
 import { getAuthInstance, isLoggingOut } from '@/lib/services/auth';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirestoreDb } from '@/lib/firebase';
 import { PortalUser, AccountType, ACCOUNT_TYPE } from '@/lib/types/portal';
 import { PortalErrorCode, getPortalError } from '@/lib/constants/error-codes';
 
@@ -18,6 +19,9 @@ interface UserData {
   notificationPreferences?: PortalUser['notificationPreferences'];
   onboardingComplete?: boolean;
   agencyRole?: import('@/lib/types/portal').UserRole;
+  // Timestamps are optional in UserData (may not be available from Auth)
+  createdAt?: unknown;
+  updatedAt?: unknown;
 }
 
 // Helper to derive account type from existing data (for backward compatibility)
@@ -51,7 +55,19 @@ function userDataEqual(a: UserData | null, b: UserData | null): boolean {
 
 export function usePortalAuth() {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  // Initialize from cache to prevent flicker
+  const [userData, setUserData] = useState<UserData | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('portal_user_data');
+        return cached ? JSON.parse(cached) : null;
+      } catch (e) {
+        console.warn('[usePortalAuth] Failed to parse cached user data', e);
+        return null;
+      }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<PortalErrorCode | null>(null);
   const isMountedRef = useRef(false);
@@ -61,42 +77,6 @@ export function usePortalAuth() {
     isMountedRef.current = true;
     let unsubscribeAuth: (() => void) | undefined;
     let unsubscribeUserData: (() => void) | undefined;
-
-    // Load cached data asynchronously to avoid state updates during render
-    const loadCache = () => {
-      if (!isMountedRef.current) return;
-      try {
-        const cached = localStorage.getItem('portal_user_data');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          // Only use cache if it's less than 1 hour old to avoid very stale data
-          const cacheTime = parsed._cacheTime;
-          if (cacheTime && Date.now() - cacheTime < 1000 * 60 * 60) {
-            // Use startTransition to ensure state updates happen after mount
-            startTransition(() => {
-              if (isMountedRef.current) {
-                setUserData(prevData => (userDataEqual(prevData, parsed) ? prevData : parsed));
-                // Set loading to false temporarily to show cached data
-                // Real data will update this shortly
-                setLoading(false);
-              }
-            });
-          }
-        }
-      } catch (e) {
-        console.error('Error reading auth cache:', e);
-      }
-    };
-
-    // Use requestAnimationFrame to defer cache loading until after mount, avoiding render-phase updates
-    let rafId: number | null = null;
-    if (typeof window !== 'undefined') {
-      rafId = requestAnimationFrame(() => {
-        if (isMountedRef.current) {
-          loadCache();
-        }
-      });
-    }
 
     try {
       const auth = getAuthInstance();
@@ -139,6 +119,13 @@ export function usePortalAuth() {
           }
 
           // Subscribe to user data from Firestore
+          // Ensure we're on client side before accessing Firestore
+          if (typeof window === 'undefined') {
+            setLoading(false);
+            return;
+          }
+
+          const db = getFirestoreDb();
           const userDocRef = doc(db, 'portal_users', currentUser.uid);
           unsubscribeUserData = onSnapshot(
             userDocRef,
@@ -169,20 +156,22 @@ export function usePortalAuth() {
                   userDataEqual(prevData, newUserData) ? prevData : newUserData
                 );
 
-                // Update cache
-                localStorage.setItem(
-                  'portal_user_data',
-                  JSON.stringify({
-                    ...newUserData,
-                    _cacheTime: Date.now(),
-                  })
-                );
+                // Update cache with minimal, non-sensitive data only
+                const minimalCacheData = {
+                  id: newUserData.id,
+                  name: newUserData.name,
+                  accountType: newUserData.accountType,
+                  isAgency: newUserData.isAgency,
+                  onboardingComplete: newUserData.onboardingComplete,
+                  _cacheTime: Date.now(),
+                };
+                localStorage.setItem('portal_user_data', JSON.stringify(minimalCacheData));
               } else {
                 // Fallback to auth user data if no Firestore doc
                 console.warn(
                   '[usePortalAuth] No user document found in Firestore for UID:',
                   currentUser.uid,
-                  '. Using fallback data.'
+                  '. Using fallback data. This is normal for new users.'
                 );
                 const fallbackData = {
                   id: currentUser.uid,
@@ -192,9 +181,9 @@ export function usePortalAuth() {
                   accountType: ACCOUNT_TYPE.CLIENT,
                   isAgency: false,
                   organizations: [],
-                  // Added for consistency with PortalUser type, though not directly from auth
-                  createdAt: null as any,
-                  updatedAt: null as any,
+                  // Timestamps from Auth are not available - these are expected to be null for new users
+                  createdAt: undefined,
+                  updatedAt: undefined,
                 };
                 setUserData(prevData =>
                   userDataEqual(prevData, fallbackData) ? prevData : fallbackData
@@ -271,9 +260,6 @@ export function usePortalAuth() {
     // Cleanup subscriptions on unmount
     return () => {
       isMountedRef.current = false;
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-      }
       if (unsubscribeAuth) {
         unsubscribeAuth();
       }
@@ -342,6 +328,8 @@ export function usePortalAuth() {
     isAgency: finalIsAgency,
     accountType: finalAccountType,
     error,
+    isImpersonating: !!(isImpersonating && impersonatedAccountId),
+    impersonatedAccountId,
   };
 }
 
@@ -349,12 +337,11 @@ export function usePortalAuth() {
 // We need to import the context object itself, but it is not exported from the file in the way we usually do
 // We might need to modify ImpersonationContext to export the Context object or a safe hook.
 // For now let's import the hook we created.
-import { useImpersonation } from '@/lib/context/ImpersonationContext';
 
 function useImpersonationSafe() {
   try {
     return useImpersonation();
-  } catch (e) {
+  } catch {
     return { isImpersonating: false, impersonatedAccountId: null };
   }
 }

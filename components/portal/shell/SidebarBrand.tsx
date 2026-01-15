@@ -35,6 +35,7 @@ export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
                 src="/images/CarShift-Icon-Colored.png"
                 alt="CartShift Studio"
                 fill
+                sizes="36px"
                 className="object-contain"
                 priority
               />

@@ -4,40 +4,40 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 
 const dropdownMenuVariants = cva(
-  "fixed z-[9999] min-w-[200px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden",
+  'fixed z-[9999] min-w-[200px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden',
   {
     variants: {
       align: {
-        left: "",
-        right: "",
-      }
+        left: '',
+        right: '',
+      },
     },
     defaultVariants: {
-      align: "right",
-    }
+      align: 'right',
+    },
   }
 );
 
 const dropdownItemVariants = cva(
-  "w-full px-4 py-3 min-h-[44px] text-sm font-medium text-start flex items-center gap-3 transition-colors duration-150 touch-manipulation active:scale-[0.98]",
+  'w-full px-4 py-3 min-h-[44px] text-sm font-medium text-start flex items-center gap-3 transition-colors duration-150 touch-manipulation active:scale-[0.98]',
   {
     variants: {
       variant: {
-        default: "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
-        danger: "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
+        default: 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800',
+        danger: 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20',
       },
       isDisabled: {
-        true: "opacity-50 cursor-not-allowed",
-        false: "",
-      }
+        true: 'opacity-50 cursor-not-allowed',
+        false: '',
+      },
     },
     defaultVariants: {
-      variant: "default",
+      variant: 'default',
       isDisabled: false,
-    }
+    },
   }
 );
 
@@ -57,13 +57,25 @@ interface DropdownProps extends VariantProps<typeof dropdownMenuVariants> {
 export function Dropdown({ trigger, items, align = 'right', className = '' }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
-  const [position, setPosition] = useState({ top: 0, left: 0, transform: '', transformOrigin: '', maxWidth: 300, maxHeight: 400 });
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+    transform: '',
+    transformOrigin: '',
+    maxWidth: 300,
+    maxHeight: 400,
+  });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const updateCoords = useCallback(() => {
@@ -84,7 +96,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
       const viewportWidth = window.innerWidth;
       const edgePadding = 12;
       const rect = triggerRef.current.getBoundingClientRect();
-      const maxDropdownWidth = viewportWidth - (edgePadding * 2);
+      const maxDropdownWidth = viewportWidth - edgePadding * 2;
 
       let initialLeft = align === 'right' ? rect.left + rect.width : rect.left;
       let initialTransform = align === 'right' ? 'translateX(-100%)' : 'none';
@@ -118,7 +130,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
         transform: initialTransform,
         transformOrigin: initialTransformOrigin,
         maxWidth: maxDropdownWidth,
-        maxHeight: Math.min(window.innerHeight - (edgePadding * 2), 400),
+        maxHeight: Math.min(window.innerHeight - edgePadding * 2, 400),
       });
     }
   }, [isOpen, align, updateCoords]);
@@ -137,9 +149,11 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
           const estimatedDropdownHeight = items.length * estimatedItemHeight + 16;
 
           const dropdownWidth = useEstimated ? 200 : Math.max(200, dropdownRef.current.offsetWidth);
-          const dropdownHeight = useEstimated ? estimatedDropdownHeight : dropdownRef.current.offsetHeight;
+          const dropdownHeight = useEstimated
+            ? estimatedDropdownHeight
+            : dropdownRef.current.offsetHeight;
 
-          const maxDropdownWidth = Math.max(200, viewportWidth - (edgePadding * 2));
+          const maxDropdownWidth = Math.max(200, viewportWidth - edgePadding * 2);
           const actualDropdownWidth = Math.min(dropdownWidth, maxDropdownWidth);
 
           let calculatedLeft: number;
@@ -182,12 +196,14 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
             }
           }
 
-          const finalLeftEdge = calculatedTransform === 'translateX(-100%)'
-            ? calculatedLeft - actualDropdownWidth
-            : calculatedLeft;
-          const finalRightEdge = calculatedTransform === 'translateX(-100%)'
-            ? calculatedLeft
-            : calculatedLeft + actualDropdownWidth;
+          const finalLeftEdge =
+            calculatedTransform === 'translateX(-100%)'
+              ? calculatedLeft - actualDropdownWidth
+              : calculatedLeft;
+          const finalRightEdge =
+            calculatedTransform === 'translateX(-100%)'
+              ? calculatedLeft
+              : calculatedLeft + actualDropdownWidth;
 
           if (finalLeftEdge < edgePadding) {
             calculatedLeft = edgePadding;
@@ -218,15 +234,23 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
             calculatedTop = edgePadding;
           }
 
-          const finalLeftEdgeCheck = calculatedTransform === 'translateX(-100%)'
-            ? calculatedLeft - actualDropdownWidth
-            : calculatedLeft;
-          const finalRightEdgeCheck = calculatedTransform === 'translateX(-100%)'
-            ? calculatedLeft
-            : calculatedLeft + actualDropdownWidth;
+          const finalLeftEdgeCheck =
+            calculatedTransform === 'translateX(-100%)'
+              ? calculatedLeft - actualDropdownWidth
+              : calculatedLeft;
+          const finalRightEdgeCheck =
+            calculatedTransform === 'translateX(-100%)'
+              ? calculatedLeft
+              : calculatedLeft + actualDropdownWidth;
 
-          if (finalLeftEdgeCheck < edgePadding || finalRightEdgeCheck > viewportWidth - edgePadding) {
-            calculatedLeft = Math.max(edgePadding, Math.min(viewportWidth - actualDropdownWidth - edgePadding, calculatedLeft));
+          if (
+            finalLeftEdgeCheck < edgePadding ||
+            finalRightEdgeCheck > viewportWidth - edgePadding
+          ) {
+            calculatedLeft = Math.max(
+              edgePadding,
+              Math.min(viewportWidth - actualDropdownWidth - edgePadding, calculatedLeft)
+            );
             calculatedTransform = '';
             calculatedTransformOrigin = 'top left';
           }
@@ -237,7 +261,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
             transform: calculatedTransform,
             transformOrigin: calculatedTransformOrigin,
             maxWidth: maxDropdownWidth,
-            maxHeight: Math.min(viewportHeight - (edgePadding * 2), 400),
+            maxHeight: Math.min(viewportHeight - edgePadding * 2, 400),
           });
         });
       };
@@ -358,96 +382,150 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
 
   const dropdownMenu = (
     <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          ref={dropdownRef}
-          initial={{ opacity: 0, scale: 0.95, y: -10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -10 }}
-          transition={{ duration: 0.15 }}
-          className={cn(dropdownMenuVariants({ align }))}
-          style={{
-            position: 'fixed',
-            top: `${position.top}px`,
-            left: `${position.left}px`,
-            transform: position.transform,
-            transformOrigin: position.transformOrigin,
-            zIndex: 9999,
-            width: 'auto',
-            maxWidth: `${position.maxWidth}px`,
-            maxHeight: `${position.maxHeight}px`,
-            boxSizing: 'border-box',
-            marginLeft: 0,
-            marginRight: 0,
-          }}
-        >
-          <div className="py-2 overflow-y-auto" style={{ maxHeight: `${position.maxHeight - 16}px` }}>
-            {items.map((item, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!item.disabled) {
-                    item.onClick();
-                    setIsOpen(false);
-                  }
-                }}
-                disabled={item.disabled}
-                className={cn(dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled }))}
-              >
-                {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      {isOpen &&
+        (isMobile ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-[9998] backdrop-blur-[2px]"
+              onClick={() => setIsOpen(false)}
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-[9999] bg-white dark:bg-surface-900 rounded-t-3xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col"
+            >
+              <div className="w-12 h-1.5 bg-surface-200 dark:bg-surface-800 rounded-full mx-auto my-3 flex-shrink-0" />
+              <div className="overflow-y-auto py-2 px-4 pb-8">
+                {items.map((item, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (!item.disabled) {
+                        item.onClick();
+                        setIsOpen(false);
+                      }
+                    }}
+                    disabled={item.disabled}
+                    className={cn(
+                      dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled }),
+                      'py-4 text-base'
+                    )}
+                  >
+                    {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        ) : (
+          <motion.div
+            ref={dropdownRef}
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            transition={{ duration: 0.15 }}
+            className={cn(dropdownMenuVariants({ align }))}
+            style={{
+              position: 'fixed',
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+              transform: position.transform,
+              transformOrigin: position.transformOrigin,
+              zIndex: 9999,
+              width: 'auto',
+              maxWidth: `${position.maxWidth}px`,
+              maxHeight: `${position.maxHeight}px`,
+              boxSizing: 'border-box',
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+          >
+            <div
+              className="py-2 overflow-y-auto"
+              style={{ maxHeight: `${position.maxHeight - 16}px` }}
+            >
+              {items.map((item, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (!item.disabled) {
+                      item.onClick();
+                      setIsOpen(false);
+                    }
+                  }}
+                  disabled={item.disabled}
+                  className={cn(
+                    dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled })
+                  )}
+                >
+                  {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        ))}
     </AnimatePresence>
   );
 
   const isTriggerButton = React.isValidElement(trigger) && trigger.type === 'button';
 
-  const triggerElement = isTriggerButton
-    ? React.cloneElement(trigger as React.ReactElement<any>, {
-        ref: (node: HTMLButtonElement | null) => {
-          triggerRef.current = node;
-          const originalRef = (trigger as any).ref;
-          if (typeof originalRef === 'function') {
-            originalRef(node);
-          } else if (originalRef) {
-            originalRef.current = node;
-          }
-        },
-        onClick: (e: React.MouseEvent) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-          const triggerElement = trigger as React.ReactElement;
-          if (triggerElement?.props && typeof triggerElement.props === 'object' && triggerElement.props !== null && 'onClick' in triggerElement.props && typeof triggerElement.props.onClick === 'function') {
-            triggerElement.props.onClick(e);
-          }
-        },
-        'aria-haspopup': 'true',
-        'aria-expanded': isOpen,
-      })
-    : (
-        <button
-          ref={triggerRef}
-          type="button"
-          onClick={e => {
-            e.stopPropagation();
-            setIsOpen(!isOpen);
-          }}
-          className="inline-flex items-center justify-center"
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-        >
-          {trigger}
-        </button>
-      );
+  const triggerElement = isTriggerButton ? (
+    React.cloneElement(trigger as React.ReactElement<any>, {
+      ref: (node: HTMLButtonElement | null) => {
+        triggerRef.current = node;
+        const originalRef = (trigger as any).ref;
+        if (typeof originalRef === 'function') {
+          originalRef(node);
+        } else if (originalRef) {
+          originalRef.current = node;
+        }
+      },
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsOpen(!isOpen);
+        const triggerElement = trigger as React.ReactElement;
+        if (
+          triggerElement?.props &&
+          typeof triggerElement.props === 'object' &&
+          triggerElement.props !== null &&
+          'onClick' in triggerElement.props &&
+          typeof triggerElement.props.onClick === 'function'
+        ) {
+          triggerElement.props.onClick(e);
+        }
+      },
+      'aria-haspopup': 'true',
+      'aria-expanded': isOpen,
+    })
+  ) : (
+    <button
+      ref={triggerRef}
+      type="button"
+      onClick={e => {
+        e.stopPropagation();
+        setIsOpen(!isOpen);
+      }}
+      className="inline-flex items-center justify-center"
+      aria-haspopup="true"
+      aria-expanded={isOpen}
+    >
+      {trigger}
+    </button>
+  );
 
   return (
-    <div className={cn("relative inline-block", className)} style={{ overflow: 'visible' }}>
+    <div className={cn('relative inline-block', className)} style={{ overflow: 'visible' }}>
       {triggerElement}
 
       {mounted && typeof document !== 'undefined' && document.body

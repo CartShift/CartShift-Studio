@@ -3,7 +3,8 @@
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from '@/lib/motion';
 import { Search, X, Clock, ArrowRight } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
@@ -11,32 +12,32 @@ import { isRTLLocale } from '@/lib/locale-config';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const mobileSearchItemVariants = cva(
-  "w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-start group",
+  'w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-start group',
   {
     variants: {
       variant: {
-        default: "hover:bg-surface-50 dark:hover:bg-surface-800",
-        active: "bg-surface-50 dark:bg-surface-800",
-      }
+        default: 'hover:bg-surface-50 dark:hover:bg-surface-800',
+        active: 'bg-surface-50 dark:bg-surface-800',
+      },
     },
     defaultVariants: {
-      variant: "default",
-    }
+      variant: 'default',
+    },
   }
 );
 
 const searchInputVariants = cva(
-  "flex-1 bg-transparent text-surface-900 dark:text-white placeholder-surface-400 outline-none text-base",
+  'flex-1 bg-transparent text-surface-900 dark:text-white placeholder-surface-400 outline-none text-base',
   {
     variants: {
       hasQuery: {
-        true: "font-medium",
-        false: "",
-      }
+        true: 'font-medium',
+        false: '',
+      },
     },
     defaultVariants: {
       hasQuery: false,
-    }
+    },
   }
 );
 
@@ -53,11 +54,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
-  const [recentSearches] = useState<string[]>([
-    'Dashboard',
-    'Requests',
-    'Settings',
-  ]);
+  const [recentSearches] = useState<string[]>(['Dashboard', 'Requests', 'Settings']);
 
   // Focus input when opened
   useEffect(() => {
@@ -106,11 +103,24 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
   };
 
   const quickLinks = [
-    { label: t('portal.sidebar.nav.dashboard' as any), href: getPortalPath('/dashboard/'), icon: '📊' },
-    { label: t('portal.sidebar.nav.requests' as any), href: getPortalPath('/requests/'), icon: '📋' },
+    {
+      label: t('portal.sidebar.nav.dashboard' as any),
+      href: getPortalPath('/dashboard/'),
+      icon: '📊',
+    },
+    {
+      label: t('portal.sidebar.nav.requests' as any),
+      href: getPortalPath('/requests/'),
+      icon: '📋',
+    },
   ];
 
-  return (
+  // Don't render if not open or if document.body is not available
+  if (!isOpen || typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -130,10 +140,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className={cn(
-              'fixed top-0 inset-x-0 z-[101] p-4',
-              className
-            )}
+            className={cn('fixed top-0 inset-x-0 z-[101] p-4', className)}
           >
             <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden max-w-lg mx-auto">
               {/* Search Input */}
@@ -143,8 +150,8 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                   ref={inputRef}
                   type="text"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => {
+                  onChange={e => setQuery(e.target.value)}
+                  onKeyDown={e => {
                     if (e.key === 'Enter') {
                       handleSearch(query);
                     }
@@ -178,7 +185,10 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                   <div className="p-4">
                     <button
                       onClick={() => handleSearch(query)}
-                      className={cn(mobileSearchItemVariants({ variant: 'default' }), "justify-between")}
+                      className={cn(
+                        mobileSearchItemVariants({ variant: 'default' }),
+                        'justify-between'
+                      )}
                     >
                       <div className="flex items-center gap-3">
                         <Search size={16} className="text-surface-400" />
@@ -203,7 +213,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                         Quick Links
                       </h3>
                       <div className="space-y-1">
-                        {quickLinks.map((link) => (
+                        {quickLinks.map(link => (
                           <button
                             key={link.href}
                             onClick={() => {
@@ -257,8 +267,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
-
-

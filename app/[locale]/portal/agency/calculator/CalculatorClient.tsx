@@ -5,8 +5,8 @@ import { useTranslations, useLocale } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { ArrowLeft, Lightbulb, TrendingUp, Clock, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { PricingCalculator } from '@/components/portal/pricing/PricingCalculator';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
@@ -18,13 +18,19 @@ export default function CalculatorClient() {
   const isRTL = locale === 'he';
 
   // Handle creating offer from calculator
-  const handleCreateOffer = (lineItem: { description: string; quantity: number; unitPrice: number }) => {
+  const handleCreateOffer = (lineItem: {
+    description: string;
+    quantity: number;
+    unitPrice: number;
+  }) => {
     // Store the line item in session storage for the pricing form to pick up
     sessionStorage.setItem('calculatorLineItems', JSON.stringify([lineItem]));
     router.push(getPortalPath('/pricing/new/'));
   };
 
-  const handleCreateMultipleOffers = (lineItems: Array<{ description: string; quantity: number; unitPrice: number }>) => {
+  const handleCreateMultipleOffers = (
+    lineItems: Array<{ description: string; quantity: number; unitPrice: number }>
+  ) => {
     // Store all items in session storage
     sessionStorage.setItem('calculatorLineItems', JSON.stringify(lineItems));
     router.push(getPortalPath('/pricing/new/'));
@@ -52,9 +58,7 @@ export default function CalculatorClient() {
         <p className="text-surface-500 dark:text-surface-400 max-w-md mb-6">
           {t('portal.agency.agencyOnly')}
         </p>
-        <PortalButton onClick={() => router.push(getPortalPath('/'))}>
-          {t('portal.common.goBack')}
-        </PortalButton>
+        <Button onClick={() => router.push(getPortalPath('/'))}>{t('portal.common.goBack')}</Button>
       </div>
     );
   }
@@ -64,14 +68,14 @@ export default function CalculatorClient() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <PortalButton
+          <Button
             variant="ghost"
             size="sm"
             onClick={() => router.push('/portal/agency/pricing/')}
             className="text-surface-500 hover:text-surface-700"
           >
             <ArrowLeft size={18} className={cn(isRTL && 'rotate-180')} />
-          </PortalButton>
+          </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
               {t('portal.pricing.calculatorTitle')}
@@ -96,7 +100,7 @@ export default function CalculatorClient() {
         {/* Tips Sidebar */}
         <div className="space-y-4">
           {/* Quick Tips Card */}
-          <PortalCard className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200/50 dark:border-amber-800/30">
+          <Card className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200/50 dark:border-amber-800/30">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center">
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -119,10 +123,10 @@ export default function CalculatorClient() {
                 <span>{t('portal.pricing.tips.tip3')}</span>
               </li>
             </ul>
-          </PortalCard>
+          </Card>
 
           {/* Effort Guide Card */}
-          <PortalCard className="p-5">
+          <Card className="p-5">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
                 <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -157,10 +161,10 @@ export default function CalculatorClient() {
                 <span className="text-surface-500">24+ {t('portal.common.hours')}</span>
               </div>
             </div>
-          </PortalCard>
+          </Card>
 
           {/* Value Prop Card */}
-          <PortalCard className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-200/50 dark:border-emerald-800/30">
+          <Card className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-200/50 dark:border-emerald-800/30">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -172,7 +176,7 @@ export default function CalculatorClient() {
             <p className="text-sm text-surface-600 dark:text-surface-400">
               {t('portal.pricing.valueProps.description')}
             </p>
-          </PortalCard>
+          </Card>
         </div>
       </div>
     </div>

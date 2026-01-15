@@ -11,16 +11,14 @@ import {
   PortalUser,
 } from '@/lib/types/portal';
 
-import { BadgeVariant } from '@/components/portal/ui/PortalBadge';
+import { BadgeVariant } from '@/components/ui/Badge';
 
 // ============================================
 // STATUS COLOR MAPPING
 // ============================================
 
 /**
- * Maps internal color names to PortalBadge variant colors.
- * Simplified to pass through colors that are now supported by PortalBadge (CVA).
- *
+ * Maps internal color names to Badge variant colors.
  * Handles colors from both:
  * - STATUS_CONFIG (request status colors)
  * - PRICING_STATUS_CONFIG (pricing status colors)
@@ -85,11 +83,12 @@ export function formatPortalDate(
   if (!timestamp) return fallback;
 
   try {
-    const date = timestamp instanceof Date
-      ? timestamp
-      : 'toDate' in timestamp
-        ? timestamp.toDate()
-        : new Date(timestamp as any);
+    const date =
+      timestamp instanceof Date
+        ? timestamp
+        : 'toDate' in timestamp
+          ? timestamp.toDate()
+          : new Date(timestamp as any);
 
     return format(date, formatStr, { locale: getDateLocale(locale) });
   } catch {
@@ -106,15 +105,16 @@ export function formatRelativeTime(
 ): string {
   if (!timestamp) return '';
 
-  const date = timestamp instanceof Date
-    ? timestamp
-    : 'toDate' in timestamp
-      ? timestamp.toDate()
-      : new Date(timestamp as any);
+  const date =
+    timestamp instanceof Date
+      ? timestamp
+      : 'toDate' in timestamp
+        ? timestamp.toDate()
+        : new Date(timestamp as any);
 
   return formatDistanceToNow(date, {
     addSuffix: true,
-    locale: getDateLocale(locale)
+    locale: getDateLocale(locale),
   });
 }
 
@@ -133,7 +133,10 @@ export function getUserDisplayName(user: PortalUser | null | undefined): string 
 /**
  * Gets user initials for avatar display.
  */
-export function getUserInitials(user: PortalUser | null | undefined, fallback: string = '?'): string {
+export function getUserInitials(
+  user: PortalUser | null | undefined,
+  fallback: string = '?'
+): string {
   if (!user) return fallback;
 
   const name = user.name || user.email;

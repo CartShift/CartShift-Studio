@@ -465,7 +465,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/contact">
                 <Button size="lg" className="group">
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-dropdown flex items-center gap-2">
                     {workT.detail.getConsultation}
                     <svg
                       className="w-5 h-5 transition-transform rtl:rotate-180"

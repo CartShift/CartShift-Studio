@@ -98,6 +98,59 @@ export function getFirestoreDb(): Firestore {
   return dbInstance;
 }
 
+/**
+ * Wraps Firestore operations to suppress expected permission errors
+ * Use this for operations that might fail during auth transitions
+ */
+export function suppressFirestorePermissionError<T>(
+  operation: () => T,
+  context?: string
+): T | null {
+  try {
+    return operation();
+  } catch (error: unknown) {
+    const err = error as { code?: string; message?: string };
+    const isPermissionError =
+      err?.code === 'permission-denied' ||
+      err?.message?.includes('Missing or insufficient permissions') ||
+      err?.message?.includes('permission');
+
+    if (!isPermissionError) {
+      // Re-throw non-permission errors immediately
+      throw error;
+    }
+
+    // Check if we should suppress this error
+    try {
+      const auth = getFirebaseAuth();
+      const currentUser = auth.currentUser;
+      const isLoggingOutActive = (globalThis as any).__cartshift_logging_out === true;
+
+      if (!currentUser || isLoggingOutActive) {
+        // Expected during auth transitions - suppress
+        if (context && typeof window !== 'undefined') {
+          console.debug(`[${context}] Suppressed permission error during auth transition`);
+        }
+        return null;
+      }
+
+      // Authenticated user getting permission error - this is unexpected
+      // Log but still allow operation to fail gracefully
+      if (typeof window !== 'undefined') {
+        console.warn(`[${context}] Unexpected permission error for authenticated user:`, {
+          uid: currentUser?.uid,
+          email: currentUser?.email,
+          errorCode: err?.code,
+        });
+      }
+      return null;
+    } catch {
+      // Auth not ready - suppress
+      return null;
+    }
+  }
+}
+
 export async function waitForAuth(): Promise<void> {
   const auth = getFirebaseAuth();
   if (auth.currentUser) {
@@ -138,9 +191,3 @@ export function getFirebaseStorage(): FirebaseStorage {
   }
   return storageInstance;
 }
-
-// Export singleton instances - use getter functions if these fail on SSR
-export const auth = typeof window !== 'undefined' ? getFirebaseAuth() : (null as unknown as Auth);
-export const db = typeof window !== 'undefined' ? getFirestoreDb() : (null as unknown as Firestore);
-export const storage =
-  typeof window !== 'undefined' ? getFirebaseStorage() : (null as unknown as FirebaseStorage);

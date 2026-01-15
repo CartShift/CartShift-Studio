@@ -12,9 +12,9 @@ import { motion } from '@/lib/motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { AnimatedNumber } from '@/components/portal/ui/AnimatedNumber';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalSkeleton } from '@/components/portal/ui/Skeleton';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import { Card } from '@/components/ui/Card';
+import { Skeleton as PortalSkeleton } from '@/components/ui/Skeleton';
 import { useSalesMetrics, useMonthlyRevenue, useTopClients } from '@/lib/hooks/useSalesAnalytics';
 import {
   DollarSign,
@@ -135,7 +135,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
         </div>
       )}
 
-      <div className="relative z-10">
+      <div className="relative z-dropdown">
         <div className="flex items-start justify-between mb-4">
           <div
             className={cn(
@@ -357,7 +357,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
   if (loading) {
     return (
       <div className={cn('space-y-6', className)}>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <PortalSkeleton key={i} className="h-40 rounded-2xl" />
           ))}
@@ -424,7 +424,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
       {variant === 'full' && (
         <>
           {/* Secondary Metrics */}
-          <PortalCard variant="default" padding="lg">
+          <Card variant="default" padding="lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-white" />
@@ -465,12 +465,12 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
                 color="blue"
               />
             </div>
-          </PortalCard>
+          </Card>
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Monthly Revenue Chart */}
-            <PortalCard variant="default" padding="lg">
+            <Card variant="default" padding="lg">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
@@ -499,10 +499,10 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
                   />
                 ))}
               </div>
-            </PortalCard>
+            </Card>
 
             {/* Top Clients */}
-            <PortalCard variant="default" padding="lg">
+            <Card variant="default" padding="lg">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
@@ -538,11 +538,11 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
                   </div>
                 )}
               </div>
-            </PortalCard>
+            </Card>
           </div>
 
           {/* Proposal Stats */}
-          <PortalCard variant="default" padding="lg">
+          <Card variant="default" padding="lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
                 <FileText className="w-5 h-5 text-white" />
@@ -603,7 +603,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
                 </p>
               </div>
             </div>
-          </PortalCard>
+          </Card>
         </>
       )}
     </div>

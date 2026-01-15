@@ -2,15 +2,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { getOrgActivities } from '@/lib/services/portal-activities';
 import { getMemberByUserId, ensureMembership } from '@/lib/services/portal-organizations';
+import { useToast } from '@/components/portal/ui';
 
 export function useDashboardData() {
   const orgId = useResolvedOrgId();
   const { userData, loading: authLoading, isAuthenticated } = usePortalAuth();
+  const router = useRouter();
+  const toast = useToast();
   const mountedRef = useRef(false);
 
   // State to track if we've verified/ensured membership for clients
@@ -85,12 +89,19 @@ export function useDashboardData() {
     queryKey: ['org-requests', orgId],
     queryFn: () => getRequestsByOrg(orgId as string),
     enabled: Boolean(shouldFetchData),
-    staleTime: 30000, // Consider data fresh for 30 seconds
-    refetchInterval: 30000, // Refresh every 30s
+    staleTime: 60000, // Consider data fresh for 60 seconds
+    refetchInterval: 120000, // Refresh every 2 minutes
     retry: (failureCount, error) => {
+      // Show user feedback on permission errors and redirect
       if (error instanceof Error && error.message.includes('Permission denied')) {
+        toast.error('Access Denied', 'You do not have permission to view this organization');
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          router.push('/portal/dashboard');
+        }, 2000);
         return false;
       }
+      // Limit retries for other errors
       return failureCount < 2;
     },
   });
@@ -104,8 +115,8 @@ export function useDashboardData() {
     queryKey: ['org-activities', orgId],
     queryFn: () => getOrgActivities(orgId as string),
     enabled: Boolean(shouldFetchData),
-    staleTime: 30000, // Consider data fresh for 30 seconds
-    refetchInterval: 30000, // Refresh every 30s
+    staleTime: 60000, // Consider data fresh for 60 seconds
+    refetchInterval: 120000, // Refresh every 2 minutes
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message.includes('Permission denied')) {
         return false;

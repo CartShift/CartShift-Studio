@@ -14,9 +14,9 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { Dropdown } from '@/components/ui/Dropdown';
 import {
   PricingRequest,
@@ -139,9 +139,7 @@ export default function PricingListClient() {
           {t('portal.common.error')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
-        <PortalButton onClick={() => window.location.reload()}>
-          {t('portal.common.retry')}
-        </PortalButton>
+        <Button onClick={() => window.location.reload()}>{t('portal.common.retry')}</Button>
       </div>
     );
   }
@@ -159,15 +157,15 @@ export default function PricingListClient() {
         </div>
         {isAgency && (
           <Link href="/portal/pricing/new/">
-            <PortalButton className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit">
+            <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit">
               <Plus size={18} />
               {t('portal.pricing.newOffer')}
-            </PortalButton>
+            </Button>
           </Link>
         )}
       </div>
 
-      <PortalCard
+      <Card
         noPadding
         className="overflow-visible border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950"
       >
@@ -210,7 +208,7 @@ export default function PricingListClient() {
         </div>
 
         {/* Table Content */}
-        <div className="overflow-x-auto">
+        <div className="w-full min-w-0">
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
@@ -219,169 +217,231 @@ export default function PricingListClient() {
               </p>
             </div>
           ) : filteredRequests.length > 0 ? (
-            <table className="w-full text-start border-collapse">
-              <thead>
-                <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
-                    {t('portal.pricing.form.titleLabel')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                    {t('portal.common.status')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                    {t('portal.pricing.form.total')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                    {t('portal.common.date')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
-                    {t('portal.common.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4 p-4">
                 {paginatedRequests.map(req => (
-                  <tr
+                  <div
                     key={req.id}
-                    className="hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-all group"
+                    onClick={() => router.push(`/portal/pricing/${req.id}/`)}
+                    className="bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-4 shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
                   >
-                    <td className="px-6 py-4">
-                      <Link
-                        href={`/portal/pricing/${req.id}/`}
-                        className="flex flex-col max-w-md"
-                      >
-                        <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex flex-col min-w-0 me-2">
+                        <span className="font-bold text-surface-900 dark:text-white font-outfit truncate text-sm">
                           {req.title}
                         </span>
-                        <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
+                        <div className="flex items-center gap-2 mt-1">
                           {req.clientName && (
-                            <>
-                              <span className="truncate">{req.clientName}</span>
-                              <span className="w-1 h-1 rounded-full bg-surface-300" />
-                            </>
+                            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 truncate max-w-[100px]">
+                              {req.clientName}
+                            </span>
                           )}
-                          <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
+                          <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight text-surface-500">
                             {req.id.slice(0, 8)}
                           </span>
-                        </span>
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center">
-                        <PortalBadge
-                          variant={getPricingStatusBadgeVariant(
-                            PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
-                          )}
-                        >
-                          {t(`portal.pricing.status.${req.status.toLowerCase()}` as never)}
-                        </PortalBadge>
+                        </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <DollarSign size={14} className="text-green-500 opacity-70" />
-                        <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
+                      <Badge
+                        variant={getPricingStatusBadgeVariant(
+                          PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
+                        )}
+                        className="text-[10px] shrink-0"
+                      >
+                        {t(`portal.pricing.status.${req.status.toLowerCase()}` as never)}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                          {t('portal.pricing.form.total')}
+                        </span>
+                        <span className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
                           {formatCurrency(req.totalAmount, req.currency)}
                         </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col items-center">
-                        <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                      <div className="flex flex-col items-end">
+                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                          {t('portal.common.date')}
+                        </span>
+                        <span className="text-xs font-bold text-surface-600 dark:text-surface-300 font-outfit">
                           {req.createdAt?.toDate
-                            ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
-                                locale: getDateLocale(locale),
-                              })
+                            ? format(req.createdAt.toDate(), 'MMM d, yyyy')
                             : t('portal.common.recently')}
                         </span>
-                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
-                          {req.status === PRICING_STATUS.DRAFT
-                            ? t('portal.pricing.status.draft')
-                            : req.sentAt?.toDate
-                              ? format(req.sentAt.toDate(), 'MMM d', {
-                                  locale: getDateLocale(locale),
-                                })
-                              : ''}
-                        </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link href={`/portal/pricing/${req.id}/`}>
-                          <button className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                            <Eye size={16} />
-                          </button>
-                        </Link>
-                        {isAgency &&
-                          (req.status === PRICING_STATUS.DRAFT ||
-                            req.status === PRICING_STATUS.SENT) && (
-                            <Link href={`/portal/pricing/${req.id}/edit`}>
-                              <button className="p-2 text-surface-400 hover:text-amber-600 dark:hover:text-amber-400 transition-all rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
-                                <Pencil size={16} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-start border-collapse">
+                  <thead>
+                    <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
+                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
+                        {t('portal.pricing.form.titleLabel')}
+                      </th>
+                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                        {t('portal.common.status')}
+                      </th>
+                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                        {t('portal.pricing.form.total')}
+                      </th>
+                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                        {t('portal.common.date')}
+                      </th>
+                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
+                        {t('portal.common.actions')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+                    {paginatedRequests.map(req => (
+                      <tr
+                        key={req.id}
+                        className="hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-all group"
+                      >
+                        <td className="px-6 py-4">
+                          <Link
+                            href={`/portal/pricing/${req.id}/`}
+                            className="flex flex-col max-w-md"
+                          >
+                            <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
+                              {req.title}
+                            </span>
+                            <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
+                              {req.clientName && (
+                                <>
+                                  <span className="truncate">{req.clientName}</span>
+                                  <span className="w-1 h-1 rounded-full bg-surface-300" />
+                                </>
+                              )}
+                              <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
+                                {req.id.slice(0, 8)}
+                              </span>
+                            </span>
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex justify-center">
+                            <Badge
+                              variant={getPricingStatusBadgeVariant(
+                                PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
+                              )}
+                            >
+                              {t(`portal.pricing.status.${req.status.toLowerCase()}` as never)}
+                            </Badge>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <DollarSign size={14} className="text-green-500 opacity-70" />
+                            <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
+                              {formatCurrency(req.totalAmount, req.currency)}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                              {req.createdAt?.toDate
+                                ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
+                                    locale: getDateLocale(locale),
+                                  })
+                                : t('portal.common.recently')}
+                            </span>
+                            <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                              {req.status === PRICING_STATUS.DRAFT
+                                ? t('portal.pricing.status.draft')
+                                : req.sentAt?.toDate
+                                  ? format(req.sentAt.toDate(), 'MMM d', {
+                                      locale: getDateLocale(locale),
+                                    })
+                                  : ''}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-end">
+                          <div className="flex items-center justify-end gap-1">
+                            <Link href={`/portal/pricing/${req.id}/`}>
+                              <button className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                                <Eye size={16} />
                               </button>
                             </Link>
-                          )}
-                        {isAgency && req.status === PRICING_STATUS.DRAFT && (
-                          <button
-                            onClick={() => handleSend(req.id)}
-                            className="p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
-                          >
-                            <Send size={16} />
-                          </button>
-                        )}
-                        <Dropdown
-                          trigger={
-                            <button className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
-                              <MoreVertical size={16} />
-                            </button>
-                          }
-                          items={[
-                            {
-                              label: t('portal.common.view'),
-                              icon: <Eye size={14} />,
-                              onClick: () =>
-                                router.push(`/portal/pricing/${req.id}`),
-                            },
-                            ...(isAgency &&
-                            (req.status === PRICING_STATUS.DRAFT ||
-                              req.status === PRICING_STATUS.SENT)
-                              ? [
-                                  {
-                                    label: t('portal.common.edit'),
-                                    icon: <Pencil size={14} />,
-                                    onClick: () =>
-                                      router.push(`/portal/pricing/${req.id}/edit`),
-                                  },
-                                ]
-                              : []),
-                            ...(isAgency && req.status === PRICING_STATUS.DRAFT
-                              ? [
-                                  {
-                                    label: 'Send to Client',
-                                    icon: <Send size={14} />,
-                                    onClick: () => handleSend(req.id),
-                                  },
-                                ]
-                              : []),
-                            ...(isAgency
-                              ? [
-                                  {
-                                    label: t('portal.common.delete'),
-                                    icon: <Trash2 size={14} />,
-                                    variant: 'danger' as const,
-                                    onClick: () => handleDelete(req.id),
-                                  },
-                                ]
-                              : []),
-                          ]}
-                          align="right"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                            {isAgency &&
+                              (req.status === PRICING_STATUS.DRAFT ||
+                                req.status === PRICING_STATUS.SENT) && (
+                                <Link href={`/portal/pricing/${req.id}/edit`}>
+                                  <button className="p-2 text-surface-400 hover:text-amber-600 dark:hover:text-amber-400 transition-all rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
+                                    <Pencil size={16} />
+                                  </button>
+                                </Link>
+                              )}
+                            {isAgency && req.status === PRICING_STATUS.DRAFT && (
+                              <button
+                                onClick={() => handleSend(req.id)}
+                                className="p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
+                              >
+                                <Send size={16} />
+                              </button>
+                            )}
+                            <Dropdown
+                              trigger={
+                                <button className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
+                                  <MoreVertical size={16} />
+                                </button>
+                              }
+                              items={[
+                                {
+                                  label: t('portal.common.view'),
+                                  icon: <Eye size={14} />,
+                                  onClick: () => router.push(`/portal/pricing/${req.id}`),
+                                },
+                                ...(isAgency &&
+                                (req.status === PRICING_STATUS.DRAFT ||
+                                  req.status === PRICING_STATUS.SENT)
+                                  ? [
+                                      {
+                                        label: t('portal.common.edit'),
+                                        icon: <Pencil size={14} />,
+                                        onClick: () =>
+                                          router.push(`/portal/pricing/${req.id}/edit`),
+                                      },
+                                    ]
+                                  : []),
+                                ...(isAgency && req.status === PRICING_STATUS.DRAFT
+                                  ? [
+                                      {
+                                        label: 'Send to Client',
+                                        icon: <Send size={14} />,
+                                        onClick: () => handleSend(req.id),
+                                      },
+                                    ]
+                                  : []),
+                                ...(isAgency
+                                  ? [
+                                      {
+                                        label: t('portal.common.delete'),
+                                        icon: <Trash2 size={14} />,
+                                        variant: 'danger' as const,
+                                        onClick: () => handleDelete(req.id),
+                                      },
+                                    ]
+                                  : []),
+                              ]}
+                              align="right"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           ) : (
             <div className="py-20 flex flex-col items-center justify-center text-center px-4 space-y-4">
               <div className="w-20 h-20 bg-surface-50 dark:bg-surface-900 rounded-3xl flex items-center justify-center mb-2 border border-surface-100 dark:border-surface-800 shadow-inner">
@@ -399,15 +459,14 @@ export default function PricingListClient() {
               </div>
               {isAgency && !searchQuery && activeFilter === 'All' && (
                 <Link href="/portal/pricing/new/" className="pt-4">
-                  <PortalButton className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/10">
+                  <Button className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/10">
                     {t('portal.pricing.newOffer')}
-                  </PortalButton>
+                  </Button>
                 </Link>
               )}
             </div>
           )}
         </div>
-
         {/* Footer info */}
         {!loading && filteredRequests.length > 0 && (
           <div className="p-5 border-t border-surface-100 dark:border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
@@ -418,7 +477,7 @@ export default function PricingListClient() {
               })}
             </span>
             <div className="flex items-center gap-2">
-              <PortalButton
+              <Button
                 variant="outline"
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
@@ -426,8 +485,8 @@ export default function PricingListClient() {
                 disabled={currentPage === 1}
               >
                 {t('portal.common.prev')}
-              </PortalButton>
-              <PortalButton
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
@@ -435,11 +494,11 @@ export default function PricingListClient() {
                 disabled={currentPage === totalPages}
               >
                 {t('portal.common.next')}
-              </PortalButton>
+              </Button>
             </div>
           </div>
         )}
-      </PortalCard>
+      </Card>
     </div>
   );
 }

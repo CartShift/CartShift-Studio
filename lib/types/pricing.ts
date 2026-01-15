@@ -43,6 +43,7 @@ export interface PricingRequest {
   description?: string;
   lineItems: PricingLineItem[];
   totalAmount: number; // calculated sum in cents/smallest currency unit
+  taxRate?: number; // Tax rate as decimal (e.g. 0.17 for 17%)
   currency: Currency;
   status: PricingStatus;
 
@@ -84,6 +85,7 @@ export interface CreatePricingRequestData {
   description?: string;
   lineItems: Omit<PricingLineItem, 'id'>[];
   currency: Currency;
+  taxRate?: number;
   validUntil?: Date;
   clientName?: string;
   clientEmail?: string;
@@ -96,6 +98,7 @@ export interface UpdatePricingRequestData {
   description?: string;
   lineItems?: PricingLineItem[];
   currency?: Currency;
+  taxRate?: number;
   validUntil?: Date;
   clientName?: string;
   clientEmail?: string;
@@ -177,8 +180,18 @@ export const CURRENCY_CONFIG: Record<Currency, { symbol: string; name: string }>
 // UTILITY FUNCTIONS
 // ============================================
 
-export function calculateTotalAmount(lineItems: PricingLineItem[]): number {
+export function calculateTotalAmount(lineItems: PricingLineItem[], taxRate: number = 0): number {
+  const subtotal = calculateSubtotal(lineItems);
+  const tax = Math.round(subtotal * taxRate);
+  return subtotal + tax;
+}
+
+export function calculateSubtotal(lineItems: PricingLineItem[]): number {
   return lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+}
+
+export function calculateTaxAmount(subtotal: number, taxRate: number): number {
+  return Math.round(subtotal * taxRate);
 }
 
 export function formatCurrency(amountInCents: number, currency: Currency): string {
@@ -188,5 +201,9 @@ export function formatCurrency(amountInCents: number, currency: Currency): strin
 }
 
 export function generateLineItemId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for older browsers
   return `item_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 }

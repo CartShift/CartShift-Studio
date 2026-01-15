@@ -240,7 +240,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/contact">
                 <Button size="lg" className="group">
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-dropdown flex items-center gap-2">
                     {t('industries.getFreeQuote')}
                     <ArrowRight size={20} className="rtl:rotate-180" />
                   </span>

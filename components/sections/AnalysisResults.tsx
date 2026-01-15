@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from '@/lib/motion';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
@@ -235,11 +234,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <TrendingUp className="w-5 h-5 text-primary-500" />
                 {t('analyzer.results.breakdown') || 'Performance Breakdown'}
               </h3>
-              <span
-                className={`text-xs px-2.5 py-1 rounded-full border ${isDark ? 'border-white/10 text-white/50 bg-white/5' : 'border-surface-200 text-surface-500 bg-surface-50'}`}
-              >
-                ID: {Math.floor(Math.random() * 10000)}
-              </span>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -266,7 +260,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           <span
                             className={`block font-bold text-sm leading-tight mb-1 ${isDark ? 'text-white' : 'text-surface-900 dark:text-white'}`}
                           >
-                            {t(`analyzer.sections.${key}` as any) || section.name}
+                            {(() => {
+                              const translationKey = `analyzer.sections.${key}` as const;
+                              const translated = t(translationKey);
+                              return typeof translated === 'string' ? translated : section.name;
+                            })()}
                           </span>
                           <span
                             className={`text-xs font-medium px-1.5 py-0.5 rounded ${
@@ -378,7 +376,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             {/* Glow effect */}
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="relative z-10">
+            <div className="relative z-dropdown">
               <h3
                 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-surface-900'}`}
               >
@@ -393,7 +391,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               </p>
             </div>
 
-            <div className="mt-auto space-y-5 relative z-10">
+            <div className="mt-auto space-y-5 relative z-dropdown">
               <a
                 href={getScheduleUrl()}
                 target="_blank"

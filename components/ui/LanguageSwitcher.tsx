@@ -4,12 +4,13 @@ import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { ChevronDown } from 'lucide-react';
 import { trackLanguageSwitch } from '@/lib/analytics';
 import { setUserLocalePreference } from '@/components/providers/GeoLocaleRedirect';
+import { useLanguageSync } from '@/lib/hooks/useLanguageSync';
 
 const USFlag = () => (
   <svg
@@ -72,32 +73,33 @@ const ILFlag = () => (
 );
 
 const triggerVariants = cva(
-  "flex items-center gap-1.5 px-2.5 py-2 rounded-xl transition-all duration-200",
+  'flex items-center gap-1.5 px-2.5 py-2 rounded-xl transition-all duration-200',
   {
     variants: {
       isOpen: {
-        true: "bg-surface-200/80 dark:bg-surface-600/50 text-surface-900 dark:text-white",
-        false: "hover:bg-surface-200/60 dark:hover:bg-surface-700/50 text-surface-700 dark:text-surface-300",
-      }
+        true: 'bg-surface-200/80 dark:bg-surface-600/50 text-surface-900 dark:text-white',
+        false:
+          'hover:bg-surface-200/60 dark:hover:bg-surface-700/50 text-surface-700 dark:text-surface-300',
+      },
     },
     defaultVariants: {
       isOpen: false,
-    }
+    },
   }
 );
 
 const langItemVariants = cva(
-  "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+  'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
   {
     variants: {
       active: {
-        true: "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400",
-        false: "text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-white/5",
-      }
+        true: 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400',
+        false: 'text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-white/5',
+      },
     },
     defaultVariants: {
       active: false,
-    }
+    },
   }
 );
 
@@ -110,6 +112,9 @@ export const LanguageSwitcher = () => {
   const [mounted, setMounted] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Sync language preference to Firestore for authenticated portal users
+  useLanguageSync();
 
   useEffect(() => {
     setMounted(true);
@@ -183,7 +188,11 @@ export const LanguageSwitcher = () => {
           className="fixed w-36 bg-white dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-white/10 overflow-hidden z-[60]"
           style={{
             top: `${position.top}px`,
-            ...(isRtl ? { left: `${window.innerWidth - position.right - buttonRef.current!.getBoundingClientRect().width}px` } : { right: `${position.right}px` }),
+            ...(isRtl
+              ? {
+                  left: `${window.innerWidth - position.right - buttonRef.current!.getBoundingClientRect().width}px`,
+                }
+              : { right: `${position.right}px` }),
           }}
         >
           <div className="p-1">
@@ -220,7 +229,10 @@ export const LanguageSwitcher = () => {
           {currentLanguage === 'en' ? 'EN' : 'עב'}
         </span>
         <ChevronDown
-          className={cn("w-3 h-3 text-surface-500 transition-transform duration-200", isOpen && "rotate-180")}
+          className={cn(
+            'w-3 h-3 text-surface-500 transition-transform duration-200',
+            isOpen && 'rotate-180'
+          )}
         />
       </button>
       {mounted && createPortal(dropdownContent, document.body)}

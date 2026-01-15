@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Card } from '@/components/ui/Card';
 import { CommentItem } from './CommentItem';
 import { MentionInput } from '@/components/portal/ui/Discussion/MentionInput';
 import { Comment, PortalUser } from '@/lib/types/portal';
@@ -21,7 +21,7 @@ export const RequestDiscussion = ({
   currentUser,
   agencyTeam,
   onSendMessage,
-  isSubmitting
+  isSubmitting,
 }: RequestDiscussionProps) => {
   const t = useTranslations('portal'); // Assuming 'portal' namespace
   const [newComment, setNewComment] = useState('');
@@ -62,11 +62,10 @@ export const RequestDiscussion = ({
   return (
     <div className="space-y-4 animate-in slide-in-from-end-4 duration-500">
       <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest flex items-center gap-2 px-1">
-        <MessageSquare size={14} className="text-blue-500" />{' '}
-        {t('requests.detail.discussion')}
+        <MessageSquare size={14} className="text-blue-500" /> {t('requests.detail.discussion')}
       </h3>
 
-      <PortalCard
+      <Card
         noPadding
         className="flex flex-col border-surface-200 dark:border-surface-800 shadow-sm bg-surface-50/50 dark:bg-surface-900/10 min-h-[500px] overflow-hidden"
       >
@@ -102,9 +101,7 @@ export const RequestDiscussion = ({
                 <p className="text-sm font-bold text-surface-400 font-outfit uppercase tracking-widest">
                   {t('requests.detail.emptyMessages')}
                 </p>
-                <p className="text-xs text-surface-500">
-                  {t('requests.detail.emptyMessagesDesc')}
-                </p>
+                <p className="text-xs text-surface-500">{t('requests.detail.emptyMessagesDesc')}</p>
               </div>
             </div>
           )}
@@ -112,12 +109,12 @@ export const RequestDiscussion = ({
 
         {/* Input Area */}
         <div className="p-4 border-t border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-950">
-
           {/* Reply Context */}
           {replyTo && (
             <div className="flex items-center justify-between bg-surface-50 dark:bg-surface-900 p-2 rounded-lg mb-2 text-xs border-s-2 border-blue-500">
               <span className="text-surface-500">
-                {t('requests.detail.replyingTo')} <span className="font-bold">{replyTo.userName}</span>
+                {t('requests.detail.replyingTo')}{' '}
+                <span className="font-bold">{replyTo.userName}</span>
               </span>
               <button
                 onClick={() => setReplyTo(null)}
@@ -143,15 +140,11 @@ export const RequestDiscussion = ({
               disabled={isSubmitting || !newComment.trim()}
               className="absolute end-3 bottom-3 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none"
             >
-              {isSubmitting ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <Send size={18} />
-              )}
+              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
             </button>
           </div>
         </div>
-      </PortalCard>
+      </Card>
     </div>
   );
 };

@@ -14,6 +14,30 @@ import {
 import { NavGroup } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
+// Define valid navigation translation keys
+type NavTranslationKey =
+  | 'portal.sidebar.nav.dashboard'
+  | 'portal.sidebar.nav.requests'
+  | 'portal.sidebar.nav.pricing'
+  | 'portal.sidebar.nav.files'
+  | 'portal.sidebar.nav.settings'
+  | 'portal.sidebar.nav.team'
+  | 'portal.sidebar.nav.consultations'
+  | 'portal.sidebar.nav.review'
+  | 'portal.sidebar.nav.workboard'
+  | 'portal.sidebar.nav.sales'
+  | 'portal.sidebar.nav.clients'
+  | 'portal.sidebar.nav.pricing'
+  | 'portal.sidebar.nav.testimonials'
+  | 'portal.sidebar.nav.help'
+  | 'portal.sidebar.nav.agency_dashboard'
+  | 'portal.sidebar.nav.agency_settings';
+
+// Type-safe translation function for navigation
+interface NavTranslationFunction {
+  (key: NavTranslationKey): string;
+}
+
 export const navItemVariants = cva('portal-nav-item group relative transition-all duration-200', {
   variants: {
     isActive: {
@@ -34,7 +58,7 @@ export const navItemVariants = cva('portal-nav-item group relative transition-al
 
 import { PERMISSIONS } from '@/lib/utils/permissions';
 
-export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
+export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
   return [
     {
       items: [
@@ -103,7 +127,7 @@ export function getAgencyNavGroups(t: (key: string) => string): NavGroup[] {
   ];
 }
 
-export function getClientNavGroups(t: (key: string) => string): NavGroup[] {
+export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
   return [
     {
       items: [

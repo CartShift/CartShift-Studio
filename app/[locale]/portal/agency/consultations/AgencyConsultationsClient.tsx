@@ -21,7 +21,7 @@ import {
   Headphones,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import {
   Consultation,
   CONSULTATION_TYPE_CONFIG,
@@ -44,8 +44,6 @@ const typeIcons: Record<ConsultationType, React.ElementType> = {
   support: Headphones,
 };
 
-
-
 export default function AgencyConsultationsClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
@@ -56,18 +54,22 @@ export default function AgencyConsultationsClient() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
 
   const { organizations, loading: clientsLoading } = useAgencyClients();
-  const { consultations, loading: consultationsLoading } = useConsultations({ status: statusFilter });
-  const { cancelMutation, completeMutation, isCanceling, isCompleting } = useConsultationMutations();
+  const { consultations, loading: consultationsLoading } = useConsultations({
+    status: statusFilter,
+  });
+  const { cancelMutation, completeMutation, isCanceling, isCompleting } =
+    useConsultationMutations();
 
   const loading = consultationsLoading || clientsLoading;
   const dateLocale = getDateLocale(locale);
 
-  const orgNames = organizations.reduce((acc, org) => {
-    acc[org.id] = org.name;
-    return acc;
-  }, {} as Record<string, string>);
-
-
+  const orgNames = organizations.reduce(
+    (acc, org) => {
+      acc[org.id] = org.name;
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
   const filteredConsultations = consultations.filter(c => {
     if (searchQuery) {
@@ -87,7 +89,7 @@ export default function AgencyConsultationsClient() {
         consultationId: consultation.id,
         orgId: consultation.orgId,
         userId: userData.id,
-        userName: userData.name || t('common.agencyFallback')
+        userName: userData.name || t('common.agencyFallback'),
       });
     } catch (error) {
       console.error('Failed to complete:', error);
@@ -103,7 +105,7 @@ export default function AgencyConsultationsClient() {
         consultationId: consultation.id,
         orgId: consultation.orgId,
         userId: userData.id,
-        userName: userData.name || t('common.agencyFallback')
+        userName: userData.name || t('common.agencyFallback'),
       });
     } catch (error) {
       console.error('Failed to cancel:', error);
@@ -112,8 +114,9 @@ export default function AgencyConsultationsClient() {
 
   const now = new Date();
   const upcomingCount = consultations.filter(
-    c => c.status === CONSULTATION_STATUS.SCHEDULED &&
-    (c.scheduledAt?.toDate ? c.scheduledAt.toDate() > now : true)
+    c =>
+      c.status === CONSULTATION_STATUS.SCHEDULED &&
+      (c.scheduledAt?.toDate ? c.scheduledAt.toDate() > now : true)
   ).length;
 
   return (
@@ -128,14 +131,10 @@ export default function AgencyConsultationsClient() {
             {t('consultations.subtitle')}
           </p>
         </div>
-        <PortalButton
-          variant="primary"
-          className="gap-2"
-          onClick={() => setShowScheduleModal(true)}
-        >
+        <Button variant="primary" className="gap-2" onClick={() => setShowScheduleModal(true)}>
           <Plus size={18} />
           {t('consultations.schedule')}
-        </PortalButton>
+        </Button>
       </div>
 
       {/* Schedule Modal */}
@@ -274,9 +273,7 @@ export default function AgencyConsultationsClient() {
           />
           <input
             type="text"
-            placeholder={
-              t('consultations.searchPlaceholder')
-            }
+            placeholder={t('consultations.searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="portal-input ps-12 w-full"
@@ -294,9 +291,7 @@ export default function AgencyConsultationsClient() {
                   : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
               )}
             >
-              {status === 'all'
-                ? t('common.all')
-                : t(`consultations.status.${status}` as any)}
+              {status === 'all' ? t('common.all') : t(`consultations.status.${status}` as any)}
             </button>
           ))}
         </div>
@@ -359,7 +354,7 @@ export default function AgencyConsultationsClient() {
                           <div className="flex items-center gap-3 mt-1 text-sm text-surface-500">
                             <span className="flex items-center gap-1">
                               <Building2 size={14} />
-                               {orgNames[consultation.orgId] || t('common.loading')}
+                              {orgNames[consultation.orgId] || t('common.loading')}
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar size={14} />
@@ -395,15 +390,19 @@ export default function AgencyConsultationsClient() {
                               <Video size={16} className="text-blue-600" />
                             </a>
                           )}
-                              {consultation.status === CONSULTATION_STATUS.SCHEDULED && (
+                          {consultation.status === CONSULTATION_STATUS.SCHEDULED && (
                             <div className="flex gap-1">
                               <button
                                 onClick={() => handleComplete(consultation)}
-                                disabled={isCompleting && completeMutation.variables?.consultationId === consultation.id}
+                                disabled={
+                                  isCompleting &&
+                                  completeMutation.variables?.consultationId === consultation.id
+                                }
                                 className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50"
                                 title="Mark as completed"
                               >
-                                {isCompleting && completeMutation.variables?.consultationId === consultation.id ? (
+                                {isCompleting &&
+                                completeMutation.variables?.consultationId === consultation.id ? (
                                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                                 ) : (
                                   <CheckCircle2 size={16} className="text-green-600" />
@@ -411,11 +410,15 @@ export default function AgencyConsultationsClient() {
                               </button>
                               <button
                                 onClick={() => handleCancel(consultation)}
-                                disabled={isCanceling && cancelMutation.variables?.consultationId === consultation.id}
+                                disabled={
+                                  isCanceling &&
+                                  cancelMutation.variables?.consultationId === consultation.id
+                                }
                                 className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
                                 title={t('consultations.cancel')}
                               >
-                                {isCanceling && cancelMutation.variables?.consultationId === consultation.id ? (
+                                {isCanceling &&
+                                cancelMutation.variables?.consultationId === consultation.id ? (
                                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                                 ) : (
                                   <XCircle size={16} className="text-red-600" />

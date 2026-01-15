@@ -1,37 +1,34 @@
 'use client';
 
-import { Skeleton } from '@/components/portal/ui/Skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const cardSkeletonVariants = cva(
-  "",
-  {
-    variants: {
-      variant: {
-        default: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
-        compact: "space-y-3",
-        horizontal: "space-y-4",
-      },
+const cardSkeletonVariants = cva('', {
+  variants: {
+    variant: {
+      default: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
+      compact: 'space-y-3',
+      horizontal: 'space-y-4',
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 const cardSkeletonItemVariants = cva(
-  "rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950",
+  'rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950',
   {
     variants: {
       variant: {
-        default: "p-6",
-        compact: "p-4 rounded-xl flex items-center gap-4",
-        horizontal: "p-5 flex items-start gap-4",
+        default: 'p-6',
+        compact: 'p-4 rounded-xl flex items-center gap-4',
+        horizontal: 'p-5 flex items-start gap-4',
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: 'default',
     },
   }
 );

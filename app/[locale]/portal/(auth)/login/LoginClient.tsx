@@ -5,10 +5,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from '@/i18n/navigation';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { FormError } from '@/components/portal/ui/FormError';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
+import { FormError } from '@/components/ui/FormError';
 import { ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { loginWithEmail, signInWithGoogle } from '@/lib/services/auth';
 import { Suspense, useMemo } from 'react';
@@ -139,10 +139,10 @@ function LoginForm() {
         </div>
       </div>
 
-      <PortalCard className="p-8 shadow-xl">
+      <Card className="p-8 shadow-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            <PortalInput
+            <Input
               label={t('portal.auth.login.email')}
               type="email"
               placeholder="yours@example.com"
@@ -165,7 +165,7 @@ function LoginForm() {
                 </Link>
               </div>
               <div className="relative">
-                <PortalInput
+                <Input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   error={errors.password?.message}
@@ -207,10 +207,10 @@ function LoginForm() {
 
           <FormError message={error} />
 
-          <PortalButton type="submit" isLoading={loading} className="w-full h-11">
+          <Button type="submit" loading={loading} className="w-full h-11">
             <span>{t('portal.auth.login.signIn')}</span>
             <ArrowRight size={16} />
-          </PortalButton>
+          </Button>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -223,12 +223,12 @@ function LoginForm() {
             </div>
           </div>
 
-          <PortalButton
+          <Button
             variant="outline"
             className="w-full h-11 border-surface-200 dark:border-surface-800"
             type="button"
             onClick={handleGoogleSignIn}
-            isLoading={googleLoading}
+            loading={googleLoading}
             disabled={loading || googleLoading}
           >
             <svg className="w-5 h-5 me-3" viewBox="0 0 24 24">
@@ -250,7 +250,7 @@ function LoginForm() {
               />
             </svg>
             <span>{t('portal.auth.login.google')}</span>
-          </PortalButton>
+          </Button>
         </form>
 
         <p className="text-center text-sm text-surface-500 dark:text-surface-400 mt-6">
@@ -274,7 +274,7 @@ function LoginForm() {
             {t('portal.auth.login.createOne')}
           </Link>
         </p>
-      </PortalCard>
+      </Card>
 
       {/* Footer */}
       <div className="flex items-center justify-center gap-2 text-surface-400 text-xs mt-8">

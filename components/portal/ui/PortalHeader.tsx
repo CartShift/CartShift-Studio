@@ -4,13 +4,16 @@ import React from 'react';
 import { Menu, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { PortalAvatar } from './PortalAvatar';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { Avatar } from '@/components/ui/Avatar';
 import { MobileSearchButton } from './MobileSearchButton';
 import { GlobalSearch } from './GlobalSearch';
-import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { ACCOUNT_TYPE, AccountType, Notification } from '@/lib/types/portal';
 import { cva } from 'class-variance-authority';
+import { Dropdown } from '@/components/ui/Dropdown';
+import { useRouter } from '@/i18n/navigation';
+import { LogOut, Settings, User, Building2 } from 'lucide-react';
 
 const notificationButtonVariants = cva(
   'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300',
@@ -35,6 +38,7 @@ interface HeaderUserData {
   photoUrl?: string;
   accountType: AccountType;
   isAgency: boolean;
+  role?: import('@/lib/types/portal').UserRole;
 }
 
 interface PortalHeaderProps {
@@ -42,6 +46,7 @@ interface PortalHeaderProps {
   onMobileSearchToggle: () => void;
   userData: HeaderUserData | null;
   accountType: AccountType;
+  userRole?: string;
   notifications: Notification[];
   unreadCount: number;
   isNotificationOpen: boolean;
@@ -51,6 +56,7 @@ interface PortalHeaderProps {
   handleNotificationClick: (notification: Notification) => void;
   handleMarkAllAsRead: () => Promise<void>;
   orgId?: string;
+  onSignOut: () => Promise<void>;
 }
 
 export function PortalHeader({
@@ -58,17 +64,54 @@ export function PortalHeader({
   onMobileSearchToggle,
   userData,
   accountType,
+  userRole,
   unreadCount,
   isNotificationOpen,
   setIsNotificationOpen,
   notificationRef,
   notificationButtonRef,
   orgId,
+  onSignOut,
 }: PortalHeaderProps) {
   const t = useTranslations();
+  const router = useRouter();
+
+  const profileItems = [
+    {
+      label: t('portal.settings.tabs.profile'),
+      icon: <User size={16} />,
+      onClick: () =>
+        router.push(
+          userData?.isAgency
+            ? '/portal/agency/settings?tab=profile'
+            : '/portal/settings?tab=profile'
+        ),
+    },
+    {
+      label: t('portal.settings.title'),
+      icon: <Settings size={16} />,
+      onClick: () =>
+        router.push(userData?.isAgency ? '/portal/agency/settings' : '/portal/settings'),
+    },
+    ...(userData?.isAgency
+      ? [
+          {
+            label: t('portal.sidebar.nav.settings'),
+            icon: <Building2 size={16} />,
+            onClick: () => router.push('/portal/agency/settings'),
+          },
+        ]
+      : []),
+    {
+      label: t('portal.sidebar.signOut'),
+      icon: <LogOut size={16} />,
+      variant: 'danger' as const,
+      onClick: onSignOut,
+    },
+  ];
 
   return (
-    <header className="portal-header flex items-center justify-between px-4 md:px-6 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md border-b border-surface-200/50 dark:border-surface-800/30 sticky top-0 z-50 h-16 md:h-20 transition-all duration-300">
+    <header className="portal-header flex items-center justify-between px-4 md:px-6 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md border-b border-surface-200/50 dark:border-surface-800/30 sticky top-0 z-header h-16 md:h-20 transition-all duration-300">
       <div className="flex items-center gap-3 md:gap-6">
         <button
           onClick={onMobileMenuToggle}
@@ -77,10 +120,7 @@ export function PortalHeader({
         >
           <Menu size={24} />
         </button>
-        <MobileSearchButton
-          onClickAction={onMobileSearchToggle}
-          className="lg:hidden"
-        />
+        <MobileSearchButton onClickAction={onMobileSearchToggle} className="lg:hidden" />
         <GlobalSearch
           orgId={orgId}
           isAgency={accountType === ACCOUNT_TYPE.AGENCY}
@@ -90,7 +130,12 @@ export function PortalHeader({
 
       <div className="flex items-center gap-2 md:gap-4 lg:gap-6">
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          {/* Controls wrapper - Language & Theme */}
+          <div className="hidden sm:flex items-center gap-1.5 p-1.5 bg-surface-100/80 dark:bg-surface-800/60 rounded-2xl border border-surface-200/60 dark:border-surface-700/40 backdrop-blur-sm">
+            <LanguageSwitcher />
+            <div className="w-[1px] h-5 bg-surface-300/60 dark:bg-surface-600/50" />
+            <ThemeToggle />
+          </div>
 
           {/* Notifications */}
           <div className="relative" ref={notificationRef}>
@@ -110,40 +155,46 @@ export function PortalHeader({
 
         {/* User Profile */}
         <div className="flex items-center gap-3 border-s border-surface-200 dark:border-surface-800 ps-3 md:ps-6">
-          <div className="hidden sm:flex flex-col items-end leading-none gap-1.5">
-            <span className="text-sm font-black text-surface-900 dark:text-white font-outfit truncate max-w-[120px]">
+          <div className="hidden sm:flex flex-col items-end leading-none gap-1">
+            <span className="text-sm font-black text-surface-900 dark:text-white font-outfit truncate max-w-[150px]">
               {userData?.name || t('portal.header.authorizedMember' as never)}
             </span>
             <div className="flex items-center gap-1.5">
-               <span
-                className={cn(
-                  'text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md',
-                  accountType === ACCOUNT_TYPE.AGENCY
-                    ? 'text-purple-600 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400'
-                    : 'text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400'
-                )}
-              >
-                {accountType === ACCOUNT_TYPE.AGENCY
-                  ? t('portal.accountType.badge.agency' as never)
-                  : t('portal.accountType.badge.client' as never)}
-              </span>
+              {userRole ? (
+                <span className="text-[10px] text-surface-500 dark:text-surface-400 font-medium">
+                  {t(`portal.roles.${userRole}` as any)}
+                </span>
+              ) : (
+                <span
+                  className={cn(
+                    'text-[9px] font-black uppercase tracking-widest',
+                    accountType === ACCOUNT_TYPE.AGENCY
+                      ? 'text-purple-600 dark:text-purple-400'
+                      : 'text-blue-600 dark:text-blue-400'
+                  )}
+                >
+                  {accountType === ACCOUNT_TYPE.AGENCY
+                    ? t('portal.accountType.badge.agency' as never)
+                    : t('portal.accountType.badge.client' as never)}
+                </span>
+              )}
             </div>
           </div>
-          <Link
-            href={
-              userData?.isAgency
-                ? '/portal/agency/settings/'
-                : '/portal/settings/'
+
+          <Dropdown
+            align="right"
+            trigger={
+              <button className="portal-avatar group cursor-pointer hover:ring-2 hover:ring-blue-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 shadow-lg shadow-blue-500/5">
+                <Avatar
+                  name={userData?.name}
+                  src={userData?.photoUrl}
+                  size="md"
+                  className="w-8 h-8 group-hover:scale-110 transition-transform"
+                />
+              </button>
             }
-            className="portal-avatar group cursor-pointer hover:ring-2 hover:ring-blue-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 shadow-lg shadow-blue-500/5"
-          >
-            <PortalAvatar
-              src={userData?.photoUrl}
-              name={userData?.name}
-              size="sm"
-              className="group-hover:scale-110 transition-transform"
-            />
-          </Link>
+            items={profileItems}
+          />
         </div>
       </div>
     </header>

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
-import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
 import { Request, RequestType, Currency } from '@/lib/types/portal';
@@ -10,26 +9,15 @@ import { EffortLevel, EFFORT_LEVEL } from '@/lib/types/pricing-calculator';
 import { calculatePricing, formatCalculatorPrice } from '@/lib/services/pricing-calculator';
 
 // Constants
-import {
-  PRICING_COLORS,
-  PRICING_MODIFIERS,
-  PRICING_UI,
-  PRICING_ERRORS,
-} from '@/lib/constants/pricing';
+import { PRICING_COLORS } from '@/lib/constants/pricing';
 
 // Custom Hooks
-import {
-  usePricingConfig,
-  useUpdatePricingConfig,
-  useApplyGlobalModifiers,
-  useRemovePricingConfig,
-} from '@/lib/hooks/usePricingConfig';
+import { useUpdatePricingConfig, useApplyGlobalModifiers } from '@/lib/hooks/usePricingConfig';
 
 // Sub-components
 import { GlobalModifiers } from './GlobalModifiers';
 import { RequestSelector } from './RequestSelector';
 import { RequestConfigurator } from './RequestConfigurator';
-import { PricingErrorBoundary, PricingValidation } from './PricingErrorBoundary';
 
 // Icon mapping for request types
 const TYPE_ICONS: Record<RequestType, React.ElementType> = {
@@ -122,8 +110,6 @@ export function RequestPricingCalculator({
   orgId,
 }: RequestPricingCalculatorProps) {
   const t = useTranslations();
-  const locale = useLocale();
-  const isRTL = locale === 'he';
 
   // Global modifiers state
   const [globalUrgent, setGlobalUrgent] = useState(false);
@@ -185,20 +171,6 @@ export function RequestPricingCalculator({
 
     onLineItemsChange(lineItems);
   }, [pricingResults, t, onLineItemsChange]);
-
-  // Toggle request selection
-  const toggleRequest = useCallback(
-    (requestId: string) => {
-      if (selectedRequestIds.includes(requestId)) {
-        onSelectionChange(selectedRequestIds.filter(id => id !== requestId));
-      } else {
-        onSelectionChange([...selectedRequestIds, requestId]);
-        // Auto-expand when selecting
-        setExpandedRequests(prev => new Set([...prev, requestId]));
-      }
-    },
-    [selectedRequestIds, onSelectionChange]
-  );
 
   // Toggle expanded state
   const toggleExpanded = useCallback((requestId: string) => {

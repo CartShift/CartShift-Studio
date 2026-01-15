@@ -17,4 +17,3 @@ export function useResolvedOrgId(): string | null {
   const { orgId } = useOrg();
   return orgId;
 }
-

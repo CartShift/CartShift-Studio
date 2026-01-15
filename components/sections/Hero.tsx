@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from '@/lib/motion';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
@@ -62,7 +61,7 @@ export const Hero: React.FC = () => {
   const isRtl = direction === 'rtl';
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-24 md:pb-40 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-surface-100 dark:bg-surface-950">
+    <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 sm:pt-28 md:pt-32 pb-16 md:pb-40 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-surface-100 dark:bg-surface-950">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-gradient-to-br from-surface-100 via-surface-100 to-surface-200 dark:from-surface-950 dark:to-surface-900"></div>
       <div className="absolute top-0 start-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.06] dark:opacity-5"></div>
@@ -81,8 +80,8 @@ export const Hero: React.FC = () => {
       {/* Floating geometric shapes */}
       <BackgroundShapes />
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full pb-4 md:pb-20 lg:pb-0">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="max-w-7xl mx-auto relative z-dropdown w-full pb-4 md:pb-20 lg:pb-0">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -91,10 +90,10 @@ export const Hero: React.FC = () => {
           >
             <motion.div
               variants={heroTag}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 dark:bg-white/5 border border-surface-300/50 dark:border-white/10 backdrop-blur-md shadow-premium"
+              className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white/90 dark:bg-white/5 border border-surface-300/50 dark:border-white/10 backdrop-blur-md shadow-premium"
             >
-              <Sparkles className="w-4 h-4 text-accent-500" />
-              <span className="text-surface-700 dark:text-surface-200 text-sm font-semibold">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent-500" />
+              <span className="text-surface-700 dark:text-surface-200 text-xs sm:text-sm font-semibold">
                 {t('hero.tag')}
               </span>
             </motion.div>
@@ -106,12 +105,12 @@ export const Hero: React.FC = () => {
             </h1>
 
             {/* LCP element - render immediately without animation delay */}
-            <p className="text-lg md:text-xl text-surface-600 dark:text-surface-300 leading-relaxed max-w-xl">
+            <p className="text-base sm:text-lg md:text-xl text-surface-600 dark:text-surface-300 leading-relaxed max-w-xl">
               {t('hero.description')}
             </p>
 
             <motion.div
-              className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-5"
+              className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-5"
               variants={heroContent}
               custom={0.6}
             >
@@ -123,10 +122,11 @@ export const Hero: React.FC = () => {
                 className="w-full sm:w-auto"
               >
                 <Button
+                  as="div"
                   size="lg"
-                  className="group text-base md:text-lg px-8 md:px-10 py-5 md:py-5 min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
+                  className="group text-base md:text-lg px-8 md:px-10 py-4 md:py-5 min-h-[48px] md:min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
                 >
-                  <span className="relative z-10 flex items-center gap-3 justify-center">
+                  <span className="relative z-dropdown flex items-center gap-3 justify-center">
                     {t('hero.primaryCta')}
                     <motion.div
                       animate={{ x: isRtl ? [0, -5, 0] : [0, 5, 0] }}
@@ -142,9 +142,10 @@ export const Hero: React.FC = () => {
               </a>
               <Link href="/tools/store-analyzer" className="w-full sm:w-auto">
                 <Button
+                  as="div"
                   variant="outline"
                   size="lg"
-                  className="text-base md:text-lg px-8 md:px-10 py-5 md:py-5 min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
+                  className="text-base md:text-lg px-8 md:px-10 py-4 md:py-5 min-h-[48px] md:min-h-[52px] shadow-premium hover:shadow-premium-hover w-full sm:w-auto"
                 >
                   {t('hero.analyzerCta')}
                 </Button>
@@ -155,7 +156,7 @@ export const Hero: React.FC = () => {
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
-              className="pt-8 md:pt-10 border-t border-surface-300/60 dark:border-white/5 flex flex-wrap gap-8 md:gap-12 mb-4 md:mb-6 lg:mb-0"
+              className="pt-8 md:pt-10 border-t border-surface-300/60 dark:border-white/5 flex flex-wrap gap-6 md:gap-12 mb-4 md:mb-6 lg:mb-0"
             >
               <div className="flex flex-col">
                 <span className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-surface-900 dark:text-white mb-1">
@@ -179,7 +180,7 @@ export const Hero: React.FC = () => {
                 </span>
                 <motion.div
                   variants={staggerContainer}
-                  className="flex flex-wrap items-center gap-3 md:gap-4"
+                  className="flex flex-wrap items-center gap-2.5 md:gap-4"
                 >
                   {platformIcons.map(platform => (
                     <motion.div
@@ -220,9 +221,9 @@ export const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll Indicator - Hidden on small mobile heights to avoid overlap */}
       <motion.div
-        className="absolute bottom-8 md:bottom-12 lg:bottom-16 inset-x-0 flex justify-center z-30 pointer-events-none"
+        className="absolute bottom-8 md:bottom-12 lg:bottom-16 inset-x-0 hidden sm:flex justify-center z-header pointer-events-none"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.8 }}
@@ -238,7 +239,7 @@ export const Hero: React.FC = () => {
       </motion.div>
 
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 start-0 end-0 h-40 bg-gradient-to-t from-surface-100 dark:from-surface-950 via-surface-100/60 dark:via-surface-950/50 to-transparent z-20"></div>
+      <div className="absolute bottom-0 start-0 end-0 h-40 bg-gradient-to-t from-surface-100 dark:from-surface-950 via-surface-100/60 dark:via-surface-950/50 to-transparent z-sticky"></div>
     </section>
   );
 };

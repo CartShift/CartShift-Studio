@@ -137,6 +137,9 @@
       "save": "Save Changes",
       "cancel": "Cancel",
       "delete": "Delete",
+      "deleteSuccess": "Deleted successfully",
+      "removeLabel": "Remove",
+      "deleteRequest": "Delete Request",
       "confirm": "Are you sure?",
       "edit": "Edit",
       "create": "Create",
@@ -176,6 +179,7 @@
       "paymentFailedRetry": "Failed to complete payment. Please try again.",
       "notAuthenticated": "Not authenticated",
       "deleteConfirm": "Are you sure?",
+      "deleteConfirmTitle": "Delete Request?",
       "sentRecently": "Sent recently",
       "agencyAdmin": "Agency Admin",
       "agencyFallback": "Agency",
@@ -427,8 +431,9 @@
       },
       "detail": {
         "loading": "Opening your request...",
-        "notFound": "Request not found",
         "notFoundDesc": "The request you are looking for might have been deleted or moved, or you may not have permission to view it.",
+        "deleteTitle": "Delete Request",
+        "deleteConfirm": "Are you sure you want to delete this request? This action cannot be undone.",
         "backToRequests": "Back to Requests",
         "designRequest": "Design Request",
         "details": "Request Details",
@@ -692,8 +697,13 @@
         "share": "Share",
         "delete": "Delete",
         "deleteConfirm": "Are you sure you want to delete this file?",
+        "remove": "Remove",
         "deleted": "File deleted successfully",
         "deleteFailed": "Failed to delete file"
+      },
+      "imageLabels": {
+        "remove": "Remove Image",
+        "change": "Change Image"
       },
       "empty": {
         "title": "No assets syncronized",
@@ -1252,19 +1262,29 @@
           "review": "Feedback & Review",
           "delivered": "Delivered"
         },
-        "viewRequest": "View request"
+        "viewRequest": "View request",
+        "filter": {
+          "myRequests": "My Requests"
+        }
       },
       "clients": {
         "title": "Client Portfolio",
         "subtitle": "Direct access and management for all partner organizations.",
         "onboard": "Onboard New Client",
         "searchPlaceholder": "Search by company name...",
+        "deleteTitle": "Delete Client",
+        "deleteConfirm": "Are you sure you want to delete {name}? This will deactivate their workspace.",
         "activeAccounts": "Active Accounts",
         "export": "Performance Export",
         "loading": "Retrieving Client Portfolio...",
         "tickets": "Open Tickets",
         "members": "Members",
         "dashboard": "Enter Dashboard",
+        "you": "YOU",
+        "viewAsClient": "View as Client",
+        "filter": {
+          "myClients": "My Clients"
+        },
         "emptyTitle": "No clients found",
         "emptyDesc": "Either you have no active clients or they don't match your search criteria.",
         "badge": {
@@ -1309,7 +1329,9 @@
             "plan": "Plan",
             "status": "Status",
             "email": "Contact Email",
-            "phone": "Phone"
+            "phone": "Phone",
+            "responsibleAgent": "Responsible Agent",
+            "unassigned": "Unassigned"
           },
           "actions": {
             "createRequest": "Create Request for Client",
@@ -1329,7 +1351,9 @@
             "admin": "Admin",
             "member": "Member",
             "emptyTitle": "No team members",
-            "emptyDesc": "This client hasn't invited any team members yet."
+            "emptyDesc": "This client hasn't invited any team members yet.",
+            "removeMemberTitle": "Remove Team Member",
+            "removeMemberDesc": "Are you sure you want to remove this user from the client organization? They will lose access to the client portal."
           },
           "activity": {
             "emptyTitle": "No recent activity",
@@ -1839,6 +1863,20 @@
           "joinCommunity": "Join our community of happy clients"
         }
       }
+    },
+    "impersonation": {
+      "viewingAs": "Viewing as",
+      "exitView": "Exit View",
+      "client": "Client",
+      "viewAsClient": "View as Client"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "sales_manager": "Sales Manager",
+      "developer": "Developer",
+      "member": "Member",
+      "viewer": "Viewer"
     }
   }
 }

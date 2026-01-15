@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowLeft, Info } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
+import { Card } from '@/components/ui/Card';
 import { CreateRequestForm } from '@/components/portal/forms/CreateRequestForm';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -36,13 +36,13 @@ export default function NewRequestClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+          <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
             <CreateRequestForm orgId={orgId} />
-          </PortalCard>
+          </Card>
         </div>
 
         <div className="space-y-6">
-          <PortalCard className="bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/20 shadow-sm">
+          <Card className="bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/20 shadow-sm">
             <h3 className="font-bold text-blue-900 dark:text-blue-400 mb-2 flex items-center gap-2">
               <Info size={18} /> {t('portal.requests.new.tips.title')}
             </h3>
@@ -52,7 +52,7 @@ export default function NewRequestClient() {
               <li>{t('portal.requests.new.tips.tip3')}</li>
               <li>{t('portal.requests.new.tips.tip4')}</li>
             </ul>
-          </PortalCard>
+          </Card>
         </div>
       </div>
     </div>

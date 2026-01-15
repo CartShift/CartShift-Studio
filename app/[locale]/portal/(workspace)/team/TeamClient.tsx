@@ -15,16 +15,14 @@ import {
   UserMinus,
   Settings,
 } from 'lucide-react';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
-import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Avatar } from '@/components/ui/Avatar';
 import { Dropdown } from '@/components/ui/Dropdown';
-import { SkeletonMemberCard, PortalSkeleton } from '@/components/portal/ui/Skeleton';
-import { PortalEmptyState } from '@/components/portal/ui/PortalEmptyState';
-import {
-  cancelInvite,
-} from '@/lib/services/portal-organizations';
+import { SkeletonMemberCard, Skeleton as PortalSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { cancelInvite, removeMember, updateMemberRole } from '@/lib/services/portal-organizations';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { InviteTeamMemberForm } from '@/components/portal/forms/InviteTeamMemberForm';
@@ -57,6 +55,27 @@ export default function TeamClient() {
       alert(t('portal.team.errors.cancelInvite'));
     } finally {
       setCancellingInvite(null);
+    }
+  };
+
+  const handleRemoveMember = async (member: any) => {
+    if (!confirm(t('portal.team.removeMemberConfirm', { name: member.name || member.email })))
+      return;
+
+    try {
+      await removeMember(member.id, orgId as string, member.userId);
+    } catch (error) {
+      console.error('Error removing member:', error);
+      alert(t('portal.common.error'));
+    }
+  };
+
+  const handleChangeRole = async (memberId: string, newRole: any) => {
+    try {
+      await updateMemberRole(memberId, newRole);
+    } catch (error) {
+      console.error('Error changing role:', error);
+      alert(t('portal.common.error'));
     }
   };
 
@@ -108,10 +127,10 @@ export default function TeamClient() {
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
           {t('portal.common.error')}
         </h2>
-        <p className="text-surface-500 max-w-sm font-medium">{error instanceof Error ? error.message : error || 'Unknown error'}</p>
-        <PortalButton onClick={() => window.location.reload()}>
-          {t('portal.common.retry')}
-        </PortalButton>
+        <p className="text-surface-500 max-w-sm font-medium">
+          {error instanceof Error ? error.message : error || 'Unknown error'}
+        </p>
+        <Button onClick={() => window.location.reload()}>{t('portal.common.retry')}</Button>
       </div>
     );
   }
@@ -127,13 +146,13 @@ export default function TeamClient() {
             {t('portal.team.subtitle')}
           </p>
         </div>
-        <PortalButton
+        <Button
           onClick={() => setShowInviteModal(true)}
           className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
         >
           <UserPlus size={18} />
           {t('portal.team.invite')}
-        </PortalButton>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -141,7 +160,7 @@ export default function TeamClient() {
           <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest px-1">
             {t('portal.team.activeMembers')}
           </h3>
-          <PortalCard
+          <Card
             noPadding
             className="border-surface-200 dark:border-surface-800 shadow-sm !overflow-visible bg-white dark:bg-surface-950"
             style={{ overflow: 'visible' }}
@@ -157,7 +176,7 @@ export default function TeamClient() {
                   style={{ overflow: 'visible' }}
                 >
                   <div className="flex items-center gap-4">
-                    <PortalAvatar
+                    <Avatar
                       src={member.photoUrl}
                       name={member.name}
                       size="md"
@@ -182,11 +201,11 @@ export default function TeamClient() {
                         {t('portal.team.workspaceAccess')}
                       </span>
                     </div>
-                    <PortalBadge variant={member.role === 'owner' ? 'blue' : 'green'}>
+                    <Badge variant={member.role === 'owner' ? 'blue' : 'green'}>
                       {member.role === 'owner'
                         ? t('portal.team.roles.owner')
                         : t('portal.team.roles.member')}
-                    </PortalBadge>
+                    </Badge>
                     <div className="!overflow-visible relative" style={{ overflow: 'visible' }}>
                       <Dropdown
                         trigger={
@@ -197,17 +216,16 @@ export default function TeamClient() {
                         items={[
                           {
                             label: t('portal.team.changeRole'),
-                            onClick: () => console.log('Change role', member.id),
+                            onClick: () => {
+                              const newRole = member.role === 'admin' ? 'member' : 'admin';
+                              handleChangeRole(member.id, newRole);
+                            },
                             icon: <Settings size={16} />,
                             disabled: member.role === 'owner',
                           },
                           {
                             label: t('portal.team.removeMember'),
-                            onClick: () => {
-                              if (confirm(t('portal.team.removeMemberConfirm', { name: member.name || member.email }))) {
-                                console.log('Remove member', member.id);
-                              }
-                            },
+                            onClick: () => handleRemoveMember(member),
                             icon: <UserMinus size={16} />,
                             variant: 'danger',
                             disabled: member.role === 'owner',
@@ -219,14 +237,14 @@ export default function TeamClient() {
                 </div>
               ))}
             </div>
-          </PortalCard>
+          </Card>
         </div>
 
         <div className="space-y-6">
           <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest px-1">
             {t('portal.team.pending')}
           </h3>
-          <PortalCard className="space-y-6 border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+          <Card className="space-y-6 border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
             {invites.length > 0 ? (
               invites.map(invite => (
                 <div key={invite.id} className="space-y-4">
@@ -282,7 +300,7 @@ export default function TeamClient() {
                 </div>
               ))
             ) : (
-              <PortalEmptyState
+              <EmptyState
                 icon={Mail}
                 title={t('portal.team.noInvites')}
                 description={t('portal.team.noInvitesSub')}
@@ -297,17 +315,17 @@ export default function TeamClient() {
                   {t('portal.team.guideNote')}
                 </p>
               </div>
-              <PortalButton
+              <Button
                 variant="outline"
                 size="sm"
                 className="w-full h-11 text-xs font-bold uppercase tracking-widest border-surface-200 dark:border-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-900 font-outfit"
               >
                 {t('portal.team.workspaceGuide')}
-              </PortalButton>
+              </Button>
             </div>
-          </PortalCard>
+          </Card>
 
-          <PortalCard className="bg-surface-900 border-none shadow-2xl relative overflow-hidden group">
+          <Card className="bg-surface-900 border-none shadow-2xl relative overflow-hidden group">
             <div className="absolute -end-8 -bottom-8 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
@@ -332,7 +350,7 @@ export default function TeamClient() {
                 </button>
               </div>
             </div>
-          </PortalCard>
+          </Card>
         </div>
       </div>
 

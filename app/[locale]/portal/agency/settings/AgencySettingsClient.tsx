@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 import {
   Shield,
   CreditCard,
@@ -20,7 +20,7 @@ import { applyTheme } from '@/lib/utils/theme-generator';
 import { cn } from '@/lib/utils';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db, getFirebaseAuth } from '@/lib/firebase';
+import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { updatePortalUser } from '@/lib/services/portal-users';
 import { getFirebaseStorage, waitForAuth } from '@/lib/firebase';
@@ -28,7 +28,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { PortalUser, Invite } from '@/lib/types/portal';
 import { subscribeToAgencyInvites, cancelInvite } from '@/lib/services/portal-organizations';
 import { useTranslations } from 'next-intl';
-import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
+import { Avatar } from '@/components/ui/Avatar';
 import { InviteTeamMemberForm } from '@/components/portal/forms/InviteTeamMemberForm';
 import { ManageServiceForm } from '@/components/portal/forms/ManageServiceForm';
 import { subscribeToServices, deleteService } from '@/lib/services/portal-services';
@@ -114,6 +114,7 @@ export default function AgencySettingsClient() {
   useEffect(() => {
     async function fetchAgencyProfile() {
       if (!user?.uid) return;
+      const db = getFirestoreDb();
 
       setLoading(true);
       try {
@@ -242,6 +243,7 @@ export default function AgencySettingsClient() {
 
   const handleSave = async () => {
     if (!user?.uid) return;
+    const db = getFirestoreDb();
 
     setSaving(true);
     try {
@@ -478,7 +480,7 @@ export default function AgencySettingsClient() {
 
         <div className="lg:col-span-3 space-y-6">
           {activeTab === 'user-profile' && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="flex items-center gap-3 mb-10">
                 <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-900/30">
                   <UserIcon size={20} />
@@ -497,7 +499,7 @@ export default function AgencySettingsClient() {
                 {/* Avatar Section */}
                 <div className="flex flex-col md:flex-row items-center gap-6 p-6 rounded-3xl bg-surface-50/50 dark:bg-surface-900/30 border border-surface-100 dark:border-surface-800/50">
                   <div className="relative group">
-                    <PortalAvatar
+                    <Avatar
                       src={profileFormData.photoUrl}
                       name={profileFormData.name}
                       size="lg"
@@ -528,7 +530,7 @@ export default function AgencySettingsClient() {
                       {t('settings.profile.avatar.desc')}
                     </p>
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                      <PortalButton
+                      <Button
                         variant="outline"
                         size="sm"
                         className="h-9 px-4 text-xs font-bold border-surface-200 dark:border-surface-800"
@@ -539,7 +541,7 @@ export default function AgencySettingsClient() {
                         {profileFormData.photoUrl
                           ? t('settings.profile.avatar.change')
                           : t('settings.profile.avatar.upload')}
-                      </PortalButton>
+                      </Button>
                       {profileFormData.photoUrl && (
                         <button
                           onClick={removeAvatar}
@@ -554,7 +556,7 @@ export default function AgencySettingsClient() {
 
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <PortalInput
+                    <Input
                       label={t('settings.profile.name')}
                       value={profileFormData.name}
                       onChange={e =>
@@ -563,7 +565,7 @@ export default function AgencySettingsClient() {
                       placeholder={t('settings.profile.namePlaceholder')}
                     />
                     <div className="opacity-60 grayscale pointer-events-none">
-                      <PortalInput
+                      <Input
                         label={t('settings.profile.email')}
                         value={user?.email || ''}
                         readOnly
@@ -575,33 +577,33 @@ export default function AgencySettingsClient() {
               </div>
 
               <div className="mt-10 pt-6 border-t border-surface-200 dark:border-surface-800 flex justify-end">
-                <PortalButton
+                <Button
                   onClick={handleProfileSave}
-                  isLoading={profileSaving}
+                  loading={profileSaving}
                   className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                 >
                   <Save size={18} />
                   {profileSaving ? t('settings.general.saving') : t('settings.profile.save')}
-                </PortalButton>
+                </Button>
               </div>
-            </PortalCard>
+            </Card>
           )}
 
           {activeTab === 'profile' && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-6 font-outfit">
                 {t('agency.settings.profile.title')}
               </h3>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <PortalInput
+                  <Input
                     label={t('agency.settings.profile.nameLabel')}
                     value={profile.name}
                     onChange={e => setProfile({ ...profile, name: e.target.value })}
                     placeholder={t('agency.settings.profile.namePlaceholder')}
                     className="font-outfit"
                   />
-                  <PortalInput
+                  <Input
                     label={t('agency.settings.profile.emailLabel')}
                     type="email"
                     value={profile.email}
@@ -611,7 +613,7 @@ export default function AgencySettingsClient() {
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <PortalInput
+                  <Input
                     label={t('agency.settings.profile.websiteLabel')}
                     type="url"
                     value={profile.website}
@@ -619,7 +621,7 @@ export default function AgencySettingsClient() {
                     placeholder={t('agency.settings.profile.websitePlaceholder')}
                     className="font-outfit"
                   />
-                  <PortalInput
+                  <Input
                     label={t('agency.settings.profile.phoneLabel')}
                     type="tel"
                     value={profile.phone}
@@ -642,20 +644,20 @@ export default function AgencySettingsClient() {
                 </div>
               </div>
               <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-800 flex justify-end">
-                <PortalButton
+                <Button
                   onClick={handleSave}
-                  isLoading={saving}
+                  loading={saving}
                   className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
                 >
                   <Save size={18} />
                   {saving ? t('agency.settings.profile.saving') : t('agency.settings.profile.save')}
-                </PortalButton>
+                </Button>
               </div>
-            </PortalCard>
+            </Card>
           )}
 
           {activeTab === 'branding' && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-6 font-outfit">
                 {t('settings.branding.title' as any)}
               </h3>
@@ -862,7 +864,7 @@ export default function AgencySettingsClient() {
                           />
                           <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 pointer-events-none" />
                         </div>
-                        <PortalInput
+                        <Input
                           value={profile.branding?.primaryColor || ''}
                           onChange={e => {
                             const val = e.target.value;
@@ -900,7 +902,7 @@ export default function AgencySettingsClient() {
                           />
                           <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 pointer-events-none" />
                         </div>
-                        <PortalInput
+                        <Input
                           value={profile.branding?.accentColor || ''}
                           onChange={e => {
                             const val = e.target.value;
@@ -1191,12 +1193,12 @@ export default function AgencySettingsClient() {
                         <div className="h-2 w-4/6 bg-surface-50 dark:bg-surface-900 rounded" />
                       </div>
                       <div className="flex gap-3">
-                        <PortalButton variant="primary" className="flex-1">
+                        <Button variant="primary" className="flex-1">
                           Primary
-                        </PortalButton>
-                        <PortalButton variant="outline" className="flex-1">
+                        </Button>
+                        <Button variant="outline" className="flex-1">
                           Outline
-                        </PortalButton>
+                        </Button>
                       </div>
                     </div>
 
@@ -1224,20 +1226,20 @@ export default function AgencySettingsClient() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-800 flex justify-end">
-                <PortalButton
+                <Button
                   onClick={handleSave}
-                  isLoading={saving}
+                  loading={saving}
                   className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
                 >
                   <Save size={18} />
                   {saving ? t('agency.settings.profile.saving') : t('agency.settings.profile.save')}
-                </PortalButton>
+                </Button>
               </div>
-            </PortalCard>
+            </Card>
           )}
 
           {activeTab === 'services' && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
@@ -1247,7 +1249,7 @@ export default function AgencySettingsClient() {
                     {t('agency.settings.services.subtitle')}
                   </p>
                 </div>
-                <PortalButton
+                <Button
                   size="sm"
                   className="h-10 font-outfit"
                   onClick={() => {
@@ -1257,7 +1259,7 @@ export default function AgencySettingsClient() {
                 >
                   <Plus size={18} className="me-2" />
                   {t('agency.settings.services.add')}
-                </PortalButton>
+                </Button>
               </div>
 
               {loadingServices ? (
@@ -1340,7 +1342,7 @@ export default function AgencySettingsClient() {
                   <p className="text-sm text-surface-500 dark:text-surface-400 max-w-sm mx-auto mb-8">
                     {t('agency.settings.services.emptyDesc')}
                   </p>
-                  <PortalButton
+                  <Button
                     variant="outline"
                     onClick={() => {
                       setEditingService(undefined);
@@ -1348,14 +1350,14 @@ export default function AgencySettingsClient() {
                     }}
                   >
                     {t('agency.settings.services.createFirst')}
-                  </PortalButton>
+                  </Button>
                 </div>
               )}
-            </PortalCard>
+            </Card>
           )}
 
           {activeTab === 'team' && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
@@ -1365,14 +1367,14 @@ export default function AgencySettingsClient() {
                     {t('agency.settings.team.subtitle')}
                   </p>
                 </div>
-                <PortalButton
+                <Button
                   size="sm"
                   variant="outline"
                   className="h-10 font-outfit"
                   onClick={() => setIsInviteModalOpen(true)}
                 >
                   {t('agency.settings.team.invite')}
-                </PortalButton>
+                </Button>
               </div>
 
               {loadingTeam ? (
@@ -1380,72 +1382,129 @@ export default function AgencySettingsClient() {
                   <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                 </div>
               ) : team.length > 0 ? (
-                <div className="overflow-hidden rounded-xl border border-surface-100 dark:border-surface-800">
-                  <table className="w-full text-start">
-                    <thead className="bg-surface-50 dark:bg-surface-900/50 text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                      <tr>
-                        <th className="px-6 py-4">{t('agency.settings.team.table.member')}</th>
-                        <th className="px-6 py-4">{t('agency.settings.team.table.status')}</th>
-                        <th className="px-6 py-4">{t('agency.settings.team.table.joined')}</th>
-                        <th className="px-6 py-4 text-end">
-                          {t('agency.settings.team.table.action')}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-                      {team.map((member: PortalUser) => (
-                        <tr
-                          key={member.id}
-                          className="hover:bg-surface-50/50 dark:hover:bg-surface-800/20 transition-all group"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <PortalAvatar
-                                name={member.name || t('portal.consultations.userFallback' as any)}
-                                size="sm"
-                                className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
-                              />
-                              <div>
-                                <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
-                                  {member.name || t('portal.common.unnamedUser' as any)}
-                                </p>
-                                <p className="text-[10px] font-bold text-surface-400 uppercase tracking-tight">
-                                  {member.email}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={cn(
-                                'inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border',
-                                member.status === 'inactive'
-                                  ? 'bg-surface-50 dark:bg-surface-900/20 text-surface-600 dark:text-surface-400 border-surface-100 dark:border-surface-800'
-                                  : member.status === 'suspended'
-                                    ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-900/30'
-                                    : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30'
-                              )}
-                            >
-                              {t(`agency.settings.team.${member.status || 'active'}` as never)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[10px] font-bold text-surface-500 uppercase tracking-tighter">
-                              {member.createdAt?.toDate
-                                ? member.createdAt.toDate().toLocaleDateString()
-                                : 'N/A'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-end">
-                            <button className="text-xs font-bold text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-widest">
-                              {t('agency.settings.team.edit')}
-                            </button>
-                          </td>
+                <>
+                  {/* Mobile View: Cards */}
+                  <div className="md:hidden space-y-4">
+                    {team.map((member: PortalUser) => (
+                      <div
+                        key={member.id}
+                        className="p-4 rounded-xl bg-surface-50/50 dark:bg-surface-900/30 border border-surface-200 dark:border-surface-800"
+                      >
+                        <div className="flex items-center gap-3 mb-3">
+                          <Avatar
+                            name={member.name || t('portal.consultations.userFallback' as any)}
+                            size="md"
+                            className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
+                          />
+                          <div>
+                            <p className="font-bold text-surface-900 dark:text-white font-outfit">
+                              {member.name || t('portal.common.unnamedUser' as any)}
+                            </p>
+                            <p className="text-xs font-bold text-surface-400 uppercase tracking-tight">
+                              {member.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between mb-3 border-t border-surface-100 dark:border-surface-800 pt-3">
+                          <span
+                            className={cn(
+                              'inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border',
+                              member.status === 'inactive'
+                                ? 'bg-surface-50 dark:bg-surface-900/20 text-surface-600 dark:text-surface-400 border-surface-100 dark:border-surface-800'
+                                : member.status === 'suspended'
+                                  ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-900/30'
+                                  : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30'
+                            )}
+                          >
+                            {t(`agency.settings.team.${member.status || 'active'}` as never)}
+                          </span>
+                          <span className="text-[10px] font-bold text-surface-500 uppercase tracking-tighter">
+                            {member.createdAt?.toDate
+                              ? member.createdAt.toDate().toLocaleDateString()
+                              : 'N/A'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-end">
+                          <button className="text-xs font-bold text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-widest">
+                            {t('agency.settings.team.edit')}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop View: Table */}
+                  <div className="hidden md:block overflow-hidden rounded-xl border border-surface-100 dark:border-surface-800">
+                    <table className="w-full text-start">
+                      <thead className="bg-surface-50 dark:bg-surface-900/50 text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <tr>
+                          <th className="px-6 py-4">{t('agency.settings.team.table.member')}</th>
+                          <th className="px-6 py-4">{t('agency.settings.team.table.status')}</th>
+                          <th className="px-6 py-4">{t('agency.settings.team.table.joined')}</th>
+                          <th className="px-6 py-4 text-end">
+                            {t('agency.settings.team.table.action')}
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+                        {team.map((member: PortalUser) => (
+                          <tr
+                            key={member.id}
+                            className="hover:bg-surface-50/50 dark:hover:bg-surface-800/20 transition-all group"
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <Avatar
+                                  name={
+                                    member.name || t('portal.consultations.userFallback' as any)
+                                  }
+                                  size="sm"
+                                  className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
+                                />
+                                <div>
+                                  <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
+                                    {member.name || t('portal.common.unnamedUser' as any)}
+                                  </p>
+                                  <p className="text-[10px] font-bold text-surface-400 uppercase tracking-tight">
+                                    {member.email}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={cn(
+                                  'inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border',
+                                  member.status === 'inactive'
+                                    ? 'bg-surface-50 dark:bg-surface-900/20 text-surface-600 dark:text-surface-400 border-surface-100 dark:border-surface-800'
+                                    : member.status === 'suspended'
+                                      ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-900/30'
+                                      : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30'
+                                )}
+                              >
+                                {t(`agency.settings.team.${member.status || 'active'}` as never)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-[10px] font-bold text-surface-500 uppercase tracking-tighter">
+                                {member.createdAt?.toDate
+                                  ? member.createdAt.toDate().toLocaleDateString()
+                                  : 'N/A'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-end">
+                              <button className="text-xs font-bold text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-widest">
+                                {t('agency.settings.team.edit')}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               ) : (
                 <div className="py-12 text-center opacity-30">
                   <UserIcon className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-3" />
@@ -1506,12 +1565,12 @@ export default function AgencySettingsClient() {
                   </div>
                 )}
               </div>
-            </PortalCard>
+            </Card>
           )}
 
           {activeTab === 'integrations' && (
             <div className="space-y-6">
-              <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+              <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 border border-purple-100 dark:border-purple-900/30">
                     <Zap size={20} />
@@ -1571,12 +1630,12 @@ export default function AgencySettingsClient() {
                     comingSoon
                   />
                 </div>
-              </PortalCard>
+              </Card>
             </div>
           )}
 
           {activeTab === 'billing' && (
-            <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm">
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-4 font-outfit">
                 {t('agency.settings.tabs.billing')}
               </h3>
@@ -1589,7 +1648,7 @@ export default function AgencySettingsClient() {
                   Billing configuration coming soon
                 </p>
               </div>
-            </PortalCard>
+            </Card>
           )}
         </div>
       </div>

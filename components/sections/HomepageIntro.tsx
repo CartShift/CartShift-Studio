@@ -50,7 +50,7 @@ export const HomepageIntro: React.FC = () => {
 
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] dark:opacity-[0.05] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-dropdown" ref={containerRef}>
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16 md:mb-24">

@@ -62,7 +62,7 @@ service firebase.storage {
       // Public read access - essential for displaying logos
       allow read: if true;
 
-      // Only org admins can upload logos
+      // Only org admins can upload logos with size and type validation
       allow create, update: if canAdminOrg(orgId) &&
         request.resource.size < 2 * 1024 * 1024 &&
         request.resource.contentType.matches('image/.*');
@@ -76,7 +76,7 @@ service firebase.storage {
       // Public read access - essential for displaying agency icons
       allow read: if true;
 
-      // Only the agency user themselves can upload icons
+      // Only the agency user themselves can upload icons with validation
       allow create, update: if isAuthenticated() &&
         getUserId() == agencyId &&
         isAgencyUser() &&

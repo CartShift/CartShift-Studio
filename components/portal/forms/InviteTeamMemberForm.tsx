@@ -1,59 +1,21 @@
 'use client';
 
-import { cva } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
 import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalInput } from '@/components/portal/ui/PortalInput';
-import { X } from 'lucide-react';
-import { inviteTeamMember, inviteAgencyMember } from '@/lib/services/portal-organizations';
-import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useTranslations } from 'next-intl';
-
-const modalContainerVariants = cva(
-  'fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity',
-  {
-    variants: {
-      isOpen: {
-        true: 'bg-black/50 backdrop-blur-sm opacity-100',
-        false: 'bg-black/0 backdrop-blur-none opacity-0 pointer-events-none',
-      },
-    },
-    defaultVariants: {
-      isOpen: true,
-    },
-  }
-);
-
-const modalContentVariants = cva(
-  'bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full border border-surface-200 dark:border-surface-800 transition-all',
-  {
-    variants: {
-      isOpen: {
-        true: 'scale-100 opacity-100',
-        false: 'scale-95 opacity-0',
-      },
-    },
-    defaultVariants: {
-      isOpen: true,
-    },
-  }
-);
-
-type InviteFormData = {
-  email: string;
-  role: 'admin' | 'sales_manager' | 'developer' | 'member' | 'viewer';
-};
-
-interface InviteTeamMemberFormProps {
-  orgId?: string;
-  isAgency?: boolean;
-  onSuccess: () => void;
-  onCancel: () => void;
-}
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { inviteTeamMember, inviteAgencyMember } from '@/lib/services/portal-organizations';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import {
+  ModalBackdrop,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from '@/components/ui/ModalBackdrop';
 
 export const InviteTeamMemberForm = ({
   orgId,
@@ -143,62 +105,66 @@ export const InviteTeamMemberForm = ({
   }, [isAgency, t]);
 
   return (
-    <div className={cn(modalContainerVariants({ isOpen: true }))}>
-      <div className={cn(modalContentVariants({ isOpen: true }))}>
-        <div className="flex items-center justify-between p-6 border-b border-surface-200 dark:border-surface-800">
-          <h3 className="text-xl font-bold text-surface-900 dark:text-white">
-            {t('portal.team.inviteForm.title')}
-          </h3>
-          <button
-            onClick={onCancel}
-            className="p-2 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
-          >
-            <X size={20} className="text-surface-500" />
-          </button>
-        </div>
+    <ModalBackdrop isOpen={true} onClick={onCancel}>
+      <ModalContent maxWidth="md" onClick={e => e.stopPropagation()}>
+        <ModalHeader title={t('portal.team.inviteForm.title')} onClose={onCancel} />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-          <PortalInput
-            label={t('portal.team.inviteForm.emailLabel')}
-            type="email"
-            placeholder={t('portal.team.inviteForm.emailPlaceholder')}
-            error={errors.email?.message}
-            {...register('email')}
-          />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ModalBody className="space-y-5">
+            <Input
+              label={t('portal.team.inviteForm.emailLabel')}
+              type="email"
+              placeholder={t('portal.team.inviteForm.emailPlaceholder')}
+              error={errors.email?.message}
+              {...register('email')}
+            />
 
-          <div>
-            <label className="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
-              {t('portal.team.inviteForm.roleLabel')}
-            </label>
-            <select
-              {...register('role')}
-              className="w-full px-4 py-3 rounded-xl bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-white/10 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-surface-900 dark:text-white"
-            >
-              {roleOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            {errors.role && <p className="mt-1.5 text-xs text-red-500">{errors.role.message}</p>}
-          </div>
-
-          {error && (
-            <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <div>
+              <label className="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
+                {t('portal.team.inviteForm.roleLabel')}
+              </label>
+              <select
+                {...register('role')}
+                className="w-full px-4 py-3 rounded-xl bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-white/10 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-surface-900 dark:text-white"
+              >
+                {roleOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              {errors.role && <p className="mt-1.5 text-xs text-red-500">{errors.role.message}</p>}
             </div>
-          )}
 
-          <div className="flex gap-3 pt-4">
-            <PortalButton type="button" variant="outline" onClick={onCancel} className="flex-1">
+            {error && (
+              <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
+                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+              </div>
+            )}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
               {t('portal.team.inviteForm.cancel')}
-            </PortalButton>
-            <PortalButton type="submit" isLoading={loading} className="flex-1">
+            </Button>
+            <Button type="submit" loading={loading} className="flex-1">
               {loading ? t('portal.team.inviteForm.sending') : t('portal.team.inviteForm.submit')}
-            </PortalButton>
-          </div>
+            </Button>
+          </ModalFooter>
         </form>
-      </div>
-    </div>
+      </ModalContent>
+    </ModalBackdrop>
   );
 };
+
+interface InviteTeamMemberFormProps {
+  orgId?: string;
+  isAgency?: boolean;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+interface InviteFormData {
+  email: string;
+  role: 'admin' | 'sales_manager' | 'developer' | 'member' | 'viewer';
+}

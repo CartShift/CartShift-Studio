@@ -30,42 +30,35 @@ export async function validateStorageRules(): Promise<boolean> {
     const bucket = storage.app.options.storageBucket;
 
     if (!bucket) {
-      console.warn('🔥 [DEBUG] Storage bucket not configured');
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[Storage] Storage bucket not configured');
+      }
       return false;
     }
 
-    // Test public access to org-logos path
-    const testPath = `org-logos/test/test.png`;
-    const testUrl = getPublicStorageUrl(testPath, bucket);
-
-    console.log('🔥 [DEBUG] Storage rules validation:', {
-      bucket,
-      testUrl,
-      shouldBePubliclyAccessible: true,
-    });
-
     return true;
   } catch (error) {
-    console.error('🔥 [DEBUG] Storage rules validation failed:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Storage] Rules validation failed:', error);
+    }
     return false;
   }
 }
 
 export function convertToPublicUrl(url: string, bucket: string): string | null {
   try {
-    console.log('🔥 [DEBUG] Converting URL to public:', { originalUrl: url, bucket });
     const urlObj = new URL(url);
     const pathMatch = urlObj.pathname.match(/\/o\/(.+?)(\?|$)/);
     if (pathMatch) {
       const storagePath = decodeURIComponent(pathMatch[1]);
       const publicUrl = getPublicStorageUrl(storagePath, bucket);
-      console.log('🔥 [DEBUG] URL conversion result:', { storagePath, publicUrl });
       return publicUrl;
     }
-    console.log('🔥 [DEBUG] URL conversion failed - no path match');
     return null;
   } catch (error) {
-    console.error('🔥 [DEBUG] URL conversion error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Storage] URL conversion error:', error);
+    }
     return null;
   }
 }

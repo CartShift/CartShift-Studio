@@ -1,47 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logError, createErrorResponse } from '@/lib/error-handler';
-
-/**
- * In-memory rate limiting map for store analysis requests.
- */
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 5; // Increased to 5 for better UX
+import { checkRateLimit as checkFirestoreRateLimit } from '@/lib/services/rate-limiter';
 
 // PageSpeed API Key - set via environment variable
 const PAGESPEED_API_KEY = process.env.PAGESPEED_API_KEY;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 
 function getRateLimitKey(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
   const ip = forwarded ? forwarded.split(',')[0].trim() : realIp;
   if (ip) {
-    return ip;
+    return `analyze-store:${ip}`;
   }
   const userAgent = request.headers.get('user-agent') || 'unknown';
-  return `ua:${userAgent}`;
-}
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(key);
-
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-
-  if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
-    return false;
-  }
-
-  record.count++;
-  return true;
+  return `analyze-store:ua:${userAgent}`;
 }
 
 // Platform detection patterns with enhanced detection
 const platformPatterns = [
-  { name: 'Shopify', patterns: [/myshopify\.com/i, /shopify/i, /cdn\.shopify\.com/i, /window\.Shopify/i] },
+  {
+    name: 'Shopify',
+    patterns: [/myshopify\.com/i, /shopify/i, /cdn\.shopify\.com/i, /window\.Shopify/i],
+  },
   { name: 'WooCommerce', patterns: [/woocommerce/i, /wp-content/i, /wordpress/i, /wp-json/i] },
   { name: 'Magento', patterns: [/magento/i, /mage/i, /varien/i] },
   { name: 'BigCommerce', patterns: [/bigcommerce/i, /mybigcommerce\.com/i, /cdn\.bigcommerce/i] },
@@ -78,14 +60,17 @@ interface PageSpeedResult {
       accessibility?: { score: number };
       'best-practices'?: { score: number };
     };
-    audits?: Record<string, {
-      id: string;
-      title: string;
-      description: string;
-      score: number | null;
-      displayValue?: string;
-      scoreDisplayMode?: string;
-    }>;
+    audits?: Record<
+      string,
+      {
+        id: string;
+        title: string;
+        description: string;
+        score: number | null;
+        displayValue?: string;
+        scoreDisplayMode?: string;
+      }
+    >;
   };
   loadingExperience?: {
     metrics?: {
@@ -129,35 +114,61 @@ async function fetchPageSpeedData(url: string): Promise<PageSpeedResult | null> 
   }
 }
 
-function extractLighthouseFindings(audits: Record<string, any>, category: string): { findings: Finding[]; recommendations: Recommendation[] } {
+function extractLighthouseFindings(
+  audits: Record<string, any>,
+  category: string
+): { findings: Finding[]; recommendations: Recommendation[] } {
   const findings: Finding[] = [];
   const recommendations: Recommendation[] = [];
 
   const categoryAudits: Record<string, string[]> = {
     performance: [
-      'first-contentful-paint', 'largest-contentful-paint', 'speed-index',
-      'total-blocking-time', 'cumulative-layout-shift', 'server-response-time',
-      'interactive', 'mainthread-work-breakdown'
+      'first-contentful-paint',
+      'largest-contentful-paint',
+      'speed-index',
+      'total-blocking-time',
+      'cumulative-layout-shift',
+      'server-response-time',
+      'interactive',
+      'mainthread-work-breakdown',
     ],
     seo: [
-      'document-title', 'meta-description', 'http-status-code', 'crawlable-anchors',
-      'is-crawlable', 'robots-txt', 'link-text', 'image-alt'
+      'document-title',
+      'meta-description',
+      'http-status-code',
+      'crawlable-anchors',
+      'is-crawlable',
+      'robots-txt',
+      'link-text',
+      'image-alt',
     ],
     accessibility: [
-      'button-name', 'color-contrast', 'image-alt', 'link-name',
-      'label', 'form-field-multiple-labels'
+      'button-name',
+      'color-contrast',
+      'image-alt',
+      'link-name',
+      'label',
+      'form-field-multiple-labels',
     ],
     'best-practices': [
-      'is-on-https', 'uses-http2', 'no-vulnerable-libraries',
-      'doctype', 'charset'
-    ]
+      'is-on-https',
+      'uses-http2',
+      'no-vulnerable-libraries',
+      'doctype',
+      'charset',
+    ],
   };
 
   const auditsToCheck = categoryAudits[category] || [];
 
   for (const auditId of auditsToCheck) {
     const audit = audits[auditId];
-    if (!audit || audit.scoreDisplayMode === 'notApplicable' || audit.scoreDisplayMode === 'informative') continue;
+    if (
+      !audit ||
+      audit.scoreDisplayMode === 'notApplicable' ||
+      audit.scoreDisplayMode === 'informative'
+    )
+      continue;
 
     if (audit.score === 1) {
       findings.push({
@@ -172,7 +183,10 @@ function extractLighthouseFindings(audits: Record<string, any>, category: string
         description: audit.displayValue || audit.description?.split('.')[0] || 'Needs improvement',
       });
       recommendations.push({
-        title: audit.title.replace('Ensure', 'Fix').replace('Avoid', 'Remove').replace('Eliminate', 'Fix'),
+        title: audit.title
+          .replace('Ensure', 'Fix')
+          .replace('Avoid', 'Remove')
+          .replace('Eliminate', 'Fix'),
         impact: audit.score < 0.5 ? 'high' : 'medium',
         serviceLink: '/contact',
       });
@@ -195,20 +209,37 @@ function analyzeSEOFallback(html: string): SectionResult {
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
   if (titleMatch && titleMatch[1].trim().length > 0) {
     score += 20;
-    findings.push({ type: 'positive', title: 'Page title found', description: 'HTML title tag is present.' });
+    findings.push({
+      type: 'positive',
+      title: 'Page title found',
+      description: 'HTML title tag is present.',
+    });
   } else {
-    findings.push({ type: 'issue', title: 'Missing page title', description: 'Title tag is empty or missing.' });
+    findings.push({
+      type: 'issue',
+      title: 'Missing page title',
+      description: 'Title tag is empty or missing.',
+    });
     recommendations.push({ title: 'Add a descriptive page title', impact: 'high' });
   }
 
   // Check Meta Description
-  const metaDescMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
-                        html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
+  const metaDescMatch =
+    html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
+    html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
   if (metaDescMatch && metaDescMatch[1].trim().length > 0) {
     score += 20;
-    findings.push({ type: 'positive', title: 'Meta description found', description: 'Meta description is present.' });
+    findings.push({
+      type: 'positive',
+      title: 'Meta description found',
+      description: 'Meta description is present.',
+    });
   } else {
-    findings.push({ type: 'issue', title: 'Missing meta description', description: 'Add a meta description for better SEO click-through rates.' });
+    findings.push({
+      type: 'issue',
+      title: 'Missing meta description',
+      description: 'Add a meta description for better SEO click-through rates.',
+    });
     recommendations.push({ title: 'Add meta description', impact: 'high' });
   }
 
@@ -216,7 +247,11 @@ function analyzeSEOFallback(html: string): SectionResult {
   const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
   if (h1Match) {
     score += 10;
-    findings.push({ type: 'positive', title: 'H1 heading found', description: 'Main heading structure exists.' });
+    findings.push({
+      type: 'positive',
+      title: 'H1 heading found',
+      description: 'Main heading structure exists.',
+    });
   } else {
     recommendations.push({ title: 'Add a main H1 heading', impact: 'medium' });
   }
@@ -226,7 +261,7 @@ function analyzeSEOFallback(html: string): SectionResult {
     score: Math.min(100, score),
     status: getScoreStatus(score),
     findings,
-    recommendations
+    recommendations,
   };
 }
 
@@ -239,16 +274,28 @@ function analyzePerformanceFallback(html: string): SectionResult {
   const scriptCount = (html.match(/<script/gi) || []).length;
   if (scriptCount > 20) {
     score -= 10;
-    findings.push({ type: 'issue', title: 'High script count', description: 'Detected many script tags which may slow down loading.' });
+    findings.push({
+      type: 'issue',
+      title: 'High script count',
+      description: 'Detected many script tags which may slow down loading.',
+    });
     recommendations.push({ title: 'Minimize and bundle JavaScript', impact: 'high' });
   } else {
-    findings.push({ type: 'positive', title: 'Reasonable script usage', description: 'Script tag count is within limits.' });
+    findings.push({
+      type: 'positive',
+      title: 'Reasonable script usage',
+      description: 'Script tag count is within limits.',
+    });
   }
 
   // Check for image optimization hints (lazy loading)
   if (/loading=["']lazy["']/i.test(html)) {
     score += 10;
-    findings.push({ type: 'positive', title: 'Lazy loading detected', description: 'Images are using lazy loading.' });
+    findings.push({
+      type: 'positive',
+      title: 'Lazy loading detected',
+      description: 'Images are using lazy loading.',
+    });
   } else {
     recommendations.push({ title: 'Implement lazy loading for images', impact: 'medium' });
   }
@@ -258,7 +305,7 @@ function analyzePerformanceFallback(html: string): SectionResult {
     score: Math.min(100, score),
     status: getScoreStatus(score),
     findings,
-    recommendations
+    recommendations,
   };
 }
 
@@ -270,7 +317,11 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
   // Check for lang attribute
   if (/html[^>]+lang=/i.test(html)) {
     score += 25;
-    findings.push({ type: 'positive', title: 'Language attribute', description: 'HTML tag specifies a language.' });
+    findings.push({
+      type: 'positive',
+      title: 'Language attribute',
+      description: 'HTML tag specifies a language.',
+    });
   } else {
     recommendations.push({ title: 'Add lang attribute to HTML tag', impact: 'high' });
   }
@@ -278,7 +329,11 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
   // Check for viewport meta
   if (/<meta[^>]+name=["']viewport["']/i.test(html)) {
     score += 25;
-    findings.push({ type: 'positive', title: 'Mobile optimization', description: 'Viewport meta tag is present.' });
+    findings.push({
+      type: 'positive',
+      title: 'Mobile optimization',
+      description: 'Viewport meta tag is present.',
+    });
   } else {
     recommendations.push({ title: 'Add viewport meta tag', impact: 'high' });
   }
@@ -289,11 +344,15 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
 
   if (imgCount > 0 && altCount >= imgCount * 0.8) {
     score += 20;
-     findings.push({ type: 'positive', title: 'Image alt text', description: 'Most images have description tags.' });
+    findings.push({
+      type: 'positive',
+      title: 'Image alt text',
+      description: 'Most images have description tags.',
+    });
   } else if (imgCount > 0) {
-     recommendations.push({ title: 'Add alt text to images', impact: 'medium' });
+    recommendations.push({ title: 'Add alt text to images', impact: 'medium' });
   } else {
-     score += 20; // No images to check
+    score += 20; // No images to check
   }
 
   return {
@@ -301,7 +360,7 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
     score: Math.min(100, score),
     status: getScoreStatus(score),
     findings,
-    recommendations
+    recommendations,
   };
 }
 
@@ -311,24 +370,38 @@ function analyzeCart(html: string): SectionResult {
   let score = 50;
 
   // Cart detection
-  const hasCart = /href=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
-                 /class=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
-                 /aria-label=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html);
+  const hasCart =
+    /href=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
+    /class=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
+    /aria-label=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html);
 
   if (hasCart) {
-    findings.push({ type: 'positive', title: 'Cart accessible', description: 'Cart link or icon detected.' });
+    findings.push({
+      type: 'positive',
+      title: 'Cart accessible',
+      description: 'Cart link or icon detected.',
+    });
     score += 25;
   } else {
-    findings.push({ type: 'issue', title: 'Cart visibility low', description: 'Could not clearly identify a cart link.' });
+    findings.push({
+      type: 'issue',
+      title: 'Cart visibility low',
+      description: 'Could not clearly identify a cart link.',
+    });
     recommendations.push({ title: 'Ensure cart is always visible', impact: 'high' });
   }
 
   // Add to cart detection
-  const hasAddToCart = /add\s*to\s*(cart|bag)|buy\s*now|checkout/i.test(html) ||
-                       /name=["']add["']|type=["']submit["']/i.test(html);
+  const hasAddToCart =
+    /add\s*to\s*(cart|bag)|buy\s*now|checkout/i.test(html) ||
+    /name=["']add["']|type=["']submit["']/i.test(html);
 
   if (hasAddToCart) {
-    findings.push({ type: 'positive', title: 'Purchase actions found', description: 'Add to cart or Buy buttons detected.' });
+    findings.push({
+      type: 'positive',
+      title: 'Purchase actions found',
+      description: 'Add to cart or Buy buttons detected.',
+    });
     score += 25;
   }
 
@@ -336,7 +409,11 @@ function analyzeCart(html: string): SectionResult {
   const hasSecureTerms = /secure|ssl|encrypt|lock|guarantee|safe/i.test(html);
   if (hasSecureTerms) {
     score += 10;
-    findings.push({ type: 'positive', title: 'Security terms found', description: 'Page mentions security or guarantees.' });
+    findings.push({
+      type: 'positive',
+      title: 'Security terms found',
+      description: 'Page mentions security or guarantees.',
+    });
   } else {
     recommendations.push({ title: 'Add security assurances near checkout/cart', impact: 'medium' });
   }
@@ -358,7 +435,11 @@ function analyzeTrust(html: string): SectionResult {
   // Reviews
   const reviewTerms = /review|rating|star|testimonial|feedback/i;
   if (reviewTerms.test(html)) {
-    findings.push({ type: 'positive', title: 'Social proof detected', description: 'Reviews or ratings found on page.' });
+    findings.push({
+      type: 'positive',
+      title: 'Social proof detected',
+      description: 'Reviews or ratings found on page.',
+    });
     score += 20;
   } else {
     recommendations.push({ title: 'Add customer reviews', impact: 'high' });
@@ -366,7 +447,11 @@ function analyzeTrust(html: string): SectionResult {
 
   // Policies
   if (/privacy/i.test(html) && /policy/i.test(html)) {
-    findings.push({ type: 'positive', title: 'Privacy policy found', description: 'Legal pages appear to be linked.' });
+    findings.push({
+      type: 'positive',
+      title: 'Privacy policy found',
+      description: 'Legal pages appear to be linked.',
+    });
     score += 15;
   } else {
     recommendations.push({ title: 'Ensure Privacy Policy is visible', impact: 'medium' });
@@ -374,7 +459,11 @@ function analyzeTrust(html: string): SectionResult {
 
   // Trust Badges/Icons (generic check for images named trust, secure, payment)
   if (/trust|secure|badge|guarantee|payment|visa|mastercard|paypal/i.test(html)) {
-    findings.push({ type: 'positive', title: 'Trust signals/Payment icons', description: 'Trust icons or payment methods displayed.' });
+    findings.push({
+      type: 'positive',
+      title: 'Trust signals/Payment icons',
+      description: 'Trust icons or payment methods displayed.',
+    });
     score += 15;
   }
 
@@ -436,14 +525,38 @@ export async function POST(request: NextRequest) {
   try {
     const rateLimitKey = getRateLimitKey(request);
 
-    if (!checkRateLimit(rateLimitKey)) {
+    const rateLimitResult = await checkFirestoreRateLimit(
+      rateLimitKey,
+      RATE_LIMIT_MAX_REQUESTS,
+      RATE_LIMIT_WINDOW
+    );
+
+    if (!rateLimitResult.allowed) {
+      const retryAfter = rateLimitResult.resetAt
+        ? Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
+        : 60;
       return NextResponse.json(
         createErrorResponse('Too many requests. Please try again later.', 429),
-        { status: 429, headers: { 'Retry-After': '60', 'Content-Type': 'application/json' } }
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'Content-Type': 'application/json',
+            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetAt?.toString() || '',
+          },
+        }
       );
     }
 
-
+    // Add rate limit headers for successful requests
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+      'X-RateLimit-Remaining': rateLimitResult.remaining?.toString() || '0',
+      'X-RateLimit-Reset': rateLimitResult.resetAt?.toString() || '',
+    };
 
     let body;
     try {
@@ -457,7 +570,9 @@ export async function POST(request: NextRequest) {
     // Verify Captcha
     if (process.env.RECAPTCHA_SECRET_KEY) {
       if (!captchaToken) {
-        return NextResponse.json(createErrorResponse('Captcha token is missing', 400), { status: 400 });
+        return NextResponse.json(createErrorResponse('Captcha token is missing', 400), {
+          status: 400,
+        });
       }
 
       const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
@@ -465,15 +580,19 @@ export async function POST(request: NextRequest) {
       const captchaData = await captchaRes.json();
 
       if (!captchaData.success) {
-        return NextResponse.json(createErrorResponse('Captcha verification failed', 400), { status: 400 });
+        return NextResponse.json(createErrorResponse('Captcha verification failed', 400), {
+          status: 400,
+        });
       }
     } else {
-        // Warn if no secret key is present (dev mode likely)
-         console.warn('RECAPTCHA_SECRET_KEY not set, skipping verification.');
+      // Warn if no secret key is present (dev mode likely)
+      console.warn('RECAPTCHA_SECRET_KEY not set, skipping verification.');
     }
 
     if (!storeUrl || !email) {
-      return NextResponse.json(createErrorResponse('URL and Email are required', 400), { status: 400 });
+      return NextResponse.json(createErrorResponse('URL and Email are required', 400), {
+        status: 400,
+      });
     }
 
     let normalizedUrl = storeUrl.trim();
@@ -481,11 +600,49 @@ export async function POST(request: NextRequest) {
       normalizedUrl = 'https://' + normalizedUrl;
     }
 
+    // Enhanced SSRF Protection: Block localhost/private/internal networks
+    const urlObj = new URL(normalizedUrl);
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // IPv4 private ranges
+    const ipv4PrivateRegex = /^(127\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)/;
+    // IPv6 private ranges and loopback
+    const ipv6PrivateRegex = /^(::1|fe[89ab][0-9a-f]:|fc[0-9a-f]{2}:|fd[0-9a-f]{2}:)/i;
+
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      ipv4PrivateRegex.test(hostname) ||
+      ipv6PrivateRegex.test(hostname) ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.internal') ||
+      hostname === '0.0.0.0' ||
+      // Block common internal hostnames
+      hostname.includes('internal') ||
+      hostname.includes('private') ||
+      hostname.includes('localdomain')
+    ) {
+      return NextResponse.json(
+        createErrorResponse('Invalid Store URL - internal addresses not allowed', 400),
+        { status: 400 }
+      );
+    }
+
+    // DNS rebinding prevention
+    if (urlObj.hostname !== hostname) {
+      return NextResponse.json(createErrorResponse('Invalid URL format', 400), { status: 400 });
+    }
+
+    // Block file://, data://, javascript://, etc.
+    if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') {
+      return NextResponse.json(createErrorResponse('Invalid URL protocol', 400), { status: 400 });
+    }
+
     // 1. Fetch HTML (for platform detection and fallback analysis)
     let html = '';
     try {
       const response = await fetch(normalizedUrl, {
-        headers: { 'User-Agent': 'CartShift Analyzer/1.0', 'Accept': 'text/html' },
+        headers: { 'User-Agent': 'CartShift Analyzer/1.0', Accept: 'text/html' },
         signal: AbortSignal.timeout(15000),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -493,7 +650,9 @@ export async function POST(request: NextRequest) {
     } catch (fetchError) {
       // If we can't access the site, we can't analyze it.
       logError('Store fetch error', fetchError);
-      return NextResponse.json(createErrorResponse('Could not access store URL', 400), { status: 400 });
+      return NextResponse.json(createErrorResponse('Could not access store URL', 400), {
+        status: 400,
+      });
     }
 
     const platform = detectPlatform(html, normalizedUrl);
@@ -519,39 +678,50 @@ export async function POST(request: NextRequest) {
           name: 'Performance',
           score: perfScore,
           status: getScoreStatus(perfScore),
-          ...extractLighthouseFindings(audits, 'performance')
+          ...extractLighthouseFindings(audits, 'performance'),
         },
         seo: {
           name: 'SEO',
           score: seoScore,
           status: getScoreStatus(seoScore),
-          ...extractLighthouseFindings(audits, 'seo')
+          ...extractLighthouseFindings(audits, 'seo'),
         },
         accessibility: {
           name: 'Accessibility',
           score: a11yScore,
           status: getScoreStatus(a11yScore),
-          ...extractLighthouseFindings(audits, 'accessibility')
+          ...extractLighthouseFindings(audits, 'accessibility'),
         },
         bestPractices: {
           name: 'Best Practices',
           score: bpScore,
           status: getScoreStatus(bpScore),
-          ...extractLighthouseFindings(audits, 'best-practices')
+          ...extractLighthouseFindings(audits, 'best-practices'),
         },
         cart: analyzeCart(html),
-        trust: analyzeTrust(html)
+        trust: analyzeTrust(html),
       };
 
       // Metrics
       const m = pageSpeedData.loadingExperience?.metrics;
       if (m) {
         coreWebVitals = {};
-        if (m.LARGEST_CONTENTFUL_PAINT_MS) coreWebVitals.lcp = { value: m.LARGEST_CONTENTFUL_PAINT_MS.percentile, rating: m.LARGEST_CONTENTFUL_PAINT_MS.category };
-        if (m.CUMULATIVE_LAYOUT_SHIFT_SCORE) coreWebVitals.cls = { value: m.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100, rating: m.CUMULATIVE_LAYOUT_SHIFT_SCORE.category };
-        if (m.FIRST_INPUT_DELAY_MS) coreWebVitals.fid = { value: m.FIRST_INPUT_DELAY_MS.percentile, rating: m.FIRST_INPUT_DELAY_MS.category };
+        if (m.LARGEST_CONTENTFUL_PAINT_MS)
+          coreWebVitals.lcp = {
+            value: m.LARGEST_CONTENTFUL_PAINT_MS.percentile,
+            rating: m.LARGEST_CONTENTFUL_PAINT_MS.category,
+          };
+        if (m.CUMULATIVE_LAYOUT_SHIFT_SCORE)
+          coreWebVitals.cls = {
+            value: m.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100,
+            rating: m.CUMULATIVE_LAYOUT_SHIFT_SCORE.category,
+          };
+        if (m.FIRST_INPUT_DELAY_MS)
+          coreWebVitals.fid = {
+            value: m.FIRST_INPUT_DELAY_MS.percentile,
+            rating: m.FIRST_INPUT_DELAY_MS.category,
+          };
       }
-
     } else {
       // Fallback to local HTML analysis matches
       console.warn('Using fallback HTML analysis for', normalizedUrl);
@@ -559,21 +729,46 @@ export async function POST(request: NextRequest) {
         performance: analyzePerformanceFallback(html),
         seo: analyzeSEOFallback(html),
         accessibility: analyzeAccessibilityFallback(html), // Use basic HTML checks
-        bestPractices: { name: 'Best Practices', score: 70, status: 'good', findings: [{ type: 'positive', title: 'HTTPS Check', description: 'Basic security check passed.' }], recommendations: [] },
+        bestPractices: {
+          name: 'Best Practices',
+          score: 70,
+          status: 'good',
+          findings: [
+            { type: 'positive', title: 'HTTPS Check', description: 'Basic security check passed.' },
+          ],
+          recommendations: [],
+        },
         cart: analyzeCart(html),
-        trust: analyzeTrust(html)
+        trust: analyzeTrust(html),
       };
 
       // Basic Accessibility Fallback
       if (!sections.accessibility) {
-         sections.accessibility = { name: 'Accessibility', score: 50, status: 'warning', findings: [], recommendations: [{ title: 'Run a full accessibility audit', impact: 'high' }] };
+        sections.accessibility = {
+          name: 'Accessibility',
+          score: 50,
+          status: 'warning',
+          findings: [],
+          recommendations: [{ title: 'Run a full accessibility audit', impact: 'high' }],
+        };
       }
     }
 
     // 4. Calculate Overall Score
-    const weights = { performance: 0.3, seo: 0.25, accessibility: 0.15, bestPractices: 0.1, cart: 0.1, trust: 0.1 };
+    const weights = {
+      performance: 0.3,
+      seo: 0.25,
+      accessibility: 0.15,
+      bestPractices: 0.1,
+      cart: 0.1,
+      trust: 0.1,
+    };
     const overallScore = Math.round(
-      Object.entries(sections).reduce((sum, [key, section]) => sum + section.score * (weights[key as keyof typeof weights] || 0.1), 0)
+      Object.entries(sections).reduce(
+        (sum, [key, section]) =>
+          sum + section.score * (weights[key as keyof typeof weights] || 0.1),
+        0
+      )
     );
 
     const result: AnalysisResult = {
@@ -587,8 +782,11 @@ export async function POST(request: NextRequest) {
 
     // 5. Send Email
     try {
-      const firebaseFunctionUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL?.replace('contactForm', 'sendStoreAnalysisReport')
-        || 'https://us-central1-cartshiftstudio.cloudfunctions.net/sendStoreAnalysisReport';
+      const firebaseFunctionUrl =
+        process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL?.replace(
+          'contactForm',
+          'sendStoreAnalysisReport'
+        ) || 'https://us-central1-cartshiftstudio.cloudfunctions.net/sendStoreAnalysisReport';
 
       // Async fire-and-forget email? Or await?
       // Awaiting to ensure logging
@@ -603,15 +801,19 @@ export async function POST(request: NextRequest) {
           subscribeNewsletter: subscribeNewsletter || false,
         }),
       }).catch(e => console.error('Email fetch error:', e));
-
     } catch (e) {
       console.error('Email logic error:', e);
     }
 
-    return NextResponse.json(result);
-
+    return NextResponse.json(result, { headers });
   } catch (error) {
     logError('Analysis API Fatal Error', error);
-    return NextResponse.json(createErrorResponse('Internal Server Error', 500), { status: 500 });
+    return NextResponse.json(createErrorResponse('Internal Server Error', 500), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+      },
+    });
   }
 }

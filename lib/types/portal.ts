@@ -104,8 +104,10 @@ export interface PricingLineItem {
 }
 
 // Utility functions for pricing
-export function calculateTotalAmount(lineItems: PricingLineItem[]): number {
-  return lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+export function calculateTotalAmount(lineItems: PricingLineItem[], taxRate: number = 0): number {
+  const subtotal = lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const tax = Math.round(subtotal * taxRate);
+  return subtotal + tax;
 }
 
 export function formatCurrency(amountInCents: number, currency: Currency): string {
@@ -115,6 +117,10 @@ export function formatCurrency(amountInCents: number, currency: Currency): strin
 }
 
 export function generateLineItemId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for older browsers
   return `item_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 }
 
@@ -171,6 +177,9 @@ export interface Organization {
     borderRadius?: '0px' | '0.5rem' | '1rem'; // UI roundness
     invertLogoInDarkMode?: boolean; // Automatically filter invert logo in dark mode
   };
+
+  // Agency Responsibility
+  responsibleAgencyUserId?: string; // ID of the agency user responsible for this client
 }
 
 export interface OrganizationMember {
@@ -184,6 +193,7 @@ export interface OrganizationMember {
   invitedBy?: string;
   inviteId?: string;
   joinedAt: Timestamp;
+  removedAt?: Timestamp;
 }
 
 export interface PortalUser {
@@ -201,6 +211,11 @@ export interface PortalUser {
     emailOnNewComment: boolean;
     emailOnStatusChange: boolean;
     marketingEmails: boolean;
+  };
+  // User preferences
+  preferences?: {
+    theme?: 'light' | 'dark' | 'system';
+    language?: 'en' | 'he';
   };
   // Onboarding tracking
   onboardingComplete?: boolean;
@@ -312,6 +327,7 @@ export interface Request {
   isBillable?: boolean;
   lineItems?: PricingLineItem[];
   totalAmount?: number; // in cents
+  taxRate?: number;
   currency?: Currency;
   validUntil?: Timestamp;
   quotedAt?: Timestamp;

@@ -5,9 +5,9 @@ import { useParams } from 'next/navigation';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import { getFirestoreDb } from '@/lib/firebase';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { Invite } from '@/lib/types/portal';
 import { CheckCircle2, XCircle, Clock, Loader2, Mail, Shield, User } from 'lucide-react';
 import { format } from 'date-fns';
@@ -180,31 +180,25 @@ export default function InviteClient() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
-        <PortalCard className="max-w-md w-full">
+        <Card className="max-w-md w-full">
           <div className="text-center space-y-4">
             <Mail className="w-12 h-12 text-primary mx-auto" />
             <h1 className="text-2xl font-bold">{t('portal.invite.title')}</h1>
             <p className="text-muted-foreground">{t('portal.invite.guestIntro')}</p>
             <div className="space-y-2">
-              <Link
-                href={getPortalPath(`/signup?redirect=/invite/${code}/`)}
-                className="block"
-              >
-                <PortalButton className="w-full shadow-lg shadow-blue-500/20">
+              <Link href={getPortalPath(`/signup?redirect=/invite/${code}/`)} className="block">
+                <Button className="w-full shadow-lg shadow-blue-500/20">
                   {t('portal.invite.createAccount')}
-                </PortalButton>
+                </Button>
               </Link>
-              <Link
-                href={getPortalPath(`/login?redirect=/invite/${code}/`)}
-                className="block"
-              >
-                <PortalButton variant="outline" className="w-full">
+              <Link href={getPortalPath(`/login?redirect=/invite/${code}/`)} className="block">
+                <Button variant="outline" className="w-full">
                   {t('portal.invite.signIn')}
-                </PortalButton>
+                </Button>
               </Link>
             </div>
           </div>
-        </PortalCard>
+        </Card>
       </div>
     );
   }
@@ -212,16 +206,16 @@ export default function InviteClient() {
   if (error && !invite) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
-        <PortalCard className="max-w-md w-full">
+        <Card className="max-w-md w-full">
           <div className="text-center space-y-4">
             <XCircle className="w-12 h-12 text-destructive mx-auto" />
             <h1 className="text-2xl font-bold">{t('portal.invite.error')}</h1>
             <p className="text-muted-foreground">{error}</p>
             <Link href={getPortalPath('/login/')}>
-              <PortalButton>{t('portal.invite.signIn')}</PortalButton>
+              <Button>{t('portal.invite.signIn')}</Button>
             </Link>
           </div>
-        </PortalCard>
+        </Card>
       </div>
     );
   }
@@ -236,7 +230,7 @@ export default function InviteClient() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
-      <PortalCard className="max-w-md w-full">
+      <Card className="max-w-md w-full">
         <div className="space-y-6">
           <div className="text-center space-y-2">
             {success ? (
@@ -277,7 +271,7 @@ export default function InviteClient() {
                 <div className="flex items-center gap-2 text-sm">
                   <Shield className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{t('portal.invite.role')}</span>
-                  <PortalBadge variant="gray">{invite.role}</PortalBadge>
+                  <Badge variant="gray">{invite.role}</Badge>
                 </div>
                 {invite.invitedByName && (
                   <div className="flex items-center gap-2 text-sm">
@@ -308,20 +302,22 @@ export default function InviteClient() {
                   </p>
                   <div className="space-y-2">
                     <Link
-                      href={getPortalPath(`/signup?email=${encodeURIComponent(invite.email)}&redirect=/invite/${invite.id}/`)}
+                      href={getPortalPath(
+                        `/signup?email=${encodeURIComponent(invite.email)}&redirect=/invite/${invite.id}/`
+                      )}
                       className="block"
                     >
-                      <PortalButton className="w-full shadow-lg shadow-blue-500/20">
+                      <Button className="w-full shadow-lg shadow-blue-500/20">
                         {t('portal.invite.createAccount')}
-                      </PortalButton>
+                      </Button>
                     </Link>
                     <Link
                       href={getPortalPath(`/login?redirect=/invite/${invite.id}/`)}
                       className="block"
                     >
-                      <PortalButton variant="outline" className="w-full">
+                      <Button variant="outline" className="w-full">
                         {t('portal.invite.signIn')}
-                      </PortalButton>
+                      </Button>
                     </Link>
                   </div>
                   <p className="text-xs text-surface-500 dark:text-surface-400 text-center">
@@ -338,7 +334,7 @@ export default function InviteClient() {
                   </p>
                 </div>
               ) : !isExpired && !isAccepted ? (
-                <PortalButton onClick={handleAcceptInvite} disabled={accepting} className="w-full">
+                <Button onClick={handleAcceptInvite} disabled={accepting} className="w-full">
                   {accepting ? (
                     <>
                       <Loader2 className="w-4 h-4 me-2 animate-spin" />
@@ -347,12 +343,12 @@ export default function InviteClient() {
                   ) : (
                     t('portal.invite.accept')
                   )}
-                </PortalButton>
+                </Button>
               ) : null}
             </div>
           )}
         </div>
-      </PortalCard>
+      </Card>
     </div>
   );
 }

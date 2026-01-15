@@ -17,10 +17,10 @@ import {
   Calculator,
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
-import { PortalAvatar } from '@/components/portal/ui/PortalAvatar';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
-import { PortalBadge } from '@/components/portal/ui/PortalBadge';
+import { Avatar } from '@/components/ui/Avatar';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import {
   PricingRequest,
   PricingStatus,
@@ -59,7 +59,7 @@ export default function AgencyPricingClient() {
   const locale = useLocale();
   const router = useRouter();
   const { switchOrg } = useOrg();
-  const { isAuthenticated, loading: authLoading, user } = usePortalAuth();
+  const { isAuthenticated, loading: authLoading, user, isAgency } = usePortalAuth();
 
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; requestId: string | null }>({
@@ -81,6 +81,11 @@ export default function AgencyPricingClient() {
 
   useEffect(() => {
     if (authLoading || !isAuthenticated || !user) {
+      return;
+    }
+
+    // Guard against non-agency users accessing agency data
+    if (!isAgency) {
       return;
     }
 
@@ -112,7 +117,7 @@ export default function AgencyPricingClient() {
       return () => unsubscribe();
     } catch (err) {
       console.error('Failed to subscribe to pricing requests:', err);
-      setError(t('portal.common.error'));
+      setError(t('portal.common.error' as any));
       setLoading(false);
       // Return void explicitly for catch block
       return;
@@ -181,12 +186,10 @@ export default function AgencyPricingClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.common.error')}
+          {t('portal.common.error' as any)}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
-        <PortalButton onClick={() => window.location.reload()}>
-          {t('portal.common.retry')}
-        </PortalButton>
+        <Button onClick={() => window.location.reload()}>{t('portal.common.retry' as any)}</Button>
       </div>
     );
   }
@@ -197,96 +200,97 @@ export default function AgencyPricingClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.pricing.title')}
+            {t('portal.pricing.title' as any)}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.agency.pricing.subtitle') || 'Manage pricing offers across all clients'}
+            {t('portal.agency.pricing.subtitle' as any) ||
+              'Manage pricing offers across all clients'}
           </p>
         </div>
         <div className="flex gap-2">
-          <PortalButton
+          <Button
             variant="outline"
             onClick={() => router.push(getPortalPath('/agency/calculator/'))}
           >
             <Calculator size={18} className="me-2" />
-            {t('portal.pricing.calculator')}
-          </PortalButton>
-          <PortalButton onClick={() => setShowNewOfferModal(true)}>
+            {t('portal.pricing.calculator' as any)}
+          </Button>
+          <Button onClick={() => setShowNewOfferModal(true)}>
             <Plus size={18} className="me-2" />
-            {t('portal.pricing.newOffer')}
-          </PortalButton>
+            {t('portal.pricing.newOffer' as any)}
+          </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <PortalCard className="p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 border-blue-200/50 dark:border-blue-800/30">
+        <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 border-blue-200/50 dark:border-blue-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest">
-                {t('portal.common.total')}
+                {t('portal.common.total' as any)}
               </p>
               <p className="text-2xl font-black text-blue-700 dark:text-blue-400">
                 {statsData.total}
               </p>
             </div>
           </div>
-        </PortalCard>
+        </Card>
 
-        <PortalCard className="p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10 border-amber-200/50 dark:border-amber-800/30">
+        <Card className="p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10 border-amber-200/50 dark:border-amber-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
               <Send className="w-5 h-5 text-amber-600" />
             </div>
             <div>
               <p className="text-[10px] font-black text-amber-600/70 uppercase tracking-widest">
-                {t('portal.pricing.status.sent')}
+                {t('portal.pricing.status.sent' as any)}
               </p>
               <p className="text-2xl font-black text-amber-700 dark:text-amber-400">
                 {statsData.sent}
               </p>
             </div>
           </div>
-        </PortalCard>
+        </Card>
 
-        <PortalCard className="p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10 border-purple-200/50 dark:border-purple-800/30">
+        <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10 border-purple-200/50 dark:border-purple-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center">
               <Building2 className="w-5 h-5 text-purple-600" />
             </div>
             <div>
               <p className="text-[10px] font-black text-purple-600/70 uppercase tracking-widest">
-                {t('portal.pricing.status.accepted')}
+                {t('portal.pricing.status.accepted' as any)}
               </p>
               <p className="text-2xl font-black text-purple-700 dark:text-purple-400">
                 {statsData.accepted}
               </p>
             </div>
           </div>
-        </PortalCard>
+        </Card>
 
-        <PortalCard className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10 border-emerald-200/50 dark:border-emerald-800/30">
+        <Card className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10 border-emerald-200/50 dark:border-emerald-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest">
-                {t('portal.agency.pricing.revenue')}
+                {t('portal.agency.pricing.revenue' as any)}
               </p>
               <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400">
                 {formatCurrency(statsData.totalRevenue, 'USD')}
               </p>
             </div>
           </div>
-        </PortalCard>
+        </Card>
       </div>
 
       {/* Main Table Card */}
-      <PortalCard
+      <Card
         noPadding
         className="overflow-visible border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950"
       >
@@ -299,7 +303,7 @@ export default function AgencyPricingClient() {
             />
             <input
               type="text"
-              placeholder={t('portal.header.searchPlaceholder')}
+              placeholder={t('portal.header.searchPlaceholder' as any)}
               className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full font-outfit"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
@@ -307,7 +311,7 @@ export default function AgencyPricingClient() {
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
             <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
-              <Filter size={12} /> {t('portal.common.filter')}:
+              <Filter size={12} /> {t('portal.common.filter' as any)}:
             </div>
             {filters.map(filter => (
               <button
@@ -321,8 +325,8 @@ export default function AgencyPricingClient() {
                 )}
               >
                 {filter === 'All'
-                  ? t('portal.common.all')
-                  : t(`portal.pricing.status.${filter.toLowerCase() as PricingStatusKey}`)}
+                  ? t('portal.common.all' as any)
+                  : t(`portal.pricing.status.${filter.toLowerCase() as PricingStatusKey}` as any)}
               </button>
             ))}
           </div>
@@ -334,51 +338,30 @@ export default function AgencyPricingClient() {
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               <p className="text-sm font-bold text-surface-400 font-outfit">
-                {t('portal.common.loading')}
+                {t('portal.common.loading' as any)}
               </p>
             </div>
           ) : filteredRequests.length > 0 ? (
-            <table className="w-full text-start border-collapse">
-              <thead>
-                <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
-                    {t('portal.pricing.form.titleLabel')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
-                    {t('portal.agency.clientOrg')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                    {t('portal.common.status')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                    {t('portal.pricing.form.total')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                    {t('portal.common.date')}
-                  </th>
-                  <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
-                    {t('portal.common.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+            <>
+              {/* Mobile View: Cards */}
+              <div className="md:hidden space-y-4 p-4">
                 {paginatedRequests.map(req => (
-                  <tr
+                  <Card
                     key={req.id}
-                    className="hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-all group"
+                    className="p-4 border-surface-200 dark:border-surface-800 shadow-none bg-surface-50/50 dark:bg-surface-900/20"
                   >
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => {
-                          switchOrg(req.orgId);
-                          router.push(getPortalPath(`/pricing/${req.id}/`));
-                        }}
-                        className="flex flex-col max-w-md text-start"
-                      >
-                        <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="space-y-1">
+                        <button
+                          onClick={() => {
+                            switchOrg(req.orgId);
+                            router.push(getPortalPath(`/pricing/${req.id}/`));
+                          }}
+                          className="font-bold text-lg text-surface-900 dark:text-white font-outfit text-start"
+                        >
                           {req.title}
-                        </span>
-                        <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
+                        </button>
+                        <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 font-outfit">
                           <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
                             {req.id.slice(0, 8)}
                           </span>
@@ -389,87 +372,240 @@ export default function AgencyPricingClient() {
                             </>
                           )}
                         </span>
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                          {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
+                      </div>
+                      <Badge
+                        variant={getPricingStatusBadgeVariant(
+                          PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
+                        )}
+                      >
+                        {t(
+                          `portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}` as any
+                        )}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      {/* Organization */}
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                          {t('portal.agency.clientOrg' as any)}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded flex items-center justify-center text-white text-[10px] font-bold">
+                            {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
+                          </div>
+                          <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[100px]">
+                            {organizations[req.orgId]?.name || t('portal.common.unknown' as any)}
+                          </span>
                         </div>
-                        <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[150px]">
-                          {organizations[req.orgId]?.name || t('portal.common.unknown')}
-                        </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center">
-                        <PortalBadge
-                          variant={getPricingStatusBadgeVariant(
-                            PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
-                          )}
-                        >
-                          {t(
-                            `portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}`
-                          )}
-                        </PortalBadge>
+
+                      {/* Total Amount */}
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                          {t('portal.pricing.form.total' as any)}
+                        </p>
+                        <div className="flex items-center gap-1.5">
+                          <DollarSign size={14} className="text-green-500 opacity-70" />
+                          <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
+                            {formatCurrency(req.totalAmount, req.currency)}
+                          </span>
+                        </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <DollarSign size={14} className="text-green-500 opacity-70" />
-                        <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
-                          {formatCurrency(req.totalAmount, req.currency)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col items-center">
-                        <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+
+                      {/* Created Date */}
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                          {t('portal.common.date' as any)}
+                        </p>
+                        <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
                           {req.createdAt?.toDate
                             ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
                                 locale: getDateLocale(locale),
                               })
-                            : t('portal.common.recently')}
+                            : t('portal.common.recently' as any)}
                         </span>
-                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                      </div>
+
+                      {/* Status Date (Draft/Sent) */}
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                          {req.status === PRICING_STATUS.DRAFT ? 'Status' : 'Sent'}
+                        </p>
+                        <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
                           {req.status === PRICING_STATUS.DRAFT
-                            ? t('portal.pricing.status.draft')
+                            ? t('portal.pricing.status.draft' as any)
                             : req.sentAt?.toDate
                               ? format(req.sentAt.toDate(), 'MMM d', {
                                   locale: getDateLocale(locale),
                                 })
-                              : ''}
+                              : '-'}
                         </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      <div className="flex items-center justify-end gap-1">
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-4 border-t border-surface-200 dark:border-surface-800">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          switchOrg(req.orgId);
+                          router.push(getPortalPath(`/pricing/${req.id}/`));
+                        }}
+                      >
+                        <Eye size={16} className="me-2" />
+                        {t('portal.common.view' as any)}
+                      </Button>
+
+                      {req.status === PRICING_STATUS.DRAFT && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleSend(req.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <Send size={16} className="me-2" />
+                          {t('portal.common.send' as any)}
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop View: Table */}
+              <table className="hidden md:table w-full text-start border-collapse">
+                <thead>
+                  <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
+                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
+                      {t('portal.pricing.form.titleLabel' as any)}
+                    </th>
+                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
+                      {t('portal.agency.clientOrg' as any)}
+                    </th>
+                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                      {t('portal.common.status' as any)}
+                    </th>
+                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                      {t('portal.pricing.form.total' as any)}
+                    </th>
+                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                      {t('portal.common.date' as any)}
+                    </th>
+                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
+                      {t('portal.common.actions' as any)}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+                  {paginatedRequests.map(req => (
+                    <tr
+                      key={req.id}
+                      className="hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-all group"
+                    >
+                      <td className="px-6 py-4">
                         <button
                           onClick={() => {
                             switchOrg(req.orgId);
                             router.push(getPortalPath(`/pricing/${req.id}/`));
                           }}
-                          className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          className="flex flex-col max-w-md text-start"
                         >
-                          <Eye size={16} />
+                          <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
+                            {req.title}
+                          </span>
+                          <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
+                            <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
+                              {req.id.slice(0, 8)}
+                            </span>
+                            {req.requestIds && req.requestIds.length > 0 && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-surface-300" />
+                                <span>{req.requestIds.length} requests</span>
+                              </>
+                            )}
+                          </span>
                         </button>
-                        {req.status === PRICING_STATUS.DRAFT && (
-                          <button
-                            onClick={() => handleSend(req.id)}
-                            className="p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                            {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
+                          </div>
+                          <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[150px]">
+                            {organizations[req.orgId]?.name || t('portal.common.unknown' as any)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-center">
+                          <Badge
+                            variant={getPricingStatusBadgeVariant(
+                              PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
+                            )}
                           >
-                            <Send size={16} />
+                            {t(
+                              `portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}` as any
+                            )}
+                          </Badge>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <DollarSign size={14} className="text-green-500 opacity-70" />
+                          <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
+                            {formatCurrency(req.totalAmount, req.currency)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col items-center">
+                          <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                            {req.createdAt?.toDate
+                              ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
+                                  locale: getDateLocale(locale),
+                                })
+                              : t('portal.common.recently' as any)}
+                          </span>
+                          <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                            {req.status === PRICING_STATUS.DRAFT
+                              ? t('portal.pricing.status.draft' as any)
+                              : req.sentAt?.toDate
+                                ? format(req.sentAt.toDate(), 'MMM d', {
+                                    locale: getDateLocale(locale),
+                                  })
+                                : ''}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-end">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => {
+                              switchOrg(req.orgId);
+                              router.push(getPortalPath(`/pricing/${req.id}/`));
+                            }}
+                            className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          >
+                            <Eye size={16} />
                           </button>
-                        )}
-                        <button className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
-                          <MoreVertical size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          {req.status === PRICING_STATUS.DRAFT && (
+                            <button
+                              onClick={() => handleSend(req.id)}
+                              className="p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
+                            >
+                              <Send size={16} />
+                            </button>
+                          )}
+                          <button className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
+                            <MoreVertical size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           ) : (
             <div className="py-20 flex flex-col items-center justify-center text-center px-4 space-y-4">
               <div className="w-20 h-20 bg-surface-50 dark:bg-surface-900 rounded-3xl flex items-center justify-center mb-2 border border-surface-100 dark:border-surface-800 shadow-inner">
@@ -477,15 +613,15 @@ export default function AgencyPricingClient() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('portal.common.noData')}
+                  {t('portal.common.noData' as any)}
                 </h3>
                 <p className="text-surface-500 dark:text-surface-400 text-sm max-w-sm font-medium">
-                  {t('portal.pricing.noOffersAgency')}
+                  {t('portal.pricing.noOffersAgency' as any)}
                 </p>
-                <PortalButton onClick={() => setShowNewOfferModal(true)} className="mt-4">
+                <Button onClick={() => setShowNewOfferModal(true)} className="mt-4">
                   <Plus size={16} className="me-2" />
-                  {t('portal.pricing.newOffer')}
-                </PortalButton>
+                  {t('portal.pricing.newOffer' as any)}
+                </Button>
               </div>
             </div>
           )}
@@ -495,34 +631,34 @@ export default function AgencyPricingClient() {
         {!loading && filteredRequests.length > 0 && (
           <div className="p-5 border-t border-surface-100 dark:border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
             <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-              {t('portal.common.showing', {
+              {t('portal.common.showing' as any, {
                 count: paginatedRequests.length,
                 total: filteredRequests.length,
               })}
             </span>
             <div className="flex items-center gap-2">
-              <PortalButton
+              <Button
                 variant="outline"
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
               >
-                {t('portal.common.prev')}
-              </PortalButton>
-              <PortalButton
+                {t('portal.common.prev' as any)}
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
               >
-                {t('portal.common.next')}
-              </PortalButton>
+                {t('portal.common.next' as any)}
+              </Button>
             </div>
           </div>
         )}
-      </PortalCard>
+      </Card>
 
       {/* New Offer - Organization Selection Modal */}
       {showNewOfferModal && (
@@ -531,10 +667,10 @@ export default function AgencyPricingClient() {
             <div className="p-6 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('portal.pricing.selectClient')}
+                  {t('portal.pricing.selectClient' as any)}
                 </h2>
                 <p className="text-sm text-surface-500 mt-1">
-                  {t('portal.pricing.selectClientDesc')}
+                  {t('portal.pricing.selectClientDesc' as any)}
                 </p>
               </div>
               <button
@@ -553,7 +689,7 @@ export default function AgencyPricingClient() {
                 />
                 <input
                   type="text"
-                  placeholder={t('portal.common.search') + '...'}
+                  placeholder={t('portal.common.search' as any) + '...'}
                   className="portal-input ps-10 h-10 w-full"
                   value={orgSearchQuery}
                   onChange={e => setOrgSearchQuery(e.target.value)}
@@ -575,7 +711,7 @@ export default function AgencyPricingClient() {
                     }}
                     className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors group text-start"
                   >
-                    <PortalAvatar name={org.name} size="md" />
+                    <Avatar name={org.name} size="md" />
                     <div className="flex-1">
                       <p className="font-bold text-surface-900 dark:text-white font-outfit group-hover:text-blue-600 transition-colors">
                         {org.name}
@@ -600,10 +736,10 @@ export default function AgencyPricingClient() {
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, requestId: null })}
         onConfirm={processSend}
-        title={t('portal.pricing.form.sendConfirm')}
-        description={t('portal.pricing.form.sendConfirm')}
-        confirmText={t('portal.pricing.form.sendToClient')}
-        cancelText={t('portal.common.cancel')}
+        title={t('portal.pricing.form.sendConfirm' as any)}
+        description={t('portal.pricing.form.sendConfirm' as any)}
+        confirmText={t('portal.pricing.form.sendToClient' as any)}
+        cancelText={t('portal.common.cancel' as any)}
         isLoading={!!processingId}
       />
     </div>

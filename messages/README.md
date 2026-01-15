@@ -37,9 +37,10 @@ messages/src/
 
 ## Scripts
 
-- `npm run i18n:merge` - Merge source files into generated files
-- `npm run prebuild` - Automatically runs merge before build
-- `npm run predev` - Automatically runs merge before dev server
+- `npm run i18n:merge` - Merge source files into generated files (verbose output)
+- `node scripts/merge-translations.js --silent` - Merge with minimal output
+- `npm run prebuild` - Automatically runs merge before build (silent mode)
+- `npm run predev` - Automatically runs merge before dev server (silent mode)
 
 ## File Organization
 

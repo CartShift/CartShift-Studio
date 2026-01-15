@@ -19,7 +19,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PortalButton } from '@/components/portal/ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import {
   Consultation,
   CONSULTATION_TYPE_CONFIG,
@@ -41,28 +41,25 @@ const typeIcons: Record<ConsultationType, React.ElementType> = {
   support: Headphones,
 };
 
-
-
 export default function ConsultationsClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
   const { userData } = usePortalAuth();
-  const {
-    consultations,
-    loading: consultationsLoading,
-  } = useConsultations();
+  const { consultations, loading: consultationsLoading } = useConsultations();
 
   const { cancelMutation, isCanceling } = useConsultationMutations();
   const dateLocale = getDateLocale(locale);
 
   const now = new Date();
   const upcomingConsultations = consultations.filter(
-    c => c.status === CONSULTATION_STATUS.SCHEDULED &&
-    (c.scheduledAt?.toDate ? c.scheduledAt.toDate() > now : true)
+    c =>
+      c.status === CONSULTATION_STATUS.SCHEDULED &&
+      (c.scheduledAt?.toDate ? c.scheduledAt.toDate() > now : true)
   );
   const pastConsultations = consultations.filter(
-    c => c.status !== CONSULTATION_STATUS.SCHEDULED ||
-    (c.scheduledAt?.toDate ? c.scheduledAt.toDate() <= now : false)
+    c =>
+      c.status !== CONSULTATION_STATUS.SCHEDULED ||
+      (c.scheduledAt?.toDate ? c.scheduledAt.toDate() <= now : false)
   );
 
   const loading = consultationsLoading;
@@ -73,11 +70,7 @@ export default function ConsultationsClient() {
   };
 
   const handleCancel = async (consultation: Consultation) => {
-    if (
-      !confirm(
-        t('consultations.form.cancelConfirm')
-      )
-    ) {
+    if (!confirm(t('consultations.form.cancelConfirm'))) {
       return;
     }
 
@@ -86,7 +79,7 @@ export default function ConsultationsClient() {
         consultationId: consultation.id,
         orgId: consultation.orgId,
         userId: userData?.id || 'unknown',
-        userName: userData?.name || t('consultations.userFallback')
+        userName: userData?.name || t('consultations.userFallback'),
       });
 
       if (consultation.externalEventId) {
@@ -111,11 +104,11 @@ export default function ConsultationsClient() {
             {t('consultations.clientSubtitle')}
           </p>
         </div>
-        <PortalButton variant="primary" className="gap-2" onClick={handleScheduleClick}>
+        <Button variant="primary" className="gap-2" onClick={handleScheduleClick}>
           <Calendar size={18} />
           {t('consultations.scheduleCall')}
           <ExternalLink size={14} className="opacity-60" />
-        </PortalButton>
+        </Button>
       </div>
 
       {/* Upcoming Consultations */}
@@ -142,13 +135,11 @@ export default function ConsultationsClient() {
             <h3 className="text-base font-bold text-surface-700 dark:text-surface-300 mb-2">
               {t('consultations.noUpcoming')}
             </h3>
-            <p className="text-surface-500 text-sm mb-4">
-              {t('consultations.noUpcomingDesc')}
-            </p>
-            <PortalButton variant="outline" onClick={handleScheduleClick} className="gap-2">
+            <p className="text-surface-500 text-sm mb-4">{t('consultations.noUpcomingDesc')}</p>
+            <Button variant="outline" onClick={handleScheduleClick} className="gap-2">
               <Calendar size={16} />
               {t('consultations.scheduleNow')}
-            </PortalButton>
+            </Button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -201,7 +192,9 @@ export default function ConsultationsClient() {
                       )}
                       {consultation.agendaItems && consultation.agendaItems.length > 0 && (
                         <div className="mt-3">
-                          <p className="text-xs font-bold text-surface-500 mb-2">{t('consultations.agenda')}</p>
+                          <p className="text-xs font-bold text-surface-500 mb-2">
+                            {t('consultations.agenda')}
+                          </p>
                           <ul className="space-y-1">
                             {consultation.agendaItems.map((item, i) => (
                               <li
@@ -229,19 +222,23 @@ export default function ConsultationsClient() {
                         </a>
                       )}
                       <button
-                            disabled={isCanceling && cancelMutation.variables?.consultationId === consultation.id}
-                            onClick={() => handleCancel(consultation)}
-                            className="text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 px-3 py-2.5 min-h-[44px] rounded-xl transition-colors flex items-center gap-2 font-bold disabled:opacity-50 touch-manipulation active:scale-95"
-                          >
-                            {isCanceling && cancelMutation.variables?.consultationId === consultation.id ? (
-                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <XCircle size={16} />
-                            )}
-                            {isCanceling && cancelMutation.variables?.consultationId === consultation.id
-                              ? t('common.loading')
-                              : t('consultations.cancel')}
-                          </button>
+                        disabled={
+                          isCanceling &&
+                          cancelMutation.variables?.consultationId === consultation.id
+                        }
+                        onClick={() => handleCancel(consultation)}
+                        className="text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 px-3 py-2.5 min-h-[44px] rounded-xl transition-colors flex items-center gap-2 font-bold disabled:opacity-50 touch-manipulation active:scale-95"
+                      >
+                        {isCanceling &&
+                        cancelMutation.variables?.consultationId === consultation.id ? (
+                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <XCircle size={16} />
+                        )}
+                        {isCanceling && cancelMutation.variables?.consultationId === consultation.id
+                          ? t('common.loading')
+                          : t('consultations.cancel')}
+                      </button>
                     </div>
                   </div>
                 </motion.div>

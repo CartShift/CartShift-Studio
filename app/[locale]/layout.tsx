@@ -18,6 +18,7 @@ import { routing } from '@/i18n/routing';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { BrandingProvider } from '@/components/providers/BrandingProvider';
+import { ToastProvider } from '@/components/ui/Toast';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
@@ -173,7 +174,9 @@ export default async function LocaleLayout({
                 <GeoLocaleRedirect />
                 <GoogleAnalytics />
                 <AnalyticsProvider>
-                  <ConditionalLayout>{children}</ConditionalLayout>
+                  <ToastProvider>
+                    <ConditionalLayout>{children}</ConditionalLayout>
+                  </ToastProvider>
                 </AnalyticsProvider>
               </NextIntlClientProvider>
             </MotionConfig>

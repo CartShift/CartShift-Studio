@@ -2,8 +2,8 @@
 
 import React, { Component, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { PortalButton } from './ui/PortalButton';
-import { PortalCard } from './ui/PortalCard';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 interface Props {
   children: ReactNode;
@@ -56,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="flex items-center justify-center min-h-[400px] p-6">
-          <PortalCard className="max-w-md text-center border-amber-200 dark:border-amber-900/30 bg-amber-50/50 dark:bg-amber-900/10">
+          <Card className="max-w-md text-center border-amber-200 dark:border-amber-900/30 bg-amber-50/50 dark:bg-amber-900/10">
             <div className="flex flex-col items-center space-y-4">
               <div className="p-4 rounded-2xl bg-amber-100 dark:bg-amber-900/30">
                 <AlertTriangle className="w-8 h-8 text-amber-600 dark:text-amber-400" />
@@ -75,16 +75,16 @@ export class ErrorBoundary extends Component<Props, State> {
                 </pre>
               )}
               <div className="flex gap-3 pt-2">
-                <PortalButton onClick={this.handleReset} variant="outline" size="sm">
+                <Button onClick={this.handleReset} variant="outline" size="sm">
                   <RefreshCw size={16} className="me-2" />
                   Try Again
-                </PortalButton>
-                <PortalButton onClick={() => window.location.reload()} size="sm">
+                </Button>
+                <Button onClick={() => window.location.reload()} size="sm">
                   Refresh Page
-                </PortalButton>
+                </Button>
               </div>
             </div>
-          </PortalCard>
+          </Card>
         </div>
       );
     }

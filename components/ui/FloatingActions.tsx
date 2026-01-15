@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -83,7 +83,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.3 }}
             className={cn(
-              'floating-actions-container fixed bottom-6 end-6 z-50 hidden md:flex flex-col items-end gap-2',
+              'floating-actions-container fixed bottom-6 end-6 z-modal hidden md:flex flex-col items-end gap-2',
               className
             )}
           >
@@ -174,7 +174,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-0 inset-x-0 z-50 md:hidden safe-bottom"
+            className="fixed bottom-0 inset-x-0 z-modal md:hidden safe-bottom"
           >
             <div className="bg-white/98 dark:bg-surface-900/98 backdrop-blur-lg border-t border-surface-200 dark:border-surface-800 px-4 py-3 shadow-2xl">
               <div className="flex gap-2">
@@ -209,4 +209,3 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     </AnimatePresence>
   );
 };
-

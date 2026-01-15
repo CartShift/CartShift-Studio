@@ -43,6 +43,7 @@ export async function createOrganization(
   userEmail: string,
   userName?: string
 ): Promise<Organization> {
+  await waitForAuth();
   const db = getFirestoreDb();
   const slug = name
     .toLowerCase()
@@ -109,6 +110,7 @@ export async function getOrganization(orgId: string): Promise<Organization | nul
 }
 
 export async function getUserOrganizations(userId: string): Promise<Organization[]> {
+  await waitForAuth();
   const db = getFirestoreDb();
   // Get user's org IDs
   const userRef = doc(db, USERS_COLLECTION, userId);
@@ -174,12 +176,26 @@ export async function updateOrganization(
     shopifyAccessStatus?: 'pending' | 'requested' | 'connected' | 'revoked';
     shopifyAccessRequestedAt?: import('firebase/firestore').Timestamp;
     shopifyConnectedAt?: import('firebase/firestore').Timestamp;
+    responsibleAgencyUserId?: string | null;
   }
 ): Promise<void> {
+  await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, ORGS_COLLECTION, orgId);
   await updateDoc(docRef, {
     ...data,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteOrganization(orgId: string): Promise<void> {
+  await waitForAuth();
+  const db = getFirestoreDb();
+  // Soft delete
+  const docRef = doc(db, ORGS_COLLECTION, orgId);
+  await updateDoc(docRef, {
+    status: 'inactive',
+    removedAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
 }
@@ -207,8 +223,9 @@ export async function getOrganizationsWithStats(): Promise<
 
   const memberCounts: Record<string, number> = {};
   membersSnap.forEach(doc => {
-    const orgId = doc.data().orgId;
-    if (orgId) {
+    const data = doc.data();
+    const orgId = data.orgId;
+    if (orgId && !data.removedAt) {
       memberCounts[orgId] = (memberCounts[orgId] || 0) + 1;
     }
   });
@@ -257,6 +274,7 @@ async function addMember(
 }
 
 export async function getOrganizationMembers(orgId: string): Promise<OrganizationMember[]> {
+  await waitForAuth();
   const db = getFirestoreDb();
   const q = query(
     collection(db, MEMBERS_COLLECTION),
@@ -265,10 +283,12 @@ export async function getOrganizationMembers(orgId: string): Promise<Organizatio
   );
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as OrganizationMember[];
+  return snapshot.docs
+    .map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+    .filter(m => !(m as any).removedAt) as OrganizationMember[];
 }
 
 export async function getMemberByUserId(
@@ -419,6 +439,7 @@ export async function createInvite(
   invitedByName: string,
   data: InviteMemberData
 ): Promise<Invite> {
+  await waitForAuth();
   // Check if already a member if orgId exists
   if (orgId) {
     const existingMembers = await getOrganizationMembers(orgId);
@@ -710,10 +731,12 @@ export function subscribeToMembers(
   return onSnapshot(
     q,
     snapshot => {
-      const members = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as OrganizationMember[];
+      const members = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter(m => !(m as any).removedAt) as OrganizationMember[];
       callback(members);
     },
     error => {

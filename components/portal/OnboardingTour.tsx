@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from "@/lib/motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import {
   X,
   ChevronRight,
@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   Rocket,
 } from 'lucide-react';
-import { PortalButton } from './ui/PortalButton';
+import { Button } from '@/components/ui/Button';
 import { useTranslations, useLocale } from 'next-intl';
 import { isRTLLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
@@ -121,6 +121,12 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
   }, [currentStep]);
 
   const handleComplete = useCallback(async () => {
+    // Ensure we're on client side before using Firestore
+    if (typeof window === 'undefined') {
+      console.warn('handleComplete called on server side, skipping');
+      return;
+    }
+
     try {
       const db = getFirestoreDb();
       await updateDoc(doc(db, 'portal_users', userId), {
@@ -134,6 +140,12 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
   }, [userId, onComplete]);
 
   const handleSkip = useCallback(async () => {
+    // Ensure we're on client side before using Firestore
+    if (typeof window === 'undefined') {
+      console.warn('handleSkip called on server side, skipping');
+      return;
+    }
+
     try {
       const db = getFirestoreDb();
       await updateDoc(doc(db, 'portal_users', userId), {
@@ -264,14 +276,14 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
             <div className="flex items-center justify-between gap-4">
               {/* Previous Button */}
               {!isFirstStep ? (
-                <PortalButton
+                <Button
                   variant="outline"
                   onClick={handlePrev}
                   className="flex items-center gap-2 border-surface-200 dark:border-surface-700"
                 >
                   <ChevronLeft size={18} className={cn(isRTL && 'rotate-180')} />
                   {t('portal.onboarding.prev')}
-                </PortalButton>
+                </Button>
               ) : (
                 <div />
               )}
@@ -296,7 +308,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
               </div>
 
               {/* Next/Complete Button */}
-              <PortalButton
+              <Button
                 onClick={handleNext}
                 className="flex items-center gap-2 shadow-lg shadow-blue-500/20"
               >
@@ -311,7 +323,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
                     <ChevronRight size={18} className={cn(isRTL && 'rotate-180')} />
                   </>
                 )}
-              </PortalButton>
+              </Button>
             </div>
           </div>
 
@@ -325,6 +337,11 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
       </motion.div>
     </AnimatePresence>
   );
+
+  // Don't render if document.body is not available
+  if (typeof document === 'undefined' || !document.body) {
+    return null;
+  }
 
   return createPortal(tourContent, document.body);
 };

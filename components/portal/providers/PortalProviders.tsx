@@ -5,6 +5,7 @@ import { ToastProvider } from '@/components/portal/ui';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { OrgProvider } from '@/lib/context/OrgContext';
 import { ImpersonationProvider } from '@/lib/context/ImpersonationContext';
+import { UserPreferencesProvider } from '@/components/providers/UserPreferencesProvider';
 import { useDirection } from '@/lib/i18n-utils';
 
 interface PortalProvidersProps {
@@ -19,9 +20,11 @@ export function PortalProviders({ children }: PortalProvidersProps) {
     <QueryProvider>
       <ImpersonationProvider>
         <OrgProvider>
-          <ToastProvider position={toastPosition} maxToasts={5}>
-            {children}
-          </ToastProvider>
+          <UserPreferencesProvider>
+            <ToastProvider position={toastPosition} maxToasts={5}>
+              {children}
+            </ToastProvider>
+          </UserPreferencesProvider>
         </OrgProvider>
       </ImpersonationProvider>
     </QueryProvider>

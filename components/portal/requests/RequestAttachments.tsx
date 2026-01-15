@@ -12,15 +12,20 @@ import {
   Image as ImageIcon,
   Film,
   Music,
-  FileText
+  FileText,
 } from 'lucide-react';
 import { FileAttachment, Request } from '@/lib/types/portal';
-import { subscribeToRequestFiles, deleteFile, formatFileSize, getFileIcon } from '@/lib/services/portal-files';
-import { PortalCard } from '@/components/portal/ui/PortalCard';
-import { PortalFileImage } from '@/components/portal/ui/PortalFileImage';
+import {
+  subscribeToRequestFiles,
+  deleteFile,
+  formatFileSize,
+  getFileIcon,
+} from '@/lib/services/portal-files';
+import { Card } from '@/components/ui/Card';
+import { FileImage } from '@/components/ui/FileImage';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
-import { ImagePreviewModal } from '@/components/portal/ui/ImagePreviewModal';
+import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 
 interface RequestAttachmentsProps {
   request: Request;
@@ -33,25 +38,36 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
   const [files, setFiles] = useState<FileAttachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<{ url: string; name: string; storagePath?: string } | null>(null);
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    name: string;
+    storagePath?: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!orgId) return;
-    const unsubscribe = subscribeToRequestFiles(request.id, (data) => {
-      setFiles(data);
-      setLoading(false);
-    }, orgId);
+    const unsubscribe = subscribeToRequestFiles(
+      request.id,
+      data => {
+        setFiles(data);
+        setLoading(false);
+      },
+      orgId
+    );
     return () => unsubscribe();
   }, [request.id, orgId]);
 
   // Group files by originalName to show versions
-  const groupedFiles = files.reduce((acc, file) => {
-    if (!acc[file.originalName]) {
-      acc[file.originalName] = [];
-    }
-    acc[file.originalName].push(file);
-    return acc;
-  }, {} as Record<string, FileAttachment[]>);
+  const groupedFiles = files.reduce(
+    (acc, file) => {
+      if (!acc[file.originalName]) {
+        acc[file.originalName] = [];
+      }
+      acc[file.originalName].push(file);
+      return acc;
+    },
+    {} as Record<string, FileAttachment[]>
+  );
 
   // Sort versions within each group (highest version first)
   Object.keys(groupedFiles).forEach(key => {
@@ -69,17 +85,22 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
 
   const getIcon = (mime: string) => {
     const type = getFileIcon(mime);
-    switch(type) {
-      case 'Image': return <ImageIcon size={18} />;
-      case 'Video': return <Film size={18} />;
-      case 'Music': return <Music size={18} />;
-      case 'FileText': return <FileText size={18} />;
-      default: return <File size={18} />;
+    switch (type) {
+      case 'Image':
+        return <ImageIcon size={18} />;
+      case 'Video':
+        return <Film size={18} />;
+      case 'Music':
+        return <Music size={18} />;
+      case 'FileText':
+        return <FileText size={18} />;
+      default:
+        return <File size={18} />;
     }
   };
 
   return (
-    <PortalCard className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+    <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
@@ -103,16 +124,25 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
             const isExpanded = expandedFileId === fileName;
 
             return (
-              <div key={fileName} className="group flex flex-col border border-surface-100 dark:border-surface-800 rounded-2xl overflow-hidden shadow-sm hover:border-surface-200 dark:hover:border-surface-700 transition-all">
+              <div
+                key={fileName}
+                className="group flex flex-col border border-surface-100 dark:border-surface-800 rounded-2xl overflow-hidden shadow-sm hover:border-surface-200 dark:hover:border-surface-700 transition-all"
+              >
                 <div className="p-4 bg-white dark:bg-surface-950 flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
                     {latest.mimeType.startsWith('image/') ? (
                       <button
-                        onClick={() => setPreviewImage({ url: latest.url, name: fileName, storagePath: latest.storagePath })}
+                        onClick={() =>
+                          setPreviewImage({
+                            url: latest.url,
+                            name: fileName,
+                            storagePath: latest.storagePath,
+                          })
+                        }
                         className="w-12 h-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 flex-shrink-0 group-hover:border-blue-100 dark:group-hover:border-blue-900/30 transition-all hover:scale-105 cursor-pointer"
                         title="Click to preview"
                       >
-                        <PortalFileImage
+                        <FileImage
                           src={latest.url}
                           storagePath={latest.storagePath}
                           alt={fileName}
@@ -138,7 +168,9 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                       <p className="text-[10px] font-medium text-surface-400 flex items-center gap-2 mt-0.5 uppercase tracking-tighter">
                         {formatFileSize(latest.size)}
                         <span className="w-0.5 h-0.5 rounded-full bg-surface-300" />
-                        {latest.uploadedAt?.toDate ? format(latest.uploadedAt.toDate(), 'MMM d, h:mm a') : t('portal.common.recently')}
+                        {latest.uploadedAt?.toDate
+                          ? format(latest.uploadedAt.toDate(), 'MMM d, h:mm a')
+                          : t('portal.common.recently')}
                       </p>
                     </div>
                   </div>
@@ -173,13 +205,22 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
 
                 {isExpanded && (
                   <div className="bg-surface-50/50 dark:bg-surface-900/30 border-t border-surface-100 dark:border-surface-800 p-2 space-y-1">
-                    <p className="px-2 py-1 text-[9px] font-black text-surface-400 uppercase tracking-widest">{t('portal.requests.detail.versionHistory')}</p>
+                    <p className="px-2 py-1 text-[9px] font-black text-surface-400 uppercase tracking-widest">
+                      {t('portal.requests.detail.versionHistory')}
+                    </p>
                     {versions.slice(1).map(v => (
-                      <div key={v.id} className="p-2 flex items-center justify-between hover:bg-white dark:hover:bg-surface-900 rounded-xl transition-all group/v">
+                      <div
+                        key={v.id}
+                        className="p-2 flex items-center justify-between hover:bg-white dark:hover:bg-surface-900 rounded-xl transition-all group/v"
+                      >
                         <div className="flex items-center gap-3">
-                          <span className="text-[9px] font-black text-surface-400 uppercase">v{v.version}</span>
+                          <span className="text-[9px] font-black text-surface-400 uppercase">
+                            v{v.version}
+                          </span>
                           <span className="text-[10px] font-bold text-surface-500 uppercase tracking-tighter">
-                            {v.uploadedAt?.toDate ? format(v.uploadedAt.toDate(), 'MMM d, yyyy') : t('portal.common.recently')}
+                            {v.uploadedAt?.toDate
+                              ? format(v.uploadedAt.toDate(), 'MMM d, yyyy')
+                              : t('portal.common.recently')}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover/v:opacity-100 transition-opacity">
@@ -211,8 +252,12 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
       ) : (
         <div className="py-12 text-center bg-surface-50/50 dark:bg-surface-900/30 rounded-3xl border-2 border-dashed border-surface-200 dark:border-surface-800">
           <Paperclip className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-3 opacity-20" />
-          <h4 className="text-sm font-bold text-surface-900 dark:text-white font-outfit">{t('portal.requests.detail.noAttachments')}</h4>
-          <p className="text-xs text-surface-500 dark:text-surface-400">{t('portal.requests.detail.noAttachmentsDesc')}</p>
+          <h4 className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
+            {t('portal.requests.detail.noAttachments')}
+          </h4>
+          <p className="text-xs text-surface-500 dark:text-surface-400">
+            {t('portal.requests.detail.noAttachmentsDesc')}
+          </p>
         </div>
       )}
 
@@ -224,6 +269,6 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
         isOpen={!!previewImage}
         onClose={() => setPreviewImage(null)}
       />
-    </PortalCard>
+    </Card>
   );
 }

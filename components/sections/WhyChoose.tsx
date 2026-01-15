@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { SectionHeader } from '@/components/ui/Section';
 import { useTranslations } from 'next-intl';
 import { Parallax } from '@/components/ui/Parallax';
@@ -132,12 +132,9 @@ export const WhyChoose: React.FC = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(30,41,59,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(30,41,59,0.03)_1px,transparent_1px)] bg-[size:50px_50px] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)]"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-dropdown">
         <div className="relative">
-          <SectionHeader
-            title={t('whyChoose.title')}
-            subtitle={t('whyChoose.subtitle')}
-          />
+          <SectionHeader title={t('whyChoose.title')} subtitle={t('whyChoose.subtitle')} />
 
           {/* Bento Grid */}
           <motion.div
@@ -178,7 +175,7 @@ export const WhyChoose: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-primary-500/[0.03] via-transparent to-accent-500/[0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
                   )}
 
-                  <div className="relative z-10 h-full flex flex-col">
+                  <div className="relative z-dropdown h-full flex flex-col">
                     {/* Icon */}
                     <div className="mb-6">
                       <div
@@ -241,4 +238,3 @@ export const WhyChoose: React.FC = () => {
     </section>
   );
 };
-

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Search, Clock, ArrowRight, Sparkles, Calendar } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -103,7 +103,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
 
   return (
     <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-surface-900">
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-dropdown">
         {/* Featured Posts Section */}
         {!searchQuery && !selectedCategory && currentPage === 1 && (
           <motion.div
@@ -439,4 +439,3 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
     </section>
   );
 };
-

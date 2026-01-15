@@ -2,6 +2,7 @@ const { onRequest } = require('firebase-functions/v2/https');
 const { onDocumentCreated, onDocumentUpdated } = require('firebase-functions/v2/firestore');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
+const PDFDocument = require('pdfkit');
 const {
   sendEmailWithLogging,
   sendBatchEmails,
@@ -422,10 +423,25 @@ exports.onPortalRequestCreated = onDocumentCreated(
       .collection('portal_organizations')
       .doc(requestData.orgId)
       .get();
-    const orgName = orgSnap.exists ? orgSnap.data().name : 'Unknown Organization';
+
+    let toEmail = contactEmail.value() || 'hello@cart-shift.com';
+    let orgName = 'Unknown Organization';
+
+    if (orgSnap.exists) {
+      const orgData = orgSnap.data();
+      orgName = orgData.name;
+
+      // Check for responsible agent
+      if (orgData.responsibleAgencyUserId) {
+        const agentEmail = await getUserEmail(orgData.responsibleAgencyUserId);
+        if (agentEmail) {
+          toEmail = agentEmail;
+        }
+      }
+    }
 
     await sendPortalEmail(
-      contactEmail.value() || 'hello@cart-shift.com',
+      toEmail,
       `New Request: ${requestData.title}`,
       'new_request',
       {
@@ -601,9 +617,27 @@ exports.onPortalCommentCreated = onDocumentCreated(
     const authorSnap = await admin.firestore().collection('portal_users').doc(authorId).get();
     const isAgency = authorSnap.exists ? authorSnap.data().isAgency : false;
 
-    const targetEmail = isAgency
-      ? await getUserEmail(requestData.createdBy) // Agency commented -> Notify client
-      : contactEmail.value() || 'hello@cart-shift.com'; // Client commented -> Notify admin
+    let targetEmail;
+
+    if (isAgency) {
+      // Agency commented -> Notify client
+      targetEmail = await getUserEmail(requestData.createdBy);
+    } else {
+      // Client commented -> Notify responsible agent or admin
+      targetEmail = contactEmail.value() || 'hello@cart-shift.com';
+
+      // Fetch org to check for responsible agent
+      const orgSnap = await admin.firestore().collection('portal_organizations').doc(commentData.orgId).get();
+      if (orgSnap.exists) {
+        const orgData = orgSnap.data();
+        if (orgData.responsibleAgencyUserId) {
+          const agentEmail = await getUserEmail(orgData.responsibleAgencyUserId);
+          if (agentEmail) {
+            targetEmail = agentEmail;
+          }
+        }
+      }
+    }
 
     if (!targetEmail) return;
 

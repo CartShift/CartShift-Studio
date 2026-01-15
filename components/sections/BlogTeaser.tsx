@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { SectionHeader } from '@/components/ui/Section';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -27,11 +27,8 @@ export const BlogTeaser: React.FC = () => {
         <div className="absolute -bottom-[200px] start-0 w-[400px] h-[400px] bg-gradient-to-tr from-primary-500/10 via-primary-500/5 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary-500/5 via-transparent to-accent-500/5 rounded-full blur-3xl"></div>
       </div>
-      <div className="max-w-7xl mx-auto relative z-10">
-        <SectionHeader
-          title={t('blogTeaser.title')}
-          subtitle={t('blogTeaser.subtitle')}
-        />
+      <div className="max-w-7xl mx-auto relative z-dropdown">
+        <SectionHeader title={t('blogTeaser.title')} subtitle={t('blogTeaser.subtitle')} />
 
         {/* Featured Post - Full Width */}
         <motion.div
@@ -79,14 +76,11 @@ export const BlogTeaser: React.FC = () => {
 
                   <div className="flex items-center gap-4">
                     <span className="text-sm text-surface-500 dark:text-surface-400">
-                      {new Date(featuredPost.date).toLocaleDateString(
-                        getDateLocaleString(locale),
-                        {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        }
-                      )}
+                      {new Date(featuredPost.date).toLocaleDateString(getDateLocaleString(locale), {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
                     </span>
                     <span className="inline-flex items-center gap-2 text-accent-600 dark:text-accent-400 font-bold group-hover:gap-3 transition-all">
                       {t('blogTeaser.readMore')}
@@ -126,9 +120,7 @@ export const BlogTeaser: React.FC = () => {
                   <div className="h-full glass-effect rounded-2xl p-6 group hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 shadow-premium hover:shadow-premium-hover relative overflow-hidden">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="text-xs text-surface-500 dark:text-surface-400 uppercase tracking-wider">
-                        {new Date(post.date).toLocaleDateString(
-                          getDateLocaleString(locale)
-                        )}
+                        {new Date(post.date).toLocaleDateString(getDateLocaleString(locale))}
                       </span>
                       <span className="w-1 h-1 rounded-full bg-surface-300 dark:bg-surface-600"></span>
                       <span className="text-xs text-surface-500 dark:text-surface-400">
@@ -193,4 +185,3 @@ export const BlogTeaser: React.FC = () => {
     </section>
   );
 };
-

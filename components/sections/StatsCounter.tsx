@@ -128,7 +128,7 @@ export const StatsCounter: React.FC = () => {
         />
       </ParallaxLayer>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-dropdown">
         <motion.div
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
@@ -152,7 +152,7 @@ export const StatsCounter: React.FC = () => {
               <div className="relative h-full p-6 lg:p-8 rounded-2xl bg-white/10 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/20 hover:bg-white/15 dark:hover:bg-white/15 hover:border-white/30 dark:hover:border-white/30 transition-all duration-300 shadow-xl hover:shadow-2xl">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                <div className="relative z-10 text-center">
+                <div className="relative z-dropdown text-center">
                   <div className="flex items-center justify-center mb-4 text-white">
                     {stat.icon}
                   </div>

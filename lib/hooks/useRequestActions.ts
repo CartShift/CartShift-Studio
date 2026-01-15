@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import {
   acceptRequest,
   declineRequest,
@@ -10,6 +10,7 @@ import {
   assignRequest,
   requestRevision,
   updateRequestStatus,
+  deleteRequest,
 } from '@/lib/services/portal-requests';
 import { logActivity } from '@/lib/services/portal-activities';
 import { uploadFile } from '@/lib/services/portal-files';
@@ -47,6 +48,7 @@ interface UseRequestActionsResult {
 
   // Work actions
   handleStartWork: () => Promise<void>;
+  isStartingWork: boolean;
   handlePaymentSuccess: (result: { paymentId?: string }) => Promise<void>;
 
   // Assignment
@@ -67,6 +69,8 @@ interface UseRequestActionsResult {
   // Comments
   handleSendComment: (content: string, parentId?: string) => Promise<void>;
   isSubmittingComment: boolean;
+  handleDeleteRequest: () => Promise<boolean>;
+  isDeleting: boolean;
 }
 
 /**
@@ -102,19 +106,32 @@ export function useRequestActions({
   const [isAddingPricing, setIsAddingPricing] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
+  const [isStartingWork, setIsStartingWork] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
   const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Validation helper
+  // Refs for cleanup
+  const commentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup effect for timeouts
+  useEffect(() => {
+    return () => {
+      if (commentTimeoutRef.current) {
+        clearTimeout(commentTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Validation helper - silent validation, no toast for missing data during loading
   const canPerformAction = useCallback(() => {
     if (!requestId || !orgId || !userData) {
-      toast.error('Unable to perform action', 'Missing required data');
       return false;
     }
     return true;
-  }, [requestId, orgId, userData, toast]);
+  }, [requestId, orgId, userData]);
 
   // Add pricing to request
   const handleAddPricing = useCallback(
@@ -122,7 +139,7 @@ export function useRequestActions({
       if (!canPerformAction()) return false;
 
       const validItems = lineItems.filter(
-        (item) => item.description.trim() && item.quantity > 0 && item.unitPrice > 0
+        item => item.description.trim() && item.quantity > 0 && item.unitPrice > 0
       );
       if (validItems.length === 0) {
         toast.warning('Invalid pricing', 'Please add at least one valid line item');
@@ -187,12 +204,15 @@ export function useRequestActions({
   const handleStartWork = useCallback(async () => {
     if (!canPerformAction()) return;
 
+    setIsStartingWork(true);
     try {
       await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
       toast.success('Work started', 'The request is now in progress');
     } catch (err) {
       console.error('Error starting work:', err);
       toast.error('Failed to start work', 'Please try again');
+    } finally {
+      setIsStartingWork(false);
     }
   }, [canPerformAction, requestId, orgId, userData, toast]);
 
@@ -347,7 +367,7 @@ export function useRequestActions({
       };
 
       // Optimistic update
-      onCommentsUpdate?.((prev) => [...prev, optimisticComment]);
+      onCommentsUpdate?.(prev => [...prev, optimisticComment]);
 
       setIsSubmittingComment(true);
       try {
@@ -361,12 +381,15 @@ export function useRequestActions({
         );
 
         // Remove temp comment after real one arrives via subscription
-        setTimeout(() => {
-          onCommentsUpdate?.((prev) => prev.filter((c) => c.id !== tempId));
+        if (commentTimeoutRef.current) {
+          clearTimeout(commentTimeoutRef.current);
+        }
+        commentTimeoutRef.current = setTimeout(() => {
+          onCommentsUpdate?.(prev => prev.filter(c => c.id !== tempId));
         }, 1000);
       } catch (error) {
         console.error('Error sending comment:', error);
-        onCommentsUpdate?.((prev) => prev.filter((c) => c.id !== tempId));
+        onCommentsUpdate?.(prev => prev.filter(c => c.id !== tempId));
         toast.error('Failed to send message', 'Please try again');
       } finally {
         setIsSubmittingComment(false);
@@ -374,6 +397,40 @@ export function useRequestActions({
     },
     [canPerformAction, requestId, orgId, userData, onCommentsUpdate, toast]
   );
+
+  // Delete request
+  const handleDeleteRequest = useCallback(async (): Promise<boolean> => {
+    if (!canPerformAction()) return false;
+
+    // Updated validation to match Firestore rules
+    const isCreator = _request?.createdBy === userData?.id;
+
+    console.log('[handleDeleteRequest] Permission check:', {
+      isAgency,
+      isCreator,
+      userId: userData?.id,
+      requestCreator: _request?.createdBy,
+    });
+
+    if (!isAgency && !isCreator) {
+      console.error('Delete attempt denied: User is neither agency nor creator');
+      toast.error('Permission denied', 'You do not have permission to delete this request');
+      return false;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteRequest(requestId!);
+      toast.success('Request deleted', 'The request has been permanently removed');
+      return true;
+    } catch (err) {
+      console.error('Error deleting request:', err);
+      toast.error('Failed to delete request', 'Please try again');
+      return false;
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [canPerformAction, requestId, isAgency, toast]);
 
   return {
     handleAddPricing,
@@ -383,6 +440,7 @@ export function useRequestActions({
     isAccepting,
     isDeclining,
     handleStartWork,
+    isStartingWork,
     handlePaymentSuccess,
     handleAssignSpecialist,
     isAssigning,
@@ -393,5 +451,7 @@ export function useRequestActions({
     handleStatusChange,
     handleSendComment,
     isSubmittingComment,
+    handleDeleteRequest,
+    isDeleting,
   };
 }
