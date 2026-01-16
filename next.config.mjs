@@ -36,6 +36,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.plugins = config.plugins || [];

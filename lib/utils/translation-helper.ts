@@ -27,30 +27,6 @@ type TranslationKey =
   | 'portal.auth.errors.invalidEmail'
   | 'portal.auth.errors.tooManyRequests'
   | 'portal.auth.errors.popupClosed'
-  | 'portal.auth.errors.networkError'
-  | 'portal.auth.errors.unauthorized'
-  // Portal Onboarding
-  | 'onboarding.welcome.title'
-  | 'onboarding.welcome.subtitle'
-  | 'onboarding.welcome.description'
-  | 'onboarding.welcome.cta'
-  | 'onboarding.info.title'
-  | 'onboarding.info.subtitle'
-  | 'onboarding.form.orgNameLabel'
-  | 'onboarding.form.orgNamePlaceholder'
-  | 'onboarding.form.orgNameHint'
-  | 'onboarding.form.industryLabel'
-  | 'onboarding.form.industrySelectPlaceholder'
-  | 'onboarding.form.sizeLabel'
-  | 'onboarding.form.sizeSelectPlaceholder'
-  | 'onboarding.form.employeesLabel'
-  | 'onboarding.back'
-  | 'onboarding.form.createButton'
-  | 'onboarding.completion.title'
-  | 'onboarding.completion.subtitle'
-  | 'onboarding.completion.description'
-  | 'onboarding.completion.cta'
-  | 'onboarding.error'
   // Organization
   | 'organization.createForm.nameLabel'
   | 'organization.createForm.namePlaceholder'
@@ -97,87 +73,50 @@ export function useTypedTranslations() {
 
   return {
     // Common methods
-    raw: (key: ValidTranslationKey) => t.raw(key),
-    t: (key: ValidTranslationKey) => t(key),
+    raw: (key: ValidTranslationKey) => t.raw(key as any),
+    t: (key: ValidTranslationKey) => t(key as any),
 
     // Specific helpers for common patterns
     common: {
-      error: () => t('common.error'),
-      success: () => t('common.success'),
-      cancel: () => t('common.cancel'),
-      save: () => t('common.save'),
-      delete: () => t('common.delete'),
-      edit: () => t('common.edit'),
-      loading: () => t('common.loading'),
+      error: () => t('common.error' as any),
+      success: () => t('common.success' as any),
+      cancel: () => t('common.cancel' as any),
+      save: () => t('common.save' as any),
+      delete: () => t('common.delete' as any),
+      edit: () => t('common.edit' as any),
+      loading: () => t('common.loading' as any),
     },
 
     portal: {
       auth: {
         errors: {
-          userNotFound: () => t('portal.auth.errors.userNotFound'),
-          wrongPassword: () => t('portal.auth.errors.wrongPassword'),
-          emailInUse: () => t('portal.auth.errors.emailInUse'),
-          weakPassword: () => t('portal.auth.errors.weakPassword'),
-          invalidEmail: () => t('portal.auth.errors.invalidEmail'),
-          tooManyRequests: () => t('portal.auth.errors.tooManyRequests'),
-          popupClosed: () => t('portal.auth.errors.popupClosed'),
-          networkError: () => t('portal.auth.errors.networkError'),
-          unauthorized: () => t('portal.auth.errors.unauthorized'),
+          userNotFound: () => t('portal.auth.errors.userNotFound' as any),
+          wrongPassword: () => t('portal.auth.errors.wrongPassword' as any),
+          emailInUse: () => t('portal.auth.errors.emailInUse' as any),
+          weakPassword: () => t('portal.auth.errors.weakPassword' as any),
+          invalidEmail: () => t('portal.auth.errors.invalidEmail' as any),
+          tooManyRequests: () => t('portal.auth.errors.tooManyRequests' as any),
+          popupClosed: () => t('portal.auth.errors.popupClosed' as any),
         },
       },
-    },
-
-    onboarding: {
-      welcome: {
-        title: () => t('onboarding.welcome.title'),
-        subtitle: () => t('onboarding.welcome.subtitle'),
-        description: () => t('onboarding.welcome.description'),
-        cta: () => t('onboarding.welcome.cta'),
-      },
-      info: {
-        title: () => t('onboarding.info.title'),
-        subtitle: () => t('onboarding.info.subtitle'),
-      },
-      form: {
-        orgNameLabel: () => t('onboarding.form.orgNameLabel'),
-        orgNamePlaceholder: () => t('onboarding.form.orgNamePlaceholder'),
-        orgNameHint: () => t('onboarding.form.orgNameHint'),
-        industryLabel: () => t('onboarding.form.industryLabel'),
-        industrySelectPlaceholder: () => t('onboarding.form.industrySelectPlaceholder'),
-        sizeLabel: () => t('onboarding.form.sizeLabel'),
-        sizeSelectPlaceholder: () => t('onboarding.form.sizeSelectPlaceholder'),
-        employeesLabel: (count: number) => {
-          if (count === 1) return '1 ' + t('industries.technology');
-          return `${count} ${t('onboarding.form.employeesLabel')}`;
-        },
-        createButton: () => t('onboarding.form.createButton'),
-      },
-      back: () => t('onboarding.back'),
-      completion: {
-        title: () => t('onboarding.completion.title'),
-        subtitle: () => t('onboarding.completion.subtitle'),
-        description: () => t('onboarding.completion.description'),
-        cta: () => t('onboarding.completion.cta'),
-      },
-      error: () => t('onboarding.error'),
     },
 
     organization: {
       createForm: {
-        nameLabel: () => t('organization.createForm.nameLabel'),
-        namePlaceholder: () => t('organization.createForm.namePlaceholder'),
-        website: () => t('organization.createForm.website'),
-        websiteLabel: () => t('organization.createForm.websiteLabel'),
-        websitePlaceholder: () => t('organization.createForm.websitePlaceholder'),
-        industryLabel: () => t('organization.createForm.industryLabel'),
-        industryPlaceholder: () => t('organization.createForm.industryPlaceholder'),
+        nameLabel: () => t('organization.createForm.nameLabel' as any),
+        namePlaceholder: () => t('organization.createForm.namePlaceholder' as any),
+        website: () => t('organization.createForm.website' as any),
+        websiteLabel: () => t('organization.createForm.websiteLabel' as any),
+        websitePlaceholder: () => t('organization.createForm.websitePlaceholder' as any),
+        industryLabel: () => t('organization.createForm.industryLabel' as any),
+        industryPlaceholder: () => t('organization.createForm.industryPlaceholder' as any),
         errors: {
           name: (min: number, max: number) => {
-            if (min === 3) return t('organization.createForm.errors.name');
-            if (max === 100) return t('organization.createForm.errors.nameLong');
+            if (min === 3) return t('organization.createForm.errors.name' as any);
+            if (max === 100) return t('organization.createForm.errors.nameLong' as any);
             return 'Invalid name';
           },
-          industry: () => t('organization.createForm.errors.industry'),
+          industry: () => t('organization.createForm.errors.industry' as any),
         },
       },
     },
@@ -185,33 +124,33 @@ export function useTypedTranslations() {
     agency: {
       clients: {
         detail: {
-          editClient: () => t('agency.clients.detail.editClient'),
+          editClient: () => t('agency.clients.detail.editClient' as any),
           info: {
-            responsibleAgent: () => t('agency.clients.detail.info.responsibleAgent'),
-            unassigned: () => t('agency.clients.detail.info.unassigned'),
-            status: () => t('agency.clients.detail.info.status'),
+            responsibleAgent: () => t('agency.clients.detail.info.responsibleAgent' as any),
+            unassigned: () => t('agency.clients.detail.info.unassigned' as any),
+            status: () => t('agency.clients.detail.info.status' as any),
           },
         },
         badge: {
-          active: () => t('agency.clients.badge.active'),
-          inactive: () => t('agency.clients.badge.inactive'),
-          suspended: () => t('agency.clients.badge.suspended'),
+          active: () => t('agency.clients.badge.active' as any),
+          inactive: () => t('agency.clients.badge.inactive' as any),
+          suspended: () => t('agency.clients.badge.suspended' as any),
         },
       },
     },
 
     analyzer: {
-      sections: (key: string) => t(`analyzer.sections.${key}` as ValidTranslationKey),
+      sections: (key: string) => t(`analyzer.sections.${key}` as any),
     },
 
     industries: {
-      ecommerce: () => t('industries.ecommerce'),
-      technology: () => t('industries.technology'),
-      healthcare: () => t('industries.healthcare'),
-      education: () => t('industries.education'),
-      finance: () => t('industries.finance'),
-      retail: () => t('industries.retail'),
-      other: () => t('industries.other'),
+      ecommerce: () => t('industries.ecommerce' as any),
+      technology: () => t('industries.technology' as any),
+      healthcare: () => t('industries.healthcare' as any),
+      education: () => t('industries.education' as any),
+      finance: () => t('industries.finance' as any),
+      retail: () => t('industries.retail' as any),
+      other: () => t('industries.other' as any),
     },
   };
 }

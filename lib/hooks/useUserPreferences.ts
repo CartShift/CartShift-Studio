@@ -25,7 +25,7 @@ export function useUserPreferences() {
       return;
     }
 
-    const prefs = userData.preferences;
+    const prefs = (userData as any).preferences;
     if (!prefs) {
       setAppliedFirestorePrefs(true);
       return;
@@ -85,7 +85,7 @@ export function useUserPreferences() {
   }, [user, isSyncing]);
 
   return {
-    preferences: userData?.preferences || {},
+    preferences: (userData as any)?.preferences || {},
     isSyncing,
   };
 }

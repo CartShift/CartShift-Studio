@@ -143,10 +143,10 @@ export function useApplyGlobalModifiers(orgId: string) {
       return { previousConfigs };
     },
 
-    onError: (_variables, context) => {
+    onError: (_error, _variables, context) => {
       // Rollback all changes
       if (context?.previousConfigs) {
-        context.previousConfigs.forEach(({ id, data }) => {
+        context.previousConfigs.forEach(({ id, data }: { id: string; data: any }) => {
           if (data) {
             queryClient.setQueryData(['pricing-config', orgId, id], data);
           }
@@ -188,7 +188,7 @@ export function useRemovePricingConfig(orgId: string) {
       return { previousConfig, requestId };
     },
 
-    onError: (_requestId, context) => {
+    onError: (_error, requestId, context) => {
       if (context?.previousConfig) {
         queryClient.setQueryData(['pricing-config', orgId, requestId], context.previousConfig);
       }
@@ -199,7 +199,7 @@ export function useRemovePricingConfig(orgId: string) {
       toast.success('Pricing configuration removed');
     },
 
-    onSettled: _requestId => {
+    onSettled: (_data, _error, requestId) => {
       queryClient.invalidateQueries({ queryKey: ['pricing-config', orgId, requestId] });
     },
   });

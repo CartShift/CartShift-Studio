@@ -1,6 +1,34 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { ConsultationType, CONSULTATION_TYPE, CONSULTATION_TYPE_CONFIG } from '@/lib/types/portal';
+import { AnimatePresence, motion } from '@/lib/motion';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
+import {
+  CheckCircle2,
+  Calendar,
+  Clock,
+  ExternalLink,
+  LinkIcon,
+  Loader2,
+  AlertTriangle,
+  FileText,
+} from 'lucide-react';
+import {
+  getCalendarConnection,
+  getFreeBusyIntervals,
+  tryCreateCalendarEventForConsultation,
+  initiateGoogleOAuth,
+} from '@/lib/services/portal-google-calendar';
+
+// Helper function to open calendar event popup
+function openCalendarEventPopup(url: string): void {
+  window.open(url, '_blank', 'width=600,height=600');
+}
+import { createConsultation, CreateConsultationData } from '@/lib/services/portal-consultations';
 import {
   ModalBackdrop,
   ModalContent,
@@ -9,7 +37,26 @@ import {
   ModalFooter,
 } from '@/components/ui/ModalBackdrop';
 
+// Type icons mapping
+const typeIcons: Record<
+  ConsultationType,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
+  [CONSULTATION_TYPE.ONBOARDING]: Calendar,
+  [CONSULTATION_TYPE.STRATEGY]: FileText,
+  [CONSULTATION_TYPE.PROJECT_REVIEW]: CheckCircle2,
+  [CONSULTATION_TYPE.SUPPORT]: FileText,
+};
+
 // ... (removing unused imports X, createPortal)
+
+interface ScheduleConsultationFormProps {
+  orgId: string;
+  orgName: string;
+  clientEmail?: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}
 
 export default function ScheduleConsultationForm({
   orgId,

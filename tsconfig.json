@@ -44,5 +44,5 @@
     "build_out/types/**/*.ts",
     "build_out/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "tailwind.config.backup.ts"]
 }

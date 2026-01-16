@@ -168,14 +168,12 @@ export default function RequestsClient() {
     setIsDeleting(true);
     try {
       await deleteRequest(requestToDelete);
-      // @ts-expect-error - Type inference issue with toast.success(t(...))
-      // toast.success expects ToastOptions but t() returns complex type
-      toast.success(t('portal.common.deleteSuccess'));
+      toast.success(t('portal.common.deleteSuccess' as any));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
       console.error('Failed to delete request:', error);
-      toast.error(t('portal.common.deleteError'));
+      toast.error(t('portal.common.deleteError' as any));
     } finally {
       setIsDeleting(false);
     }

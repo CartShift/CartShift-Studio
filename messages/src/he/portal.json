@@ -202,7 +202,10 @@
       "goBack": "חזרה",
       "hours": "שעות",
       "estimated": "משוער",
-      "connected": "מחובר"
+      "connected": "מחובר",
+      "deleteSuccess": "נמחק בהצלחה",
+      "deleteError": "המחיקה נכשלה",
+      "clearFilters": "נקה מסננים"
     },
     "access": {
       "restrictedTitle": "הגישה מוגבלת",

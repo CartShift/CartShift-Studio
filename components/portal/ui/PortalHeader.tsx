@@ -31,7 +31,7 @@ const notificationButtonVariants = cva(
   }
 );
 
-interface HeaderUserData {
+export interface HeaderUserData {
   id: string;
   email: string;
   name?: string;

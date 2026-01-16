@@ -200,7 +200,10 @@
       "goBack": "Go Back",
       "hours": "hours",
       "estimated": "Est.",
-      "connected": "Connected"
+      "connected": "Connected",
+      "deleteSuccess": "Deleted successfully",
+      "deleteError": "Failed to delete",
+      "clearFilters": "Clear Filters"
     },
     "access": {
       "restrictedTitle": "Access Restricted",

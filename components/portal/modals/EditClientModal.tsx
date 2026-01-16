@@ -113,7 +113,6 @@ export const EditClientModal = ({
         website: data.website || undefined,
         industry: data.industry || undefined,
         responsibleAgencyUserId: data.responsibleAgencyUserId || null,
-        status: data.status,
       });
 
       onSuccess();

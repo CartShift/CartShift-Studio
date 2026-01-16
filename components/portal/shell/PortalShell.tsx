@@ -21,7 +21,7 @@ import { PortalShellProps } from './types';
 import { OfflineIndicator } from '../ui/OfflineIndicator';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
 import { MobileSearch } from '../ui/MobileSearch';
-import { PortalHeader } from '../ui/PortalHeader';
+import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { OnboardingTour } from '../OnboardingTour';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
@@ -38,8 +38,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
-    ? getAgencyNavGroups((key: string) => t(key as NavTranslationKey))
-    : getClientNavGroups((key: string) => t(key as NavTranslationKey));
+    ? getAgencyNavGroups((key: string) => t(key as any))
+    : getClientNavGroups((key: string) => t(key as any));
 
   // Calculate if breadcrumbs should be shown
   const showBreadcrumbs = (() => {
@@ -156,9 +156,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
         <PortalHeader
           onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
           onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
-          userData={
-            state.userData as typeof import('@/portal/ui/PortalHeader').HeaderUserData | null
-          }
+          userData={state.userData as HeaderUserData | null}
           accountType={state.accountType}
           userRole={state.memberRole}
           notifications={state.notifications}

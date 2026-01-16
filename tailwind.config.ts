@@ -138,17 +138,17 @@ const config: Config = {
       },
 
       zIndex: {
-        base: 0,
-        dropdown: 10,
-        sticky: 20,
-        header: 30,
-        sidebar: 40,
-        modal: 50,
-        'banner-fixed': 60,
-        tooltip: 100,
-        toast: 110,
-        'notification-badge': 120,
-        'always-on-top': 9999,
+        base: '0',
+        dropdown: '10',
+        sticky: '20',
+        header: '30',
+        sidebar: '40',
+        modal: '50',
+        'banner-fixed': '60',
+        tooltip: '100',
+        toast: '110',
+        'notification-badge': '120',
+        'always-on-top': '9999',
       },
 
       minHeight: {

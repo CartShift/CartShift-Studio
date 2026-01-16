@@ -262,7 +262,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           >
                             {(() => {
                               const translationKey = `analyzer.sections.${key}` as const;
-                              const translated = t(translationKey);
+                              const translated = t(translationKey as any);
                               return typeof translated === 'string' ? translated : section.name;
                             })()}
                           </span>

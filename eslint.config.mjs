@@ -48,6 +48,7 @@ export default [
 
             // Scripts (utility scripts, not app code)
             "scripts/**",
+            "dev-pro.mjs",
 
             // Config files
             "*.config.js",
@@ -103,19 +104,19 @@ export default [
                 varsIgnorePattern: "^_",
                 caughtErrorsIgnorePattern: "^_",
             }],
-            "@typescript-eslint/no-explicit-any": "off", // Too many to fix, disable for now
-            "@typescript-eslint/no-unused-expressions": "off", // Allow ternary expressions
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-unused-expressions": "off",
 
             // React rules
-            "react-hooks/exhaustive-deps": "off", // Translation function 't' triggers false positives
-            "react/react-in-jsx-scope": "off", // Not needed in Next.js
+            "react-hooks/exhaustive-deps": "off",
+            "react/react-in-jsx-scope": "off",
 
             // Next.js rules
-            "@next/next/no-img-element": "off", // Allow <img> for dynamic external images
+            "@next/next/no-img-element": "off",
 
             // General rules
             "prefer-const": "warn",
-            "no-console": "off", // Allow console for development logging
+            "no-console": "off",
         },
     },
     {
