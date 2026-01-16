@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { useViewTransition, type TransitionPreset } from '@/lib/hooks/useViewTransition';
+import { type TransitionPreset } from '@/lib/hooks/useViewTransition';
 
 export interface ViewTransitionWrapperProps {
   children: ReactNode;
@@ -17,17 +17,7 @@ export const ViewTransitionWrapper = ({
   preset = 'default',
   className,
   as: Component = 'div',
-  ...options
 }: ViewTransitionWrapperProps) => {
-  const { startViewTransition } = useViewTransition();
-
-  const applyTransition = async (callback: () => void) => {
-    await startViewTransition(callback, {
-      preset,
-      ...options,
-    });
-  };
-
   return (
     <Component className={className} data-view-transition-preset={preset}>
       {children}
