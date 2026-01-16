@@ -63,7 +63,7 @@ export default function OAuthCallbackClient() {
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
             </div>
             <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
-              Connecting Google Calendar
+              Google Calendar
             </h1>
             <p className="text-surface-500 dark:text-surface-400">
               Please wait while we complete the connection...
@@ -76,9 +76,7 @@ export default function OAuthCallbackClient() {
             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
-              Connected Successfully!
-            </h1>
+            <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">Connected !</h1>
             <p className="text-surface-500 dark:text-surface-400">
               Redirecting you back to settings...
             </p>
@@ -98,7 +96,7 @@ export default function OAuthCallbackClient() {
               onClick={() => router.push(getPortalPath('/agency/settings'))}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Back to Settings
+              Back to s
             </button>
           </>
         )}

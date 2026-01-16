@@ -13,12 +13,12 @@ interface FileImageProps {
 
 export function FileImage({ src, storagePath, alt, className, onError }: FileImageProps) {
   const [imageUrl, setImageUrl] = useState<string>(src);
-  const [isLoading, setIsLoading] = useState(true);
+  const [is, setIs] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setImageUrl(src);
-    setIsLoading(true);
+    setIs(true);
     setHasError(false);
   }, [src]);
 
@@ -29,20 +29,20 @@ export function FileImage({ src, storagePath, alt, className, onError }: FileIma
     }
 
     setHasError(true);
-    setIsLoading(true);
+    setIs(true);
 
     try {
       const freshUrl = await getFreshDownloadUrl(storagePath);
       if (freshUrl) {
         setImageUrl(freshUrl);
-        setIsLoading(false);
+        setIs(false);
       } else {
-        setIsLoading(false);
+        setIs(false);
         onError?.();
       }
     } catch (error) {
       console.error('Error getting fresh download URL:', error);
-      setIsLoading(false);
+      setIs(false);
       onError?.();
     }
   };
@@ -53,8 +53,8 @@ export function FileImage({ src, storagePath, alt, className, onError }: FileIma
       alt={alt}
       className={className}
       onError={handleError}
-      onLoad={() => setIsLoading(false)}
-      style={{ display: isLoading ? 'none' : 'block' }}
+      onLoad={() => setIs(false)}
+      style={{ display: is ? 'none' : 'block' }}
     />
   );
 }

@@ -657,7 +657,7 @@ export async function POST(request: NextRequest) {
 
     const platform = detectPlatform(html, normalizedUrl);
 
-    // 2. Try Fetching PageSpeed Data
+    // 2. Try  PageSpeed Data
     const pageSpeedData = await fetchPageSpeedData(normalizedUrl);
 
     let sections: AnalysisResult['sections'];

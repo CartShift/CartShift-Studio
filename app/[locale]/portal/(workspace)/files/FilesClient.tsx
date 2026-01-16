@@ -33,11 +33,11 @@ import { FileImage as PortalFileImage } from '@/components/ui/FileImage';
 export default function FilesClient() {
   const orgId = useResolvedOrgId();
   const [files, setFiles] = useState<FileAttachment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [deletingFile, setDeletingFile] = useState<string | null>(null);
+  const [deletingFile, setFile] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<{
     url: string;
     name: string;
@@ -50,7 +50,7 @@ export default function FilesClient() {
     async function fetchFiles() {
       if (!orgId || typeof orgId !== 'string') return;
 
-      setLoading(true);
+      set(true);
       setError(null);
       try {
         const data = await getFilesByOrg(orgId);
@@ -59,7 +59,7 @@ export default function FilesClient() {
         console.error('Error fetching files:', err);
         setError(t('portal.common.error'));
       } finally {
-        setLoading(false);
+        set(false);
       }
     }
 
@@ -90,7 +90,7 @@ export default function FilesClient() {
   const handleDeleteFile = async (fileId: string, storagePath: string) => {
     if (!confirm(t('portal.files.actions.deleteConfirm'))) return;
 
-    setDeletingFile(fileId);
+    setFile(fileId);
     try {
       await deleteFile(fileId, storagePath);
       if (orgId && typeof orgId === 'string') {
@@ -101,14 +101,14 @@ export default function FilesClient() {
       console.error('Error deleting file:', error);
       alert(t('portal.files.actions.deleteFailed'));
     } finally {
-      setDeletingFile(null);
+      setFile(null);
     }
   };
 
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse" role="status" aria-live="polite">
-        <span className="sr-only">Loading files...</span>
+        <span className="sr-only"> files...</span>
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <div className="h-8 w-48 bg-surface-200 dark:bg-surface-800 rounded-lg" />
@@ -251,7 +251,7 @@ export default function FilesClient() {
                           ? format(file.uploadedAt.toDate(), 'MMM d, yyyy', {
                               locale: getDateLocale(locale),
                             })
-                          : t('portal.files.recentlyAdded')}
+                          : t('portal.common.recently')}
                       </span>
 
                       <div className="flex items-center gap-2">
@@ -367,7 +367,7 @@ export default function FilesClient() {
                             ? format(file.uploadedAt.toDate(), 'MMM d, yyyy', {
                                 locale: getDateLocale(locale),
                               })
-                            : t('portal.files.recentlyAdded')}
+                            : t('portal.common.recently')}
                         </span>
                       </td>
                       <td className="px-6 py-5 text-end">

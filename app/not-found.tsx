@@ -3,14 +3,14 @@
 import { HomeIcon, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NotFound() {
+export default function Not() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
       <div className="max-w-md w-full text-center space-y-8">
         <div className="relative">
           <div className="text-9xl font-bold text-surface-200 dark:text-surface-800 select-none">
-          404
-        </div>
+            404
+          </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl shadow-blue-500/20 flex items-center justify-center transform -rotate-12">
               <span className="text-white text-4xl">?</span>
@@ -19,9 +19,7 @@ export default function NotFound() {
         </div>
 
         <div className="space-y-3">
-          <h1 className="text-3xl font-bold text-surface-900 dark:text-white">
-            Page Not Found
-          </h1>
+          <h1 className="text-3xl font-bold text-surface-900 dark:text-white">Page Not</h1>
           <p className="text-surface-600 dark:text-surface-400 leading-relaxed">
             The page you're looking for doesn't exist or has been moved.
           </p>

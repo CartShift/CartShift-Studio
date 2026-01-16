@@ -41,7 +41,9 @@ const searchInputVariants = cva(
   }
 );
 
-interface MobileSearchProps {
+import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
+
+export interface MobileSearchProps {
   isOpen: boolean;
   onClose: () => void;
   className?: string;
@@ -54,7 +56,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
-  const [recentSearches] = useState<string[]>(['Dashboard', 'Requests', 'Settings']);
+  const { recentSearches, addSearch } = useRecentSearches();
 
   // Focus input when opened
   useEffect(() => {
@@ -82,6 +84,9 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
 
   const handleSearch = (searchQuery: string) => {
     if (!searchQuery.trim()) return;
+
+    // Save to recent searches
+    addSearch(searchQuery);
 
     // Simple search navigation - could be enhanced with actual search
     const normalizedQuery = searchQuery.toLowerCase().trim();
@@ -130,7 +135,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-surface-950/60 backdrop-blur-md z-[100]"
+            className="fixed inset-0 bg-surface-950/60 backdrop-blur-md z-always-on-top"
             onClick={onClose}
           />
 
@@ -140,7 +145,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className={cn('fixed top-0 inset-x-0 z-[101] p-4', className)}
+            className={cn('fixed top-0 inset-x-0 z-always-on-top p-4', className)}
           >
             <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden max-w-lg mx-auto">
               {/* Search Input */}

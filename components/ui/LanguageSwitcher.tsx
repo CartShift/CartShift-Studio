@@ -185,12 +185,12 @@ export const LanguageSwitcher = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="fixed w-36 bg-white dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-white/10 overflow-hidden z-[60]"
+          className="fixed w-36 bg-white dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-white/10 overflow-hidden z-always-on-top"
           style={{
             top: `${position.top}px`,
             ...(isRtl
               ? {
-                  left: `${window.innerWidth - position.right - buttonRef.current!.getBoundingClientRect().width}px`,
+                  left: `${window.innerWidth - position.right - (buttonRef.current?.getBoundingClientRect().width || 0)}px`,
                 }
               : { right: `${position.right}px` }),
           }}

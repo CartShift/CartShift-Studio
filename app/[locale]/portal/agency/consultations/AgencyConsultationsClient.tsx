@@ -14,11 +14,11 @@ import {
   Search,
   CheckCircle2,
   XCircle,
-  Building2,
   UserPlus,
   Target,
   ClipboardCheck,
   Headphones,
+  Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
@@ -53,14 +53,14 @@ export default function AgencyConsultationsClient() {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
 
-  const { organizations, loading: clientsLoading } = useAgencyClients();
-  const { consultations, loading: consultationsLoading } = useConsultations({
+  const { organizations, loading: clients } = useAgencyClients();
+  const { consultations: consultationsData, loading: consultations } = useConsultations({
     status: statusFilter,
   });
   const { cancelMutation, completeMutation, isCanceling, isCompleting } =
     useConsultationMutations();
 
-  const loading = consultationsLoading || clientsLoading;
+  const loading = consultations || clients;
   const dateLocale = getDateLocale(locale);
 
   const orgNames = organizations.reduce(
@@ -71,7 +71,7 @@ export default function AgencyConsultationsClient() {
     {} as Record<string, string>
   );
 
-  const filteredConsultations = consultations.filter(c => {
+  const filteredConsultations = consultationsData.filter(c => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
@@ -113,7 +113,7 @@ export default function AgencyConsultationsClient() {
   };
 
   const now = new Date();
-  const upcomingCount = consultations.filter(
+  const upcomingCount = consultationsData.filter(
     c =>
       c.status === CONSULTATION_STATUS.SCHEDULED &&
       (c.scheduledAt?.toDate ? c.scheduledAt.toDate() > now : true)
@@ -224,7 +224,7 @@ export default function AgencyConsultationsClient() {
             </div>
             <div>
               <p className="text-2xl font-black text-surface-900 dark:text-white">
-                {consultations.filter(c => c.status === CONSULTATION_STATUS.COMPLETED).length}
+                {consultationsData.filter(c => c.status === CONSULTATION_STATUS.COMPLETED).length}
               </p>
               <p className="text-xs text-surface-500 font-medium">
                 {t('consultations.stats.completed')}
@@ -239,7 +239,7 @@ export default function AgencyConsultationsClient() {
             </div>
             <div>
               <p className="text-2xl font-black text-surface-900 dark:text-white">
-                {consultations.filter(c => c.status === CONSULTATION_STATUS.CANCELED).length}
+                {consultationsData.filter(c => c.status === CONSULTATION_STATUS.CANCELED).length}
               </p>
               <p className="text-xs text-surface-500 font-medium">
                 {t('consultations.stats.canceled')}
@@ -254,7 +254,7 @@ export default function AgencyConsultationsClient() {
             </div>
             <div>
               <p className="text-2xl font-black text-surface-900 dark:text-white">
-                {consultations.length}
+                {consultationsData.length}
               </p>
               <p className="text-xs text-surface-500 font-medium">
                 {t('consultations.stats.total')}

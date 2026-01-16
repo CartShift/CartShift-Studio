@@ -4,47 +4,37 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import React from 'react';
 
-const skeletonVariants = cva(
-  "bg-gradient-to-r from-surface-200 via-surface-100 to-surface-200 dark:from-surface-800 dark:via-surface-700 dark:to-surface-800",
-  {
-    variants: {
-      variant: {
-        default: "rounded-lg",
-        circular: "rounded-full",
-        rounded: "rounded-2xl",
-        text: "rounded-md h-4",
-        button: "rounded-xl",
-        badge: "rounded-lg",
-      },
-      animation: {
-        pulse: "animate-pulse",
-        shimmer: [
-          "bg-[length:400%_100%]",
-          "animate-[shimmer_2s_ease-in-out_infinite]",
-        ],
-        wave: [
-          "bg-[length:200%_100%]",
-          "animate-[shimmer_1.5s_ease-in-out_infinite]",
-        ],
-        none: "",
-      },
-      intensity: {
-        light: "opacity-60",
-        normal: "opacity-80",
-        strong: "opacity-100",
-      },
+const skeletonVariants = cva('', {
+  variants: {
+    variant: {
+      default: 'rounded-lg',
+      circular: 'rounded-full',
+      rounded: 'rounded-2xl',
+      text: 'rounded-md h-4',
+      button: 'rounded-xl',
+      badge: 'rounded-lg',
     },
-    defaultVariants: {
-      variant: "default",
-      animation: "shimmer",
-      intensity: "normal",
+    animation: {
+      pulse: 'animate-pulse bg-surface-200 dark:bg-surface-800',
+      shimmer: 'skeleton-shimmer',
+      wave: 'skeleton-shimmer',
+      none: 'bg-surface-200 dark:bg-surface-800',
     },
-  }
-);
+    intensity: {
+      light: 'opacity-60',
+      normal: 'opacity-80',
+      strong: 'opacity-100',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+    animation: 'shimmer',
+    intensity: 'normal',
+  },
+});
 
 interface SkeletonProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof skeletonVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof skeletonVariants> {
   width?: string | number;
   height?: string | number;
 }
@@ -80,10 +70,7 @@ export function SkeletonText({ lines = 3, className }: { lines?: number; classNa
         <Skeleton
           key={i}
           variant="text"
-          className={cn(
-            'h-4',
-            i === lines - 1 ? 'w-2/3' : i === lines - 2 ? 'w-5/6' : 'w-full'
-          )}
+          className={cn('h-4', i === lines - 1 ? 'w-2/3' : i === lines - 2 ? 'w-5/6' : 'w-full')}
           style={{ animationDelay: `${i * 100}ms` }}
         />
       ))}
@@ -91,25 +78,26 @@ export function SkeletonText({ lines = 3, className }: { lines?: number; classNa
   );
 }
 
-const avatarSizeVariants = cva(
-  "",
-  {
-    variants: {
-      size: {
-        xs: "w-6 h-6",
-        sm: "w-8 h-8",
-        md: "w-10 h-10",
-        lg: "w-12 h-12",
-        xl: "w-16 h-16",
-      },
+const avatarSizeVariants = cva('', {
+  variants: {
+    size: {
+      xs: 'w-6 h-6',
+      sm: 'w-8 h-8',
+      md: 'w-10 h-10',
+      lg: 'w-12 h-12',
+      xl: 'w-16 h-16',
     },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
-export function SkeletonAvatar({ size }: { size?: VariantProps<typeof avatarSizeVariants>['size'] }) {
+export function SkeletonAvatar({
+  size,
+}: {
+  size?: VariantProps<typeof avatarSizeVariants>['size'];
+}) {
   return <Skeleton variant="circular" className={avatarSizeVariants({ size })} />;
 }
 
@@ -140,11 +128,17 @@ export function SkeletonCard({ className }: { className?: string }) {
   );
 }
 
-export function SkeletonButton({ className, size = "md" }: { className?: string; size?: "sm" | "md" | "lg" }) {
+export function SkeletonButton({
+  className,
+  size = 'md',
+}: {
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+}) {
   const sizeClasses = {
-    sm: "h-8 w-20",
-    md: "h-10 w-24",
-    lg: "h-12 w-32",
+    sm: 'h-8 w-20',
+    md: 'h-10 w-24',
+    lg: 'h-12 w-32',
   };
   return <Skeleton variant="button" className={cn(sizeClasses[size], className)} />;
 }
@@ -160,7 +154,11 @@ export function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; column
       </div>
       {/* Rows */}
       {Array.from({ length: rows }).map((_, rowIndex) => (
-        <div key={rowIndex} className="flex gap-4 py-3" style={{ animationDelay: `${rowIndex * 50}ms` }}>
+        <div
+          key={rowIndex}
+          className="flex gap-4 py-3"
+          style={{ animationDelay: `${rowIndex * 50}ms` }}
+        >
           {Array.from({ length: columns }).map((_, colIndex) => (
             <Skeleton key={`row-${rowIndex}-col-${colIndex}`} className="h-4 flex-1" />
           ))}
@@ -173,7 +171,7 @@ export function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; column
 // New skeleton variants for specific use cases
 export function SkeletonList({ items = 4, className }: { items?: number; className?: string }) {
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn('space-y-3', className)}>
       {Array.from({ length: items }).map((_, i) => (
         <div
           key={i}
@@ -193,7 +191,7 @@ export function SkeletonList({ items = 4, className }: { items?: number; classNa
 
 export function SkeletonStats({ className }: { className?: string }) {
   return (
-    <div className={cn("grid grid-cols-2 md:grid-cols-4 gap-4", className)}>
+    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4', className)}>
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}

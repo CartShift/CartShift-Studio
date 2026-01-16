@@ -25,7 +25,7 @@ interface ContactFormData {
 
 export const ContactPageContent: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -36,7 +36,7 @@ export const ContactPageContent: React.FC = () => {
   const direction = useDirection();
 
   const onSubmit = async (data: ContactFormData) => {
-    setLoading(true);
+    set(true);
     setError(null);
 
     try {
@@ -56,7 +56,7 @@ export const ContactPageContent: React.FC = () => {
           : 'Something went wrong. Please try again or contact us directly.'
       );
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

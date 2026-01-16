@@ -10,11 +10,11 @@ import {
   DollarSign,
   Send,
   Eye,
-  Building2,
   Plus,
   X,
   ChevronRight,
   Calculator,
+  Building2,
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { Avatar } from '@/components/ui/Avatar';
@@ -47,7 +47,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 export default function AgencyPricingClient() {
   const [requests, setRequests] = useState<PricingRequest[]>([]);
   const [organizations, setOrganizations] = useState<Record<string, Organization>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,9 +59,9 @@ export default function AgencyPricingClient() {
   const locale = useLocale();
   const router = useRouter();
   const { switchOrg } = useOrg();
-  const { isAuthenticated, loading: authLoading, user, isAgency } = usePortalAuth();
+  const { isAuthenticated, loading: auth, user, isAgency } = usePortalAuth();
 
-  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [processingId, setId] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; requestId: string | null }>({
     isOpen: false,
     requestId: null,
@@ -80,7 +80,7 @@ export default function AgencyPricingClient() {
   ];
 
   useEffect(() => {
-    if (authLoading || !isAuthenticated || !user) {
+    if (auth || !isAuthenticated || !user) {
       return;
     }
 
@@ -102,23 +102,23 @@ export default function AgencyPricingClient() {
       }
     }
     fetchOrganizations();
-  }, [authLoading, isAuthenticated, user]);
+  }, [auth, isAuthenticated, user]);
 
   useEffect(() => {
-    setLoading(true);
+    set(true);
     setError(null);
 
     try {
       const unsubscribe = subscribeToAllPricingRequests(data => {
         setRequests(data);
-        setLoading(false);
+        set(false);
       });
 
       return () => unsubscribe();
     } catch (err) {
       console.error('Failed to subscribe to pricing requests:', err);
       setError(t('portal.common.error' as any));
-      setLoading(false);
+      set(false);
       // Return void explicitly for catch block
       return;
     }
@@ -138,7 +138,7 @@ export default function AgencyPricingClient() {
     if (!requestId) return;
 
     setConfirmModal(prev => ({ ...prev, isOpen: false }));
-    setProcessingId(requestId);
+    setId(requestId);
 
     try {
       await sendPricingRequest(requestId);
@@ -146,7 +146,7 @@ export default function AgencyPricingClient() {
       console.error('Failed to send pricing request:', err);
       // You might want to show a toast here instead of alert, but keeping logic simpler for now or rely on global error handler
     } finally {
-      setProcessingId(null);
+      setId(null);
     }
   };
 
@@ -740,7 +740,7 @@ export default function AgencyPricingClient() {
         description={t('portal.pricing.form.sendConfirm' as any)}
         confirmText={t('portal.pricing.form.sendToClient' as any)}
         cancelText={t('portal.common.cancel' as any)}
-        isLoading={!!processingId}
+        is={!!processingId}
       />
     </div>
   );

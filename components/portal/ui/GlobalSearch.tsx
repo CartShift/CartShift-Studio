@@ -12,6 +12,7 @@ import { subscribeToOrgRequests, subscribeToAllRequests } from '@/lib/services/p
 import { Badge } from '@/components/ui/Badge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { Logger } from '@/lib/logger';
 
 const searchInputVariants = cva(
   'w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
@@ -69,7 +70,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   const t = useTranslations();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [, setLoading] = useState(false);
+  const [, set] = useState(false);
   const [requests, setRequests] = useState<Request[]>([]);
   const [filteredResults, setFilteredResults] = useState<Request[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -82,12 +83,12 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   useEffect(() => {
     if (!orgId && !isAgency) return;
 
-    setLoading(true);
+    set(true);
     let unsubscribe: (() => void) | undefined;
 
     const handleData = (data: Request[]) => {
       setRequests(data);
-      setLoading(false);
+      set(false);
     };
 
     // Wait for auth before subscribing to prevent permission errors
@@ -103,8 +104,8 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           unsubscribe = subscribeToOrgRequests(orgId, handleData);
         }
       } catch (error) {
-        console.error('[GlobalSearch] Error setting up subscription:', error);
-        setLoading(false);
+        Logger.error('Error setting up subscription', error);
+        set(false);
       }
     };
 

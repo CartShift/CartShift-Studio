@@ -47,7 +47,7 @@ function userDataEqual(a: UserData | null, b: UserData | null): boolean {
     a.accountType === b.accountType &&
     a.isAgency === b.isAgency &&
     a.onboardingComplete === b.onboardingComplete &&
-    a.agencyRole === b.agencyRole && // Added check
+    a.agencyRole === b.agencyRole && //  check
     JSON.stringify(a.organizations) === JSON.stringify(b.organizations) &&
     JSON.stringify(a.notificationPreferences) === JSON.stringify(b.notificationPreferences)
   );
@@ -68,7 +68,7 @@ export function usePortalAuth() {
     }
     return null;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [error, setError] = useState<PortalErrorCode | null>(null);
   const isMountedRef = useRef(false);
   const pathname = usePathname();
@@ -88,7 +88,7 @@ export function usePortalAuth() {
         // CRITICAL: Unsubscribe from previous user data listener to prevent
         // "Missing or insufficient permissions" errors when the user logs out.
         if (unsubscribeUserData) {
-          console.log('[usePortalAuth] Cleaning up previous userData listener');
+          console.log('[usePortalAuth]  previous userData listener');
           unsubscribeUserData();
           unsubscribeUserData = undefined;
         }
@@ -114,14 +114,14 @@ export function usePortalAuth() {
             setUserData(prevData =>
               userDataEqual(prevData, fallbackData) ? prevData : fallbackData
             );
-            setLoading(false);
+            set(false);
             return;
           }
 
           // Subscribe to user data from Firestore
           // Ensure we're on client side before accessing Firestore
           if (typeof window === 'undefined') {
-            setLoading(false);
+            set(false);
             return;
           }
 
@@ -191,7 +191,7 @@ export function usePortalAuth() {
                 // Clear cache if user exists in Auth but not Firestore (rare edge case or new user)
                 localStorage.removeItem('portal_user_data');
               }
-              setLoading(false);
+              set(false);
             },
             err => {
               if (!isMountedRef.current) return;
@@ -226,7 +226,7 @@ export function usePortalAuth() {
                   setUserData(prevData =>
                     userDataEqual(prevData, fallbackData) ? prevData : fallbackData
                   );
-                  setLoading(false);
+                  set(false);
                   return;
                 }
               }
@@ -240,21 +240,21 @@ export function usePortalAuth() {
               }
 
               setError(getPortalError(err));
-              setLoading(false);
+              set(false);
             }
           );
         } else {
           if (!isMountedRef.current) return;
           setUserData(null);
           localStorage.removeItem('portal_user_data');
-          setLoading(false);
+          set(false);
         }
       });
     } catch (err) {
       if (!isMountedRef.current) return;
       console.error('Auth initialization error:', err);
       setError(getPortalError(err));
-      setLoading(false);
+      set(false);
     }
 
     // Cleanup subscriptions on unmount

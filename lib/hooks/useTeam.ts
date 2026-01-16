@@ -7,13 +7,14 @@ import { getOrganizationMembers, getInvitesByOrg } from '@/lib/services/portal-o
 
 export function useTeam() {
   const orgId = useResolvedOrgId();
-  const { loading: authLoading, isAuthenticated } = usePortalAuth();
+  const { loading: auth, isAuthenticated } = usePortalAuth();
 
-  const shouldFetch = isAuthenticated && !authLoading && orgId && typeof orgId === 'string' && orgId !== 'template';
+  const shouldFetch =
+    isAuthenticated && !auth && orgId && typeof orgId === 'string' && orgId !== 'template';
 
   const {
-    data: members = [],
-    isLoading: membersLoading,
+    data: membersData = [],
+    is: members,
     error: membersError,
   } = useQuery({
     queryKey: ['org-members', orgId],
@@ -24,8 +25,8 @@ export function useTeam() {
   });
 
   const {
-    data: invites = [],
-    isLoading: invitesLoading,
+    data: invitesData = [],
+    is: invites,
     error: invitesError,
   } = useQuery({
     queryKey: ['org-invites', orgId],
@@ -35,14 +36,15 @@ export function useTeam() {
     staleTime: 60 * 1000,
   });
 
-  const loading = authLoading || (shouldFetch && (membersLoading || invitesLoading));
-  const error = (membersError || invitesError) instanceof Error
-    ? (membersError || invitesError)?.message
-    : (membersError || invitesError as string | null);
+  const loading = auth || (shouldFetch && (members || invites));
+  const error =
+    (membersError || invitesError) instanceof Error
+      ? (membersError || invitesError)?.message
+      : membersError || (invitesError as string | null);
 
   return {
-    members,
-    invites,
+    members: membersData,
+    invites: invitesData,
     loading,
     error,
   };

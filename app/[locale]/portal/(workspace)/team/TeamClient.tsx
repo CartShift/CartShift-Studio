@@ -89,7 +89,7 @@ export default function TeamClient() {
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse" role="status" aria-live="polite">
-        <span className="sr-only">Loading team members...</span>
+        <span className="sr-only"> team members...</span>
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <PortalSkeleton className="h-8 w-48" />

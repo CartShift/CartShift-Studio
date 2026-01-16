@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   FileText,
 } from 'lucide-react';
+import { Logger } from '@/lib/logger';
 import {
   getCalendarConnection,
   getFreeBusyIntervals,
@@ -75,7 +76,7 @@ export default function ScheduleConsultationForm({
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   const [duration, setDuration] = useState(30);
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [success, setSuccess] = useState(false);
   const [calendarUrl, setCalendarUrl] = useState<string | null>(null);
   const [autoCreated, setAutoCreated] = useState(false);
@@ -83,7 +84,7 @@ export default function ScheduleConsultationForm({
 
   // Smart Calendar Features
   const [isConnected, setIsConnected] = useState(false);
-  const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [checkingAvailability, setAvailability] = useState(false);
   const [busySlots, setBusySlots] = useState<{ start: Date; end: Date }[]>([]);
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function ScheduleConsultationForm({
 
   useEffect(() => {
     if (isConnected && scheduledDate) {
-      setCheckingAvailability(true);
+      setAvailability(true);
       const dateObj = new Date(scheduledDate);
 
       // Expand the window to cover timezone differences
@@ -107,7 +108,7 @@ export default function ScheduleConsultationForm({
           setBusySlots(slots);
         })
         .finally(() => {
-          setCheckingAvailability(false);
+          setAvailability(false);
         });
     }
   }, [isConnected, scheduledDate]);
@@ -128,7 +129,7 @@ export default function ScheduleConsultationForm({
       return;
     }
 
-    setLoading(true);
+    set(true);
 
     try {
       const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`);
@@ -167,9 +168,9 @@ export default function ScheduleConsultationForm({
       setSuccess(true);
       onSuccess?.();
     } catch (error) {
-      console.error('Failed to create consultation:', error);
+      Logger.error('Failed to create consultation', error);
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 
@@ -357,7 +358,7 @@ export default function ScheduleConsultationForm({
                         {checkingAvailability ? (
                           <span className="flex items-center gap-1 text-surface-500">
                             <Loader2 size={12} className="animate-spin" />
-                            Checking availability...
+                            availability...
                           </span>
                         ) : hasConflict ? (
                           <motion.div
@@ -439,7 +440,7 @@ export default function ScheduleConsultationForm({
                     {loading ? (
                       <>
                         <Loader2 size={18} className="animate-spin" />
-                        Creating...
+                        ...
                       </>
                     ) : (
                       <>

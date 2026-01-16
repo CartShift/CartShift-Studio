@@ -45,7 +45,7 @@ interface CreateRequestFormProps {
 }
 
 export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -94,7 +94,7 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
       return;
     }
 
-    setLoading(true);
+    set(true);
     setError(null);
 
     try {
@@ -146,7 +146,7 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
       console.error('Create request error:', error);
       setError(error instanceof Error ? error.message : t('portal.requests.form.errors.generic'));
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

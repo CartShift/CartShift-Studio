@@ -3,6 +3,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { getFirebaseStorage, getFirestoreDb, getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import { v4 as uuidv4 } from 'uuid';
+import { Logger } from '@/lib/logger';
 
 /**
  * Construct a public Firebase Storage URL from a storage path
@@ -173,65 +174,36 @@ export async function deleteUserProfilePicture(userId: string, photoUrl: string)
  * @returns The download URL of the uploaded image
  */
 export async function uploadOrganizationLogo(orgId: string, file: File): Promise<string> {
-  console.log('🔥 [DEBUG] uploadOrganizationLogo started', {
-    orgId,
-    fileName: file.name,
-    fileSize: file.size,
-    fileType: file.type,
-  });
-
   await waitForAuth();
-  console.log('🔥 [DEBUG] Auth completed');
 
   // Validate file type
   if (!file.type.startsWith('image/')) {
     const error = 'Only image files are allowed';
-    console.error('🔥 [DEBUG] File type validation failed:', error);
+    Logger.error('File type validation failed', { error, fileType: file.type });
     throw new Error(error);
   }
 
   // Validate file size (max 2MB)
   if (file.size > 2 * 1024 * 1024) {
     const error = 'File size must be less than 2MB';
-    console.error('🔥 [DEBUG] File size validation failed:', error);
+    Logger.error('File size validation failed', { error, fileSize: file.size });
     throw new Error(error);
   }
 
   const storage = getFirebaseStorage();
   const db = getFirestoreDb();
-  const auth = getFirebaseAuth();
-
-  console.log('🔥 [DEBUG] Firebase services initialized', {
-    userId: auth.currentUser?.uid,
-    bucket: storage.app.options.storageBucket,
-  });
 
   // Generate unique filename
   const fileId = uuidv4();
   const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
   const storagePath = `org-logos/${orgId}/${fileId}.${extension}`;
 
-  console.log('🔥 [DEBUG] Storage path generated:', storagePath);
-
   // Upload to Storage
   const storageRef = ref(storage, storagePath);
-  console.log('🔥 [DEBUG] About to upload file to Storage');
   try {
     await uploadBytes(storageRef, file);
-    console.log('🔥 [DEBUG] File uploaded successfully to Storage');
   } catch (uploadError) {
-    console.error('🔥 [DEBUG] Storage upload failed:', uploadError);
-    console.error('🔥 [DEBUG] Upload error details:', {
-      code:
-        uploadError instanceof Error && 'code' in uploadError
-          ? (uploadError as any).code
-          : undefined,
-      message: uploadError instanceof Error ? uploadError.message : 'Unknown error',
-      serverResponse:
-        uploadError instanceof Error && 'serverResponse' in uploadError
-          ? (uploadError as any).serverResponse
-          : undefined,
-    });
+    Logger.error('Storage upload failed', uploadError);
     throw uploadError;
   }
 

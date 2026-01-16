@@ -141,7 +141,7 @@ export function PricingCalculator({
       {/* SECTION 1: GLOBAL SETTINGS */}
       {/* ============================================ */}
       <Card className="overflow-hidden border-surface-200 dark:border-surface-800">
-        {/* Global Settings Header */}
+        {/* Global s Header */}
         <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-950/30 dark:to-zinc-950/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-slate-500 to-zinc-600 rounded-xl flex items-center justify-center shadow-lg shadow-slate-500/20">
@@ -149,10 +149,10 @@ export function PricingCalculator({
             </div>
             <div>
               <h2 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.globalSettings')}
+                {t('portal.pricing.globals')}
               </h2>
               <p className="text-xs text-surface-500 dark:text-surface-400">
-                {t('portal.pricing.globalSettingsDesc')}
+                {t('portal.pricing.globalsDesc')}
               </p>
             </div>
           </div>

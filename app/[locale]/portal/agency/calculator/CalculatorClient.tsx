@@ -14,7 +14,7 @@ export default function CalculatorClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const { isAgency, loading: authLoading } = usePortalAuth();
+  const { isAgency, loading: auth } = usePortalAuth();
   const isRTL = locale === 'he';
 
   // Handle creating offer from calculator
@@ -37,7 +37,7 @@ export default function CalculatorClient() {
   };
 
   // Show loading state
-  if (authLoading) {
+  if (auth) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />

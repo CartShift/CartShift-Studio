@@ -23,7 +23,7 @@ export const InviteTeamMemberForm = ({
   onSuccess,
   onCancel,
 }: InviteTeamMemberFormProps) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userData } = usePortalAuth();
   const t = useTranslations();
@@ -49,7 +49,7 @@ export const InviteTeamMemberForm = ({
   });
 
   const onSubmit = async (data: InviteFormData) => {
-    setLoading(true);
+    set(true);
     setError(null);
 
     try {
@@ -79,7 +79,7 @@ export const InviteTeamMemberForm = ({
       console.error('Invite error:', error);
       setError(error instanceof Error ? error.message : t('portal.team.inviteForm.errors.generic'));
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

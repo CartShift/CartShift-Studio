@@ -4,6 +4,7 @@ import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { updateThemePreference } from '@/lib/services/portal-users';
+import { Logger } from '@/lib/logger';
 
 /**
  * Hook to sync user preferences (theme and language) with Firestore
@@ -16,52 +17,50 @@ export function useUserPreferences() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [appliedFirestorePrefs, setAppliedFirestorePrefs] = useState(false);
+  const [is, setIs] = useState(false);
+  const [appliedFirestorePrefs, setFirestorePrefs] = useState(false);
 
   // Apply Firestore preferences when user data loads
   useEffect(() => {
-    if (!user || !userData || appliedFirestorePrefs || isSyncing) {
+    if (!user || !userData || appliedFirestorePrefs || is) {
       return;
     }
 
     const prefs = (userData as any).preferences;
     if (!prefs) {
-      setAppliedFirestorePrefs(true);
+      setFirestorePrefs(true);
       return;
     }
 
     const applyPrefs = async () => {
-      setIsSyncing(true);
+      setIs(true);
 
       try {
         // Apply theme preference from Firestore
         if (prefs.theme) {
           setNextTheme(prefs.theme);
-          console.log('[useUserPreferences] Applied Firestore theme:', prefs.theme);
         }
 
         // Apply language preference from Firestore
         if (prefs.language && prefs.language !== locale) {
           const newPathname = pathname.replace(`/${locale}`, `/${prefs.language}`);
           router.push(newPathname);
-          console.log('[useUserPreferences] Applied Firestore language:', prefs.language);
         }
 
-        setAppliedFirestorePrefs(true);
+        setFirestorePrefs(true);
       } catch (error) {
-        console.error('[useUserPreferences] Error applying Firestore preferences:', error);
+        Logger.error('Error applying Firestore preferences', error);
       } finally {
-        setIsSyncing(false);
+        setIs(false);
       }
     };
 
     applyPrefs();
-  }, [user, userData, appliedFirestorePrefs, setNextTheme, locale, pathname, router, isSyncing]);
+  }, [user, userData, appliedFirestorePrefs, setNextTheme, locale, pathname, router, is]);
 
   // Update theme in Firestore when it changes locally
   useEffect(() => {
-    if (!user || isSyncing) {
+    if (!user || is) {
       return;
     }
 
@@ -75,17 +74,16 @@ export function useUserPreferences() {
 
       try {
         await updateThemePreference(user.uid, theme as 'light' | 'dark');
-        console.log('[useUserPreferences] Synced theme to Firestore:', theme);
       } catch (error) {
-        console.error('[useUserPreferences] Error syncing theme to Firestore:', error);
+        Logger.error('Error syncing theme to Firestore', error);
       }
     }, 500); // Debounce to avoid too many writes
 
     return () => clearTimeout(timeoutId);
-  }, [user, isSyncing]);
+  }, [user, is]);
 
   return {
     preferences: (userData as any)?.preferences || {},
-    isSyncing,
+    is,
   };
 }

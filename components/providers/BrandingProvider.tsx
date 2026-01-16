@@ -26,18 +26,18 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
       try {
         const cached = localStorage.getItem('cartshift_cached_branding');
         return cached ? JSON.parse(cached) : null;
-      } catch (e) {
+      } catch {
         return null;
       }
     }
     return null;
   });
-  const [loading, setLoading] = useState(() => !branding);
+  const [loading, set] = useState(() => !branding);
 
   useEffect(() => {
     // Early return for SSR - prevent all client-side code from running
     if (typeof window === 'undefined') {
-      setLoading(false);
+      set(false);
       return;
     }
 
@@ -101,7 +101,7 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
               console.log('No global branding found or accessible:', e);
             }
           } finally {
-            setLoading(false);
+            set(false);
           }
           return;
         }
@@ -197,17 +197,17 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
           }
           // Permission errors are expected if user doesn't have org membership yet
         } finally {
-          setLoading(false);
+          set(false);
         }
       } catch (error: any) {
         // Handle Firebase initialization errors (e.g., during build/SSR)
         if (error?.message?.includes('client side')) {
           // Expected during SSR - ignore
-          setLoading(false);
+          set(false);
           return;
         }
         console.error('Failed to initialize Firestore for branding:', error);
-        setLoading(false);
+        set(false);
       }
     }
 

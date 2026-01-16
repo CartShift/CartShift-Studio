@@ -5,7 +5,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
 import { isLoggingOut } from '@/lib/services/auth';
 import { OnboardingWizard } from '@/components/portal/onboarding/OnboardingWizard';
-import { PortalLoadingState } from '@/components/portal/shell/PortalLoadingState';
+import { PortalState } from '@/components/portal/shell/PortalLoadingState';
 
 export default function PortalRootClient() {
   const { userData, loading, isAuthenticated } = usePortalAuth();
@@ -59,7 +59,7 @@ export default function PortalRootClient() {
 
   // Show loading while authenticating
   if (loading || !userData) {
-    return <PortalLoadingState />;
+    return <PortalState />;
   }
 
   // Show organization creation form if user has no organizations
@@ -72,5 +72,5 @@ export default function PortalRootClient() {
   }
 
   // Fallback loading state (shouldn't normally reach here)
-  return <PortalLoadingState />;
+  return <PortalState />;
 }

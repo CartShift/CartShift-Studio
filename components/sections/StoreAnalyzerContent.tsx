@@ -24,6 +24,7 @@ import {
   Award,
 } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
+import { Logger } from '@/lib/logger';
 
 export interface AnalysisResult {
   storeUrl: string;
@@ -99,11 +100,11 @@ export const StoreAnalyzerContent: React.FC = () => {
 
     // Run progress animation in parallel with API call
     const steps = [
-      { progress: 10, label: t('analyzer.steps.connecting') || 'Connecting to store...' },
+      { progress: 10, label: t('analyzer.steps.connecting') || ' to store...' },
       { progress: 25, label: t('analyzer.steps.performance') || 'Analyzing performance...' },
-      { progress: 40, label: t('analyzer.steps.seo') || 'Checking SEO...' },
+      { progress: 40, label: t('analyzer.steps.seo') || ' SEO...' },
       { progress: 55, label: t('analyzer.steps.ux') || 'Evaluating UX...' },
-      { progress: 70, label: t('analyzer.steps.trust') || 'Checking trust signals...' },
+      { progress: 70, label: t('analyzer.steps.trust') || ' trust signals...' },
       { progress: 85, label: t('analyzer.steps.generating') || 'Generating report...' },
     ];
 
@@ -143,7 +144,7 @@ export const StoreAnalyzerContent: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 800));
       setState('results');
     } catch (error) {
-      console.error('Analysis error:', error);
+      Logger.error('Analysis error', error, { storeUrl: data.storeUrl });
       trackEvent('store_analysis_failed', {
         store_url: data.storeUrl,
         error_message: error instanceof Error ? error.message : String(error),
@@ -218,16 +219,16 @@ export const StoreAnalyzerContent: React.FC = () => {
           {/* Hero Section */}
           <section className="relative min-h-screen flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-8">
             {/* Animated Background */}
-            <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-gradient-to-br from-surface-950 via-surface-900 to-surface-950" />
-              <div className="absolute top-0 start-1/4 w-[600px] h-[600px] bg-primary-500/10 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-background via-surface-50 to-background dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 transition-colors duration-300" />
+              <div className="absolute top-0 start-1/4 w-[600px] h-[600px] bg-primary-500/10 dark:bg-primary-500/20 rounded-full blur-[120px] animate-pulse" />
               <div
-                className="absolute bottom-0 end-1/4 w-[500px] h-[500px] bg-accent-500/10 rounded-full blur-[100px] animate-pulse"
+                className="absolute bottom-0 end-1/4 w-[500px] h-[500px] bg-accent-500/10 dark:bg-accent-500/20 rounded-full blur-[100px] animate-pulse"
                 style={{ animationDelay: '1s' }}
               />
               <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-conic from-primary-500/5 via-transparent to-accent-500/5 rounded-full blur-[80px]" />
               {/* Grid Pattern */}
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
             </div>
 
             <div className="relative z-dropdown w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
@@ -244,10 +245,10 @@ export const StoreAnalyzerContent: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-500/20 to-accent-500/20 border border-primary-500/30 mb-6"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-500/10 to-accent-500/10 dark:from-primary-500/20 dark:to-accent-500/20 border border-primary-500/20 dark:border-primary-500/30 mb-6"
                   >
-                    <Sparkles className="w-4 h-4 text-primary-400" />
-                    <span className="text-sm font-medium text-white/90">
+                    <Sparkles className="w-4 h-4 text-primary-500 dark:text-primary-400" />
+                    <span className="text-sm font-medium text-surface-900 dark:text-white/90">
                       {t('analyzer.hero.badge') || 'Free Tool • No Credit Card Required'}
                     </span>
                   </motion.div>
@@ -259,12 +260,12 @@ export const StoreAnalyzerContent: React.FC = () => {
                     transition={{ delay: 0.2 }}
                     className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
                   >
-                    <span className="text-white">
+                    <span className="text-surface-900 dark:text-white">
                       {t('analyzer.hero.title')?.split(' ').slice(0, -2).join(' ') ||
                         'Free E-Commerce'}
                     </span>
                     <br />
-                    <span className="bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                    <span className="bg-gradient-to-r from-primary-600 via-accent-500 to-primary-600 dark:from-primary-400 dark:via-accent-400 dark:to-primary-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
                       {t('analyzer.hero.subtitle') || 'Store Analyzer'}
                     </span>
                   </motion.h1>
@@ -274,7 +275,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="text-lg text-white/60 mb-8 max-w-xl mx-auto lg:mx-0"
+                    className="text-lg text-surface-600 dark:text-white/60 mb-8 max-w-xl mx-auto lg:mx-0"
                   >
                     {t('analyzer.hero.description') ||
                       "Get actionable insights to boost your store's performance, SEO, and conversions. Instant results in 60 seconds."}
@@ -290,10 +291,14 @@ export const StoreAnalyzerContent: React.FC = () => {
                     {stats.map((stat, i) => (
                       <div key={i} className="text-center lg:text-start">
                         <div className="flex items-center justify-center lg:justify-start gap-2 mb-1">
-                          <stat.icon className="w-4 h-4 text-primary-400" />
-                          <span className="text-2xl font-bold text-white">{stat.value}</span>
+                          <stat.icon className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                          <span className="text-2xl font-bold text-surface-900 dark:text-white">
+                            {stat.value}
+                          </span>
                         </div>
-                        <span className="text-xs text-white/50">{stat.label}</span>
+                        <span className="text-xs text-surface-500 dark:text-white/50">
+                          {stat.label}
+                        </span>
                       </div>
                     ))}
                   </motion.div>
@@ -310,8 +315,11 @@ export const StoreAnalyzerContent: React.FC = () => {
                       { icon: Shield, text: t('analyzer.trust.secure') || 'Secure & private' },
                       { icon: Star, text: t('analyzer.trust.expert') || 'Expert insights' },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2 text-white/50">
-                        <item.icon className="w-4 h-4 text-emerald-400" />
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 text-surface-500 dark:text-white/50"
+                      >
+                        <item.icon className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                         <span className="text-sm">{item.text}</span>
                       </div>
                     ))}
@@ -326,19 +334,19 @@ export const StoreAnalyzerContent: React.FC = () => {
                 >
                   <div className="relative">
                     {/* Glow Effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/50 via-accent-500/50 to-primary-500/50 rounded-2xl blur-xl opacity-50" />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/30 via-accent-500/30 to-primary-500/30 dark:from-primary-500/50 dark:via-accent-500/50 dark:to-primary-500/50 rounded-2xl blur-xl opacity-50" />
 
                     {/* Form Card */}
-                    <div className="relative bg-surface-950/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 lg:p-8">
+                    <div className="relative bg-white dark:bg-surface-950/90 backdrop-blur-xl border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 shadow-premium">
                       <div className="flex items-center gap-3 mb-6">
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/25">
                           <BarChart3 className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <h2 className="text-xl font-bold text-white">
+                          <h2 className="text-xl font-bold text-surface-900 dark:text-white">
                             {t('analyzer.form.title') || 'Analyze Your Store'}
                           </h2>
-                          <p className="text-sm text-white/50">
+                          <p className="text-sm text-surface-500 dark:text-white/50">
                             {t('analyzer.form.subtitle') || 'Get your free report in 60 seconds'}
                           </p>
                         </div>
@@ -353,11 +361,11 @@ export const StoreAnalyzerContent: React.FC = () => {
                           nonce: undefined,
                         }}
                       >
-                        <AnalyzerForm onSubmit={handleAnalyze} variant="dark" />
+                        <AnalyzerForm onSubmit={handleAnalyze} />
                       </GoogleReCaptchaProvider>
 
-                      <div className="mt-6 pt-6 border-t border-white/10">
-                        <div className="flex items-center justify-center gap-2 text-white/40 text-xs">
+                      <div className="mt-6 pt-6 border-t border-surface-100 dark:border-white/10">
+                        <div className="flex items-center justify-center gap-2 text-surface-400 dark:text-white/40 text-xs">
                           <Shield className="w-3.5 h-3.5" />
                           <span>
                             {t('analyzer.form.privacy') ||
@@ -374,7 +382,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
           {/* Features Section */}
           <section className="relative py-20 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-surface-950 via-surface-900 to-surface-950" />
+            <div className="absolute inset-0 bg-white dark:bg-gradient-to-b dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 transition-colors duration-300" />
 
             <div className="relative z-dropdown max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -383,10 +391,10 @@ export const StoreAnalyzerContent: React.FC = () => {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                <h2 className="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-white mb-4">
                   {t('analyzer.whatYouGet.title') || "What You'll Get"}
                 </h2>
-                <p className="text-white/50 max-w-2xl mx-auto">
+                <p className="text-surface-600 dark:text-white/50 max-w-2xl mx-auto">
                   {t('analyzer.whatYouGet.description') ||
                     "A comprehensive analysis covering every aspect of your store's success."}
                 </p>
@@ -408,14 +416,18 @@ export const StoreAnalyzerContent: React.FC = () => {
                         backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))`,
                       }}
                     />
-                    <div className="relative h-full bg-white/5 hover:bg-white/[0.08] border border-white/10 hover:border-white/20 rounded-xl p-5 transition-all duration-300">
+                    <div className="relative h-full bg-white dark:bg-white/5 hover:bg-surface-50 dark:hover:bg-white/[0.08] border border-surface-200 dark:border-white/10 hover:border-primary-500/30 dark:hover:border-white/20 rounded-xl p-5 transition-all duration-300 shadow-sm hover:shadow-md">
                       <div
                         className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg`}
                       >
                         <feature.icon className="w-5 h-5 text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-white mb-1">{feature.title}</h3>
-                      <p className="text-sm text-white/50">{feature.description}</p>
+                      <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-surface-600 dark:text-white/50">
+                        {feature.description}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
@@ -425,7 +437,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
           {/* How It Works */}
           <section className="relative py-20 overflow-hidden">
-            <div className="absolute inset-0 bg-surface-950" />
+            <div className="absolute inset-0 bg-surface-50 dark:bg-surface-950 transition-colors duration-300" />
 
             <div className="relative z-dropdown max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -434,14 +446,14 @@ export const StoreAnalyzerContent: React.FC = () => {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                <h2 className="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-white mb-4">
                   {t('analyzer.howItWorks.title') || 'How It Works'}
                 </h2>
               </motion.div>
 
               <div className="relative">
                 {/* Connection Line */}
-                <div className="hidden md:block absolute top-12 start-[16.67%] end-[16.67%] h-0.5 bg-gradient-to-r from-primary-500/50 via-accent-500/50 to-primary-500/50" />
+                <div className="hidden md:block absolute top-12 start-[16.67%] end-[16.67%] h-0.5 bg-gradient-to-r from-primary-500/30 via-accent-500/30 to-primary-500/30 dark:from-primary-500/50 dark:via-accent-500/50 dark:to-primary-500/50" />
 
                 <div className="grid md:grid-cols-3 gap-8">
                   {[
@@ -479,15 +491,17 @@ export const StoreAnalyzerContent: React.FC = () => {
                       className="relative text-center"
                     >
                       <div className="relative inline-flex mb-6">
-                        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center">
-                          <item.icon className="w-10 h-10 text-primary-400" />
+                        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-500/10 to-accent-500/10 dark:from-primary-500/20 dark:to-accent-500/20 border border-surface-200 dark:border-white/10 flex items-center justify-center shadow-sm">
+                          <item.icon className="w-10 h-10 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div className="absolute -top-2 -end-2 w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/30">
                           {item.step}
                         </div>
                       </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                      <p className="text-white/50">{item.description}</p>
+                      <h3 className="text-xl font-semibold text-surface-900 dark:text-white mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-surface-600 dark:text-white/50">{item.description}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -497,7 +511,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
           {/* CTA Section */}
           <section className="relative py-20 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-primary-500/10 via-surface-900 to-surface-950" />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary-500/10 via-background to-background dark:via-surface-900 dark:to-surface-950 transition-colors duration-300" />
 
             <div className="relative z-dropdown max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <motion.div
@@ -505,16 +519,16 @@ export const StoreAnalyzerContent: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                <h2 className="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-white mb-4">
                   {t('analyzer.cta.title') || 'Ready to Improve Your Store?'}
                 </h2>
-                <p className="text-white/50 mb-8">
+                <p className="text-surface-600 dark:text-white/50 mb-8">
                   {t('analyzer.cta.description') ||
                     'Get your free analysis now and discover opportunities to boost conversions.'}
                 </p>
                 <button
                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-400 hover:to-accent-400 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-500 dark:to-accent-500 hover:from-primary-500 hover:to-accent-500 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5"
                 >
                   {t('analyzer.cta.analyzeNow') || 'Analyze My Store Now'}
                   <ArrowRight className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
@@ -531,9 +545,9 @@ export const StoreAnalyzerContent: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="min-h-screen flex items-center justify-center bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32"
+          className="min-h-screen flex items-center justify-center bg-background dark:bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32"
         >
-          <AnalyzingState progress={analyzingProgress} currentStep={currentStep} variant="dark" />
+          <AnalyzingState progress={analyzingProgress} currentStep={currentStep} />
         </motion.div>
       )}
 
@@ -543,10 +557,10 @@ export const StoreAnalyzerContent: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32 pb-12"
+          className="min-h-screen bg-background dark:bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32 pb-12"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AnalysisResults results={results} onReset={handleReset} variant="dark" />
+            <AnalysisResults results={results} onReset={handleReset} />
           </div>
         </motion.div>
       )}

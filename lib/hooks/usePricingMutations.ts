@@ -4,7 +4,7 @@ import {
   sendPricingRequest,
   acceptPricingRequest,
   declinePricingRequest,
-  cancelPricingRequest
+  cancelPricingRequest,
 } from '@/lib/services/pricing-requests';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -15,20 +15,25 @@ export function usePricingMutations() {
   const t = useTranslations('portal.pricing');
 
   const createMutation = useMutation({
-    mutationFn: ({ orgId, userId, userName, data }: {
+    mutationFn: ({
+      orgId,
+      userId,
+      userName,
+      data,
+    }: {
       orgId: string;
       userId: string;
       userName: string;
-      data: CreatePricingRequestData
+      data: CreatePricingRequestData;
     }) => createPricingRequest(orgId, userId, userName, data),
-    onSuccess: (pricingOffer) => {
+    onSuccess: pricingOffer => {
       toast.success(t('form.createSuccess' as any));
       queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
       queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
       queryClient.invalidateQueries({ queryKey: ['portal-requests'] });
       return pricingOffer;
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to create pricing request:', error);
       toast.error(t('form.errors.generic' as any)); // Generic error
     },
@@ -41,7 +46,7 @@ export function usePricingMutations() {
       queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
       queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to send pricing request:', error);
       toast.error(t('form.sendFailed' as any));
     },
@@ -56,7 +61,7 @@ export function usePricingMutations() {
       queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
       queryClient.invalidateQueries({ queryKey: ['portal-requests'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to accept pricing request:', error);
       toast.error(t('form.sendFailed' as any));
     },
@@ -70,7 +75,7 @@ export function usePricingMutations() {
       queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
       queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to decline pricing request:', error);
       toast.error(t('form.sendFailed' as any));
     },
@@ -84,7 +89,7 @@ export function usePricingMutations() {
       queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
       queryClient.invalidateQueries({ queryKey: ['portal-requests'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to cancel pricing request:', error);
       toast.error(t('form.deleteFailed' as any));
     },
@@ -93,11 +98,11 @@ export function usePricingMutations() {
   return {
     createMutation,
     createPricingRequest: createMutation.mutateAsync,
-    isCreating: createMutation.isPending,
+    is: createMutation.isPending,
 
     sendMutation,
     sendPricingRequest: sendMutation.mutateAsync,
-    isSending: sendMutation.isPending,
+    is: sendMutation.isPending,
 
     acceptMutation,
     acceptPricingRequest: acceptMutation.mutateAsync,

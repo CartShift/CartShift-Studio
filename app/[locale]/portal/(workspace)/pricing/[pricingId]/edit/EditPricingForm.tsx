@@ -76,7 +76,7 @@ export default function EditPricingForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -246,7 +246,7 @@ export default function EditPricingForm() {
     }
 
     setIsSubmitting(true);
-    if (shouldSend) setIsSending(true);
+    if (shouldSend) setIsDeleting(true);
     setSubmitStatus('idle');
     setErrorMessage(null);
 
@@ -289,9 +289,11 @@ export default function EditPricingForm() {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
-      setIsSending(false);
+      setIsDeleting(false);
     }
   };
+
+  const isSent = pricingRequest?.status === PRICING_STATUS.SENT;
 
   if (isLoading) {
     return (
@@ -342,10 +344,10 @@ export default function EditPricingForm() {
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-            {isSending ? 'Offer Sent!' : 'Changes Saved!'}
+            {isSent ? 'Offer Sent!' : 'Changes Saved!'}
           </h2>
           <p className="text-surface-500 dark:text-surface-400 max-w-sm">
-            {isSending
+            {isSent
               ? 'Your pricing offer has been sent to the client.'
               : 'Your changes have been saved successfully.'}
           </p>
@@ -729,8 +731,8 @@ export default function EditPricingForm() {
                 disabled={isSubmitting}
                 className="w-full h-12 flex items-center justify-center gap-2"
               >
-                {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
-                {isSending
+                {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
+                {isDeleting
                   ? t('portal.pricing.form.sending')
                   : t('portal.pricing.form.sendToClient')}
               </Button>
@@ -743,7 +745,7 @@ export default function EditPricingForm() {
               disabled={isSubmitting}
               className="w-full h-12 flex items-center justify-center gap-2"
             >
-              {isSubmitting && !isSending ? (
+              {isSubmitting && !isDeleting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <Save size={18} />

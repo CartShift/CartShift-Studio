@@ -11,7 +11,7 @@ import { SidebarBrand } from './SidebarBrand';
 import { SidebarNavigation } from './SidebarNavigation';
 import { OrganizationSwitcher } from './OrganizationSwitcher';
 import { SidebarFooter } from './SidebarFooter';
-import { PortalLoadingState } from './PortalLoadingState';
+import { PortalState } from './PortalLoadingState';
 import { PortalAccessDenied } from './PortalAccessDenied';
 import { getAgencyNavGroups, getClientNavGroups } from './constants';
 import { usePortalShellState } from './hooks/usePortalShellState';
@@ -20,9 +20,9 @@ import { PortalShellProps } from './types';
 // Existing UI components
 import { OfflineIndicator } from '../ui/OfflineIndicator';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
-import { MobileSearch } from '../ui/MobileSearch';
+import { MobileSearchWithErrorBoundary } from '../ui/MobileSearchWithErrorBoundary';
 import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
-import { NotificationDropdown } from '../ui/NotificationDropdown';
+import { NotificationDropdownWithErrorBoundary } from '../ui/NotificationDropdownWithErrorBoundary';
 import { OnboardingTour } from '../OnboardingTour';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
 import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
@@ -56,12 +56,11 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
   })();
 
   // Only show loading state on initial load, not during subsequent navigations
-  const showLoadingState =
-    !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
+  const showState = !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
 
   // Access denied state - only if explicitly denied (not null/loading)
   const showAccessDenied =
-    !showLoadingState && state.isAuthorized === false && !state.hasEverBeenAuthorized;
+    !showState && state.isAuthorized === false && !state.hasEverBeenAuthorized;
 
   return (
     <div
@@ -81,9 +80,9 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
         {t('portal.accessibility.skipToContent')}
       </a>
 
-      {showLoadingState ? (
+      {showState ? (
         <div className="flex min-h-screen bg-surface-50 dark:bg-surface-950">
-          <PortalLoadingState />
+          <PortalState />
         </div>
       ) : showAccessDenied ? (
         <PortalAccessDenied />
@@ -193,8 +192,9 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           {/* Portal Elements */}
           {state.mounted && typeof document !== 'undefined' && document.body
             ? createPortal(
-                <NotificationDropdown
+                <NotificationDropdownWithErrorBoundary
                   isOpen={state.isNotificationOpen}
+                  onClose={() => state.setIsNotificationOpen(false)}
                   notifications={state.notifications}
                   unreadCount={state.unreadCount}
                   onMarkAllAsRead={state.handleMarkAllAsRead}
@@ -216,7 +216,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           )}
 
           {/* Mobile Search */}
-          <MobileSearch
+          <MobileSearchWithErrorBoundary
             isOpen={state.isMobileSearchOpen}
             onClose={() => state.setIsMobileSearchOpen(false)}
           />

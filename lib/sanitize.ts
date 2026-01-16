@@ -97,10 +97,7 @@ export function sanitizeHtml(html: string): string {
       '*': ['id', 'data-*'],
     },
     allowedSchemes: ['http', 'https', 'mailto', 'tel'],
-    // Allow data attributes
     allowedSchemesAppliedToAttributes: ['href', 'src', 'cite'],
-    // Self-closing tags
-    selfClosing: ['img', 'br', 'hr', 'input', 'col'],
     // Transform tags if needed
     transformTags: {
       // Ensure external links open in new tab

@@ -24,10 +24,10 @@ const USERS_COLLECTION = 'portal_users';
 export default function InviteClient() {
   const { code } = useParams();
   const router = useRouter();
-  const { user, userData, loading: authLoading, isAuthenticated } = usePortalAuth();
+  const { user, userData, loading: auth, isAuthenticated } = usePortalAuth();
   const { switchOrg } = useOrg();
   const [invite, setInvite] = useState<Invite | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [accepting, setAccepting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -40,7 +40,7 @@ export default function InviteClient() {
 
       if (!code || typeof code !== 'string') {
         setError(t('portal.auth.errors.invalidCode'));
-        setLoading(false);
+        set(false);
         return;
       }
 
@@ -50,8 +50,8 @@ export default function InviteClient() {
         const inviteSnap = await getDoc(inviteRef);
 
         if (!inviteSnap.exists()) {
-          setError(t('portal.auth.errors.inviteNotFound'));
-          setLoading(false);
+          setError(t('portal.auth.errors.inviteNot'));
+          set(false);
           return;
         }
 
@@ -83,16 +83,16 @@ export default function InviteClient() {
         console.error('Error fetching invite:', error);
         setError(t('portal.auth.errors.genericInvite'));
       } finally {
-        setLoading(false);
+        set(false);
       }
     }
 
-    if (!authLoading && isAuthenticated) {
+    if (!auth && isAuthenticated) {
       fetchInvite();
-    } else if (!authLoading && !isAuthenticated) {
-      setLoading(false);
+    } else if (!auth && !isAuthenticated) {
+      set(false);
     }
-  }, [code, authLoading, t, isAuthenticated]);
+  }, [code, auth, t, isAuthenticated]);
 
   const handleAcceptInvite = async () => {
     if (!invite || !user || !userData) return;
@@ -106,7 +106,7 @@ export default function InviteClient() {
       const inviteSnap = await getDoc(inviteRef);
 
       if (!inviteSnap.exists()) {
-        throw new Error(t('portal.auth.errors.inviteNotFound'));
+        throw new Error(t('portal.auth.errors.inviteNot'));
       }
 
       const currentInvite = inviteSnap.data() as Invite;
@@ -169,7 +169,7 @@ export default function InviteClient() {
     }
   };
 
-  if (authLoading || loading) {
+  if (auth || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />

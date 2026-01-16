@@ -9,7 +9,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { useTranslations, useLocale } from 'next-intl';
 
-interface NotificationDropdownProps {
+export interface NotificationDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: Notification[];
@@ -40,7 +40,7 @@ export function NotificationDropdown({
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
-          className="fixed max-w-80 w-[calc(100vw-2rem)] bg-white/90 dark:bg-surface-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-surface-200/60 dark:border-surface-800/50 overflow-hidden z-[100]"
+          className="fixed max-w-80 w-[calc(100vw-2rem)] bg-white/90 dark:bg-surface-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-surface-200/60 dark:border-surface-800/50 overflow-hidden z-always-on-top"
           style={{
             top: `${position.top}px`,
             right: position.right !== undefined ? `${position.right}px` : undefined,
@@ -75,7 +75,7 @@ export function NotificationDropdown({
               </div>
             ) : (
               <div className="divide-y divide-surface-100 dark:divide-surface-800/50">
-                {notifications.map((notification) => {
+                {notifications.map(notification => {
                   const createdAt = notification.createdAt?.toDate
                     ? notification.createdAt.toDate()
                     : new Date();

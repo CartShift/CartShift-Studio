@@ -212,7 +212,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
               <Icon name="search" size={32} className="text-surface-400" />
             </div>
             <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
-              {(work as any).empty?.title || 'No Projects Found'}
+              {(work as any).empty?.title || 'No Projects '}
             </h3>
             <p className="text-surface-500 dark:text-surface-400">
               {(work as any).empty?.description || 'Try changing the filter to see more projects.'}

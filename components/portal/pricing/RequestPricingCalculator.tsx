@@ -70,8 +70,8 @@ interface RequestPricingCalculatorProps {
   onLineItemsChange: (items: LineItemOutput[]) => void;
   /** Currency for calculations */
   currency: Currency;
-  /** Loading state */
-  isLoading?: boolean;
+  /**  state */
+  is?: boolean;
   /** Error message */
   error?: string | null;
   /** Callback to open quick add request modal/form */
@@ -103,7 +103,7 @@ export function RequestPricingCalculator({
   onSelectionChange,
   onLineItemsChange,
   currency,
-  isLoading = false,
+  is = false,
   error = null,
   onQuickAddRequest,
   className,
@@ -214,7 +214,7 @@ export function RequestPricingCalculator({
 
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Global Settings */}
+      {/* Global s */}
       <GlobalModifiers
         urgent={globalUrgent}
         recurring={globalRecurring}
@@ -234,7 +234,7 @@ export function RequestPricingCalculator({
         expandedRequests={expandedRequests}
         pricingResults={pricingResults}
         currency={currency}
-        isLoading={isLoading}
+        is={is}
         error={error}
       />
 

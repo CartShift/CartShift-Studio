@@ -9,13 +9,7 @@ import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedRequestId } from '@/lib/hooks/useResolvedRequestId';
-import {
-  Request,
-  Comment,
-  Organization,
-  ActivityLog,
-  PortalUser,
-} from '@/lib/types/portal';
+import { Request, Comment, Organization, ActivityLog, PortalUser } from '@/lib/types/portal';
 
 export interface UseRequestDetailResult {
   // Data
@@ -51,7 +45,7 @@ export interface UseRequestDetailResult {
 export function useRequestDetail(): UseRequestDetailResult {
   const orgId = useResolvedOrgId();
   const requestId = useResolvedRequestId();
-  const { userData, isAgency, loading: authLoading, isAuthenticated } = usePortalAuth();
+  const { userData, isAgency, loading: auth, isAuthenticated } = usePortalAuth();
   const queryClient = useQueryClient();
 
   const enabled = Boolean(isAuthenticated && requestId && typeof requestId === 'string');
@@ -59,8 +53,8 @@ export function useRequestDetail(): UseRequestDetailResult {
   // 1. Request Detail
   const {
     data: request,
-    isLoading: requestLoading,
-    error: requestError
+    is: request,
+    error: requestError,
   } = useQuery({
     queryKey: ['request', requestId],
     queryFn: () => getRequest(requestId as string),
@@ -69,34 +63,29 @@ export function useRequestDetail(): UseRequestDetailResult {
   });
 
   // 2. Comments
-  const {
-    data: comments = []
-  } = useQuery({
+  const { data: comments = [] } = useQuery({
     queryKey: ['request-comments', requestId, orgId],
-    queryFn: () => getCommentsByRequest(
-      requestId as string,
-      Boolean(userData?.isAgency),
-      typeof orgId === 'string' ? orgId : undefined
-    ),
+    queryFn: () =>
+      getCommentsByRequest(
+        requestId as string,
+        Boolean(userData?.isAgency),
+        typeof orgId === 'string' ? orgId : undefined
+      ),
     enabled, // orgId is optional - comments are already linked to requestId
     refetchInterval: 5000, // Poll every 5s for new comments (simulating real-time lite)
   });
 
-
   // 3. Activities
-  const {
-    data: activities = []
-  } = useQuery({
+  const { data: activities = [] } = useQuery({
     queryKey: ['request-activities', requestId],
-    queryFn: () => getRequestActivities(requestId as string, typeof orgId === 'string' ? orgId : undefined),
+    queryFn: () =>
+      getRequestActivities(requestId as string, typeof orgId === 'string' ? orgId : undefined),
     enabled: enabled && Boolean(orgId),
     refetchInterval: 10000, // Poll every 10s for activities
   });
 
   // 4. Organization (Static-ish)
-  const {
-    data: organization
-  } = useQuery({
+  const { data: organization } = useQuery({
     queryKey: ['organization', orgId],
     queryFn: () => getOrganization(orgId as string),
     enabled: Boolean(orgId && typeof orgId === 'string' && isAuthenticated),
@@ -104,9 +93,7 @@ export function useRequestDetail(): UseRequestDetailResult {
   });
 
   // 5. Agency Team (Static-ish)
-  const {
-    data: agencyTeam = []
-  } = useQuery({
+  const { data: agencyTeam = [] } = useQuery({
     queryKey: ['agency-team'],
     queryFn: getAgencyTeam,
     enabled: Boolean(isAgency && isAuthenticated),
@@ -117,7 +104,7 @@ export function useRequestDetail(): UseRequestDetailResult {
   // This bridges the gap for components expecting setComments
   const setComments = (action: React.SetStateAction<Comment[]>) => {
     // We need to match the key used in useQuery above: ['request-comments', requestId, orgId]
-    queryClient.setQueryData<Comment[]>(['request-comments', requestId, orgId], (oldData) => {
+    queryClient.setQueryData<Comment[]>(['request-comments', requestId, orgId], oldData => {
       const current = oldData || [];
       if (typeof action === 'function') {
         return action(current);
@@ -131,7 +118,8 @@ export function useRequestDetail(): UseRequestDetailResult {
   const showAgencyActions = canAct && isAgency;
   const showClientActions = canAct && !isAgency;
 
-  const errorMsg = requestError instanceof Error ? requestError.message : (requestError as string | null);
+  const errorMsg =
+    requestError instanceof Error ? requestError.message : (requestError as string | null);
 
   return {
     request: request || null,
@@ -143,7 +131,7 @@ export function useRequestDetail(): UseRequestDetailResult {
     isAgency,
     orgId: typeof orgId === 'string' ? orgId : null,
     requestId: typeof requestId === 'string' ? requestId : null,
-    loading: authLoading || requestLoading,
+    loading: auth || request,
     error: errorMsg,
     canAct,
     showAgencyActions,

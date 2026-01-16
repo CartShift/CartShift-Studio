@@ -116,7 +116,7 @@ const ProcessStep: React.FC<ProcessStepExtendedProps> = ({
       <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-base md:text-lg shadow-lg shadow-primary-500/25">
         {number}
       </div>
-      {/* Connecting line - hidden for last item */}
+      {/*  line - hidden for last item */}
       {!isLast && (
         <div className="absolute top-10 md:top-12 start-1/2 -translate-x-1/2 w-px h-[calc(100%-1rem)] bg-gradient-to-b from-primary-500/40 to-transparent" />
       )}

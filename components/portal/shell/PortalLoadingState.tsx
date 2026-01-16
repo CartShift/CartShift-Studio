@@ -2,7 +2,7 @@
 
 import { Skeleton, SkeletonAvatar } from '@/components/ui/Skeleton';
 
-export function PortalLoadingState() {
+export function PortalState() {
   return (
     <>
       {/* Container that matches side-by-side layout of shell */}

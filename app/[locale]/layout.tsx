@@ -18,6 +18,7 @@ import { routing } from '@/i18n/routing';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { BrandingProvider } from '@/components/providers/BrandingProvider';
+import { Logger } from '@/lib/logger';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
@@ -29,7 +30,7 @@ function loadMessages(locale: 'en' | 'he') {
     return JSON.parse(trimmed);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Failed to load messages for locale ${locale}:`, errorMessage);
+    Logger.error('Failed to load messages', { locale, error: errorMessage });
 
     if (locale === 'en') {
       throw new Error(`Failed to load English messages: ${errorMessage}`);
@@ -146,7 +147,7 @@ export default async function LocaleLayout({
   try {
     schemaJson = JSON.stringify(orgSchema);
   } catch (error) {
-    console.error('Failed to stringify organization schema:', error);
+    Logger.error('Failed to stringify organization schema', error);
     schemaJson = '{}';
   }
 
@@ -168,7 +169,7 @@ export default async function LocaleLayout({
                 mass: 0.8,
               }}
             >
-              <NextIntlClientProvider messages={messages} locale={locale}>
+              <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
                 <LocaleAttributes />
                 <GeoLocaleRedirect />
                 <GoogleAnalytics />

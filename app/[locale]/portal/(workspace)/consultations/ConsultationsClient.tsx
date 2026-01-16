@@ -45,24 +45,24 @@ export default function ConsultationsClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
   const { userData } = usePortalAuth();
-  const { consultations, loading: consultationsLoading } = useConsultations();
+  const { consultations: consultationsData, loading: consultations } = useConsultations();
 
   const { cancelMutation, isCanceling } = useConsultationMutations();
   const dateLocale = getDateLocale(locale);
 
   const now = new Date();
-  const upcomingConsultations = consultations.filter(
+  const upcomingConsultations = consultationsData.filter(
     c =>
       c.status === CONSULTATION_STATUS.SCHEDULED &&
       (c.scheduledAt?.toDate ? c.scheduledAt.toDate() > now : true)
   );
-  const pastConsultations = consultations.filter(
+  const pastConsultations = consultationsData.filter(
     c =>
       c.status !== CONSULTATION_STATUS.SCHEDULED ||
       (c.scheduledAt?.toDate ? c.scheduledAt.toDate() <= now : false)
   );
 
-  const loading = consultationsLoading;
+  const loading = consultations;
 
   const handleScheduleClick = () => {
     trackBookCallClick('portal_consultations');

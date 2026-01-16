@@ -38,11 +38,11 @@ interface OrgProviderProps {
 }
 
 export function OrgProvider({ children }: OrgProviderProps) {
-  const { userData, loading: authLoading } = usePortalAuth();
+  const { userData, loading: auth } = usePortalAuth();
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const [fullOrganizations, setFullOrganizations] = useState<Organization[]>([]);
-  const [loadingOrgs, setLoadingOrgs] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [loadingOrgs, setOrgs] = useState(false);
+  const [is, setIs] = useState(false);
 
   // Get organizations from user data
   const organizations = useMemo(() => {
@@ -57,14 +57,14 @@ export function OrgProvider({ children }: OrgProviderProps) {
         return;
       }
 
-      setLoadingOrgs(true);
+      setOrgs(true);
       try {
         const orgs = await getUserOrganizations(userData?.id || '');
         setFullOrganizations(orgs);
       } catch (error) {
         console.error('[OrgContext] Error fetching full organizations:', error);
       } finally {
-        setLoadingOrgs(false);
+        setOrgs(false);
       }
     };
 
@@ -75,7 +75,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
 
   // Initialize org from storage or user's first org
   useEffect(() => {
-    if (authLoading) return;
+    if (auth) return;
 
     // Try to load from session storage first
     const storedOrgId = sessionStorage.getItem(STORAGE_KEY);
@@ -84,7 +84,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
       // If agency, we trust the stored ID. If client, we check membership.
       if (userData?.isAgency || organizations.includes(storedOrgId)) {
         setCurrentOrgId(storedOrgId);
-        setIsInitialized(true);
+        setIs(true);
         return;
       }
     }
@@ -100,37 +100,39 @@ export function OrgProvider({ children }: OrgProviderProps) {
       setCurrentOrgId(null);
     }
 
-    setIsInitialized(true);
-  }, [authLoading, userData?.isAgency, organizations]);
+    setIs(true);
+  }, [auth, userData?.isAgency, organizations]);
 
   // Switch to a different organization
-  const switchOrg = useCallback((newOrgId: string) => {
-    // Agency users can switch to any org, clients must be members
-    if (!userData?.isAgency && !organizations.includes(newOrgId)) {
-      console.warn(`[OrgContext] Cannot switch to org ${newOrgId} - user is not a member`);
-      return;
-    }
+  const switchOrg = useCallback(
+    (newOrgId: string) => {
+      // Agency users can switch to any org, clients must be members
+      if (!userData?.isAgency && !organizations.includes(newOrgId)) {
+        console.warn(`[OrgContext] Cannot switch to org ${newOrgId} - user is not a member`);
+        return;
+      }
 
-    setCurrentOrgId(newOrgId);
-    sessionStorage.setItem(STORAGE_KEY, newOrgId);
+      setCurrentOrgId(newOrgId);
+      sessionStorage.setItem(STORAGE_KEY, newOrgId);
 
-    console.log(`[OrgContext] Switched to organization: ${newOrgId}`);
-  }, [organizations, userData?.isAgency]);
-
-  const value = useMemo<OrgContextValue>(() => ({
-    orgId: currentOrgId,
-    loading: authLoading || !isInitialized || loadingOrgs,
-    switchOrg,
-    organizations,
-    fullOrganizations,
-    hasMultipleOrgs: organizations.length > 1,
-  }), [currentOrgId, authLoading, isInitialized, loadingOrgs, switchOrg, organizations, fullOrganizations]);
-
-  return (
-    <OrgContext.Provider value={value}>
-      {children}
-    </OrgContext.Provider>
+      console.log(`[OrgContext] Switched to organization: ${newOrgId}`);
+    },
+    [organizations, userData?.isAgency]
   );
+
+  const value = useMemo<OrgContextValue>(
+    () => ({
+      orgId: currentOrgId,
+      loading: auth || !is || loadingOrgs,
+      switchOrg,
+      organizations,
+      fullOrganizations,
+      hasMultipleOrgs: organizations.length > 1,
+    }),
+    [currentOrgId, auth, is, loadingOrgs, switchOrg, organizations, fullOrganizations]
+  );
+
+  return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }
 
 /**

@@ -2,6 +2,8 @@ export * from './useViewTransition';
 export * from './useTransitionRouter';
 export * from './usePricingConfig';
 export * from './useUserPreferences';
+export * from './useOnboarding';
+export * from './useRecentSearches';
 export * from './useResolvedOrgId';
 export * from './useRequestActions';
 export * from './usePortalAuth';

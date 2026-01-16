@@ -1,9 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  cancelInvite,
-  removeMember,
-  updateMemberRole
-} from '@/lib/services/portal-organizations';
+import { cancelInvite, removeMember, updateMemberRole } from '@/lib/services/portal-organizations';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { UserRole } from '@/lib/types/portal';
@@ -18,20 +14,27 @@ export function useTeamMutations() {
       toast.success(t('success.cancelInvite' as any));
       queryClient.invalidateQueries({ queryKey: ['org-invites'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to cancel invite:', error);
       toast.error(t('errors.cancelInvite'));
     },
   });
 
   const removeMemberMutation = useMutation({
-    mutationFn: ({ memberId, orgId, userId }: { memberId: string; orgId: string; userId: string }) =>
-      removeMember(memberId, orgId, userId),
+    mutationFn: ({
+      memberId,
+      orgId,
+      userId,
+    }: {
+      memberId: string;
+      orgId: string;
+      userId: string;
+    }) => removeMember(memberId, orgId, userId),
     onSuccess: () => {
       toast.success(t('success.removeMember' as any));
       queryClient.invalidateQueries({ queryKey: ['org-members'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to remove member:', error);
       toast.error(t('errors.load')); // Generic error
     },
@@ -44,7 +47,7 @@ export function useTeamMutations() {
       toast.success(t('success.updateRole' as any));
       queryClient.invalidateQueries({ queryKey: ['org-members'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to update member role:', error);
       toast.error(t('errors.load')); // Generic error
     },
@@ -61,6 +64,6 @@ export function useTeamMutations() {
 
     updateRoleMutation,
     updateMemberRole: updateRoleMutation.mutate,
-    isUpdatingRole: updateRoleMutation.isPending,
+    isRole: updateRoleMutation.isPending,
   };
 }

@@ -9,6 +9,7 @@ import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, Timestamp } from 'fire
 import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
 import { buildFirebaseFunctionUrl } from './firebase';
 import { ConsultationType, CONSULTATION_TYPE_CONFIG } from '@/lib/types/portal';
+import { Logger } from '@/lib/logger';
 
 // Collection for storing integration credentials
 const INTEGRATIONS_COLLECTION = 'agency_integrations';
@@ -34,7 +35,7 @@ export interface GoogleCalendarConnection {
   accessToken?: string;
   refreshToken?: string;
   tokenExpiry?: Date;
-  lastSynced?: Date;
+  last?: Date;
   syncedCalendarIds?: string[];
   selectedCalendarId?: string; // The calendar to use for events
   error?: string;
@@ -72,13 +73,13 @@ export interface CalendarInfo {
  */
 export function initiateGoogleOAuth(): void {
   if (!GOOGLE_CLIENT_ID) {
-    console.error('[Google Calendar] Missing GOOGLE_CLIENT_ID environment variable');
+    Logger.error('Missing GOOGLE_CLIENT_ID environment variable');
     alert('Google Calendar integration is not configured. Please contact support.');
     return;
   }
 
   const redirectUri = GOOGLE_REDIRECT_URI;
-  console.log('[Google Calendar] Initiating OAuth with redirect URI:', redirectUri);
+  Logger.info('Initiating Google OAuth', { redirectUri });
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
@@ -146,16 +147,13 @@ export async function handleOAuthCallback(
         baseUrl.pathname = '/googleCalendarOAuthCallback';
         functionUrl = baseUrl.toString();
       } catch (e) {
-        console.error('[Google Calendar] Failed to build function URL:', e);
+        Logger.error('Failed to build function URL', e);
         return { success: false, error: 'Invalid Firebase function URL' };
       }
     }
 
     const redirectUri = GOOGLE_REDIRECT_URI;
-    console.log('[Google Calendar] Exchanging code');
-    console.log('[Google Calendar] Base Firebase Function URL:', firebaseFunctionUrl);
-    console.log('[Google Calendar] Built Function URL:', functionUrl);
-    console.log('[Google Calendar] Redirect URI:', redirectUri);
+    Logger.debug(' Google OAuth code');
 
     const response = await fetch(functionUrl, {
       method: 'POST',
@@ -168,10 +166,10 @@ export async function handleOAuthCallback(
       try {
         const error = await response.json();
         errorMessage = error.message || error.error || errorMessage;
-        console.error('[Google Calendar] OAuth callback error:', error);
+        Logger.error('OAuth callback error', error);
       } catch (_e) {
         const errorText = await response.text();
-        console.error('[Google Calendar] OAuth callback error (non-JSON):', errorText);
+        Logger.error('OAuth callback error (non-JSON)', { errorText });
         errorMessage = errorText || errorMessage;
       }
       return { success: false, error: errorMessage };
@@ -184,7 +182,7 @@ export async function handleOAuthCallback(
 
     return { success: true };
   } catch (error) {
-    console.error('[Google Calendar] OAuth callback error:', error);
+    Logger.error('OAuth callback error', error);
     return { success: false, error: 'Failed to complete authentication' };
   }
 }
@@ -225,7 +223,7 @@ async function storeGoogleTokens(tokens: {
       email: tokens.email || null,
       status: 'connected',
       connectedAt: serverTimestamp(),
-      lastSynced: null,
+      last: null,
       syncedCalendarIds: [],
       selectedCalendarId: 'primary', // Default to primary
     },
@@ -236,7 +234,7 @@ async function storeGoogleTokens(tokens: {
 /**
  * Updates the selected calendar settings
  */
-export async function updateCalendarSettings(selectedCalendarId: string): Promise<void> {
+export async function updateCalendars(selectedCalendarId: string): Promise<void> {
   const auth = getFirebaseAuth();
   const user = auth.currentUser;
 
@@ -280,13 +278,13 @@ export async function getCalendarConnection(): Promise<GoogleCalendarConnection>
       connected: data.status === 'connected' && !isExpired,
       email: data.email,
       tokenExpiry: tokenExpiry,
-      lastSynced: data.lastSynced?.toDate(),
+      last: data.last?.toDate(),
       syncedCalendarIds: data.syncedCalendarIds || [],
       selectedCalendarId: data.selectedCalendarId || 'primary',
       error: isExpired ? 'Token expired. Please reconnect.' : undefined,
     };
   } catch (error) {
-    console.error('[Google Calendar] Error fetching connection:', error);
+    Logger.error('Error fetching connection', error);
     return { connected: false, error: 'Failed to fetch connection status' };
   }
 }
@@ -317,7 +315,7 @@ export async function disconnectCalendar(): Promise<void> {
           method: 'POST',
         });
       } catch (error) {
-        console.warn('[Google Calendar] Token revocation failed:', error);
+        Logger.warn('Token revocation failed', { error });
       }
     }
   }
@@ -367,7 +365,7 @@ export async function listCalendars(): Promise<CalendarInfo[]> {
     const data = await response.json();
     return data.calendars || [];
   } catch (error) {
-    console.error('[Google Calendar] Error listing calendars:', error);
+    Logger.error('Error listing calendars', error);
     throw error;
   }
 }
@@ -415,7 +413,7 @@ export async function createCalendarEvent(
 
     return await response.json();
   } catch (error) {
-    console.error('[Google Calendar] Error creating event:', error);
+    Logger.error('Error creating calendar event', error);
     throw error;
   }
 }
@@ -451,7 +449,7 @@ export async function deleteCalendarEvent(eventId: string, calendarId?: string):
       throw new Error('Failed to delete calendar event');
     }
   } catch (error) {
-    console.error('[Google Calendar] Error deleting event:', error);
+    Logger.error('Error deleting calendar event', error);
     // Don't throw, just log. Deletion failure shouldn't block the UI flow entirely.
   }
 }
@@ -501,7 +499,7 @@ export async function getFreeBusyIntervals(
 
     if (!response.ok) {
       // If we fail to check availability, just return empty to avoid blocking
-      console.warn('[Google Calendar] Failed to check availability');
+      Logger.warn('Failed to check availability');
       return [];
     }
 
@@ -513,7 +511,7 @@ export async function getFreeBusyIntervals(
       end: new Date(slot.end),
     }));
   } catch (error) {
-    console.error('[Google Calendar] Error checking free/busy:', error);
+    Logger.error('Error checking free/busy', error);
     return [];
   }
 }
@@ -593,7 +591,7 @@ export async function tryCreateCalendarEventForConsultation(params: {
       eventId: eventResult.eventId,
     };
   } catch (error) {
-    console.error('Failed to auto-create calendar event:', error);
+    Logger.error('Failed to auto-create calendar event', error);
 
     // Fallback to link generation on error
     if (typeof window !== 'undefined') {

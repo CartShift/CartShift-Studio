@@ -12,7 +12,7 @@ import { useToast } from '@/components/portal/ui';
 
 export function useDashboardData() {
   const orgId = useResolvedOrgId();
-  const { userData, loading: authLoading, isAuthenticated } = usePortalAuth();
+  const { userData, loading: auth, isAuthenticated } = usePortalAuth();
   const router = useRouter();
   const toast = useToast();
   const mountedRef = useRef(false);
@@ -37,7 +37,7 @@ export function useDashboardData() {
     if (
       !orgId ||
       typeof orgId !== 'string' ||
-      authLoading ||
+      auth ||
       !userData ||
       isAgency ||
       membershipChecked ||
@@ -78,12 +78,12 @@ export function useDashboardData() {
     };
 
     verifyMembership();
-  }, [orgId, userData, authLoading, isAgency, membershipChecked]);
+  }, [orgId, userData, auth, isAgency, membershipChecked]);
 
   // 1. Requests Query
   const {
-    data: requests = [],
-    isLoading: requestsLoading,
+    data: requestsData = [],
+    is: requests,
     error: requestsError,
   } = useQuery({
     queryKey: ['org-requests', orgId],
@@ -108,8 +108,8 @@ export function useDashboardData() {
 
   // 2. Activities Query
   const {
-    data: activities = [],
-    isLoading: activitiesLoading,
+    data: activitiesData = [],
+    is: activities,
     error: activitiesError,
   } = useQuery({
     queryKey: ['org-activities', orgId],
@@ -126,8 +126,8 @@ export function useDashboardData() {
   });
 
   const loading =
-    authLoading ||
-    (shouldFetchData && (requestsLoading || activitiesLoading)) ||
+    auth ||
+    (shouldFetchData && (requests || activities)) ||
     (!isAgency && !membershipChecked && !membershipError);
 
   const error =
@@ -136,8 +136,8 @@ export function useDashboardData() {
     (activitiesError instanceof Error ? activitiesError.message : null);
 
   return {
-    requests,
-    activities,
+    requests: requestsData,
+    activities: activitiesData,
     loading,
     error,
     userData,

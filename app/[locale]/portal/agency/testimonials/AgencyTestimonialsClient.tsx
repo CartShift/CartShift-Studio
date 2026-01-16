@@ -13,7 +13,6 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  Building2,
   User,
   Calendar,
   Quote,
@@ -22,6 +21,7 @@ import {
   Download,
   FileJson,
   Code2,
+  Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/Card';
@@ -229,16 +229,16 @@ function TestimonialDetailModal({
 }) {
   const t = useTranslations('portal');
   const [adminNotes, setAdminNotes] = useState(testimonial.adminNotes || '');
-  const [updating, setUpdating] = useState<'approve' | 'reject' | null>(null);
+  const [updating, set] = useState<'approve' | 'reject' | null>(null);
   const dir = useDirection();
 
   const handleStatusUpdate = async (status: 'approved' | 'rejected') => {
-    setUpdating(status === 'approved' ? 'approve' : 'reject');
+    set(status === 'approved' ? 'approve' : 'reject');
     try {
       await onStatusUpdate(status, adminNotes);
       onClose();
     } finally {
-      setUpdating(null);
+      set(null);
     }
   };
 
@@ -437,7 +437,7 @@ export default function AgencyTestimonialsClient() {
   const dir = useDirection();
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
@@ -452,7 +452,7 @@ export default function AgencyTestimonialsClient() {
   // Fetch testimonials
   useEffect(() => {
     async function fetchTestimonials() {
-      setLoading(true);
+      set(true);
       try {
         const data = await getAllTestimonials();
         setTestimonials(data);
@@ -460,7 +460,7 @@ export default function AgencyTestimonialsClient() {
         console.error('Failed to fetch testimonials:', error);
         toast.error('Failed to load testimonials');
       } finally {
-        setLoading(false);
+        set(false);
       }
     }
     fetchTestimonials();
@@ -576,7 +576,7 @@ export default function AgencyTestimonialsClient() {
   // Export as React component code
   const handleExportCode = () => {
     const code = `// Testimonials data exported from CartShift Portal
-// Generated on ${new Date().toLocaleDateString()}
+//  on ${new Date().toLocaleDateString()}
 
 export const testimonials = [
 ${approvedTestimonials

@@ -10,7 +10,7 @@
  * - SidebarNavigation.tsx - Navigation items
  * - OrganizationSwitcher.tsx - Org dropdown
  * - SidebarFooter.tsx - Collapse/Logout
- * - PortalLoadingState.tsx - Loading spinner
+ * - PortalState.tsx -  spinner
  * - PortalAccessDenied.tsx - Access denied screen
  * - hooks/usePortalShellState.ts - Consolidated state logic
  * - constants.ts - Nav groups and variants

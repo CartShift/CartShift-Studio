@@ -68,7 +68,7 @@ export default function ShopifyStoreIntegration({
       : 'portal.settings.general.integrations.shopify'
   );
   const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [saving, set] = useState(false);
   const [shopifyDomain, setShopifyDomain] = useState(organization.shopifyDomain || '');
   const [collaboratorCode, setCollaboratorCode] = useState(
     organization.shopifyCollaboratorCode || ''
@@ -114,7 +114,7 @@ export default function ShopifyStoreIntegration({
       return;
     }
 
-    setSaving(true);
+    set(true);
     try {
       await updateOrganization(organization.id, {
         shopifyDomain: cleanDomain || undefined,
@@ -129,7 +129,7 @@ export default function ShopifyStoreIntegration({
       console.error('Failed to save Shopify settings:', err);
       toast.error(t('errors.saveFailed' as any));
     } finally {
-      setSaving(false);
+      set(false);
     }
   };
 
@@ -148,7 +148,7 @@ export default function ShopifyStoreIntegration({
   };
 
   const handleMarkAsRequested = async () => {
-    setSaving(true);
+    set(true);
     try {
       await updateOrganization(organization.id, {
         shopifyAccessStatus: 'requested',
@@ -160,12 +160,12 @@ export default function ShopifyStoreIntegration({
       console.error('Failed to update status:', err);
       toast.error('Failed to submit access request');
     } finally {
-      setSaving(false);
+      set(false);
     }
   };
 
   const handleMarkAsConnected = async () => {
-    setSaving(true);
+    set(true);
     try {
       await updateOrganization(organization.id, {
         shopifyAccessStatus: 'connected',
@@ -177,7 +177,7 @@ export default function ShopifyStoreIntegration({
       console.error('Failed to update status:', err);
       toast.error('Failed to connect Shopify store');
     } finally {
-      setSaving(false);
+      set(false);
     }
   };
 

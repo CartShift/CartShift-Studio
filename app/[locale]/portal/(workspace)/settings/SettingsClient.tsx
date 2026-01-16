@@ -45,7 +45,7 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
-export default function SettingsClient() {
+export default function sClient() {
   const orgId = useResolvedOrgId();
   const { switchOrg } = useOrg();
   const router = useRouter();
@@ -73,14 +73,14 @@ export default function SettingsClient() {
     marketingEmails: false,
   });
 
-  const [notifSaving, setNotifSaving] = useState(false);
+  const [notif, setNotif] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [restartingOnboarding, setRestartingOnboarding] = useState(false);
   const [profileFormData, setProfileFormData] = useState({
     name: '',
     photoUrl: '',
   });
-  const [profileSaving, setProfileSaving] = useState(false);
+  const [profile, setProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingOrgLogo, setUploadingOrgLogo] = useState(false);
 
@@ -110,7 +110,7 @@ export default function SettingsClient() {
   useEffect(() => {
     // Early return if orgId is not ready
     if (!orgId || typeof orgId !== 'string') {
-      setLoading(false);
+      set(false);
       return;
     }
 
@@ -118,11 +118,11 @@ export default function SettingsClient() {
     let mounted = true;
 
     async function fetchOrganization(): Promise<void> {
-      setLoading(true);
+      set(true);
 
       const rulesValid = await validateStorageRules();
       if (!rulesValid && process.env.NODE_ENV === 'development') {
-        console.warn('[Settings] Storage rules validation failed');
+        console.warn('[s] Storage rules validation failed');
       }
 
       try {
@@ -161,13 +161,7 @@ export default function SettingsClient() {
             bio: org.bio || '',
           });
         } else {
-          const errorMsg = t('portal.settings.general.orgNotFound');
-          showFeedback(
-            'error',
-            typeof errorMsg === 'string' && errorMsg !== 'portal.settings.general.orgNotFound'
-              ? errorMsg
-              : t('portal.common.organizationNotFound')
-          );
+          showFeedback('error', t('portal.common.organizationNot'));
         }
       } catch (error: unknown) {
         if (!mounted) return;
@@ -194,7 +188,7 @@ export default function SettingsClient() {
         }
       } finally {
         if (mounted) {
-          setLoading(false);
+          set(false);
         }
       }
     }
@@ -238,7 +232,7 @@ export default function SettingsClient() {
       return;
     }
 
-    setSaving(true);
+    set(true);
     try {
       await updateOrganization(orgId, {
         name: formData.name,
@@ -254,20 +248,20 @@ export default function SettingsClient() {
         error instanceof Error ? error.message : t('portal.settings.general.error')
       );
     } finally {
-      setSaving(false);
+      set(false);
     }
   };
 
   const handleSaveNotificationPrefs = async (newPrefs: typeof notificationPrefs) => {
     if (!user) return;
-    setNotifSaving(true);
+    setNotif(true);
     try {
       await updatePortalUser(user.uid, { notificationPreferences: newPrefs });
       setNotificationPrefs(newPrefs);
     } catch (error) {
       console.error('Error saving notification preferences:', error);
     } finally {
-      setNotifSaving(false);
+      setNotif(false);
     }
   };
 
@@ -314,7 +308,7 @@ export default function SettingsClient() {
 
   const handleProfileSave = async () => {
     if (!user) return;
-    setProfileSaving(true);
+    setProfile(true);
     try {
       await updatePortalUser(user.uid, {
         name: profileFormData.name,
@@ -325,7 +319,7 @@ export default function SettingsClient() {
       console.error('Error saving profile:', error);
       showFeedback('error', t('portal.settings.profile.error'));
     } finally {
-      setProfileSaving(false);
+      setProfile(false);
     }
   };
 
@@ -771,11 +765,11 @@ export default function SettingsClient() {
                 <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800 flex justify-end">
                   <Button
                     onClick={handleProfileSave}
-                    loading={profileSaving}
+                    loading={profile}
                     className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
-                    {profileSaving
+                    {profile
                       ? t('portal.settings.general.saving')
                       : t('portal.settings.profile.save')}
                   </Button>
@@ -852,7 +846,7 @@ export default function SettingsClient() {
                 </div>
 
                 <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800">
-                  {notifSaving ? (
+                  {notif ? (
                     <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 animate-pulse tracking-widest uppercase">
                       <Loader2 size={12} className="animate-spin" />
                       {t('portal.settings.notifications.syncing')}

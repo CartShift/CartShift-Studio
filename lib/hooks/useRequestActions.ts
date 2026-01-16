@@ -48,7 +48,7 @@ interface UseRequestActionsResult {
 
   // Work actions
   handleStartWork: () => Promise<void>;
-  isStartingWork: boolean;
+  isWork: boolean;
   handlePaymentSuccess: (result: { paymentId?: string }) => Promise<void>;
 
   // Assignment
@@ -70,7 +70,7 @@ interface UseRequestActionsResult {
   handleSendComment: (content: string, parentId?: string) => Promise<void>;
   isSubmittingComment: boolean;
   handleDeleteRequest: () => Promise<boolean>;
-  isDeleting: boolean;
+  is: boolean;
 }
 
 /**
@@ -102,16 +102,16 @@ export function useRequestActions({
 }: UseRequestActionsParams): UseRequestActionsResult {
   const toast = useToast();
 
-  // Loading states
+  //  states
   const [isAddingPricing, setIsAddingPricing] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
-  const [isStartingWork, setIsStartingWork] = useState(false);
+  const [isWork, setIsWork] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
   const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [is, setIs] = useState(false);
 
   // Refs for cleanup
   const commentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -204,7 +204,7 @@ export function useRequestActions({
   const handleStartWork = useCallback(async () => {
     if (!canPerformAction()) return;
 
-    setIsStartingWork(true);
+    setIsWork(true);
     try {
       await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
       toast.success('Work started', 'The request is now in progress');
@@ -212,7 +212,7 @@ export function useRequestActions({
       console.error('Error starting work:', err);
       toast.error('Failed to start work', 'Please try again');
     } finally {
-      setIsStartingWork(false);
+      setIsWork(false);
     }
   }, [canPerformAction, requestId, orgId, userData, toast]);
 
@@ -309,7 +309,7 @@ export function useRequestActions({
           action: 'ADDED_ATTACHMENT',
           details: { fileName: file.name },
         });
-        toast.success('File uploaded', `${file.name} has been attached`);
+        toast.success('', `${file.name} has been attached`);
       } catch (err) {
         console.error('Failed to upload file:', err);
         toast.error('Upload failed', 'Please try again');
@@ -418,7 +418,7 @@ export function useRequestActions({
       return false;
     }
 
-    setIsDeleting(true);
+    setIs(true);
     try {
       await deleteRequest(requestId!);
       toast.success('Request deleted', 'The request has been permanently removed');
@@ -428,7 +428,7 @@ export function useRequestActions({
       toast.error('Failed to delete request', 'Please try again');
       return false;
     } finally {
-      setIsDeleting(false);
+      setIs(false);
     }
   }, [canPerformAction, requestId, isAgency, toast]);
 
@@ -440,7 +440,7 @@ export function useRequestActions({
     isAccepting,
     isDeclining,
     handleStartWork,
-    isStartingWork,
+    isWork,
     handlePaymentSuccess,
     handleAssignSpecialist,
     isAssigning,
@@ -452,6 +452,6 @@ export function useRequestActions({
     handleSendComment,
     isSubmittingComment,
     handleDeleteRequest,
-    isDeleting,
+    is,
   };
 }

@@ -53,11 +53,11 @@ export default function AgencyWorkboardClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
   const router = useRouter();
-  const { userData, loading: authLoading, isAuthenticated, user } = usePortalAuth();
+  const { userData, loading: auth, isAuthenticated, user } = usePortalAuth();
   const { organizations } = useAgencyClients();
   const { switchOrg } = useOrg();
   const [requests, setRequests] = useState<Request[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [showMyRequests, setShowMyRequests] = useState(false);
   const [isRepairing, setIsRepairing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -65,7 +65,7 @@ export default function AgencyWorkboardClient() {
   const [requestToDelete, setRequestToDelete] = useState<{ id: string; title: string } | null>(
     null
   );
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [is, setIs] = useState(false);
   const { success, error: showError } = useToast();
 
   const columns: Column[] = [
@@ -122,14 +122,14 @@ export default function AgencyWorkboardClient() {
 
     async function fetchData() {
       if (!userData?.isAgency) {
-        if (!authLoading && isAuthenticated && mounted) {
-          setLoading(false);
+        if (!auth && isAuthenticated && mounted) {
+          set(false);
         }
         return;
       }
 
       if (mounted) {
-        setLoading(true);
+        set(true);
       }
       try {
         const data = await getAllRequests();
@@ -140,19 +140,19 @@ export default function AgencyWorkboardClient() {
         console.error('Error fetching workboard data:', error);
       } finally {
         if (mounted) {
-          setLoading(false);
+          set(false);
         }
       }
     }
 
-    if (!authLoading) {
+    if (!auth) {
       fetchData();
     }
 
     return () => {
       mounted = false;
     };
-  }, [userData, authLoading, isAuthenticated]);
+  }, [userData, auth, isAuthenticated]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -280,7 +280,7 @@ export default function AgencyWorkboardClient() {
 
   const handleDeleteConfirm = async () => {
     if (!requestToDelete) return;
-    setIsDeleting(true);
+    setIs(true);
     try {
       await deleteRequest(requestToDelete.id);
       setRequests(prev => prev.filter(r => r.id !== requestToDelete.id));
@@ -290,17 +290,17 @@ export default function AgencyWorkboardClient() {
       console.error('Delete failed:', err);
       showError(t('common.error' as any), 'Failed to delete request');
     } finally {
-      setIsDeleting(false);
+      setIs(false);
     }
   };
 
   const activeRequest = activeId ? requests.find(r => r.id === activeId) : null;
 
-  if (authLoading || (loading && userData?.isAgency)) {
+  if (auth || (loading && userData?.isAgency)) {
     return <WorkboardSkeleton />;
   }
 
-  if (!authLoading && isAuthenticated && !userData?.isAgency) {
+  if (!auth && isAuthenticated && !userData?.isAgency) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -340,7 +340,7 @@ export default function AgencyWorkboardClient() {
         description={t('requests.detail.deleteConfirm' as any) || 'Are you sure?'}
         confirmText={t('common.delete' as any) || 'Delete'}
         variant="danger"
-        isLoading={isDeleting}
+        is={is}
       />
       <div className="space-y-6 animate-in fade-in duration-700">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

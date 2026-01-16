@@ -62,10 +62,10 @@ import { cn } from '@/lib/utils';
 // SUBCOMPONENTS (Extracted for clarity)
 // ============================================
 
-function LoadingSkeleton({ requestId }: { requestId: string | null }) {
+function Skeleton({ requestId }: { requestId: string | null }) {
   return (
     <div className="space-y-6 animate-pulse" role="status" aria-live="polite">
-      <span className="sr-only">Loading request details...</span>
+      <span className="sr-only"> request details...</span>
       <div className="h-8 w-48 bg-surface-200 dark:bg-surface-800 rounded-lg" />
       <motion.div
         layoutId={requestId ? `request-container-${requestId}` : undefined}
@@ -116,10 +116,10 @@ function ErrorState({ error, t }: { error: string | null; t: ReturnType<typeof u
         <AlertCircle size={40} className="text-rose-500" />
       </div>
       <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-        {error || t('requests.detail.notFound')}
+        {error || t('requests.detail.not')}
       </h2>
       <p className="text-surface-500 mt-2 max-w-sm mx-auto font-medium">
-        {t('requests.detail.notFoundDesc')}
+        {t('requests.detail.notDesc')}
       </p>
       <Link href="/portal/requests/" className="mt-8 inline-block">
         <Button variant="outline" className="font-outfit">
@@ -168,7 +168,7 @@ export default function RequestDetailClient() {
     isAccepting,
     isDeclining,
     handleStartWork,
-    isStartingWork,
+    isWork,
     handlePaymentSuccess,
     handleAssignSpecialist,
     isAssigning,
@@ -180,7 +180,7 @@ export default function RequestDetailClient() {
     handleSendComment,
     isSubmittingComment,
     handleDeleteRequest,
-    isDeleting,
+    is,
   } = useRequestActions({
     request,
     userData,
@@ -215,7 +215,7 @@ export default function RequestDetailClient() {
   // ========== RENDER ==========
 
   if (loading) {
-    return <LoadingSkeleton requestId={requestId} />;
+    return <Skeleton requestId={requestId} />;
   }
 
   if (error || !request) {
@@ -685,9 +685,9 @@ export default function RequestDetailClient() {
                     variant="primary"
                     className="w-full h-12"
                     onClick={handleStartWork}
-                    disabled={isStartingWork}
+                    disabled={isWork}
                   >
-                    {isStartingWork ? (
+                    {isWork ? (
                       <Loader2 size={18} className="me-2 animate-spin" />
                     ) : (
                       <Zap size={18} className="me-2" />
@@ -802,7 +802,7 @@ export default function RequestDetailClient() {
             }
             confirmText={t('common.delete' as any) || 'Delete'}
             variant="danger"
-            isLoading={isDeleting}
+            is={is}
           />
 
           {/* Assigned Specialist Card */}

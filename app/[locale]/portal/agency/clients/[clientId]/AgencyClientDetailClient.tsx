@@ -15,7 +15,6 @@ import {
   FileText,
   Loader2,
   BarChart3,
-  Settings,
   Trash2,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
@@ -58,7 +57,7 @@ export default function AgencyClientDetailClient({
   const t = useTranslations('portal');
   const locale = useLocale();
   const clientId = useResolvedClientId() || initialClientId;
-  const { userData, loading: authLoading } = usePortalAuth();
+  const { userData, loading: auth } = usePortalAuth();
   const { switchOrg } = useOrg();
   const router = useRouter();
 
@@ -67,7 +66,7 @@ export default function AgencyClientDetailClient({
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [responsibleAgent, setResponsibleAgent] = useState<PortalUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -78,11 +77,11 @@ export default function AgencyClientDetailClient({
   useEffect(() => {
     if (!clientId) {
       setError(t('clients.noClientId' as any));
-      setLoading(false);
+      set(false);
       return undefined;
     }
 
-    if (authLoading) {
+    if (auth) {
       console.log('[AgencyClientDetail] Waiting for auth...');
       return undefined;
     }
@@ -90,7 +89,7 @@ export default function AgencyClientDetailClient({
     if (!userData) {
       console.log('[AgencyClientDetail] No user data - not logged in?');
       setError('You must be logged in to view this page');
-      setLoading(false);
+      set(false);
       return undefined;
     }
 
@@ -104,16 +103,16 @@ export default function AgencyClientDetailClient({
     if (!userData.isAgency) {
       console.warn('[AgencyClientDetail] User is not an agency user!');
       setError('You do not have permission to view this page. Agency access required.');
-      setLoading(false);
+      set(false);
       return undefined;
     }
 
     let mounted = true;
 
-    setLoading(true);
+    set(true);
     setError(null);
 
-    console.log('[AgencyClientDetail] Loading client:', clientId);
+    console.log('[AgencyClientDetail]  client:', clientId);
 
     try {
       // Subscribe to organization data
@@ -136,7 +135,7 @@ export default function AgencyClientDetailClient({
             setResponsibleAgent(null);
           }
         }
-        setLoading(false);
+        set(false);
       });
 
       // Subscribe to requests
@@ -176,13 +175,13 @@ export default function AgencyClientDetailClient({
       console.error('[AgencyClientDetail] Critical error in useEffect:', err);
       if (mounted) {
         setError(err instanceof Error ? err.message : t('clients.unexpectedError' as any));
-        setLoading(false);
+        set(false);
       }
       return () => {
         mounted = false;
       };
     }
-  }, [clientId, authLoading, userData, t]);
+  }, [clientId, auth, userData, t]);
 
   // Prevent hydration mismatch for time-sensitive content
   useEffect(() => {
@@ -295,7 +294,7 @@ export default function AgencyClientDetailClient({
         }
         confirmText={t('common.removeLabel' as any) || 'Remove'}
         variant="danger"
-        isLoading={isRemovingMember}
+        is={isRemovingMember}
       />
 
       {/* Header */}

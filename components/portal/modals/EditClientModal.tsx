@@ -55,7 +55,7 @@ export const EditClientModal = ({
   onClose,
   onSuccess,
 }: EditClientModalProps) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agencyMembers, setAgencyMembers] = useState<PortalUser[]>([]);
   const t = useTranslations('portal');
@@ -104,7 +104,7 @@ export const EditClientModal = ({
   }, [isOpen]);
 
   const onSubmit = async (data: EditOrgFormData) => {
-    setLoading(true);
+    set(true);
     setError(null);
 
     try {
@@ -121,7 +121,7 @@ export const EditClientModal = ({
       console.error('Update organization error:', error);
       setError(error instanceof Error ? error.message : t('common.error' as any));
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

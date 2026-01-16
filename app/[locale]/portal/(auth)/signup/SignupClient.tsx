@@ -44,7 +44,7 @@ const getSignupSchema = (t: (path: string) => string) =>
 
 function SignupForm() {
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { navigateToPortal, getPortalHref } = usePortalNavigation();
@@ -73,7 +73,7 @@ function SignupForm() {
   const strengthLabels = Object.values(PASSWORD_STRENGTH_LABELS);
 
   const onSubmit = async (data: SignupData) => {
-    setLoading(true);
+    set(true);
     setError(null);
     try {
       await signUpWithEmail(data.email, data.password, data.name);
@@ -91,7 +91,7 @@ function SignupForm() {
               : firebaseError.message || t('portal.auth.errors.generic' as any);
       setError(errorMessage);
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

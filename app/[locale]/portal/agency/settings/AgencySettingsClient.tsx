@@ -9,12 +9,11 @@ import {
   Shield,
   CreditCard,
   Save,
-  Settings2,
-  Building2,
   Loader2,
   Camera,
   User as UserIcon,
   Palette,
+  Building2,
 } from 'lucide-react';
 import { applyTheme } from '@/lib/utils/theme-generator';
 import { cn } from '@/lib/utils';
@@ -65,7 +64,7 @@ interface AgencyProfile {
   };
 }
 
-export default function AgencySettingsClient() {
+export default function AgencysClient() {
   const t = useTranslations('portal');
   const { user } = usePortalAuth();
   const searchParams = useSearchParams();
@@ -73,8 +72,8 @@ export default function AgencySettingsClient() {
   const validTabs = ['profile', 'team', 'services', 'integrations', 'billing'];
   const initialTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'profile';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [loading, set] = useState(true);
+  const [saving, set] = useState(false);
   const [profile, setProfile] = useState<AgencyProfile>({
     name: '',
     email: '',
@@ -88,19 +87,19 @@ export default function AgencySettingsClient() {
   });
   const [team, setTeam] = useState<PortalUser[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
-  const [loadingTeam, setLoadingTeam] = useState(false);
+  const [loadingTeam, setTeam] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | undefined>(undefined);
   const [services, setServices] = useState<Service[]>([]);
-  const [loadingServices, setLoadingServices] = useState(false);
+  const [loadingServices, setServices] = useState(false);
   const [calendarConnection, setCalendarConnection] = useState<CalendarConnection | null>(null);
   const [cancellingInvite, setCancellingInvite] = useState<string | null>(null);
   const [profileFormData, setProfileFormData] = useState({
     name: '',
     photoUrl: '',
   });
-  const [profileSaving, setProfileSaving] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Sync activeTab with URL parameter when it changes
@@ -116,7 +115,7 @@ export default function AgencySettingsClient() {
       if (!user?.uid) return;
       const db = getFirestoreDb();
 
-      setLoading(true);
+      set(true);
       try {
         const agencyDoc = await getDoc(doc(db, 'agencies', user.uid));
         if (agencyDoc.exists()) {
@@ -155,7 +154,7 @@ export default function AgencySettingsClient() {
       } catch (error) {
         console.error('Error fetching agency profile:', error);
       } finally {
-        setLoading(false);
+        set(false);
       }
     }
 
@@ -245,7 +244,7 @@ export default function AgencySettingsClient() {
     if (!user?.uid) return;
     const db = getFirestoreDb();
 
-    setSaving(true);
+    set(true);
     try {
       const auth = getFirebaseAuth();
       const currentUser = auth.currentUser;
@@ -265,7 +264,7 @@ export default function AgencySettingsClient() {
         throw new Error(t('portal.common.failedToGetAuthToken' as any));
       }
 
-      console.log('Saving agency profile:', { userId, agencyId: userId });
+      console.log(' agency profile:', { userId, agencyId: userId });
 
       const agencyRef = doc(db, 'agencies', userId);
       const agencyDoc = await getDoc(agencyRef);
@@ -336,7 +335,7 @@ export default function AgencySettingsClient() {
         error instanceof Error ? error.message : t('portal.common.unknownError' as any);
       alert(`Failed to save settings: ${errorMessage}`);
     } finally {
-      setSaving(false);
+      set(false);
     }
   };
 
@@ -377,7 +376,7 @@ export default function AgencySettingsClient() {
     { id: 'profile', label: t('agency.settings.tabs.profile'), icon: Building2 },
     { id: 'branding', label: t('settings.tabs.branding' as any), icon: Palette },
     { id: 'user-profile', label: t('settings.tabs.profile'), icon: UserIcon },
-    { id: 'services', label: t('agency.settings.tabs.services'), icon: Settings2 },
+    { id: 'services', label: t('agency.settings.tabs.services'), icon: Building2 },
     { id: 'team', label: t('agency.settings.tabs.team'), icon: UserIcon },
     { id: 'integrations', label: t('agency.settings.tabs.integrations'), icon: Shield },
     { id: 'billing', label: t('agency.settings.tabs.billing'), icon: CreditCard },
@@ -385,7 +384,7 @@ export default function AgencySettingsClient() {
 
   const handleProfileSave = async () => {
     if (!user) return;
-    setProfileSaving(true);
+    setSavingProfile(true);
     try {
       await updatePortalUser(user.uid, {
         name: profileFormData.name,
@@ -396,7 +395,7 @@ export default function AgencySettingsClient() {
       console.error('Error saving profile:', error);
       alert(t('settings.profile.error'));
     } finally {
-      setProfileSaving(false);
+      setSavingProfile(false);
     }
   };
 
@@ -579,11 +578,11 @@ export default function AgencySettingsClient() {
               <div className="mt-10 pt-6 border-t border-surface-200 dark:border-surface-800 flex justify-end">
                 <Button
                   onClick={handleProfileSave}
-                  loading={profileSaving}
+                  loading={savingProfile}
                   className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                 >
                   <Save size={18} />
-                  {profileSaving ? t('settings.general.saving') : t('settings.profile.save')}
+                  {savingProfile ? t('settings.general.saving') : t('settings.profile.save')}
                 </Button>
               </div>
             </Card>

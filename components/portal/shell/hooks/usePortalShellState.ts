@@ -17,6 +17,7 @@ import { Notification } from '@/lib/types/portal';
 import { isRTLLocale } from '@/lib/locale-config';
 import { NotificationPosition } from '../types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { Logger } from '@/lib/logger';
 
 interface UsePortalShellStateOptions {
   orgIdProp?: string;
@@ -210,7 +211,7 @@ export function usePortalShellState({
             }
           }
         } catch (error) {
-          console.error('[PortalShell] Error checking access:', error);
+          Logger.error('Error checking access', error);
           if (internalMounted) setIsAuthorized(false);
         }
       };
@@ -466,7 +467,7 @@ export function usePortalShellState({
       await logout();
       router.push('/');
     } catch (error) {
-      console.error('Logout failed:', error);
+      Logger.error('Logout failed', error);
     }
   }, [router]);
 

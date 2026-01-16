@@ -32,7 +32,7 @@ const platformPatterns = [
 export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 'default' }) => {
   const isDark = variant === 'dark';
   const t = useTranslations();
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [detectedPlatform, setDetectedPlatform] = useState<{
     name: string;
     icon: string;
@@ -65,7 +65,7 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
   }, [storeUrl]);
 
   const handleFormSubmit = async (data: AnalyzerFormData) => {
-    setLoading(true);
+    set(true);
     try {
       if (!executeRecaptcha) {
         console.warn('Execute recaptcha not yet available');
@@ -78,7 +78,7 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
     } catch (e) {
       console.error('Submission error', e);
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 
@@ -89,20 +89,14 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
     ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:ring-primary-500 focus:border-primary-500/50'
     : 'glass-effect text-surface-900 dark:text-white placeholder:text-surface-500 dark:placeholder:text-surface-400 focus:ring-primary-500 focus:border-primary-500';
 
-  const labelStyles = isDark
-    ? 'text-white/80'
-    : 'text-surface-700 dark:text-surface-200';
+  const labelStyles = isDark ? 'text-white/80' : 'text-surface-700 dark:text-surface-200';
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
       {/* Store URL Field */}
       <div>
-        <label
-          htmlFor="storeUrl"
-          className={`block text-sm font-medium mb-2 ${labelStyles}`}
-        >
-          {t('analyzer.form.urlLabel') || 'Your Store URL'}{' '}
-          <span className="text-error">*</span>
+        <label htmlFor="storeUrl" className={`block text-sm font-medium mb-2 ${labelStyles}`}>
+          {t('analyzer.form.urlLabel') || 'Your Store URL'} <span className="text-error">*</span>
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
@@ -161,12 +155,8 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
 
       {/* Email Field */}
       <div>
-        <label
-          htmlFor="email"
-          className={`block text-sm font-medium mb-2 ${labelStyles}`}
-        >
-          {t('analyzer.form.emailLabel') || 'Email Address'}{' '}
-          <span className="text-error">*</span>
+        <label htmlFor="email" className={`block text-sm font-medium mb-2 ${labelStyles}`}>
+          {t('analyzer.form.emailLabel') || 'Email Address'} <span className="text-error">*</span>
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
@@ -196,8 +186,10 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
             {errors.email.message}
           </p>
         )}
-        <p className={`mt-1.5 text-xs ${isDark ? 'text-white/40' : 'text-surface-500 dark:text-surface-400'}`}>
-          {t('analyzer.form.emailHint') || 'We\'ll send your detailed report here'}
+        <p
+          className={`mt-1.5 text-xs ${isDark ? 'text-white/40' : 'text-surface-500 dark:text-surface-400'}`}
+        >
+          {t('analyzer.form.emailHint') || "We'll send your detailed report here"}
         </p>
       </div>
 
@@ -238,7 +230,9 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
       </Button>
 
       {/* Privacy Notice */}
-      <p className={`text-xs text-center ${isDark ? 'text-white/30' : 'text-surface-400 dark:text-surface-500'}`}>
+      <p
+        className={`text-xs text-center ${isDark ? 'text-white/30' : 'text-surface-400 dark:text-surface-500'}`}
+      >
         {t('analyzer.form.privacy') ||
           'Your data is secure. We never share your information with third parties.'}
       </p>

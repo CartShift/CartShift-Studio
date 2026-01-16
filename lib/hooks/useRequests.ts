@@ -7,13 +7,14 @@ import { getRequestsByOrg, getAllRequests } from '@/lib/services/portal-requests
 
 export function useRequests() {
   const orgId = useResolvedOrgId();
-  const { loading: authLoading, isAuthenticated, isAgency } = usePortalAuth();
+  const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
 
-  const shouldFetch = isAuthenticated && !authLoading && (isAgency || (orgId && typeof orgId === 'string'));
+  const shouldFetch =
+    isAuthenticated && !auth && (isAgency || (orgId && typeof orgId === 'string'));
 
   const {
     data: requests = [],
-    isLoading,
+    is,
     error,
     refetch,
   } = useQuery({
@@ -30,7 +31,7 @@ export function useRequests() {
     staleTime: 60 * 1000, // 1 minute stale time
   });
 
-  const loading = authLoading || (shouldFetch && isLoading);
+  const loading = auth || (shouldFetch && is);
   const errorMsg = error instanceof Error ? error.message : (error as string | null);
 
   return {

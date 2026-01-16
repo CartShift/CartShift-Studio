@@ -12,17 +12,16 @@ interface UseConsultationsOptions {
 
 export function useConsultations({ status = 'all' }: UseConsultationsOptions = {}) {
   const orgId = useResolvedOrgId();
-  const { loading: authLoading, isAuthenticated, isAgency } = usePortalAuth();
+  const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
 
-  const shouldFetch = isAuthenticated && !authLoading && (isAgency || (orgId && typeof orgId === 'string'));
+  const shouldFetch =
+    isAuthenticated && !auth && (isAgency || (orgId && typeof orgId === 'string'));
 
-  const queryKey = isAgency
-    ? ['all-consultations', status]
-    : ['org-consultations', orgId, status];
+  const queryKey = isAgency ? ['all-consultations', status] : ['org-consultations', orgId, status];
 
   const {
     data: consultations = [],
-    isLoading,
+    is,
     error,
   } = useQuery({
     queryKey,
@@ -41,7 +40,7 @@ export function useConsultations({ status = 'all' }: UseConsultationsOptions = {
     staleTime: 60 * 1000,
   });
 
-  const loading = authLoading || (shouldFetch && isLoading);
+  const loading = auth || (shouldFetch && is);
   const errorMsg = error instanceof Error ? error.message : (error as string | null);
 
   return {

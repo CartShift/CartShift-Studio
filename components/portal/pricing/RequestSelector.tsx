@@ -20,7 +20,7 @@ interface RequestSelectorProps {
   expandedRequests: Set<string>;
   pricingResults: any[];
   currency: Currency;
-  isLoading?: boolean;
+  is?: boolean;
   error?: string | null;
 }
 
@@ -37,7 +37,7 @@ export function RequestSelector({
   expandedRequests,
   pricingResults,
   currency,
-  isLoading,
+  is,
   error,
 }: RequestSelectorProps) {
   const t = useTranslations();
@@ -93,7 +93,7 @@ export function RequestSelector({
       </div>
 
       <div className="divide-y divide-surface-100 dark:divide-surface-800">
-        {isLoading ? (
+        {is ? (
           <div className="p-8 flex items-center justify-center">
             <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>

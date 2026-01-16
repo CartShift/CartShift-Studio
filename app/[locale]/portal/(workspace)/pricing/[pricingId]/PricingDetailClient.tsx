@@ -39,13 +39,13 @@ export default function PricingDetailClient() {
 
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
   const [linkedRequests, setLinkedRequests] = useState<Request[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!orgId || !pricingId || typeof orgId !== 'string' || typeof pricingId !== 'string') {
       setError(t('portal.common.error' as never));
-      setLoading(false);
+      set(false);
       return undefined;
     }
 
@@ -64,7 +64,7 @@ export default function PricingDetailClient() {
         console.error('Failed to fetch pricing request:', err);
         setError(t('portal.common.error' as never));
       } finally {
-        setLoading(false);
+        set(false);
       }
     };
 

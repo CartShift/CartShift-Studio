@@ -15,7 +15,7 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
 
   try {
     // 1. Check Authentication
-    console.log('\n1️⃣ Checking Authentication...');
+    console.log('\n1️⃣  Authentication...');
     const auth = getFirebaseAuth();
     const user = auth.currentUser;
 
@@ -33,7 +33,7 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
     });
 
     // 2. Check Auth Token
-    console.log('\n2️⃣ Checking Auth Token...');
+    console.log('\n2️⃣  Auth Token...');
     try {
       const token = await user.getIdToken();
       console.log('✅ Auth token retrieved successfully');
@@ -46,7 +46,7 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
     }
 
     // 3. Check User Document
-    console.log('\n3️⃣ Checking portal_users Document...');
+    console.log('\n3️⃣  portal_users Document...');
     const db = getFirestoreDb();
     const userDocRef = doc(db, 'portal_users', user.uid);
 
@@ -67,7 +67,7 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
           console.warn('⚠️ User has no organizations');
           console.log('💡 Solution: Create an organization or accept an invite');
         } else {
-          console.log('\n4️⃣ Checking Organization Membership...');
+          console.log('\n4️⃣  Organization Membership...');
           for (const orgId of orgs) {
             const memberId = `${orgId}_${user.uid}`;
             const memberDocRef = doc(db, 'portal_members', memberId);

@@ -18,13 +18,13 @@ import { Link } from '@/i18n/navigation';
 
 export default function SalesDashboardClient() {
   const t = useTranslations('portal');
-  const { userData, loading: authLoading, isAuthenticated, user } = usePortalAuth();
+  const { userData, loading: auth, isAuthenticated, user } = usePortalAuth();
   const { metrics, loading, refetch } = useSalesAnalytics();
 
   // Check if there's any sales data
   const hasData = metrics && (metrics.totalRevenue > 0 || metrics.totalProposals > 0);
 
-  if (authLoading) {
+  if (auth) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
@@ -35,7 +35,7 @@ export default function SalesDashboardClient() {
     );
   }
 
-  if (!authLoading && isAuthenticated && !userData?.isAgency) {
+  if (!auth && isAuthenticated && !userData?.isAgency) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />

@@ -20,7 +20,7 @@ type TranslationKey =
   // Portal Auth
   | 'portal.auth.title'
   | 'portal.auth.subtitle'
-  | 'portal.auth.errors.userNotFound'
+  | 'portal.auth.errors.userNot'
   | 'portal.auth.errors.wrongPassword'
   | 'portal.auth.errors.emailInUse'
   | 'portal.auth.errors.weakPassword'
@@ -90,7 +90,7 @@ export function useTypedTranslations() {
     portal: {
       auth: {
         errors: {
-          userNotFound: () => t('portal.auth.errors.userNotFound' as any),
+          userNot: () => t('portal.auth.errors.userNot' as any),
           wrongPassword: () => t('portal.auth.errors.wrongPassword' as any),
           emailInUse: () => t('portal.auth.errors.emailInUse' as any),
           weakPassword: () => t('portal.auth.errors.weakPassword' as any),

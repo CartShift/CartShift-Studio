@@ -32,8 +32,8 @@ const getLoginSchema = (t: (path: string) => string) =>
 
 function LoginForm() {
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [loading, set] = useState(false);
+  const [google, setGoogle] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { navigateToPortal, getPortalHref } = usePortalNavigation();
   const searchParams = useSearchParams();
@@ -53,7 +53,7 @@ function LoginForm() {
   });
 
   const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
+    setGoogle(true);
     setError(null);
     try {
       await signInWithGoogle();
@@ -69,17 +69,17 @@ function LoginForm() {
             : firebaseError.code === 'auth/cancelled-popup-request'
               ? t('portal.auth.errors.popupCancelled' as any)
               : firebaseError.code === 'auth/account-exists-with-different-credential'
-                ? t('portal.auth.errors.accountExists' as any)
+                ? t('portal.auth.errors.account' as any)
                 : firebaseError.message || t('portal.auth.errors.generic' as any);
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
-      setGoogleLoading(false);
+      setGoogle(false);
     }
   };
 
   const onSubmit = async (data: LoginData) => {
-    setLoading(true);
+    set(true);
     setError(null);
     try {
       await loginWithEmail(data.email, data.password);
@@ -89,7 +89,7 @@ function LoginForm() {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/user-not-found'
-          ? t('portal.auth.errors.userNotFound' as any)
+          ? t('portal.auth.errors.userNot' as any)
           : firebaseError.code === 'auth/wrong-password' ||
               firebaseError.code === 'auth/invalid-credential'
             ? t('portal.auth.errors.wrongPassword' as any)
@@ -101,7 +101,7 @@ function LoginForm() {
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 
@@ -228,8 +228,8 @@ function LoginForm() {
             className="w-full h-11 border-surface-200 dark:border-surface-800"
             type="button"
             onClick={handleGoogleSignIn}
-            loading={googleLoading}
-            disabled={loading || googleLoading}
+            loading={google}
+            disabled={loading || google}
           >
             <svg className="w-5 h-5 me-3" viewBox="0 0 24 24">
               <path

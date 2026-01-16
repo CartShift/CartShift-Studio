@@ -15,13 +15,13 @@ export type EnhancedOrganization = Organization & {
 };
 
 export function useAgencyClients() {
-  const { loading: authLoading, isAgency, userData } = usePortalAuth();
+  const { loading: auth, isAgency, userData } = usePortalAuth();
 
-  const shouldFetch = !authLoading && isAgency;
+  const shouldFetch = !auth && isAgency;
 
   const {
     data: organizations = [],
-    isLoading: orgsLoading,
+    is: orgs,
     error: orgsError,
   } = useQuery({
     queryKey: ['agency-clients'],
@@ -30,7 +30,7 @@ export function useAgencyClients() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const { data: revenueData = [], isLoading: revenueLoading } = useQuery<ClientRevenueData[]>({
+  const { data: revenueData = [], is: revenue } = useQuery<ClientRevenueData[]>({
     queryKey: ['client-revenue-data'],
     queryFn: getClientRevenueData,
     enabled: Boolean(shouldFetch),
@@ -53,7 +53,7 @@ export function useAgencyClients() {
 
   return {
     organizations: enhancedOrganizations,
-    loading: authLoading || (shouldFetch && (orgsLoading || revenueLoading)),
+    loading: auth || (shouldFetch && (orgs || revenue)),
     error: orgsError instanceof Error ? orgsError.message : (orgsError as string | null),
     userData,
   };

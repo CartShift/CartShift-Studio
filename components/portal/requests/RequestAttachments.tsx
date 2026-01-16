@@ -36,7 +36,7 @@ interface RequestAttachmentsProps {
 export function RequestAttachments({ request, isAgency, orgId }: RequestAttachmentsProps) {
   const t = useTranslations();
   const [files, setFiles] = useState<FileAttachment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<{
     url: string;
@@ -50,7 +50,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
       request.id,
       data => {
         setFiles(data);
-        setLoading(false);
+        set(false);
       },
       orgId
     );

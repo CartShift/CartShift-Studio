@@ -23,7 +23,7 @@ export enum PortalErrorCode {
 }
 
 export const ERROR_MESSAGES: Record<PortalErrorCode, string> = {
-  [PortalErrorCode.AUTH_USER_NOT_FOUND]: 'portal.auth.errors.userNotFound',
+  [PortalErrorCode.AUTH_USER_NOT_FOUND]: 'portal.auth.errors.userNot',
   [PortalErrorCode.AUTH_WRONG_PASSWORD]: 'portal.auth.errors.wrongPassword',
   [PortalErrorCode.AUTH_EMAIL_ALREADY_IN_USE]: 'portal.auth.errors.emailInUse',
   [PortalErrorCode.AUTH_WEAK_PASSWORD]: 'portal.auth.errors.weakPassword',
@@ -34,7 +34,7 @@ export const ERROR_MESSAGES: Record<PortalErrorCode, string> = {
   [PortalErrorCode.AUTH_NETWORK_REQUEST_FAILED]: 'portal.auth.errors.networkError',
   [PortalErrorCode.AUTH_UNAUTHORIZED]: 'portal.auth.errors.unauthorized',
 
-  [PortalErrorCode.REQ_NOT_FOUND]: 'portal.requests.errors.notFound',
+  [PortalErrorCode.REQ_NOT_FOUND]: 'portal.requests.errors.not',
   [PortalErrorCode.REQ_PERMISSION_DENIED]: 'portal.requests.errors.permissionDenied',
   [PortalErrorCode.REQ_INVALID_DATA]: 'portal.requests.errors.invalidData',
   [PortalErrorCode.REQ_UPDATE_FAILED]: 'portal.requests.errors.updateFailed',

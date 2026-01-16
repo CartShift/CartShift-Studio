@@ -13,7 +13,7 @@ interface ConfirmationModalProps {
   confirmText?: string;
   cancelText?: string;
   variant?: 'danger' | 'warning' | 'info';
-  isLoading?: boolean;
+  is?: boolean;
 }
 
 export function ConfirmationModal({
@@ -25,7 +25,7 @@ export function ConfirmationModal({
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   variant = 'warning',
-  isLoading = false,
+  is = false,
 }: ConfirmationModalProps) {
   const variantStyles = {
     danger: {
@@ -62,7 +62,7 @@ export function ConfirmationModal({
     variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white border-transparent' : '';
 
   return (
-    <ModalBackdrop isOpen={isOpen} onClick={isLoading ? undefined : onClose} zIndex="200">
+    <ModalBackdrop isOpen={isOpen} onClick={is ? undefined : onClose} zIndex="200">
       <ModalContent maxWidth="md" onClick={e => e.stopPropagation()}>
         <div className="bg-white dark:bg-surface-800 rounded-2xl shadow-xl overflow-hidden border border-surface-200 dark:border-surface-700">
           <div className="p-6">
@@ -88,7 +88,7 @@ export function ConfirmationModal({
               <Button
                 variant="ghost"
                 onClick={onClose}
-                disabled={isLoading}
+                disabled={is}
                 className="hover:bg-surface-100 dark:hover:bg-surface-700"
               >
                 {cancelText}
@@ -96,7 +96,7 @@ export function ConfirmationModal({
               <Button
                 variant={confirmButtonVariant}
                 onClick={onConfirm}
-                loading={isLoading}
+                loading={is}
                 className={confirmButtonClass}
               >
                 {confirmText}

@@ -30,7 +30,7 @@ const getSignupSchema = (t: (path: string) => string) =>
 
 function SignupForm() {
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -65,7 +65,7 @@ function SignupForm() {
   }, [prefilledEmail, setValue]);
 
   const onSubmit = async (data: SignupData) => {
-    setLoading(true);
+    set(true);
     setError(null);
     try {
       await signUpWithEmail(data.email, data.password, data.name);
@@ -87,7 +87,7 @@ function SignupForm() {
               : firebaseError.message || t('portal.auth.errors.genericSignup' as any);
       setError(errorMessage);
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 
@@ -194,7 +194,7 @@ export default function SignupPage() {
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-surface-500">Loading...</p>
+            <p className="text-surface-500">...</p>
           </div>
         </div>
       }

@@ -61,20 +61,20 @@ interface PricingFormData {
 }
 
 export default function CreatePricingForm() {
-  const { orgId, loading: orgLoading } = useOrg();
+  const { orgId, loading: org } = useOrg();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userData } = usePortalAuth();
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  const [is, setIs] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Request selection state
   const [availableRequests, setAvailableRequests] = useState<Request[]>([]);
   const [selectedRequestIds, setSelectedRequestIds] = useState<string[]>([]);
-  const [loadingRequests, setLoadingRequests] = useState(true);
+  const [loadingRequests, setRequests] = useState(true);
   const [requestsError, setRequestsError] = useState<string | null>(null);
 
   // Track if line items are from calculator (to sync)
@@ -84,11 +84,11 @@ export default function CreatePricingForm() {
   useEffect(() => {
     async function fetchRequests() {
       if (!orgId || typeof orgId !== 'string') {
-        setLoadingRequests(false);
+        setRequests(false);
         return;
       }
 
-      setLoadingRequests(true);
+      setRequests(true);
       setRequestsError(null);
 
       try {
@@ -113,7 +113,7 @@ export default function CreatePricingForm() {
         setRequestsError(errorMessage);
         setAvailableRequests([]);
       } finally {
-        setLoadingRequests(false);
+        setRequests(false);
       }
     }
 
@@ -294,7 +294,7 @@ export default function CreatePricingForm() {
     }
 
     setIsSubmitting(true);
-    if (shouldSend) setIsSending(true);
+    if (shouldSend) setIs(true);
     setSubmitStatus('idle');
     setErrorMessage(null);
 
@@ -340,11 +340,11 @@ export default function CreatePricingForm() {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
-      setIsSending(false);
+      setIs(false);
     }
   };
 
-  if (orgLoading) {
+  if (org) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="flex items-center justify-center py-20">
@@ -362,10 +362,10 @@ export default function CreatePricingForm() {
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-            {isSending ? 'Offer Sent!' : 'Draft Saved!'}
+            {is ? 'Offer Sent!' : 'Draft Saved!'}
           </h2>
           <p className="text-surface-500 dark:text-surface-400 max-w-sm">
-            {isSending
+            {is
               ? 'Your pricing offer has been sent to the client.'
               : 'Your draft has been saved. You can send it when ready.'}
           </p>
@@ -441,7 +441,7 @@ export default function CreatePricingForm() {
             onSelectionChange={setSelectedRequestIds}
             onLineItemsChange={handleCalculatorLineItems}
             currency={watchedCurrency}
-            isLoading={loadingRequests}
+            is={loadingRequests}
             error={requestsError}
             onQuickAddRequest={() => router.push(getPortalPath('/requests/new'))}
             orgId={orgId!}
@@ -481,7 +481,7 @@ export default function CreatePricingForm() {
                   {lineItemsFromCalculator && selectedRequestIds.length > 0 && (
                     <p className="text-xs text-surface-500 mt-1">
                       {t('portal.pricing.form.lineItemsFromCalculator' as never) ||
-                        'Generated from selected requests - edit as needed'}
+                        ' from selected requests - edit as needed'}
                     </p>
                   )}
                 </div>
@@ -636,7 +636,7 @@ export default function CreatePricingForm() {
           {/* Currency & Validity */}
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.settings' as never) || 'Settings'}
+              {t('portal.pricing.form.settings' as never) || 's'}
             </h3>
 
             <div className="space-y-4">
@@ -736,8 +736,8 @@ export default function CreatePricingForm() {
               disabled={isSubmitting}
               className="w-full h-12 flex items-center justify-center gap-2"
             >
-              {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
-              {isSending ? t('portal.pricing.form.sending') : t('portal.pricing.form.sendToClient')}
+              {is ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
+              {is ? t('portal.pricing.form.sending') : t('portal.pricing.form.sendToClient')}
             </Button>
 
             <Button
@@ -747,7 +747,7 @@ export default function CreatePricingForm() {
               disabled={isSubmitting}
               className="w-full h-12 flex items-center justify-center gap-2"
             >
-              {isSubmitting && !isSending ? (
+              {isSubmitting && !is ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <Save size={18} />

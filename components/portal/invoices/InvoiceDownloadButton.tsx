@@ -8,8 +8,8 @@ import { FileText, Loader2 } from 'lucide-react';
 import { InvoiceDocument } from './InvoiceDocument';
 import { useTranslations } from 'next-intl';
 
-// Loading component for dynamic import
-const PDFLoadingButton = () => {
+//  component for dynamic import
+const PDFButton = () => {
   const t = useTranslations();
   return (
     <Button variant="outline" disabled className="gap-2">
@@ -24,7 +24,7 @@ const PDFDownloadLink = dynamic(
   () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
   {
     ssr: false,
-    loading: () => <PDFLoadingButton />,
+    loading: () => <PDFButton />,
   }
 );
 

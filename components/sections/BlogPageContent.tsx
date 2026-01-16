@@ -245,7 +245,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
             {paginatedPosts.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-lg text-surface-600 dark:text-surface-300">
-                  {t('blog.content.noPostsFound')}
+                  {t('blog.content.noPosts')}
                 </p>
               </div>
             ) : (

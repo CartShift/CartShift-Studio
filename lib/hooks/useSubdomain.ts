@@ -7,7 +7,7 @@ interface SubdomainState {
   isPortalSubdomain: boolean;
   isMainDomain: boolean;
   isDevelopment: boolean;
-  isLoading: boolean;
+  is: boolean;
 }
 
 /**
@@ -19,7 +19,7 @@ export function useSubdomain(): SubdomainState {
     isPortalSubdomain: false,
     isMainDomain: false,
     isDevelopment: false,
-    isLoading: true,
+    is: true,
   });
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function useSubdomain(): SubdomainState {
       isPortalSubdomain: config.isPortalSubdomain,
       isMainDomain: config.isMainDomain,
       isDevelopment: config.isDevelopment,
-      isLoading: false,
+      is: false,
     });
   }, []);
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -45,7 +45,7 @@ export const AboutPageContent: React.FC = () => {
         </div>
       </Section>
 
-      {/* Founders Image & Team Section */}
+      {/* ers Image & Team Section */}
       <Section background="light" className="relative overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -73,7 +73,7 @@ export const AboutPageContent: React.FC = () => {
             <div className="aspect-[4/3] md:aspect-[16/9] relative">
               <Image
                 src="/images/the-team.png"
-                alt="CartShift Studio Founders"
+                alt="CartShift Studio ers"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
@@ -111,10 +111,7 @@ export const AboutPageContent: React.FC = () => {
       </Section>
 
       <Section background="default" className="relative overflow-hidden">
-        <SectionHeader
-          title={t('about.values.title')}
-          subtitle={t('about.values.subtitle')}
-        />
+        <SectionHeader title={t('about.values.title')} subtitle={t('about.values.subtitle')} />
         <div className="grid md:grid-cols-2 gap-8">
           {valuesItems.map((value, index) => (
             <motion.div
@@ -203,4 +200,3 @@ export const AboutPageContent: React.FC = () => {
     </>
   );
 };
-

@@ -14,43 +14,43 @@ export function useOptimisticMutation<T>() {
   const { addToast } = useToast();
   const t = useTranslations('portal.common');
 
-  const mutate = useCallback(async (
-    mutationFn: () => Promise<void>,
-    options: OptimisticMutationOptions<T>
-  ) => {
-    const { onError, onSuccess, rollbackData } = options;
+  const mutate = useCallback(
+    async (mutationFn: () => Promise<void>, options: OptimisticMutationOptions<T>) => {
+      const { onError, onSuccess, rollbackData } = options;
 
-    setIsMutating(true);
+      setIsMutating(true);
 
-    // Apply optimistic update immediately
-    // Note: The actual data partial is passed to onMutate by the caller before calling this if needed,
-    // or passed as argument to this wrapper if we want to enforce it.
-    // Here we assume the caller handles the local state update logic inside onMutate.
-    // However, to make it truly generic, let's accept the newData as an argument to mutate.
+      // Apply optimistic update immediately
+      // Note: The actual data partial is passed to onMutate by the caller before calling this if needed,
+      // or passed as argument to this wrapper if we want to enforce it.
+      // Here we assume the caller handles the local state update logic inside onMutate.
+      // However, to make it truly generic, let's accept the newData as an argument to mutate.
 
-    // Actually, following the pattern:
-    // mutate(newData, mutationFn)
+      // Actually, following the pattern:
+      // mutate(newData, mutationFn)
 
-    try {
-      await mutationFn();
-      onSuccess?.();
-    } catch (error) {
-      console.error('Optimistic mutation failed:', error);
+      try {
+        await mutationFn();
+        onSuccess?.();
+      } catch (error) {
+        console.error('Optimistic mutation failed:', error);
 
-      // Rollback
-      if (rollbackData && onError) {
-        onError(error, rollbackData);
+        // Rollback
+        if (rollbackData && onError) {
+          onError(error, rollbackData);
+        }
+
+        addToast({
+          type: 'error',
+          title: t('actionFailed' as any),
+          message: t('changesReverted' as any),
+        });
+      } finally {
+        setIsMutating(false);
       }
-
-      addToast({
-        type: 'error',
-        title: t('actionFailed' as any),
-        message: t('changesReverted' as any),
-      });
-    } finally {
-      setIsMutating(false);
-    }
-  }, [addToast, t]);
+    },
+    [addToast, t]
+  );
 
   return { mutate, isMutating };
 }
@@ -65,12 +65,12 @@ export function useOptimisticAction<TData, TVariables>(
     onError?: (error: unknown) => void;
   }
 ) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [is, setIs] = useState(false);
   const { addToast } = useToast();
   const t = useTranslations('portal.common');
 
   const execute = async (variables: TVariables) => {
-    setIsLoading(true);
+    setIs(true);
     options.onMutate(variables);
 
     try {
@@ -90,9 +90,9 @@ export function useOptimisticAction<TData, TVariables>(
       options.onError?.(error);
       throw error;
     } finally {
-      setIsLoading(false);
+      setIs(false);
     }
   };
 
-  return { execute, isLoading };
+  return { execute, is };
 }

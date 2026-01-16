@@ -18,13 +18,14 @@ import { Button } from '@/components/ui/Button';
 import {
   CalendarInfo,
   listCalendars,
-  updateCalendarSettings,
+  updateCalendars,
 } from '@/lib/services/portal-google-calendar';
+import { Logger } from '@/lib/logger';
 
 export interface CalendarConnection {
   connected: boolean;
   email?: string;
-  lastSynced?: Date;
+  last?: Date;
   syncedCalendars?: string[];
   selectedCalendarId?: string;
   error?: string;
@@ -44,15 +45,15 @@ export default function GoogleCalendarIntegration({
   onSync,
 }: GoogleCalendarIntegrationProps) {
   const t = useTranslations('portal');
-  const [connecting, setConnecting] = useState(false);
-  const [disconnecting, setDisconnecting] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  const [connecting, set] = useState(false);
+  const [disconnecting, set] = useState(false);
+  const [syncing, set] = useState(false);
 
   // Calendar selection state
   const [calendars, setCalendars] = useState<CalendarInfo[]>([]);
-  const [loadingCalendars, setLoadingCalendars] = useState(false);
+  const [loadingCalendars, setCalendars] = useState(false);
   const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(null);
-  const [updatingSettings, setUpdatingSettings] = useState(false);
+  const [updating, set] = useState(false);
 
   const isConnected = connection?.connected;
 
@@ -69,25 +70,25 @@ export default function GoogleCalendarIntegration({
   }, [isConnected, connection?.selectedCalendarId]);
 
   const fetchCalendars = async () => {
-    setLoadingCalendars(true);
+    setCalendars(true);
     try {
       const list = await listCalendars();
       setCalendars(list);
     } catch (error) {
-      console.error('Failed to fetch calendars:', error);
+      Logger.error('Failed to fetch calendars', error);
     } finally {
-      setLoadingCalendars(false);
+      setCalendars(false);
     }
   };
 
   const handleConnect = async () => {
-    setConnecting(true);
+    set(true);
     try {
       await onConnect();
       // After connect, fetch calendars
       await fetchCalendars();
     } finally {
-      setConnecting(false);
+      set(false);
     }
   };
 
@@ -95,33 +96,33 @@ export default function GoogleCalendarIntegration({
     if (!confirm(t('googleCalendar.disconnectConfirm'))) {
       return;
     }
-    setDisconnecting(true);
+    set(true);
     try {
       await onDisconnect();
     } finally {
-      setDisconnecting(false);
+      set(false);
     }
   };
 
   const handleSync = async () => {
     if (!onSync) return;
-    setSyncing(true);
+    set(true);
     try {
       await onSync();
     } finally {
-      setSyncing(false);
+      set(false);
     }
   };
 
   const handleCalendarChange = async (calendarId: string) => {
     setSelectedCalendarId(calendarId);
-    setUpdatingSettings(true);
+    set(true);
     try {
-      await updateCalendarSettings(calendarId);
+      await updateCalendars(calendarId);
     } catch (error) {
-      console.error('Failed to update calendar settings:', error);
+      Logger.error('Failed to update calendar settings', error);
     } finally {
-      setUpdatingSettings(false);
+      set(false);
     }
   };
 
@@ -196,17 +197,17 @@ export default function GoogleCalendarIntegration({
                 {loadingCalendars ? (
                   <div className="flex items-center gap-2 text-sm text-surface-500">
                     <Loader2 size={14} className="animate-spin" />
-                    Loading calendars...
+                    calendars...
                   </div>
                 ) : (
                   <div className="relative">
                     <select
                       value={selectedCalendarId || 'primary'}
                       onChange={e => handleCalendarChange(e.target.value)}
-                      disabled={updatingSettings}
+                      disabled={updating}
                       className={cn(
                         'w-full appearance-none bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg py-2 ps-3 pe-8 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20',
-                        updatingSettings && 'opacity-50 cursor-wait'
+                        updating && 'opacity-50 cursor-wait'
                       )}
                     >
                       <option value="primary">Primary Calendar</option>
@@ -228,13 +229,13 @@ export default function GoogleCalendarIntegration({
                   {t('googleCalendar.targetCalendarDescription')}
                 </p>
               </div>
-              {connection.lastSynced && (
+              {connection.last && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
                     {t('googleCalendar.lastSync')}
                   </span>
                   <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                    {connection.lastSynced.toLocaleString()}
+                    {connection.last.toLocaleString()}
                   </span>
                 </div>
               )}

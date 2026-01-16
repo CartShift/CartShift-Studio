@@ -24,7 +24,7 @@ interface UploadFileFormProps {
 export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: UploadFileFormProps) => {
   const { user, userData } = usePortalAuth();
   const t = useTranslations();
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -56,7 +56,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
   const handleUpload = async () => {
     if (!selectedFile || !user) return;
 
-    setLoading(true);
+    set(true);
     setError(null);
     setUploadProgress(0);
 
@@ -88,7 +88,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
       console.error('Upload error:', error);
       setError(error instanceof Error ? error.message : t('portal.files.uploadForm.errorGeneric'));
     } finally {
-      setLoading(false);
+      set(false);
       // Clear interval on error as well
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);

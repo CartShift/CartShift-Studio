@@ -1,6 +1,5 @@
-import NotFoundClient from '@/components/NotFoundClient';
+import NotClient from '@/components/NotFoundClient';
 
 export default function NotFound() {
-  return <NotFoundClient />;
+  return <NotClient />;
 }
-

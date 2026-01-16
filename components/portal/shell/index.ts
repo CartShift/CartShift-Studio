@@ -7,7 +7,7 @@ export { SidebarBrand } from './SidebarBrand';
 export { SidebarNavigation } from './SidebarNavigation';
 export { OrganizationSwitcher } from './OrganizationSwitcher';
 export { SidebarFooter } from './SidebarFooter';
-export { PortalLoadingState } from './PortalLoadingState';
+export { PortalState } from './PortalLoadingState';
 export { PortalAccessDenied } from './PortalAccessDenied';
 
 // Export types

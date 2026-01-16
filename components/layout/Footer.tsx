@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
   const t = useTranslations();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentYear, setCurrentYear] = useState(2026);
 
@@ -49,7 +49,7 @@ export const Footer: React.FC = () => {
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    set(true);
 
     try {
       const result = await subscribeNewsletter(email);
@@ -64,7 +64,7 @@ export const Footer: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : t('portal.common.failedToSubscribe'));
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

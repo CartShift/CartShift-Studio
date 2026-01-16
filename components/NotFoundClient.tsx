@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion } from '@/lib/motion';
 
-interface NotFoundClientProps {
+interface NotClientProps {
   isPortalRoute?: boolean;
 }
 
-export default function NotFoundClient({ isPortalRoute = false }: NotFoundClientProps) {
+export default function NotClient({ isPortalRoute = false }: NotClientProps) {
   const t = useTranslations();
 
   return (
@@ -72,10 +72,10 @@ export default function NotFoundClient({ isPortalRoute = false }: NotFoundClient
           className="space-y-4"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
-            {t('notFound.title')}
+            {t('not.title')}
           </h1>
           <p className="text-lg text-surface-600 dark:text-surface-400 leading-relaxed max-w-md mx-auto">
-            {t('notFound.description')}
+            {t('not.description')}
           </p>
         </motion.div>
 
@@ -94,14 +94,14 @@ export default function NotFoundClient({ isPortalRoute = false }: NotFoundClient
               size={18}
               className="group-hover:-translate-x-1 transition-transform rtl:rotate-180 rtl:group-hover:translate-x-1"
             />
-            {t('notFound.goBack')}
+            {t('not.goBack')}
           </button>
           <Link
             href={isPortalRoute ? '/portal/login/' : '/'}
             className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl font-bold text-white hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
           >
             <HomeIcon size={18} className="group-hover:scale-110 transition-transform" />
-            {isPortalRoute ? t('notFound.portalLogin') : t('notFound.goHome')}
+            {isPortalRoute ? t('not.portalLogin') : t('not.goHome')}
           </Link>
         </motion.div>
 
@@ -112,12 +112,12 @@ export default function NotFoundClient({ isPortalRoute = false }: NotFoundClient
           transition={{ duration: 0.5, delay: 0.8 }}
           className="text-sm text-surface-500 dark:text-surface-500 pt-6"
         >
-          {t('notFound.needHelp')}{' '}
+          {t('not.needHelp')}{' '}
           <Link
             href="/contact/"
             className="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-bold hover:underline underline-offset-2 transition-colors"
           >
-            {t('notFound.contactTeam')}
+            {t('not.contactTeam')}
           </Link>
         </motion.p>
 

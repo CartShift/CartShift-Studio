@@ -23,7 +23,7 @@ interface ManageServiceFormProps {
 }
 
 export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServiceFormProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations('portal.agency.settings.services.form');
 
@@ -45,7 +45,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
       return;
     }
 
-    setLoading(true);
+    set(true);
     try {
       const serviceData = {
         name: formData.name,
@@ -66,7 +66,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
       console.error('Error saving service:', error);
       setError(error instanceof Error ? error.message : t('errors.failed'));
     } finally {
-      setLoading(false);
+      set(false);
     }
   };
 

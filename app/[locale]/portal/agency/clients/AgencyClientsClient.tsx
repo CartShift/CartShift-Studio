@@ -48,23 +48,23 @@ function formatRevenue(amountInCents: number, currency: Currency = 'USD'): strin
 export default function AgencyClientsClient() {
   const t = useTranslations('portal');
   const router = useRouter();
-  const { loading: authLoading, isAuthenticated, user } = usePortalAuth();
-  const { organizations, loading: clientsLoading, userData } = useAgencyClients();
+  const { loading: auth, isAuthenticated, user } = usePortalAuth();
+  const { organizations, loading: clients, userData } = useAgencyClients();
   const { viewAsClient } = useImpersonation();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyClientsOnly, setShowMyClientsOnly] = useState(false);
   const [isRepairing, setIsRepairing] = useState(false);
   const [orgToDelete, setOrgToDelete] = useState<{ id: string; name: string } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [is, setIs] = useState(false);
 
   useEffect(() => {
     // Sync loading state or use derived state
-    if (!authLoading && !clientsLoading) {
-      setLoading(false);
+    if (!auth && !clients) {
+      set(false);
     }
-  }, [authLoading, clientsLoading]);
+  }, [auth, clients]);
 
   // Calculate totals for the header stats
   const totals = useMemo(() => {
@@ -115,7 +115,7 @@ export default function AgencyClientsClient() {
 
   const handleDeleteClient = async () => {
     if (!orgToDelete) return;
-    setIsDeleting(true);
+    setIs(true);
     try {
       await deleteOrganization(orgToDelete.id);
       setOrgToDelete(null);
@@ -127,11 +127,11 @@ export default function AgencyClientsClient() {
       console.error('Failed to delete client:', err);
       alert('Failed to delete client');
     } finally {
-      setIsDeleting(false);
+      setIs(false);
     }
   };
 
-  if (authLoading || (loading && userData?.isAgency)) {
+  if (auth || (loading && userData?.isAgency)) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
@@ -142,7 +142,7 @@ export default function AgencyClientsClient() {
     );
   }
 
-  if (!authLoading && isAuthenticated && !userData?.isAgency) {
+  if (!auth && isAuthenticated && !userData?.isAgency) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -181,7 +181,7 @@ export default function AgencyClientsClient() {
         }
         confirmText={t('common.delete' as any) || 'Delete'}
         variant="danger"
-        isLoading={isDeleting}
+        is={is}
       />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

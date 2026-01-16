@@ -525,11 +525,39 @@ body {
   /* Shimmer animation for skeleton loaders */
   @keyframes shimmer {
     0% {
-      background-position: -400% 0;
+      background-position: -200% 0;
     }
     100% {
-      background-position: 400% 0;
+      background-position: 200% 0;
     }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--color-surface-200)) 0%,
+      rgb(var(--color-surface-100)) 20%,
+      rgb(var(--color-surface-50)) 40%,
+      rgb(var(--color-surface-50)) 60%,
+      rgb(var(--color-surface-100)) 80%,
+      rgb(var(--color-surface-200)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .dark .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--color-surface-800)) 0%,
+      rgb(var(--color-surface-700)) 20%,
+      rgb(var(--color-surface-600)) 40%,
+      rgb(var(--color-surface-600)) 60%,
+      rgb(var(--color-surface-700)) 80%,
+      rgb(var(--color-surface-800)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
   }
 
   /* Subtle float animation */

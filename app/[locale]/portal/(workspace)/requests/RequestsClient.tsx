@@ -19,6 +19,7 @@ import {
   MousePointer2,
   Building2,
 } from 'lucide-react';
+import { Logger } from '@/lib/logger';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -48,8 +49,8 @@ import { toast } from 'sonner';
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
-  const { loading: authLoading, isAgency } = usePortalAuth();
-  const { requests, loading: requestsLoading, error: requestsError } = useRequests();
+  const { loading: auth, isAgency } = usePortalAuth();
+  const { requests: requestsData, loading: requests, error: requestsError } = useRequests();
   const { pinnedIds } = usePinnedRequests(orgId as string);
   const { switchOrg } = useOrg();
   const prevPinnedIdsRef = useRef<string[]>([]);
@@ -90,7 +91,7 @@ export default function RequestsClient() {
   // Delete Modal State
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [is, setIs] = useState(false);
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED'];
   const filters = isAgency
@@ -112,7 +113,7 @@ export default function RequestsClient() {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  const loading = authLoading || requestsLoading;
+  const loading = auth || requests;
   const error = requestsError;
 
   // Reset to page 1 when filter or search changes
@@ -165,22 +166,22 @@ export default function RequestsClient() {
   const handleConfirmDelete = async () => {
     if (!requestToDelete) return;
 
-    setIsDeleting(true);
+    setIs(true);
     try {
       await deleteRequest(requestToDelete);
       toast.success(t('portal.common.deleteSuccess' as any));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
-      console.error('Failed to delete request:', error);
+      Logger.error('Failed to delete request', error);
       toast.error(t('portal.common.deleteError' as any));
     } finally {
-      setIsDeleting(false);
+      setIs(false);
     }
   };
 
   // Filter and sort requests - pinned items appear at the top
-  const filteredRequests = requests
+  const filteredRequests = requestsData
     .filter(req => {
       // Organization filter (agency only)
       if (isAgency && selectedOrgFilter !== 'all' && req.orgId !== selectedOrgFilter) {
@@ -250,7 +251,7 @@ export default function RequestsClient() {
   const handleGoToPricing = () => {
     if (selectedRequestIds.length === 0) return;
 
-    const selectedReqs = requests.filter(r => selectedRequestIds.includes(r.id));
+    const selectedReqs = requestsData.filter(r => selectedRequestIds.includes(r.id));
     const uniqueOrgIds = [...new Set(selectedReqs.map(r => r.orgId))];
 
     if (uniqueOrgIds.length > 1) {
@@ -301,7 +302,7 @@ export default function RequestsClient() {
         confirmText={t('portal.common.delete')}
         cancelText={t('portal.common.cancel')}
         variant="danger"
-        isLoading={isDeleting}
+        is={is}
       />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
@@ -445,7 +446,7 @@ export default function RequestsClient() {
                 aria-live="polite"
               >
                 <SkeletonTable rows={8} columns={6} />
-                <span className="sr-only">Loading requests...</span>
+                <span className="sr-only"> requests...</span>
               </motion.div>
             ) : filteredRequests.length > 0 ? (
               <motion.div

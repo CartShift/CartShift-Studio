@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
-    "predev": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
+    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent && node scripts/clean-debug-logging.mjs",
+    "predev": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent && node scripts/clean-debug-logging.mjs",
     "dev": "node dev-pro.mjs",
     "dev:force": "powershell -ExecutionPolicy Bypass -File scripts/dev-force-simple.ps1",
     "dev:force:win": "cmd /c scripts\\dev-force.bat",

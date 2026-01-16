@@ -45,7 +45,7 @@ export default function PricingListClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
   const [requests, setRequests] = useState<PricingRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,7 +66,7 @@ export default function PricingListClient() {
   useEffect(() => {
     if (!orgId || typeof orgId !== 'string') return undefined;
 
-    setLoading(true);
+    set(true);
     setError(null);
 
     try {
@@ -75,7 +75,7 @@ export default function PricingListClient() {
         orgId,
         data => {
           setRequests(data);
-          setLoading(false);
+          set(false);
         },
         { excludeDrafts: !isAgency }
       );
@@ -84,7 +84,7 @@ export default function PricingListClient() {
     } catch (err) {
       console.error('Failed to subscribe to pricing requests:', err);
       setError(t('portal.common.error'));
-      setLoading(false);
+      set(false);
       return undefined;
     }
   }, [orgId, isAgency, t]);

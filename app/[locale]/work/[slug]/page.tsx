@@ -1,6 +1,10 @@
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { generateMetadata as genMeta, generateBreadcrumbSchema, generateArticleSchema } from '@/lib/seo';
+import {
+  generateMetadata as genMeta,
+  generateBreadcrumbSchema,
+  generateArticleSchema,
+} from '@/lib/seo';
 import Script from 'next/script';
 import type { Metadata } from 'next';
 import { getCaseStudyBySlug, getCaseStudySlugs } from '@/lib/case-studies';
@@ -10,9 +14,7 @@ export async function generateStaticParams() {
   const locales = ['en', 'he'];
   const slugs = getCaseStudySlugs();
 
-  return locales.flatMap(locale =>
-    slugs.map(slug => ({ locale, slug }))
-  );
+  return locales.flatMap(locale => slugs.map(slug => ({ locale, slug })));
 }
 
 export async function generateMetadata({
@@ -24,12 +26,15 @@ export async function generateMetadata({
   const caseStudy = getCaseStudyBySlug(slug, locale);
 
   if (!caseStudy) {
-    return genMeta({
-      title: 'Case Study Not Found',
-      description: 'The requested case study could not be found.',
-      url: `/work/${slug}`,
-      noindex: true,
-    }, locale as 'en' | 'he');
+    return genMeta(
+      {
+        title: 'Case Study Not ',
+        description: 'The requested case study could not be found.',
+        url: `/work/${slug}`,
+        noindex: true,
+      },
+      locale as 'en' | 'he'
+    );
   }
 
   const keywords = [
@@ -40,13 +45,16 @@ export async function generateMetadata({
     `${caseStudy.platform} development`,
   ];
 
-  return genMeta({
-    title: `${caseStudy.title} | Case Study`,
-    description: caseStudy.summary,
-    url: `/work/${slug}`,
-    type: 'article',
-    keywords,
-  }, locale as 'en' | 'he');
+  return genMeta(
+    {
+      title: `${caseStudy.title} | Case Study`,
+      description: caseStudy.summary,
+      url: `/work/${slug}`,
+      type: 'article',
+      keywords,
+    },
+    locale as 'en' | 'he'
+  );
 }
 
 export default async function CaseStudyPage({

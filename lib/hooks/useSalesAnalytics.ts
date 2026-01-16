@@ -23,13 +23,13 @@ const STALE_TIME = 5 * 60 * 1000; // 5 minutes
  * Hook for fetching comprehensive sales metrics
  */
 export function useSalesMetrics() {
-  const { loading: authLoading, isAgency } = usePortalAuth();
+  const { loading: auth, isAgency } = usePortalAuth();
 
-  const shouldFetch = !authLoading && isAgency;
+  const shouldFetch = !auth && isAgency;
 
   const {
     data: metrics,
-    isLoading,
+    isLoading: metricsLoading,
     error,
     refetch,
   } = useQuery<SalesMetrics>({
@@ -41,7 +41,7 @@ export function useSalesMetrics() {
 
   return {
     metrics,
-    loading: authLoading || (shouldFetch && isLoading),
+    loading: auth || (shouldFetch && metricsLoading),
     error: error instanceof Error ? error.message : (error as string | null),
     refetch,
   };
@@ -51,13 +51,13 @@ export function useSalesMetrics() {
  * Hook for fetching per-client revenue data
  */
 export function useClientRevenueData() {
-  const { loading: authLoading, isAgency } = usePortalAuth();
+  const { loading: auth, isAgency } = usePortalAuth();
 
-  const shouldFetch = !authLoading && isAgency;
+  const shouldFetch = !auth && isAgency;
 
   const {
     data: clients = [],
-    isLoading,
+    isLoading: clientsLoading,
     error,
     refetch,
   } = useQuery<ClientRevenueData[]>({
@@ -69,7 +69,7 @@ export function useClientRevenueData() {
 
   return {
     clients,
-    loading: authLoading || (shouldFetch && isLoading),
+    loading: auth || (shouldFetch && clientsLoading),
     error: error instanceof Error ? error.message : (error as string | null),
     refetch,
   };
@@ -79,13 +79,13 @@ export function useClientRevenueData() {
  * Hook for fetching monthly revenue trends
  */
 export function useMonthlyRevenue(months: number = 6) {
-  const { loading: authLoading, isAgency } = usePortalAuth();
+  const { loading: auth, isAgency } = usePortalAuth();
 
-  const shouldFetch = !authLoading && isAgency;
+  const shouldFetch = !auth && isAgency;
 
   const {
     data: monthlyData = [],
-    isLoading,
+    isLoading: monthlyLoading,
     error,
     refetch,
   } = useQuery<MonthlyRevenue[]>({
@@ -97,7 +97,7 @@ export function useMonthlyRevenue(months: number = 6) {
 
   return {
     monthlyData,
-    loading: authLoading || (shouldFetch && isLoading),
+    loading: auth || (shouldFetch && monthlyLoading),
     error: error instanceof Error ? error.message : (error as string | null),
     refetch,
   };
@@ -107,13 +107,13 @@ export function useMonthlyRevenue(months: number = 6) {
  * Hook for fetching top performing clients
  */
 export function useTopClients(limit: number = 5) {
-  const { loading: authLoading, isAgency } = usePortalAuth();
+  const { loading: auth, isAgency } = usePortalAuth();
 
-  const shouldFetch = !authLoading && isAgency;
+  const shouldFetch = !auth && isAgency;
 
   const {
     data: topClients = [],
-    isLoading,
+    isLoading: topClientsLoading,
     error,
     refetch,
   } = useQuery<TopClient[]>({
@@ -125,7 +125,7 @@ export function useTopClients(limit: number = 5) {
 
   return {
     topClients,
-    loading: authLoading || (shouldFetch && isLoading),
+    loading: auth || (shouldFetch && topClientsLoading),
     error: error instanceof Error ? error.message : (error as string | null),
     refetch,
   };
@@ -136,15 +136,15 @@ export function useTopClients(limit: number = 5) {
  * Useful for the main dashboard that needs everything
  */
 export function useSalesAnalytics() {
-  const { loading: authLoading, isAgency } = usePortalAuth();
+  const { loading: auth, isAgency } = usePortalAuth();
 
   const metricsQuery = useSalesMetrics();
   const revenueQuery = useClientRevenueData();
   const monthlyQuery = useMonthlyRevenue(6);
   const topClientsQuery = useTopClients(5);
 
-  const isLoading =
-    authLoading ||
+  const is =
+    auth ||
     metricsQuery.loading ||
     revenueQuery.loading ||
     monthlyQuery.loading ||
@@ -158,7 +158,7 @@ export function useSalesAnalytics() {
     clientRevenue: revenueQuery.clients,
     monthlyRevenue: monthlyQuery.monthlyData,
     topClients: topClientsQuery.topClients,
-    loading: isLoading,
+    loading: is,
     error: hasError,
     isAgency,
     refetch: () => {

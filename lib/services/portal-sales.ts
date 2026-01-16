@@ -372,13 +372,25 @@ export async function getTopClients(limit: number = 5): Promise<TopClient[]> {
   return revenueData
     .filter(client => client.totalRevenue > 0)
     .slice(0, limit)
-    .map(client => ({
-      orgId: client.orgId,
-      orgName: client.orgName,
-      totalRevenue: client.totalRevenue,
-      dealCount: client.paidCount,
-      avgDealSize: client.paidCount > 0 ? Math.round(client.totalRevenue / client.paidCount) : 0,
-      trend: 'stable' as const, // TODO: Calculate based on recent activity
-      currency: client.currency,
-    }));
+    .map(client => {
+      // Calculate trend based on payment recency
+      const hasRecentActivity = client.lastPaymentAt
+        ? Date.now() - client.lastPaymentAt.toDate().getTime() < 30 * 24 * 60 * 60 * 1000
+        : false;
+      const trend: 'stable' | 'up' | 'down' = hasRecentActivity
+        ? 'up'
+        : client.totalRevenue > 1000
+          ? 'stable'
+          : 'down';
+
+      return {
+        orgId: client.orgId,
+        orgName: client.orgName,
+        totalRevenue: client.totalRevenue,
+        dealCount: client.paidCount,
+        avgDealSize: client.paidCount > 0 ? Math.round(client.totalRevenue / client.paidCount) : 0,
+        trend,
+        currency: client.currency,
+      };
+    });
 }
