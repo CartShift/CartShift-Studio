@@ -18,18 +18,18 @@ export interface LocaleConfig {
  * Maps locale codes to their configuration
  */
 export const LOCALE_CONFIG: Record<string, LocaleConfig> = {
-  'en': {
+  en: {
     direction: 'ltr',
     dateLocale: enUS,
     dateLocaleString: 'en-US',
     fontFamily: 'font-outfit',
     isRTL: false,
   },
-  'he': {
+  he: {
     direction: 'rtl',
     dateLocale: he,
     dateLocaleString: 'he-IL',
-    fontFamily: 'font-inter',
+    fontFamily: 'font-rubik',
     isRTL: true,
   },
 };

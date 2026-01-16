@@ -21,8 +21,18 @@ export const useBranding = () => useContext(BrandingContext);
 
 export function BrandingProvider({ children }: { children: React.ReactNode }) {
   const { user, userData } = usePortalAuth();
-  const [branding, setBranding] = useState<Organization['branding'] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [branding, setBranding] = useState<Organization['branding'] | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('cartshift_cached_branding');
+        return cached ? JSON.parse(cached) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => !branding);
 
   useEffect(() => {
     // Early return for SSR - prevent all client-side code from running
@@ -67,6 +77,7 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
               const data = globalDoc.data() as Organization['branding'];
               if (data) {
                 setBranding(data);
+                localStorage.setItem('cartshift_cached_branding', JSON.stringify(data));
                 const {
                   primaryColor,
                   accentColor,
@@ -104,6 +115,7 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
               const data = agencyDoc.data();
               if (data.branding) {
                 setBranding(data.branding);
+                localStorage.setItem('cartshift_cached_branding', JSON.stringify(data.branding));
                 const {
                   primaryColor,
                   accentColor,
@@ -148,6 +160,10 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
                     const data = agencyDoc.data();
                     if (data.branding) {
                       setBranding(data.branding);
+                      localStorage.setItem(
+                        'cartshift_cached_branding',
+                        JSON.stringify(data.branding)
+                      );
                       const {
                         primaryColor,
                         accentColor,

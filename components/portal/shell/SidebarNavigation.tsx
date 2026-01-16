@@ -1,6 +1,7 @@
 'use client';
 
-import { Link, usePathname } from '@/i18n/navigation';
+import { ViewTransitionLink } from '@/components/ui/ViewTransitionLink';
+import { usePathname } from '@/i18n/navigation';
 import { motion } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
@@ -36,10 +37,10 @@ export function SidebarNavigation({
           {group.items.map(item => {
             const isActive = pathname?.startsWith(item.href);
             return (
-              <Link
+              <ViewTransitionLink
                 key={item.href}
                 href={item.href}
-                prefetch={true}
+                preset="slide"
                 onClick={() => {
                   if (isMobile) onItemClick();
                 }}
@@ -70,7 +71,7 @@ export function SidebarNavigation({
                     className="absolute w-1 h-6 bg-primary-600 rounded-full start-0"
                   />
                 )}
-              </Link>
+              </ViewTransitionLink>
             );
           })}
         </div>

@@ -4,7 +4,8 @@ import { Skeleton, SkeletonAvatar } from '@/components/ui/Skeleton';
 
 export function PortalLoadingState() {
   return (
-    <div className="flex min-h-screen bg-surface-50 dark:bg-surface-950">
+    <>
+      {/* Container that matches side-by-side layout of shell */}
       {/* Sidebar Skeleton */}
       <div className="hidden md:flex w-[280px] flex-col border-e border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-4 gap-6 shrink-0">
         {/* Brand */}
@@ -71,6 +72,6 @@ export function PortalLoadingState() {
           </div>
         </main>
       </div>
-    </div>
+    </>
   );
 }

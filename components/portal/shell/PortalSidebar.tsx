@@ -11,11 +11,13 @@ export function PortalSidebar({
   onTouchStart,
   onTouchEnd,
   children,
+  viewTransitionName,
 }: PortalSidebarProps) {
   const locale = useLocale();
 
   return (
     <aside
+      {...(viewTransitionName && { 'view-transition-name': viewTransitionName })}
       className={cn(
         'portal-sidebar fixed top-0 bottom-0 z-[70] flex flex-col transition-transform duration-300',
         'bg-white dark:bg-surface-950/80 backdrop-blur-xl',

@@ -57,6 +57,7 @@ interface PortalHeaderProps {
   handleMarkAllAsRead: () => Promise<void>;
   orgId?: string;
   onSignOut: () => Promise<void>;
+  viewTransitionName?: string;
 }
 
 export function PortalHeader({
@@ -72,6 +73,7 @@ export function PortalHeader({
   notificationButtonRef,
   orgId,
   onSignOut,
+  viewTransitionName,
 }: PortalHeaderProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -111,7 +113,10 @@ export function PortalHeader({
   ];
 
   return (
-    <header className="portal-header flex items-center justify-between px-4 md:px-6 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md border-b border-surface-200/50 dark:border-surface-800/30 sticky top-0 z-header h-16 md:h-20 transition-all duration-300">
+    <header
+      {...(viewTransitionName && { 'view-transition-name': viewTransitionName })}
+      className="portal-header flex items-center justify-between px-4 md:px-6 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md border-b border-surface-200/50 dark:border-surface-800/30 sticky top-0 z-header h-16 md:h-20 transition-all duration-300"
+    >
       <div className="flex items-center gap-3 md:gap-6">
         <button
           onClick={onMobileMenuToggle}

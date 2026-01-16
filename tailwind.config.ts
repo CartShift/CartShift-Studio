@@ -173,8 +173,8 @@ const config: Config = {
 
       // OPTIMIZATION: Reduce to only used fonts
       fontFamily: {
-        sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-main)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-main)', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
 
         // English

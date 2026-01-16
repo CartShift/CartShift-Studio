@@ -6,6 +6,10 @@
   --background: #f0f4f8;
   --foreground: #1e293b;
 
+  /* === CRITICAL LAYOUT VARIABLES (set here to prevent flicker) === */
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-collapsed: 80px;
+
   /* === DESIGN SYSTEM TOKENS === */
 
   /* Primary Palette (WordPress Blue) */
@@ -101,18 +105,27 @@ body {
   color: var(--foreground);
   background: var(--background);
   overflow-x: hidden;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+  /* Transitions only enabled AFTER initial paint to prevent flicker */
+}
+
+/* Enable transitions only after page is ready (added via JS after hydration) */
+.transitions-enabled body {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 @layer utilities {
   .font-outfit {
     font-family: var(--font-outfit), system-ui, sans-serif;
+  }
+
+  .font-rubik {
+    font-family: var(--font-rubik), system-ui, sans-serif;
   }
 
   .text-balance {
@@ -169,6 +182,7 @@ body {
     scroll-behavior: smooth;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
+    scrollbar-gutter: stable;
   }
 
   [dir='rtl'] {
@@ -1882,22 +1896,33 @@ body {
   }
 
   .portal-main {
-    @apply flex-1 flex flex-col min-w-0 min-h-screen relative overflow-y-auto overflow-x-hidden;
+    @apply flex-1 flex flex-col min-w-0 min-h-screen relative;
   }
 
   .portal-content {
-    @apply flex-1 w-full max-w-[1600px] mx-auto p-6 md:p-6 lg:p-8 space-y-6;
-    animation: portal-content-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    @apply flex-1 w-full max-w-[1600px] mx-auto p-6 md:p-6 lg:p-8 space-y-6 overflow-y-auto overflow-x-hidden;
+    scrollbar-gutter: stable;
+    /* Start visible to prevent flash - animation only for non-reduced-motion users */
+    opacity: 1;
+  }
+
+  [dir='rtl'] .portal-content {
+    direction: rtl;
+  }
+
+  /* Only apply animations when user hasn't requested reduced motion */
+  @media (prefers-reduced-motion: no-preference) {
+    .portal-content {
+      animation: portal-content-reveal 0.2s ease-in-out forwards;
+    }
   }
 
   @keyframes portal-content-reveal {
     from {
       opacity: 0;
-      transform: translateY(1rem);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
     }
   }
 
@@ -2175,20 +2200,34 @@ body {
   }
 }
 
-/* Animations for Portal Content */
+/* Animations for Portal Content - fade only, no movement */
 @keyframes portal-content-fade {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .portal-reveal {
-  animation: portal-content-fade 0.5s ease-out forwards;
+  opacity: 1;
+}
+
+/* Only use fallback animation when view transitions are NOT supported */
+@supports not (startViewTransition: auto) {
+  @media (prefers-reduced-motion: no-preference) {
+    .portal-reveal {
+      animation: portal-content-fade 0.2s ease-in-out forwards;
+    }
+  }
+}
+
+/* Disable fallback animation when view transitions ARE supported */
+@supports (startViewTransition: auto) {
+  .portal-reveal {
+    animation: none !important;
+  }
 }
 
 /* ========================================
@@ -2759,4 +2798,127 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: rgb(var(--color-surface-600));
+}
+
+/* === VIEW TRANSITIONS API STYLING === */
+
+/* Cross-document opt-in for browsers that support it (Chrome 126+, Safari 18.2+, Edge 126+) */
+@view-transition {
+  navigation: auto;
+}
+
+/* Default transition duration and easing - can be overridden per-transition via JS */
+:root {
+  --view-transition-duration: 200ms;
+  --view-transition-easing: ease-in-out;
+}
+
+/* CRITICAL: Exclude persistent elements from transitions to prevent flickering */
+/* Only exclude sidebar and header, not all view-transition-name elements */
+[view-transition-name='sidebar'],
+[view-transition-name='header'] {
+  view-transition-name: none !important;
+}
+
+/* Root view transition group */
+::view-transition-group(root) {
+  animation-duration: var(--view-transition-duration);
+}
+
+/* Default old/new state styling */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-timing-function: var(--view-transition-easing);
+  animation-duration: var(--view-transition-duration);
+}
+
+/* Default animations for page content - fade only, no movement */
+::view-transition-old(root) {
+  animation-name: page-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: page-fade-in;
+}
+
+/* Fade-only animations - no transforms to prevent any movement */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Fade-only preset - no transforms at all */
+
+/* Zoom preset for hero sections or important content */
+@keyframes page-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes page-zoom-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-6px);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.001s !important;
+  }
+}
+
+/* RTL-aware animations - same fade-only for RTL */
+[dir='rtl'] ::view-transition-old(root) {
+  animation-name: page-fade-out;
+}
+
+[dir='rtl'] ::view-transition-new(root) {
+  animation-name: page-fade-in;
+}
+
+/* Disable old fallback animation when view transitions are active */
+@supports (startViewTransition: auto) {
+  .portal-reveal {
+    animation: none !important;
+  }
+}
+
+/* Enable fallback animation only when view transitions NOT supported */
+@supports not (startViewTransition: auto) {
+  @media (prefers-reduced-motion: no-preference) {
+    .portal-reveal {
+      animation: portal-content-fade 0.2s ease-in-out forwards;
+    }
+  }
 }

@@ -26,6 +26,7 @@ export interface PortalSidebarProps {
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchEnd: (e: React.TouchEvent) => void;
   children: React.ReactNode;
+  viewTransitionName?: string;
 }
 
 export interface SidebarBrandProps {

@@ -56,18 +56,12 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
   })();
 
   // Only show loading state on initial load, not during subsequent navigations
-  // Once authorized, keep showing the shell to enable smooth client-side navigation
   const showLoadingState =
     !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
 
-  if (showLoadingState) {
-    return <PortalLoadingState />;
-  }
-
   // Access denied state - only if explicitly denied (not null/loading)
-  if (state.isAuthorized === false && !state.hasEverBeenAuthorized) {
-    return <PortalAccessDenied />;
-  }
+  const showAccessDenied =
+    !showLoadingState && state.isAuthorized === false && !state.hasEverBeenAuthorized;
 
   return (
     <div
@@ -87,131 +81,147 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
         {t('portal.accessibility.skipToContent')}
       </a>
 
-      {/* ARIA Live Region for dynamic content announcements (notifications, status changes) */}
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-        id="portal-announcer"
-      >
-        {/* Screen reader announcements are injected here dynamically */}
-      </div>
+      {showLoadingState ? (
+        <div className="flex min-h-screen bg-surface-50 dark:bg-surface-950">
+          <PortalLoadingState />
+        </div>
+      ) : showAccessDenied ? (
+        <PortalAccessDenied />
+      ) : (
+        <>
+          {/* ARIA Live Region for dynamic content announcements */}
+          <div
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="sr-only"
+            id="portal-announcer"
+          >
+            {/* Screen reader announcements are injected here dynamically */}
+          </div>
 
-      {/* Mobile Sidebar Backdrop */}
-      <ModalBackdrop
-        isOpen={state.isMobileMenuOpen}
-        onClick={() => state.setIsMobileMenuOpen(false)}
-        variant="light"
-        blur="md"
-        zIndex="60"
-        preventScroll={false} // Already handled by mobile menu logic
-      />
+          {/* Mobile Sidebar Backdrop */}
+          <ModalBackdrop
+            isOpen={state.isMobileMenuOpen}
+            onClick={() => state.setIsMobileMenuOpen(false)}
+            variant="light"
+            blur="md"
+            zIndex="60"
+            preventScroll={false} // Already handled by mobile menu logic
+          />
 
-      {/* Sidebar */}
-      <PortalSidebar
-        isExpanded={state.isExpanded}
-        isMobileMenuOpen={state.isMobileMenuOpen}
-        onClose={() => state.setIsMobileMenuOpen(false)}
-        onTouchStart={state.handleTouchStart}
-        onTouchEnd={state.handleTouchEnd}
-      >
-        <SidebarBrand isExpanded={state.isExpanded} />
+          {/* Sidebar - Persistent element excluded from page transitions */}
+          <PortalSidebar
+            isExpanded={state.isExpanded}
+            isMobileMenuOpen={state.isMobileMenuOpen}
+            onClose={() => state.setIsMobileMenuOpen(false)}
+            onTouchStart={state.handleTouchStart}
+            onTouchEnd={state.handleTouchEnd}
+            viewTransitionName="sidebar"
+          >
+            <SidebarBrand isExpanded={state.isExpanded} />
 
-        <OrganizationSwitcher
-          organizations={state.fullOrganizations}
-          currentOrgId={state.effectiveOrgId ?? null}
-          onSwitch={state.handleOrgSwitch}
-          isExpanded={state.isExpanded && state.hasMultipleOrgs}
-        />
+            <OrganizationSwitcher
+              organizations={state.fullOrganizations}
+              currentOrgId={state.effectiveOrgId ?? null}
+              onSwitch={state.handleOrgSwitch}
+              isExpanded={state.isExpanded && state.hasMultipleOrgs}
+            />
 
-        <SidebarNavigation
-          navGroups={navGroups}
-          isExpanded={state.isExpanded}
-          isMobile={state.isMobile}
-          onItemClick={() => state.setIsMobileMenuOpen(false)}
-          userRole={state.memberRole}
-        />
+            <SidebarNavigation
+              navGroups={navGroups}
+              isExpanded={state.isExpanded}
+              isMobile={state.isMobile}
+              onItemClick={() => state.setIsMobileMenuOpen(false)}
+              userRole={state.memberRole}
+            />
 
-        <SidebarFooter
-          isExpanded={state.isExpanded}
-          isSidebarOpen={state.isSidebarOpen}
-          onToggleSidebar={() => state.setIsSidebarOpen(!state.isSidebarOpen)}
-          onSignOut={state.handleSignOut}
-        />
-      </PortalSidebar>
+            <SidebarFooter
+              isExpanded={state.isExpanded}
+              isSidebarOpen={state.isSidebarOpen}
+              onToggleSidebar={() => state.setIsSidebarOpen(!state.isSidebarOpen)}
+              onSignOut={state.handleSignOut}
+            />
+          </PortalSidebar>
 
-      {/* Main Area */}
-      <div
-        className={cn(
-          'portal-main',
-          'transition-all duration-300',
-          state.isSidebarOpen
-            ? 'md:ps-[var(--sidebar-width-expanded)]'
-            : 'md:ps-[var(--sidebar-width-collapsed)]'
-        )}
-      >
-        <ImpersonationBanner />
+          {/* Main Area */}
+          <div
+            className={cn(
+              'portal-main',
+              'transition-all duration-300',
+              state.isSidebarOpen
+                ? 'md:ps-[var(--sidebar-width-expanded)]'
+                : 'md:ps-[var(--sidebar-width-collapsed)]'
+            )}
+          >
+            <ImpersonationBanner />
 
-        <PortalHeader
-          onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
-          onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
-          userData={state.userData as HeaderUserData | null}
-          accountType={state.accountType}
-          userRole={state.memberRole}
-          notifications={state.notifications}
-          unreadCount={state.unreadCount}
-          isNotificationOpen={state.isNotificationOpen}
-          setIsNotificationOpen={state.setIsNotificationOpen}
-          notificationRef={state.notificationRef}
-          notificationButtonRef={state.notificationButtonRef}
-          handleNotificationClick={state.handleNotificationClick}
-          handleMarkAllAsRead={state.handleMarkAllAsRead}
-          orgId={state.effectiveOrgId}
-          onSignOut={state.handleSignOut}
-        />
-
-        {/* Page Content Container */}
-        <main id="main-content" className="portal-content">
-          {showBreadcrumbs && (
-            <div className="mb-4">
-              <Breadcrumbs />
-            </div>
-          )}
-          <div className="portal-reveal">{children}</div>
-        </main>
-      </div>
-
-      {/* Portal Elements */}
-      {state.mounted && typeof document !== 'undefined' && document.body
-        ? createPortal(
-            <NotificationDropdown
-              isOpen={state.isNotificationOpen}
+            <PortalHeader
+              onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
+              onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
+              userData={state.userData as HeaderUserData | null}
+              accountType={state.accountType}
+              userRole={state.memberRole}
               notifications={state.notifications}
               unreadCount={state.unreadCount}
-              onMarkAllAsRead={state.handleMarkAllAsRead}
-              onNotificationClick={state.handleNotificationClick}
-              position={state.notificationPosition}
-              dropdownRef={state.notificationDropdownRef}
-            />,
-            document.body
-          )
-        : null}
+              isNotificationOpen={state.isNotificationOpen}
+              setIsNotificationOpen={state.setIsNotificationOpen}
+              notificationRef={state.notificationRef}
+              notificationButtonRef={state.notificationButtonRef}
+              handleNotificationClick={state.handleNotificationClick}
+              handleMarkAllAsRead={state.handleMarkAllAsRead}
+              orgId={state.effectiveOrgId}
+              onSignOut={state.handleSignOut}
+              viewTransitionName="header"
+            />
 
-      {/* Onboarding Tour for new users */}
-      {state.showOnboarding && state.userData?.id && (
-        <OnboardingTour
-          userId={state.userData.id}
-          onComplete={() => state.setShowOnboarding(false)}
-          onSkip={() => state.setShowOnboarding(false)}
-        />
+            {/* Page Content Container */}
+            <main
+              id="main-content"
+              className="portal-content"
+              data-view-transition-name="page-content"
+            >
+              {showBreadcrumbs && (
+                <div className="mb-4">
+                  <Breadcrumbs />
+                </div>
+              )}
+              <div className="portal-reveal">{children}</div>
+            </main>
+          </div>
+
+          {/* Portal Elements */}
+          {state.mounted && typeof document !== 'undefined' && document.body
+            ? createPortal(
+                <NotificationDropdown
+                  isOpen={state.isNotificationOpen}
+                  notifications={state.notifications}
+                  unreadCount={state.unreadCount}
+                  onMarkAllAsRead={state.handleMarkAllAsRead}
+                  onNotificationClick={state.handleNotificationClick}
+                  position={state.notificationPosition}
+                  dropdownRef={state.notificationDropdownRef}
+                />,
+                document.body
+              )
+            : null}
+
+          {/* Onboarding Tour for new users */}
+          {state.showOnboarding && state.userData?.id && (
+            <OnboardingTour
+              userId={state.userData.id}
+              onComplete={() => state.setShowOnboarding(false)}
+              onSkip={() => state.setShowOnboarding(false)}
+            />
+          )}
+
+          {/* Mobile Search */}
+          <MobileSearch
+            isOpen={state.isMobileSearchOpen}
+            onClose={() => state.setIsMobileSearchOpen(false)}
+          />
+        </>
       )}
-
-      {/* Mobile Search */}
-      <MobileSearch
-        isOpen={state.isMobileSearchOpen}
-        onClose={() => state.setIsMobileSearchOpen(false)}
-      />
     </div>
   );
 }
