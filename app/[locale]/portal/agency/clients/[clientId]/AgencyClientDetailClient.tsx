@@ -16,6 +16,7 @@ import {
   Loader2,
   BarChart3,
   Trash2,
+  Settings,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -82,26 +83,21 @@ export default function AgencyClientDetailClient({
     }
 
     if (auth) {
-      console.log('[AgencyClientDetail] Waiting for auth...');
+      // Waiting for auth...
       return undefined;
     }
 
     if (!userData) {
-      console.log('[AgencyClientDetail] No user data - not logged in?');
+      // No user data
       setError('You must be logged in to view this page');
       set(false);
       return undefined;
     }
 
-    console.log('[AgencyClientDetail] User data:', {
-      id: userData.id,
-      email: userData.email,
-      accountType: userData.accountType,
-      isAgency: userData.isAgency,
-    });
+    // Debug logging removed
 
     if (!userData.isAgency) {
-      console.warn('[AgencyClientDetail] User is not an agency user!');
+      // User is not an agency user
       setError('You do not have permission to view this page. Agency access required.');
       set(false);
       return undefined;
@@ -112,13 +108,13 @@ export default function AgencyClientDetailClient({
     set(true);
     setError(null);
 
-    console.log('[AgencyClientDetail]  client:', clientId);
+    // client loaded
 
     try {
       // Subscribe to organization data
       const unsubOrg = subscribeToOrganization(clientId, org => {
         if (!mounted) return;
-        console.log('[AgencyClientDetail] Organization loaded:', org);
+        // Organization loaded
         if (org === null) {
           setError('Client not found or you do not have permission to view it');
         } else {
@@ -141,14 +137,14 @@ export default function AgencyClientDetailClient({
       // Subscribe to requests
       const unsubRequests = subscribeToOrgRequests(clientId, reqs => {
         if (!mounted) return;
-        console.log('[AgencyClientDetail] Requests loaded:', reqs.length);
+        // Requests loaded
         setRequests(reqs);
       });
 
       // Subscribe to activities
       const unsubActivities = subscribeToOrgActivities(clientId, acts => {
         if (!mounted) return;
-        console.log('[AgencyClientDetail] Activities loaded:', acts.length);
+        // Activities loaded
         setActivities(acts);
       });
 
@@ -156,7 +152,7 @@ export default function AgencyClientDetailClient({
       getOrganizationMembers(clientId)
         .then(membersList => {
           if (mounted) {
-            console.log('[AgencyClientDetail] Members loaded:', membersList.length);
+            // Members loaded
             setMembers(membersList);
           }
         })

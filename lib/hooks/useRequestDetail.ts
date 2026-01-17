@@ -53,7 +53,7 @@ export function useRequestDetail(): UseRequestDetailResult {
   // 1. Request Detail
   const {
     data: request,
-    is: request,
+    isLoading: requestLoading,
     error: requestError,
   } = useQuery({
     queryKey: ['request', requestId],
@@ -131,7 +131,7 @@ export function useRequestDetail(): UseRequestDetailResult {
     isAgency,
     orgId: typeof orgId === 'string' ? orgId : null,
     requestId: typeof requestId === 'string' ? requestId : null,
-    loading: auth || request,
+    loading: auth || requestLoading,
     error: errorMsg,
     canAct,
     showAgencyActions,

@@ -70,7 +70,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   const t = useTranslations();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [, set] = useState(false);
+
   const [requests, setRequests] = useState<Request[]>([]);
   const [filteredResults, setFilteredResults] = useState<Request[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -83,12 +83,11 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   useEffect(() => {
     if (!orgId && !isAgency) return;
 
-    set(true);
+
     let unsubscribe: (() => void) | undefined;
 
     const handleData = (data: Request[]) => {
       setRequests(data);
-      set(false);
     };
 
     // Wait for auth before subscribing to prevent permission errors
@@ -105,7 +104,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
         }
       } catch (error) {
         Logger.error('Error setting up subscription', error);
-        set(false);
+
       }
     };
 

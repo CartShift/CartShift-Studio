@@ -8,7 +8,7 @@ import {
   DollarSign,
   Calendar,
   Star,
-  s,
+  Settings,
   TrendingUp,
 } from 'lucide-react';
 import { NavGroup } from './types';
@@ -118,7 +118,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       items: [
         {
           label: t('portal.sidebar.nav.settings'),
-          icon: s,
+          icon: Settings,
           href: getPortalPath('/agency/settings/'),
           roles: PERMISSIONS.MANAGE_SETTINGS,
         },
@@ -180,7 +180,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
       items: [
         {
           label: t('portal.sidebar.nav.settings'),
-          icon: s,
+          icon: Settings,
           href: getPortalPath('/settings/'),
         },
       ],

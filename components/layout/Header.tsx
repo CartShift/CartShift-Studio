@@ -7,13 +7,15 @@ import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Icon } from '@/components/ui/Icon';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useDirection } from '@/lib/i18n-utils';
 import { useNavigationState, DropdownType } from '@/lib/hooks/useNavigationState';
+
+import { MobileMenu } from './MobileMenu';
 
 export const Header: React.FC = () => {
   const t = useTranslations();
@@ -24,6 +26,7 @@ export const Header: React.FC = () => {
 
   // Unified navigation state - Issue #1 fix
   const { state, actions, refs } = useNavigationState();
+  const router = useRouter();
 
   const navigation = useMemo(
     () => [
@@ -196,37 +199,33 @@ export const Header: React.FC = () => {
 
               {/* CTA Button */}
               {!isLoggedIn && (
-                <Link href={getPortalPath('/login/')}>
-                  <Button
-                    as="div"
-                    variant="ghost"
-                    size="sm"
-                    className="hidden sm:inline-flex text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 font-medium me-2"
-                  >
-                    {t('nav.login')}
-                  </Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hidden sm:inline-flex text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 font-medium me-2"
+                  onClick={() => router.push(getPortalPath('/login/'))}
+                >
+                  {t('nav.login')}
+                </Button>
               )}
 
-              <Link href={isLoggedIn ? getPortalPath('/') : '/tools/store-analyzer'}>
-                <Button
-                  as="div"
-                  size="md"
-                  className="font-outfit font-black tracking-tight shadow-lg shadow-primary-500/15 hover:shadow-xl hover:shadow-primary-500/25 active:scale-[0.97] px-5 sm:px-6 transition-shadow"
-                >
-                  {isLoggedIn ? (
-                    <span className="flex items-center gap-2">
-                      <Icon name="layout" size={16} />
-                      <span className="hidden xs:inline">{t('nav.portal')}</span>
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Icon name="bar-chart" size={16} />
-                      <span>{t('nav.freeAudit')}</span>
-                    </span>
-                  )}
-                </Button>
-              </Link>
+              <Button
+                size="md"
+                className="font-outfit font-black tracking-tight shadow-lg shadow-primary-500/15 hover:shadow-xl hover:shadow-primary-500/25 active:scale-[0.97] px-5 sm:px-6 transition-shadow"
+                onClick={() => router.push(isLoggedIn ? getPortalPath('/') : '/tools/store-analyzer')}
+              >
+                {isLoggedIn ? (
+                  <span className="flex items-center gap-2">
+                    <Icon name="layout" size={16} />
+                    <span className="hidden xs:inline">{t('nav.portal')}</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Icon name="bar-chart" size={16} />
+                    <span>{t('nav.freeAudit')}</span>
+                  </span>
+                )}
+              </Button>
 
               {/* Mobile menu button */}
               <button
@@ -244,124 +243,16 @@ export const Header: React.FC = () => {
       </motion.header>
 
       {/* Mobile drawer - must be outside header to avoid being hidden on scroll */}
-      <AnimatePresence>
-        {state.isMobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-surface-950/60 backdrop-blur-sm z-[100] lg:hidden"
-              onClick={actions.closeMobileMenu}
-              aria-hidden="true"
-            />
-            <motion.div
-              initial={{ x: isRtl ? '-100%' : '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: isRtl ? '-100%' : '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="lg:hidden fixed top-0 end-0 bottom-0 w-[85vw] max-w-sm z-[101] bg-white dark:bg-surface-950 backdrop-blur-2xl border-s border-surface-200 dark:border-surface-800 flex flex-col shadow-2xl"
-            >
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between h-20 px-6 border-b border-surface-200 dark:border-surface-800">
-                <Logo size="sm" />
-                <button
-                  onClick={actions.closeMobileMenu}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400 transition-colors"
-                  aria-label="Close menu"
-                >
-                  <Icon name="x" size={20} />
-                </button>
-              </div>
-
-              {/* Drawer Content */}
-              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-                <div className="space-y-1">
-                  {navigation.map(item => {
-                    if (item.submenu && item.dropdownType) {
-                      const isExpanded = state.activeMobileDropdown === item.dropdownType;
-
-                      return (
-                        <div key={item.name} className="space-y-1">
-                          <button
-                            onClick={() => actions.toggleMobileDropdown(item.dropdownType!)}
-                            className="w-full flex items-center justify-between py-3 px-3 -mx-3 rounded-xl text-base font-bold tracking-tight text-surface-900 dark:text-white hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors"
-                          >
-                            <span>{item.name}</span>
-                            <motion.span
-                              animate={{ rotate: isExpanded ? 180 : 0 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <Icon name="chevron-down" size={18} className="text-surface-400" />
-                            </motion.span>
-                          </button>
-                          <AnimatePresence>
-                            {isExpanded && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="overflow-hidden"
-                              >
-                                <div className="ps-4 pb-2 space-y-1">
-                                  {item.submenu.map(subItem => (
-                                    <Link
-                                      key={subItem.name}
-                                      href={subItem.href}
-                                      className="block py-2.5 px-3 -mx-3 rounded-lg text-surface-600 dark:text-surface-400 font-semibold hover:bg-surface-100 dark:hover:bg-surface-800/40 hover:text-surface-900 dark:hover:text-white transition-colors"
-                                      onClick={actions.closeMobileMenu}
-                                    >
-                                      {subItem.name}
-                                    </Link>
-                                  ))}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      );
-                    }
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="block py-3 px-3 -mx-3 rounded-xl text-base font-bold tracking-tight text-surface-900 dark:text-white hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors"
-                        onClick={actions.closeMobileMenu}
-                      >
-                        {item.name}
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                {/* Footer Controls */}
-                <div className="pt-6 border-t border-surface-200 dark:border-surface-800 space-y-5">
-                  {/* Language & Theme Controls Container */}
-                  <div className="flex items-center gap-3 p-2 bg-surface-100 dark:bg-surface-800/60 rounded-2xl border border-surface-200 dark:border-surface-700/50">
-                    <LanguageSwitcher />
-                    <div className="w-px h-6 bg-surface-300 dark:bg-surface-600" />
-                    <ThemeToggle />
-                  </div>
-
-                  {/* CTA Button */}
-                  <Link
-                    href={getPortalPath(isLoggedIn ? '/' : '/login/')}
-                    onClick={actions.closeMobileMenu}
-                  >
-                    <Button as="div" variant="primary" className="w-full h-12 text-base font-bold">
-                      <span className="flex items-center justify-center gap-2">
-                        <Icon name={isLoggedIn ? 'layout' : 'log-in'} size={18} />
-                        {isLoggedIn ? t('nav.portal') : t('nav.login')}
-                      </span>
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <MobileMenu
+        isOpen={state.isMobileMenuOpen}
+        onClose={actions.closeMobileMenu}
+        navigation={navigation}
+        activeDropdown={state.activeMobileDropdown}
+        onToggleDropdown={actions.toggleMobileDropdown}
+        isRtl={isRtl}
+        isLoggedIn={isLoggedIn}
+        t={(key: string) => t(key as any)}
+      />
     </>
   );
 };

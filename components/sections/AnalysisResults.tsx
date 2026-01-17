@@ -57,7 +57,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const isRtl = direction === 'rtl';
   const isDark = variant === 'dark';
 
-  const getStatusLabel = (status: SectionResult['status']): string => {
+  const getStatusLabel = (status: SectionResult['status']) => {
     switch (status) {
       case 'excellent':
         return t('analyzer.results.status.excellent') || 'Excellent';
@@ -67,8 +67,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return t('analyzer.results.status.warning') || 'Needs Work';
       case 'critical':
         return t('analyzer.results.status.critical') || 'Critical';
-      default:
-        return 'Unknown';
     }
   };
 
@@ -80,15 +78,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   );
 
   // Sort by impact 'high' then take top 3
-  const priorityRecs: ExtendedRecommendation[] = allRecommendations
+  const priorityRecs = allRecommendations
     .filter(r => r.impact === 'high')
-    .slice(0, 3);
+    .slice(0, 3) as ExtendedRecommendation[];
 
   // Fallback if no high impact items (show medium)
   if (priorityRecs.length < 3) {
     const mediumRecs = allRecommendations
       .filter(r => r.impact === 'medium')
-      .slice(0, 3 - priorityRecs.length);
+      .slice(0, 3 - priorityRecs.length) as ExtendedRecommendation[];
     priorityRecs.push(...mediumRecs);
   }
 
@@ -135,7 +133,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
                   {results.overallScore >= 80
                     ? t('analyzer.results.greatJob') || 'Great Job! Your store is optimized.'
-                    : t('analyzer.results.issues', { count: priorityRecs.length }) ||
+                    : t('analyzer.results.issuesFound', { count: priorityRecs.length }) ||
                       `Attention Needed: ${priorityRecs.length} Critical Issues Detected`}
                 </h3>
                 <p className="text-white/90 text-base leading-relaxed">
@@ -264,7 +262,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           >
                             {(() => {
                               const translationKey = `analyzer.sections.${key}` as const;
-                              const translated = t(translationKey);
+                              const translated = t(translationKey as any);
                               return typeof translated === 'string' ? translated : section.name;
                             })()}
                           </span>

@@ -15,6 +15,8 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { getFirestoreDb } from '@/lib/firebase';
+import { z } from 'zod';
+import { safeParse } from '@/lib/utils/safe-parse';
 
 interface RateLimitResult {
   allowed: boolean;
@@ -124,14 +126,18 @@ export async function checkRateLimit(
     const localData = typeof window !== 'undefined' ? sessionStorage.getItem(localKey) : null;
 
     if (localData) {
-      const { count, timestamp } = JSON.parse(localData);
-      const timeSinceLastRequest = now - timestamp;
-      if (timeSinceLastRequest < windowMs) {
-        if (count >= maxRequests) {
-          return { allowed: false, remaining: 0, resetAt: timestamp + windowMs };
+      const rateLimitSchema = z.object({ count: z.number(), timestamp: z.number() });
+      const parsed = safeParse(localData, rateLimitSchema);
+      if (parsed) {
+        const { count, timestamp } = parsed;
+        const timeSinceLastRequest = now - timestamp;
+        if (timeSinceLastRequest < windowMs) {
+          if (count >= maxRequests) {
+            return { allowed: false, remaining: 0, resetAt: timestamp + windowMs };
+          }
+          sessionStorage.setItem(localKey, JSON.stringify({ count: count + 1, timestamp: now }));
+          return { allowed: true, remaining: maxRequests - count - 1, resetAt: timestamp + windowMs };
         }
-        sessionStorage.setItem(localKey, JSON.stringify({ count: count + 1, timestamp: now }));
-        return { allowed: true, remaining: maxRequests - count - 1, resetAt: timestamp + windowMs };
       }
     }
 

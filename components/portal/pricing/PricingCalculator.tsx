@@ -149,10 +149,10 @@ export function PricingCalculator({
             </div>
             <div>
               <h2 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.globals')}
+                {t('portal.pricing.globals' as any)}
               </h2>
               <p className="text-xs text-surface-500 dark:text-surface-400">
-                {t('portal.pricing.globalsDesc')}
+                {t('portal.pricing.globalsDesc' as any)}
               </p>
             </div>
           </div>

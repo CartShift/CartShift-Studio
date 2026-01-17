@@ -98,11 +98,11 @@ export function usePricingMutations() {
   return {
     createMutation,
     createPricingRequest: createMutation.mutateAsync,
-    is: createMutation.isPending,
+    isCreating: createMutation.isPending,
 
     sendMutation,
     sendPricingRequest: sendMutation.mutateAsync,
-    is: sendMutation.isPending,
+    isSending: sendMutation.isPending,
 
     acceptMutation,
     acceptPricingRequest: acceptMutation.mutateAsync,

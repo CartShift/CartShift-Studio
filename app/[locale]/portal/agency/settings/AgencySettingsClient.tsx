@@ -11,7 +11,7 @@ import {
   Save,
   Loader2,
   Camera,
-  User as UserIcon,
+  User,
   Palette,
   Building2,
 } from 'lucide-react';
@@ -72,8 +72,8 @@ export default function AgencysClient() {
   const validTabs = ['profile', 'team', 'services', 'integrations', 'billing'];
   const initialTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'profile';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [loading, set] = useState(true);
-  const [saving, set] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<AgencyProfile>({
     name: '',
     email: '',
@@ -87,19 +87,19 @@ export default function AgencysClient() {
   });
   const [team, setTeam] = useState<PortalUser[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
-  const [loadingTeam, setTeam] = useState(false);
+  const [loadingTeam, setIsTeamLoading] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | undefined>(undefined);
   const [services, setServices] = useState<Service[]>([]);
-  const [loadingServices, setServices] = useState(false);
+  const [loadingServices, setIsServicesLoading] = useState(false);
   const [calendarConnection, setCalendarConnection] = useState<CalendarConnection | null>(null);
   const [cancellingInvite, setCancellingInvite] = useState<string | null>(null);
   const [profileFormData, setProfileFormData] = useState({
     name: '',
     photoUrl: '',
   });
-  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingProfile, setIsProfileSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Sync activeTab with URL parameter when it changes
@@ -115,7 +115,7 @@ export default function AgencysClient() {
       if (!user?.uid) return;
       const db = getFirestoreDb();
 
-      set(true);
+      setLoading(true);
       try {
         const agencyDoc = await getDoc(doc(db, 'agencies', user.uid));
         if (agencyDoc.exists()) {
@@ -154,7 +154,7 @@ export default function AgencysClient() {
       } catch (error) {
         console.error('Error fetching agency profile:', error);
       } finally {
-        set(false);
+        setLoading(false);
       }
     }
 
@@ -176,18 +176,18 @@ export default function AgencysClient() {
     if (activeTab === 'team') {
       const fetchTeam = async () => {
         if (mounted) {
-          setLoadingTeam(true);
+          setIsTeamLoading(true);
         }
         try {
           const members = await getAgencyTeam();
           if (mounted) {
-            setTeam(members);
+            setTeam(members as any);
           }
         } catch (error) {
           console.error('Error fetching agency team:', error);
         } finally {
           if (mounted) {
-            setLoadingTeam(false);
+            setIsTeamLoading(false);
           }
         }
       };
@@ -203,12 +203,12 @@ export default function AgencysClient() {
 
     if (activeTab === 'services') {
       if (mounted) {
-        setLoadingServices(true);
+        setIsServicesLoading(true);
       }
       unsubscribeServices = subscribeToServices(data => {
         if (mounted) {
           setServices(data);
-          setLoadingServices(false);
+          setIsServicesLoading(false);
         }
       });
     }
@@ -244,7 +244,7 @@ export default function AgencysClient() {
     if (!user?.uid) return;
     const db = getFirestoreDb();
 
-    set(true);
+    setSaving(true);
     try {
       const auth = getFirebaseAuth();
       const currentUser = auth.currentUser;
@@ -264,7 +264,7 @@ export default function AgencysClient() {
         throw new Error(t('portal.common.failedToGetAuthToken' as any));
       }
 
-      console.log(' agency profile:', { userId, agencyId: userId });
+      // Debug logging removed
 
       const agencyRef = doc(db, 'agencies', userId);
       const agencyDoc = await getDoc(agencyRef);
@@ -335,7 +335,7 @@ export default function AgencysClient() {
         error instanceof Error ? error.message : t('portal.common.unknownError' as any);
       alert(`Failed to save settings: ${errorMessage}`);
     } finally {
-      set(false);
+      setSaving(false);
     }
   };
 
@@ -358,14 +358,14 @@ export default function AgencysClient() {
     // Refresh team if we are on team tab
     if (activeTab === 'team') {
       const fetchTeam = async () => {
-        setLoadingTeam(true);
+        setIsTeamLoading(true);
         try {
           const members = await getAgencyTeam();
-          setTeam(members);
+          setTeam(members as any);
         } catch (error) {
           console.error('Error refreshing agency team:', error);
         } finally {
-          setLoadingTeam(false);
+          setIsTeamLoading(false);
         }
       };
       fetchTeam();
@@ -375,16 +375,16 @@ export default function AgencysClient() {
   const tabs = [
     { id: 'profile', label: t('agency.settings.tabs.profile'), icon: Building2 },
     { id: 'branding', label: t('settings.tabs.branding' as any), icon: Palette },
-    { id: 'user-profile', label: t('settings.tabs.profile'), icon: UserIcon },
+    { id: 'user-profile', label: t('settings.tabs.profile'), icon: User },
     { id: 'services', label: t('agency.settings.tabs.services'), icon: Building2 },
-    { id: 'team', label: t('agency.settings.tabs.team'), icon: UserIcon },
+    { id: 'team', label: t('agency.settings.tabs.team'), icon: User },
     { id: 'integrations', label: t('agency.settings.tabs.integrations'), icon: Shield },
     { id: 'billing', label: t('agency.settings.tabs.billing'), icon: CreditCard },
   ];
 
   const handleProfileSave = async () => {
     if (!user) return;
-    setSavingProfile(true);
+    setIsProfileSaving(true);
     try {
       await updatePortalUser(user.uid, {
         name: profileFormData.name,
@@ -395,7 +395,7 @@ export default function AgencysClient() {
       console.error('Error saving profile:', error);
       alert(t('settings.profile.error'));
     } finally {
-      setSavingProfile(false);
+      setIsProfileSaving(false);
     }
   };
 
@@ -482,7 +482,7 @@ export default function AgencysClient() {
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="flex items-center gap-3 mb-10">
                 <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-900/30">
-                  <UserIcon size={20} />
+                  <User size={20} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
@@ -1179,7 +1179,7 @@ export default function AgencysClient() {
                     <div className="w-full max-w-sm p-6 rounded-xl bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 shadow-sm">
                       <div className="flex items-center gap-4 mb-6">
                         <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
-                          <UserIcon size={20} />
+                          <User size={20} />
                         </div>
                         <div>
                           <div className="h-4 w-24 bg-surface-100 dark:bg-surface-800 rounded mb-1.5" />
@@ -1506,7 +1506,7 @@ export default function AgencysClient() {
                 </>
               ) : (
                 <div className="py-12 text-center opacity-30">
-                  <UserIcon className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-3" />
+                  <User className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-3" />
                   <p className="text-[10px] font-black uppercase tracking-widest">
                     {t('agency.settings.team.noMembers')}
                   </p>
@@ -1516,7 +1516,7 @@ export default function AgencysClient() {
               {/* Pending Invites Section */}
               <div className="mt-10">
                 <div className="flex items-center gap-2 mb-4 px-1">
-                  <UserIcon className="text-blue-500" size={16} />
+                  <User className="text-blue-500" size={16} />
                   <h4 className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
                     {t('agency.settings.team.pendingInvites')}
                   </h4>

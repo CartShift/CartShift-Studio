@@ -50,7 +50,7 @@ export default function InviteClient() {
         const inviteSnap = await getDoc(inviteRef);
 
         if (!inviteSnap.exists()) {
-          setError(t('portal.auth.errors.inviteNot'));
+          setError(t('portal.auth.errors.inviteNotFound'));
           set(false);
           return;
         }
@@ -106,7 +106,7 @@ export default function InviteClient() {
       const inviteSnap = await getDoc(inviteRef);
 
       if (!inviteSnap.exists()) {
-        throw new Error(t('portal.auth.errors.inviteNot'));
+        throw new Error(t('portal.auth.errors.inviteNotFound'));
       }
 
       const currentInvite = inviteSnap.data() as Invite;

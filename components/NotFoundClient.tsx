@@ -72,10 +72,10 @@ export default function NotClient({ isPortalRoute = false }: NotClientProps) {
           className="space-y-4"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
-            {t('not.title')}
+            {t('not.title' as any)}
           </h1>
           <p className="text-lg text-surface-600 dark:text-surface-400 leading-relaxed max-w-md mx-auto">
-            {t('not.description')}
+            {t('not.description' as any)}
           </p>
         </motion.div>
 
@@ -94,14 +94,14 @@ export default function NotClient({ isPortalRoute = false }: NotClientProps) {
               size={18}
               className="group-hover:-translate-x-1 transition-transform rtl:rotate-180 rtl:group-hover:translate-x-1"
             />
-            {t('not.goBack')}
+            {t('not.goBack' as any)}
           </button>
           <Link
             href={isPortalRoute ? '/portal/login/' : '/'}
             className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl font-bold text-white hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
           >
             <HomeIcon size={18} className="group-hover:scale-110 transition-transform" />
-            {isPortalRoute ? t('not.portalLogin') : t('not.goHome')}
+            {isPortalRoute ? t('not.portalLogin' as any) : t('not.goHome' as any)}
           </Link>
         </motion.div>
 
@@ -112,12 +112,12 @@ export default function NotClient({ isPortalRoute = false }: NotClientProps) {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="text-sm text-surface-500 dark:text-surface-500 pt-6"
         >
-          {t('not.needHelp')}{' '}
+          {t('not.needHelp' as any)}{' '}
           <Link
             href="/contact/"
             className="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-bold hover:underline underline-offset-2 transition-colors"
           >
-            {t('not.contactTeam')}
+            {t('not.contactTeam' as any)}
           </Link>
         </motion.p>
 

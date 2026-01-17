@@ -13,8 +13,8 @@ const cardVariants = cva(
         default: [
           'bg-white dark:bg-surface-900/80',
           'border border-surface-200/80 dark:border-white/[0.08]',
-          'shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.03)]',
-          'dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.15)]',
+          'shadow-card-default',
+          'dark:shadow-card-dark',
         ],
         glass: [
           'bg-white/70 dark:bg-white/[0.03]',
@@ -26,20 +26,19 @@ const cardVariants = cva(
         elevated: [
           'bg-white dark:bg-surface-900',
           'border border-surface-100 dark:border-surface-800',
-          'shadow-[0_4px_24px_-4px_rgba(0,0,0,0.1),0_8px_32px_-8px_rgba(0,0,0,0.08)]',
-          'dark:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.4),0_8px_32px_-8px_rgba(0,0,0,0.3)]',
+          'shadow-card-hover-light',
+          'dark:shadow-card-hover-dark',
         ],
         gradient: [
           'bg-gradient-to-br from-white to-surface-50 dark:from-surface-900 dark:to-surface-950',
           'border border-surface-200/60 dark:border-white/[0.06]',
-          'shadow-[0_2px_16px_rgba(0,0,0,0.05)]',
-          'dark:shadow-[0_2px_16px_rgba(0,0,0,0.25)]',
+          'shadow-sm',
         ],
         interactive: [
           'bg-white dark:bg-surface-900/90',
           'border border-surface-200/70 dark:border-white/[0.08]',
-          'shadow-[0_2px_8px_rgba(0,0,0,0.04)]',
-          'dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)]',
+          'shadow-card-default',
+          'dark:shadow-card-dark',
           'cursor-pointer select-none',
         ],
         // Legacy support
@@ -90,8 +89,8 @@ const cardVariants = cva(
         hover: true,
         className: [
           'hover:border-surface-300 dark:hover:border-white/15',
-          'hover:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.1),0_16px_40px_-8px_rgba(0,0,0,0.08)]',
-          'dark:hover:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.4),0_16px_40px_-8px_rgba(0,0,0,0.3)]',
+          'hover:shadow-card-hover-light',
+          'dark:hover:shadow-card-hover-dark',
         ],
       },
       // Lift hover effect
@@ -100,8 +99,8 @@ const cardVariants = cva(
         className: [
           'hover:-translate-y-1',
           'hover:border-surface-300 dark:hover:border-white/15',
-          'hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.12),0_20px_48px_-12px_rgba(0,0,0,0.1)]',
-          'dark:hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.5),0_20px_48px_-12px_rgba(0,0,0,0.4)]',
+          'hover:shadow-card-lift-light',
+          'dark:hover:shadow-card-lift-dark',
         ],
       },
       // Glow hover effect
@@ -109,8 +108,7 @@ const cardVariants = cva(
         hover: 'glow',
         className: [
           'hover:border-primary-300/60 dark:hover:border-primary-500/30',
-          'hover:shadow-[0_0_0_1px_rgba(var(--color-primary-600-rgb),0.1),0_8px_24px_rgba(var(--color-primary-600-rgb),0.15),0_16px_48px_rgba(var(--color-primary-600-rgb),0.1)]',
-          'dark:hover:shadow-[0_0_0_1px_rgba(var(--color-primary-600-rgb),0.2),0_8px_24px_rgba(var(--color-primary-600-rgb),0.2),0_16px_48px_rgba(var(--color-primary-600-rgb),0.1)]',
+          'hover:shadow-glow-primary',
         ],
       },
       // Scale hover effect
@@ -119,8 +117,8 @@ const cardVariants = cva(
         className: [
           'hover:scale-[1.02]',
           'hover:border-surface-300 dark:hover:border-white/15',
-          'hover:shadow-[0_10px_28px_-6px_rgba(0,0,0,0.1)]',
-          'dark:hover:shadow-[0_10px_28px_-6px_rgba(0,0,0,0.4)]',
+          'hover:shadow-card-hover-light',
+          'dark:hover:shadow-card-hover-dark',
         ],
       },
       // Interactive card special hover
@@ -182,7 +180,7 @@ export const Card = ({
           padding: noPadding ? 'none' : padding || 'default',
           hover: resolvedHover,
           accent,
-          glow, // Pass through legay glow prop
+          glow, // Pass through legacy glow prop
         }),
         className
       )}

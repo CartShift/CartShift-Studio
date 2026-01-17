@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { updateLanguagePreference } from '@/lib/services/portal-users';
-import { Logger } from '@/lib/logger';
 
 /**
  * Hook to sync language preference to Firestore when user changes language
@@ -21,8 +20,9 @@ export function useLanguageSync() {
     const timeoutId = setTimeout(async () => {
       try {
         await updateLanguagePreference(user.uid, locale as 'en' | 'he');
+        console.log('[useLanguageSync]  language to Firestore:', locale);
       } catch (error) {
-        Logger.error('Error syncing language to Firestore', error);
+        console.error('[useLanguageSync] Error syncing language to Firestore:', error);
       }
     }, 500); // Debounce to avoid too many writes
 

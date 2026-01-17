@@ -45,15 +45,15 @@ export default function GoogleCalendarIntegration({
   onSync,
 }: GoogleCalendarIntegrationProps) {
   const t = useTranslations('portal');
-  const [connecting, set] = useState(false);
-  const [disconnecting, set] = useState(false);
-  const [syncing, set] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   // Calendar selection state
   const [calendars, setCalendars] = useState<CalendarInfo[]>([]);
-  const [loadingCalendars, setCalendars] = useState(false);
+  const [loadingCalendars, setLoadingCalendars] = useState(false);
   const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(null);
-  const [updating, set] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   const isConnected = connection?.connected;
 
@@ -70,25 +70,25 @@ export default function GoogleCalendarIntegration({
   }, [isConnected, connection?.selectedCalendarId]);
 
   const fetchCalendars = async () => {
-    setCalendars(true);
+    setLoadingCalendars(true);
     try {
       const list = await listCalendars();
       setCalendars(list);
     } catch (error) {
       Logger.error('Failed to fetch calendars', error);
     } finally {
-      setCalendars(false);
+      setLoadingCalendars(false);
     }
   };
 
   const handleConnect = async () => {
-    set(true);
+    setConnecting(true);
     try {
       await onConnect();
       // After connect, fetch calendars
       await fetchCalendars();
     } finally {
-      set(false);
+      setConnecting(false);
     }
   };
 
@@ -96,33 +96,33 @@ export default function GoogleCalendarIntegration({
     if (!confirm(t('googleCalendar.disconnectConfirm'))) {
       return;
     }
-    set(true);
+    setDisconnecting(true);
     try {
       await onDisconnect();
     } finally {
-      set(false);
+      setDisconnecting(false);
     }
   };
 
   const handleSync = async () => {
     if (!onSync) return;
-    set(true);
+    setSyncing(true);
     try {
       await onSync();
     } finally {
-      set(false);
+      setSyncing(false);
     }
   };
 
   const handleCalendarChange = async (calendarId: string) => {
     setSelectedCalendarId(calendarId);
-    set(true);
+    setUpdating(true);
     try {
       await updateCalendars(calendarId);
     } catch (error) {
       Logger.error('Failed to update calendar settings', error);
     } finally {
-      set(false);
+      setUpdating(false);
     }
   };
 

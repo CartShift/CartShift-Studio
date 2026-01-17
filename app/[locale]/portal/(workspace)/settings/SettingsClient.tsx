@@ -110,7 +110,7 @@ export default function sClient() {
   useEffect(() => {
     // Early return if orgId is not ready
     if (!orgId || typeof orgId !== 'string') {
-      set(false);
+      setLoading(false);
       return;
     }
 
@@ -118,7 +118,7 @@ export default function sClient() {
     let mounted = true;
 
     async function fetchOrganization(): Promise<void> {
-      set(true);
+      setLoading(true);
 
       const rulesValid = await validateStorageRules();
       if (!rulesValid && process.env.NODE_ENV === 'development') {
@@ -161,7 +161,13 @@ export default function sClient() {
             bio: org.bio || '',
           });
         } else {
-          showFeedback('error', t('portal.common.organizationNot'));
+          const errorMsg = t('portal.settings.general.orgNotFound');
+          showFeedback(
+            'error',
+            typeof errorMsg === 'string' && errorMsg !== 'portal.settings.general.orgNotFound'
+              ? errorMsg
+              : t('portal.common.organizationNotFound')
+          );
         }
       } catch (error: unknown) {
         if (!mounted) return;
@@ -188,7 +194,7 @@ export default function sClient() {
         }
       } finally {
         if (mounted) {
-          set(false);
+          setLoading(false);
         }
       }
     }
@@ -232,7 +238,7 @@ export default function sClient() {
       return;
     }
 
-    set(true);
+    setSaving(true);
     try {
       await updateOrganization(orgId, {
         name: formData.name,
@@ -248,7 +254,7 @@ export default function sClient() {
         error instanceof Error ? error.message : t('portal.settings.general.error')
       );
     } finally {
-      set(false);
+      setSaving(false);
     }
   };
 

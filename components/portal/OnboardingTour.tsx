@@ -20,7 +20,8 @@ import { Button } from '@/components/ui/Button';
 import { useTranslations, useLocale } from 'next-intl';
 import { isRTLLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
-import { useOnboarding } from '@/lib/hooks/useOnboarding';
+import { doc, updateDoc } from 'firebase/firestore';
+import { getFirestoreDb } from '@/lib/firebase';
 
 interface TourStep {
   id: string;
@@ -43,7 +44,6 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = isRTLLocale(locale);
-  const { handleComplete, handleSkip: skipOnboarding } = useOnboarding(userId, onComplete, onSkip);
 
   useEffect(() => {
     setMounted(true);
@@ -120,6 +120,44 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
     }
   }, [currentStep]);
 
+  const handleComplete = useCallback(async () => {
+    // Ensure we're on client side before using Firestore
+    if (typeof window === 'undefined') {
+      console.warn('handleComplete called on server side, skipping');
+      return;
+    }
+
+    try {
+      const db = getFirestoreDb();
+      await updateDoc(doc(db, 'portal_users', userId), {
+        onboardingComplete: true,
+        onboardingCompletedAt: new Date(),
+      });
+    } catch (error) {
+      console.error('Failed to save onboarding status:', error);
+    }
+    onComplete();
+  }, [userId, onComplete]);
+
+  const handleSkip = useCallback(async () => {
+    // Ensure we're on client side before using Firestore
+    if (typeof window === 'undefined') {
+      console.warn('handleSkip called on server side, skipping');
+      return;
+    }
+
+    try {
+      const db = getFirestoreDb();
+      await updateDoc(doc(db, 'portal_users', userId), {
+        onboardingComplete: true,
+        onboardingSkipped: true,
+      });
+    } catch (error) {
+      console.error('Failed to save onboarding status:', error);
+    }
+    onSkip();
+  }, [userId, onSkip]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -128,13 +166,13 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
       } else if (e.key === 'ArrowLeft') {
         handlePrev();
       } else if (e.key === 'Escape') {
-        skipOnboarding();
+        handleSkip();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, skipOnboarding]);
+  }, [handleNext, handlePrev, handleSkip]);
 
   if (!mounted) return null;
 
@@ -149,7 +187,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-always-on-top flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       >
         {/* Backdrop */}
         <motion.div
@@ -181,7 +219,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
           {/* Skip Button */}
           {!isLastStep && (
             <button
-              onClick={skipOnboarding}
+              onClick={handleSkip}
               className="absolute top-4 end-4 rtl:end-auto rtl:start-4 p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800"
               aria-label={t('portal.onboarding.skip')}
             >

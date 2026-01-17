@@ -175,17 +175,17 @@ export const EditClientModal = ({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                {t('agency.clients.detail.info.status' as any)}
-              </label>
-              <select
-                className="w-full rounded-xl border transition-all duration-200 bg-white dark:bg-surface-900/80 text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none h-10 text-sm font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)] border-surface-200/80 dark:border-white/[0.08] hover:border-surface-300 dark:hover:border-white/[0.12] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:ring-primary-400/20 dark:focus:border-primary-400 px-3 font-outfit"
-                {...register('status')}
-              >
-                <option value="active">{t('agency.clients.badge.active' as any)}</option>
-                <option value="inactive">{t('agency.clients.badge.inactive' as any)}</option>
-                <option value="suspended">{t('agency.clients.badge.suspended' as any)}</option>
-              </select>
+               <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
+                 {t('agency.clients.detail.info.status' as any)}
+               </label>
+               <select
+                 className="w-full rounded-xl border transition-all duration-200 bg-white dark:bg-surface-900/80 text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none h-10 text-sm font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)] border-surface-200/80 dark:border-white/[0.08] hover:border-surface-300 dark:hover:border-white/[0.12] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:ring-primary-400/20 dark:focus:border-primary-400 px-3 font-outfit"
+                 {...register('status')}
+               >
+                 <option value="active">{t('agency.clients.badge.active' as any)}</option>
+                 <option value="inactive">{t('agency.clients.badge.inactive' as any)}</option>
+                 <option value="suspended">{t('agency.clients.badge.suspended' as any)}</option>
+               </select>
             </div>
 
             {error && (
@@ -196,20 +196,20 @@ export const EditClientModal = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-              className="flex-1 font-outfit"
-            >
-              {t('common.cancel' as any)}
-            </Button>
-            <Button type="submit" loading={loading} className="flex-1 font-outfit">
-              {loading ? t('common.saving' as any) : t('common.saveChanges' as any)}
-            </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={loading}
+                className="flex-1 font-outfit"
+              >
+                {t('common.cancel' as any)}
+              </Button>
+              <Button type="submit" loading={loading} className="flex-1 font-outfit">
+                {loading ? t('common.saving' as any) : t('common.saveChanges' as any)}
+              </Button>
           </ModalFooter>
-        </form>
+          </form>
       </ModalContent>
     </ModalBackdrop>
   );

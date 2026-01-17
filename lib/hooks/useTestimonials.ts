@@ -101,14 +101,14 @@ export function useTestimonialMutations() {
     createMutation,
     createTestimonial: createMutation.mutate,
     createTestimonialAsync: createMutation.mutateAsync,
-    is: createMutation.isPending,
+    isCreating: createMutation.isPending,
     createError: createMutation.error,
 
     // Update
     updateMutation,
     updateTestimonial: updateMutation.mutate,
     updateTestimonialAsync: updateMutation.mutateAsync,
-    is: updateMutation.isPending,
+    isUpdating: updateMutation.isPending,
     updateError: updateMutation.error,
   };
 }
@@ -126,7 +126,7 @@ export function useTestimonials(orgId: string | null | undefined) {
     // Query data
     testimonial: testimonialQuery.data,
     hasSubmitted: hasSubmittedQuery.data ?? false,
-    is: testimonialQuery.is || hasSubmittedQuery.is,
+    isLoading: testimonialQuery.isLoading || hasSubmittedQuery.isLoading,
     isError: testimonialQuery.isError || hasSubmittedQuery.isError,
     error: testimonialQuery.error || hasSubmittedQuery.error,
 

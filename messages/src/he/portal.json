@@ -139,7 +139,6 @@
       "deleteSuccess": "נמחק בהצלחה",
       "deleteRequest": "מחק בקשה",
       "removeLabel": "הסר",
-      "deleteRequest": "מחק בקשה",
       "confirm": "האם אתה בטוח?",
       "edit": "ערוך",
       "create": "צור",
@@ -203,7 +202,6 @@
       "hours": "שעות",
       "estimated": "משוער",
       "connected": "מחובר",
-      "deleteSuccess": "נמחק בהצלחה",
       "deleteError": "המחיקה נכשלה",
       "clearFilters": "נקה מסננים"
     },

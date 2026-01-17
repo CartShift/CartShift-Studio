@@ -34,9 +34,8 @@ export async function loginWithEmail(email: string, password: string): Promise<U
       throw new Error('Email and password are required');
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validate email format using shared utility
+    if (!isValidEmail(email)) {
       throw new Error('Invalid email format');
     }
 
@@ -233,9 +232,8 @@ export async function resetPassword(email: string): Promise<void> {
       throw new Error('Email is required');
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validate email format using shared utility
+    if (!isValidEmail(email)) {
       throw new Error('Invalid email format');
     }
 

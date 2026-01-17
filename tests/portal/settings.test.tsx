@@ -27,6 +27,24 @@ vi.mock('@/lib/hooks/usePortalAuth', () => ({
   usePortalAuth: () => mockUsePortalAuth(),
 }));
 
+vi.mock('@/lib/context/OrgContext', () => ({
+  useOrg: () => ({
+    orgId: 'org-1',
+    hasMultipleOrgs: false,
+    fullOrganizations: [{ id: 'org-1', name: 'Test Org' }],
+    switchOrg: vi.fn(),
+  }),
+}));
+
+vi.mock('@/lib/services/portal-uploads', () => ({
+  uploadUserProfilePicture: vi.fn(),
+  deleteUserProfilePicture: vi.fn(),
+  uploadOrganizationLogo: vi.fn(),
+  deleteOrganizationLogo: vi.fn(),
+  regenerateOrganizationLogoUrl: vi.fn(),
+  validateStorageRules: vi.fn().mockResolvedValue(true),
+}));
+
 describe('Settings Page', () => {
   beforeEach(() => {
     setupFirebaseMocks();
@@ -54,7 +72,9 @@ describe('Settings Page', () => {
     render(<SettingsClient />);
 
     await waitFor(() => {
-      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+      // Since translations are missing for settings, it renders the keys.
+      // There are multiple keys containing "settings", so we check for the title key specifically
+      expect(screen.getByText('portal.settings.title')).toBeInTheDocument();
     });
   });
 });

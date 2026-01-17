@@ -19,7 +19,6 @@ import {
   MousePointer2,
   Building2,
 } from 'lucide-react';
-import { Logger } from '@/lib/logger';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -50,7 +49,7 @@ export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
   const { loading: auth, isAgency } = usePortalAuth();
-  const { requests: requestsData, loading: requests, error: requestsError } = useRequests();
+  const { requests, loading: _requests, error: requestsError } = useRequests();
   const { pinnedIds } = usePinnedRequests(orgId as string);
   const { switchOrg } = useOrg();
   const prevPinnedIdsRef = useRef<string[]>([]);
@@ -91,7 +90,7 @@ export default function RequestsClient() {
   // Delete Modal State
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
-  const [is, setIs] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED'];
   const filters = isAgency
@@ -113,7 +112,7 @@ export default function RequestsClient() {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  const loading = auth || requests;
+  const loading = auth || _requests;
   const error = requestsError;
 
   // Reset to page 1 when filter or search changes
@@ -166,22 +165,22 @@ export default function RequestsClient() {
   const handleConfirmDelete = async () => {
     if (!requestToDelete) return;
 
-    setIs(true);
+    setIsDeleting(true);
     try {
       await deleteRequest(requestToDelete);
       toast.success(t('portal.common.deleteSuccess' as any));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
-      Logger.error('Failed to delete request', error);
+      console.error('Failed to delete request:', error);
       toast.error(t('portal.common.deleteError' as any));
     } finally {
-      setIs(false);
+      setIsDeleting(false);
     }
   };
 
   // Filter and sort requests - pinned items appear at the top
-  const filteredRequests = requestsData
+  const filteredRequests = requests
     .filter(req => {
       // Organization filter (agency only)
       if (isAgency && selectedOrgFilter !== 'all' && req.orgId !== selectedOrgFilter) {
@@ -251,7 +250,7 @@ export default function RequestsClient() {
   const handleGoToPricing = () => {
     if (selectedRequestIds.length === 0) return;
 
-    const selectedReqs = requestsData.filter(r => selectedRequestIds.includes(r.id));
+    const selectedReqs = requests.filter(r => selectedRequestIds.includes(r.id));
     const uniqueOrgIds = [...new Set(selectedReqs.map(r => r.orgId))];
 
     if (uniqueOrgIds.length > 1) {
@@ -275,6 +274,21 @@ export default function RequestsClient() {
     router.push(getPortalPath(`/pricing/new?requestIds=${selectedRequestIds.join(',')}`));
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-8 w-48 bg-surface-200 dark:bg-surface-800 rounded-lg animate-pulse" />
+            <div className="h-4 w-64 bg-surface-100 dark:bg-surface-850 rounded-md animate-pulse" />
+          </div>
+          <div className="h-11 w-32 bg-surface-200 dark:bg-surface-800 rounded-xl animate-pulse" />
+        </div>
+        <SkeletonTable />
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
@@ -290,6 +304,7 @@ export default function RequestsClient() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full min-w-0">
+
       <ConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -302,7 +317,7 @@ export default function RequestsClient() {
         confirmText={t('portal.common.delete')}
         cancelText={t('portal.common.cancel')}
         variant="danger"
-        is={is}
+        is={isDeleting}
       />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
@@ -791,12 +806,18 @@ export default function RequestsClient() {
                                   items={[
                                     {
                                       label: t('portal.common.edit'),
-                                      onClick: () => console.log('Edit request', req.id),
+                                      onClick: () => {
+                                        // TODO: Implement Edit
+                                        toast.info(t('portal.common.featureComingSoon' as any));
+                                      },
                                       icon: <Edit size={16} />,
                                     },
                                     {
                                       label: t('portal.common.archive'),
-                                      onClick: () => console.log('Archive request', req.id),
+                                      onClick: () => {
+                                        // TODO: Implement Archive
+                                        toast.info(t('portal.common.featureComingSoon' as any));
+                                      },
                                       icon: <Archive size={16} />,
                                     },
                                     {

@@ -4,7 +4,6 @@ import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { updateThemePreference } from '@/lib/services/portal-users';
-import { Logger } from '@/lib/logger';
 
 /**
  * Hook to sync user preferences (theme and language) with Firestore
@@ -39,17 +38,19 @@ export function useUserPreferences() {
         // Apply theme preference from Firestore
         if (prefs.theme) {
           setNextTheme(prefs.theme);
+          console.log('[useUserPreferences]  Firestore theme:', prefs.theme);
         }
 
         // Apply language preference from Firestore
         if (prefs.language && prefs.language !== locale) {
           const newPathname = pathname.replace(`/${locale}`, `/${prefs.language}`);
           router.push(newPathname);
+          console.log('[useUserPreferences]  Firestore language:', prefs.language);
         }
 
         setFirestorePrefs(true);
       } catch (error) {
-        Logger.error('Error applying Firestore preferences', error);
+        console.error('[useUserPreferences] Error applying Firestore preferences:', error);
       } finally {
         setIs(false);
       }
@@ -74,8 +75,9 @@ export function useUserPreferences() {
 
       try {
         await updateThemePreference(user.uid, theme as 'light' | 'dark');
+        console.log('[useUserPreferences]  theme to Firestore:', theme);
       } catch (error) {
-        Logger.error('Error syncing theme to Firestore', error);
+        console.error('[useUserPreferences] Error syncing theme to Firestore:', error);
       }
     }, 500); // Debounce to avoid too many writes
 

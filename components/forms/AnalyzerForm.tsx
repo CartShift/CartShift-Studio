@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { useTranslations } from 'next-intl';
 import { Globe, Mail, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -69,8 +70,6 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
     try {
       if (!executeRecaptcha) {
         console.warn('Execute recaptcha not yet available');
-        // Proceed without captcha if blocked? Or return.
-        // Usually better to fail safe or wait.
       }
 
       const token = executeRecaptcha ? await executeRecaptcha('analyze_store') : '';
@@ -85,22 +84,24 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
   // URL validation pattern
   const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-./?%&=]*)?$/i;
 
-  const inputStyles = isDark
-    ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:ring-primary-500 focus:border-primary-500/50'
-    : 'glass-effect text-surface-900 dark:text-white placeholder:text-surface-500 dark:placeholder:text-surface-400 focus:ring-primary-500 focus:border-primary-500';
-
-  const labelStyles = isDark ? 'text-white/80' : 'text-surface-700 dark:text-surface-200';
-
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
       {/* Store URL Field */}
       <div>
-        <label htmlFor="storeUrl" className={`block text-sm font-medium mb-2 ${labelStyles}`}>
-          {t('analyzer.form.urlLabel') || 'Your Store URL'} <span className="text-error">*</span>
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-            {detectedPlatform ? (
+        <Input
+          label={t('analyzer.form.urlLabel') || 'Your Store URL'}
+          placeholder={t('analyzer.form.urlPlaceholder') || 'https://your-store.com'}
+          {...register('storeUrl', {
+            required: t('analyzer.form.urlRequired') || 'Store URL is required',
+            pattern: {
+              value: urlPattern,
+              message: t('analyzer.form.urlInvalid') || 'Please enter a valid URL',
+            },
+          })}
+          error={errors.storeUrl?.message}
+          disabled={loading}
+          leftIcon={
+            detectedPlatform ? (
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -115,82 +116,42 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
               </motion.div>
             ) : (
               <Globe className="w-5 h-5 text-surface-400" />
-            )}
-          </div>
-          <input
-            id="storeUrl"
-            type="text"
-            {...register('storeUrl', {
-              required: t('analyzer.form.urlRequired') || 'Store URL is required',
-              pattern: {
-                value: urlPattern,
-                message: t('analyzer.form.urlInvalid') || 'Please enter a valid URL',
-              },
-            })}
-            className={`w-full ps-12 pe-4 py-4 rounded-xl ${inputStyles} focus:ring-2 transition-all touch-manipulation`}
-            placeholder={t('analyzer.form.urlPlaceholder') || 'https://your-store.com'}
-            aria-required="true"
-            aria-invalid={errors.storeUrl ? 'true' : 'false'}
-            aria-describedby={errors.storeUrl ? 'url-error' : undefined}
-            disabled={loading}
-          />
-          {detectedPlatform && (
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="absolute inset-y-0 end-0 pe-4 flex items-center"
-            >
-              <span className="text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded-full">
-                {detectedPlatform.name}
-              </span>
-            </motion.div>
-          )}
-        </div>
-        {errors.storeUrl && (
-          <p id="url-error" role="alert" className="mt-1.5 text-sm text-error">
-            {errors.storeUrl.message}
-          </p>
-        )}
+            )
+          }
+          rightIcon={
+            detectedPlatform && (
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <span className="text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded-full">
+                  {detectedPlatform.name}
+                </span>
+              </motion.div>
+            )
+          }
+        />
       </div>
 
       {/* Email Field */}
       <div>
-        <label htmlFor="email" className={`block text-sm font-medium mb-2 ${labelStyles}`}>
-          {t('analyzer.form.emailLabel') || 'Email Address'} <span className="text-error">*</span>
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-            <Mail className="w-5 h-5 text-surface-400" />
-          </div>
-          <input
-            id="email"
-            type="email"
-            {...register('email', {
-              required: t('analyzer.form.emailRequired') || 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: t('analyzer.form.emailInvalid') || 'Invalid email address',
-              },
-            })}
-            className={`w-full ps-12 pe-4 py-4 rounded-xl ${inputStyles} focus:ring-2 transition-all touch-manipulation`}
-            style={{ direction: 'ltr' }}
-            placeholder={t('analyzer.form.emailPlaceholder') || 'you@example.com'}
-            aria-required="true"
-            aria-invalid={errors.email ? 'true' : 'false'}
-            aria-describedby={errors.email ? 'email-error' : undefined}
-            disabled={loading}
-          />
-        </div>
-        {errors.email && (
-          <p id="email-error" role="alert" className="mt-1.5 text-sm text-error">
-            {errors.email.message}
-          </p>
-        )}
-        <p
-          className={`mt-1.5 text-xs ${isDark ? 'text-white/40' : 'text-surface-500 dark:text-surface-400'}`}
-        >
-          {t('analyzer.form.emailHint') || "We'll send your detailed report here"}
-        </p>
+        <Input
+          label={t('analyzer.form.emailLabel') || 'Email Address'}
+          placeholder={t('analyzer.form.emailPlaceholder') || 'you@example.com'}
+          type="email"
+          style={{ direction: 'ltr' }}
+          {...register('email', {
+            required: t('analyzer.form.emailRequired') || 'Email is required',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: t('analyzer.form.emailInvalid') || 'Invalid email address',
+            },
+          })}
+          error={errors.email?.message}
+          disabled={loading}
+          leftIcon={<Mail className="w-5 h-5 text-surface-400" />}
+          hint={t('analyzer.form.emailHint') || "We'll send your detailed report here"}
+        />
       </div>
 
       {/* Newsletter Checkbox */}

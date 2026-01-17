@@ -232,7 +232,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white font-display mb-6 leading-tight tracking-tight">
-              {t('industries.readyToGet')}
+              {t('industries.readyToGetStarted')}
             </h2>
             <p className="text-base md:text-lg text-surface-600 dark:text-surface-300 mb-8 max-w-2xl mx-auto leading-relaxed">
               {t('industries.ctaDescription')}

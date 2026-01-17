@@ -21,7 +21,7 @@ export function useConsultations({ status = 'all' }: UseConsultationsOptions = {
 
   const {
     data: consultations = [],
-    is,
+    isLoading: consultationsLoading,
     error,
   } = useQuery({
     queryKey,
@@ -40,7 +40,7 @@ export function useConsultations({ status = 'all' }: UseConsultationsOptions = {
     staleTime: 60 * 1000,
   });
 
-  const loading = auth || (shouldFetch && is);
+  const loading = auth || (shouldFetch && consultationsLoading);
   const errorMsg = error instanceof Error ? error.message : (error as string | null);
 
   return {

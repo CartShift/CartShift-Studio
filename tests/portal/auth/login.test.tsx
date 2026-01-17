@@ -14,6 +14,7 @@ vi.mock('@/i18n/navigation', () => ({
   useSearchParams: () => ({
     get: mockGet,
   }),
+  usePathname: () => '/portal/login',
   Link: ({ children, href }: any) => <a href={href}>{children}</a>,
 }));
 

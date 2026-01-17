@@ -50,7 +50,7 @@ import {
   MessageCircle,
   Info,
   Minus,
-  s,
+  Settings,
   Headphones,
   Folder,
   Activity,
@@ -60,7 +60,11 @@ import {
   FileText,
   DollarSign,
   AlertTriangle,
+  Bell,
+  Building2,
+  LogOut,
   LogIn,
+  Loader2,
   type LucideProps,
 } from 'lucide-react';
 
@@ -120,7 +124,7 @@ const iconComponents: Record<string, React.ComponentType<LucideProps>> = {
   'message-circle': MessageCircle,
   info: Info,
   minus: Minus,
-  settings: s,
+  settings: Settings,
   headphones: Headphones,
   folder: Folder,
   activity: Activity,
@@ -131,7 +135,12 @@ const iconComponents: Record<string, React.ComponentType<LucideProps>> = {
   'dollar-sign': DollarSign,
   'alert-triangle': AlertTriangle,
   'log-in': LogIn,
+  bell: Bell,
+  building: Building2,
+  'log-out': LogOut,
+  loader: Loader2,
 };
+
 
 export const Icon: React.FC<IconProps> = ({ name, className = '', size = 24 }) => {
   if (name === 'whatsapp') {

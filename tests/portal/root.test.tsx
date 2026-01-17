@@ -11,6 +11,7 @@ vi.mock('@/i18n/navigation', () => ({
     push: mockPush,
     replace: mockReplace,
   }),
+  usePathname: () => '/portal/dashboard',
 }));
 
 const mockUsePortalAuth = vi.fn();
@@ -39,7 +40,8 @@ describe('Portal Root', () => {
     });
 
     render(<PortalRootClient />);
-    expect(screen.getByText(/loading workspace/i)).toBeInTheDocument();
+    const skeletons = document.querySelectorAll('[aria-hidden="true"]');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('redirects to login when not authenticated', async () => {

@@ -20,9 +20,9 @@ import { PortalShellProps } from './types';
 // Existing UI components
 import { OfflineIndicator } from '../ui/OfflineIndicator';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
-import { MobileSearchWithErrorBoundary } from '../ui/MobileSearchWithErrorBoundary';
+import { MobileSearch } from '../ui/MobileSearch';
 import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
-import { NotificationDropdownWithErrorBoundary } from '../ui/NotificationDropdownWithErrorBoundary';
+import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { OnboardingTour } from '../OnboardingTour';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
 import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
@@ -56,7 +56,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
   })();
 
   // Only show loading state on initial load, not during subsequent navigations
-  const showState = !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
+  const showState =
+    !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
 
   // Access denied state - only if explicitly denied (not null/loading)
   const showAccessDenied =
@@ -192,9 +193,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           {/* Portal Elements */}
           {state.mounted && typeof document !== 'undefined' && document.body
             ? createPortal(
-                <NotificationDropdownWithErrorBoundary
+                <NotificationDropdown
                   isOpen={state.isNotificationOpen}
-                  onClose={() => state.setIsNotificationOpen(false)}
                   notifications={state.notifications}
                   unreadCount={state.unreadCount}
                   onMarkAllAsRead={state.handleMarkAllAsRead}
@@ -216,7 +216,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           )}
 
           {/* Mobile Search */}
-          <MobileSearchWithErrorBoundary
+          <MobileSearch
             isOpen={state.isMobileSearchOpen}
             onClose={() => state.setIsMobileSearchOpen(false)}
           />

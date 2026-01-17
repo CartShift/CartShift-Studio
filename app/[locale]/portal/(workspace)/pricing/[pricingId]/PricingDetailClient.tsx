@@ -254,8 +254,8 @@ export default function PricingDetailClient() {
             <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800">
               <PayPalCheckoutButton
                 pricingRequest={pricingRequest}
-                onSuccess={result => {
-                  console.log('Payment successful:', result);
+                onSuccess={_result => {
+                  // Payment successful
                   window.location.reload();
                 }}
                 onError={error => {

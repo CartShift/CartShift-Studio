@@ -131,7 +131,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         {/* Error Message */}
         {error && (
-          <p className="text-xs text-red-600 dark:text-red-400 font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5">
+          <p className="text-xs text-error font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5">
             {error}
           </p>
         )}

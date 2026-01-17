@@ -82,8 +82,8 @@ export function useDashboardData() {
 
   // 1. Requests Query
   const {
-    data: requestsData = [],
-    is: requests,
+    data: requests = [],
+    isLoading: isLoadingRequests,
     error: requestsError,
   } = useQuery({
     queryKey: ['org-requests', orgId],
@@ -108,8 +108,8 @@ export function useDashboardData() {
 
   // 2. Activities Query
   const {
-    data: activitiesData = [],
-    is: activities,
+    data: activities = [],
+    isLoading: isLoadingActivities,
     error: activitiesError,
   } = useQuery({
     queryKey: ['org-activities', orgId],
@@ -127,7 +127,7 @@ export function useDashboardData() {
 
   const loading =
     auth ||
-    (shouldFetchData && (requests || activities)) ||
+    (shouldFetchData && (isLoadingRequests || isLoadingActivities)) ||
     (!isAgency && !membershipChecked && !membershipError);
 
   const error =
@@ -136,8 +136,8 @@ export function useDashboardData() {
     (activitiesError instanceof Error ? activitiesError.message : null);
 
   return {
-    requests: requestsData,
-    activities: activitiesData,
+    requests,
+    activities,
     loading,
     error,
     userData,

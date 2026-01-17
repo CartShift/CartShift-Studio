@@ -14,7 +14,7 @@ export function useTeam() {
 
   const {
     data: membersData = [],
-    is: members,
+    isLoading: membersLoading,
     error: membersError,
   } = useQuery({
     queryKey: ['org-members', orgId],
@@ -26,7 +26,7 @@ export function useTeam() {
 
   const {
     data: invitesData = [],
-    is: invites,
+    isLoading: invitesLoading,
     error: invitesError,
   } = useQuery({
     queryKey: ['org-invites', orgId],
@@ -36,7 +36,7 @@ export function useTeam() {
     staleTime: 60 * 1000,
   });
 
-  const loading = auth || (shouldFetch && (members || invites));
+  const loading = auth || (shouldFetch && (membersLoading || invitesLoading));
   const error =
     (membersError || invitesError) instanceof Error
       ? (membersError || invitesError)?.message

@@ -338,7 +338,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
   const orgId = useResolvedOrgId();
   const { userData, user } = usePortalAuth();
   const { fullOrganizations } = useOrg();
-  const { hasSubmitted, testimonial, createTestimonial, is } = useTestimonials(orgId);
+  const { hasSubmitted, testimonial, createTestimonial, isLoading } = useTestimonials(orgId);
 
   // Get current org name
   const currentOrg = fullOrganizations.find(org => org.id === orgId);
@@ -783,8 +783,8 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
         )}
 
         {currentStep === 'confirm' ? (
-          <Button variant="gradient" onClick={handleSubmit} disabled={is} className="gap-2">
-            {is ? (
+          <Button variant="gradient" onClick={handleSubmit} disabled={isLoading} className="gap-2">
+            {isLoading ? (
               <>
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -802,7 +802,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             )}
           </Button>
         ) : (
-          <Button variant="primary" onClick={goToNextStep} className="gap-2">
+          <Button variant="gradient" onClick={goToNextStep} className="gap-2">
             {t('testimonial.testimonial.actions.next')}
             <NextIcon className="w-4 h-4" />
           </Button>

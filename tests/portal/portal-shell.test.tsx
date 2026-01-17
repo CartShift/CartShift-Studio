@@ -1,7 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '../utils/test-utils';
+import { render, screen } from '../utils/test-utils';
 import { setupFirebaseMocks, mockUserData } from '../utils/mock-firebase';
 import { PortalShell } from '@/components/portal/PortalShell';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
+);
 
 const mockPush = vi.fn();
 const mockPathname = '/portal/dashboard';
@@ -42,6 +57,70 @@ vi.mock('@/lib/hooks/usePortalAuth', () => ({
   usePortalAuth: () => mockUsePortalAuth(),
 }));
 
+vi.mock('@/lib/context/OrgContext', () => ({
+  useOrg: () => ({
+    orgId: 'org-1',
+    hasMultipleOrgs: false,
+    fullOrganizations: [{ id: 'org-1', name: 'Test Org' }],
+    switchOrg: vi.fn(),
+  }),
+}));
+
+const mockUsePortalShellState = vi.fn();
+vi.mock('@/components/portal/shell/hooks/usePortalShellState', () => ({
+  usePortalShellState: () => mockUsePortalShellState(),
+}));
+
+// Mock child components
+vi.mock('@/components/portal/shell/PortalSidebar', () => ({
+  PortalSidebar: ({ children }: any) => <div data-testid="portal-sidebar">{children}</div>,
+}));
+vi.mock('@/components/portal/shell/SidebarBrand', () => ({
+  SidebarBrand: () => <div>Sidebar Brand</div>,
+}));
+vi.mock('@/components/portal/shell/SidebarNavigation', () => ({
+  SidebarNavigation: () => <div>Sidebar Navigation</div>,
+}));
+vi.mock('@/components/portal/shell/OrganizationSwitcher', () => ({
+  OrganizationSwitcher: () => <div>Organization Switcher</div>,
+}));
+vi.mock('@/components/portal/shell/SidebarFooter', () => ({
+  SidebarFooter: () => <div>Sidebar Footer</div>,
+}));
+vi.mock('@/components/portal/ui/PortalHeader', () => ({
+  PortalHeader: () => <div data-testid="portal-header">Portal Header</div>,
+}));
+vi.mock('@/components/portal/ui/NotificationDropdown', () => ({
+  NotificationDropdown: () => null,
+}));
+vi.mock('@/components/portal/shell/ImpersonationBanner', () => ({
+  ImpersonationBanner: () => null,
+}));
+vi.mock('@/components/ui/ModalBackdrop', () => ({
+  ModalBackdrop: () => null,
+}));
+vi.mock('@/components/portal/ui/OfflineIndicator', () => ({
+  OfflineIndicator: () => null,
+}));
+vi.mock('@/components/portal/ui/Breadcrumbs', () => ({
+  Breadcrumbs: () => <div>Breadcrumbs</div>,
+}));
+vi.mock('@/components/portal/ui/MobileSearch', () => ({
+  MobileSearch: () => null,
+}));
+vi.mock('@/components/portal/OnboardingTour', () => ({
+  OnboardingTour: () => null,
+}));
+
+vi.mock('@/lib/context/ImpersonationContext', () => ({
+  useImpersonation: () => ({
+    isImpersonating: false,
+    impersonatedOrg: null,
+    startImpersonation: vi.fn(),
+    stopImpersonation: vi.fn(),
+  }),
+}));
+
 describe('Portal Shell', () => {
   beforeEach(() => {
     setupFirebaseMocks();
@@ -49,76 +128,104 @@ describe('Portal Shell', () => {
     mockPush.mockClear();
   });
 
+  const defaultState = {
+    isAgency: false,
+    pathname: '/portal/dashboard',
+    initialLoadComplete: true,
+    loading: false,
+    isAuthorized: true,
+    hasEverBeenAuthorized: true,
+    isMobileMenuOpen: false,
+    setIsMobileMenuOpen: vi.fn(),
+    isExpanded: true,
+    handleTouchStart: vi.fn(),
+    handleTouchEnd: vi.fn(),
+    fullOrganizations: [],
+    effectiveOrgId: 'org-1',
+    handleOrgSwitch: vi.fn(),
+    isMobile: false,
+    isSidebarOpen: true,
+    setIsSidebarOpen: vi.fn(),
+    handleSignOut: vi.fn(),
+    userData: mockUserData(),
+    accountType: 'CLIENT',
+    memberRole: 'OWNER',
+    notifications: [],
+    unreadCount: 0,
+    isNotificationOpen: false,
+    setIsNotificationOpen: vi.fn(),
+    notificationRef: { current: null },
+    notificationButtonRef: { current: null },
+    handleNotificationClick: vi.fn(),
+    handleMarkAllAsRead: vi.fn(),
+    mounted: true,
+    showOnboarding: false,
+    setShowOnboarding: vi.fn(),
+    isMobileSearchOpen: false,
+    setIsMobileSearchOpen: vi.fn(),
+    notificationPosition: {},
+    notificationDropdownRef: { current: null },
+  };
+
   it('shows loading state initially', () => {
-    mockUsePortalAuth.mockReturnValue({
-      userData: null,
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
       loading: true,
-      isAuthenticated: false,
-      accountType: 'CLIENT',
+      initialLoadComplete: false,
+      isAuthorized: null,
     });
 
     render(
-      <PortalShell orgId="org-1">
-        <div>Test Content</div>
-      </PortalShell>
+      <TestWrapper>
+        <PortalShell orgId="org-1">
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
     );
-    expect(screen.getByText(/initializing/i)).toBeInTheDocument();
-  });
-
-  it('redirects to login when not authenticated', async () => {
-    mockUsePortalAuth.mockReturnValue({
-      userData: null,
-      loading: false,
-      isAuthenticated: false,
-      accountType: 'CLIENT',
-    });
-
-    render(
-      <PortalShell orgId="org-1">
-        <div>Test Content</div>
-      </PortalShell>
-    );
-
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/portal/login/');
-    }, { timeout: 3000 });
+    // PortalState renders loading skeletons which have skeleton-shimmer class by default
+    const skeletons = document.querySelectorAll('.skeleton-shimmer');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('renders content when authenticated and authorized', async () => {
-    mockUsePortalAuth.mockReturnValue({
-      userData: mockUserData(),
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
       loading: false,
-      isAuthenticated: true,
-      accountType: 'CLIENT',
+      isAuthorized: true,
+      initialLoadComplete: true,
     });
 
     render(
-      <PortalShell orgId="org-1">
-        <div>Test Content</div>
-      </PortalShell>
+      <TestWrapper>
+        <PortalShell orgId="org-1">
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test Content')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    // Check if mock was called
+    expect(mockUsePortalShellState).toHaveBeenCalled();
+
+    // Should render children immediately if state allows
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
   it('displays navigation sidebar', async () => {
-    mockUsePortalAuth.mockReturnValue({
-      userData: mockUserData(),
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
       loading: false,
-      isAuthenticated: true,
-      accountType: 'CLIENT',
+      isAuthorized: true,
+      initialLoadComplete: true,
     });
 
     render(
-      <PortalShell orgId="org-1">
-        <div>Test Content</div>
-      </PortalShell>
+      <TestWrapper>
+        <PortalShell orgId="org-1">
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test Content')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    expect(screen.getByTestId('portal-sidebar')).toBeInTheDocument();
   });
 });

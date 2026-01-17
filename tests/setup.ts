@@ -12,10 +12,14 @@ vi.mock('next/navigation', () => ({
     prefetch: vi.fn(),
   }),
   usePathname: () => '/portal/dashboard',
+  useParams: () => ({ locale: 'en' }),
   useSearchParams: () => ({
     get: vi.fn(() => null),
     toString: vi.fn(() => ''),
   }),
+  redirect: vi.fn(),
+  permanentRedirect: vi.fn(),
+  notFound: vi.fn(),
 }));
 
 afterEach(() => {

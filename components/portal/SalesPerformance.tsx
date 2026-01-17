@@ -348,11 +348,11 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
   variant = 'full',
 }) => {
   const t = useTranslations('portal');
-  const { metrics, loading: metrics } = useSalesMetrics();
+  const { metrics, loading: metricsLoading } = useSalesMetrics();
   const { monthlyData, loading: monthly } = useMonthlyRevenue(6);
   const { topClients, loading: clients } = useTopClients(5);
 
-  const loading = metrics || monthly || clients;
+  const loading = metricsLoading || monthly || clients;
 
   if (loading) {
     return (

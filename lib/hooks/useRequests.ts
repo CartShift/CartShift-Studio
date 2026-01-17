@@ -14,7 +14,7 @@ export function useRequests() {
 
   const {
     data: requests = [],
-    is,
+    isLoading,
     error,
     refetch,
   } = useQuery({
@@ -31,7 +31,7 @@ export function useRequests() {
     staleTime: 60 * 1000, // 1 minute stale time
   });
 
-  const loading = auth || (shouldFetch && is);
+  const loading = auth || (shouldFetch && isLoading);
   const errorMsg = error instanceof Error ? error.message : (error as string | null);
 
   return {

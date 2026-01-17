@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Logger } from '@/lib/logger';
+import { safeParse } from '@/lib/utils/safe-parse';
 
 const STORAGE_KEY = 'recent_searches';
 const MAX_RECENT_SEARCHES = 5;
@@ -13,7 +14,10 @@ export function useRecentSearches() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setRecentSearches(JSON.parse(stored));
+        const parsed = safeParse<string[]>(stored);
+        if (parsed && Array.isArray(parsed)) {
+          setRecentSearches(parsed);
+        }
       }
     } catch (error) {
       Logger.warn('Failed to load recent searches from localStorage', { error });

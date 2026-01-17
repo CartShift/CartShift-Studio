@@ -21,7 +21,7 @@ export function useAgencyClients() {
 
   const {
     data: organizations = [],
-    is: orgs,
+    isLoading: isLoadingOrgs,
     error: orgsError,
   } = useQuery({
     queryKey: ['agency-clients'],
@@ -30,7 +30,7 @@ export function useAgencyClients() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const { data: revenueData = [], is: revenue } = useQuery<ClientRevenueData[]>({
+  const { data: revenueData = [], isLoading: isLoadingRevenue } = useQuery<ClientRevenueData[]>({
     queryKey: ['client-revenue-data'],
     queryFn: getClientRevenueData,
     enabled: Boolean(shouldFetch),
@@ -53,7 +53,7 @@ export function useAgencyClients() {
 
   return {
     organizations: enhancedOrganizations,
-    loading: auth || (shouldFetch && (orgs || revenue)),
+    loading: auth || (shouldFetch && (isLoadingOrgs || isLoadingRevenue)),
     error: orgsError instanceof Error ? orgsError.message : (orgsError as string | null),
     userData,
   };

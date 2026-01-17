@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { type TransitionPreset } from '@/lib/hooks/useViewTransition';
 
 export interface ViewTransitionWrapperProps {
@@ -9,7 +9,7 @@ export interface ViewTransitionWrapperProps {
   duration?: number;
   easing?: string;
   className?: string;
-  as?: keyof React.JSX.IntrinsicElements;
+  as?: React.ElementType;
 }
 
 export const ViewTransitionWrapper = ({
