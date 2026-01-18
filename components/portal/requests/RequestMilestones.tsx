@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from '@/lib/types/portal';
 import { CheckCircle2, Circle, Plus, GripVertical, Trash2, Calendar, Clock } from 'lucide-react';
 import { Milestone, MILESTONE_STATUS, Request, MilestoneStatus } from '@/lib/types/portal';
 import { updateRequestMilestones, updateMilestoneStatus } from '@/lib/services/portal-requests';

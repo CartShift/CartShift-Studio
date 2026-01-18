@@ -1,12 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
 import AgencyClientDetailClient from './AgencyClientDetailClient';
-import { getPortalStaticClientParams } from '@/lib/portal-static-params';
-
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  return getPortalStaticClientParams();
-}
 
 export default async function AgencyClientDetailPage({
   params,

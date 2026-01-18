@@ -20,8 +20,7 @@ import { Button } from '@/components/ui/Button';
 import { useTranslations, useLocale } from 'next-intl';
 import { isRTLLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
-import { doc, updateDoc } from 'firebase/firestore';
-import { getFirestoreDb } from '@/lib/firebase';
+import { updateOnboardingStatus } from '@/lib/services/portal-users';
 
 interface TourStep {
   id: string;
@@ -121,15 +120,14 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
   }, [currentStep]);
 
   const handleComplete = useCallback(async () => {
-    // Ensure we're on client side before using Firestore
+    // Ensure we're on client side
     if (typeof window === 'undefined') {
       console.warn('handleComplete called on server side, skipping');
       return;
     }
 
     try {
-      const db = getFirestoreDb();
-      await updateDoc(doc(db, 'portal_users', userId), {
+      await updateOnboardingStatus(userId, {
         onboardingComplete: true,
         onboardingCompletedAt: new Date(),
       });
@@ -140,15 +138,14 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
   }, [userId, onComplete]);
 
   const handleSkip = useCallback(async () => {
-    // Ensure we're on client side before using Firestore
+    // Ensure we're on client side
     if (typeof window === 'undefined') {
       console.warn('handleSkip called on server side, skipping');
       return;
     }
 
     try {
-      const db = getFirestoreDb();
-      await updateDoc(doc(db, 'portal_users', userId), {
+      await updateOnboardingStatus(userId, {
         onboardingComplete: true,
         onboardingSkipped: true,
       });

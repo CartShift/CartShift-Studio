@@ -2,8 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { doc, getDoc } from 'firebase/firestore';
-import { getFirestoreDb } from '@/lib/firebase';
+import {
+  getGlobalBranding,
+  getAgencyBranding,
+  getOrganizationAgencyBranding,
+} from '@/lib/services/portal-branding';
 import { applyTheme } from '@/lib/utils/theme-generator';
 import { Organization } from '@/lib/types/portal';
 
@@ -62,19 +65,85 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
       console.error('Error loading branding from local storage', e);
     }
 
-    // 2. Load theme from Firestore (for authenticated users or guests)
+    // 2. Load theme from Services (for authenticated users or guests)
     async function loadTheme() {
       try {
-        const db = getFirestoreDb();
-
         // If no user, we load GLOBAL/PUBLIC branding if it exists (for site visitors)
         // This supports the "all users on the website" requirement.
         if (!user?.uid) {
           try {
             // Fetch global branding
-            const globalDoc = await getDoc(doc(db, 'system_settings', 'branding'));
-            if (globalDoc.exists()) {
-              const data = globalDoc.data() as Organization['branding'];
+            const data = await getGlobalBranding();
+            if (data) {
+              setBranding(data);
+              localStorage.setItem('cartshift_cached_branding', JSON.stringify(data));
+              const {
+                primaryColor,
+                accentColor,
+                fontFamily,
+                fontFamilyEn,
+                fontFamilyHe,
+                borderRadius,
+              } = data;
+              applyTheme(
+                primaryColor,
+                accentColor,
+                fontFamilyEn || fontFamily,
+                borderRadius,
+                fontFamilyHe
+              );
+            }
+          } catch (e: any) {
+            // Silently handle permission errors for global branding (expected if not public)
+            if (e?.code !== 'permission-denied' && !e?.message?.includes('permission')) {
+              console.log('No global branding found or accessible:', e);
+            }
+          } finally {
+            set(false);
+          }
+          return;
+        }
+
+        try {
+          const isAgencyUser = userData?.isAgency || userData?.accountType === 'AGENCY';
+
+          if (isAgencyUser) {
+            const data = await getAgencyBranding(user.uid);
+            if (data) {
+              setBranding(data);
+              localStorage.setItem('cartshift_cached_branding', JSON.stringify(data));
+              const {
+                primaryColor,
+                accentColor,
+                fontFamily,
+                fontFamilyEn,
+                fontFamilyHe,
+                borderRadius,
+              } = data;
+              applyTheme(
+                primaryColor,
+                accentColor,
+                fontFamilyEn || fontFamily,
+                borderRadius,
+                fontFamilyHe
+              );
+            }
+          } else {
+            // Client User: Find Agency they belong to
+            // 1. Try to get active org from session
+            let targetOrgId =
+              typeof window !== 'undefined'
+                ? sessionStorage.getItem('cartshift_current_org_id')
+                : null;
+
+            // 2. Fallback to first org if no active org
+            if (!targetOrgId && (userData?.organizations?.length ?? 0) > 0) {
+              targetOrgId = userData!.organizations![0];
+            }
+
+            if (targetOrgId) {
+              // Fetch Organization to find Agency (Creator)
+              const data = await getOrganizationAgencyBranding(targetOrgId);
               if (data) {
                 setBranding(data);
                 localStorage.setItem('cartshift_cached_branding', JSON.stringify(data));
@@ -93,95 +162,6 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
                   borderRadius,
                   fontFamilyHe
                 );
-              }
-            }
-          } catch (e: any) {
-            // Silently handle permission errors for global branding (expected if not public)
-            if (e?.code !== 'permission-denied' && !e?.message?.includes('permission')) {
-              console.log('No global branding found or accessible:', e);
-            }
-          } finally {
-            set(false);
-          }
-          return;
-        }
-
-        try {
-          const isAgencyUser = userData?.isAgency || userData?.accountType === 'AGENCY';
-
-          if (isAgencyUser) {
-            const agencyDoc = await getDoc(doc(db, 'agencies', user.uid));
-            if (agencyDoc.exists()) {
-              const data = agencyDoc.data();
-              if (data.branding) {
-                setBranding(data.branding);
-                localStorage.setItem('cartshift_cached_branding', JSON.stringify(data.branding));
-                const {
-                  primaryColor,
-                  accentColor,
-                  fontFamily,
-                  fontFamilyEn,
-                  fontFamilyHe,
-                  borderRadius,
-                } = data.branding;
-                applyTheme(
-                  primaryColor,
-                  accentColor,
-                  fontFamilyEn || fontFamily,
-                  borderRadius,
-                  fontFamilyHe
-                );
-              }
-            }
-          } else {
-            // Client User: Find Agency they belong to
-            // 1. Try to get active org from session
-            let targetOrgId =
-              typeof window !== 'undefined'
-                ? sessionStorage.getItem('cartshift_current_org_id')
-                : null;
-
-            // 2. Fallback to first org if no active org
-            if (!targetOrgId && (userData?.organizations?.length ?? 0) > 0) {
-              targetOrgId = userData!.organizations![0];
-            }
-
-            if (targetOrgId) {
-              // Fetch Organization to find Agency (Creator)
-              const orgDoc = await getDoc(doc(db, 'portal_organizations', targetOrgId));
-              if (orgDoc.exists()) {
-                const orgData = orgDoc.data();
-                const agencyId = orgData.createdBy; // The Agency Owner ID
-
-                if (agencyId) {
-                  // Fetch Agency Branding
-                  const agencyDoc = await getDoc(doc(db, 'agencies', agencyId));
-                  if (agencyDoc.exists()) {
-                    const data = agencyDoc.data();
-                    if (data.branding) {
-                      setBranding(data.branding);
-                      localStorage.setItem(
-                        'cartshift_cached_branding',
-                        JSON.stringify(data.branding)
-                      );
-                      const {
-                        primaryColor,
-                        accentColor,
-                        fontFamily,
-                        fontFamilyEn,
-                        fontFamilyHe,
-                        borderRadius,
-                      } = data.branding;
-                      applyTheme(
-                        primaryColor,
-                        accentColor,
-                        fontFamilyEn || fontFamily,
-                        borderRadius,
-                        fontFamilyHe
-                      );
-                    }
-                  }
-                }
               }
             }
           }

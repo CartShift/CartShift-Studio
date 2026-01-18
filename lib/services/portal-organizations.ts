@@ -493,6 +493,24 @@ export async function createInvite(
   } as Invite;
 }
 
+/**
+ * Fetches an invite by its ID.
+ */
+export async function getInvite(inviteId: string): Promise<Invite | null> {
+  const db = getFirestoreDb();
+  const docRef = doc(db, INVITES_COLLECTION, inviteId);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    return null;
+  }
+
+  return {
+    id: docSnap.id,
+    ...docSnap.data(),
+  } as Invite;
+}
+
 export async function getPendingInviteByEmail(
   orgId: string,
   email: string
@@ -571,6 +589,13 @@ export async function acceptInvite(
   if (invite.expiresAt.toDate() < new Date()) {
     await updateDoc(inviteRef, { status: 'expired' });
     throw new Error('This invite has expired');
+  }
+
+  // Check email mismatch
+  const auth = getFirebaseAuth();
+  const currentUser = auth.currentUser;
+  if (invite.email.toLowerCase() !== currentUser?.email?.toLowerCase()) {
+    throw new Error('Email mismatch: This invite was sent to another email address');
   }
 
   // Handle based on invite type

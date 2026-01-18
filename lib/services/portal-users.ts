@@ -66,3 +66,10 @@ export async function updateLanguagePreference(
     },
   });
 }
+
+export async function updateOnboardingStatus(
+  userId: string,
+  data: { onboardingComplete: boolean; onboardingCompletedAt?: Date; onboardingSkipped?: boolean }
+): Promise<void> {
+  return updatePortalUser(userId, data as any);
+}

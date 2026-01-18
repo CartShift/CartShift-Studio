@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 import { FileText, Clock, CheckCircle2, DollarSign, TrendingUp, Activity } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Request, REQUEST_STATUS, RequestStatus } from '@/lib/types/portal';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from '@/lib/types/portal';
 
 interface ClientAnalyticsProps {
   requests: Request[];

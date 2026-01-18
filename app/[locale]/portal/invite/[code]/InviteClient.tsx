@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
-import { getFirestoreDb } from '@/lib/firebase';
+import {
+  getInvite,
+  acceptInvite,
+  cancelInvite
+} from '@/lib/services/portal-organizations';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -16,10 +19,6 @@ import { Link } from '@/i18n/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-
-const INVITES_COLLECTION = 'portal_invites';
-const MEMBERS_COLLECTION = 'portal_members';
-const USERS_COLLECTION = 'portal_users';
 
 export default function InviteClient() {
   const { code } = useParams();
@@ -45,20 +44,13 @@ export default function InviteClient() {
       }
 
       try {
-        const db = getFirestoreDb();
-        const inviteRef = doc(db, INVITES_COLLECTION, code);
-        const inviteSnap = await getDoc(inviteRef);
+        const inviteData = await getInvite(code);
 
-        if (!inviteSnap.exists()) {
+        if (!inviteData) {
           setError(t('portal.auth.errors.inviteNotFound'));
           set(false);
           return;
         }
-
-        const inviteData = {
-          id: inviteSnap.id,
-          ...inviteSnap.data(),
-        } as Invite;
 
         setInvite(inviteData);
 
@@ -72,7 +64,7 @@ export default function InviteClient() {
           // Update expired status if user is authenticated, otherwise just show error
           if (isAuthenticated) {
             try {
-              await updateDoc(inviteRef, { status: 'expired' });
+              await cancelInvite(code);
             } catch (err) {
               console.error('Error updating invite status:', err);
             }
@@ -101,58 +93,7 @@ export default function InviteClient() {
     setError(null);
 
     try {
-      const db = getFirestoreDb();
-      const inviteRef = doc(db, INVITES_COLLECTION, invite.id);
-      const inviteSnap = await getDoc(inviteRef);
-
-      if (!inviteSnap.exists()) {
-        throw new Error(t('portal.auth.errors.inviteNotFound'));
-      }
-
-      const currentInvite = inviteSnap.data() as Invite;
-
-      if (currentInvite.status !== 'pending') {
-        throw new Error(t('portal.auth.errors.alreadyAccepted'));
-      }
-
-      if (currentInvite.expiresAt?.toDate && currentInvite.expiresAt.toDate() < new Date()) {
-        await updateDoc(inviteRef, { status: 'expired' });
-        throw new Error(t('portal.auth.errors.expired'));
-      }
-
-      if (
-        !currentInvite.email ||
-        !user.email ||
-        currentInvite.email.toLowerCase() !== user.email.toLowerCase()
-      ) {
-        throw new Error(t('portal.auth.errors.mismatch'));
-      }
-
-      const memberData = {
-        orgId: invite.orgId,
-        userId: user.uid,
-        email: invite.email,
-        role: invite.role,
-        name: userData.name || null,
-        invitedBy: invite.invitedBy,
-        inviteId: invite.id,
-        joinedAt: serverTimestamp(),
-      };
-
-      await setDoc(doc(db, MEMBERS_COLLECTION, `${invite.orgId}_${user.uid}`), memberData);
-
-      const userRef = doc(db, USERS_COLLECTION, user.uid);
-      await updateDoc(userRef, {
-        email: invite.email,
-        name: userData.name || null,
-        organizations: arrayUnion(invite.orgId),
-        updatedAt: serverTimestamp(),
-      });
-
-      await updateDoc(inviteRef, {
-        status: 'accepted',
-        acceptedAt: serverTimestamp(),
-      });
+      await acceptInvite(invite.id, user.uid, userData.name || undefined);
 
       setSuccess(true);
       setTimeout(() => {

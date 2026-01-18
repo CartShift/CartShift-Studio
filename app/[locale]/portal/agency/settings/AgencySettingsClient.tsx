@@ -18,12 +18,20 @@ import {
 import { applyTheme } from '@/lib/utils/theme-generator';
 import { cn } from '@/lib/utils';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
-import { getAgencyTeam } from '@/lib/services/portal-agency';
+import {
+  getAgencyTeam,
+  getAgency,
+  updateAgency
+} from '@/lib/services/portal-agency';
 import { updatePortalUser } from '@/lib/services/portal-users';
-import { getFirebaseStorage, waitForAuth } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import {
+  uploadAgencyAsset,
+  uploadUserProfilePicture
+} from '@/lib/services/portal-uploads';
+import {
+  updateGlobalBranding
+} from '@/lib/services/portal-branding';
+import { getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import { PortalUser, Invite } from '@/lib/types/portal';
 import { subscribeToAgencyInvites, cancelInvite } from '@/lib/services/portal-organizations';
 import { useTranslations } from 'next-intl';
@@ -113,13 +121,11 @@ export default function AgencysClient() {
   useEffect(() => {
     async function fetchAgencyProfile() {
       if (!user?.uid) return;
-      const db = getFirestoreDb();
 
       setLoading(true);
       try {
-        const agencyDoc = await getDoc(doc(db, 'agencies', user.uid));
-        if (agencyDoc.exists()) {
-          const data = agencyDoc.data();
+        const data = await getAgency(user.uid);
+        if (data) {
           setProfile({
             name: data.name || '',
             email: data.email || '',
@@ -242,7 +248,6 @@ export default function AgencysClient() {
 
   const handleSave = async () => {
     if (!user?.uid) return;
-    const db = getFirestoreDb();
 
     setSaving(true);
     try {
@@ -255,20 +260,6 @@ export default function AgencysClient() {
 
       const userId = currentUser.uid;
 
-      if (userId !== user.uid) {
-        console.warn('UID mismatch:', { hookUid: user.uid, authUid: userId });
-      }
-
-      const token = await currentUser.getIdToken(true);
-      if (!token) {
-        throw new Error(t('portal.common.failedToGetAuthToken' as any));
-      }
-
-      // Debug logging removed
-
-      const agencyRef = doc(db, 'agencies', userId);
-      const agencyDoc = await getDoc(agencyRef);
-
       const data = {
         name: profile.name,
         email: profile.email,
@@ -276,31 +267,14 @@ export default function AgencysClient() {
         phone: profile.phone,
         description: profile.description,
         branding: profile.branding,
-        updatedAt: serverTimestamp(),
       };
 
-      if (agencyDoc.exists()) {
-        await updateDoc(agencyRef, data);
-      } else {
-        await setDoc(agencyRef, {
-          ...data,
-          createdAt: serverTimestamp(),
-        });
-      }
+      await updateAgency(userId, data);
 
       // Also save to global system settings for public branding
       if (profile.branding) {
         try {
-          const globalRef = doc(db, 'system_settings', 'branding');
-          await setDoc(
-            globalRef,
-            {
-              ...profile.branding,
-              updatedAt: serverTimestamp(),
-              updatedBy: userId,
-            },
-            { merge: true }
-          );
+          await updateGlobalBranding(profile.branding, userId);
         } catch (globalError) {
           console.warn('Failed to update global branding:', globalError);
           // Don't fail the main save if this optional step fails
@@ -403,25 +377,13 @@ export default function AgencysClient() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Image size must be less than 2MB');
-      return;
-    }
-
     setUploadingAvatar(true);
     try {
-      await waitForAuth();
-      const storage = getFirebaseStorage();
-      const storageRef = ref(storage, `avatars/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
+      const url = await uploadUserProfilePicture(user.uid, file);
       setProfileFormData(prev => ({ ...prev, photoUrl: url }));
-
-      // Auto-save
-      await updatePortalUser(user.uid, { photoUrl: url });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      alert(t('agency.settings.profile.failedToUpload'));
+      alert(error.message || t('agency.settings.profile.failedToUpload'));
     } finally {
       setUploadingAvatar(false);
     }
@@ -705,13 +667,7 @@ export default function AgencysClient() {
                               const file = e.target.files?.[0];
                               if (!file || !user) return;
                               try {
-                                const storage = getFirebaseStorage();
-                                const storageRef = ref(
-                                  storage,
-                                  `agencies/${user.uid}/logo_${Date.now()}`
-                                );
-                                await uploadBytes(storageRef, file);
-                                const url = await getDownloadURL(storageRef);
+                                const url = await uploadAgencyAsset(user.uid, file, 'logo');
                                 setProfile({
                                   ...profile,
                                   branding: { ...profile.branding, logoUrl: url },
@@ -797,13 +753,7 @@ export default function AgencysClient() {
                               const file = e.target.files?.[0];
                               if (!file || !user) return;
                               try {
-                                const storage = getFirebaseStorage();
-                                const storageRef = ref(
-                                  storage,
-                                  `agencies/${user.uid}/icon_${Date.now()}`
-                                );
-                                await uploadBytes(storageRef, file);
-                                const url = await getDownloadURL(storageRef);
+                                const url = await uploadAgencyAsset(user.uid, file, 'icon');
                                 setProfile({
                                   ...profile,
                                   branding: { ...profile.branding, iconUrl: url },

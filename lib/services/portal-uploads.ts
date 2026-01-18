@@ -302,3 +302,54 @@ export async function deleteOrganizationLogo(orgId: string, logoUrl: string): Pr
     updatedAt: serverTimestamp(),
   });
 }
+
+// ============================================
+// AGENCY ASSET UPLOAD
+// ============================================
+
+/**
+ * Upload an agency asset (logo or icon) to Firebase Storage
+ * @param agencyId - The agency's ID
+ * @param file - The image file to upload
+ * @param type - The type of asset ('logo' or 'icon')
+ * @returns The download URL of the uploaded image
+ */
+export async function uploadAgencyAsset(
+  agencyId: string,
+  file: File,
+  type: 'logo' | 'icon'
+): Promise<string> {
+  await waitForAuth();
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Only image files are allowed');
+  }
+
+  // Validate file size (max 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    throw new Error('File size must be less than 2MB');
+  }
+
+  const storage = getFirebaseStorage();
+  const db = getFirestoreDb();
+
+  // Generate unique filename
+  const fileId = uuidv4();
+  const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+  const storagePath = `agency-${type}s/${agencyId}/${fileId}.${extension}`;
+
+  // Upload to Storage
+  const storageRef = ref(storage, storagePath);
+  await uploadBytes(storageRef, file);
+  const downloadUrl = await getDownloadURL(storageRef);
+
+  // Update agency document in Firestore
+  const agencyDocRef = doc(db, 'agencies', agencyId);
+  await updateDoc(agencyDocRef, {
+    [`branding.${type}Url`]: downloadUrl,
+    updatedAt: serverTimestamp(),
+  });
+
+  return downloadUrl;
+}

@@ -117,7 +117,40 @@ export default [
             // General rules
             "prefer-const": "warn",
             "no-console": "off",
+            // Custom rules
+            "no-restricted-syntax": [
+                "warn",
+                {
+                    "selector": "JSXAttribute[name.name='className'] > Literal[value=/(\\s|^)(ml-|mr-|pl-|pr-|left-|right-)/]",
+                    "message": "Use logical properties (ms-, me-, ps-, pe-, start-, end-) instead of physical ones (ml-, mr-, pl-, pr-, left-, right-) for better RTL support."
+                },
+                {
+                    "selector": "JSXAttribute[name.name='className'] TemplateElement[value.raw=/(\\s|^)(ml-|mr-|pl-|pr-|left-|right-)/]",
+                    "message": "Use logical properties (ms-, me-, ps-, pe-, start-, end-) instead of physical ones (ml-, mr-, pl-, pr-, left-, right-) for better RTL support."
+                }
+            ],
         },
+    },
+    {
+        // Enforce service layer by restricting direct firebase imports in components and pages
+        files: [
+            "components/**/*.{ts,tsx}",
+            "app/**/*.{ts,tsx}"
+        ],
+        rules: {
+            "no-restricted-imports": ["warn", {
+                "paths": [
+                    {
+                        "name": "firebase/firestore",
+                        "message": "Direct firestore imports are not allowed in components. Use service functions or custom hooks from @/lib/services instead."
+                    },
+                    {
+                        "name": "firebase/storage",
+                        "message": "Direct storage imports are not allowed in components. Use service functions from @/lib/services instead."
+                    }
+                ]
+            }]
+        }
     },
     {
         files: ["**/*.js", "**/*.jsx"],
