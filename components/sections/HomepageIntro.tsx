@@ -33,13 +33,13 @@ export const HomepageIntro: React.FC = () => {
   return (
     <Section className="relative overflow-hidden py-24 md:py-32 bg-surface-50 dark:bg-surface-950/20">
       {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 p-20 opacity-30 dark:opacity-20 pointer-events-none overflow-hidden">
+      <div className="absolute top-0 end-0 p-20 opacity-30 dark:opacity-20 pointer-events-none overflow-hidden">
         <motion.div style={{ y, rotate }} className="relative">
           <div className="absolute inset-0 bg-primary-500/20 blur-[100px] rounded-full w-[30rem] h-[30rem]" />
         </motion.div>
       </div>
 
-      <div className="absolute bottom-0 left-0 p-20 opacity-30 dark:opacity-20 pointer-events-none overflow-hidden">
+      <div className="absolute bottom-0 start-0 p-20 opacity-30 dark:opacity-20 pointer-events-none overflow-hidden">
         <motion.div
           style={{ y: useTransform(scrollYProgress, [0, 1], [-50, 50]) }}
           className="relative"

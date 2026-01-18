@@ -72,7 +72,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 if (offset.x > swipeThreshold || velocity.x > 500) onClose();
               }
             }}
-            className="lg:hidden fixed top-0 end-0 bottom-0 w-[85vw] max-w-sm z-mobile-menu bg-white dark:bg-surface-950 backdrop-blur-2xl border-s border-surface-200 dark:border-surface-800 flex flex-col shadow-2xl"
+            className="lg:hidden fixed inset-y-0 end-0 w-[85vw] max-w-sm z-mobile-menu bg-white dark:bg-surface-950 backdrop-blur-2xl border-s border-surface-200 dark:border-surface-800 flex flex-col shadow-2xl"
           >
             {/* Drawer Header */}
             <div className="flex items-center justify-between h-20 px-6 border-b border-surface-200 dark:border-surface-800">

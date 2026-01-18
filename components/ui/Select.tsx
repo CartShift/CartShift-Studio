@@ -36,10 +36,19 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     // Determine state based on props if not explicitly provided
     const state = propState || (error ? 'error' : success ? 'success' : 'default');
 
+    // Generate unique IDs for accessibility
+    const selectId = props.id || `select-${Math.random().toString(36).substring(2, 9)}`;
+    const errorId = `${selectId}-error`;
+    const hintId = `${selectId}-hint`;
+    const describedBy = error ? errorId : hint ? hintId : undefined;
+
     return (
       <div className="w-full space-y-1.5 group">
         {label && (
-          <label className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors">
+          <label
+            htmlFor={selectId}
+            className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
+          >
             {label}
           </label>
         )}
@@ -76,7 +85,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               className
             )}
             ref={ref}
+            id={selectId}
             disabled={disabled}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={describedBy}
             {...props}
           >
             {placeholder && (
@@ -107,13 +119,21 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
         {/* Error Message */}
         {error && (
-          <p className="text-xs text-red-600 dark:text-red-400 font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5">
+          <p
+            id={errorId}
+            className="text-xs text-red-600 dark:text-red-400 font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5"
+            role="alert"
+          >
             {error}
           </p>
         )}
 
         {/* Hint Text */}
-        {!error && hint && <p className="text-xs text-surface-500 dark:text-surface-400">{hint}</p>}
+        {!error && hint && (
+          <p id={hintId} className="text-xs text-surface-500 dark:text-surface-400">
+            {hint}
+          </p>
+        )}
       </div>
     );
   }

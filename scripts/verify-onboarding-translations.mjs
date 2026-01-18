@@ -33,6 +33,38 @@ const requiredKeys = [
   'portal.onboarding.steps.notifications.description',
   'portal.onboarding.steps.complete.title',
   'portal.onboarding.steps.complete.description',
+  // Welcome Step
+  'portal.onboarding.welcome.title',
+  'portal.onboarding.welcome.subtitle',
+  'portal.onboarding.welcome.description',
+  'portal.onboarding.welcome.cta',
+  // Info Step
+  'portal.onboarding.info.title',
+  'portal.onboarding.info.subtitle',
+  // Form
+  'portal.onboarding.form.orgNameLabel',
+  'portal.onboarding.form.orgNamePlaceholder',
+  'portal.onboarding.form.orgNameHint',
+  'portal.onboarding.form.industryLabel',
+  'portal.onboarding.form.industrySelectPlaceholder',
+  'portal.onboarding.form.sizeLabel',
+  'portal.onboarding.form.sizeSelectPlaceholder',
+  'portal.onboarding.form.employeesLabel',
+  'portal.onboarding.form.createButton',
+  // Completion Step
+  'portal.onboarding.completion.title',
+  'portal.onboarding.completion.subtitle',
+  'portal.onboarding.completion.description',
+  'portal.onboarding.completion.cta',
+  // General
+  'portal.onboarding.back',
+  'portal.onboarding.error',
+  // Settings
+  'portal.settings.general.onboarding.title',
+  'portal.settings.general.onboarding.description',
+  'portal.settings.general.onboarding.button',
+  'portal.settings.general.onboarding.success',
+  'portal.settings.general.onboarding.error',
 ];
 
 function getNestedValue(obj, path) {

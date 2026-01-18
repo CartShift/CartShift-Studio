@@ -17,9 +17,14 @@ const avatarVariants = cva('rounded-full object-cover shrink-0', {
 });
 
 export interface AvatarProps extends VariantProps<typeof avatarVariants> {
+  /** User's display name, used for initials fallback and accessibility */
   name?: string;
+  /** Image source URL */
   src?: string;
+  /** Additional CSS classes */
   className?: string;
+  /** Alt text override for the image (defaults to name or 'Avatar') */
+  alt?: string;
 }
 
 const getAvatarColor = (name: string) => {
@@ -40,7 +45,7 @@ const getAvatarColor = (name: string) => {
   return colors[Math.abs(hash) % colors.length];
 };
 
-export const Avatar: React.FC<AvatarProps> = ({ name, src, size, className }) => {
+export const Avatar: React.FC<AvatarProps> = ({ name, src, size, className, alt }) => {
   const initials = name
     ? name
         .split(' ')
@@ -56,12 +61,18 @@ export const Avatar: React.FC<AvatarProps> = ({ name, src, size, className }) =>
 
   if (src) {
     return (
-      <img src={src} alt={name || 'Avatar'} className={cn(avatarVariants({ size }), className)} />
+      <img
+        src={src}
+        alt={alt || name || 'Avatar'}
+        className={cn(avatarVariants({ size }), className)}
+      />
     );
   }
 
   return (
     <div
+      role="img"
+      aria-label={alt || name || 'Avatar'}
       className={cn(
         avatarVariants({ size }),
         'flex items-center justify-center font-semibold text-white',

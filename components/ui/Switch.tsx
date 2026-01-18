@@ -39,12 +39,22 @@ const switchThumbVariants = cva(
 );
 
 interface SwitchProps {
+  /** The switch label text */
   label?: string;
+  /** Description text shown below the label */
   description?: string;
+  /** Current checked state */
   checked: boolean;
+  /** Callback when state changes */
   onChange: (checked: boolean) => void;
+  /** Whether the switch is disabled */
   disabled?: boolean;
+  /** Additional CSS classes */
   className?: string;
+  /** Unique ID for the switch (auto-generated if not provided) */
+  id?: string;
+  /** aria-label for screen readers when no visible label is provided */
+  'aria-label'?: string;
 }
 
 export const Switch = ({
@@ -54,25 +64,37 @@ export const Switch = ({
   onChange,
   disabled = false,
   className,
+  id,
+  'aria-label': ariaLabel,
 }: SwitchProps) => {
+  // Generate unique ID for accessibility linking
+  const switchId = id || `switch-${Math.random().toString(36).substring(2, 9)}`;
+  const descriptionId = description ? `${switchId}-description` : undefined;
+
   return (
     <div className={cn("flex items-start justify-between gap-4 py-2", className)}>
       <div className="flex-1">
         {label && (
-          <label className="text-sm font-bold text-surface-900 dark:text-white block mb-0.5 cursor-pointer" onClick={() => !disabled && onChange(!checked)}>
+          <label
+            htmlFor={switchId}
+            className="text-sm font-bold text-surface-900 dark:text-white block mb-0.5 cursor-pointer"
+          >
             {label}
           </label>
         )}
         {description && (
-          <p className="text-xs text-surface-500 dark:text-surface-400 font-medium">
+          <p id={descriptionId} className="text-xs text-surface-500 dark:text-surface-400 font-medium">
             {description}
           </p>
         )}
       </div>
       <button
+        id={switchId}
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={ariaLabel}
+        aria-describedby={descriptionId}
         onClick={() => !disabled && onChange(!checked)}
         className={cn(switchTrackVariants({ checked, disabled }))}
         disabled={disabled}

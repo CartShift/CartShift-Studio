@@ -15,14 +15,23 @@ interface TextareaProps
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, label, error, success, hint, disabled, state: propState, ...props }, ref) => {
+  ({ className, label, error, success, hint, disabled, state: propState, id, ...props }, ref) => {
     // Determine state based on props if not explicitly provided
     const state = propState || (error ? 'error' : success ? 'success' : 'default');
+
+    // Generate unique IDs for accessibility
+    const textareaId = id || `textarea-${Math.random().toString(36).substring(2, 9)}`;
+    const errorId = `${textareaId}-error`;
+    const hintId = `${textareaId}-hint`;
+    const describedBy = error ? errorId : hint ? hintId : undefined;
 
     return (
       <div className="w-full space-y-1.5 group">
         {label && (
-          <label className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors">
+          <label
+            htmlFor={textareaId}
+            className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
+          >
             {label}
           </label>
         )}
@@ -60,7 +69,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               className
             )}
             ref={ref}
+            id={textareaId}
             disabled={disabled}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={describedBy}
             {...props}
           />
 
@@ -83,13 +95,21 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
         {/* Error Message */}
         {error && (
-          <p className="text-xs text-red-600 dark:text-red-400 font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5">
+          <p
+            id={errorId}
+            className="text-xs text-red-600 dark:text-red-400 font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5"
+            role="alert"
+          >
             {error}
           </p>
         )}
 
         {/* Hint Text */}
-        {!error && hint && <p className="text-xs text-surface-500 dark:text-surface-400">{hint}</p>}
+        {!error && hint && (
+          <p id={hintId} className="text-xs text-surface-500 dark:text-surface-400">
+            {hint}
+          </p>
+        )}
       </div>
     );
   }

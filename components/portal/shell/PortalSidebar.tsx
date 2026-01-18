@@ -24,7 +24,7 @@ export function PortalSidebar({
         'border-e border-surface-200/50 dark:border-surface-800/30 shadow-2xl shadow-surface-950/20',
         'w-[85vw] max-w-[320px] min-h-screen-mobile overflow-hidden',
         'pb-safe',
-        isRTLLocale(locale) ? 'right-0' : 'left-0',
+        'start-0',
         isMobileMenuOpen
           ? 'translate-x-0'
           : isRTLLocale(locale)

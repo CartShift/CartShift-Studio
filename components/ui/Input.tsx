@@ -79,14 +79,23 @@ interface InputProps
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, success, className, leftIcon, rightIcon, hint, disabled, ...props }, ref) => {
+  ({ label, error, success, className, leftIcon, rightIcon, hint, disabled, id, ...props }, ref) => {
     const state = error ? 'error' : success ? 'success' : 'default';
     const hasRightContent = Boolean(rightIcon || error || success);
+
+    // Generate unique IDs for aria-describedby
+    const inputId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
+    const errorId = `${inputId}-error`;
+    const hintId = `${inputId}-hint`;
+    const describedBy = error ? errorId : hint ? hintId : undefined;
 
     return (
       <div className="w-full space-y-1.5 group">
         {label && (
-          <label className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors">
+          <label
+            htmlFor={inputId}
+            className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
+          >
             {label}
           </label>
         )}
@@ -99,7 +108,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
           <input
             ref={ref}
+            id={inputId}
             disabled={disabled}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={describedBy}
             className={cn(
               inputVariants({
                 state,
@@ -131,13 +143,21 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         {/* Error Message */}
         {error && (
-          <p className="text-xs text-error font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5">
+          <p
+            id={errorId}
+            className="text-xs text-error font-medium animate-in slide-in-from-top-1 duration-200 flex items-center gap-1.5"
+            role="alert"
+          >
             {error}
           </p>
         )}
 
         {/* Hint Text (if no error) */}
-        {!error && hint && <p className="text-xs text-surface-500 dark:text-surface-400">{hint}</p>}
+        {!error && hint && (
+          <p id={hintId} className="text-xs text-surface-500 dark:text-surface-400">
+            {hint}
+          </p>
+        )}
       </div>
     );
   }

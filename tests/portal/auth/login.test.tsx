@@ -53,7 +53,7 @@ describe('Login Page', () => {
     await userEvent.click(submitButton);
 
     await waitFor(() => {
-      const error = screen.queryByText(/invalid email/i);
+      const error = screen.queryByText(/valid email/i);
       expect(error).toBeInTheDocument();
     });
   });

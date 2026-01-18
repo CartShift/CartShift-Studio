@@ -585,7 +585,37 @@
           "title": "You're All Set!",
           "description": "Your workspace is ready. Start by creating your first request or explore the dashboard to see what's possible."
         }
-      }
+      },
+      "welcome": {
+        "title": "Welcome to CartShift",
+        "subtitle": "Let's get your workspace set up",
+        "description": "We'll help you set up your organization and get you ready to collaborate with our team.",
+        "cta": "Let's Get Started"
+      },
+      "info": {
+        "title": "Tell us about your organization",
+        "subtitle": "This helps us tailor the experience for you"
+      },
+      "form": {
+        "orgNameLabel": "Organization Name",
+        "orgNamePlaceholder": "e.g. Acme Corp",
+        "orgNameHint": "This will be the name of your workspace",
+        "industryLabel": "Industry",
+        "industrySelectPlaceholder": "Select your industry",
+        "sizeLabel": "Company Size",
+        "sizeSelectPlaceholder": "Select company size",
+        "employeesLabel": "employees",
+        "createButton": "Create Organization",
+        "createError": "Failed to create organization. Please try again."
+      },
+      "completion": {
+        "title": "All Set!",
+        "subtitle": "Your workspace is ready",
+        "description": "You can now invite team members, submit requests, and track your projects.",
+        "cta": "Go to Dashboard"
+      },
+      "back": "Back",
+      "error": "Something went wrong. Please try again."
     },
     "industries": {
       "ecommerce": "E-commerce",
@@ -764,6 +794,15 @@
         "security": "Security",
         "billing": "Billing",
         "branding": "Branding"
+      },
+      "general": {
+        "onboarding": {
+          "title": "Onboarding Tour",
+          "description": "Reset the onboarding tour to view the welcome guide again.",
+          "button": "Restart Tour",
+          "success": "Onboarding tour reset successfully",
+          "error": "Failed to reset onboarding tour"
+        }
       },
       "branding": {
         "title": "Agency Branding",

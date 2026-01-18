@@ -201,7 +201,12 @@ function ToastItem({ type, title, message, action, onDismiss, duration }: ToastI
   const Icon = icons[type || 'info'];
 
   return (
-    <div className={cn(toastVariants({ type }))} role="alert">
+    <div
+      className={cn(toastVariants({ type }))}
+      role="alert"
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+      aria-atomic="true"
+    >
       <div className="flex items-start gap-3">
         <Icon size={20} className={cn(toastIconVariants({ type }))} />
         <div className="flex-1 min-w-0">

@@ -56,6 +56,7 @@ interface DropdownProps extends VariantProps<typeof dropdownMenuVariants> {
 
 export function Dropdown({ trigger, items, align = 'right', className = '' }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1); // For keyboard navigation
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
   const [position, setPosition] = useState({
     top: 0,
@@ -67,6 +68,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
   });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -363,20 +365,77 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Escape to close
       if (event.key === 'Escape') {
         setIsOpen(false);
+        setFocusedIndex(-1);
+        triggerRef.current?.focus();
+        return;
+      }
+
+      // Arrow key navigation
+      const enabledIndices = items.map((item, i) => !item.disabled ? i : -1).filter(i => i !== -1);
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        const currentEnabledIndex = enabledIndices.indexOf(focusedIndex);
+        const nextIndex = currentEnabledIndex < enabledIndices.length - 1
+          ? enabledIndices[currentEnabledIndex + 1]
+          : enabledIndices[0];
+        setFocusedIndex(nextIndex);
+        itemRefs.current[nextIndex]?.focus();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        const currentEnabledIndex = enabledIndices.indexOf(focusedIndex);
+        const prevIndex = currentEnabledIndex > 0
+          ? enabledIndices[currentEnabledIndex - 1]
+          : enabledIndices[enabledIndices.length - 1];
+        setFocusedIndex(prevIndex);
+        itemRefs.current[prevIndex]?.focus();
+      } else if (event.key === 'Home') {
+        event.preventDefault();
+        const firstEnabled = enabledIndices[0];
+        if (firstEnabled !== undefined) {
+          setFocusedIndex(firstEnabled);
+          itemRefs.current[firstEnabled]?.focus();
+        }
+      } else if (event.key === 'End') {
+        event.preventDefault();
+        const lastEnabled = enabledIndices[enabledIndices.length - 1];
+        if (lastEnabled !== undefined) {
+          setFocusedIndex(lastEnabled);
+          itemRefs.current[lastEnabled]?.focus();
+        }
+      } else if (event.key === 'Enter' || event.key === ' ') {
+        if (focusedIndex >= 0 && !items[focusedIndex].disabled) {
+          event.preventDefault();
+          items[focusedIndex].onClick();
+          setIsOpen(false);
+          setFocusedIndex(-1);
+        }
       }
     };
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus first enabled item when opening
+      if (focusedIndex === -1) {
+        const firstEnabled = items.findIndex(item => !item.disabled);
+        if (firstEnabled !== -1) {
+          setFocusedIndex(firstEnabled);
+          // Small delay to ensure dropdown is rendered
+          requestAnimationFrame(() => {
+            itemRefs.current[firstEnabled]?.focus();
+          });
+        }
+      }
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
 
@@ -397,7 +456,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-[9999] bg-white dark:bg-surface-900 rounded-t-3xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col"
+              className="fixed bottom-0 inset-inline-0 z-[9999] bg-white dark:bg-surface-900 rounded-t-3xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col"
             >
               <div className="w-12 h-1.5 bg-surface-200 dark:bg-surface-800 rounded-full mx-auto my-3 flex-shrink-0" />
               <div className="overflow-y-auto py-2 px-4 pb-8">
@@ -451,21 +510,28 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
             <div
               className="py-2 overflow-y-auto"
               style={{ maxHeight: `${position.maxHeight - 16}px` }}
+              role="menu"
+              aria-orientation="vertical"
             >
               {items.map((item, index) => (
                 <button
                   key={index}
+                  ref={el => { itemRefs.current[index] = el; }}
                   type="button"
+                  role="menuitem"
+                  tabIndex={focusedIndex === index ? 0 : -1}
                   onClick={e => {
                     e.stopPropagation();
                     if (!item.disabled) {
                       item.onClick();
                       setIsOpen(false);
+                      setFocusedIndex(-1);
                     }
                   }}
                   disabled={item.disabled}
                   className={cn(
-                    dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled })
+                    dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled }),
+                    focusedIndex === index && 'bg-slate-100 dark:bg-slate-800'
                   )}
                 >
                   {item.icon && <span className="flex-shrink-0">{item.icon}</span>}

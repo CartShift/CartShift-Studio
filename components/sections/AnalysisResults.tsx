@@ -374,7 +374,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             }`}
           >
             {/* Glow effect */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 end-0 -me-20 -mt-20 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-dropdown">
               <h3

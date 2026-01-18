@@ -222,7 +222,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
         {/* Background decoration */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div
-            className={`absolute top-0 ${isHe ? 'left-0' : 'right-0'} w-96 h-96 rounded-full opacity-[0.03] blur-3xl ${
+            className={`absolute top-0 end-0 w-96 h-96 rounded-full opacity-[0.03] blur-3xl ${
               platformColor === 'green' ? 'bg-green-500' : 'bg-blue-500'
             }`}
           />
@@ -399,7 +399,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                 >
                   {/* Quote mark decoration */}
                   <div
-                    className={`absolute top-4 ${isHe ? 'left-4' : 'right-4'} text-6xl font-serif opacity-10 ${
+                    className={`absolute top-4 end-4 text-6xl font-serif opacity-10 ${
                       platformColor === 'green' ? 'text-green-500' : 'text-blue-500'
                     }`}
                   >
@@ -435,7 +435,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
               <div className="relative">
                 {/* Decorative element */}
                 <div
-                  className={`absolute -top-4 ${isHe ? '-right-4' : '-left-4'} w-24 h-24 rounded-full opacity-5 blur-2xl ${
+                  className={`absolute -top-4 -start-4 w-24 h-24 rounded-full opacity-5 blur-2xl ${
                     platformColor === 'green' ? 'bg-green-500' : 'bg-blue-500'
                   }`}
                 />

@@ -6,7 +6,18 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { Check, X, Loader2 } from 'lucide-react';
 
-// Base button styles - optimized with targeted transitions and GPU hints
+/**
+ * Button Component Variants
+ *
+ * @accessibility Touch Target Compliance (WCAG 2.1 AA):
+ * - xs (h-7, 28px): ⚠️ Below 44px minimum - use only for non-critical, secondary actions
+ * - sm (h-9, 36px): ⚠️ Below 44px minimum - use only for compact layouts with low error cost
+ * - md (h-11, 44px): ✅ Meets minimum touch target requirement
+ * - lg (h-14, 56px): ✅ Exceeds minimum, ideal for primary actions
+ * - icon (h-10, 40px): ⚠️ Slightly below minimum - consider icon-lg for critical actions
+ * - icon-sm (h-8, 32px): ⚠️ Below minimum - use only for toolbar-style compact UIs
+ * - icon-lg (h-12, 48px): ✅ Meets minimum touch target requirement
+ */
 export const buttonVariants = cva(
   [
     // Layout
@@ -220,8 +231,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               or just the icon if that's preferred. The original reused children for idle/loading.
               Let's show children only if idle. If success/error, standard text.
           */}
-          {currentState === 'success' && <span className="ml-1">Success!</span>}
-          {currentState === 'error' && <span className="ml-1">Error</span>}
+          {currentState === 'success' && <span className="ms-1">Success!</span>}
+          {currentState === 'error' && <span className="ms-1">Error</span>}
         </span>
       </Component>
     );
