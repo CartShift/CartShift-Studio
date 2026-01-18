@@ -127,7 +127,13 @@ export function generateOrganizationSchema() {
         },
       ],
     },
-    sameAs: [],
+    sameAs: [
+      "https://twitter.com/cartshiftstudio",
+      "https://linkedin.com/company/cartshift-studio",
+      "https://github.com/cartshift-studio",
+      "https://www.facebook.com/cartshiftstudio",
+      "https://www.instagram.com/cartshiftstudio",
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",

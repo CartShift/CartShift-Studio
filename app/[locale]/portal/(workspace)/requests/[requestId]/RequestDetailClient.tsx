@@ -537,7 +537,7 @@ export default function RequestDetailClient() {
                             </button>
                           )}
                         </div>
-                        {item.quantity > 0 && item.unitPrice > 0 && (
+                        {item.quantity > 0 && item.unitPrice >= 0 && item.unitPrice !== undefined && (
                           <div className="text-end text-xs font-bold text-surface-500">
                             = {formatCurrency(item.unitPrice * item.quantity, pricingCurrency)}
                           </div>

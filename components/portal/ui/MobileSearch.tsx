@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from '@/lib/motion';
-import { Search, X, Clock, ArrowRight } from 'lucide-react';
+import { Search, X, Clock, ArrowRight, Trash2 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { isRTLLocale } from '@/lib/locale-config';
@@ -56,7 +56,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
-  const { recentSearches, addSearch } = useRecentSearches();
+  const { recentSearches, addSearch, clearSearches, removeFromHistory } = useRecentSearches();
 
   // Focus input when opened
   useEffect(() => {
@@ -239,28 +239,45 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                     {/* Recent Searches */}
                     {recentSearches.length > 0 && (
                       <div className="p-4">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-surface-400 mb-3 flex items-center gap-2">
-                          <Clock size={12} />
-                          Recent
-                        </h3>
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-[10px] font-black uppercase tracking-widest text-surface-400 flex items-center gap-2">
+                            <Clock size={12} />
+                            Recent
+                          </h3>
+                          <button
+                            onClick={clearSearches}
+                            className="flex items-center gap-1 text-[9px] font-medium text-surface-400 hover:text-rose-500 transition-colors"
+                            aria-label="Clear all recent searches"
+                          >
+                            <Trash2 size={10} />
+                            Clear
+                          </button>
+                        </div>
                         <div className="space-y-1">
                           {recentSearches.map((search, idx) => (
-                            <button
+                            <div
                               key={idx}
-                              onClick={() => handleSearch(search)}
-                              className={cn(mobileSearchItemVariants({ variant: 'default' }))}
+                              className={cn(mobileSearchItemVariants({ variant: 'default' }), 'group pr-2')}
                             >
-                              <span className="text-sm text-surface-600 dark:text-surface-400">
-                                {search}
-                              </span>
-                              <ArrowRight
-                                size={12}
-                                className={cn(
-                                  'text-surface-300 opacity-0 group-hover:opacity-100 transition-opacity ms-auto',
-                                  isRTL && 'rotate-180'
-                                )}
-                              />
-                            </button>
+                              <button
+                                onClick={() => handleSearch(search)}
+                                className="flex-1 flex items-center gap-3 text-start"
+                              >
+                                <span className="text-sm text-surface-600 dark:text-surface-400">
+                                  {search}
+                                </span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeFromHistory(search);
+                                }}
+                                className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all"
+                                aria-label={`Remove "${search}" from history`}
+                              >
+                                <X size={12} className="text-surface-400" />
+                              </button>
+                            </div>
                           ))}
                         </div>
                       </div>

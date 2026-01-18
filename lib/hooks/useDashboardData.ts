@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
+import { useTranslations } from 'next-intl';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { getOrgActivities } from '@/lib/services/portal-activities';
 import { getMemberByUserId, ensureMembership } from '@/lib/services/portal-organizations';
@@ -15,6 +16,7 @@ export function useDashboardData() {
   const { userData, loading: auth, isAuthenticated } = usePortalAuth();
   const router = useRouter();
   const toast = useToast();
+  const t = useTranslations('portal.dashboard.toast');
   const mountedRef = useRef(false);
 
   // State to track if we've verified/ensured membership for clients
@@ -94,7 +96,7 @@ export function useDashboardData() {
     retry: (failureCount, error) => {
       // Show user feedback on permission errors and redirect
       if (error instanceof Error && error.message.includes('Permission denied')) {
-        toast.error('Access Denied', 'You do not have permission to view this organization');
+        toast.error(t('accessDenied'), t('accessDeniedDesc'));
         // Redirect to dashboard after a short delay
         setTimeout(() => {
           router.push('/portal/dashboard');

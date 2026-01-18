@@ -15,7 +15,11 @@ export default function robots(): MetadataRoute.Robots {
           "/portal/",
           "/_next/",
           "/admin/",
-          "/*?*",
+          "/auth/",
+          "/*?utm_*",
+          "/*?fbclid=*",
+          "/*?gclid=*",
+          "/*?msclkid=*",
         ],
       },
       {

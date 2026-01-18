@@ -67,6 +67,7 @@ export default function ShopifyStoreIntegration({
       ? 'portal.agency.settings.integrations.shopify'
       : 'portal.settings.general.integrations.shopify'
   );
+  const toastT = useTranslations('portal.settings.general.integrations.shopify.toast');
   const [editing, setEditing] = useState(false);
   const [saving, set] = useState(false);
   const [shopifyDomain, setShopifyDomain] = useState(organization.shopifyDomain || '');
@@ -122,7 +123,7 @@ export default function ShopifyStoreIntegration({
         shopifyAccessStatus: cleanDomain ? 'pending' : undefined,
       } as Partial<Organization>);
 
-      toast.success('Shopify settings saved successfully');
+      toast.success(toastT('settingsSaved'));
       setEditing(false);
       onUpdate?.();
     } catch (err) {
@@ -154,11 +155,11 @@ export default function ShopifyStoreIntegration({
         shopifyAccessStatus: 'requested',
         shopifyAccessRequestedAt: new Date() as unknown as import('firebase/firestore').Timestamp,
       } as Partial<Organization>);
-      toast.success('Access request submitted');
+      toast.success(toastT('accessRequestSubmitted'));
       onUpdate?.();
     } catch (err) {
       console.error('Failed to update status:', err);
-      toast.error('Failed to submit access request');
+      toast.error(toastT('accessRequestFailed'));
     } finally {
       set(false);
     }
@@ -171,11 +172,11 @@ export default function ShopifyStoreIntegration({
         shopifyAccessStatus: 'connected',
         shopifyConnectedAt: new Date() as unknown as import('firebase/firestore').Timestamp,
       } as Partial<Organization>);
-      toast.success('Shopify store connected');
+      toast.success(toastT('storeConnected'));
       onUpdate?.();
     } catch (err) {
       console.error('Failed to update status:', err);
-      toast.error('Failed to connect Shopify store');
+      toast.error(toastT('connectFailed'));
     } finally {
       set(false);
     }

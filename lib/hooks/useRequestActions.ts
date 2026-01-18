@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   acceptRequest,
   declineRequest,
@@ -101,6 +102,7 @@ export function useRequestActions({
   onCommentsUpdate,
 }: UseRequestActionsParams): UseRequestActionsResult {
   const toast = useToast();
+  const t = useTranslations('portal.requests.toast');
 
   //  states
   const [isAddingPricing, setIsAddingPricing] = useState(false);
@@ -139,10 +141,10 @@ export function useRequestActions({
       if (!canPerformAction()) return false;
 
       const validItems = lineItems.filter(
-        item => item.description.trim() && item.quantity > 0 && item.unitPrice > 0
+        item => item.description.trim() && item.quantity > 0 && item.unitPrice >= 0
       );
       if (validItems.length === 0) {
-        toast.warning('Invalid pricing', 'Please add at least one valid line item');
+        toast.warning(t('invalidPricing'), t('invalidPricingDesc'));
         return false;
       }
 
@@ -155,17 +157,17 @@ export function useRequestActions({
           userData!.name || userData!.email,
           { lineItems: validItems, currency }
         );
-        toast.success('Quote sent', 'The pricing quote has been sent to the client');
+        toast.success(t('quoteSent'), t('quoteSentDesc'));
         return true;
       } catch (err) {
         console.error('Error adding pricing:', err);
-        toast.error('Failed to send quote', 'Please try again');
+        toast.error(t('quoteFailed'), t('quoteFailedDesc'));
         return false;
       } finally {
         setIsAddingPricing(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast]
+    [canPerformAction, requestId, orgId, userData, toast, t]
   );
 
   // Accept quote
@@ -173,12 +175,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     setIsAccepting(true);
-    try {
-      await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      toast.success('Quote accepted', 'The quote has been accepted');
-    } catch (err) {
-      console.error('Error accepting quote:', err);
-      toast.error('Failed to accept quote', 'Please try again');
+      try {
+        await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+        toast.success(t('quoteAccepted'), t('quoteAcceptedDesc'));
+      } catch (err) {
+        console.error('Error accepting quote:', err);
+        toast.error(t('quoteAcceptFailed'), t('quoteAcceptFailedDesc'));
     } finally {
       setIsAccepting(false);
     }
@@ -189,12 +191,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     setIsDeclining(true);
-    try {
-      await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      toast.info('Quote declined', 'The quote has been declined');
-    } catch (err) {
-      console.error('Error declining quote:', err);
-      toast.error('Failed to decline quote', 'Please try again');
+      try {
+        await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+        toast.info(t('quoteDeclined'), t('quoteDeclinedDesc'));
+      } catch (err) {
+        console.error('Error declining quote:', err);
+        toast.error(t('quoteDeclineFailed'), t('quoteDeclineFailedDesc'));
     } finally {
       setIsDeclining(false);
     }
@@ -205,12 +207,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     setIsWork(true);
-    try {
-      await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      toast.success('Work started', 'The request is now in progress');
-    } catch (err) {
-      console.error('Error starting work:', err);
-      toast.error('Failed to start work', 'Please try again');
+      try {
+        await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+        toast.success(t('workStarted'), t('workStartedDesc'));
+      } catch (err) {
+        console.error('Error starting work:', err);
+        toast.error(t('workStartFailed'), t('workStartFailedDesc'));
     } finally {
       setIsWork(false);
     }
@@ -229,13 +231,13 @@ export function useRequestActions({
           userData!.name || userData!.email,
           result.paymentId
         );
-        toast.success('Payment successful', 'Thank you for your payment');
+        toast.success(t('paymentSuccess'), t('paymentSuccessDesc'));
       } catch (err) {
         console.error('Error marking as paid:', err);
-        toast.error('Payment recorded, but status update failed', 'Please contact support');
+        toast.error(t('paymentRecorded'), t('paymentRecordedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast]
+    [canPerformAction, requestId, orgId, userData, toast, t]
   );
 
   // Assign specialist
@@ -253,15 +255,15 @@ export function useRequestActions({
           specialistId,
           specialistName
         );
-        toast.success('Specialist assigned', `${specialistName} has been assigned to this request`);
+        toast.success(t('specialistAssigned'), t('specialistAssignedDesc', { name: specialistName }));
       } catch (err) {
         console.error('Error assigning specialist:', err);
-        toast.error('Failed to assign specialist', 'Please try again');
+        toast.error(t('specialistAssignFailed'), t('specialistAssignFailedDesc'));
       } finally {
         setIsAssigning(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast]
+    [canPerformAction, requestId, orgId, userData, toast, t]
   );
 
   // Request revision
@@ -278,17 +280,17 @@ export function useRequestActions({
           userData!.name || userData!.email,
           notes.trim()
         );
-        toast.success('Revision requested', 'Your revision request has been submitted');
+        toast.success(t('revisionRequested'), t('revisionRequestedDesc'));
         return true;
       } catch (err) {
         console.error('Failed to request revision:', err);
-        toast.error('Failed to submit revision', 'Please try again');
+        toast.error(t('revisionFailed'), t('revisionFailedDesc'));
         return false;
       } finally {
         setIsSubmittingRevision(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast]
+    [canPerformAction, requestId, orgId, userData, toast, t]
   );
 
   // File upload
@@ -309,15 +311,15 @@ export function useRequestActions({
           action: 'ADDED_ATTACHMENT',
           details: { fileName: file.name },
         });
-        toast.success('', `${file.name} has been attached`);
+        toast.success(t('fileAttached', { fileName: file.name }));
       } catch (err) {
         console.error('Failed to upload file:', err);
-        toast.error('Upload failed', 'Please try again');
+        toast.error(t('uploadFailed'), t('uploadFailedDesc'));
       } finally {
         setIsUploading(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast]
+    [canPerformAction, requestId, orgId, userData, toast, t]
   );
 
   // Status change
@@ -335,10 +337,10 @@ export function useRequestActions({
           action: 'STATUS_CHANGED',
           details: { status: newStatus },
         });
-        toast.success('Status updated', `Request status changed to ${newStatus.toLowerCase()}`);
+        toast.success(t('statusUpdated'), t('statusUpdatedDesc', { status: newStatus.toLowerCase() }));
       } catch (error) {
         console.error('Error updating status:', error);
-        toast.error('Failed to update status', 'Please try again');
+        toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));
       }
     },
     [canPerformAction, requestId, orgId, userData, isAgency, toast]
@@ -390,7 +392,7 @@ export function useRequestActions({
       } catch (error) {
         console.error('Error sending comment:', error);
         onCommentsUpdate?.(prev => prev.filter(c => c.id !== tempId));
-        toast.error('Failed to send message', 'Please try again');
+        toast.error(t('messageFailed'), t('messageFailedDesc'));
       } finally {
         setIsSubmittingComment(false);
       }
@@ -421,11 +423,11 @@ export function useRequestActions({
     setIs(true);
     try {
       await deleteRequest(requestId!);
-      toast.success('Request deleted', 'The request has been permanently removed');
+      toast.success(t('requestDeleted'), t('requestDeletedDesc'));
       return true;
     } catch (err) {
       console.error('Error deleting request:', err);
-      toast.error('Failed to delete request', 'Please try again');
+      toast.error(t('deleteFailed'), t('deleteFailedDesc'));
       return false;
     } finally {
       setIs(false);

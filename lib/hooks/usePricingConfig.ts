@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getFirestoreDb } from '@/lib/firebase';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
@@ -31,6 +32,7 @@ export function usePricingConfig(orgId: string, requestId: string) {
 export function useUpdatePricingConfig(orgId: string) {
   const queryClient = useQueryClient();
   const db = getFirestoreDb();
+  const t = useTranslations('portal.pricing.toast');
 
   return useMutation({
     mutationFn: async ({
@@ -80,11 +82,11 @@ export function useUpdatePricingConfig(orgId: string) {
           context.previousConfig
         );
       }
-      toast.error('Failed to update pricing configuration');
+      toast.error(t('configUpdateFailed'));
     },
 
     onSuccess: () => {
-      toast.success('Pricing configuration updated');
+      toast.success(t('configUpdated'));
     },
 
     onSettled: (_data, _error, variables) => {
@@ -101,6 +103,7 @@ export function useUpdatePricingConfig(orgId: string) {
 export function useApplyGlobalModifiers(orgId: string) {
   const queryClient = useQueryClient();
   const db = getFirestoreDb();
+  const t = useTranslations('portal.pricing.toast');
 
   return useMutation({
     mutationFn: async ({
@@ -152,11 +155,11 @@ export function useApplyGlobalModifiers(orgId: string) {
           }
         });
       }
-      toast.error('Failed to apply global modifiers');
+      toast.error(t('modifiersApplyFailed'));
     },
 
     onSuccess: () => {
-      toast.success('Global modifiers applied to all requests');
+      toast.success(t('modifiersApplied'));
     },
 
     onSettled: () => {
@@ -171,6 +174,7 @@ export function useApplyGlobalModifiers(orgId: string) {
 export function useRemovePricingConfig(orgId: string) {
   const queryClient = useQueryClient();
   const db = getFirestoreDb();
+  const t = useTranslations('portal.pricing.toast');
 
   return useMutation({
     mutationFn: async (requestId: string) => {
@@ -192,11 +196,11 @@ export function useRemovePricingConfig(orgId: string) {
       if (context?.previousConfig) {
         queryClient.setQueryData(['pricing-config', orgId, requestId], context.previousConfig);
       }
-      toast.error('Failed to remove pricing configuration');
+      toast.error(t('configRemoveFailed'));
     },
 
     onSuccess: () => {
-      toast.success('Pricing configuration removed');
+      toast.success(t('configRemoved'));
     },
 
     onSettled: (_data, _error, requestId) => {

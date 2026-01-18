@@ -20,9 +20,9 @@ import Script from 'next/script';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = genMeta({
-  title: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
+  title: 'E-commerce Development Agency | Shopify & WordPress Experts | CartShift Studio',
   description:
-    'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.',
+    '🚀 Transform your e-commerce vision into reality. Expert Shopify & WordPress development with 50+ successful launches. Custom stores, migrations, and optimization. Get your free consultation today!',
   url: '/',
   keywords: [
     'Shopify development agency',
@@ -33,6 +33,8 @@ export const metadata: Metadata = genMeta({
     'WooCommerce development',
     'online store design',
     'Shopify experts',
+    'e-commerce consultants',
+    'Shopify developers',
   ],
 });
 

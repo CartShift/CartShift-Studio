@@ -10,9 +10,9 @@ import Script from 'next/script';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = genMeta({
-  title: 'Shopify Development Agency | Store Setup, Custom Features & Migration Services',
+  title: 'Shopify Development Services | Custom Stores & Migration | CartShift Studio',
   description:
-    'Expert Shopify development services: store setup, custom features, performance optimization, and migration. Trusted by 100+ e-commerce businesses. Free consultation.',
+    'Expert Shopify development services: store setup, custom features, performance optimization, and migration. Trusted by 100+ e-commerce businesses. Free consultation today!',
   url: '/solutions/shopify',
   keywords: [
     'Shopify development',
@@ -24,6 +24,7 @@ export const metadata: Metadata = genMeta({
     'Shopify performance optimization',
     'Shopify app development',
     'hire Shopify developer',
+    'Shopify agency',
   ],
 });
 

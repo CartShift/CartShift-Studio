@@ -225,6 +225,10 @@
         "title": "Dashboard Error",
         "retry": "Retry"
       },
+      "toast": {
+        "accessDenied": "Access Denied",
+        "accessDeniedDesc": "You do not have permission to view this organization"
+      },
       "actions": {
         "newRequest": "New Request",
         "viewAll": "View all",
@@ -381,6 +385,9 @@
         "high": "High",
         "urgent": "Urgent"
       },
+      "toast": {
+        "pinUpdateFailed": "Failed to update pin status"
+      },
       "type": {
         "design": "Design",
         "feature": "New Feature",
@@ -502,6 +509,51 @@
         "versionHistory": "Version History",
         "noAttachments": "No attachments found",
         "noAttachmentsDesc": "Files shared in discussion will appear here."
+      },
+      "toast": {
+        "invalidPricing": "Invalid pricing",
+        "invalidPricingDesc": "Please add at least one valid line item",
+        "quoteSent": "Quote sent",
+        "quoteSentDesc": "The pricing quote has been sent to the client",
+        "quoteFailed": "Failed to send quote",
+        "quoteFailedDesc": "Please try again",
+        "quoteAccepted": "Quote accepted",
+        "quoteAcceptedDesc": "The quote has been accepted",
+        "quoteAcceptFailed": "Failed to accept quote",
+        "quoteAcceptFailedDesc": "Please try again",
+        "quoteDeclined": "Quote declined",
+        "quoteDeclinedDesc": "The quote has been declined",
+        "quoteDeclineFailed": "Failed to decline quote",
+        "quoteDeclineFailedDesc": "Please try again",
+        "workStarted": "Work started",
+        "workStartedDesc": "The request is now in progress",
+        "workStartFailed": "Failed to start work",
+        "workStartFailedDesc": "Please try again",
+        "paymentSuccess": "Payment successful",
+        "paymentSuccessDesc": "Thank you for your payment",
+        "paymentRecorded": "Payment recorded, but status update failed",
+        "paymentRecordedDesc": "Please contact support",
+        "specialistAssigned": "Specialist assigned",
+        "specialistAssignedDesc": "{name} has been assigned to this request",
+        "specialistAssignFailed": "Failed to assign specialist",
+        "specialistAssignFailedDesc": "Please try again",
+        "revisionRequested": "Revision requested",
+        "revisionRequestedDesc": "Your revision request has been submitted",
+        "revisionFailed": "Failed to submit revision",
+        "revisionFailedDesc": "Please try again",
+        "fileAttached": "{fileName} has been attached",
+        "uploadFailed": "Upload failed",
+        "uploadFailedDesc": "Please try again",
+        "statusUpdated": "Status updated",
+        "statusUpdatedDesc": "Request status changed to {status}",
+        "statusUpdateFailed": "Failed to update status",
+        "statusUpdateFailedDesc": "Please try again",
+        "messageFailed": "Failed to send message",
+        "messageFailedDesc": "Please try again",
+        "requestDeleted": "Request deleted",
+        "requestDeletedDesc": "The request has been permanently removed",
+        "deleteFailed": "Failed to delete request",
+        "deleteFailedDesc": "Please try again"
       },
       "types": {
         "feature": "New Feature",
@@ -958,6 +1010,13 @@
               "invalidCode": "Collaborator code must be 4 digits",
               "saveFailed": "Failed to save. Please try again."
             },
+            "toast": {
+              "settingsSaved": "Shopify settings saved successfully",
+              "accessRequestSubmitted": "Access request submitted",
+              "accessRequestFailed": "Failed to submit access request",
+              "storeConnected": "Shopify store connected",
+              "connectFailed": "Failed to connect Shopify store"
+            },
             "agency": {
               "notConnected": "Shopify Store Not Connected",
               "notConnectedDesc": "The client hasn't connected their Shopify store yet.",
@@ -1271,7 +1330,8 @@
         "toast": {
           "approved": "Testimonial approved successfully",
           "rejected": "Testimonial rejected",
-          "error": "Failed to update testimonial status"
+          "error": "Failed to update testimonial status",
+          "loadFailed": "Failed to load testimonials"
         },
         "stats": {
           "total": "Total",
@@ -1554,6 +1614,13 @@
               "invalidCode": "Collaborator code must be 4 digits",
               "saveFailed": "Failed to save. Please try again."
             },
+            "toast": {
+              "settingsSaved": "Shopify settings saved successfully",
+              "accessRequestSubmitted": "Access request submitted",
+              "accessRequestFailed": "Failed to submit access request",
+              "storeConnected": "Shopify store connected",
+              "connectFailed": "Failed to connect Shopify store"
+            },
             "agency": {
               "notConnected": "Shopify Store Not Connected",
               "notConnectedDesc": "The client hasn't connected their Shopify store yet.",
@@ -1722,6 +1789,14 @@
       "globalSettings": "Quote Settings",
       "globalSettingsDesc": "Currency and modifiers apply to all items",
       "globalModifiers": "Global Modifiers",
+      "toast": {
+        "configUpdated": "Pricing configuration updated",
+        "configUpdateFailed": "Failed to update pricing configuration",
+        "modifiersApplied": "Global modifiers applied to all requests",
+        "modifiersApplyFailed": "Failed to apply global modifiers",
+        "configRemoved": "Pricing configuration removed",
+        "configRemoveFailed": "Failed to remove pricing configuration"
+      },
       "selectAndPrice": "Select & Price Requests",
       "selectAndPriceDesc": "Choose requests to include in your pricing offer",
       "quickAddRequest": "Quick Add",

@@ -151,6 +151,8 @@ export default async function LocaleLayout({
     schemaJson = '{}';
   }
 
+  const canonicalUrl = `${siteUrl}/${locale}`;
+
   return (
     <>
       <Script
@@ -170,6 +172,12 @@ export default async function LocaleLayout({
               }}
             >
               <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
+                <head>
+                  <link rel="canonical" href={canonicalUrl} />
+                  <link rel="alternate" hrefLang="en" href={`${siteUrl}/en`} />
+                  <link rel="alternate" hrefLang="he" href={`${siteUrl}/he`} />
+                  <link rel="alternate" hrefLang="x-default" href={`${siteUrl}/en`} />
+                </head>
                 <LocaleAttributes />
                 <GeoLocaleRedirect />
                 <GoogleAnalytics />

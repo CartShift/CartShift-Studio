@@ -189,7 +189,10 @@ export function PortalHeader({
           <Dropdown
             align="right"
             trigger={
-              <button className="portal-avatar group cursor-pointer hover:ring-2 hover:ring-blue-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 shadow-lg shadow-blue-500/5">
+              <button
+                className="portal-avatar group cursor-pointer hover:ring-2 hover:ring-blue-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 shadow-lg shadow-blue-500/5"
+                aria-label={t('portal.header.profileMenu' as any)}
+              >
                 <Avatar
                   name={userData?.name}
                   src={userData?.photoUrl}

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Logger } from '@/lib/logger';
 import { safeParse } from '@/lib/utils/safe-parse';
 
 const STORAGE_KEY = 'recent_searches';
-const MAX_RECENT_SEARCHES = 5;
+const MAX_RECENT_SEARCHES = 10;
 
 export function useRecentSearches() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -24,7 +24,7 @@ export function useRecentSearches() {
     }
   }, []);
 
-  const addSearch = (query: string) => {
+  const addSearch = useCallback((query: string) => {
     if (!query.trim()) return;
 
     setRecentSearches(prev => {
@@ -41,9 +41,9 @@ export function useRecentSearches() {
 
       return updated;
     });
-  };
+  }, []);
 
-  const clearSearches = () => {
+  const clearSearches = useCallback(() => {
     setRecentSearches([]);
     if (typeof window !== 'undefined') {
       try {
@@ -52,7 +52,27 @@ export function useRecentSearches() {
         Logger.warn('Failed to clear recent searches from localStorage', { error });
       }
     }
-  };
+  }, []);
 
-  return { recentSearches, addSearch, clearSearches };
+  const removeFromHistory = useCallback((query: string) => {
+    setRecentSearches(prev => {
+      const updated = prev.filter(s => s !== query);
+
+      if (typeof window !== 'undefined') {
+        try {
+          if (updated.length > 0) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        } catch (error) {
+          Logger.warn('Failed to update recent searches in localStorage', { error });
+        }
+      }
+
+      return updated;
+    });
+  }, []);
+
+  return { recentSearches, addSearch, clearSearches, removeFromHistory };
 }

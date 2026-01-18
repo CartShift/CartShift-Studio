@@ -219,15 +219,15 @@ export default function CVPageContent() {
 
         {/* Animated gradient orbs */}
         <GradientOrb
-          className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-primary-300/30 to-cyan-300/20 dark:from-primary-500/20 dark:to-cyan-500/10 rounded-full blur-[100px]"
+          className="absolute -top-40 -end-40 w-[600px] h-[600px] bg-gradient-to-br from-primary-300/30 to-cyan-300/20 dark:from-primary-500/20 dark:to-cyan-500/10 rounded-full blur-[100px]"
           delay={0}
         />
         <GradientOrb
-          className="absolute top-1/3 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-accent-300/30 to-pink-300/20 dark:from-accent-500/20 dark:to-pink-500/10 rounded-full blur-[100px]"
+          className="absolute top-1/3 -start-40 w-[500px] h-[500px] bg-gradient-to-br from-accent-300/30 to-pink-300/20 dark:from-accent-500/20 dark:to-pink-500/10 rounded-full blur-[100px]"
           delay={2}
         />
         <GradientOrb
-          className="absolute -bottom-40 right-1/4 w-[400px] h-[400px] bg-gradient-to-br from-violet-300/30 to-indigo-300/20 dark:from-violet-500/15 dark:to-indigo-500/10 rounded-full blur-[100px]"
+          className="absolute -bottom-40 end-1/4 w-[400px] h-[400px] bg-gradient-to-br from-violet-300/30 to-indigo-300/20 dark:from-violet-500/15 dark:to-indigo-500/10 rounded-full blur-[100px]"
           delay={4}
         />
 
@@ -274,7 +274,7 @@ export default function CVPageContent() {
           {/* Elegant card */}
           <div className="relative backdrop-blur-xl bg-white/60 dark:bg-transparent dark:bg-gradient-to-br dark:from-white/[0.04] dark:to-white/[0.01] border border-slate-200 dark:border-white/[0.06] rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-12 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
             {/* Subtle top accent line */}
-            <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
+            <div className="absolute top-0 inset-inline-8 h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
 
             <div className="relative flex flex-col lg:flex-row items-center gap-6 lg:gap-16">
               {/* Profile Image - Clean and elegant */}

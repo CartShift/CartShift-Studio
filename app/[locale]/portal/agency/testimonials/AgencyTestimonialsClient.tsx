@@ -433,6 +433,7 @@ function TestimonialDetailModal({
 
 export default function AgencyTestimonialsClient() {
   const t = useTranslations('portal');
+  const toastT = useTranslations('portal.agency.testimonials.toast');
   const { user } = usePortalAuth();
   const dir = useDirection();
 
@@ -458,7 +459,7 @@ export default function AgencyTestimonialsClient() {
         setTestimonials(data);
       } catch (error) {
         console.error('Failed to fetch testimonials:', error);
-        toast.error('Failed to load testimonials');
+        toast.error(toastT('loadFailed'));
       } finally {
         set(false);
       }

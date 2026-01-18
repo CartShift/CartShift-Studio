@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { FileText, ChevronRight, Search } from 'lucide-react';
+import { FileText, ChevronRight, Search, Clock, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { Request, CLIENT_STATUS_MAP } from '@/lib/types/portal';
 import { subscribeToOrgRequests, subscribeToAllRequests } from '@/lib/services/portal-requests';
@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/Badge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { Logger } from '@/lib/logger';
+import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 
 const searchInputVariants = cva(
   'w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
@@ -77,6 +78,10 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Search history integration
+  const { recentSearches, addSearch, clearSearches, removeFromHistory } = useRecentSearches();
+  const showHistory = isOpen && !query.trim() && recentSearches.length > 0;
 
   // Subscribe to data once on mount (or when deps change)
   // Wait for authentication before subscribing
@@ -164,9 +169,19 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   }, []);
 
   const handleSelect = (req: Request) => {
+    // Save search term to history
+    if (query.trim()) {
+      addSearch(query.trim());
+    }
     setIsOpen(false);
     setQuery('');
     router.push(getPortalPath(`/requests/${req.id}/`));
+  };
+
+  const handleHistorySearch = (historyQuery: string) => {
+    setQuery(historyQuery);
+    addSearch(historyQuery);
+    // Keep dropdown open to show results
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -207,7 +222,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           onChange={e => setQuery(e.target.value)}
           onFocus={() => {
             setIsFocused(true);
-            if (query.trim()) setIsOpen(true);
+            setIsOpen(true);
           }}
           onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
@@ -223,6 +238,63 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
       </div>
 
       <AnimatePresence>
+        {/* Search History - show when focused with empty query */}
+        {showHistory && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            className="absolute top-full start-0 end-0 mt-2 bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden z-modal p-2"
+          >
+            <div className="text-[10px] font-black uppercase tracking-widest text-surface-400 px-3 py-2 mb-1 flex justify-between items-center">
+              <span className="flex items-center gap-1.5">
+                <Clock size={12} />
+                Recent Searches
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearSearches();
+                }}
+                className="flex items-center gap-1 text-[9px] hover:text-rose-500 transition-colors"
+                aria-label="Clear all recent searches"
+              >
+                <Trash2 size={10} />
+                Clear All
+              </button>
+            </div>
+            <div className="space-y-0.5">
+              {recentSearches.map((historyItem, index) => (
+                <div
+                  key={index}
+                  className="group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                >
+                  <button
+                    onClick={() => handleHistorySearch(historyItem)}
+                    className="flex-1 flex items-center gap-3 text-start"
+                  >
+                    <Clock size={14} className="text-surface-400 group-hover:text-primary-500 transition-colors flex-shrink-0" />
+                    <span className="text-sm text-surface-700 dark:text-surface-300 truncate">
+                      {historyItem}
+                    </span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFromHistory(historyItem);
+                    }}
+                    className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all"
+                    aria-label={`Remove "${historyItem}" from history`}
+                  >
+                    <X size={12} className="text-surface-400" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Search Results */}
         {isOpen && query.trim() && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.98 }}

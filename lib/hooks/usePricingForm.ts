@@ -87,7 +87,7 @@ export function usePricingForm(defaultCurrency: Currency = 'USD'): UsePricingFor
   const validItems = useMemo(
     () =>
       lineItems.filter(
-        (item) => item.description.trim() && item.quantity > 0 && item.unitPrice > 0
+        (item) => item.description.trim() && item.quantity > 0 && item.unitPrice >= 0
       ),
     [lineItems]
   );

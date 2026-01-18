@@ -225,6 +225,10 @@
         "title": "שגיאה בלוח הבקרה",
         "retry": "נסה שוב"
       },
+      "toast": {
+        "accessDenied": "הגישה נדחתה",
+        "accessDeniedDesc": "אין לך הרשאות לצפות בארגון זה"
+      },
       "actions": {
         "newRequest": "בקשה חדשה",
         "viewAll": "צפה בהכל",
@@ -395,6 +399,9 @@
         "content": "עדכון תוכן",
         "other": "אחר"
       },
+      "toast": {
+        "pinUpdateFailed": "נכשל בעדכון מצב הנעיצה"
+      },
       "new": {
         "title": "צור בקשה חדשה",
         "subtitle": "מלאו את הפרטים מטה כדי להתחיל משימה חדשה עם הצוות שלכם.",
@@ -542,6 +549,51 @@
         "errorGeneric": "העלאת הקובץ נכשלה. אנא נסו שוב.",
         "cancel": "ביטול",
         "submit": "העלה קובץ"
+      },
+      "toast": {
+        "invalidPricing": "תמחור לא תקין",
+        "invalidPricingDesc": "אנא הוסף לפחות פריט תמחור אחד תקין",
+        "quoteSent": "הצעת מחיר נשלחה",
+        "quoteSentDesc": "הצעת המחיר נשלחה ללקוח",
+        "quoteFailed": "שליחת הצעת המחיר נכשלה",
+        "quoteFailedDesc": "אנא נסה שוב",
+        "quoteAccepted": "הצעת המחיר התקבלה",
+        "quoteAcceptedDesc": "הצעת המחיר התקבלה",
+        "quoteAcceptFailed": "קבלת הצעת המחיר נכשלה",
+        "quoteAcceptFailedDesc": "אנא נסה שוב",
+        "quoteDeclined": "הצעת המחיר נדחתה",
+        "quoteDeclinedDesc": "הצעת המחיר נדחתה",
+        "quoteDeclineFailed": "דחיית הצעת המחיר נכשלה",
+        "quoteDeclineFailedDesc": "אנא נסה שוב",
+        "workStarted": "העבודה התחילה",
+        "workStartedDesc": "הבקשה כעת בתהליך",
+        "workStartFailed": "התחלת העבודה נכשלה",
+        "workStartFailedDesc": "אנא נסה שוב",
+        "paymentSuccess": "תשלום הצליח",
+        "paymentSuccessDesc": "תודה על התשלום שלך",
+        "paymentRecorded": "התשלום נרשם, אך עדכון הסטטוס נכשל",
+        "paymentRecordedDesc": "אנא צור קשר עם התמיכה",
+        "specialistAssigned": "מומחה הוקצה",
+        "specialistAssignedDesc": "{name} הוקצה לבקשה זו",
+        "specialistAssignFailed": "הקצאת המומחה נכשלה",
+        "specialistAssignFailedDesc": "אנא נסה שוב",
+        "revisionRequested": "בקשת שינוי נשלחה",
+        "revisionRequestedDesc": "בקשת השינוי שלך נשלחה",
+        "revisionFailed": "שליחת בקשת השינוי נכשלה",
+        "revisionFailedDesc": "אנא נסה שוב",
+        "fileAttached": "{fileName} צורף",
+        "uploadFailed": "העלאה נכשלה",
+        "uploadFailedDesc": "אנא נסה שוב",
+        "statusUpdated": "הסטטוס עודכן",
+        "statusUpdatedDesc": "סטטוס הבקשה שונה ל-{status}",
+        "statusUpdateFailed": "עדכון הסטטוס נכשל",
+        "statusUpdateFailedDesc": "אנא נסה שוב",
+        "messageFailed": "שליחת ההודעה נכשלה",
+        "messageFailedDesc": "אנא נסה שוב",
+        "requestDeleted": "הבקשה נמחקה",
+        "requestDeletedDesc": "הבקשה הוסרה לצמיתות",
+        "deleteFailed": "מחיקת הבקשה נכשלה",
+        "deleteFailedDesc": "אנא נסה שוב"
       },
       "types": {
         "feature": "פיצ׳ר חדש",
@@ -971,6 +1023,13 @@
               "invalidCode": "קוד שותף חייב להכיל 4 ספרות",
               "saveFailed": "השמירה נכשלה. אנא נסה שוב."
             },
+            "toast": {
+              "settingsSaved": "הגדרות Shopify נשמרו בהצלחה",
+              "accessRequestSubmitted": "בקשת גישה נשלחה",
+              "accessRequestFailed": "נכשל בשליחת בקשת גישה",
+              "storeConnected": "חנות Shopify מחוברת",
+              "connectFailed": "נכשל בחיבור לחנות Shopify"
+            },
             "agency": {
               "notConnected": "חנות Shopify לא מחוברת",
               "notConnectedDesc": "הלקוח עדיין לא חיבר את חנות Shopify שלו.",
@@ -1284,7 +1343,8 @@
         "toast": {
           "approved": "ההמלצה אושרה בהצלחה",
           "rejected": "ההמלצה נדחתה",
-          "error": "נכשל בעדכון סטטוס ההמלצה"
+          "error": "נכשל בעדכון סטטוס ההמלצה",
+          "loadFailed": "נכשל בטעינת ההמלצות"
         },
         "stats": {
           "total": "סה״כ",
@@ -1566,6 +1626,13 @@
               "invalidCode": "קוד שותף חייב להכיל 4 ספרות",
               "saveFailed": "השמירה נכשלה. אנא נסה שוב."
             },
+            "toast": {
+              "settingsSaved": "הגדרות Shopify נשמרו בהצלחה",
+              "accessRequestSubmitted": "בקשת גישה נשלחה",
+              "accessRequestFailed": "נכשל בשליחת בקשת גישה",
+              "storeConnected": "חנות Shopify מחוברת",
+              "connectFailed": "נכשל בחיבור לחנות Shopify"
+            },
             "agency": {
               "notConnected": "חנות Shopify לא מחוברת",
               "notConnectedDesc": "הלקוח עדיין לא חיבר את חנות Shopify שלו.",
@@ -1733,6 +1800,14 @@
       "globalSettings": "הגדרות הצעה",
       "globalSettingsDesc": "מטבע ומודיפיירים חלים על כל הפריטים",
       "globalModifiers": "מודיפיירים גלובליים",
+      "toast": {
+        "configUpdated": "תצורת תמחור עודכנה",
+        "configUpdateFailed": "נכשל בעדכון תצורת התמחור",
+        "modifiersApplied": "מודיפיירים גלובליים חלו על כל הבקשות",
+        "modifiersApplyFailed": "נכשל בהחלת מודיפיירים גלובליים",
+        "configRemoved": "תצורת התמחור הוסרה",
+        "configRemoveFailed": "נכשל בהסרת תצורת התמחור"
+      },
       "selectAndPrice": "בחר ותמחר בקשות",
       "selectAndPriceDesc": "בחר בקשות לכלול בהצעת המחיר שלך",
       "quickAddRequest": "הוסף מהיר",
