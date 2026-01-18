@@ -11,13 +11,13 @@ The portal can be accessed via two URLs:
 
 ## Architecture
 
-### Production (Static Export + Firebase Hosting)
+### Production (Firebase App Hosting)
 
-Since the app uses `output: 'export'` for production, **middleware doesn't run**. Instead:
+With Firebase App Hosting running Next.js in standalone mode:
 
-1. **Firebase Hosting rewrites** (`firebase.json`) handle all URL routing
-2. Requests to `portal.cart-shift.com/en/dashboard/` are served from `/en/portal/dashboard/index.html`
-3. **Client-side utilities** generate correct URLs based on detected subdomain
+1. **Server-side routing** handles all URL patterns dynamically
+2. **Next.js middleware** can run in production for subdomain detection
+3. **Dynamic routes** work without pre-configuration
 
 ### Development
 
@@ -27,8 +27,7 @@ Since the app uses `output: 'export'` for production, **middleware doesn't run**
 ### File Structure
 
 ```
-middleware.ts                    # Dev-only subdomain routing
-firebase.json                    # Production rewrites (Firebase Hosting)
+middleware.ts                    # Subdomain routing (works in dev + production)
 components/providers/
 │   └── PortalSubdomainRedirect.tsx  # Cleans /portal/ prefix on subdomain
 lib/
@@ -40,25 +39,13 @@ lib/
 │   └── usePortalNavigation.ts  # Subdomain-aware navigation hook
 ```
 
-### Why Client-Side Redirect is Needed
-
-Since static export can't detect subdomains during build, links are generated with `/portal/` prefix. When users click these links on `portal.cart-shift.com`, `PortalSubdomainRedirect` strips the prefix for clean URLs.
-
 ## How It Works
 
-### Firebase Hosting Rewrites
+### Server-Side Routing
 
-The `firebase.json` already maps clean paths to portal pages:
+With App Hosting, Next.js handles routing at runtime:
 
-```json
-{ "source": "/en/dashboard/**", "destination": "/en/portal/dashboard/index.html" },
-{ "source": "/en/requests/**", "destination": "/en/portal/requests/index.html" },
-// ... etc
-```
-
-When deployed, both domains serve from the same Firebase Hosting site. The rewrites ensure:
-
-- `portal.cart-shift.com/en/dashboard/` → serves `/en/portal/dashboard/index.html`
+- `portal.cart-shift.com/en/dashboard/` → serves portal dashboard
 - `cart-shift.com/en/portal/dashboard/` → serves same content
 
 ### Client-Side URL Generation
@@ -84,12 +71,12 @@ Value: cart-shift.com
 TTL: 3600
 ```
 
-### 2. Firebase Hosting
+### 2. Firebase App Hosting
 
-1. Firebase Console → Hosting → Add custom domain
-2. Enter `portal.cart-shift.com`
+1. Firebase Console → App Hosting → Settings
+2. Add custom domain `portal.cart-shift.com`
 3. Complete verification steps
-4. Wait for SSL provisioning (24-48 hours)
+4. Wait for SSL provisioning
 
 ### 3. Firebase Authentication
 
@@ -137,31 +124,6 @@ function Header() {
 | `cart-shift.com/en/portal/requests/`  | `portal.cart-shift.com/en/requests/`  |
 | `cart-shift.com/en/portal/login/`     | `portal.cart-shift.com/en/login/`     |
 
-## Important Notes
-
-### Static Export Limitations
-
-Since production uses `output: 'export'`:
-
-- **No server-side redirects** - All routing is handled by Firebase Hosting
-- **No middleware in production** - `middleware.ts` is dev-only
-- **Client-side detection** - Subdomain detection happens in browser
-
-### Adding New Portal Pages
-
-When adding new portal pages, update `firebase.json` rewrites:
-
-```json
-{
-  "source": "/en/new-page/**",
-  "destination": "/en/portal/new-page/index.html"
-},
-{
-  "source": "/he/new-page/**",
-  "destination": "/he/portal/new-page/index.html"
-}
-```
-
 ## Troubleshooting
 
 | Issue               | Solution                                         |
@@ -169,5 +131,5 @@ When adding new portal pages, update `firebase.json` rewrites:
 | CORS errors         | Check CORS config in `functions/index.js`        |
 | Auth issues         | Verify authorized domains in Firebase Console    |
 | SSL not working     | Wait 48 hours for provisioning                   |
-| 404 on subdomain    | Add missing rewrites to `firebase.json`          |
+| 404 on routes       | Check route params and dynamic segments          |
 | Wrong URLs in links | Use `getPortalPath()` instead of hardcoded paths |
