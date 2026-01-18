@@ -18,8 +18,7 @@ import {
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils';
-import { ActivityLog } from '@/lib/types/portal';
-import { Timestamp } from 'firebase/firestore';
+import { ActivityLog, Timestamp } from '@/lib/types/portal';
 import { Link } from '@/i18n/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale, isRTLLocale } from '@/lib/locale-config';

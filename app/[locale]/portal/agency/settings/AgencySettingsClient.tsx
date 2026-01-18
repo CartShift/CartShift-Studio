@@ -1011,7 +1011,7 @@ export default function AgencysClient() {
                               <span style={{ fontFamily: font.fontVar }} className="text-lg">
                                 Aa
                               </span>{' '}
-                              <span className="ml-1">{font.label.split(' ')[0]}</span>
+                              <span className="ms-1">{font.label.split(' ')[0]}</span>
                             </button>
                           ))}
                         </div>
@@ -1074,7 +1074,7 @@ export default function AgencysClient() {
                               <span style={{ fontFamily: font.fontVar }} className="text-lg">
                                 אב
                               </span>{' '}
-                              <span className="ml-1">{font.label.split(' ')[0]}</span>
+                              <span className="ms-1">{font.label.split(' ')[0]}</span>
                             </button>
                           ))}
                         </div>

@@ -499,7 +499,7 @@ export default function CVPageContent() {
                       />
                     </div>
 
-                    <div className={`${isRTL ? 'mr-10 lg:mr-16' : 'ml-10 lg:ml-16'} relative`}>
+                    <div className="ms-10 lg:ms-16 relative">
                       {!isSelfEmployment && (
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500/10 via-accent-500/10 to-primary-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-500" />
                       )}

@@ -9,10 +9,9 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  ...(process.env.NODE_ENV === 'production' && { output: 'export' }),
+  output: 'standalone',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
-  ...(process.env.NODE_ENV === 'production' && { distDir: 'build_out' }),
   assetPrefix: '',
 
 

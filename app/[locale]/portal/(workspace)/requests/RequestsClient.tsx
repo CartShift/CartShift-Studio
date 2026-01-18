@@ -386,7 +386,7 @@ export default function RequestsClient() {
                 <select
                   value={selectedOrgFilter}
                   onChange={e => setSelectedOrgFilter(e.target.value)}
-                  className="portal-input h-10 px-3 pr-8 text-sm font-bold bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-700 min-w-[140px] max-w-[200px] truncate"
+                  className="portal-input h-10 px-3 pe-8 text-sm font-bold bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-700 min-w-[140px] max-w-[200px] truncate"
                 >
                   <option value="all">
                     {t('portal.common.all')} ({organizationsList.length})

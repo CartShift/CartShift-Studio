@@ -1,5 +1,8 @@
 import { Timestamp } from 'firebase/firestore';
 
+// Re-export Timestamp for use in components (avoids direct firebase imports)
+export { Timestamp };
+
 // ============================================
 // ENUMS & CONSTANTS
 // ============================================
