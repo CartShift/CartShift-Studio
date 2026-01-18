@@ -38,7 +38,7 @@ env:
       - RUNTIME
 
   - variable: NEXT_PUBLIC_FIREBASE_FUNCTION_URL
-    secret: NEXT_PUBLIC_FIREBASE_FUNCTION_URL
+    value: https://us-central1-cartshiftstudio.cloudfunctions.net/contactForm
     availability:
       - BUILD
       - RUNTIME
