@@ -11,7 +11,7 @@ runConfig:
 
 # Environment variables and secrets
 env:
-  # Firebase Configuration (public - available in browser)
+  # === REQUIRED Firebase Configuration ===
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     secret: NEXT_PUBLIC_FIREBASE_API_KEY
     availability:
@@ -30,6 +30,19 @@ env:
       - BUILD
       - RUNTIME
 
+  - variable: NEXT_PUBLIC_FIREBASE_FUNCTION_URL
+    secret: NEXT_PUBLIC_FIREBASE_FUNCTION_URL
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    secret: NEXT_PUBLIC_FIREBASE_APP_ID
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # === OPTIONAL Firebase Configuration ===
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
     secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
     availability:
@@ -42,20 +55,13 @@ env:
       - BUILD
       - RUNTIME
 
-  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    secret: NEXT_PUBLIC_FIREBASE_APP_ID
-    availability:
-      - BUILD
-      - RUNTIME
-
-  # reCAPTCHA
+  # === Third-party Services ===
   - variable: NEXT_PUBLIC_RECAPTCHA_SITE_KEY
     secret: NEXT_PUBLIC_RECAPTCHA_SITE_KEY
     availability:
       - BUILD
       - RUNTIME
 
-  # PayPal
   - variable: NEXT_PUBLIC_PAYPAL_CLIENT_ID
     secret: NEXT_PUBLIC_PAYPAL_CLIENT_ID
     availability:

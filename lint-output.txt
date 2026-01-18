@@ -1,1 +1,0 @@
-Invalid project directory provided, no such directory: C:\Users\yotam\Desktop\Personal Projects\CartShift Studio\lint
