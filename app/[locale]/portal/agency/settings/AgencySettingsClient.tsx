@@ -31,7 +31,7 @@ import {
 import {
   updateGlobalBranding
 } from '@/lib/services/portal-branding';
-import { getFirebaseAuth, waitForAuth } from '@/lib/firebase';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { PortalUser, Invite } from '@/lib/types/portal';
 import { subscribeToAgencyInvites, cancelInvite } from '@/lib/services/portal-organizations';
 import { useTranslations } from 'next-intl';
