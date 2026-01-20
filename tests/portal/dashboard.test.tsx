@@ -65,7 +65,11 @@ vi.mock('@/components/portal/TipsCard', () => ({
   TipsCard: () => <div data-testid="tips-card">Tips Card</div>,
 }));
 vi.mock('@/components/portal/skeletons', () => ({
-  DashboardSkeleton: () => <div data-testid="dashboard-skeleton" className="animate-pulse">Loading Skeleton</div>,
+  DashboardSkeleton: () => (
+    <div data-testid="dashboard-skeleton" className="animate-pulse">
+      Loading Skeleton
+    </div>
+  ),
 }));
 vi.mock('@/components/portal/PinnedRequests', () => ({
   PinnedRequests: () => <div data-testid="pinned-requests">Pinned Requests</div>,

@@ -1,26 +1,35 @@
-"use client";
+'use client';
 
-import React, { useRef, useLayoutEffect } from "react";
-import { motion, useScroll, useTransform, MotionValue, useSpring } from "@/lib/motion";
+import React, { useRef, useLayoutEffect } from 'react';
+import { motion, useScroll, useTransform, MotionValue, useSpring } from '@/lib/motion';
 
 /**
  * Hook: useParallax - Returns parallax motion values based on viewport scroll
  */
-export function useParallax(speed: number = 0.5, direction: "vertical" | "horizontal" = "vertical") {
+export function useParallax(
+  speed: number = 0.5,
+  direction: 'vertical' | 'horizontal' = 'vertical'
+) {
   const ref = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ['start end', 'end start'],
   });
 
   const range = 100 * speed;
-  const y = useSpring(useTransform(scrollYProgress, [0, 1], [-range, range]), { stiffness: 100, damping: 30 });
-  const x = useSpring(useTransform(scrollYProgress, [0, 1], [-range, range]), { stiffness: 100, damping: 30 });
+  const y = useSpring(useTransform(scrollYProgress, [0, 1], [-range, range]), {
+    stiffness: 100,
+    damping: 30,
+  });
+  const x = useSpring(useTransform(scrollYProgress, [0, 1], [-range, range]), {
+    stiffness: 100,
+    damping: 30,
+  });
 
   return {
     ref,
-    style: direction === "vertical" ? { y } : { x },
+    style: direction === 'vertical' ? { y } : { x },
   };
 }
 
@@ -32,13 +41,16 @@ export function useParallaxLayer(depth: number = 1, baseSpeed: number = 0.1) {
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ['start end', 'end start'],
   });
 
   const speed = baseSpeed * depth;
   const range = 100 * speed;
 
-  const y = useSpring(useTransform(scrollYProgress, [0, 1], [range, -range]), { stiffness: 100, damping: 30 });
+  const y = useSpring(useTransform(scrollYProgress, [0, 1], [range, -range]), {
+    stiffness: 100,
+    damping: 30,
+  });
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1 - depth * 0.01, 1, 1 + depth * 0.01]);
 
   return {
@@ -52,14 +64,14 @@ interface ParallaxProps {
   children: React.ReactNode;
   className?: string;
   speed?: number;
-  direction?: "vertical" | "horizontal";
+  direction?: 'vertical' | 'horizontal';
 }
 
 export const Parallax: React.FC<ParallaxProps> = ({
   children,
-  className = "",
+  className = '',
   speed = 0.5,
-  direction = "vertical",
+  direction = 'vertical',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -70,7 +82,7 @@ export const Parallax: React.FC<ParallaxProps> = ({
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ['start end', 'end start'],
   });
 
   const range = 80 * speed;
@@ -78,11 +90,7 @@ export const Parallax: React.FC<ParallaxProps> = ({
   const x = useTransform(scrollYProgress, [0, 1], [-range, range]);
 
   return (
-    <motion.div
-      ref={ref}
-      style={direction === "vertical" ? { y } : { x }}
-      className={className}
-    >
+    <motion.div ref={ref} style={direction === 'vertical' ? { y } : { x }} className={className}>
       {children}
     </motion.div>
   );
@@ -98,7 +106,7 @@ interface ParallaxLayerProps {
 
 export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
   children,
-  className = "",
+  className = '',
   depth = 1,
   baseSpeed = 0.1,
 }) => {
@@ -106,7 +114,7 @@ export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ['start end', 'end start'],
   });
 
   const speed = baseSpeed * depth;
@@ -117,11 +125,7 @@ export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1 - depth * 0.02, 1, 1 + depth * 0.02]);
 
   return (
-    <motion.div
-      ref={ref}
-      style={{ y, scale }}
-      className={className}
-    >
+    <motion.div ref={ref} style={{ y, scale }} className={className}>
       {children}
     </motion.div>
   );
@@ -130,35 +134,35 @@ export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
 interface ParallaxTextProps {
   children: React.ReactNode;
   className?: string;
-  type?: "fade-up" | "slide-in" | "scale";
+  type?: 'fade-up' | 'slide-in' | 'scale';
 }
 
 export const ParallaxText: React.FC<ParallaxTextProps> = ({
   children,
-  className = "",
-  type = "fade-up",
+  className = '',
+  type = 'fade-up',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 0.9", "start 0.4"],
+    offset: ['start 0.9', 'start 0.4'],
   });
 
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
-  const animations: Record<string, { y?: MotionValue<number>; x?: MotionValue<number>; scale?: MotionValue<number> }> = {
-    "fade-up": { y: useTransform(scrollYProgress, [0, 1], [50, 0]) },
-    "slide-in": { x: useTransform(scrollYProgress, [0, 1], [-100, 0]) },
-    "scale": { scale: useTransform(scrollYProgress, [0, 1], [0.8, 1]) },
+  const animations: Record<
+    string,
+    { y?: MotionValue<number>; x?: MotionValue<number>; scale?: MotionValue<number> }
+  > = {
+    'fade-up': { y: useTransform(scrollYProgress, [0, 1], [50, 0]) },
+    'slide-in': { x: useTransform(scrollYProgress, [0, 1], [-100, 0]) },
+    scale: { scale: useTransform(scrollYProgress, [0, 1], [0.8, 1]) },
   };
 
   return (
     <div ref={ref} className={className}>
-      <motion.div
-        style={{ opacity, ...animations[type] }}
-        className="will-change-transform"
-      >
+      <motion.div style={{ opacity, ...animations[type] }} className="will-change-transform">
         {children}
       </motion.div>
     </div>
@@ -176,7 +180,7 @@ interface FloatingElementProps {
 
 export const FloatingElement: React.FC<FloatingElementProps> = ({
   children,
-  className = "",
+  className = '',
   amplitude = 20,
   duration = 6,
   delay = 0,
@@ -192,8 +196,8 @@ export const FloatingElement: React.FC<FloatingElementProps> = ({
       transition={{
         duration,
         repeat: Infinity,
-        repeatType: "loop",
-        ease: "easeInOut",
+        repeatType: 'loop',
+        ease: 'easeInOut',
         delay,
       }}
     >
@@ -201,4 +205,3 @@ export const FloatingElement: React.FC<FloatingElementProps> = ({
     </motion.div>
   );
 };
-

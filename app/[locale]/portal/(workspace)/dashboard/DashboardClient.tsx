@@ -3,7 +3,7 @@
 import { Suspense, lazy, useMemo } from 'react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { Clock, AlertCircle, Sparkles } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useTranslations, NextIntlClientProvider } from 'next-intl';
 import { ClientAnalytics } from '@/components/portal/ClientAnalytics';
@@ -161,10 +161,9 @@ function DashboardClientContent() {
 
           {/* Service Status */}
           <Card variant="elevated" accent="primary" className="shadow-lg">
-            <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 flex items-center gap-2 uppercase tracking-widest">
-              <Clock size={14} className="text-blue-500" />
+            <CardSectionTitle as="h4" icon={Clock} iconClassName="text-blue-500" className="mb-6">
               {t('portal.dashboard.serviceStatus.title')}
-            </h4>
+            </CardSectionTitle>
             <div className="space-y-5">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">

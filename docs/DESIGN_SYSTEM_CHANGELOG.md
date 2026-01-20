@@ -14,10 +14,12 @@ This document tracks all improvements made to achieve 100% design system complia
 ## 1. RTL Support Improvements ✅
 
 ### 1.1 Button.tsx
+
 - **Change:** Replaced `ml-1` with `ms-1` (margin-inline-start)
 - **Impact:** Success/error state labels now properly positioned in RTL layouts
 
 ### 1.2 Tooltip.tsx
+
 - **Changes:**
   - Renamed `left`/`right` positioning to `start`/`end` for RTL awareness
   - Replaced physical positioning classes with logical properties
@@ -25,10 +27,12 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Tooltips now position correctly in both LTR and RTL layouts
 
 ### 1.3 Dropdown.tsx
+
 - **Change:** Replaced `left-0 right-0` with `inset-inline-0` on mobile bottom sheet
 - **Impact:** Mobile bottom sheets now work correctly in RTL mode
 
 ### 1.4 AnalysisResults.tsx
+
 - **Change:** Replaced `right-0 -mr-20` with `end-0 -me-20` for decorative glow element
 - **Impact:** Decorative elements properly positioned in RTL layouts
 
@@ -37,12 +41,14 @@ This document tracks all improvements made to achieve 100% design system complia
 ## 2. Accessibility (a11y) Improvements ✅
 
 ### 2.1 Toast.tsx - Live Region Support
+
 - **Changes:**
   - Added `aria-live` attribute (assertive for errors, polite for others)
   - Added `aria-atomic="true"` for complete announcement
 - **Impact:** Screen readers now announce toast notifications properly
 
 ### 2.2 Input.tsx - Complete Form Accessibility
+
 - **Changes:**
   - Added `aria-describedby` linking input to error/hint text
   - Added `aria-invalid` for error states
@@ -52,6 +58,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Screen readers can now understand form validation state and related text
 
 ### 2.3 Select.tsx - Complete Form Accessibility
+
 - **Changes:**
   - Added `aria-describedby` linking select to error/hint text
   - Added `aria-invalid` for error states
@@ -61,6 +68,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Select components now fully accessible to screen readers
 
 ### 2.4 Textarea.tsx - Complete Form Accessibility
+
 - **Changes:**
   - Added `aria-describedby` linking textarea to error/hint text
   - Added `aria-invalid` for error states
@@ -70,6 +78,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Textarea components now fully accessible to screen readers
 
 ### 2.5 Switch.tsx - Toggle Accessibility
+
 - **Changes:**
   - Added unique ID generation for accessibility linking
   - Added `aria-label` support for icon-only switches
@@ -79,6 +88,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Switch toggles now fully accessible with proper ARIA relationships
 
 ### 2.6 Avatar.tsx - Image Accessibility
+
 - **Changes:**
   - Added `role="img"` to fallback div avatars
   - Added `aria-label` for screen reader announcement
@@ -87,6 +97,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Avatar fallbacks are now properly announced by screen readers
 
 ### 2.7 Tooltip.tsx - Tooltip Accessibility
+
 - **Changes:**
   - Added unique `id` to tooltip content
   - Added `aria-describedby` linking trigger to tooltip
@@ -98,6 +109,7 @@ This document tracks all improvements made to achieve 100% design system complia
 ## 3. Keyboard Navigation ✅
 
 ### 3.1 Dropdown.tsx - Full Keyboard Support
+
 - **Changes:**
   - Added `ArrowDown`/`ArrowUp` navigation between items
   - Added `Home`/`End` to jump to first/last item
@@ -110,6 +122,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Dropdown menus are now fully keyboard accessible (WCAG 2.1 AA)
 
 ### 3.2 useFocusTrap Hook (NEW)
+
 - **Location:** `lib/hooks/useFocusTrap.ts`
 - **Features:**
   - Traps Tab/Shift+Tab within a container
@@ -124,6 +137,7 @@ This document tracks all improvements made to achieve 100% design system complia
 ## 4. Documentation Improvements ✅
 
 ### 4.1 Button.tsx - Touch Target Documentation
+
 - **Changes:** Added comprehensive JSDoc comment documenting WCAG 2.1 AA touch target compliance:
   - xs (28px): ⚠️ Below minimum - use only for non-critical actions
   - sm (36px): ⚠️ Below minimum - use for compact layouts
@@ -135,6 +149,7 @@ This document tracks all improvements made to achieve 100% design system complia
 - **Impact:** Developers can now make informed decisions about button size usage
 
 ### 4.2 Switch.tsx - JSDoc Documentation
+
 - **Changes:** Added comprehensive JSDoc comments for all props
 - **Impact:** Better developer experience with IntelliSense
 
@@ -150,36 +165,36 @@ This document tracks all improvements made to achieve 100% design system complia
 
 ## Files Modified
 
-| File | Changes Made |
-|------|-------------|
-| `components/ui/Button.tsx` | RTL fix, touch target docs |
-| `components/ui/Tooltip.tsx` | RTL positioning, full ARIA |
-| `components/ui/Dropdown.tsx` | RTL mobile sheet, keyboard nav, ARIA roles |
-| `components/ui/Toast.tsx` | aria-live region |
-| `components/ui/Input.tsx` | aria-describedby, labels, aria-invalid |
-| `components/ui/Select.tsx` | aria-describedby, labels, aria-invalid |
-| `components/ui/Textarea.tsx` | aria-describedby, labels, aria-invalid |
-| `components/ui/Switch.tsx` | aria-label, aria-describedby, JSDoc |
-| `components/ui/Avatar.tsx` | role="img", aria-label, alt prop |
-| `components/sections/AnalysisResults.tsx` | RTL decorative element |
+| File                                      | Changes Made                               |
+| ----------------------------------------- | ------------------------------------------ |
+| `components/ui/Button.tsx`                | RTL fix, touch target docs                 |
+| `components/ui/Tooltip.tsx`               | RTL positioning, full ARIA                 |
+| `components/ui/Dropdown.tsx`              | RTL mobile sheet, keyboard nav, ARIA roles |
+| `components/ui/Toast.tsx`                 | aria-live region                           |
+| `components/ui/Input.tsx`                 | aria-describedby, labels, aria-invalid     |
+| `components/ui/Select.tsx`                | aria-describedby, labels, aria-invalid     |
+| `components/ui/Textarea.tsx`              | aria-describedby, labels, aria-invalid     |
+| `components/ui/Switch.tsx`                | aria-label, aria-describedby, JSDoc        |
+| `components/ui/Avatar.tsx`                | role="img", aria-label, alt prop           |
+| `components/sections/AnalysisResults.tsx` | RTL decorative element                     |
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
+| File                        | Purpose                                 |
+| --------------------------- | --------------------------------------- |
 | `lib/hooks/useFocusTrap.ts` | Focus trap hook for modal accessibility |
 
 ---
 
 ## Updated Scores (Estimated)
 
-| Category | Before | After |
-|----------|--------|-------|
-| RTL Support | 8.5/10 | 10/10 |
-| Accessibility | 8.5/10 | 10/10 |
-| Keyboard Navigation | 8/10 | 10/10 |
-| Documentation | 9/10 | 9.5/10 |
-| **Overall** | **85/100** | **98/100** |
+| Category            | Before     | After      |
+| ------------------- | ---------- | ---------- |
+| RTL Support         | 8.5/10     | 10/10      |
+| Accessibility       | 8.5/10     | 10/10      |
+| Keyboard Navigation | 8/10       | 10/10      |
+| Documentation       | 9/10       | 9.5/10     |
+| **Overall**         | **85/100** | **98/100** |
 
 ---
 
@@ -197,27 +212,30 @@ These items were identified in the review but are deferred for future sprints:
 ## Quick Reference: Accessibility Improvements by Component
 
 ### Form Components (Input, Select, Textarea)
+
 ```tsx
 // All form components now support:
 <Input
-  label="Email"           // Linked via htmlFor
+  label="Email" // Linked via htmlFor
   hint="Enter your email" // Linked via aria-describedby
-  error="Invalid email"   // Shows with role="alert"
-  id="custom-id"          // Or auto-generated
+  error="Invalid email" // Shows with role="alert"
+  id="custom-id" // Or auto-generated
 />
 ```
 
 ### Switch Component
+
 ```tsx
 <Switch
   label="Enable notifications"
   description="Get updates on new features"
   aria-label="Toggle notifications" // For icon-only switches
-  id="custom-id"                    // Or auto-generated
+  id="custom-id" // Or auto-generated
 />
 ```
 
 ### Dropdown Component
+
 ```tsx
 // Full keyboard navigation:
 // - ArrowDown/Up: Navigate items
@@ -227,13 +245,14 @@ These items were identified in the review but are deferred for future sprints:
 ```
 
 ### Focus Trap Hook
+
 ```tsx
 import { useFocusTrap } from '@/lib/hooks/useFocusTrap';
 
 const modalRef = useFocusTrap(isOpen, {
   autoFocus: true,
   restoreFocus: true,
-  initialFocus: '.primary-action'
+  initialFocus: '.primary-action',
 });
 
 return <div ref={modalRef}>...</div>;

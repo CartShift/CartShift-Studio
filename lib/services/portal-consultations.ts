@@ -164,21 +164,16 @@ export async function getConsultationsByOrg(
   }
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Consultation));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }) as Consultation);
 }
 
-export async function getAllConsultations(
-  options?: {
-    status?: ConsultationStatus | ConsultationStatus[];
-    limit?: number;
-  }
-): Promise<Consultation[]> {
+export async function getAllConsultations(options?: {
+  status?: ConsultationStatus | ConsultationStatus[];
+  limit?: number;
+}): Promise<Consultation[]> {
   await waitForAuth();
   const db = getFirestoreDb();
-  let q = query(
-    collection(db, CONSULTATIONS_COLLECTION),
-    orderBy('scheduledAt', 'desc')
-  );
+  let q = query(collection(db, CONSULTATIONS_COLLECTION), orderBy('scheduledAt', 'desc'));
 
   if (options?.status) {
     const statuses = Array.isArray(options.status) ? options.status : [options.status];
@@ -190,13 +185,10 @@ export async function getAllConsultations(
   }
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Consultation));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }) as Consultation);
 }
 
-export async function getUpcomingConsultations(
-  orgId?: string,
-  count = 5
-): Promise<Consultation[]> {
+export async function getUpcomingConsultations(orgId?: string, count = 5): Promise<Consultation[]> {
   await waitForAuth();
   const db = getFirestoreDb();
   let q = query(
@@ -219,7 +211,7 @@ export async function getUpcomingConsultations(
   }
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Consultation));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }) as Consultation);
 }
 
 // ============================================
@@ -258,7 +250,8 @@ export async function updateConsultation(
   if (data.scheduledAt) updateData.scheduledAt = Timestamp.fromDate(data.scheduledAt);
   if (data.duration !== undefined) updateData.duration = data.duration;
   if (data.participants !== undefined) updateData.participants = data.participants;
-  if (data.externalCalendarLink !== undefined) updateData.externalCalendarLink = data.externalCalendarLink;
+  if (data.externalCalendarLink !== undefined)
+    updateData.externalCalendarLink = data.externalCalendarLink;
   if (data.agendaItems !== undefined) updateData.agendaItems = data.agendaItems;
   if (data.meetingNotes !== undefined) updateData.meetingNotes = data.meetingNotes;
   if (data.actionItems !== undefined) updateData.actionItems = data.actionItems;
@@ -456,10 +449,7 @@ export function subscribeToAllConsultations(
     .then(() => {
       if (isUnsubscribed) return;
       const db = getFirestoreDb();
-      let q = query(
-        collection(db, CONSULTATIONS_COLLECTION),
-        orderBy('scheduledAt', 'desc')
-      );
+      let q = query(collection(db, CONSULTATIONS_COLLECTION), orderBy('scheduledAt', 'desc'));
 
       if (options?.status && options.status.length > 0) {
         q = query(q, where('status', 'in', options.status));

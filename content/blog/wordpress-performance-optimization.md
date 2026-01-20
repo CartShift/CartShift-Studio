@@ -1,11 +1,11 @@
 ---
-title: "WordPress Performance Optimization: Speed Guide (2025)"
-date: "2025-12-18"
-excerpt: "A practical WordPress performance optimization guide for faster load times, better Core Web Vitals, and higher conversions. Includes a step-by-step checklist."
-category: "WordPress"
-title_he: "אופטימיזציית ביצועים לוורדפרס: מדריך מהירות (2025)"
-excerpt_he: "מדריך פרקטי לאופטימיזציית ביצועים בוורדפרס: שיפור מהירות, Core Web Vitals והמרות, עם צ׳ק ליסט מסודר לביצוע."
-category_he: "וורדפרס"
+title: 'WordPress Performance Optimization: Speed Guide (2025)'
+date: '2025-12-18'
+excerpt: 'A practical WordPress performance optimization guide for faster load times, better Core Web Vitals, and higher conversions. Includes a step-by-step checklist.'
+category: 'WordPress'
+title_he: 'אופטימיזציית ביצועים לוורדפרס: מדריך מהירות (2025)'
+excerpt_he: 'מדריך פרקטי לאופטימיזציית ביצועים בוורדפרס: שיפור מהירות, Core Web Vitals והמרות, עם צ׳ק ליסט מסודר לביצוע.'
+category_he: 'וורדפרס'
 ---
 
 If your WordPress site feels slow, here's the annoying truth: you're not just losing "patience points". You're losing real visitors, and the window is tiny. Google's own research has shown that people abandon slow mobile pages fast, especially when load time creeps beyond a few seconds[^1].

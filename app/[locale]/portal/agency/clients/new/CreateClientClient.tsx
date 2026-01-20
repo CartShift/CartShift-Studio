@@ -10,13 +10,13 @@ export default function CreateClientClient() {
 
   return (
     <div className="h-full w-full flex items-center justify-center p-6">
-        <CreateOrganizationForm
-          onSuccess={(orgId) => {
-            switchOrg(orgId);
-            router.push('/portal/dashboard/');
-          }}
-          onCancel={() => router.back()}
-        />
+      <CreateOrganizationForm
+        onSuccess={orgId => {
+          switchOrg(orgId);
+          router.push('/portal/dashboard/');
+        }}
+        onCancel={() => router.back()}
+      />
     </div>
   );
 }

@@ -7,6 +7,7 @@ A comprehensive testing suite has been set up for the CartShift Studio portal fu
 ## Test Infrastructure
 
 ### Setup Files
+
 - `vitest.config.ts` - Vitest configuration with React plugin and path aliases
 - `tests/setup.ts` - Global test setup with jsdom environment and cleanup
 - `tests/utils/test-utils.tsx` - Testing utilities with NextIntl provider
@@ -28,6 +29,7 @@ pnpm test:ui
 ## Test Coverage
 
 ### Authentication Tests
+
 - **Location**: `tests/portal/auth/login.test.tsx`
 - **Coverage**:
   - Login form rendering
@@ -36,6 +38,7 @@ pnpm test:ui
   - Error handling
 
 ### Portal Root Tests
+
 - **Location**: `tests/portal/root.test.tsx`
 - **Coverage**:
   - Loading states
@@ -45,6 +48,7 @@ pnpm test:ui
   - Onboarding flow
 
 ### Dashboard Tests
+
 - **Location**: `tests/portal/dashboard.test.tsx`
 - **Coverage**:
   - Loading states
@@ -54,6 +58,7 @@ pnpm test:ui
   - UI rendering
 
 ### Settings Tests
+
 - **Location**: `tests/portal/settings.test.tsx`
 - **Coverage**:
   - Settings page rendering
@@ -61,6 +66,7 @@ pnpm test:ui
   - Form functionality
 
 ### Requests Tests
+
 - **Location**: `tests/portal/requests.test.tsx`
 - **Coverage**:
   - Request list rendering
@@ -69,6 +75,7 @@ pnpm test:ui
   - New request button
 
 ### Portal Shell Tests
+
 - **Location**: `tests/portal/portal-shell.test.tsx`
 - **Coverage**:
   - Navigation rendering
@@ -79,12 +86,14 @@ pnpm test:ui
 ## Mocking Strategy
 
 ### Firebase Mocks
+
 - Auth state changes
 - Firestore subscriptions
 - User data
 - Organization data
 
 ### Next.js Mocks
+
 - Navigation (useRouter, usePathname)
 - Search params
 - Internationalization
@@ -92,16 +101,19 @@ pnpm test:ui
 ## Running Tests
 
 ### Basic Usage
+
 ```bash
 pnpm test:run
 ```
 
 ### Watch Mode
+
 ```bash
 pnpm test
 ```
 
 ### With UI
+
 ```bash
 pnpm test:ui
 ```

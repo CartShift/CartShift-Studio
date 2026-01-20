@@ -32,9 +32,11 @@ export const MentionInput = ({
   const suggestionRef = useRef<HTMLDivElement>(null);
   const t = useTranslations('portal.requests.detail');
 
-  const filteredUsers = users.filter(user =>
-    (user.name?.toLowerCase() || user.email.toLowerCase()).includes(mentionQuery.toLowerCase())
-  ).slice(0, 5);
+  const filteredUsers = users
+    .filter(user =>
+      (user.name?.toLowerCase() || user.email.toLowerCase()).includes(mentionQuery.toLowerCase())
+    )
+    .slice(0, 5);
 
   useEffect(() => {
     const textBeforeCursor = value.slice(0, cursorPosition);
@@ -135,15 +137,19 @@ export const MentionInput = ({
                 type="button"
                 onClick={() => insertMention(user)}
                 className={cn(
-                  "w-full text-start px-3 py-2 flex items-center gap-2 transition-colors",
+                  'w-full text-start px-3 py-2 flex items-center gap-2 transition-colors',
                   index === suggestionIndex
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                    : "hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200"
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                    : 'hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200'
                 )}
               >
                 <div className="w-6 h-6 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {user.photoUrl ? (
-                    <img src={user.photoUrl} alt={user.name || user.email} className="w-full h-full object-cover" />
+                    <img
+                      src={user.photoUrl}
+                      alt={user.name || user.email}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <User size={12} className="text-surface-500" />
                   )}

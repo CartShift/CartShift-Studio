@@ -19,9 +19,5 @@ export function PayPalProvider({ children }: PayPalProviderProps) {
     locale: getPayPalLocale(locale),
   };
 
-  return (
-    <PayPalScriptProvider options={initialOptions}>
-      {children}
-    </PayPalScriptProvider>
-  );
+  return <PayPalScriptProvider options={initialOptions}>{children}</PayPalScriptProvider>;
 }

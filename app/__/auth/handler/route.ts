@@ -13,9 +13,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   // Build the Firebase auth handler URL
-  const firebaseAuthUrl = new URL(
-    'https://cartshiftstudio.firebaseapp.com/__/auth/handler'
-  );
+  const firebaseAuthUrl = new URL('https://cartshiftstudio.firebaseapp.com/__/auth/handler');
 
   // Forward all query parameters
   searchParams.forEach((value, key) => {
@@ -27,7 +25,7 @@ export async function GET(request: NextRequest) {
     const response = await fetch(firebaseAuthUrl.toString(), {
       headers: {
         // Forward relevant headers
-        'Accept': request.headers.get('Accept') || 'text/html',
+        Accept: request.headers.get('Accept') || 'text/html',
         'User-Agent': request.headers.get('User-Agent') || '',
       },
     });
@@ -45,10 +43,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Firebase auth handler proxy error:', error);
-    return NextResponse.json(
-      { error: 'Failed to proxy auth request' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to proxy auth request' }, { status: 500 });
   }
 }
 
@@ -56,9 +51,7 @@ export async function POST(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   // Build the Firebase auth handler URL
-  const firebaseAuthUrl = new URL(
-    'https://cartshiftstudio.firebaseapp.com/__/auth/handler'
-  );
+  const firebaseAuthUrl = new URL('https://cartshiftstudio.firebaseapp.com/__/auth/handler');
 
   // Forward all query parameters
   searchParams.forEach((value, key) => {
@@ -73,7 +66,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': request.headers.get('Content-Type') || 'application/x-www-form-urlencoded',
-        'Accept': request.headers.get('Accept') || 'text/html',
+        Accept: request.headers.get('Accept') || 'text/html',
         'User-Agent': request.headers.get('User-Agent') || '',
       },
       body: body,
@@ -90,9 +83,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Firebase auth handler proxy error:', error);
-    return NextResponse.json(
-      { error: 'Failed to proxy auth request' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to proxy auth request' }, { status: 500 });
   }
 }

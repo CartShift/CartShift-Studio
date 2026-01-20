@@ -67,10 +67,7 @@ export default async function CVPage({ params }: Props) {
       email: t('email'),
       url: `${siteUrl}/${locale}/cv`,
       image: `${siteUrl}/images/yotam-programmer.png`,
-      sameAs: [
-        'https://linkedin.com/in/yotam-faraggi',
-        'https://github.com/yotamon',
-      ],
+      sameAs: ['https://linkedin.com/in/yotam-faraggi', 'https://github.com/yotamon'],
       address: {
         '@type': 'PostalAddress',
         addressLocality: t('location'),
@@ -82,9 +79,9 @@ export default async function CVPage({ params }: Props) {
         'Next.js',
         'React',
         'Node.js',
-        'Cloud Architecture'
-      ]
-    }
+        'Cloud Architecture',
+      ],
+    },
   };
 
   return (

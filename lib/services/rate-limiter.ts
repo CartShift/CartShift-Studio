@@ -136,7 +136,11 @@ export async function checkRateLimit(
             return { allowed: false, remaining: 0, resetAt: timestamp + windowMs };
           }
           sessionStorage.setItem(localKey, JSON.stringify({ count: count + 1, timestamp: now }));
-          return { allowed: true, remaining: maxRequests - count - 1, resetAt: timestamp + windowMs };
+          return {
+            allowed: true,
+            remaining: maxRequests - count - 1,
+            resetAt: timestamp + windowMs,
+          };
         }
       }
     }

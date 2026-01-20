@@ -59,21 +59,19 @@ export function usePricingForm(defaultCurrency: Currency = 'USD'): UsePricingFor
   const [isFormVisible, setFormVisible] = useState(false);
 
   const addLineItem = useCallback(() => {
-    setLineItems((prev) => [...prev, createEmptyLineItem()]);
+    setLineItems(prev => [...prev, createEmptyLineItem()]);
   }, []);
 
   const removeLineItem = useCallback((id: string) => {
-    setLineItems((prev) => {
+    setLineItems(prev => {
       if (prev.length <= 1) return prev;
-      return prev.filter((item) => item.id !== id);
+      return prev.filter(item => item.id !== id);
     });
   }, []);
 
   const updateLineItem = useCallback(
     (id: string, field: keyof PricingLineItem, value: string | number) => {
-      setLineItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
-      );
+      setLineItems(prev => prev.map(item => (item.id === id ? { ...item, [field]: value } : item)));
     },
     []
   );
@@ -86,9 +84,7 @@ export function usePricingForm(defaultCurrency: Currency = 'USD'): UsePricingFor
   // Computed values
   const validItems = useMemo(
     () =>
-      lineItems.filter(
-        (item) => item.description.trim() && item.quantity > 0 && item.unitPrice >= 0
-      ),
+      lineItems.filter(item => item.description.trim() && item.quantity > 0 && item.unitPrice >= 0),
     [lineItems]
   );
 

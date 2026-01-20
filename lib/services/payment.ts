@@ -57,7 +57,7 @@ export function createPayPalOrderFromPricingRequest(pricingRequest: PricingReque
   const currencyCode = pricingRequest.currency;
   const totalValue = (pricingRequest.totalAmount / 100).toFixed(2);
 
-  const items = pricingRequest.lineItems.map((item) => ({
+  const items = pricingRequest.lineItems.map(item => ({
     name: item.description.substring(0, 127), // PayPal has a 127 char limit
     quantity: item.quantity.toString(),
     unit_amount: {

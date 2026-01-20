@@ -1,8 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useScrollDepthTracking, useOutboundLinkTracking, useEngagementTracking } from "@/lib/hooks/useAnalytics";
-import { trackError } from "@/lib/analytics";
+import { useEffect } from 'react';
+import {
+  useScrollDepthTracking,
+  useOutboundLinkTracking,
+  useEngagementTracking,
+} from '@/lib/hooks/useAnalytics';
+import { trackError } from '@/lib/analytics';
 
 interface AnalyticsProviderProps {
   children: React.ReactNode;
@@ -31,15 +35,15 @@ export function AnalyticsProvider({
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      trackError(String(event.reason), "unhandled_promise");
+      trackError(String(event.reason), 'unhandled_promise');
     };
 
-    window.addEventListener("error", handleError);
-    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
     return () => {
-      window.removeEventListener("error", handleError);
-      window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, [enableErrorTracking]);
 

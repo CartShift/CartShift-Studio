@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useCallback } from "react";
-import { usePathname } from "next/navigation";
-import { trackEvent, trackOutboundLink } from "@/lib/analytics";
+import { useEffect, useRef, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
+import { trackEvent, trackOutboundLink } from '@/lib/analytics';
 
 export function useScrollDepthTracking(thresholds = [25, 50, 75, 100]) {
   const trackedRef = useRef<Set<number>>(new Set());
@@ -20,24 +20,24 @@ export function useScrollDepthTracking(thresholds = [25, 50, 75, 100]) {
       thresholds.forEach(threshold => {
         if (scrollPercent >= threshold && !trackedRef.current.has(threshold)) {
           trackedRef.current.add(threshold);
-          trackEvent("scroll_depth", { percent: threshold, page_path: pathname });
+          trackEvent('scroll_depth', { percent: threshold, page_path: pathname });
         }
       });
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [pathname, thresholds]);
 }
 
 export function useOutboundLinkTracking() {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      const link = (e.target as HTMLElement).closest("a");
+      const link = (e.target as HTMLElement).closest('a');
       if (!link) return;
 
-      const href = link.getAttribute("href");
-      if (!href || href.startsWith("/") || href.startsWith("#")) return;
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('/') || href.startsWith('#')) return;
 
       try {
         const url = new URL(href, window.location.origin);
@@ -49,8 +49,8 @@ export function useOutboundLinkTracking() {
       }
     };
 
-    document.addEventListener("click", handleClick, { capture: true });
-    return () => document.removeEventListener("click", handleClick, { capture: true });
+    document.addEventListener('click', handleClick, { capture: true });
+    return () => document.removeEventListener('click', handleClick, { capture: true });
   }, []);
 }
 
@@ -64,7 +64,7 @@ export function useEngagementTracking() {
     return () => {
       const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
       if (timeSpent >= 5) {
-        trackEvent("page_engagement", { page_path: pathname, time_seconds: timeSpent });
+        trackEvent('page_engagement', { page_path: pathname, time_seconds: timeSpent });
       }
     };
   }, [pathname]);

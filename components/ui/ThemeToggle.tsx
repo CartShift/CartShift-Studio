@@ -1,26 +1,23 @@
-"use client";
+'use client';
 
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import React, { useState, useEffect } from "react";
-import { motion } from "@/lib/motion";
-import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { motion } from '@/lib/motion';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 
-const themeToggleVariants = cva(
-  "relative p-2 rounded-xl transition-all duration-200",
-  {
-    variants: {
-      isDark: {
-        true: "hover:bg-surface-700/50 text-surface-300",
-        false: "hover:bg-surface-200/60 text-surface-600",
-      }
+const themeToggleVariants = cva('relative p-2 rounded-xl transition-all duration-200', {
+  variants: {
+    isDark: {
+      true: 'hover:bg-surface-700/50 text-surface-300',
+      false: 'hover:bg-surface-200/60 text-surface-600',
     },
-    defaultVariants: {
-      isDark: false,
-    }
-  }
-);
+  },
+  defaultVariants: {
+    isDark: false,
+  },
+});
 
 export const ThemeToggle: React.FC = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -32,23 +29,20 @@ export const ThemeToggle: React.FC = () => {
 
   if (!mounted) {
     return (
-      <button
-        className={cn(themeToggleVariants({ isDark: false }))}
-        aria-label="Toggle theme"
-      >
+      <button className={cn(themeToggleVariants({ isDark: false }))} aria-label="Toggle theme">
         <div className="relative w-6 h-6" />
       </button>
     );
   }
 
   const currentTheme = resolvedTheme || theme;
-  const isDark = currentTheme === "dark";
+  const isDark = currentTheme === 'dark';
 
   return (
     <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(themeToggleVariants({ isDark }))}
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
       <div className="relative w-6 h-6">
         <motion.div

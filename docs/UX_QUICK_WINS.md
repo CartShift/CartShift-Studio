@@ -9,6 +9,7 @@
 ## Quick Win 1: Standardized Error Handling (2-3 hours)
 
 ### Why This Matters
+
 Inconsistent error messages frustrate users and lead to support requests. Standardizing errors improves user trust and reduces confusion.
 
 ### Implementation
@@ -34,9 +35,9 @@ export const getErrorMessage = (error: unknown): ErrorDetails => {
       case 'unauthorized':
         return {
           title: 'Access Denied',
-          message: 'You don\'t have permission to perform this action.',
+          message: "You don't have permission to perform this action.",
           action: 'Contact your administrator',
-          severity: 'high'
+          severity: 'high',
         };
 
       case 'network-request-failed':
@@ -45,35 +46,35 @@ export const getErrorMessage = (error: unknown): ErrorDetails => {
           title: 'Network Error',
           message: 'Unable to connect to the server. Please check your internet connection.',
           action: 'Try Again',
-          severity: 'medium'
+          severity: 'medium',
         };
 
       case 'not-found':
         return {
           title: 'Not Found',
           message: 'The requested resource could not be found.',
-          severity: 'medium'
+          severity: 'medium',
         };
 
       case 'already-exists':
         return {
           title: 'Already Exists',
           message: 'This item already exists. Please use a different value.',
-          severity: 'low'
+          severity: 'low',
         };
 
       case 'invalid-argument':
         return {
           title: 'Invalid Input',
           message: 'Please check your input and try again.',
-          severity: 'low'
+          severity: 'low',
         };
 
       default:
         return {
           title: 'Error',
           message: error.message || 'An unexpected error occurred.',
-          severity: 'medium'
+          severity: 'medium',
         };
     }
   }
@@ -83,7 +84,7 @@ export const getErrorMessage = (error: unknown): ErrorDetails => {
     return {
       title: 'Error',
       message: error.message,
-      severity: 'medium'
+      severity: 'medium',
     };
   }
 
@@ -92,7 +93,7 @@ export const getErrorMessage = (error: unknown): ErrorDetails => {
     return {
       title: 'Error',
       message: error,
-      severity: 'medium'
+      severity: 'medium',
     };
   }
 
@@ -100,7 +101,7 @@ export const getErrorMessage = (error: unknown): ErrorDetails => {
   return {
     title: 'Unexpected Error',
     message: 'An unexpected error occurred. Please try again later.',
-    severity: 'high'
+    severity: 'high',
   };
 };
 ```
@@ -114,12 +115,18 @@ import { getErrorMessage } from './errorHandling';
 
 export const showError = (error: unknown) => {
   const { title, message, action } = getErrorMessage(error);
-  toast.error(title, message, action ? {
-    label: action,
-    onClick: () => {
-      // Handle action click if needed
-    }
-  } : undefined);
+  toast.error(
+    title,
+    message,
+    action
+      ? {
+          label: action,
+          onClick: () => {
+            // Handle action click if needed
+          },
+        }
+      : undefined
+  );
 };
 
 export const showSuccess = (message: string) => {
@@ -138,6 +145,7 @@ export const showInfo = (message: string) => {
 #### Step 3: Update Components to Use New Helpers
 
 **Before:**
+
 ```tsx
 // ❌ Bad: Generic error message
 try {
@@ -148,6 +156,7 @@ try {
 ```
 
 **After:**
+
 ```tsx
 // ✅ Good: Actionable error message
 try {
@@ -159,6 +168,7 @@ try {
 ```
 
 ### Files to Update
+
 - `components/portal/forms/CreateRequestForm.tsx`
 - `components/portal/forms/CreateOrganizationForm.tsx`
 - `components/portal/ScheduleConsultationForm.tsx`
@@ -170,6 +180,7 @@ try {
 ## Quick Win 2: Add Loading States to Data Components (2-3 hours)
 
 ### Why This Matters
+
 Users need visual feedback during data loading. Skeletons are better than spinners because they reduce perceived wait time.
 
 ### Implementation
@@ -225,6 +236,7 @@ export const AnalyticsSkeleton = () => (
 #### Step 2: Add Skeletons to Components
 
 **Example: Requests List**
+
 ```tsx
 // components/portal/requests/RequestsClient.tsx
 import { RequestsListSkeleton } from '@/portal/skeletons/RequestsListSkeleton';
@@ -247,6 +259,7 @@ export const RequestsClient = () => {
 ```
 
 **Example: Analytics Dashboard**
+
 ```tsx
 // components/portal/ClientAnalytics.tsx
 import { AnalyticsSkeleton } from '@/portal/skeletons/AnalyticsSkeleton';
@@ -263,6 +276,7 @@ export const ClientAnalytics = () => {
 ```
 
 ### Files to Add Skeletons To
+
 - `components/portal/PinnedRequests.tsx`
 - `components/portal/ClientAnalytics.tsx`
 - `components/portal/SalesPerformance.tsx`
@@ -273,6 +287,7 @@ export const ClientAnalytics = () => {
 ## Quick Win 3: Add ARIA Labels to Icon-Only Buttons (1-2 hours)
 
 ### Why This Matters
+
 Screen readers can't identify buttons without text labels. This is critical for accessibility compliance.
 
 ### Implementation
@@ -285,31 +300,28 @@ import React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const iconButtonVariants = cva(
-  'inline-flex items-center justify-center',
-  {
-    variants: {
-      size: {
-        sm: 'w-8 h-8',
-        md: 'w-10 h-10',
-        lg: 'w-12 h-12',
-      },
-      variant: {
-        default: 'text-surface-600 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white',
-        primary: 'bg-primary-500 text-white hover:bg-primary-600',
-        ghost: 'hover:bg-surface-100 dark:hover:bg-surface-800',
-      },
+const iconButtonVariants = cva('inline-flex items-center justify-center', {
+  variants: {
+    size: {
+      sm: 'w-8 h-8',
+      md: 'w-10 h-10',
+      lg: 'w-12 h-12',
     },
-    defaultVariants: {
-      size: 'md',
-      variant: 'default',
+    variant: {
+      default:
+        'text-surface-600 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white',
+      primary: 'bg-primary-500 text-white hover:bg-primary-600',
+      ghost: 'hover:bg-surface-100 dark:hover:bg-surface-800',
     },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+    variant: 'default',
+  },
+});
 
 export interface IconButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof iconButtonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof iconButtonVariants> {
   icon: React.ElementType;
   label: string; // Required for accessibility
 }
@@ -336,6 +348,7 @@ IconButton.displayName = 'IconButton';
 #### Step 2: Update Icon-Only Buttons
 
 **Before:**
+
 ```tsx
 // ❌ Bad: No accessibility
 <button onClick={onEdit}>
@@ -344,24 +357,21 @@ IconButton.displayName = 'IconButton';
 ```
 
 **After:**
+
 ```tsx
 // ✅ Good: Accessible
-<IconButton
-  icon={Edit}
-  label="Edit request"
-  onClick={onEdit}
-/>
+<IconButton icon={Edit} label="Edit request" onClick={onEdit} />
 ```
 
 **Before:**
+
 ```tsx
 // ❌ Bad: No accessibility
-<button onClick={() => setTheme(isDark ? 'light' : 'dark')}>
-  {isDark ? <Sun /> : <Moon />}
-</button>
+<button onClick={() => setTheme(isDark ? 'light' : 'dark')}>{isDark ? <Sun /> : <Moon />}</button>
 ```
 
 **After:**
+
 ```tsx
 // ✅ Good: Accessible
 <IconButton
@@ -372,6 +382,7 @@ IconButton.displayName = 'IconButton';
 ```
 
 ### Files to Update
+
 - `components/ui/ThemeToggle.tsx`
 - `components/ui/LanguageSwitcher.tsx`
 - `components/portal/ui/PortalHeader.tsx` (all icon buttons)
@@ -383,6 +394,7 @@ IconButton.displayName = 'IconButton';
 ## Quick Win 4: Add Optimistic Updates (3-4 hours)
 
 ### Why This Matters
+
 Optimistic updates make actions feel instant by assuming success and rolling back on error. This significantly improves perceived performance.
 
 ### Implementation
@@ -393,20 +405,18 @@ Optimistic updates make actions feel instant by assuming success and rolling bac
 // lib/hooks/useOptimisticMutation.ts
 import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
 
-export function useOptimisticMutation<TData, TVariables, TContext>(
-  options: {
-    mutationFn: (variables: TVariables) => Promise<TData>;
-    onMutate: (variables: TVariables) => Promise<TContext> | TContext;
-    onError?: (error: Error, variables: TVariables, context: TContext) => void;
-    onSuccess?: (data: TData, variables: TVariables, context: TContext) => void;
-    queryKeys?: string[][];
-  }
-) {
+export function useOptimisticMutation<TData, TVariables, TContext>(options: {
+  mutationFn: (variables: TVariables) => Promise<TData>;
+  onMutate: (variables: TVariables) => Promise<TContext> | TContext;
+  onError?: (error: Error, variables: TVariables, context: TContext) => void;
+  onSuccess?: (data: TData, variables: TVariables, context: TContext) => void;
+  queryKeys?: string[][];
+}) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: options.mutationFn,
-    onMutate: async (variables) => {
+    onMutate: async variables => {
       await Promise.all(
         options.queryKeys?.map(key => queryClient.cancelQueries({ queryKey: key })) || []
       );
@@ -432,6 +442,7 @@ export function useOptimisticMutation<TData, TVariables, TContext>(
 #### Step 2: Implement Optimistic Updates
 
 **Example: Pin Request**
+
 ```tsx
 // components/portal/PinnedRequests.tsx
 import { useOptimisticMutation } from '@/lib/hooks/useOptimisticMutation';
@@ -444,7 +455,7 @@ export const PinnedRequests = () => {
     mutationFn: (requestId: string) => pinRequest(requestId),
     queryKeys: [['requests'], ['pinned-requests']],
 
-    onMutate: async (requestId) => {
+    onMutate: async requestId => {
       // Cancel in-flight queries
       const previousPinned = queryClient.getQueryData(['pinned-requests']);
 
@@ -465,7 +476,7 @@ export const PinnedRequests = () => {
 
     onSuccess: () => {
       showSuccess('Request pinned successfully');
-    }
+    },
   });
 
   return (
@@ -484,6 +495,7 @@ export const PinnedRequests = () => {
 ```
 
 **Example: Update Status**
+
 ```tsx
 // components/portal/requests/RequestStatus.tsx
 const updateStatusMutation = useOptimisticMutation({
@@ -510,11 +522,12 @@ const updateStatusMutation = useOptimisticMutation({
 
   onSuccess: () => {
     showSuccess('Status updated');
-  }
+  },
 });
 ```
 
 ### Files to Add Optimistic Updates To
+
 - Pin/unpin operations
 - Like/favorite operations
 - Status updates
@@ -526,6 +539,7 @@ const updateStatusMutation = useOptimisticMutation({
 ## Quick Win 5: Add Search History (2-3 hours)
 
 ### Why This Matters
+
 Search history helps users quickly access previous searches, reducing time spent re-typing queries.
 
 ### Implementation
@@ -553,26 +567,29 @@ export function useSearchHistory(maxItems: number = 10) {
     }
   }, []);
 
-  const addToHistory = useCallback((query: string) => {
-    if (!query.trim()) return;
+  const addToHistory = useCallback(
+    (query: string) => {
+      if (!query.trim()) return;
 
-    setHistory(prev => {
-      const trimmed = query.trim();
-      const filtered = prev.filter(q => q !== trimmed);
-      const updated = [trimmed, ...filtered].slice(0, maxItems);
+      setHistory(prev => {
+        const trimmed = query.trim();
+        const filtered = prev.filter(q => q !== trimmed);
+        const updated = [trimmed, ...filtered].slice(0, maxItems);
 
-      // Save to localStorage
-      if (typeof window !== 'undefined') {
-        try {
-          localStorage.setItem('search-history', JSON.stringify(updated));
-        } catch (error) {
-          console.error('Failed to save search history:', error);
+        // Save to localStorage
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('search-history', JSON.stringify(updated));
+          } catch (error) {
+            console.error('Failed to save search history:', error);
+          }
         }
-      }
 
-      return updated;
-    });
-  }, [maxItems]);
+        return updated;
+      });
+    },
+    [maxItems]
+  );
 
   const clearHistory = useCallback(() => {
     setHistory([]);
@@ -600,6 +617,7 @@ export function useSearchHistory(maxItems: number = 10) {
 #### Step 2: Add Search History to Search Components
 
 **Example: GlobalSearch**
+
 ```tsx
 // components/portal/ui/GlobalSearch.tsx
 import { useSearchHistory } from '@/lib/hooks/useSearchHistory';
@@ -626,7 +644,7 @@ export const GlobalSearch = () => {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           placeholder="Search..."
           className="w-full ps-10 pe-4 h-10 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900"
@@ -660,7 +678,7 @@ export const GlobalSearch = () => {
                     <Clock className="w-4 h-4 text-surface-400 group-hover:text-primary-500" />
                     <span className="text-sm flex-1">{item}</span>
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         removeFromHistory(item);
                       }}
@@ -683,6 +701,7 @@ export const GlobalSearch = () => {
 ```
 
 ### Files to Update
+
 - `components/portal/ui/GlobalSearch.tsx`
 - `components/portal/ui/MobileSearch.tsx`
 - Any other search components
@@ -694,30 +713,35 @@ export const GlobalSearch = () => {
 After implementing each quick win, verify:
 
 ### Error Handling
+
 - [ ] Error messages are clear and actionable
 - [ ] All error types are covered
 - [ ] Error toasts display correctly
 - [ ] Retry actions work when provided
 
 ### Loading States
+
 - [ ] Skeletons appear before data
 - [ ] Skeletons match the content structure
 - [ ] Skeletons disappear when data loads
 - [ ] Error states display when data fails
 
 ### ARIA Labels
+
 - [ ] All icon-only buttons have aria-label
 - [ ] Labels are descriptive and concise
 - [ ] Labels follow consistent patterns
 - [ ] Screen reader announces button purpose
 
 ### Optimistic Updates
+
 - [ ] Changes appear immediately
 - [ ] Success feedback displays
 - [ ] Errors rollback correctly
 - [ ] Data stays consistent
 
 ### Search History
+
 - [ ] History saves after search
 - [ ] History displays on focus
 - [ ] Can click to reuse searches
@@ -728,18 +752,22 @@ After implementing each quick win, verify:
 ## Estimated Impact
 
 ### User Satisfaction
+
 - **Before:** 3.8/5 CSAT
 - **After:** 4.2/5 CSAT (+10%)
 
 ### Task Completion
+
 - **Before:** 85% success rate
 - **After:** 92% success rate (+7%)
 
 ### Perceived Performance
+
 - **Before:** Users report "slow"
 - **After:** Users report "responsive"
 
 ### Accessibility Score
+
 - **Before:** 7/10
 - **After:** 9/10 (+20%)
 

@@ -66,11 +66,13 @@ getPortalPath('/dashboard/'); // → '/portal/dashboard/'
 ```
 
 **Key behaviors:**
+
 - **Main domain → Subdomain redirect**: When users click portal links on `cart-shift.com`, they are directed to `portal.cart-shift.com`
 - **Internal navigation**: Within the portal subdomain, links stay relative for seamless navigation
 - **Development**: Uses `/portal/...` paths for local Next.js routing
 
 For full subdomain URLs (e.g., for emails or sharing):
+
 ```tsx
 import { getPortalSubdomainUrl } from '@/lib/utils/portal-paths';
 

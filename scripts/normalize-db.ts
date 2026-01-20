@@ -387,10 +387,13 @@ async function normalizeMembers(db: admin.firestore.Firestore): Promise<Normaliz
 
     if (!userOrgs.includes(currentOrgId)) {
       console.log(`  ⚠️  User's organizations array missing ${currentOrgId}, adding...`);
-      await db.collection(USERS_COLLECTION).doc(currentUserId).update({
-        organizations: admin.firestore.FieldValue.arrayUnion(currentOrgId),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
+      await db
+        .collection(USERS_COLLECTION)
+        .doc(currentUserId)
+        .update({
+          organizations: admin.firestore.FieldValue.arrayUnion(currentOrgId),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
       stats.organizationsArrayFixed++;
       stats.usersFixed++;
       console.log(`  ✓ Added org to user's organizations array`);
@@ -425,8 +428,10 @@ async function main() {
       orgsCreated: userStats.orgsCreated,
       membersCreated: userStats.membersCreated + orgStats.membersCreated,
       accountTypeFixed: userStats.accountTypeFixed,
-      organizationsArrayFixed: userStats.organizationsArrayFixed + memberStats.organizationsArrayFixed,
-      memberRecordsFixed: userStats.memberRecordsFixed + orgStats.memberRecordsFixed + memberStats.memberRecordsFixed,
+      organizationsArrayFixed:
+        userStats.organizationsArrayFixed + memberStats.organizationsArrayFixed,
+      memberRecordsFixed:
+        userStats.memberRecordsFixed + orgStats.memberRecordsFixed + memberStats.memberRecordsFixed,
       orgCreatedByFixed: orgStats.orgCreatedByFixed,
     };
 

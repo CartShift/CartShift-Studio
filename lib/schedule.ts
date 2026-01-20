@@ -1,10 +1,11 @@
-export const SCHEDULE_URL = process.env.NEXT_PUBLIC_SCHEDULE_URL || "https://calendar.app.google/C9HXxJEMqBk1na2v8";
+export const SCHEDULE_URL =
+  process.env.NEXT_PUBLIC_SCHEDULE_URL || 'https://calendar.app.google/C9HXxJEMqBk1na2v8';
 
 export const getScheduleUrl = () => SCHEDULE_URL;
 
 export const openSchedulePopup = () => {
-  if (typeof window !== "undefined") {
-    window.open(SCHEDULE_URL, "_blank");
+  if (typeof window !== 'undefined') {
+    window.open(SCHEDULE_URL, '_blank');
   }
 };
 
@@ -34,7 +35,10 @@ export function generateGoogleCalendarEventLink(event: CalendarEventDetails): st
 
   // Format dates to Google Calendar format (YYYYMMDDTHHmmssZ)
   const formatDate = (date: Date): string => {
-    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    return date
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}/, '');
   };
 
   const params = new URLSearchParams({
@@ -115,7 +119,7 @@ export function generateConsultationCalendarLink(
  * Opens a new Google Calendar event in a popup window.
  */
 export function openCalendarEventPopup(eventUrl: string): void {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     window.open(
       eventUrl,
       'google-calendar-event',

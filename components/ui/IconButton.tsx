@@ -51,11 +51,7 @@ const iconButtonVariants = cva(
           'hover:text-surface-900 dark:hover:text-white',
           'hover:bg-surface-100 dark:hover:bg-surface-800',
         ],
-        primary: [
-          'bg-primary-500 text-white',
-          'hover:bg-primary-600',
-          'shadow-sm',
-        ],
+        primary: ['bg-primary-500 text-white', 'hover:bg-primary-600', 'shadow-sm'],
         secondary: [
           'bg-surface-100 dark:bg-surface-800',
           'text-surface-700 dark:text-surface-300',
@@ -109,7 +105,8 @@ const iconSizeMap = {
 } as const;
 
 export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'>,
+  extends
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'>,
     VariantProps<typeof iconButtonVariants> {
   /** The icon component to render (e.g., from lucide-react) */
   icon: React.ElementType;

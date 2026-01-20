@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { CommentItem } from './CommentItem';
 import { MentionInput } from '@/components/portal/ui/Discussion/MentionInput';
 import { Comment, PortalUser } from '@/lib/types/portal';
@@ -60,91 +60,91 @@ export const RequestDiscussion = ({
   const getReplies = (parentId: string) => comments.filter(c => c.parentId === parentId);
 
   return (
-    <div className="space-y-4 animate-in slide-in-from-end-4 duration-500">
-      <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest flex items-center gap-2 px-1">
-        <MessageSquare size={14} className="text-blue-500" /> {t('requests.detail.discussion')}
-      </h3>
+    <Card
+      noPadding
+      className="flex flex-col border-surface-200 dark:border-surface-800 shadow-sm bg-surface-50/50 dark:bg-surface-900/10 min-h-[500px] overflow-hidden animate-in slide-in-from-end-4 duration-500"
+    >
+      <div className="p-6 pb-0">
+        <CardSectionTitle icon={MessageSquare} iconClassName="text-blue-500">
+          {t('requests.detail.discussion')}
+        </CardSectionTitle>
+      </div>
 
-      <Card
-        noPadding
-        className="flex flex-col border-surface-200 dark:border-surface-800 shadow-sm bg-surface-50/50 dark:bg-surface-900/10 min-h-[500px] overflow-hidden"
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-6 space-y-6 max-h-[600px] scrollbar-hide"
       >
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto p-6 space-y-6 max-h-[600px] scrollbar-hide"
-        >
-          {comments.length > 0 ? (
-            rootComments.map(comment => (
-              <div key={comment.id} className="flex flex-col">
+        {comments.length > 0 ? (
+          rootComments.map(comment => (
+            <div key={comment.id} className="flex flex-col">
+              <CommentItem
+                comment={comment}
+                currentUserId={currentUser?.id || ''}
+                onReply={handleReply}
+              />
+
+              {/* Render Replies */}
+              {getReplies(comment.id).map(reply => (
                 <CommentItem
-                  comment={comment}
+                  key={reply.id}
+                  comment={reply}
                   currentUserId={currentUser?.id || ''}
                   onReply={handleReply}
+                  isReply
                 />
-
-                {/* Render Replies */}
-                {getReplies(comment.id).map(reply => (
-                  <CommentItem
-                    key={reply.id}
-                    comment={reply}
-                    currentUserId={currentUser?.id || ''}
-                    onReply={handleReply}
-                    isReply
-                  />
-                ))}
-              </div>
-            ))
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center py-20 opacity-40 space-y-2">
-              <MessageSquare size={48} className="text-surface-300" />
-              <div>
-                <p className="text-sm font-bold text-surface-400 font-outfit uppercase tracking-widest">
-                  {t('requests.detail.emptyMessages')}
-                </p>
-                <p className="text-xs text-surface-500">{t('requests.detail.emptyMessagesDesc')}</p>
-              </div>
+              ))}
             </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 border-t border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-950">
-          {/* Reply Context */}
-          {replyTo && (
-            <div className="flex items-center justify-between bg-surface-50 dark:bg-surface-900 p-2 rounded-lg mb-2 text-xs border-s-2 border-blue-500">
-              <span className="text-surface-500">
-                {t('requests.detail.replyingTo')}{' '}
-                <span className="font-bold">{replyTo.userName}</span>
-              </span>
-              <button
-                onClick={() => setReplyTo(null)}
-                className="text-surface-400 hover:text-surface-600"
-              >
-                {t('common.cancel')}
-              </button>
+          ))
+        ) : (
+          <div className="h-full flex flex-col items-center justify-center text-center py-20 opacity-40 space-y-2">
+            <MessageSquare size={48} className="text-surface-300" />
+            <div>
+              <p className="text-sm font-bold text-surface-400 font-outfit uppercase tracking-widest">
+                {t('requests.detail.emptyMessages')}
+              </p>
+              <p className="text-xs text-surface-500">{t('requests.detail.emptyMessagesDesc')}</p>
             </div>
-          )}
+          </div>
+        )}
+      </div>
 
-          <div className="relative group">
-            <MentionInput
-              value={newComment}
-              onChange={setNewComment}
-              onSubmit={handleSubmit}
-              disabled={isSubmitting}
-              placeholder={t('requests.detail.placeholder')}
-              users={agencyTeam} // Also include current user? Usually just others.
-            />
-
+      {/* Input Area */}
+      <div className="p-4 border-t border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-950">
+        {/* Reply Context */}
+        {replyTo && (
+          <div className="flex items-center justify-between bg-surface-50 dark:bg-surface-900 p-2 rounded-lg mb-2 text-xs border-s-2 border-blue-500">
+            <span className="text-surface-500">
+              {t('requests.detail.replyingTo')}{' '}
+              <span className="font-bold">{replyTo.userName}</span>
+            </span>
             <button
-              onClick={handleSubmit}
-              disabled={isSubmitting || !newComment.trim()}
-              className="absolute end-3 bottom-3 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none"
+              onClick={() => setReplyTo(null)}
+              className="text-surface-400 hover:text-surface-600"
             >
-              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              {t('common.cancel')}
             </button>
           </div>
+        )}
+
+        <div className="relative group">
+          <MentionInput
+            value={newComment}
+            onChange={setNewComment}
+            onSubmit={handleSubmit}
+            disabled={isSubmitting}
+            placeholder={t('requests.detail.placeholder')}
+            users={agencyTeam} // Also include current user? Usually just others.
+          />
+
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !newComment.trim()}
+            className="absolute end-3 bottom-3 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none"
+          >
+            {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+          </button>
         </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 };

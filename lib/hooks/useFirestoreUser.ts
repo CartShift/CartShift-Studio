@@ -94,7 +94,7 @@ export function useFirestoreUser(
   const pathname = usePathname();
 
   const refreshUserData = useCallback(() => {
-    setRefreshKey((k) => k + 1);
+    setRefreshKey(k => k + 1);
   }, []);
 
   // Cleanup function for Firestore subscription
@@ -142,7 +142,7 @@ export function useFirestoreUser(
 
       unsubscribeRef.current = onSnapshot(
         userDocRef,
-        (snapshot) => {
+        snapshot => {
           if (!isMountedRef.current) return;
 
           if (snapshot.exists()) {
@@ -161,7 +161,7 @@ export function useFirestoreUser(
               agencyRole: data.agencyRole,
             };
 
-            setUserData((prevData) =>
+            setUserData(prevData =>
               userDataEqual(prevData, newUserData) ? prevData : newUserData
             );
             options.onUserData?.(newUserData);
@@ -173,14 +173,14 @@ export function useFirestoreUser(
               '. Using fallback data.'
             );
             const fallbackData = createFallbackUserData(user);
-            setUserData((prevData) =>
+            setUserData(prevData =>
               userDataEqual(prevData, fallbackData) ? prevData : fallbackData
             );
             options.onNoUserDocument?.(fallbackData);
           }
           set(false);
         },
-        (err) => {
+        err => {
           if (!isMountedRef.current) return;
 
           const isLoggingOutActive = isLoggingOut();
@@ -200,7 +200,7 @@ export function useFirestoreUser(
             // User authenticated but no document yet - use fallback
             if (hasCurrentUser) {
               const fallbackData = createFallbackUserData(user);
-              setUserData((prevData) =>
+              setUserData(prevData =>
                 userDataEqual(prevData, fallbackData) ? prevData : fallbackData
               );
               set(false);

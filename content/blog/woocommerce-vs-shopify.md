@@ -1,11 +1,11 @@
 ---
-title: "WooCommerce vs Shopify: Which Platform Fits in 2026"
-date: "2025-12-18"
-excerpt: "WooCommerce vs Shopify in 2026: compare costs, flexibility, SEO, speed, and scalability to choose the right ecommerce platform for your business."
-category: "E-commerce Strategy"
-title_he: "ווקומרס או שופיפיי: מה מתאים לכם ב-2026?"
-excerpt_he: "ווקומרס מול שופיפיי ב-2026: השוואה פרקטית על עלויות, גמישות, SEO, ביצועים וסקייל — כדי לבחור פלטפורמה שמתאימה לעסק שלכם."
-category_he: "אסטרטגיית איקומרס"
+title: 'WooCommerce vs Shopify: Which Platform Fits in 2026'
+date: '2025-12-18'
+excerpt: 'WooCommerce vs Shopify in 2026: compare costs, flexibility, SEO, speed, and scalability to choose the right ecommerce platform for your business.'
+category: 'E-commerce Strategy'
+title_he: 'ווקומרס או שופיפיי: מה מתאים לכם ב-2026?'
+excerpt_he: 'ווקומרס מול שופיפיי ב-2026: השוואה פרקטית על עלויות, גמישות, SEO, ביצועים וסקייל — כדי לבחור פלטפורמה שמתאימה לעסק שלכם.'
+category_he: 'אסטרטגיית איקומרס'
 ---
 
 If you’ve been stuck in the “WooCommerce vs Shopify” loop, you’re not alone. It’s one of those debates that _looks_ like a simple feature checklist… until you’re 3 months in, paying for apps/plugins, fighting edge-case shipping rules, and realizing the platform decision quietly dictates how fast you can move.

@@ -15,7 +15,7 @@ import {
   UserMinus,
   Settings,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -156,15 +156,15 @@ export default function TeamClient() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest px-1">
-            {t('portal.team.activeMembers')}
-          </h3>
+        <div className="lg:col-span-2">
           <Card
             noPadding
             className="border-surface-200 dark:border-surface-800 shadow-sm !overflow-visible bg-white dark:bg-surface-950"
             style={{ overflow: 'visible' }}
           >
+            <CardSectionTitle className="p-5 pb-0">
+              {t('portal.team.activeMembers')}
+            </CardSectionTitle>
             <div
               className="divide-y divide-surface-100 dark:divide-surface-800 !overflow-visible"
               style={{ overflow: 'visible' }}
@@ -240,11 +240,9 @@ export default function TeamClient() {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest px-1">
-            {t('portal.team.pending')}
-          </h3>
+        <div>
           <Card className="space-y-6 border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+            <CardSectionTitle>{t('portal.team.pending')}</CardSectionTitle>
             {invites.length > 0 ? (
               invites.map(invite => (
                 <div key={invite.id} className="space-y-4">

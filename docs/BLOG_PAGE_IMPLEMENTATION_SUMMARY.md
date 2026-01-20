@@ -96,10 +96,10 @@ types/
 
 ```tsx
 // Card hover effect
-className = "group hover:-translate-y-1 hover:shadow-xl transition-all duration-300";
+className = 'group hover:-translate-y-1 hover:shadow-xl transition-all duration-300';
 
 // Image with scale on hover
-className = "group-hover:scale-105 transition-transform duration-300";
+className = 'group-hover:scale-105 transition-transform duration-300';
 ```
 
 #### 1.2 Typography & Spacing
@@ -183,16 +183,20 @@ export const FeaturedPost: React.FC<{ post: BlogPost }> = ({ post }) => {
 ```tsx
 // components/ui/SearchBar.tsx
 export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, resultCount }) => {
-	const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
+  const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
 
-	return (
-		<div className="search-bar">
-			<SearchIcon />
-			<input type="search" placeholder="Search articles..." onChange={e => debouncedOnChange(e.target.value)} />
-			{value && <button onClick={onClear}>×</button>}
-			{resultCount !== null && <div className="result-count">Found {resultCount} results</div>}
-		</div>
-	);
+  return (
+    <div className="search-bar">
+      <SearchIcon />
+      <input
+        type="search"
+        placeholder="Search articles..."
+        onChange={e => debouncedOnChange(e.target.value)}
+      />
+      {value && <button onClick={onClear}>×</button>}
+      {resultCount !== null && <div className="result-count">Found {resultCount} results</div>}
+    </div>
+  );
 };
 ```
 
@@ -208,9 +212,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, 
 
 ```tsx
 const [filters, setFilters] = useState({
-	search: "",
-	categories: [] as string[],
-	sortBy: "latest" as SortOption
+  search: '',
+  categories: [] as string[],
+  sortBy: 'latest' as SortOption,
 });
 ```
 
@@ -238,16 +242,16 @@ const [filters, setFilters] = useState({
 
 ```tsx
 <div className="grid lg:grid-cols-12 gap-8">
-	<aside className="lg:col-span-3">
-		<div className="lg:sticky lg:top-28">
-			<SearchBar />
-			<CategoryFilters />
-			<SortDropdown />
-			<NewsletterWidget />
-			<PopularTags />
-		</div>
-	</aside>
-	<main className="lg:col-span-9">{/* Posts grid */}</main>
+  <aside className="lg:col-span-3">
+    <div className="lg:sticky lg:top-28">
+      <SearchBar />
+      <CategoryFilters />
+      <SortDropdown />
+      <NewsletterWidget />
+      <PopularTags />
+    </div>
+  </aside>
+  <main className="lg:col-span-9">{/* Posts grid */}</main>
 </div>
 ```
 
@@ -276,25 +280,25 @@ const [filters, setFilters] = useState({
 ```tsx
 // components/sections/NewsletterWidget.tsx
 export const NewsletterWidget: React.FC = () => {
-	const [email, setEmail] = useState("");
-	const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-	const handleSubmit = async (e: FormEvent) => {
-		e.preventDefault();
-		setStatus("loading");
-		try {
-			await subscribeToNewsletter(email);
-			setStatus("success");
-		} catch (error) {
-			setStatus("error");
-		}
-	};
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      await subscribeToNewsletter(email);
+      setStatus('success');
+    } catch (error) {
+      setStatus('error');
+    }
+  };
 
-	return (
-		<Card className="newsletter-widget">
-			<form onSubmit={handleSubmit}>{/* Form fields */}</form>
-		</Card>
-	);
+  return (
+    <Card className="newsletter-widget">
+      <form onSubmit={handleSubmit}>{/* Form fields */}</form>
+    </Card>
+  );
 };
 ```
 
@@ -309,9 +313,9 @@ export const NewsletterWidget: React.FC = () => {
 
 ```tsx
 <div className="relative">
-	<div className="absolute -inset-[2px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 rounded-2xl opacity-75 blur-sm animate-gradient-x" />
-	<div className="absolute -inset-[1px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 rounded-2xl opacity-90 animate-gradient-x" />
-	<div className="relative bg-white dark:bg-surface-900 rounded-2xl p-10">{/* CTA content */}</div>
+  <div className="absolute -inset-[2px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 rounded-2xl opacity-75 blur-sm animate-gradient-x" />
+  <div className="absolute -inset-[1px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 rounded-2xl opacity-90 animate-gradient-x" />
+  <div className="relative bg-white dark:bg-surface-900 rounded-2xl p-10">{/* CTA content */}</div>
 </div>
 ```
 
@@ -332,20 +336,27 @@ export const NewsletterWidget: React.FC = () => {
 
 ```tsx
 // components/ui/Pagination.tsx
-export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, postsPerPage, totalPosts, onLoadMore, isLoading }) => {
-	return (
-		<div className="pagination">
-			<Button onClick={onLoadMore} disabled={isLoading || currentPage >= totalPages}>
-				{isLoading ? "Loading..." : `Load More Posts (${postsPerPage})`}
-			</Button>
-			<div className="progress-info">
-				Showing {currentPage * postsPerPage} of {totalPosts}
-			</div>
-			<div className="progress-bar">
-				<div className="progress-fill" style={{ width: `${(currentPage / totalPages) * 100}%` }} />
-			</div>
-		</div>
-	);
+export const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  postsPerPage,
+  totalPosts,
+  onLoadMore,
+  isLoading,
+}) => {
+  return (
+    <div className="pagination">
+      <Button onClick={onLoadMore} disabled={isLoading || currentPage >= totalPages}>
+        {isLoading ? 'Loading...' : `Load More Posts (${postsPerPage})`}
+      </Button>
+      <div className="progress-info">
+        Showing {currentPage * postsPerPage} of {totalPosts}
+      </div>
+      <div className="progress-bar">
+        <div className="progress-fill" style={{ width: `${(currentPage / totalPages) * 100}%` }} />
+      </div>
+    </div>
+  );
 };
 ```
 
@@ -379,17 +390,17 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages,
 
 ```tsx
 export const BlogCardSkeleton: React.FC = () => {
-	return (
-		<div className="animate-pulse">
-			<div className="bg-gray-200 h-48 rounded-t-xl" />
-			<div className="p-6 space-y-3">
-				<div className="h-4 bg-gray-200 rounded w-1/4" />
-				<div className="h-6 bg-gray-200 rounded w-3/4" />
-				<div className="h-4 bg-gray-200 rounded w-full" />
-				<div className="h-4 bg-gray-200 rounded w-full" />
-			</div>
-		</div>
-	);
+  return (
+    <div className="animate-pulse">
+      <div className="bg-gray-200 h-48 rounded-t-xl" />
+      <div className="p-6 space-y-3">
+        <div className="h-4 bg-gray-200 rounded w-1/4" />
+        <div className="h-6 bg-gray-200 rounded w-3/4" />
+        <div className="h-4 bg-gray-200 rounded w-full" />
+        <div className="h-4 bg-gray-200 rounded w-full" />
+      </div>
+    </div>
+  );
 };
 ```
 
@@ -409,7 +420,7 @@ export const BlogCardSkeleton: React.FC = () => {
 
 ```css
 .focus-visible {
-	@apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
 }
 ```
 
@@ -448,10 +459,10 @@ export const BlogCardSkeleton: React.FC = () => {
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-	* {
-		animation-duration: 0.01ms !important;
-		transition-duration: 0.01ms !important;
-	}
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 ```
 
@@ -470,7 +481,15 @@ export const BlogCardSkeleton: React.FC = () => {
 **Implementation:**
 
 ```tsx
-<Image src={post.image} alt={post.title} width={400} height={225} loading="lazy" placeholder="blur" blurDataURL={post.blurDataURL} />
+<Image
+  src={post.image}
+  alt={post.title}
+  width={400}
+  height={225}
+  loading="lazy"
+  placeholder="blur"
+  blurDataURL={post.blurDataURL}
+/>
 ```
 
 #### 9.2 Code Splitting
@@ -480,7 +499,9 @@ export const BlogCardSkeleton: React.FC = () => {
 - [ ] Dynamic import heavy components
 
 ```tsx
-const NewsletterWidget = dynamic(() => import("@/components/sections/NewsletterWidget"), { ssr: false });
+const NewsletterWidget = dynamic(() => import('@/components/sections/NewsletterWidget'), {
+  ssr: false,
+});
 ```
 
 #### 9.3 Search Optimization
@@ -544,67 +565,71 @@ const NewsletterWidget = dynamic(() => import("@/components/sections/NewsletterW
 
 ```tsx
 // components/sections/BlogPageContent.tsx
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from 'react';
 
 interface BlogPageState {
-	searchTerm: string;
-	selectedCategories: string[];
-	sortBy: "latest" | "oldest" | "a-z" | "z-a";
-	currentPage: number;
-	postsPerPage: number;
+  searchTerm: string;
+  selectedCategories: string[];
+  sortBy: 'latest' | 'oldest' | 'a-z' | 'z-a';
+  currentPage: number;
+  postsPerPage: number;
 }
 
 export const BlogPageContent: React.FC<Props> = ({ posts, categories }) => {
-	const [state, setState] = useState<BlogPageState>({
-		searchTerm: "",
-		selectedCategories: [],
-		sortBy: "latest",
-		currentPage: 1,
-		postsPerPage: 9
-	});
+  const [state, setState] = useState<BlogPageState>({
+    searchTerm: '',
+    selectedCategories: [],
+    sortBy: 'latest',
+    currentPage: 1,
+    postsPerPage: 9,
+  });
 
-	// Filter posts based on search and categories
-	const filteredPosts = useMemo(() => {
-		let result = posts;
+  // Filter posts based on search and categories
+  const filteredPosts = useMemo(() => {
+    let result = posts;
 
-		// Search filter
-		if (state.searchTerm) {
-			result = result.filter(post => post.title.toLowerCase().includes(state.searchTerm.toLowerCase()) || post.excerpt.toLowerCase().includes(state.searchTerm.toLowerCase()));
-		}
+    // Search filter
+    if (state.searchTerm) {
+      result = result.filter(
+        post =>
+          post.title.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+          post.excerpt.toLowerCase().includes(state.searchTerm.toLowerCase())
+      );
+    }
 
-		// Category filter
-		if (state.selectedCategories.length > 0) {
-			result = result.filter(post => state.selectedCategories.includes(post.category));
-		}
+    // Category filter
+    if (state.selectedCategories.length > 0) {
+      result = result.filter(post => state.selectedCategories.includes(post.category));
+    }
 
-		// Sorting
-		switch (state.sortBy) {
-			case "latest":
-				return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-			case "oldest":
-				return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-			case "a-z":
-				return result.sort((a, b) => a.title.localeCompare(b.title));
-			case "z-a":
-				return result.sort((a, b) => b.title.localeCompare(a.title));
-			default:
-				return result;
-		}
-	}, [posts, state.searchTerm, state.selectedCategories, state.sortBy]);
+    // Sorting
+    switch (state.sortBy) {
+      case 'latest':
+        return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      case 'oldest':
+        return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      case 'a-z':
+        return result.sort((a, b) => a.title.localeCompare(b.title));
+      case 'z-a':
+        return result.sort((a, b) => b.title.localeCompare(a.title));
+      default:
+        return result;
+    }
+  }, [posts, state.searchTerm, state.selectedCategories, state.sortBy]);
 
-	// Paginated posts
-	const displayedPosts = useMemo(() => {
-		const startIndex = 0;
-		const endIndex = state.currentPage * state.postsPerPage;
-		return filteredPosts.slice(startIndex, endIndex);
-	}, [filteredPosts, state.currentPage, state.postsPerPage]);
+  // Paginated posts
+  const displayedPosts = useMemo(() => {
+    const startIndex = 0;
+    const endIndex = state.currentPage * state.postsPerPage;
+    return filteredPosts.slice(startIndex, endIndex);
+  }, [filteredPosts, state.currentPage, state.postsPerPage]);
 
-	// Featured post (first post or marked as featured)
-	const featuredPost = useMemo(() => {
-		return posts.find(post => post.featured) || posts[0];
-	}, [posts]);
+  // Featured post (first post or marked as featured)
+  const featuredPost = useMemo(() => {
+    return posts.find(post => post.featured) || posts[0];
+  }, [posts]);
 
-	return <div>{/* Layout with sidebar and main content */}</div>;
+  return <div>{/* Layout with sidebar and main content */}</div>;
 };
 ```
 
@@ -613,24 +638,29 @@ export const BlogPageContent: React.FC<Props> = ({ posts, categories }) => {
 ```tsx
 // lib/search.ts
 export function searchPosts(posts: BlogPost[], query: string): BlogPost[] {
-	if (!query.trim()) return posts;
+  if (!query.trim()) return posts;
 
-	const lowerQuery = query.toLowerCase();
+  const lowerQuery = query.toLowerCase();
 
-	return posts.filter(post => {
-		const searchableText = [post.title, post.excerpt, post.category, ...(post.tags || [])].join(" ").toLowerCase();
+  return posts.filter(post => {
+    const searchableText = [post.title, post.excerpt, post.category, ...(post.tags || [])]
+      .join(' ')
+      .toLowerCase();
 
-		return searchableText.includes(lowerQuery);
-	});
+    return searchableText.includes(lowerQuery);
+  });
 }
 
-export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
-	let timeout: NodeJS.Timeout | null = null;
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
 
-	return (...args: Parameters<T>) => {
-		if (timeout) clearTimeout(timeout);
-		timeout = setTimeout(() => func(...args), wait);
-	};
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
 }
 ```
 
@@ -639,34 +669,34 @@ export function debounce<T extends (...args: any[]) => any>(func: T, wait: numbe
 ```tsx
 // types/blog.ts
 export interface BlogPost {
-	slug: string;
-	title: string;
-	excerpt: string;
-	content: string;
-	date: string;
-	category: string;
-	author?: string;
-	image?: string;
-	blurDataURL?: string;
-	readingTime?: number;
-	tags?: string[];
-	featured?: boolean;
-	translation?: {
-		title: string;
-		excerpt: string;
-		content: string;
-		category: string;
-	};
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  date: string;
+  category: string;
+  author?: string;
+  image?: string;
+  blurDataURL?: string;
+  readingTime?: number;
+  tags?: string[];
+  featured?: boolean;
+  translation?: {
+    title: string;
+    excerpt: string;
+    content: string;
+    category: string;
+  };
 }
 
 export interface BlogFilters {
-	search: string;
-	categories: string[];
-	tags: string[];
-	sortBy: SortOption;
+  search: string;
+  categories: string[];
+  tags: string[];
+  sortBy: SortOption;
 }
 
-export type SortOption = "latest" | "oldest" | "a-z" | "z-a" | "popular";
+export type SortOption = 'latest' | 'oldest' | 'a-z' | 'z-a' | 'popular';
 ```
 
 ---
@@ -680,9 +710,9 @@ These can be implemented quickly for immediate impact:
 ```tsx
 // lib/markdown.ts
 function calculateReadingTime(content: string): number {
-	const wordsPerMinute = 200;
-	const wordCount = content.trim().split(/\s+/).length;
-	return Math.ceil(wordCount / wordsPerMinute);
+  const wordsPerMinute = 200;
+  const wordCount = content.trim().split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
 }
 
 // Add to post processing
@@ -693,21 +723,23 @@ post.readingTime = calculateReadingTime(post.content);
 
 ```tsx
 // components/sections/BlogPageContent.tsx
-className = "group hover:-translate-y-1 hover:shadow-xl transition-all duration-300";
+className = 'group hover:-translate-y-1 hover:shadow-xl transition-all duration-300';
 ```
 
 ### 3. Add Gradient Text to Title (10 minutes)
 
 ```tsx
 <h1>
-	Insights & <span className="gradient-text">Expertise</span>
+  Insights & <span className="gradient-text">Expertise</span>
 </h1>
 ```
 
 ### 4. Better Category Badges (15 minutes)
 
 ```tsx
-<span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs font-semibold">{category}</span>
+<span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs font-semibold">
+  {category}
+</span>
 ```
 
 ### 5. Improve Spacing (20 minutes)

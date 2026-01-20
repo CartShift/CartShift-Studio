@@ -1,11 +1,11 @@
 ---
-title: "10 Ways to Speed Up Your Shopify Store"
-date: "2024-12-01"
+title: '10 Ways to Speed Up Your Shopify Store'
+date: '2024-12-01'
 excerpt: "Learn proven strategies to improve your store's performance and boost conversions."
-category: "Shopify"
-title_he: "10 דרכים להאיץ את חנות השופיפיי שלכם"
-excerpt_he: "למדו אסטרטגיות מוכחות לשיפור ביצועי החנות ולהגדלת ההמרות."
-category_he: "שופיפיי"
+category: 'Shopify'
+title_he: '10 דרכים להאיץ את חנות השופיפיי שלכם'
+excerpt_he: 'למדו אסטרטגיות מוכחות לשיפור ביצועי החנות ולהגדלת ההמרות.'
+category_he: 'שופיפיי'
 ---
 
 Speed is crucial for e-commerce success. A slow-loading store can significantly impact your conversion rates and search engine rankings. ~~Old advice: "just compress images"~~ Modern approach: systematic optimization across multiple layers. Here are 10 proven strategies to speed up your Shopify store:
@@ -56,12 +56,12 @@ Use tools like https://pagespeed.web.dev/ and Shopify's built-in performance met
 
 ### Performance Benchmarks
 
-| Metric | Target | Poor |
-| - | :-: | :-: |
-| **LCP (Largest Contentful Paint)** | < 2.5s | > 4s |
-| **FID (First Input Delay)** | < 100ms | > 300ms |
-| **CLS (Cumulative Layout Shift)** | < 0.1 | > 0.25 |
-| **TTFB (Time to First Byte)** | < 600ms | > 1.2s |
+| Metric                             | Target  |  Poor   |
+| ---------------------------------- | :-----: | :-----: |
+| **LCP (Largest Contentful Paint)** | < 2.5s  |  > 4s   |
+| **FID (First Input Delay)**        | < 100ms | > 300ms |
+| **CLS (Cumulative Layout Shift)**  |  < 0.1  | > 0.25  |
+| **TTFB (Time to First Byte)**      | < 600ms | > 1.2s  |
 
 ## Conclusion
 
@@ -118,7 +118,3 @@ Struggling with a slow store? We've optimized dozens of Shopify sites. [Contact 
 שיפור מהירות החנות הוא תהליך מתמשך. התחילו עם הניצחונות הגדולים (אופטימיזציה לתמונות והסרת אפליקציות) והתקדמו ברשימה. אפילו שיפורים קטנים יכולים להוביל לעלייה משמעותית בשיעורי ההמרה.
 
 מתמודדים עם חנות איטית? ביצענו אופטימיזציה לעשרות אתרי שופיפיי. [צרו קשר עם CartShift Studio](/contact) כדי לדון כיצד נוכל לעזור להפוך את שלכם למהירה יותר.
-
-
-
-

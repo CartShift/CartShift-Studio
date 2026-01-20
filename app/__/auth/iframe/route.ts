@@ -10,9 +10,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   // Build the Firebase auth iframe URL
-  const firebaseAuthUrl = new URL(
-    'https://cartshiftstudio.firebaseapp.com/__/auth/iframe'
-  );
+  const firebaseAuthUrl = new URL('https://cartshiftstudio.firebaseapp.com/__/auth/iframe');
 
   // Forward all query parameters
   searchParams.forEach((value, key) => {
@@ -22,7 +20,7 @@ export async function GET(request: NextRequest) {
   try {
     const response = await fetch(firebaseAuthUrl.toString(), {
       headers: {
-        'Accept': request.headers.get('Accept') || 'text/html',
+        Accept: request.headers.get('Accept') || 'text/html',
         'User-Agent': request.headers.get('User-Agent') || '',
       },
     });
@@ -40,9 +38,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Firebase auth iframe proxy error:', error);
-    return NextResponse.json(
-      { error: 'Failed to proxy auth request' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to proxy auth request' }, { status: 500 });
   }
 }

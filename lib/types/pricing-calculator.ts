@@ -14,16 +14,19 @@ export const EFFORT_LEVEL = {
 export type EffortLevel = (typeof EFFORT_LEVEL)[keyof typeof EFFORT_LEVEL];
 
 // Effort level configuration for UI
-export const EFFORT_LEVEL_CONFIG: Record<EffortLevel, {
-  label: string;
-  labelHe: string;
-  color: string;
-  bgColor: string;
-  description: string;
-  descriptionHe: string;
-  hoursRange: string;
-  hoursRangeHe: string;
-}> = {
+export const EFFORT_LEVEL_CONFIG: Record<
+  EffortLevel,
+  {
+    label: string;
+    labelHe: string;
+    color: string;
+    bgColor: string;
+    description: string;
+    descriptionHe: string;
+    hoursRange: string;
+    hoursRangeHe: string;
+  }
+> = {
   low: {
     label: 'Low',
     labelHe: 'נמוך',
@@ -50,7 +53,7 @@ export const EFFORT_LEVEL_CONFIG: Record<EffortLevel, {
     color: 'text-amber-600 dark:text-amber-400',
     bgColor: 'bg-amber-100 dark:bg-amber-900/30',
     description: 'Complex features, significant changes',
-    descriptionHe: 'פיצ\'רים מורכבים, שינויים משמעותיים',
+    descriptionHe: "פיצ'רים מורכבים, שינויים משמעותיים",
     hoursRange: '12-24 hours',
     hoursRangeHe: '12-24 שעות',
   },
@@ -60,7 +63,7 @@ export const EFFORT_LEVEL_CONFIG: Record<EffortLevel, {
     color: 'text-purple-600 dark:text-purple-400',
     bgColor: 'bg-purple-100 dark:bg-purple-900/30',
     description: 'Major features, architectural changes',
-    descriptionHe: 'פיצ\'רים גדולים, שינויים ארכיטקטוניים',
+    descriptionHe: "פיצ'רים גדולים, שינויים ארכיטקטוניים",
     hoursRange: '24+ hours',
     hoursRangeHe: '24+ שעות',
   },
@@ -73,39 +76,39 @@ export const EFFORT_LEVEL_CONFIG: Record<EffortLevel, {
 // Base prices in cents (ILS) - adjust as needed
 export const PRICING_MATRIX: Record<RequestType, Record<EffortLevel, number>> = {
   feature: {
-    low: 55000,      // ₪550
-    medium: 150000,  // ₪1,500
-    high: 300000,    // ₪3,000
+    low: 55000, // ₪550
+    medium: 150000, // ₪1,500
+    high: 300000, // ₪3,000
     complex: 560000, // ₪5,600
   },
   bug: {
-    low: 28000,      // ₪280
-    medium: 75000,   // ₪750
-    high: 170000,    // ₪1,700
+    low: 28000, // ₪280
+    medium: 75000, // ₪750
+    high: 170000, // ₪1,700
     complex: 300000, // ₪3,000
   },
   optimization: {
-    low: 37000,      // ₪370
-    medium: 112000,  // ₪1,120
-    high: 225000,    // ₪2,250
+    low: 37000, // ₪370
+    medium: 112000, // ₪1,120
+    high: 225000, // ₪2,250
     complex: 450000, // ₪4,500
   },
   content: {
-    low: 19000,      // ₪190
-    medium: 56000,   // ₪560
-    high: 130000,    // ₪1,300
+    low: 19000, // ₪190
+    medium: 56000, // ₪560
+    high: 130000, // ₪1,300
     complex: 260000, // ₪2,600
   },
   design: {
-    low: 47000,      // ₪470
-    medium: 130000,  // ₪1,300
-    high: 260000,    // ₪2,600
+    low: 47000, // ₪470
+    medium: 130000, // ₪1,300
+    high: 260000, // ₪2,600
     complex: 520000, // ₪5,200
   },
   other: {
-    low: 37000,      // ₪370
-    medium: 93000,   // ₪930
-    high: 187000,    // ₪1,870
+    low: 37000, // ₪370
+    medium: 93000, // ₪930
+    high: 187000, // ₪1,870
     complex: 375000, // ₪3,750
   },
 };

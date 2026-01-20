@@ -137,16 +137,7 @@
       },
       "backend": {
         "category": "Backend & Runtime",
-        "items": [
-          "Node.js",
-          "PHP",
-          "Python",
-          "Java",
-          "C#",
-          "C++",
-          "GraphQL",
-          "REST APIs"
-        ]
+        "items": ["Node.js", "PHP", "Python", "Java", "C#", "C++", "GraphQL", "REST APIs"]
       },
       "cloud": {
         "category": "Cloud & DevOps",
@@ -162,36 +153,15 @@
       },
       "ecommerce": {
         "category": "E-Commerce & CMS",
-        "items": [
-          "Shopify",
-          "Shopify APIs",
-          "WordPress",
-          "HubSpot",
-          "Laravel",
-          "Stripe"
-        ]
+        "items": ["Shopify", "Shopify APIs", "WordPress", "HubSpot", "Laravel", "Stripe"]
       },
       "database": {
         "category": "Data & Storage",
-        "items": [
-          "PostgreSQL",
-          "Firestore",
-          "MongoDB",
-          "SQL",
-          "Redis",
-          "PL/SQL"
-        ]
+        "items": ["PostgreSQL", "Firestore", "MongoDB", "SQL", "Redis", "PL/SQL"]
       },
       "apis": {
         "category": "AI & Automation",
-        "items": [
-          "OpenAI API",
-          "Claude API",
-          "LangChain",
-          "Webhooks",
-          "Puppeteer",
-          "Playwright"
-        ]
+        "items": ["OpenAI API", "Claude API", "LangChain", "Webhooks", "Puppeteer", "Playwright"]
       }
     },
     "education": {

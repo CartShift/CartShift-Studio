@@ -226,7 +226,9 @@ export const ImageUpload = ({
           ) : (
             <>
               <Camera className="w-3 h-3 me-1.5" />
-              {currentImageUrl ? labels.change || t('portal.files.imageLabels.change' as any) : labels.upload || t('portal.files.imageLabels.upload' as any)}
+              {currentImageUrl
+                ? labels.change || t('portal.files.imageLabels.change' as any)
+                : labels.upload || t('portal.files.imageLabels.upload' as any)}
             </>
           )}
         </Button>

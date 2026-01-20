@@ -39,7 +39,7 @@ export function isPortalPath(pathWithoutLocale: string): boolean {
 export function getPortalPath(path: string, locale?: string): string {
   let normalized = path
     .replace(/^\/[a-z]{2}\//, '/') // Remove locale prefix
-    .replace(/^\/portal\//, '/')   // Remove /portal/ prefix
+    .replace(/^\/portal\//, '/') // Remove /portal/ prefix
     .replace(/^\/portal$/, '/');
 
   if (!normalized.startsWith('/')) normalized = '/' + normalized;

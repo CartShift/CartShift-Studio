@@ -304,7 +304,6 @@ export default function RequestsClient() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full min-w-0">
-
       <ConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -860,7 +859,10 @@ export default function RequestsClient() {
                 action={
                   !debouncedSearchQuery && activeFilter === 'All' ? (
                     <Link href="/portal/requests/new/">
-                      <Button as="div" className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/20">
+                      <Button
+                        as="div"
+                        className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/20"
+                      >
                         <Plus size={18} className="me-2" />
                         {t('portal.requests.newRequest')}
                       </Button>

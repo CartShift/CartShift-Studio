@@ -22,23 +22,25 @@ Firebase App Hosting deploys automatically on push to the connected branch.
 ### Manual Deployments
 
 **Deploy rules only**:
+
 ```bash
 pnpm run deploy:rules
 ```
 
 **Deploy functions**:
+
 ```bash
 pnpm run deploy:functions
 ```
 
 ## 🔧 Configuration Files
 
-| File | Purpose |
-|------|---------|
+| File              | Purpose                                           |
+| ----------------- | ------------------------------------------------- |
 | `apphosting.yaml` | App Hosting config (Cloud Run settings, env vars) |
-| `firebase.json` | Firestore/Storage rules, Functions config |
-| `firestore.rules` | Firestore security rules |
-| `storage.rules` | Storage security rules |
+| `firebase.json`   | Firestore/Storage rules, Functions config         |
+| `firestore.rules` | Firestore security rules                          |
+| `storage.rules`   | Storage security rules                            |
 
 ## 🔗 Useful Links
 

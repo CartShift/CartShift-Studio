@@ -141,7 +141,6 @@ const iconComponents: Record<string, React.ComponentType<LucideProps>> = {
   loader: Loader2,
 };
 
-
 export const Icon: React.FC<IconProps> = ({ name, className = '', size = 24 }) => {
   if (name === 'whatsapp') {
     return (

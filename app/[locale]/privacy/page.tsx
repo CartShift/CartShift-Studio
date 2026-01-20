@@ -1,13 +1,14 @@
 import { setRequestLocale } from 'next-intl/server';
-import { generateMetadata as genMeta, generateBreadcrumbSchema } from "@/lib/seo";
-import Script from "next/script";
-import type { Metadata } from "next";
-import PrivacyContent from "./PrivacyContent";
+import { generateMetadata as genMeta, generateBreadcrumbSchema } from '@/lib/seo';
+import Script from 'next/script';
+import type { Metadata } from 'next';
+import PrivacyContent from './PrivacyContent';
 
 export const metadata: Metadata = genMeta({
-  title: "Privacy Policy",
-  description: "CartShift Studio privacy policy. Learn how we collect, use, and protect your personal information.",
-  url: "/privacy",
+  title: 'Privacy Policy',
+  description:
+    'CartShift Studio privacy policy. Learn how we collect, use, and protect your personal information.',
+  url: '/privacy',
   keywords: ['privacy policy', 'data protection', 'GDPR', 'cookie policy'],
 });
 
@@ -15,8 +16,8 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: "Home", url: "/" },
-    { name: "Privacy Policy", url: "/privacy" }
+    { name: 'Home', url: '/' },
+    { name: 'Privacy Policy', url: '/privacy' },
   ]);
 
   return (

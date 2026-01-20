@@ -19,15 +19,12 @@ interface RetryOptions {
  * @param options Configuration options
  * @returns The result of the function call
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const {
     maxAttempts = 3,
     initialDelay = 1000,
     backoffFactor = 2,
-    shouldRetry = () => true
+    shouldRetry = () => true,
   } = options;
 
   let lastError: any;

@@ -8,11 +8,7 @@ export {
   RequestRowSkeleton,
   RequestCardSkeleton,
 } from './RequestsListSkeleton';
-export {
-  AnalyticsSkeleton,
-  StatCardSkeleton,
-  AnalyticsCompactSkeleton,
-} from './AnalyticsSkeleton';
+export { AnalyticsSkeleton, StatCardSkeleton, AnalyticsCompactSkeleton } from './AnalyticsSkeleton';
 export {
   SalesPerformanceSkeleton,
   MetricCardSkeleton,

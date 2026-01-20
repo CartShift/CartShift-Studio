@@ -51,13 +51,19 @@ function fixUnusedPortalImports() {
       if (usesBaseInJSX && importsAsPortal && !usesPortalInJSX) {
         // Replace: import { Component as PortalComponent } from ...
         content = content.replace(
-          new RegExp(`import\\s+{\\s*${base}\\s+as\\s+${portal}\\s*}\\s+from\\s+['"]@/components/ui/${base}['"]`, 'g'),
+          new RegExp(
+            `import\\s+{\\s*${base}\\s+as\\s+${portal}\\s*}\\s+from\\s+['"]@/components/ui/${base}['"]`,
+            'g'
+          ),
           `import { ${base} } from '@/components/ui/${base}'`
         );
 
         // Also handle cases with other imports in the same statement
         content = content.replace(
-          new RegExp(`import\\s+{\\s*${base}\\s+as\\s+${portal}([^}]*)\\}\\s+from\\s+['"]@/components/ui/${base}['"]`, 'g'),
+          new RegExp(
+            `import\\s+{\\s*${base}\\s+as\\s+${portal}([^}]*)\\}\\s+from\\s+['"]@/components/ui/${base}['"]`,
+            'g'
+          ),
           (match, rest) => {
             const otherImports = rest.trim();
             if (otherImports && otherImports.startsWith(',')) {

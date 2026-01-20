@@ -31,6 +31,7 @@ For each component using the old system, follow this pattern:
 ### Client Components
 
 **Before:**
+
 ```tsx
 import { useLanguage } from '@/components/providers/LanguageProvider';
 
@@ -39,6 +40,7 @@ const isHe = language === 'he';
 ```
 
 **After:**
+
 ```tsx
 import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
@@ -53,11 +55,13 @@ const isHe = locale === 'he';
 ### Server Components
 
 **Before:**
+
 ```tsx
 import { useLanguage } from '@/components/providers/LanguageProvider';
 ```
 
 **After:**
+
 ```tsx
 import { getTranslations } from 'next-intl/server';
 import { setRequestLocale } from 'next-intl/server';
@@ -73,27 +77,31 @@ export default async function Component({ params }: { params: Promise<{ locale: 
 ### Navigation
 
 **Before:**
+
 ```tsx
 import Link from 'next/link';
 const href = localizePath('/some-path');
-<Link href={href}>...</Link>
+<Link href={href}>...</Link>;
 ```
 
 **After:**
+
 ```tsx
 import { Link } from '@/i18n/navigation';
-<Link href="/some-path">...</Link>
+<Link href="/some-path">...</Link>;
 ```
 
 ### Language Switching
 
 **Before:**
+
 ```tsx
 const { setLanguage } = useLanguage();
 setLanguage('he');
 ```
 
 **After:**
+
 ```tsx
 import { useRouter, usePathname } from '@/i18n/navigation';
 const router = useRouter();
@@ -106,6 +114,7 @@ router.replace(pathname, { locale: 'he' });
 ### Components (87+ files found)
 
 **High Priority:**
+
 - `components/sections/*` - All section components
 - `components/templates/*` - All template components
 - `components/portal/*` - Portal components
@@ -113,6 +122,7 @@ router.replace(pathname, { locale: 'he' });
 - `components/forms/*` - Form components
 
 **App Routes:**
+
 - `app/[locale]/portal/**` - Portal pages
 - `app/[locale]/blog/**` - Blog pages
 - `app/[locale]/*/page.tsx` - All page components
@@ -120,6 +130,7 @@ router.replace(pathname, { locale: 'he' });
 ### Migration Checklist
 
 For each file:
+
 1. Replace `useLanguage` import with `useTranslations`/`useLocale`/`getTranslations`
 2. Replace `localizePath` with direct paths (next-intl Link handles localization)
 3. Replace `Link` from `next/link` with `Link` from `@/i18n/navigation`
@@ -140,4 +151,3 @@ For each file:
 3. **Best Practices**: Industry-standard library
 4. **Server Components**: Full support for App Router
 5. **Maintainability**: Less custom code to maintain
-

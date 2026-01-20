@@ -7,6 +7,7 @@ These scripts automatically kill any existing Next.js dev processes and clear th
 ### PowerShell Script (`dev-force.ps1`)
 
 **Usage:**
+
 ```bash
 # Direct execution
 powershell -ExecutionPolicy Bypass -File scripts/dev-force.ps1
@@ -16,6 +17,7 @@ pnpm run dev:force
 ```
 
 **Features:**
+
 - Detects and terminates existing Next.js dev processes
 - Clears the `.next` cache directory
 - Starts a fresh development server
@@ -24,12 +26,14 @@ pnpm run dev:force
 ### Batch Script (`dev-force.bat`)
 
 **Usage:**
+
 ```bash
 # Via npm/pnpm
 pnpm run dev:force:win
 ```
 
 **Features:**
+
 - Windows batch alternative for systems that prefer .bat files
 - Same functionality as PowerShell script
 - Uses Windows taskkill and rmdir commands
@@ -39,6 +43,7 @@ pnpm run dev:force:win
 If you still encounter issues:
 
 1. **Manual cleanup:**
+
    ```powershell
    # Kill all node processes
    taskkill /IM node.exe /F
@@ -48,6 +53,7 @@ If you still encounter issues:
    ```
 
 2. **Check for processes:**
+
    ```powershell
    Get-Process -Name node | Where-Object { $_.CommandLine -like "*next*" }
    ```
@@ -60,6 +66,7 @@ If you still encounter issues:
 ## Regular Development
 
 For normal development (when no other instances are running), use:
+
 ```bash
 pnpm run dev
 ```

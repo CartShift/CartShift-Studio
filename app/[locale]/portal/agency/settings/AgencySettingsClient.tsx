@@ -2,35 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import {
-  Shield,
-  CreditCard,
-  Save,
-  Loader2,
-  Camera,
-  User,
-  Palette,
-  Building2,
-} from 'lucide-react';
+import { Shield, CreditCard, Save, Loader2, Camera, User, Palette, Building2 } from 'lucide-react';
 import { applyTheme } from '@/lib/utils/theme-generator';
 import { cn } from '@/lib/utils';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import {
-  getAgencyTeam,
-  getAgency,
-  updateAgency
-} from '@/lib/services/portal-agency';
+import { getAgencyTeam, getAgency, updateAgency } from '@/lib/services/portal-agency';
 import { updatePortalUser } from '@/lib/services/portal-users';
-import {
-  uploadAgencyAsset,
-  uploadUserProfilePicture
-} from '@/lib/services/portal-uploads';
-import {
-  updateGlobalBranding
-} from '@/lib/services/portal-branding';
+import { uploadAgencyAsset, uploadUserProfilePicture } from '@/lib/services/portal-uploads';
+import { updateGlobalBranding } from '@/lib/services/portal-branding';
 import { getFirebaseAuth } from '@/lib/firebase';
 import { PortalUser, Invite } from '@/lib/types/portal';
 import { subscribeToAgencyInvites, cancelInvite } from '@/lib/services/portal-organizations';
@@ -1465,12 +1447,9 @@ export default function AgencysClient() {
 
               {/* Pending Invites Section */}
               <div className="mt-10">
-                <div className="flex items-center gap-2 mb-4 px-1">
-                  <User className="text-blue-500" size={16} />
-                  <h4 className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                    {t('agency.settings.team.pendingInvites')}
-                  </h4>
-                </div>
+                <CardSectionTitle as="h4" icon={User} iconClassName="text-blue-500" className="mb-4 px-1">
+                  {t('agency.settings.team.pendingInvites')}
+                </CardSectionTitle>
 
                 {invites.length > 0 ? (
                   <div className="space-y-3">

@@ -48,7 +48,9 @@ export const EmptyState = ({
         </div>
       )}
 
-      <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit mb-2">{title}</h3>
+      <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
+        {title}
+      </h3>
 
       <p className="text-surface-500 dark:text-surface-400 text-sm font-medium max-w-sm leading-relaxed mb-6">
         {description}

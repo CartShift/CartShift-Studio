@@ -2,7 +2,11 @@
 
 import { forwardRef, type ReactNode } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { useViewTransition, type ViewTransitionOptions, type TransitionPreset } from '@/lib/hooks/useViewTransition';
+import {
+  useViewTransition,
+  type ViewTransitionOptions,
+  type TransitionPreset,
+} from '@/lib/hooks/useViewTransition';
 
 export interface ViewTransitionLinkProps extends Omit<React.ComponentPropsWithoutRef<'a'>, 'ref'> {
   children: ReactNode;
@@ -13,7 +17,19 @@ export interface ViewTransitionLinkProps extends Omit<React.ComponentPropsWithou
 }
 
 export const ViewTransitionLink = forwardRef<HTMLAnchorElement, ViewTransitionLinkProps>(
-  ({ children, viewTransition = true, transitionOptions, preset, onClick, href, className, ...props }, ref) => {
+  (
+    {
+      children,
+      viewTransition = true,
+      transitionOptions,
+      preset,
+      onClick,
+      href,
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const router = useRouter();
     const { startViewTransition, isSupported } = useViewTransition();
 
@@ -41,23 +57,20 @@ export const ViewTransitionLink = forwardRef<HTMLAnchorElement, ViewTransitionLi
 
       e.preventDefault();
 
-      await startViewTransition(() => {
-        router.push(href);
-      }, {
-        ...transitionOptions,
-        preset,
-        disableForReducedMotion: true,
-      });
+      await startViewTransition(
+        () => {
+          router.push(href);
+        },
+        {
+          ...transitionOptions,
+          preset,
+          disableForReducedMotion: true,
+        }
+      );
     };
 
     return (
-      <a
-        ref={ref}
-        href={href}
-        onClick={handleClick}
-        className={className}
-        {...props}
-      >
+      <a ref={ref} href={href} onClick={handleClick} className={className} {...props}>
         {children}
       </a>
     );

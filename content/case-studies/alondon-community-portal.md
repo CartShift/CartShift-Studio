@@ -8,7 +8,7 @@ duration: '8 weeks'
 featured: false
 thumbnail: '/images/case-studies/alondon-thumb.jpg'
 heroImage: '/images/case-studies/alondon-hero.jpg'
-summary: 'Strategic redesign of London''s premier Hebrew community portal, transforming a legacy magazine into a modern digital content hub focused on engagement and readability.'
+summary: "Strategic redesign of London's premier Hebrew community portal, transforming a legacy magazine into a modern digital content hub focused on engagement and readability."
 results:
   - metric: 'User Experience'
     before: 'Legacy'
@@ -33,7 +33,7 @@ services:
   - 'Information Architecture'
   - 'Performance Optimization'
 testimonial:
-  quote: 'The new design perfectly captures the essence of our community. It''s not just a website; it''s a home for Israelis in London.'
+  quote: "The new design perfectly captures the essence of our community. It's not just a website; it's a home for Israelis in London."
   author: 'Carmel Faraggi'
   role: 'Editorial Board'
 
@@ -68,7 +68,7 @@ he:
     - 'שיפור ביצועים'
   testimonial:
     quote: 'העיצוב החדש תופס בדיוק את המהות של הקהילה שלנו. זה לא סתם אתר, זה בית לישראלים בלונדון.'
-    author: 'כרמל פרג''י'
+    author: "כרמל פרג'י"
     role: 'מערכת האתר'
   content: |
     ## מי זה Alondon
@@ -132,6 +132,7 @@ he:
 Alondon is a Hebrew-language community content site designed primarily for Israelis in London and the UK. It serves as a news portal, magazine, guide hub, and community platform providing relevant information for life in London.
 
 The site covers:
+
 - News, Tourism, and Culture
 - Neighborhood and Accommodation Guides
 - Events, Employment, and Business
@@ -142,6 +143,7 @@ Starting as a printed magazine in 1994 and moving online in 2001, Alondon has op
 ## The Challenge
 
 It is crucial to define what this project is **not**:
+
 - It is not an e-commerce site or online store.
 - It is not necessarily a sales site.
 - It is not a physical product brand.
@@ -153,17 +155,20 @@ It is a digital content site/magazine with guide pages, news, and columns in Heb
 We focused on upgrading the infrastructure and overall experience by installing a new Theme and adapting it precisely to the client's needs:
 
 ### UI/UX Design
+
 - **Content-First Design**: We adapted the design to how users consume news and guides, emphasizing readability (Typography) and proper spacing.
 - **Class Adaptation**: shifted the design approach from a sales site (products/cart) to a community magazine approach.
 - **Hebrew User Experience**: Improved navigation, readability, and orientation for the Hebrew-speaking audience.
 
 ### Information Architecture
+
 - **Logical Navigation**: Reconstructed the page structure to allow logical flow between different categories like "London Now", Culture, Real Estate, and more.
 - **Business Connectivity**: Built navigation that leads directly to business and promotional content according to the client's KPIs.
 
 ## Business Goals
 
 Alondon aims to be:
+
 - A **central content home** for the Israeli community in London.
 - A **useful information resource** for living, working, and integrating into the city.
 - A **community platform** with ongoing updates and events.
@@ -177,6 +182,8 @@ From a marketing perspective, the asset serves as a platform for ads, advertisin
 - **Content Diversity**: The platform supports a rich variety of formats - from short news to in-depth guides and travel articles.
 
 ### Future Outlook
- To continue developing the platform, foundations were laid for:
+
+To continue developing the platform, foundations were laid for:
+
 - **UX Measurement**: Tools to understand the most engaging content.
 - **Engagement**: Infrastructures for newsletters and user registration to create an active community.

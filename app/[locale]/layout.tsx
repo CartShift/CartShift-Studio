@@ -160,8 +160,6 @@ export default async function LocaleLayout({
     schemaJson = '{}';
   }
 
-  const canonicalUrl = `${siteUrl}/${locale}`;
-
   return (
     <>
       <Script

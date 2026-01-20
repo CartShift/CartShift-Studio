@@ -55,7 +55,8 @@ const messages = {
     },
     access: {
       restrictedTitle: 'Access Restricted',
-      restrictedMessage: 'Your account current profile doesn\'t have the necessary permissions to access this specific organization workspace.',
+      restrictedMessage:
+        "Your account current profile doesn't have the necessary permissions to access this specific organization workspace.",
     },
     sidebar: {
       title: 'CartShift',
@@ -111,7 +112,7 @@ const messages = {
         signIn: 'Sign in',
         sso: 'Or continue with',
         google: 'Google SSO',
-        noAccount: 'Don\'t have an account yet?',
+        noAccount: "Don't have an account yet?",
         createOne: 'Create one here',
         secure: 'Secure Enterprise Access',
       },
@@ -245,12 +246,14 @@ const messages = {
             },
             form: {
               storeUrl: 'Your Shopify Store URL',
-              storeUrlHint: 'Enter your store\'s .myshopify.com URL (e.g., yourstore.myshopify.com)',
+              storeUrlHint: "Enter your store's .myshopify.com URL (e.g., yourstore.myshopify.com)",
               collaboratorCode: 'Collaborator Request Code',
-              collaboratorCodeHint: 'Found in Shopify Admin > Settings > Users > Security. Leave empty if not enabled.',
+              collaboratorCodeHint:
+                'Found in Shopify Admin > Settings > Users > Security. Leave empty if not enabled.',
               optional: 'optional',
               infoTitle: 'Where to find the collaborator code?',
-              infoDesc: 'In your Shopify admin, go to Settings > Users and permissions > Security. If enabled, you\'ll see a 4-digit code.',
+              infoDesc:
+                "In your Shopify admin, go to Settings > Users and permissions > Security. If enabled, you'll see a 4-digit code.",
               save: 'Save Store Details',
               saving: 'Saving...',
               cancel: 'Cancel',
@@ -261,7 +264,7 @@ const messages = {
             },
             agency: {
               notConnected: 'Shopify Store Not Connected',
-              notConnectedDesc: 'The client hasn\'t connected their Shopify store yet.',
+              notConnectedDesc: "The client hasn't connected their Shopify store yet.",
               requestAccess: 'Request Collaborator Access',
               markRequested: 'Mark as Requested',
               markConnected: 'Mark as Connected',

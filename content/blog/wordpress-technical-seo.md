@@ -1,11 +1,11 @@
 ---
-title: "WordPress Technical SEO Checklist: Ecommerce Edition"
-date: "2025-12-18"
-excerpt: "A practical WordPress technical SEO checklist for ecommerce: indexing, canonicals, sitemaps, structured data, Core Web Vitals, and multilingual setup."
-category: "WordPress"
-title_he: "צ׳ק ליסט SEO טכני לוורדפרס: גרסת איקומרס"
-excerpt_he: "צ׳ק ליסט פרקטי ל-SEO טכני בוורדפרס לאיקומרס: אינדוקס, קנוניקל, סייטמאפ, סכמות, Core Web Vitals, וריבוי שפות."
-category_he: "וורדפרס"
+title: 'WordPress Technical SEO Checklist: Ecommerce Edition'
+date: '2025-12-18'
+excerpt: 'A practical WordPress technical SEO checklist for ecommerce: indexing, canonicals, sitemaps, structured data, Core Web Vitals, and multilingual setup.'
+category: 'WordPress'
+title_he: 'צ׳ק ליסט SEO טכני לוורדפרס: גרסת איקומרס'
+excerpt_he: 'צ׳ק ליסט פרקטי ל-SEO טכני בוורדפרס לאיקומרס: אינדוקס, קנוניקל, סייטמאפ, סכמות, Core Web Vitals, וריבוי שפות.'
+category_he: 'וורדפרס'
 ---
 
 Technical SEO for ecommerce is basically: “Make sure Google can crawl the right pages, ignore the garbage pages, and understand your products clearly.”

@@ -627,7 +627,11 @@ exports.onPortalCommentCreated = onDocumentCreated(
       targetEmail = contactEmail.value() || 'hello@cart-shift.com';
 
       // Fetch org to check for responsible agent
-      const orgSnap = await admin.firestore().collection('portal_organizations').doc(commentData.orgId).get();
+      const orgSnap = await admin
+        .firestore()
+        .collection('portal_organizations')
+        .doc(commentData.orgId)
+        .get();
       if (orgSnap.exists) {
         const orgData = orgSnap.data();
         if (orgData.responsibleAgencyUserId) {

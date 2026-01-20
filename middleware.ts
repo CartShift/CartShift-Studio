@@ -56,5 +56,5 @@ export default function middleware(request: NextRequest) {
 
 export const config = {
   // Exclude: api, _next, _vercel, __ (Firebase auth), and files with extensions
-  matcher: ['/((?!api|_next|_vercel|__|.*\\..*).*)']
+  matcher: ['/((?!api|_next|_vercel|__|.*\\..*).*)'],
 };

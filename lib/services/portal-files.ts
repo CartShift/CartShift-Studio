@@ -1,9 +1,4 @@
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import {
   collection,
   doc,
@@ -92,7 +87,7 @@ export async function uploadMultipleFiles(
   }
 ): Promise<FileAttachment[]> {
   const results = await Promise.all(
-    files.map((file) => uploadFile(orgId, userId, userName, file, options))
+    files.map(file => uploadFile(orgId, userId, userName, file, options))
   );
   return results;
 }
@@ -112,7 +107,7 @@ export async function getFilesByOrg(orgId: string): Promise<FileAttachment[]> {
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as FileAttachment[];
@@ -137,7 +132,7 @@ export async function getFilesByRequest(requestId: string): Promise<FileAttachme
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as FileAttachment[];
@@ -226,14 +221,14 @@ export function subscribeToRequestFiles(
 
       unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
+        snapshot => {
           const files = snapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
           })) as FileAttachment[];
           callback(files);
         },
-        (error) => {
+        error => {
           console.error('Error in request files subscription:', error);
           callback([]);
         }

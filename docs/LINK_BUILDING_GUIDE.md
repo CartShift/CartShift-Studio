@@ -3,8 +3,9 @@
 ## Link Building Campaign Dashboard
 
 ### Monthly Goals
+
 - **Month 1-3**: 15-25 backlinks
-- **Month 4-6**: 25-40 backlinks  
+- **Month 4-6**: 25-40 backlinks
 - **Month 7-12**: 40-60 backlinks
 - **Target DA/DR**: 30+ for quality links
 
@@ -12,12 +13,12 @@
 
 ## Link Acquisition Tracker
 
-| Date | Target Site | DA/DR | Link Type | Status | Contact | Notes | Follow-up Date |
-|------|-------------|-------|-----------|--------|---------|-------|----------------|
-| | | | Guest Post | Pitched | | | |
-| | | | Resource Link | Acquired | | Link to /solutions/shopify | |
-| | | | Directory | Acquired | | Clutch.co listing | |
-| | | | HARO | Pending | | Responded to query | |
+| Date | Target Site | DA/DR | Link Type     | Status   | Contact | Notes                      | Follow-up Date |
+| ---- | ----------- | ----- | ------------- | -------- | ------- | -------------------------- | -------------- |
+|      |             |       | Guest Post    | Pitched  |         |                            |                |
+|      |             |       | Resource Link | Acquired |         | Link to /solutions/shopify |                |
+|      |             |       | Directory     | Acquired |         | Clutch.co listing          |                |
+|      |             |       | HARO          | Pending  |         | Responded to query         |                |
 
 **Status Options**: Researching, Pitched, Follow-up, Accepted, In Progress, Published, Declined, Acquired
 
@@ -29,13 +30,13 @@
 
 ### Guest Post Outreach
 
-| # | Website | DA | Contact Email | Date Pitched | Response | Status | Notes |
-|---|---------|----|--------------:|--------------|----------|--------|-------|
-| 1 | dev.to | 90 | - | | | | Accept contributions |
-| 2 | CSS-Tricks | 88 | - | | | | High authority |
-| 3 | Smashing Magazine | 90 | - | | | | Premium target |
-| 4 | A Better Lemonade Stand | 55 | - | | | | eCommerce focus |
-| 5 | Practical eCommerce | 60 | - | | | | Industry publication |
+| #   | Website                 | DA  | Contact Email | Date Pitched | Response | Status | Notes                |
+| --- | ----------------------- | --- | ------------: | ------------ | -------- | ------ | -------------------- |
+| 1   | dev.to                  | 90  |             - |              |          |        | Accept contributions |
+| 2   | CSS-Tricks              | 88  |             - |              |          |        | High authority       |
+| 3   | Smashing Magazine       | 90  |             - |              |          |        | Premium target       |
+| 4   | A Better Lemonade Stand | 55  |             - |              |          |        | eCommerce focus      |
+| 5   | Practical eCommerce     | 60  |             - |              |          |        | Industry publication |
 
 ---
 
@@ -44,6 +45,7 @@
 ### Template 1: Guest Post Pitch (Cold Outreach)
 
 **Subject Line Options:**
+
 - "Guest post idea: [Specific Topic] for [Their Site]"
 - "Article contribution: [Topic] for your [Their Site] readers"
 - "Quick question about guest posting on [Their Site]"
@@ -53,11 +55,11 @@
 ```
 Hi [First Name],
 
-I'm [Your Name], founder of CartShift Studio, a Shopify and WordPress development 
-agency. I've been following [Their Website] for [timeframe] and really enjoyed 
+I'm [Your Name], founder of CartShift Studio, a Shopify and WordPress development
+agency. I've been following [Their Website] for [timeframe] and really enjoyed
 your recent article on [specific article title].
 
-I noticed your audience would likely be interested in [specific topic that 
+I noticed your audience would likely be interested in [specific topic that
 complements their content]. I'd love to contribute a guest post on this topic.
 
 Title idea: "[Your Proposed Title]"
@@ -67,12 +69,12 @@ This article would cover:
 • [Specific value point 2]
 • [Specific value point 3]
 
-The post would be around [word count] words, include original insights/data, 
+The post would be around [word count] words, include original insights/data,
 and provide actionable takeaways for your readers.
 
 You can see my writing style here: [Link to your best blog post]
 
-Would this be a good fit for [Their Site]? Happy to adjust the angle based on 
+Would this be a good fit for [Their Site]? Happy to adjust the angle based on
 your editorial needs.
 
 Best regards,
@@ -95,16 +97,16 @@ P.S. [Optional personal note showing you genuinely follow their content]
 ```
 Hi [First Name],
 
-[Mutual Connection] suggested I reach out to you about potentially contributing 
-to [Their Website]. We connected at [where you met/how you know them], and when 
-I mentioned I write about eCommerce development, they immediately thought of 
+[Mutual Connection] suggested I reach out to you about potentially contributing
+to [Their Website]. We connected at [where you met/how you know them], and when
+I mentioned I write about eCommerce development, they immediately thought of
 your site.
 
-I'd love to share expertise with your audience on [specific topic]. 
+I'd love to share expertise with your audience on [specific topic].
 
 Proposed title: "[Your Title]"
 
-This would be especially valuable for [Their Site] readers because [specific reason 
+This would be especially valuable for [Their Site] readers because [specific reason
 related to their audience's needs/pain points].
 
 A few samples of my writing:
@@ -112,7 +114,7 @@ A few samples of my writing:
 • [Link 2 - shows writing quality]
 • [Link 3 - demonstrates expertise]
 
-Would you be open to this? I'm flexible on the topic and happy to work with your 
+Would you be open to this? I'm flexible on the topic and happy to work with your
 editorial guidelines.
 
 Best,
@@ -135,7 +137,7 @@ I was researching [topic] and came across your excellent article: "[Their Articl
 While reading, I noticed that one of your links appears to be broken:
 [URL of broken link]
 
-I recently published a comprehensive guide on [similar topic] that could be a 
+I recently published a comprehensive guide on [similar topic] that could be a
 great replacement: [Your URL]
 
 It covers [key points that make it relevant].
@@ -170,7 +172,7 @@ It covers:
 • [Key point 2]
 • [Key point 3]
 
-If you think it would be a good addition to your resource list, I'd be honored 
+If you think it would be a good addition to your resource list, I'd be honored
 to be included. Either way, keep up the great work curating these resources!
 
 Best,
@@ -190,7 +192,7 @@ Hi [First Name],
 
 I saw that you linked to [Original Content Title] in your article "[Their Article]."
 
-I just published a comprehensive update on this topic that includes [what makes 
+I just published a comprehensive update on this topic that includes [what makes
 yours better: more recent data, additional strategies, better format, etc.]:
 [Your URL]
 
@@ -199,7 +201,7 @@ Some highlights:
 • [Unique element not in original]
 • [Visual/interactive element]
 
-I thought it might be worth updating your article with this newer resource. Either 
+I thought it might be worth updating your article with this newer resource. Either
 way, I really enjoyed your take on [their article topic]!
 
 Best regards,
@@ -220,8 +222,8 @@ Hi [Reporter Name],
 I'd be happy to contribute to your article on [topic].
 
 About me:
-[Your Name], Founder of CartShift Studio, a Shopify and WordPress development 
-agency that has [relevant credential: built 50+ stores, worked with clients in 
+[Your Name], Founder of CartShift Studio, a Shopify and WordPress development
+agency that has [relevant credential: built 50+ stores, worked with clients in
 X industries, etc.].
 
 Regarding your question about [their specific question]:
@@ -254,12 +256,12 @@ Best,
 ```
 Hi [First Name],
 
-I noticed you mentioned CartShift Studio in your article "[Article Title]" - 
+I noticed you mentioned CartShift Studio in your article "[Article Title]" -
 thank you for the shout-out!
 
 [Link to their article]
 
-Would you be open to adding a link to our site so readers can learn more? 
+Would you be open to adding a link to our site so readers can learn more?
 Our URL is: https://cart-shift.com
 
 I'd be happy to share your article on our social channels as well!
@@ -282,11 +284,11 @@ CartShift Studio
 ```
 Hi [First Name],
 
-I'm [Your Name] from CartShift Studio. We specialize in Shopify and WordPress 
-development, and I've been impressed by the work you do at [Their Company] in 
+I'm [Your Name] from CartShift Studio. We specialize in Shopify and WordPress
+development, and I've been impressed by the work you do at [Their Company] in
 [their specialty - design/marketing/etc.].
 
-Our clients often need [their service], and your clients likely need development 
+Our clients often need [their service], and your clients likely need development
 support. I think there might be a great partnership opportunity here.
 
 Would you be interested in:
@@ -294,7 +296,7 @@ Would you be interested in:
 • Referring clients to each other?
 • Co-creating content (webinar, guide, etc.)?
 
-I'd love to schedule a quick 15-minute call to explore this. 
+I'd love to schedule a quick 15-minute call to explore this.
 
 Available this week: [Provide 2-3 specific times]
 
@@ -313,10 +315,10 @@ Best,
 ```
 Hi [Host Name],
 
-I'm a big fan of [Podcast Name]! I especially enjoyed your recent episode with 
+I'm a big fan of [Podcast Name]! I especially enjoyed your recent episode with
 [Guest Name] about [topic].
 
-I'd love to come on the show to discuss [specific topic that fits their format]. 
+I'd love to come on the show to discuss [specific topic that fits their format].
 This would be valuable for your audience because [specific reason].
 
 Some potential topics we could cover:
@@ -350,7 +352,7 @@ Best,
 ```
 Hi [First Name],
 
-We've been using [Their Product/Service] at CartShift Studio for [timeframe] 
+We've been using [Their Product/Service] at CartShift Studio for [timeframe]
 and it's been fantastic for [specific use case].
 
 I'd love to provide a testimonial for your website. Here's what I wrote:
@@ -359,7 +361,7 @@ I'd love to provide a testimonial for your website. Here's what I wrote:
 
 - [Your Name], Founder, CartShift Studio
 
-Feel free to use this on your site. If you could link back to our website 
+Feel free to use this on your site. If you could link back to our website
 (https://cart-shift.com) in the attribution, that would be great!
 
 Let me know if you need anything else.
@@ -383,8 +385,8 @@ Hi [First Name],
 
 Following up on my email from [date] about [brief description of original ask].
 
-I know you're probably busy, so I wanted to bump this back to the top of your 
-inbox. 
+I know you're probably busy, so I wanted to bump this back to the top of your
+inbox.
 
 [One sentence re-stating the value proposition]
 
@@ -405,7 +407,7 @@ Best,
 ```
 Hi [First Name],
 
-I sent a couple emails about [topic] but haven't heard back. I understand you're 
+I sent a couple emails about [topic] but haven't heard back. I understand you're
 busy and this might not be the right fit right now.
 
 If you're interested, just reply with "Yes" and I'll send over the details.
@@ -423,6 +425,7 @@ Best regards,
 ### 1. Competitor Backlink Analysis
 
 **Process:**
+
 1. Enter competitor URL into Ahrefs Site Explorer
 2. Go to "Backlinks" section
 3. Filter for:
@@ -434,6 +437,7 @@ Best regards,
 6. Reach out with appropriate template
 
 **Top Competitors to Analyze:**
+
 - [ ] [Competitor 1 URL]
 - [ ] [Competitor 2 URL]
 - [ ] [Competitor 3 URL]
@@ -443,6 +447,7 @@ Best regards,
 ### 2. Resource Page Hunting
 
 **Google Search Queries:**
+
 - "shopify development" + "resources"
 - "ecommerce" + "useful links"
 - "web development" + "tools"
@@ -458,18 +463,19 @@ Best regards,
 
 **Target Website List:**
 
-| Website | DA | Accepts Guest Posts | Topics | Contact Method |
-|---------|-----|-------------------|---------|----------------|
-| Dev.to | 90 | Yes | Technical | Self-publish |
-| Hashnode | 75 | Yes | Technical | Self-publish |
-| Medium | 95 | Yes | Various | Submit to publications |
-| CSS-Tricks | 88 | Yes | Web dev | Contact form |
-| Smashing Magazine | 90 | Yes | Design/Dev | Submission form |
-| A Better Lemonade Stand | 55 | Yes | eCommerce | Email |
-| Practical eCommerce | 60 | Yes | eCommerce | Email |
-| eCommerceFuel | 58 | Maybe | eCommerce | Forum participation first |
+| Website                 | DA  | Accepts Guest Posts | Topics     | Contact Method            |
+| ----------------------- | --- | ------------------- | ---------- | ------------------------- |
+| Dev.to                  | 90  | Yes                 | Technical  | Self-publish              |
+| Hashnode                | 75  | Yes                 | Technical  | Self-publish              |
+| Medium                  | 95  | Yes                 | Various    | Submit to publications    |
+| CSS-Tricks              | 88  | Yes                 | Web dev    | Contact form              |
+| Smashing Magazine       | 90  | Yes                 | Design/Dev | Submission form           |
+| A Better Lemonade Stand | 55  | Yes                 | eCommerce  | Email                     |
+| Practical eCommerce     | 60  | Yes                 | eCommerce  | Email                     |
+| eCommerceFuel           | 58  | Maybe               | eCommerce  | Forum participation first |
 
 **Guest Post Content Ideas:**
+
 1. "10 Shopify Liquid Tricks Every Developer Should Know"
 2. "Building Custom Shopify Sections: A Developer's Guide"
 3. "Performance Optimization for Large-Scale Shopify Stores"
@@ -482,17 +488,20 @@ Best regards,
 ### 4. HARO Strategy
 
 **Setup:**
+
 - Sign up at https://www.helpareporter.com/
 - Choose "3 times a day" email delivery
 - Set up email filter to organize HARO emails
 
 **Relevant Categories:**
+
 - Business & Finance
 - High Tech
 - Lifestyle & Fitness (for eCommerce stores)
 - General
 
 **Response Strategy:**
+
 - Respond within 2 hours of receiving query
 - Provide detailed, quotable answers
 - Include credentials
@@ -505,10 +514,12 @@ Best regards,
 ### 5. Broken Link Building
 
 **Tools:**
+
 - Ahrefs Broken Link Checker
 - Check My Links (Chrome extension)
 
 **Process:**
+
 1. Find high-authority pages in your niche
 2. Use tool to find broken links
 3. Check if you have similar content
@@ -516,6 +527,7 @@ Best regards,
 5. Reach out with Template 3
 
 **Target Pages:**
+
 - Resource lists
 - Ultimate guides
 - Link roundups
@@ -526,6 +538,7 @@ Best regards,
 ### 6. Local Business Directories
 
 **High Priority Directories:**
+
 - [ ] Google Business Profile
 - [ ] Bing Places for Business
 - [ ] Clutch.co
@@ -536,6 +549,7 @@ Best regards,
 - [ ] Agency Spotter
 
 **Medium Priority:**
+
 - [ ] Yelp for Business
 - [ ] Yellow Pages
 - [ ] Better Business Bureau
@@ -548,14 +562,17 @@ Best regards,
 ### 7. Industry-Specific Directories
 
 **Shopify Partners:**
+
 - [ ] Shopify Experts Marketplace
 - [ ] Shopify Partners Directory
 
 **WordPress:**
+
 - [ ] WordPress.org Professionals
 - [ ] Codeable (freelance platform)
 
 **General Web Dev:**
+
 - [ ] Awwwards (if you win)
 - [ ] CSS Design Awards
 
@@ -566,6 +583,7 @@ Best regards,
 Before pursuing a link, check:
 
 ✅ **Good Link Indicators:**
+
 - DR/DA 30+
 - Real organic traffic
 - Relevant to your niche
@@ -575,6 +593,7 @@ Before pursuing a link, check:
 - Active social media
 
 ❌ **Bad Link Indicators:**
+
 - DR/DA under 10
 - No organic traffic
 - Unrelated niche
@@ -584,6 +603,7 @@ Before pursuing a link, check:
 - Penalized domain
 
 **Tools to Check:**
+
 - Ahrefs Site Explorer
 - Moz Link Explorer
 - Google "site:domain.com" to check if indexed
@@ -593,6 +613,7 @@ Before pursuing a link, check:
 ## Monthly Link Building Goals
 
 ### Month 1-2: Foundation
+
 - [ ] 10 directory submissions
 - [ ] 2 guest posts published
 - [ ] 3 resource page links
@@ -600,6 +621,7 @@ Before pursuing a link, check:
 - **Total Goal: 15-20 new links**
 
 ### Month 3-4: Scaling
+
 - [ ] 3 guest posts published
 - [ ] 5 resource page links
 - [ ] 5 HARO links acquired
@@ -608,6 +630,7 @@ Before pursuing a link, check:
 - **Total Goal: 20-25 new links**
 
 ### Month 5-6: Authority Building
+
 - [ ] 4 guest posts on high-DA sites
 - [ ] 8 resource page links
 - [ ] 3 HARO links acquired
@@ -619,12 +642,12 @@ Before pursuing a link, check:
 
 ## Link Building Calendar Template
 
-| Week | Monday | Tuesday | Wednesday | Thursday | Friday |
-|------|--------|---------|-----------|----------|--------|
-| 1 | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Content for links |
-| 2 | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Content for links |
-| 3 | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Content for links |
-| 4 | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Link audit & report |
+| Week | Monday                | Tuesday             | Wednesday            | Thursday       | Friday              |
+| ---- | --------------------- | ------------------- | -------------------- | -------------- | ------------------- |
+| 1    | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Content for links   |
+| 2    | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Content for links   |
+| 3    | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Content for links   |
+| 4    | Research 10 prospects | Outreach (5 emails) | Follow-up (5 emails) | HARO responses | Link audit & report |
 
 **Daily Time Investment:** 1-2 hours
 
@@ -657,16 +680,19 @@ Upload via Google Search Console > Disavow Links Tool (only if penalized!)
 ## Outreach Tools Recommendations
 
 **Email Outreach:**
+
 - Gmail with Boomerang (follow-up reminders)
 - Hunter.io (find email addresses)
 - Mailshake (cold email campaigns) - $59/month
 - Pitchbox (advanced) - $195/month
 
 **Email Verification:**
+
 - NeverBounce
 - ZeroBounce
 
 **Organization:**
+
 - Google Sheets (free)
 - Airtable (better features) - $10/month
 - Notion (all-in-one) - free tier available
@@ -676,6 +702,7 @@ Upload via Google Search Console > Disavow Links Tool (only if penalized!)
 ## Link Building Don'ts
 
 ❌ **Never:**
+
 - Buy links from link schemes
 - Use PBN (Private Blog Networks)
 - Participate in link exchanges at scale
@@ -688,6 +715,7 @@ Upload via Google Search Console > Disavow Links Tool (only if penalized!)
 - Submit to low-quality directories in bulk
 
 ✅ **Always:**
+
 - Build genuine relationships
 - Create link-worthy content
 - Earn links through value
@@ -705,16 +733,16 @@ Upload via Google Search Console > Disavow Links Tool (only if penalized!)
 
 Track these monthly:
 
-| Metric | Month 1 | Month 2 | Month 3 | Month 6 | Month 12 |
-|--------|---------|---------|---------|---------|----------|
-| Total Backlinks | | | | | |
-| Referring Domains | | | | | |
-| Average DR | | | | | |
-| Do-follow Links | | | | | |
-| Outreach Emails Sent | | | | | |
-| Response Rate | | | | | |
-| Link Acquisition Rate | | | | | |
-| Domain Authority | | | | | |
+| Metric                | Month 1 | Month 2 | Month 3 | Month 6 | Month 12 |
+| --------------------- | ------- | ------- | ------- | ------- | -------- |
+| Total Backlinks       |         |         |         |         |          |
+| Referring Domains     |         |         |         |         |          |
+| Average DR            |         |         |         |         |          |
+| Do-follow Links       |         |         |         |         |          |
+| Outreach Emails Sent  |         |         |         |         |          |
+| Response Rate         |         |         |         |         |          |
+| Link Acquisition Rate |         |         |         |         |          |
+| Domain Authority      |         |         |         |         |          |
 
 **Target Response Rate:** 10-20%
 **Target Acceptance Rate:** 20-40% of responses
@@ -724,6 +752,7 @@ Track these monthly:
 ## Quick Reference: Best Practices
 
 ### Outreach Email Best Practices
+
 1. Personalize every email
 2. Keep it under 150 words
 3. Lead with value for them
@@ -736,6 +765,7 @@ Track these monthly:
 10. Proofread carefully
 
 ### Link Building Best Practices
+
 1. Focus on quality over quantity
 2. Prioritize relevance
 3. Build relationships first

@@ -32,7 +32,7 @@ export const mockUser: User = {
 
 export const mockAuth = {
   currentUser: mockUser,
-  onAuthStateChanged: vi.fn((callback) => {
+  onAuthStateChanged: vi.fn(callback => {
     callback(mockUser);
     return vi.fn();
   }),

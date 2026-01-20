@@ -3283,22 +3283,22 @@ Every page should have a self-referencing canonical tag:
 
 ```javascript
 // Hero form submission
-gtag("event", "form_submit", {
-	form_name: "hero_lead_form",
-	form_location: "hero"
+gtag('event', 'form_submit', {
+  form_name: 'hero_lead_form',
+  form_location: 'hero',
 });
 
 // Book a call click
-gtag("event", "book_call_click", {
-	button_location: "sticky_cta"
+gtag('event', 'book_call_click', {
+  button_location: 'sticky_cta',
 });
 
 // WhatsApp click
-gtag("event", "whatsapp_click");
+gtag('event', 'whatsapp_click');
 
 // Package CTA click
-gtag("event", "package_click", {
-	package_name: "quick_launch"
+gtag('event', 'package_click', {
+  package_name: 'quick_launch',
 });
 ```
 
@@ -3338,24 +3338,24 @@ If running Facebook/Instagram ads in future:
 ```html
 <!-- Meta Pixel Code -->
 <script>
-	!(function (f, b, e, v, n, t, s) {
-		if (f.fbq) return;
-		n = f.fbq = function () {
-			n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-		};
-		if (!f._fbq) f._fbq = n;
-		n.push = n;
-		n.loaded = !0;
-		n.version = "2.0";
-		n.queue = [];
-		t = b.createElement(e);
-		t.async = !0;
-		t.src = v;
-		s = b.getElementsByTagName(e)[0];
-		s.parentNode.insertBefore(t, s);
-	})(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-	fbq("init", "{{META_PIXEL_ID}}");
-	fbq("track", "PageView");
+  !(function (f, b, e, v, n, t, s) {
+    if (f.fbq) return;
+    n = f.fbq = function () {
+      n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+    };
+    if (!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = !0;
+    n.version = '2.0';
+    n.queue = [];
+    t = b.createElement(e);
+    t.async = !0;
+    t.src = v;
+    s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s);
+  })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '{{META_PIXEL_ID}}');
+  fbq('track', 'PageView');
 </script>
 ```
 

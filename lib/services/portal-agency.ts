@@ -1,4 +1,14 @@
-import { collection, query, where, getDocs, orderBy, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth } from '@/lib/firebase';
 import { PortalUser, ACCOUNT_TYPE } from '@/lib/types/portal';
 
@@ -45,8 +55,12 @@ export async function getAgency(agencyId: string): Promise<any | null> {
 export async function updateAgency(agencyId: string, data: any): Promise<void> {
   const db = getFirestoreDb();
   const docRef = doc(db, AGENCIES_COLLECTION, agencyId);
-  await setDoc(docRef, {
-    ...data,
-    updatedAt: serverTimestamp(),
-  }, { merge: true });
+  await setDoc(
+    docRef,
+    {
+      ...data,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }

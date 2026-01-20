@@ -13,9 +13,7 @@ const queryClient = new QueryClient({
 });
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 vi.mock('@/lib/hooks/useResolvedOrgId', () => ({

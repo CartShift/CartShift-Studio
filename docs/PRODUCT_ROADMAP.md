@@ -23,19 +23,20 @@
 ## 🎯 Executive Summary
 
 CartShift Studio is a dual-purpose product:
+
 - **Marketing Website**: Conversion-optimized agency website
 - **Client Portal**: Project management & billing platform
 
 ### Overall Health Score: **7.4/10**
 
-| Dimension | Score | Status |
-|-----------|-------|--------|
-| Market Positioning | 7/10 | 🟡 Needs social proof |
-| Feature Completeness | 7.5/10 | 🟡 Core solid, polish needed |
-| Technical Architecture | 8.5/10 | 🟢 Modern & scalable |
-| User Experience | 8/10 | 🟡 Needs onboarding |
-| Monetization Potential | 7/10 | 🟡 Add recurring revenue |
-| Competitive Advantage | 6.5/10 | 🟠 Needs differentiation |
+| Dimension              | Score  | Status                       |
+| ---------------------- | ------ | ---------------------------- |
+| Market Positioning     | 7/10   | 🟡 Needs social proof        |
+| Feature Completeness   | 7.5/10 | 🟡 Core solid, polish needed |
+| Technical Architecture | 8.5/10 | 🟢 Modern & scalable         |
+| User Experience        | 8/10   | 🟡 Needs onboarding          |
+| Monetization Potential | 7/10   | 🟡 Add recurring revenue     |
+| Competitive Advantage  | 6.5/10 | 🟠 Needs differentiation     |
 
 ---
 
@@ -96,16 +97,20 @@ CLIENT PORTAL
 > **Goal**: Fix critical gaps that block sales and confuse users
 
 ### 1.1 Portal Onboarding Tour
+
 **Priority**: 🔴 CRITICAL | **Effort**: Medium | **Impact**: High
 
 #### Description
+
 New users currently land in the portal with no guidance. We need an interactive tour that:
+
 - Welcomes new users
 - Highlights key features
 - Creates first request placeholder
 - Shows navigation structure
 
 #### Implementation Steps
+
 - [ ] **1.1.1** Install `react-joyride` or similar tour library
 - [ ] **1.1.2** Create `OnboardingTour` component
 - [ ] **1.1.3** Define tour steps for:
@@ -120,6 +125,7 @@ New users currently land in the portal with no guidance. We need an interactive 
 - [ ] **1.1.7** Test on mobile devices
 
 #### Files to Create/Modify
+
 ```
 📁 components/portal/
 ├── 📄 OnboardingTour.tsx (NEW)
@@ -136,6 +142,7 @@ New users currently land in the portal with no guidance. We need an interactive 
 ```
 
 #### Acceptance Criteria
+
 - [ ] Tour triggers automatically for new users
 - [ ] Users can skip or complete tour
 - [ ] Completion persists across sessions
@@ -145,12 +152,15 @@ New users currently land in the portal with no guidance. We need an interactive 
 ---
 
 ### 1.2 Empty States with Guidance
+
 **Priority**: 🔴 CRITICAL | **Effort**: Low | **Impact**: High
 
 #### Description
+
 Empty dashboard, requests list, and other sections should show helpful guidance instead of blank space.
 
 #### Implementation Steps
+
 - [ ] **1.2.1** Create reusable `EmptyState` component
 - [ ] **1.2.2** Add empty state to Dashboard
 - [ ] **1.2.3** Add empty state to Requests list
@@ -161,6 +171,7 @@ Empty dashboard, requests list, and other sections should show helpful guidance 
 - [ ] **1.2.8** Translate empty state messages
 
 #### Files to Create/Modify
+
 ```
 📁 components/portal/ui/
 └── 📄 EmptyState.tsx (NEW)
@@ -174,14 +185,15 @@ Empty dashboard, requests list, and other sections should show helpful guidance 
 ```
 
 #### Design Spec
+
 ```tsx
 <EmptyState
   icon="inbox"
   title="No requests yet"
   description="Create your first request to get started"
   action={{
-    label: "New Request",
-    href: "/portal/org/{orgId}/requests/new"
+    label: 'New Request',
+    href: '/portal/org/{orgId}/requests/new',
   }}
 />
 ```
@@ -189,12 +201,15 @@ Empty dashboard, requests list, and other sections should show helpful guidance 
 ---
 
 ### 1.3 Email Notifications Verification
+
 **Priority**: 🟠 HIGH | **Effort**: Medium | **Impact**: High
 
 #### Description
+
 Email notifications are defined in code but unclear if they're actually sending. Need to verify and implement.
 
 #### Implementation Steps
+
 - [ ] **1.3.1** Audit current Cloud Functions for email logic
 - [ ] **1.3.2** Set up Gmail API credentials in Firebase secrets
 - [ ] **1.3.3** Create `sendEmail` Cloud Function if missing
@@ -208,6 +223,7 @@ Email notifications are defined in code but unclear if they're actually sending.
 - [ ] **1.3.6** Test email delivery
 
 #### Files to Create/Modify
+
 ```
 📁 functions/
 ├── 📄 src/index.ts (MODIFY - add email triggers)
@@ -222,12 +238,15 @@ Email notifications are defined in code but unclear if they're actually sending.
 ---
 
 ### 1.4 Case Studies / Portfolio Section
+
 **Priority**: 🔴 CRITICAL | **Effort**: Medium | **Impact**: Very High
 
 #### Description
+
 The website lacks real project showcases. This is the #1 credibility gap for agency websites.
 
 #### Implementation Steps
+
 - [ ] **1.4.1** Design case study card component
 - [ ] **1.4.2** Design case study detail page
 - [ ] **1.4.3** Create `/work` page with case study grid
@@ -238,6 +257,7 @@ The website lacks real project showcases. This is the #1 credibility gap for age
 - [ ] **1.4.8** Link case studies from homepage
 
 #### Files to Create/Modify
+
 ```
 📁 content/
 └── 📁 case-studies/ (NEW)
@@ -257,36 +277,40 @@ The website lacks real project showcases. This is the #1 credibility gap for age
 ```
 
 #### Case Study Template
+
 ```markdown
 ---
-title: "Fashion Brand E-commerce Redesign"
-client: "StyleCraft Boutique"
-industry: "Fashion"
-platform: "Shopify"
-duration: "8 weeks"
+title: 'Fashion Brand E-commerce Redesign'
+client: 'StyleCraft Boutique'
+industry: 'Fashion'
+platform: 'Shopify'
+duration: '8 weeks'
 results:
-  - metric: "Conversion Rate"
-    before: "1.2%"
-    after: "3.8%"
-    improvement: "+216%"
-  - metric: "Page Load Speed"
-    before: "4.5s"
-    after: "1.8s"
-    improvement: "-60%"
+  - metric: 'Conversion Rate'
+    before: '1.2%'
+    after: '3.8%'
+    improvement: '+216%'
+  - metric: 'Page Load Speed'
+    before: '4.5s'
+    after: '1.8s'
+    improvement: '-60%'
 featured: true
-thumbnail: "/images/case-studies/stylecraft-thumb.jpg"
+thumbnail: '/images/case-studies/stylecraft-thumb.jpg'
 ---
 ```
 
 ---
 
 ### 1.5 Real Testimonials
+
 **Priority**: 🟠 HIGH | **Effort**: Low | **Impact**: High
 
 #### Description
+
 Replace placeholder testimonials with real client quotes.
 
 #### Implementation Steps
+
 - [ ] **1.5.1** Collect testimonials from existing/past clients
 - [ ] **1.5.2** Update testimonial data in translations
 - [ ] **1.5.3** Add client photos (or company logos)
@@ -294,6 +318,7 @@ Replace placeholder testimonials with real client quotes.
 - [ ] **1.5.5** Consider adding video testimonials link
 
 #### Files to Modify
+
 ```
 📁 messages/
 ├── 📄 en.json (MODIFY - testimonials section)
@@ -311,16 +336,20 @@ Replace placeholder testimonials with real client quotes.
 > **Goal**: Increase conversion and add recurring revenue streams
 
 ### 2.1 Maintenance Packages
+
 **Priority**: 🔴 CRITICAL | **Effort**: Medium | **Impact**: Very High
 
 #### Description
+
 Add recurring revenue through maintenance and support packages.
 
 #### Implementation Steps
+
 - [ ] **2.1.1** Design maintenance package cards
 - [ ] **2.1.2** Create `/pricing/maintenance` page
 - [ ] **2.1.3** Add package comparison table
 - [ ] **2.1.4** Define 3 tiers:
+
   ```
   Essential: $199/mo
   - 2 hours dev time
@@ -337,6 +366,7 @@ Add recurring revenue through maintenance and support packages.
   - Dedicated manager
   - 24/7 support
   ```
+
 - [ ] **2.1.5** Add subscription management to portal (future)
 - [ ] **2.1.6** Create maintenance request type
 - [ ] **2.1.7** Update pricing page navigation
@@ -344,12 +374,15 @@ Add recurring revenue through maintenance and support packages.
 ---
 
 ### 2.2 Project Milestones
+
 **Priority**: 🟠 HIGH | **Effort**: High | **Impact**: High
 
 #### Description
+
 Add milestone/phase tracking to requests so clients can see project progress.
 
 #### Implementation Steps
+
 - [ ] **2.2.1** Design milestone data model
 - [ ] **2.2.2** Add milestones to Request type
 - [ ] **2.2.3** Create `MilestoneTimeline` component
@@ -359,6 +392,7 @@ Add milestone/phase tracking to requests so clients can see project progress.
 - [ ] **2.2.7** Show estimated vs actual dates
 
 #### Data Model
+
 ```typescript
 interface Milestone {
   id: string;
@@ -376,12 +410,15 @@ interface Milestone {
 ---
 
 ### 2.3 Client Analytics Dashboard
+
 **Priority**: 🟠 HIGH | **Effort**: Medium | **Impact**: Medium
 
 #### Description
+
 Show clients useful insights about their requests and history.
 
 #### Implementation Steps
+
 - [ ] **2.3.1** Design dashboard analytics cards
 - [ ] **2.3.2** Calculate and display:
   - [ ] Total requests (all time)
@@ -395,12 +432,15 @@ Show clients useful insights about their requests and history.
 ---
 
 ### 2.4 Invoice PDF Export
+
 **Priority**: 🟡 MEDIUM | **Effort**: Medium | **Impact**: Medium
 
 #### Description
+
 Allow clients to download PDF invoices for paid pricing requests.
 
 #### Implementation Steps
+
 - [ ] **2.4.1** Choose PDF library (`@react-pdf/renderer` or `jspdf`)
 - [ ] **2.4.2** Design invoice template
 - [ ] **2.4.3** Include company details, line items, totals
@@ -411,12 +451,15 @@ Allow clients to download PDF invoices for paid pricing requests.
 ---
 
 ### 2.5 Industry Landing Pages
+
 **Priority**: 🟡 MEDIUM | **Effort**: Medium | **Impact**: Medium
 
 #### Description
+
 Create specialized landing pages for target industries to improve SEO and conversion.
 
 #### Target Industries
+
 - [ ] Fashion & Apparel
 - [ ] Food & Beverage
 - [ ] Health & Wellness
@@ -432,9 +475,11 @@ Create specialized landing pages for target industries to improve SEO and conver
 > **Goal**: Build competitive moats and prepare for growth
 
 ### 3.1 Automated Testing Suite
+
 **Priority**: 🟠 HIGH | **Effort**: High | **Impact**: High
 
 #### Implementation Steps
+
 - [ ] **3.1.1** Set up Jest + React Testing Library
 - [ ] **3.1.2** Write tests for critical components
 - [ ] **3.1.3** Add Playwright for E2E tests
@@ -444,25 +489,31 @@ Create specialized landing pages for target industries to improve SEO and conver
 ---
 
 ### 3.2 Time Tracking Integration
+
 **Priority**: 🟡 MEDIUM | **Effort**: High | **Impact**: Medium
 
 #### Description
+
 Track time spent on requests (for agency internal use).
 
 ---
 
 ### 3.3 Zapier / Webhook Integrations
+
 **Priority**: 🟡 MEDIUM | **Effort**: Medium | **Impact**: Medium
 
 #### Description
+
 Allow external automation via webhooks.
 
 ---
 
 ### 3.4 White-Label Portal Exploration
+
 **Priority**: 🟢 FUTURE | **Effort**: Very High | **Impact**: Very High
 
 #### Description
+
 Evaluate making the portal available to other agencies.
 
 ---
@@ -470,28 +521,31 @@ Evaluate making the portal available to other agencies.
 ## 🔧 Technical Debt Backlog
 
 ### High Priority
-| ID | Issue | Files Affected | Effort |
-|----|-------|----------------|--------|
-| TD-01 | Split PortalShell.tsx (720 lines) | `components/portal/PortalShell.tsx` | Medium |
-| TD-02 | Split BlogPostContent.tsx (45KB) | `components/sections/BlogPostContent.tsx` | Medium |
-| TD-03 | Add unit tests | New test files | High |
-| TD-04 | Document deployment process | `docs/DEPLOYMENT.md` | Low |
-| TD-05 | Review static export limitations | `next.config.mjs` | Medium |
+
+| ID    | Issue                             | Files Affected                            | Effort |
+| ----- | --------------------------------- | ----------------------------------------- | ------ |
+| TD-01 | Split PortalShell.tsx (720 lines) | `components/portal/PortalShell.tsx`       | Medium |
+| TD-02 | Split BlogPostContent.tsx (45KB)  | `components/sections/BlogPostContent.tsx` | Medium |
+| TD-03 | Add unit tests                    | New test files                            | High   |
+| TD-04 | Document deployment process       | `docs/DEPLOYMENT.md`                      | Low    |
+| TD-05 | Review static export limitations  | `next.config.mjs`                         | Medium |
 
 ### Medium Priority
-| ID | Issue | Files Affected | Effort |
-|----|-------|----------------|--------|
-| TD-06 | Optimize bundle size | Various | Medium |
-| TD-07 | Add error tracking (Sentry) | New setup | Low |
-| TD-08 | Clean up unused components | `components/` | Low |
+
+| ID    | Issue                       | Files Affected             | Effort |
+| ----- | --------------------------- | -------------------------- | ------ |
+| TD-06 | Optimize bundle size        | Various                    | Medium |
+| TD-07 | Add error tracking (Sentry) | New setup                  | Low    |
+| TD-08 | Clean up unused components  | `components/`              | Low    |
 | TD-09 | Standardize form components | `components/portal/forms/` | Medium |
-| TD-10 | Add loading skeletons | Portal components | Low |
+| TD-10 | Add loading skeletons       | Portal components          | Low    |
 
 ---
 
 ## ✅ Implementation Tracking
 
 ### Legend
+
 - ⬜ Not Started
 - 🔄 In Progress
 - ✅ Completed
@@ -500,65 +554,69 @@ Evaluate making the portal available to other agencies.
 
 ### Phase 1 Progress
 
-| Task | Status | Assignee | Due Date | Notes |
-|------|--------|----------|----------|-------|
-| 1.1 Portal Onboarding Tour | ⬜ | - | - | |
-| 1.2 Empty States | ⬜ | - | - | |
-| 1.3 Email Notifications | ⬜ | - | - | |
-| 1.4 Case Studies | ⬜ | - | - | |
-| 1.5 Real Testimonials | ⬜ | - | - | |
+| Task                       | Status | Assignee | Due Date | Notes |
+| -------------------------- | ------ | -------- | -------- | ----- |
+| 1.1 Portal Onboarding Tour | ⬜     | -        | -        |       |
+| 1.2 Empty States           | ⬜     | -        | -        |       |
+| 1.3 Email Notifications    | ⬜     | -        | -        |       |
+| 1.4 Case Studies           | ⬜     | -        | -        |       |
+| 1.5 Real Testimonials      | ⬜     | -        | -        |       |
 
 ### Phase 2 Progress
 
-| Task | Status | Assignee | Due Date | Notes |
-|------|--------|----------|----------|-------|
-| 2.1 Maintenance Packages | ⬜ | - | - | |
-| 2.2 Project Milestones | ⬜ | - | - | |
-| 2.3 Client Analytics | ⬜ | - | - | |
-| 2.4 Invoice PDF Export | ⬜ | - | - | |
-| 2.5 Industry Landing Pages | ⬜ | - | - | |
+| Task                       | Status | Assignee | Due Date | Notes |
+| -------------------------- | ------ | -------- | -------- | ----- |
+| 2.1 Maintenance Packages   | ⬜     | -        | -        |       |
+| 2.2 Project Milestones     | ⬜     | -        | -        |       |
+| 2.3 Client Analytics       | ⬜     | -        | -        |       |
+| 2.4 Invoice PDF Export     | ⬜     | -        | -        |       |
+| 2.5 Industry Landing Pages | ⬜     | -        | -        |       |
 
 ### Phase 3 Progress
 
-| Task | Status | Assignee | Due Date | Notes |
-|------|--------|----------|----------|-------|
-| 3.1 Testing Suite | ⬜ | - | - | |
-| 3.2 Time Tracking | ⬜ | - | - | |
-| 3.3 Webhooks | ⬜ | - | - | |
-| 3.4 White-Label | ⬜ | - | - | |
+| Task              | Status | Assignee | Due Date | Notes |
+| ----------------- | ------ | -------- | -------- | ----- |
+| 3.1 Testing Suite | ⬜     | -        | -        |       |
+| 3.2 Time Tracking | ⬜     | -        | -        |       |
+| 3.3 Webhooks      | ⬜     | -        | -        |       |
+| 3.4 White-Label   | ⬜     | -        | -        |       |
 
 ---
 
 ## 📈 Success Metrics
 
 ### Marketing Website KPIs
-| Metric | Current | Phase 1 Target | Phase 3 Target |
-|--------|---------|----------------|----------------|
-| Monthly Organic Traffic | Unknown | +50% | +200% |
-| Contact Form Submissions | Unknown | +30% | +100% |
-| Average Time on Site | Unknown | +20% | +40% |
-| Bounce Rate | Unknown | -10% | -25% |
+
+| Metric                   | Current | Phase 1 Target | Phase 3 Target |
+| ------------------------ | ------- | -------------- | -------------- |
+| Monthly Organic Traffic  | Unknown | +50%           | +200%          |
+| Contact Form Submissions | Unknown | +30%           | +100%          |
+| Average Time on Site     | Unknown | +20%           | +40%           |
+| Bounce Rate              | Unknown | -10%           | -25%           |
 
 ### Portal KPIs
-| Metric | Current | Phase 1 Target | Phase 3 Target |
-|--------|---------|----------------|----------------|
-| User Retention (30d) | Unknown | 60% | 80% |
-| Request Creation Rate | Unknown | +25% | +100% |
-| Client Satisfaction | Unknown | 4.0/5 | 4.5/5 |
-| Support Tickets | Unknown | -20% | -50% |
+
+| Metric                | Current | Phase 1 Target | Phase 3 Target |
+| --------------------- | ------- | -------------- | -------------- |
+| User Retention (30d)  | Unknown | 60%            | 80%            |
+| Request Creation Rate | Unknown | +25%           | +100%          |
+| Client Satisfaction   | Unknown | 4.0/5          | 4.5/5          |
+| Support Tickets       | Unknown | -20%           | -50%           |
 
 ### Revenue KPIs
-| Metric | Current | Phase 1 Target | Phase 3 Target |
-|--------|---------|----------------|----------------|
-| Monthly Revenue | Unknown | +10% | +50% |
-| Recurring Revenue % | 0% | 20% | 40% |
-| Client Lifetime Value | Unknown | +30% | +100% |
+
+| Metric                | Current | Phase 1 Target | Phase 3 Target |
+| --------------------- | ------- | -------------- | -------------- |
+| Monthly Revenue       | Unknown | +10%           | +50%           |
+| Recurring Revenue %   | 0%      | 20%            | 40%            |
+| Client Lifetime Value | Unknown | +30%           | +100%          |
 
 ---
 
 ## 📝 Notes & Decisions Log
 
 ### December 26, 2024
+
 - 📋 Initial roadmap created based on comprehensive product review
 - 🎯 Priority set on onboarding and social proof as critical gaps
 - 💡 Maintenance packages identified as key revenue opportunity
@@ -568,15 +626,18 @@ Evaluate making the portal available to other agencies.
 ## 📚 Resources
 
 ### Design References
+
 - [Portal UI Inspiration](https://dribbble.com/tags/dashboard)
 - [Onboarding Best Practices](https://uxdesign.cc/onboarding-best-practices)
 
 ### Technical Documentation
+
 - [Firebase Cloud Functions](https://firebase.google.com/docs/functions)
 - [next-intl Documentation](https://next-intl-docs.vercel.app/)
 - [React Joyride](https://react-joyride.com/)
 
 ### Competitor Analysis
+
 - [Aeolidia](https://aeolidia.com) - Case studies reference
 - [Future Holidays](https://futureholidays.co) - Messaging reference
 

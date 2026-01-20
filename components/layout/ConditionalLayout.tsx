@@ -43,4 +43,3 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   // Regular site routes use MainLayout
   return <MainLayout>{children}</MainLayout>;
 }
-

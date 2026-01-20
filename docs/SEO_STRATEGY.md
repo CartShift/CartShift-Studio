@@ -15,6 +15,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 ### 1.1 Primary Target Keywords (High Priority)
 
 **Shopify Services:**
+
 - `shopify development agency` (Volume: 1,200/mo, Difficulty: 58)
 - `shopify store setup` (Volume: 2,400/mo, Difficulty: 45)
 - `custom shopify development` (Volume: 880/mo, Difficulty: 52)
@@ -23,12 +24,14 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 - `shopify developer` (Volume: 8,100/mo, Difficulty: 65)
 
 **WordPress Services:**
+
 - `wordpress ecommerce development` (Volume: 1,300/mo, Difficulty: 55)
 - `woocommerce development` (Volume: 2,900/mo, Difficulty: 58)
 - `custom wordpress development` (Volume: 1,600/mo, Difficulty: 60)
 - `wordpress migration service` (Volume: 480/mo, Difficulty: 44)
 
 **E-commerce Solutions:**
+
 - `ecommerce development agency` (Volume: 1,900/mo, Difficulty: 62)
 - `online store development` (Volume: 1,200/mo, Difficulty: 50)
 - `ecommerce website design` (Volume: 2,400/mo, Difficulty: 55)
@@ -37,6 +40,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 ### 1.2 Long-Tail Keywords (Medium Priority)
 
 **Intent-Based Keywords:**
+
 - `how to migrate from woocommerce to shopify`
 - `best shopify development company`
 - `shopify store speed optimization`
@@ -47,6 +51,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 - `custom shopify theme development`
 
 **Location-Based (if applicable):**
+
 - `shopify developer [city/region]`
 - `ecommerce agency [city/region]`
 - `wordpress developer [city/region]`
@@ -54,6 +59,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 ### 1.3 Content-Focused Keywords (Blog Strategy)
 
 **Educational/Informational:**
+
 - `shopify seo guide`
 - `shopify vs woocommerce`
 - `ecommerce conversion optimization`
@@ -63,13 +69,13 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 
 ### 1.4 Keyword Mapping to Pages
 
-| Page | Primary Keyword | Secondary Keywords | Long-Tail Targets |
-|------|----------------|-------------------|------------------|
-| Homepage | `ecommerce development agency` | `shopify developer`, `wordpress developer` | `custom ecommerce solutions` |
-| /solutions/shopify | `shopify development agency` | `shopify store setup`, `custom shopify development` | `hire shopify developer`, `shopify migration service` |
-| /solutions/wordpress | `wordpress ecommerce development` | `woocommerce development`, `custom wordpress development` | `wordpress migration service` |
-| /about | `ecommerce agency team` | `shopify experts`, `wordpress specialists` | Brand + service keywords |
-| /blog | `ecommerce tips`, `shopify guides` | Category-based keywords | Educational long-tail |
+| Page                 | Primary Keyword                    | Secondary Keywords                                        | Long-Tail Targets                                     |
+| -------------------- | ---------------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
+| Homepage             | `ecommerce development agency`     | `shopify developer`, `wordpress developer`                | `custom ecommerce solutions`                          |
+| /solutions/shopify   | `shopify development agency`       | `shopify store setup`, `custom shopify development`       | `hire shopify developer`, `shopify migration service` |
+| /solutions/wordpress | `wordpress ecommerce development`  | `woocommerce development`, `custom wordpress development` | `wordpress migration service`                         |
+| /about               | `ecommerce agency team`            | `shopify experts`, `wordpress specialists`                | Brand + service keywords                              |
+| /blog                | `ecommerce tips`, `shopify guides` | Category-based keywords                                   | Educational long-tail                                 |
 
 ---
 
@@ -78,6 +84,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 ### 2.1 Homepage Optimization
 
 **Current Issues:**
+
 - Missing explicit keyword targeting in H1
 - No structured content sections with keyword focus
 - Limited internal linking to service pages
@@ -175,6 +182,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 ### 2.6 Heading Structure Best Practices
 
 **Implementation Guidelines:**
+
 - One H1 per page (primary keyword)
 - H2 for main sections (secondary keywords)
 - H3 for subsections (long-tail keywords)
@@ -182,6 +190,7 @@ This document outlines a data-driven SEO strategy for CartShift Studio, an e-com
 - Use descriptive, keyword-rich headings
 
 **Example Structure:**
+
 ```
 H1: Shopify Development Services | Custom Store Setup
   H2: Why Choose Our Shopify Development Services
@@ -252,6 +261,7 @@ H1: Shopify Development Services | Custom Store Setup
    - Optimize mobile images
 
 **Tools for Monitoring:**
+
 - Google PageSpeed Insights
 - Google Search Console Core Web Vitals report
 - Lighthouse CI
@@ -262,6 +272,7 @@ H1: Shopify Development Services | Custom Store Setup
 **Current Status**: Responsive design with Tailwind CSS
 
 **Verification Checklist:**
+
 - ✅ Responsive design
 - ✅ Mobile-friendly navigation
 - ✅ Touch-friendly buttons (min 44x44px)
@@ -271,6 +282,7 @@ H1: Shopify Development Services | Custom Store Setup
 - ⚠️ Verify mobile page speed
 
 **Action Items:**
+
 1. Run mobile usability test in Google Search Console
 2. Test on multiple devices (iOS, Android)
 3. Verify mobile menu functionality
@@ -280,6 +292,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 3.3 Schema Markup Enhancement
 
 **Current Implementation:**
+
 - ✅ Organization schema
 - ✅ Service schema
 - ✅ Article schema
@@ -295,6 +308,7 @@ H1: Shopify Development Services | Custom Store Setup
    - **Service**: Enhanced with more properties (priceRange, serviceArea, etc.)
 
 2. **Schema Implementation Priority**
+
    ```
    High Priority:
    - BreadcrumbList (all pages)
@@ -369,6 +383,7 @@ H1: Shopify Development Services | Custom Store Setup
 **Current Status**: Basic robots.txt
 
 **Review:**
+
 - ✅ Allows all crawlers
 - ✅ Disallows /api/ (correct)
 - ✅ References sitemap
@@ -378,6 +393,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 3.7 Canonical URLs
 
 **Implementation:**
+
 - ✅ Already implemented via metadata alternates
 - Verify all pages have canonical tags
 - Ensure no duplicate content issues
@@ -386,6 +402,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 3.8 HTTPS & Security
 
 **Status:**
+
 - ✅ HTTPS required (Firebase Hosting)
 - ⚠️ Verify SSL certificate validity
 - ⚠️ Implement security headers:
@@ -400,6 +417,7 @@ H1: Shopify Development Services | Custom Store Setup
 **Current Status**: Custom 404 page exists
 
 **Action Items:**
+
 1. Monitor 404 errors in Google Search Console
 2. Set up redirects for broken links
 3. Improve 404 page with helpful navigation
@@ -412,6 +430,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 4.1 Content Audit
 
 **Current Content:**
+
 - Homepage: Hero, services overview, process, testimonials
 - Service pages: Detailed service descriptions
 - Blog: 6 posts covering Shopify/WordPress topics
@@ -419,6 +438,7 @@ H1: Shopify Development Services | Custom Store Setup
 - Contact: Contact form
 
 **Content Gaps:**
+
 - Case studies/portfolio
 - Detailed service descriptions
 - FAQ sections
@@ -451,6 +471,7 @@ H1: Shopify Development Services | Custom Store Setup
 **Phase 2: Blog Content (Ongoing)**
 
 **Monthly Publishing Schedule:**
+
 - Week 1: How-to guide (1,500-2,500 words)
 - Week 2: Comparison article (2,000-3,000 words)
 - Week 3: Case study (1,000-1,500 words)
@@ -602,6 +623,7 @@ H1: Shopify Development Services | Custom Store Setup
    - Target: 3-5 partnership links
 
 **Link Quality Criteria:**
+
 - Domain Authority (DA) > 30
 - Relevant to e-commerce/web development
 - Organic, editorial links (not paid)
@@ -611,6 +633,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 5.2 Social Signals
 
 **Strategy:**
+
 1. **Social Media Presence**
    - LinkedIn company page (optimize)
    - Twitter/X account
@@ -651,6 +674,7 @@ H1: Shopify Development Services | Custom Store Setup
    - Community involvement content
 
 **If Remote/Virtual:**
+
 - Focus on service area targeting
 - Use "serving [regions]" messaging
 - Create location-agnostic content
@@ -736,11 +760,13 @@ H1: Shopify Development Services | Custom Store Setup
 ### 6.3 Reporting Schedule
 
 **Weekly:**
+
 - Check Google Search Console for errors
 - Monitor keyword ranking changes
 - Review organic traffic trends
 
 **Monthly:**
+
 - Comprehensive SEO report:
   - Organic traffic (sessions, users, pageviews)
   - Keyword rankings (top keywords)
@@ -751,6 +777,7 @@ H1: Shopify Development Services | Custom Store Setup
   - Core Web Vitals scores
 
 **Quarterly:**
+
 - Full SEO audit
 - Competitor analysis
 - Strategy review and adjustments
@@ -759,6 +786,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 6.4 Dashboard Creation
 
 **Recommended Dashboard Metrics:**
+
 1. Organic traffic (last 30 days vs previous period)
 2. Top 10 performing keywords
 3. Top 10 landing pages
@@ -774,24 +802,28 @@ H1: Shopify Development Services | Custom Store Setup
 ### Phase 1: Foundation (Weeks 1-4)
 
 **Week 1:**
+
 - [ ] Complete technical SEO audit
 - [ ] Set up all monitoring tools
 - [ ] Fix critical technical issues
 - [ ] Optimize homepage metadata and content
 
 **Week 2:**
+
 - [ ] Optimize Shopify solutions page
 - [ ] Optimize WordPress solutions page
 - [ ] Add FAQ sections to service pages
 - [ ] Implement missing schema markup
 
 **Week 3:**
+
 - [ ] Enhance blog post SEO
 - [ ] Optimize About and Contact pages
 - [ ] Set up Google Search Console
 - [ ] Submit sitemap
 
 **Week 4:**
+
 - [ ] Image optimization
 - [ ] Internal linking implementation
 - [ ] Performance optimization
@@ -800,17 +832,20 @@ H1: Shopify Development Services | Custom Store Setup
 ### Phase 2: Content Expansion (Weeks 5-12)
 
 **Ongoing:**
+
 - [ ] Publish 2-4 blog posts per month
 - [ ] Expand service page content
 - [ ] Create case studies (if available)
 - [ ] Build internal linking structure
 
 **Month 2:**
+
 - [ ] Launch resource center
 - [ ] Create downloadable resources
 - [ ] Expand FAQ content
 
 **Month 3:**
+
 - [ ] Content refresh and updates
 - [ ] Add new service pages (if needed)
 - [ ] Create topic clusters
@@ -818,12 +853,14 @@ H1: Shopify Development Services | Custom Store Setup
 ### Phase 3: Link Building (Months 3-6)
 
 **Ongoing:**
+
 - [ ] Resource page outreach (5-10 links)
 - [ ] Guest posting (2-3 per month)
 - [ ] Broken link building
 - [ ] Directory submissions
 
 **Month 4-6:**
+
 - [ ] Skyscraper content creation
 - [ ] Digital PR campaigns
 - [ ] Partnership link building
@@ -831,12 +868,14 @@ H1: Shopify Development Services | Custom Store Setup
 ### Phase 4: Optimization & Growth (Months 6-12)
 
 **Ongoing:**
+
 - [ ] Monitor and adjust strategy
 - [ ] Continue content creation
 - [ ] Build more backlinks
 - [ ] Optimize based on data
 
 **Quarterly:**
+
 - [ ] Full SEO audit
 - [ ] Competitor analysis
 - [ ] Strategy refinement
@@ -848,16 +887,19 @@ H1: Shopify Development Services | Custom Store Setup
 ### 6-Month Targets
 
 **Traffic:**
+
 - 100-150% increase in organic traffic
 - 50+ new organic keywords ranking
 - 5-10 primary keywords in top 20
 
 **Engagement:**
+
 - 15-20% increase in average session duration
 - 10-15% decrease in bounce rate
 - 5-10 organic leads per month
 
 **Technical:**
+
 - Core Web Vitals: All green
 - Zero critical technical issues
 - 95%+ mobile usability score
@@ -865,18 +907,21 @@ H1: Shopify Development Services | Custom Store Setup
 ### 12-Month Targets
 
 **Traffic:**
+
 - 200-300% increase in organic traffic
 - 200+ new organic keywords ranking
 - 10-15 primary keywords in top 10
 - 3-5 primary keywords in top 3
 
 **Engagement:**
+
 - 25-30% increase in average session duration
 - 20-25% decrease in bounce rate
 - 15-25 organic leads per month
 - 20-30% of total leads from organic
 
 **Authority:**
+
 - 30-50 quality backlinks
 - Domain Authority increase of 5-10 points
 - Featured snippets for 3-5 keywords
@@ -888,6 +933,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 9.1 Google Guidelines Compliance
 
 **Critical Rules:**
+
 - ✅ No keyword stuffing
 - ✅ No paid links for ranking
 - ✅ No cloaking or hidden text
@@ -899,6 +945,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 9.2 Algorithm Update Preparedness
 
 **Strategy:**
+
 - Diversify traffic sources (not just SEO)
 - Focus on user experience
 - Create high-quality content
@@ -940,6 +987,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 10.1 Competitor Research
 
 **Action Items:**
+
 1. Identify top 5-10 competitors
 2. Analyze their keyword strategies
 3. Review their content approach
@@ -947,6 +995,7 @@ H1: Shopify Development Services | Custom Store Setup
 5. Identify content gaps and opportunities
 
 **Key Questions:**
+
 - What keywords are they ranking for?
 - What content do they create?
 - Where do they get backlinks?
@@ -956,6 +1005,7 @@ H1: Shopify Development Services | Custom Store Setup
 ### 10.2 Competitive Advantages
 
 **Leverage:**
+
 - Dual platform expertise (Shopify + WordPress)
 - Custom solutions focus
 - Technical depth
@@ -963,6 +1013,7 @@ H1: Shopify Development Services | Custom Store Setup
 - Long-term partnership approach
 
 **Differentiation:**
+
 - Emphasize unique value propositions
 - Create content competitors don't have
 - Target underserved keywords
@@ -1010,17 +1061,20 @@ H1: Shopify Development Services | Custom Store Setup
 ### 12.1 Essential Investments
 
 **Tools (Monthly):**
+
 - Google Analytics: Free
 - Google Search Console: Free
 - Ahrefs or SEMrush: $99-199/month (recommended)
 - Screaming Frog: Free (limited) or $209/year (paid)
 
 **Content:**
+
 - Blog writing: In-house or freelance ($50-200/post)
 - Content updates: In-house
 - Design assets: In-house or stock ($10-50/month)
 
 **Link Building:**
+
 - Guest posting: Time investment
 - Outreach tools: Optional ($50-100/month)
 - PR: Optional ($500-2000/campaign)
@@ -1028,11 +1082,13 @@ H1: Shopify Development Services | Custom Store Setup
 ### 12.2 ROI Expectations
 
 **Investment:**
+
 - Tools: $100-300/month
 - Content: $200-800/month (if outsourcing)
 - Time: 10-20 hours/month (if in-house)
 
 **Expected Return:**
+
 - 200-300% organic traffic increase
 - 15-25 organic leads/month (value: $5,000-25,000+)
 - Improved brand visibility
@@ -1045,6 +1101,7 @@ H1: Shopify Development Services | Custom Store Setup
 This comprehensive SEO strategy provides a roadmap for significantly improving CartShift Studio's search engine visibility and organic traffic. Success requires consistent execution, regular monitoring, and adaptation based on data and results.
 
 **Key Success Factors:**
+
 1. Consistent content creation
 2. Technical SEO excellence
 3. Quality link building
@@ -1052,6 +1109,7 @@ This comprehensive SEO strategy provides a roadmap for significantly improving C
 5. Data-driven optimization
 
 **Next Steps:**
+
 1. Review and approve strategy
 2. Set up monitoring tools
 3. Begin Phase 1 implementation
@@ -1071,12 +1129,14 @@ This comprehensive SEO strategy provides a roadmap for significantly improving C
 ### Completed Enhancements
 
 #### 1. Sitemap Improvements
+
 - ✅ Added localized URLs for all pages (en/he)
 - ✅ Implemented hreflang alternates for multilingual support
 - ✅ Added case studies to sitemap
 - ✅ Proper priority and changeFrequency values
 
 #### 2. Schema Markup Enhancements
+
 - ✅ Enhanced Organization schema with offers catalog, contact info
 - ✅ Added ProfessionalService schema to homepage
 - ✅ Enhanced Service schema with pricing, offers configuration
@@ -1087,6 +1147,7 @@ This comprehensive SEO strategy provides a roadmap for significantly improving C
 - ✅ All schemas now use @id references for entity linking
 
 #### 3. Metadata Improvements
+
 - ✅ Keywords added to all major pages
 - ✅ Enhanced Open Graph with locale alternates
 - ✅ Twitter card optimization with creator/site handles
@@ -1094,16 +1155,19 @@ This comprehensive SEO strategy provides a roadmap for significantly improving C
 - ✅ Robot directives with googleBot configuration
 
 #### 4. robots.txt Optimization
+
 - ✅ Added specific rules for Googlebot and Bingbot
 - ✅ Disallowed portal/admin paths
 - ✅ Added host directive
 
 #### 5. Technical SEO
+
 - ✅ Created reusable JsonLd component
 - ✅ Word count tracking for blog posts
 - ✅ Reading time calculation
 
 ### Files Modified
+
 - `lib/seo.ts` - Enhanced schema generators
 - `app/sitemap.ts` - Localized URLs with hreflang
 - `app/robots.ts` - Extended rules
@@ -1117,18 +1181,10 @@ This comprehensive SEO strategy provides a roadmap for significantly improving C
 - `components/seo/JsonLd.tsx` - New reusable component
 
 ### Next Steps for Further Optimization
+
 1. Create dedicated OG image (1200x630) for social sharing
 2. Add Google Search Console verification
 3. Set up monitoring for Core Web Vitals
 4. Consider adding FAQ schema to more pages
 5. Implement breadcrumbs visually on all pages
 6. Add social media links to Organization schema
-
-
-
-
-
-
-
-
-

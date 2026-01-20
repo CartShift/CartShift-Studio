@@ -74,8 +74,10 @@ const messageColorVariants = cva('', {
   },
 });
 
-export interface ErrorRecoveryProps
-  extends Omit<VariantProps<typeof errorRecoveryVariants>, 'severity'> {
+export interface ErrorRecoveryProps extends Omit<
+  VariantProps<typeof errorRecoveryVariants>,
+  'severity'
+> {
   /** The error to display (will be parsed for user-friendly message) */
   error: unknown;
   /** Override the parsed title */
@@ -124,17 +126,11 @@ export function ErrorRecovery({
   if (variant === 'minimal') {
     return (
       <div
-        className={cn(
-          errorRecoveryVariants({ variant, severity }),
-          'border',
-          className
-        )}
+        className={cn(errorRecoveryVariants({ variant, severity }), 'border', className)}
         role="alert"
       >
         <AlertTriangle size={16} className={iconColorVariants({ severity })} />
-        <span className={cn('text-sm', messageColorVariants({ severity }))}>
-          {displayMessage}
-        </span>
+        <span className={cn('text-sm', messageColorVariants({ severity }))}>{displayMessage}</span>
         {onRetry && retryable && (
           <button
             onClick={onRetry}
@@ -154,21 +150,20 @@ export function ErrorRecovery({
   if (variant === 'inline') {
     return (
       <div
-        className={cn(
-          errorRecoveryVariants({ variant, severity }),
-          'border',
-          className
-        )}
+        className={cn(errorRecoveryVariants({ variant, severity }), 'border', className)}
         role="alert"
       >
-        <div className={cn('p-2 rounded-lg', `bg-${severity === 'high' ? 'rose' : severity === 'medium' ? 'orange' : 'amber'}-100 dark:bg-${severity === 'high' ? 'rose' : severity === 'medium' ? 'orange' : 'amber'}-900/20`)}>
+        <div
+          className={cn(
+            'p-2 rounded-lg',
+            `bg-${severity === 'high' ? 'rose' : severity === 'medium' ? 'orange' : 'amber'}-100 dark:bg-${severity === 'high' ? 'rose' : severity === 'medium' ? 'orange' : 'amber'}-900/20`
+          )}
+        >
           <AlertTriangle size={18} className={iconColorVariants({ severity })} />
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className={cn('text-sm', titleColorVariants({ severity }))}>
-            {displayTitle}
-          </p>
+          <p className={cn('text-sm', titleColorVariants({ severity }))}>{displayTitle}</p>
           {displayMessage !== displayTitle && (
             <p className={cn('text-xs mt-0.5', messageColorVariants({ severity }))}>
               {displayMessage}
@@ -192,7 +187,10 @@ export function ErrorRecovery({
           {onDismiss && (
             <button
               onClick={onDismiss}
-              className={cn('p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5', messageColorVariants({ severity }))}
+              className={cn(
+                'p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5',
+                messageColorVariants({ severity })
+              )}
               aria-label="Dismiss error"
             >
               <X size={14} />
@@ -206,11 +204,7 @@ export function ErrorRecovery({
   // Card variant (default)
   return (
     <Card
-      className={cn(
-        errorRecoveryVariants({ variant, severity }),
-        'border',
-        className
-      )}
+      className={cn(errorRecoveryVariants({ variant, severity }), 'border', className)}
       role="alert"
     >
       <div className="flex items-start gap-4">
@@ -228,9 +222,7 @@ export function ErrorRecovery({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className={cn('text-base mb-1', titleColorVariants({ severity }))}>
-            {displayTitle}
-          </h3>
+          <h3 className={cn('text-base mb-1', titleColorVariants({ severity }))}>{displayTitle}</h3>
           <p className={cn('text-sm mb-4 leading-relaxed', messageColorVariants({ severity }))}>
             {displayMessage}
           </p>

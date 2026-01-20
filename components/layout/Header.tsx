@@ -212,7 +212,9 @@ export const Header: React.FC = () => {
               <Button
                 size="md"
                 className="font-outfit font-black tracking-tight shadow-lg shadow-primary-500/15 hover:shadow-xl hover:shadow-primary-500/25 active:scale-[0.97] px-5 sm:px-6 transition-shadow"
-                onClick={() => router.push(isLoggedIn ? getPortalPath('/') : '/tools/store-analyzer')}
+                onClick={() =>
+                  router.push(isLoggedIn ? getPortalPath('/') : '/tools/store-analyzer')
+                }
               >
                 {isLoggedIn ? (
                   <span className="flex items-center gap-2">

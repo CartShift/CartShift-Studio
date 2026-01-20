@@ -366,10 +366,10 @@ Date & Reading Time:
 
 ```css
 .gradient-text {
-	background: linear-gradient(135deg, #3b82f6, #f59e0b);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
+  background: linear-gradient(135deg, #3b82f6, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 ```
 
@@ -377,27 +377,27 @@ Date & Reading Time:
 
 ```css
 .gradient-border {
-	position: relative;
+  position: relative;
 }
 
 .gradient-border::before {
-	content: "";
-	position: absolute;
-	inset: -2px;
-	background: linear-gradient(90deg, primary-500, accent-500, primary-500);
-	border-radius: 1rem;
-	animation: gradient-x 3s ease infinite;
-	background-size: 200% 200%;
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, primary-500, accent-500, primary-500);
+  border-radius: 1rem;
+  animation: gradient-x 3s ease infinite;
+  background-size: 200% 200%;
 }
 
 @keyframes gradient-x {
-	0%,
-	100% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 ```
 
@@ -702,22 +702,22 @@ Focus Indicators:
 
 <!-- Filters -->
 <fieldset aria-label="Filter by category">
-	<legend class="sr-only">Filter posts by category</legend>
-	<!-- checkboxes -->
+  <legend class="sr-only">Filter posts by category</legend>
+  <!-- checkboxes -->
 </fieldset>
 
 <!-- Cards -->
 <article aria-labelledby="post-title-1">
-	<h3 id="post-title-1">Article Title</h3>
-	<time datetime="2025-12-15">December 15, 2025</time>
-	<a href="/blog/slug" aria-label="Read article: Article Title">Read Article</a>
+  <h3 id="post-title-1">Article Title</h3>
+  <time datetime="2025-12-15">December 15, 2025</time>
+  <a href="/blog/slug" aria-label="Read article: Article Title">Read Article</a>
 </article>
 
 <!-- Pagination -->
 <nav aria-label="Pagination">
-	<button aria-label="Go to previous page">←</button>
-	<button aria-current="page" aria-label="Current page, page 2">2</button>
-	<button aria-label="Go to next page">→</button>
+  <button aria-label="Go to previous page">←</button>
+  <button aria-current="page" aria-label="Current page, page 2">2</button>
+  <button aria-label="Go to next page">→</button>
 </nav>
 ```
 
@@ -725,11 +725,11 @@ Focus Indicators:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-	* {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-	}
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 ```
 
@@ -749,20 +749,22 @@ Focus Indicators:
 ```css
 /* Article Card */
 .blog-card {
-	transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .blog-card:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .blog-card:hover .card-image {
-	transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .blog-card:hover .read-more-arrow {
-	transform: translateX(4px); /* or -4px for RTL */
+  transform: translateX(4px); /* or -4px for RTL */
 }
 ```
 
@@ -771,29 +773,31 @@ Focus Indicators:
 ```tsx
 // Stagger children cards
 <motion.div
-	variants={{
-		hidden: { opacity: 0 },
-		visible: {
-			opacity: 1,
-			transition: {
-				staggerChildren: 0.1
-			}
-		}
-	}}
-	initial="hidden"
-	whileInView="visible"
-	viewport={{ once: true, margin: "-100px" }}>
-	{posts.map((post, index) => (
-		<motion.div
-			key={post.slug}
-			variants={{
-				hidden: { opacity: 0, y: 50 },
-				visible: { opacity: 1, y: 0 }
-			}}
-			transition={{ duration: 0.6 }}>
-			{/* Card content */}
-		</motion.div>
-	))}
+  variants={{
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }}
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true, margin: '-100px' }}
+>
+  {posts.map((post, index) => (
+    <motion.div
+      key={post.slug}
+      variants={{
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0 },
+      }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Card content */}
+    </motion.div>
+  ))}
 </motion.div>
 ```
 
@@ -825,17 +829,17 @@ Focus Indicators:
 ### Image Handling
 
 ```tsx
-import Image from "next/image";
+import Image from 'next/image';
 
 <Image
-	src={post.image || "/images/blog-placeholder.jpg"}
-	alt={post.title}
-	width={400}
-	height={225}
-	className="w-full h-48 object-cover"
-	loading="lazy"
-	placeholder="blur"
-	blurDataURL={post.blurDataURL}
+  src={post.image || '/images/blog-placeholder.jpg'}
+  alt={post.title}
+  width={400}
+  height={225}
+  className="w-full h-48 object-cover"
+  loading="lazy"
+  placeholder="blur"
+  blurDataURL={post.blurDataURL}
 />;
 ```
 
@@ -849,7 +853,9 @@ import Image from "next/image";
 
 ```tsx
 // Lazy load heavy components
-const NewsletterWidget = dynamic(() => import("@/components/sections/NewsletterWidget"), { ssr: false });
+const NewsletterWidget = dynamic(() => import('@/components/sections/NewsletterWidget'), {
+  ssr: false,
+});
 ```
 
 ### Search Optimization
@@ -874,9 +880,9 @@ const debouncedSearch = useMemo(() => debounce(value => setSearchTerm(value), 30
 
 ```typescript
 function calculateReadingTime(content: string): number {
-	const wordsPerMinute = 200;
-	const wordCount = content.trim().split(/\s+/).length;
-	return Math.ceil(wordCount / wordsPerMinute);
+  const wordsPerMinute = 200;
+  const wordCount = content.trim().split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
 }
 ```
 
@@ -933,15 +939,15 @@ function calculateReadingTime(content: string): number {
 
 ```typescript
 interface BlogPageState {
-	posts: BlogPost[];
-	filteredPosts: BlogPost[];
-	searchTerm: string;
-	selectedCategories: string[];
-	sortBy: "latest" | "oldest" | "popular" | "a-z" | "z-a";
-	currentPage: number;
-	postsPerPage: number;
-	isLoading: boolean;
-	featuredPost: BlogPost | null;
+  posts: BlogPost[];
+  filteredPosts: BlogPost[];
+  searchTerm: string;
+  selectedCategories: string[];
+  sortBy: 'latest' | 'oldest' | 'popular' | 'a-z' | 'z-a';
+  currentPage: number;
+  postsPerPage: number;
+  isLoading: boolean;
+  featuredPost: BlogPost | null;
 }
 ```
 
@@ -949,14 +955,14 @@ interface BlogPageState {
 
 ```typescript
 function searchPosts(posts: BlogPost[], query: string): BlogPost[] {
-	const lowercaseQuery = query.toLowerCase();
-	return posts.filter(
-		post =>
-			post.title.toLowerCase().includes(lowercaseQuery) ||
-			post.excerpt.toLowerCase().includes(lowercaseQuery) ||
-			post.category.toLowerCase().includes(lowercaseQuery) ||
-			post.tags?.some(tag => tag.toLowerCase().includes(lowercaseQuery))
-	);
+  const lowercaseQuery = query.toLowerCase();
+  return posts.filter(
+    post =>
+      post.title.toLowerCase().includes(lowercaseQuery) ||
+      post.excerpt.toLowerCase().includes(lowercaseQuery) ||
+      post.category.toLowerCase().includes(lowercaseQuery) ||
+      post.tags?.some(tag => tag.toLowerCase().includes(lowercaseQuery))
+  );
 }
 ```
 
@@ -964,22 +970,23 @@ function searchPosts(posts: BlogPost[], query: string): BlogPost[] {
 
 ```typescript
 function filterAndSortPosts(posts: BlogPost[], categories: string[], sortBy: string): BlogPost[] {
-	// Filter
-	let filtered = categories.length > 0 ? posts.filter(post => categories.includes(post.category)) : posts;
+  // Filter
+  let filtered =
+    categories.length > 0 ? posts.filter(post => categories.includes(post.category)) : posts;
 
-	// Sort
-	switch (sortBy) {
-		case "latest":
-			return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-		case "oldest":
-			return filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-		case "a-z":
-			return filtered.sort((a, b) => a.title.localeCompare(b.title));
-		case "z-a":
-			return filtered.sort((a, b) => b.title.localeCompare(a.title));
-		default:
-			return filtered;
-	}
+  // Sort
+  switch (sortBy) {
+    case 'latest':
+      return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    case 'oldest':
+      return filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    case 'a-z':
+      return filtered.sort((a, b) => a.title.localeCompare(b.title));
+    case 'z-a':
+      return filtered.sort((a, b) => b.title.localeCompare(a.title));
+    default:
+      return filtered;
+  }
 }
 ```
 

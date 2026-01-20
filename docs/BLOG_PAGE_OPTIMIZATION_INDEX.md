@@ -310,22 +310,18 @@ Transitions:    300ms cubic-bezier
 These can be completed quickly for immediate impact:
 
 1. **Add Reading Time** (30 min)
-
    - Calculate from word count
    - Display on cards
 
 2. **Improve Card Hover Effects** (15 min)
-
    - Add lift effect
    - Increase shadow
 
 3. **Add Gradient Text to Title** (10 min)
-
    - Apply to "Expertise" or similar
    - Use brand gradient
 
 4. **Better Category Badges** (15 min)
-
    - Gradient background
    - Rounded full style
 

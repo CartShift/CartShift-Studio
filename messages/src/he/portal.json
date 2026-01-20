@@ -76,7 +76,8 @@
         "scheduled_consultation": "פגישת ייעוץ נקבעה",
         "completed_consultation": "פגישת ייעוץ הושלמה",
         "canceled_consultation": "פגישת ייעוץ בוטלה",
-        "marked_no_show": "סומן כלא הגיע"
+        "marked_no_show": "סומן כלא הגיע",
+        "status_changed": "סטטוס הבקשה עודכן"
       },
       "filters": {
         "all": "כל הפעילות",

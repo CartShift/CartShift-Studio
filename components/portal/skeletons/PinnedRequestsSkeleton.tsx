@@ -15,10 +15,7 @@ interface PinnedRequestsSkeletonProps {
   className?: string;
 }
 
-export function PinnedRequestsSkeleton({
-  count = 3,
-  className,
-}: PinnedRequestsSkeletonProps) {
+export function PinnedRequestsSkeleton({ count = 3, className }: PinnedRequestsSkeletonProps) {
   return (
     <Card
       variant="glass"

@@ -5,6 +5,7 @@
 CartShift Studio is an e-commerce development agency specializing in Shopify and WordPress solutions. This document outlines a comprehensive, data-driven SEO strategy to significantly enhance search engine rankings, organic traffic, and lead generation.
 
 **Target Goals (6-12 months):**
+
 - Achieve top 10 rankings for 15+ primary keywords
 - Increase organic traffic by 300-500%
 - Generate 50-100 qualified monthly leads from organic search
@@ -16,6 +17,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ## 1. Current SEO Foundation Assessment
 
 ### ✅ Strengths Identified
+
 - **Technical Foundation**: Strong Next.js implementation with SSG
 - **Schema Markup**: Organization, Service, and Article schemas implemented
 - **Mobile-First**: Responsive design with proper viewport configuration
@@ -26,6 +28,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 - **Analytics Ready**: Google Analytics 4 integration prepared
 
 ### ⚠️ Areas for Improvement
+
 - Missing critical on-page optimization
 - No H1 tags optimized for primary keywords
 - Limited internal linking structure
@@ -42,7 +45,9 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ## 2. Keyword Research & Targeting Strategy
 
 ### Primary Keywords (High Priority)
+
 **Service Keywords:**
+
 1. `shopify development agency` (1,600 searches/mo, KD: 45)
 2. `custom shopify store development` (800 searches/mo, KD: 38)
 3. `wordpress ecommerce development` (900 searches/mo, KD: 42)
@@ -52,6 +57,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 7. `shopify migration service` (400 searches/mo, KD: 32)
 
 **Informational Keywords (Blog Focus):**
+
 1. `how to optimize shopify store` (1,900 searches/mo, KD: 28)
 2. `shopify vs woocommerce` (4,500 searches/mo, KD: 35)
 3. `ecommerce conversion rate optimization` (1,200 searches/mo, KD: 40)
@@ -59,6 +65,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 5. `speed up shopify store` (600 searches/mo, KD: 25)
 
 ### Secondary Keywords (Medium Priority)
+
 - `shopify theme customization service`
 - `shopify app development`
 - `wordpress to shopify migration`
@@ -69,6 +76,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 - `headless shopify development`
 
 ### Long-Tail Keywords (Low Competition, High Intent)
+
 - `best shopify development agency for [industry]`
 - `hire shopify developer for custom features`
 - `shopify store optimization service`
@@ -76,6 +84,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 - `ecommerce migration specialist`
 
 ### Local SEO Keywords (If targeting specific locations)
+
 - `shopify developers in [city]`
 - `ecommerce development agency [city]`
 
@@ -86,12 +95,14 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### A. Homepage Optimization
 
 **Current Issues:**
+
 - Missing optimized H1 tag
 - Generic meta description
 - No FAQ schema
 - Limited keyword density
 
 **Action Items:**
+
 1. **Title Tag**: "Shopify & WordPress Development Agency | Custom eCommerce Solutions | CartShift Studio"
 2. **Meta Description**: "Transform your online store with CartShift Studio. Expert Shopify & WordPress developers delivering custom eCommerce solutions that drive sales. Free consultation available."
 3. **H1 Tag**: "Custom Shopify & WordPress Development for Growing Businesses"
@@ -114,6 +125,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### B. Shopify Solutions Page Optimization
 
 **Action Items:**
+
 1. **Title**: "Shopify Development Services | Custom Store Setup & Optimization"
 2. **Meta Description**: "Expert Shopify developers create high-converting stores. Custom features, theme development, migration, and optimization. Get your free quote today."
 3. **H1**: "Professional Shopify Development Services"
@@ -123,7 +135,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
    - Add pricing transparency section
    - Include 8-10 FAQs with schema
    - Add testimonials section
-5. **Internal Linking**: 
+5. **Internal Linking**:
    - Link to related blog posts (Shopify SEO, Speed Optimization)
    - Link to contact page multiple times
    - Link to portfolio/case studies
@@ -139,6 +151,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### C. WordPress Solutions Page Optimization
 
 **Action Items:**
+
 1. **Title**: "WordPress & WooCommerce Development | Custom eCommerce Solutions"
 2. **Meta Description**: "Transform your WordPress site into a powerful eCommerce platform. Custom WooCommerce development, optimization, and support from expert developers."
 3. **H1**: "WordPress & WooCommerce Development Experts"
@@ -157,6 +170,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### D. About Page Optimization
 
 **Action Items:**
+
 1. **Title**: "About CartShift Studio | Your eCommerce Development Partners"
 2. **Meta Description**: "Meet the team behind CartShift Studio. Expert developers passionate about creating custom Shopify & WordPress solutions that drive business growth."
 3. **H1**: "Building eCommerce Success Stories Since [Year]"
@@ -174,6 +188,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### E. Blog Page & Posts Optimization
 
 **Current Blog Posts:**
+
 1. Complete Guide to eCommerce Migration
 2. eCommerce Conversion Rate Optimization
 3. Shopify SEO Complete Guide
@@ -182,6 +197,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 6. WooCommerce Performance Optimization
 
 **Optimization Actions:**
+
 1. **Add Missing Elements to Each Post**:
    - Table of contents with anchor links
    - Featured images with optimized alt text
@@ -213,6 +229,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### A. Site Speed Optimization
 
 **Current Configuration:**
+
 - Next.js SSG with Firebase hosting
 - Images set to unoptimized
 - No performance monitoring
@@ -248,6 +265,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
    - Set performance budgets
 
 **Target Metrics:**
+
 - Largest Contentful Paint (LCP): <2.5s
 - First Input Delay (FID): <100ms
 - Cumulative Layout Shift (CLS): <0.1
@@ -260,6 +278,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### B. Mobile Optimization
 
 **Action Items:**
+
 1. Test all pages on multiple devices and screen sizes
 2. Optimize touch targets (minimum 48x48px)
 3. Ensure readable font sizes (16px minimum)
@@ -275,6 +294,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### C. Schema Markup Enhancement
 
 **Current Implementation:**
+
 - Organization schema ✅
 - Service schema ✅
 - Article schema ✅
@@ -282,6 +302,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 **To Add:**
 
 1. **Breadcrumb Schema** (All pages)
+
 ```json
 {
   "@context": "https://schema.org",
@@ -291,6 +312,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ```
 
 2. **FAQ Schema** (Service pages, blog posts)
+
 ```json
 {
   "@context": "https://schema.org",
@@ -300,6 +322,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ```
 
 3. **Review/Rating Schema** (Homepage, service pages)
+
 ```json
 {
   "@context": "https://schema.org",
@@ -322,6 +345,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 **Current Status**: Clean URLs with proper slugs ✅
 
 **Enhancement Actions:**
+
 1. Ensure all blog post URLs match target keywords
 2. Add category prefixes to blog URLs if beneficial
 3. Set up 301 redirects for any URL changes
@@ -337,6 +361,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 **Current Status**: Dynamic sitemap.xml generated ✅
 
 **Enhancements:**
+
 1. Add image sitemap
 2. Add video sitemap (when videos added)
 3. Split into multiple sitemaps if site grows (blog, pages, images)
@@ -353,6 +378,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 **Current Status**: Basic robots.txt ✅
 
 **Enhancements:**
+
 1. Add crawl-delay directive if needed
 2. Block resource-heavy pages from crawling
 3. Specify sitemap location (already done ✅)
@@ -367,6 +393,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 **Current Status**: SSL enabled via Firebase ✅
 
 **Verification Actions:**
+
 1. Audit all pages for mixed content
 2. Ensure all internal links use HTTPS
 3. Update external links to HTTPS where possible
@@ -382,6 +409,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 ### A. Blog Content Calendar (Next 6 Months)
 
 **Month 1-2: Foundation Topics (8 posts)**
+
 1. "Shopify Store Launch Checklist: 50 Essential Steps"
 2. "WordPress eCommerce: Complete WooCommerce Setup Guide"
 3. "15 Shopify Apps That Actually Increase Conversions"
@@ -391,27 +419,12 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 7. "Top 10 WooCommerce Plugins for High-Performance Stores"
 8. "How to Choose the Right eCommerce Platform for Your Business"
 
-**Month 3-4: Advanced Topics (8 posts)**
-9. "Headless Commerce: Is It Right for Your Shopify Store?"
-10. "Complete Guide to Shopify Checkout Customization"
-11. "International eCommerce: Multi-Currency Setup Guide"
-12. "Shopify API Integration: Common Use Cases"
-13. "WordPress Security for eCommerce: Essential Guide"
-14. "A/B Testing Your eCommerce Store: Tools and Strategies"
-15. "Subscription Commerce with Shopify: Complete Setup"
-16. "Mobile Commerce Optimization: Beyond Responsive Design"
+**Month 3-4: Advanced Topics (8 posts)** 9. "Headless Commerce: Is It Right for Your Shopify Store?" 10. "Complete Guide to Shopify Checkout Customization" 11. "International eCommerce: Multi-Currency Setup Guide" 12. "Shopify API Integration: Common Use Cases" 13. "WordPress Security for eCommerce: Essential Guide" 14. "A/B Testing Your eCommerce Store: Tools and Strategies" 15. "Subscription Commerce with Shopify: Complete Setup" 16. "Mobile Commerce Optimization: Beyond Responsive Design"
 
-**Month 5-6: Industry-Specific & Advanced (8 posts)**
-17. "Shopify for Fashion Brands: Complete Setup Guide"
-18. "B2B eCommerce with Shopify: Custom Solutions"
-19. "Food & Beverage eCommerce: Compliance and Setup"
-20. "Print-on-Demand Shopify Store Setup Guide"
-21. "Wholesale eCommerce Integration for Shopify"
-22. "Multi-Vendor Marketplace Development"
-23. "eCommerce Analytics: Beyond Google Analytics"
-24. "Voice Commerce: Preparing Your Store for the Future"
+**Month 5-6: Industry-Specific & Advanced (8 posts)** 17. "Shopify for Fashion Brands: Complete Setup Guide" 18. "B2B eCommerce with Shopify: Custom Solutions" 19. "Food & Beverage eCommerce: Compliance and Setup" 20. "Print-on-Demand Shopify Store Setup Guide" 21. "Wholesale eCommerce Integration for Shopify" 22. "Multi-Vendor Marketplace Development" 23. "eCommerce Analytics: Beyond Google Analytics" 24. "Voice Commerce: Preparing Your Store for the Future"
 
 **Content Specifications:**
+
 - Length: 2,500-4,000 words per post
 - Include: Table of contents, images, infographics, actionable steps
 - Target: 1-2 primary keywords, 3-5 secondary keywords per post
@@ -427,6 +440,7 @@ CartShift Studio is an e-commerce development agency specializing in Shopify and
 Create comprehensive pillar pages that serve as authoritative resources:
 
 **Pillar Page 1: "The Complete Shopify Development Guide"**
+
 - Length: 8,000-10,000 words
 - Sections: Planning, Design, Development, Launch, Growth, Optimization
 - Link to: 15-20 related blog posts
@@ -434,6 +448,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
 - Target: "shopify development guide" + related keywords
 
 **Pillar Page 2: "WordPress eCommerce Mastery"**
+
 - Length: 8,000-10,000 words
 - Sections: Platform selection, WooCommerce setup, Customization, Plugins, Security, Scale
 - Link to: 15-20 related blog posts
@@ -441,6 +456,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
 - Target: "wordpress ecommerce" + related keywords
 
 **Pillar Page 3: "eCommerce Conversion Optimization Handbook"**
+
 - Length: 6,000-8,000 words
 - Sections: UX principles, Checkout optimization, Copywriting, Design, Testing
 - Link to: 10-15 related blog posts
@@ -454,6 +470,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
 ### C. Content Update Strategy
 
 **Existing Content Refresh (Quarterly):**
+
 1. Update statistics and data
 2. Add new sections based on industry changes
 3. Improve internal linking
@@ -463,6 +480,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
 7. Add "Updated: [Date]" badge
 
 **Content Pruning:**
+
 - Review content performance quarterly
 - Merge, redirect, or delete underperforming content
 - Consolidate similar topics
@@ -472,6 +490,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
 ### D. Visual Content Strategy
 
 **To Create:**
+
 1. **Infographics** (1 per month)
    - "Shopify vs WordPress: Visual Comparison"
    - "eCommerce Site Speed Optimization Checklist"
@@ -492,6 +511,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
    - Technical architecture diagrams
 
 **Distribution:**
+
 - Embed in blog posts
 - Share on social media
 - Create YouTube channel
@@ -502,6 +522,7 @@ Create comprehensive pillar pages that serve as authoritative resources:
 ### E. Case Studies & Portfolio
 
 **Action Items:**
+
 1. Create 3-5 detailed case studies:
    - Challenge, Solution, Results format
    - Include metrics and ROI
@@ -619,15 +640,16 @@ Create comprehensive pillar pages that serve as authoritative resources:
 **Link Acquisition Tactics:**
 
 **Email Outreach Template (Guest Posting):**
+
 ```
 Subject: Guest Post Idea: [Specific Topic] for [Their Site]
 
 Hi [Name],
 
-I'm [Your Name] from CartShift Studio, and I've been following [Their Site] 
+I'm [Your Name] from CartShift Studio, and I've been following [Their Site]
 for [specific detail showing you read their content].
 
-I noticed you recently published [specific article]. I'd love to contribute 
+I noticed you recently published [specific article]. I'd love to contribute
 a guest post that complements this, specifically on [your topic idea].
 
 I'm thinking of a piece titled "[Your Title]" that would cover:
@@ -644,11 +666,13 @@ Best,
 ```
 
 **Broken Link Building:**
+
 1. Find broken links on high-authority sites
 2. Create replacement content
 3. Reach out offering your content as replacement
 
 **Skyscraper Technique:**
+
 1. Find top-performing content in your niche
 2. Create significantly better version
 3. Reach out to sites linking to original content
@@ -658,6 +682,7 @@ Best,
 ### B. Brand Mention & Unlinked Citations
 
 **Strategy:**
+
 1. Set up Google Alerts for "CartShift Studio"
 2. Use tools like Mention.com or Brand24
 3. Find unlinked brand mentions
@@ -697,6 +722,7 @@ Best,
    - Optimize pin descriptions with keywords
 
 **Social Sharing Optimization:**
+
 - Add social sharing buttons to blog posts
 - Create quote graphics from blog content
 - Optimize Open Graph tags for social sharing
@@ -713,6 +739,7 @@ Best,
 ### A. Google Business Profile
 
 **Setup Actions:**
+
 1. Create/claim Google Business Profile
 2. Complete all profile sections:
    - Business name: CartShift Studio
@@ -737,6 +764,7 @@ Best,
 ### B. Local Citations
 
 **Action Items:**
+
 1. Ensure NAP (Name, Address, Phone) consistency across:
    - Website footer
    - Contact page
@@ -757,6 +785,7 @@ Best,
 ### C. Local Content Strategy
 
 **If targeting specific cities:**
+
 1. Create location-specific landing pages
 2. Write blog posts about local eCommerce scene
 3. Participate in local business events
@@ -772,6 +801,7 @@ Best,
 ### A. Landing Page Optimization
 
 **Homepage CRO:**
+
 1. A/B test hero section headlines
 2. Test different CTAs (text, color, placement)
 3. Optimize form fields (test 3 fields vs. 5 fields)
@@ -780,6 +810,7 @@ Best,
 6. Optimize for mobile conversions
 
 **Service Page CRO:**
+
 1. Add clear pricing transparency
 2. Include case studies above the fold
 3. Add comparison tables
@@ -794,6 +825,7 @@ Best,
 ### B. Lead Magnet Strategy
 
 **Create Downloadable Resources:**
+
 1. "Shopify Store Launch Checklist" (PDF)
 2. "eCommerce Development Cost Calculator" (Interactive)
 3. "Conversion Rate Optimization Playbook" (PDF)
@@ -801,6 +833,7 @@ Best,
 5. "Website Performance Audit Template" (Spreadsheet)
 
 **Implementation:**
+
 - Create dedicated landing pages
 - Gate content with email signup
 - Integrate with email marketing tool
@@ -814,6 +847,7 @@ Best,
 ### C. Trust & Authority Building
 
 **Add to Website:**
+
 1. Client testimonials (video and text)
 2. Case study results
 3. Industry certifications/partnerships
@@ -834,6 +868,7 @@ Best,
 ### Phase 1: Foundation (Weeks 1-4)
 
 **Week 1:**
+
 - [ ] Set up Google Search Console
 - [ ] Set up Bing Webmaster Tools
 - [ ] Configure Google Analytics 4 with conversions
@@ -844,6 +879,7 @@ Best,
 - [ ] Create comprehensive keyword list
 
 **Week 2:**
+
 - [ ] Optimize homepage (H1, meta, content)
 - [ ] Add FAQ schema to homepage
 - [ ] Implement breadcrumb schema site-wide
@@ -852,12 +888,14 @@ Best,
 - [ ] Implement proper image optimization
 
 **Week 3:**
+
 - [ ] Optimize Shopify solutions page
 - [ ] Optimize WordPress solutions page
 - [ ] Add FAQ sections with schema
 - [ ] Create internal linking structure
 
 **Week 4:**
+
 - [ ] Optimize About page
 - [ ] Optimize Contact page
 - [ ] Optimize blog listing page
@@ -868,24 +906,28 @@ Best,
 ### Phase 2: Content Expansion (Weeks 5-12)
 
 **Weeks 5-6:**
+
 - [ ] Write and publish 4 new blog posts
 - [ ] Create 2 lead magnets
 - [ ] Develop first pillar content piece
 - [ ] Create 2 infographics
 
 **Weeks 7-8:**
+
 - [ ] Write and publish 4 new blog posts
 - [ ] Create 2 case studies
 - [ ] Build portfolio section
 - [ ] Start guest posting outreach
 
 **Weeks 9-10:**
+
 - [ ] Write and publish 4 new blog posts
 - [ ] Create second pillar content piece
 - [ ] Develop first free tool
 - [ ] Create 2 video tutorials
 
 **Weeks 11-12:**
+
 - [ ] Write and publish 4 new blog posts
 - [ ] Complete all Phase 2 optimizations
 - [ ] Audit and improve existing content
@@ -896,6 +938,7 @@ Best,
 ### Phase 3: Advanced Optimization (Weeks 13-24)
 
 **Month 4:**
+
 - [ ] Implement advanced schema markup
 - [ ] Develop second free tool
 - [ ] Conduct original research/survey
@@ -903,6 +946,7 @@ Best,
 - [ ] Continue content publication (8 posts)
 
 **Month 5:**
+
 - [ ] Launch YouTube channel with 4 videos
 - [ ] Implement video schema
 - [ ] Expand internal linking
@@ -910,6 +954,7 @@ Best,
 - [ ] Continue content publication (8 posts)
 
 **Month 6:**
+
 - [ ] Conduct comprehensive site audit
 - [ ] Optimize for Core Web Vitals
 - [ ] Review and refresh old content
@@ -923,6 +968,7 @@ Best,
 ### A. Key Performance Indicators (KPIs)
 
 **Traffic Metrics:**
+
 - Organic traffic (overall and by page)
 - Organic sessions
 - Pages per session
@@ -931,12 +977,14 @@ Best,
 - New vs. returning visitors
 
 **Ranking Metrics:**
+
 - Keyword rankings (track top 50 keywords)
 - Average position
 - Click-through rate (CTR) from SERPs
 - Impressions in Google Search Console
 
 **Conversion Metrics:**
+
 - Contact form submissions
 - Phone calls
 - Email inquiries
@@ -945,6 +993,7 @@ Best,
 - Qualified leads from organic traffic
 
 **Engagement Metrics:**
+
 - Blog post views
 - Time on blog posts
 - Blog post shares
@@ -952,6 +1001,7 @@ Best,
 - Video views (when implemented)
 
 **Technical Metrics:**
+
 - Page speed scores (mobile and desktop)
 - Core Web Vitals (LCP, FID, CLS)
 - Crawl errors
@@ -959,6 +1009,7 @@ Best,
 - Mobile usability issues
 
 **Authority Metrics:**
+
 - Domain Authority (Moz)
 - Domain Rating (Ahrefs)
 - Total backlinks
@@ -1040,53 +1091,62 @@ Best,
 **Monthly SEO Report Template:**
 
 **Executive Summary:**
+
 - Overall performance vs. goals
 - Key wins
 - Key challenges
 - Next month's priorities
 
 **Traffic Analysis:**
+
 - Organic traffic (MoM and YoY change)
 - Top landing pages
 - Traffic by source/medium
 - Geographic data
 
 **Rankings:**
+
 - Top keyword rankings
 - Ranking improvements
 - Ranking declines
 - New rankings achieved
 
 **Conversions:**
+
 - Total conversions from organic
 - Conversion rate
 - Top converting pages
 - Cost per lead (if applicable)
 
 **Content Performance:**
+
 - Top blog posts
 - New content published
 - Content engagement metrics
 - Social shares
 
 **Technical Health:**
+
 - Site speed metrics
 - Core Web Vitals
 - Crawl errors
 - Index coverage
 
 **Backlinks:**
+
 - New backlinks acquired
 - Lost backlinks
 - Total referring domains
 - Domain authority changes
 
 **Competitor Analysis:**
+
 - Competitor ranking changes
 - Competitor content analysis
 - Gap opportunities
 
 **Action Items:**
+
 - Specific tasks for next month
 - Content calendar
 - Optimization priorities
@@ -1100,10 +1160,12 @@ Best,
 ### Competitor SEO Audit (To Be Conducted)
 
 **Identify 5-10 main competitors:**
+
 1. Direct competitors (Shopify/WordPress agencies)
 2. Indirect competitors (freelance platforms, larger agencies)
 
 **Analyze:**
+
 - Top ranking keywords
 - Content strategy
 - Backlink profile
@@ -1113,6 +1175,7 @@ Best,
 - Content gaps (opportunities)
 
 **Tools:**
+
 - Ahrefs Site Explorer
 - SEMrush Competitive Analysis
 - SimilarWeb
@@ -1126,6 +1189,7 @@ Best,
 ### A. Google Algorithm Updates
 
 **Strategy:**
+
 1. Follow Google Search Central Blog
 2. Monitor industry news (Search Engine Journal, Search Engine Land)
 3. Focus on quality over quantity
@@ -1138,6 +1202,7 @@ Best,
 ### B. Ethical SEO Practices
 
 **Commit To:**
+
 - No keyword stuffing
 - No hidden text or links
 - No link schemes or PBNs
@@ -1153,6 +1218,7 @@ Best,
 ### C. Penalties Prevention
 
 **Actions:**
+
 1. Regular site audits
 2. Monitor for manual actions in GSC
 3. Clean backlink profile (disavow toxic links)
@@ -1169,12 +1235,14 @@ Best,
 **Year 1:**
 
 **Essential Costs:**
+
 - Ahrefs/SEMrush: $99-199/month
 - Content writing (if outsourced): $500-1,500/month
 - Design/graphics (if outsourced): $200-500/month
 - **Total Essential: $799-2,199/month**
 
 **Optional/Growth Costs:**
+
 - Video production: $500-2,000/month
 - Link building agency: $1,000-5,000/month
 - Technical SEO consultant: $1,000-3,000/month
@@ -1182,12 +1250,14 @@ Best,
 - **Total Optional: $3,000-12,000/month**
 
 **Recommended DIY Approach (First 6 months):**
+
 - Focus on in-house content creation
 - Use essential tools only
 - Manual outreach for link building
 - **Budget: ~$100-200/month (tools only)**
 
 **Time Investment:**
+
 - Content creation: 20-30 hours/week
 - Technical optimization: 10-15 hours/week (first month)
 - Link building/outreach: 10-15 hours/week
@@ -1199,10 +1269,10 @@ Best,
 ## 14. Expected Outcomes & Timeline
 
 ### 3-Month Goals
+
 - **Rankings:**
   - 5-10 keywords in top 50
   - 2-3 keywords in top 20
-  
 - **Traffic:**
   - 1,000-2,000 monthly organic sessions
   - 50-100 new organic visitors daily
@@ -1222,6 +1292,7 @@ Best,
 ---
 
 ### 6-Month Goals
+
 - **Rankings:**
   - 15-20 keywords in top 20
   - 5-8 keywords in top 10
@@ -1250,6 +1321,7 @@ Best,
 ---
 
 ### 12-Month Goals
+
 - **Rankings:**
   - 25-30 keywords in top 10
   - 10-15 keywords in top 3
@@ -1289,6 +1361,7 @@ Best,
 ## 15. Action Items Summary
 
 ### Immediate Actions (Week 1)
+
 1. Set up Google Search Console and verify site
 2. Set up GA4 with conversion tracking
 3. Create baseline performance report
@@ -1298,6 +1371,7 @@ Best,
 7. Submit sitemap to search engines
 
 ### Short-Term Actions (Weeks 2-4)
+
 8. Complete on-page optimization for all pages
 9. Add FAQ schema to service pages
 10. Implement breadcrumb schema
@@ -1307,6 +1381,7 @@ Best,
 14. Start guest posting outreach
 
 ### Medium-Term Actions (Months 2-3)
+
 15. Develop 2-3 lead magnets
 16. Create first pillar content piece
 17. Build portfolio section
@@ -1316,6 +1391,7 @@ Best,
 21. Launch local SEO efforts
 
 ### Long-Term Actions (Months 4-12)
+
 22. Maintain consistent content publication (32 posts)
 23. Create 2 more pillar pages
 24. Develop 2-3 free tools
@@ -1337,6 +1413,7 @@ This comprehensive SEO strategy positions CartShift Studio for significant growt
 5. **Ethical Practices**: White-hat SEO following Google guidelines
 
 **Success Factors:**
+
 - Consistency in content publication
 - Quality over quantity in backlink acquisition
 - Focus on user experience and value
@@ -1344,6 +1421,7 @@ This comprehensive SEO strategy positions CartShift Studio for significant growt
 - Patience and long-term commitment
 
 **Next Steps:**
+
 1. Review and approve strategy
 2. Prioritize action items based on resources
 3. Set up tracking and monitoring tools

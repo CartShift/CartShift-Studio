@@ -14,6 +14,7 @@ import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { Logger } from '@/lib/logger';
 import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
+import { CardSectionTitle } from '@/components/ui/Card';
 
 const searchInputVariants = cva(
   'w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
@@ -88,7 +89,6 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   useEffect(() => {
     if (!orgId && !isAgency) return;
 
-
     let unsubscribe: (() => void) | undefined;
 
     const handleData = (data: Request[]) => {
@@ -109,7 +109,6 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
         }
       } catch (error) {
         Logger.error('Error setting up subscription', error);
-
       }
     };
 
@@ -246,13 +245,12 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             className="absolute top-full start-0 end-0 mt-2 bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden z-modal p-2"
           >
-            <div className="text-[10px] font-black uppercase tracking-widest text-surface-400 px-3 py-2 mb-1 flex justify-between items-center">
-              <span className="flex items-center gap-1.5">
-                <Clock size={12} />
+            <div className="px-3 py-2 mb-1 flex justify-between items-center">
+              <CardSectionTitle icon={Clock}>
                 Recent Searches
-              </span>
+              </CardSectionTitle>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   clearSearches();
                 }}
@@ -273,13 +271,16 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
                     onClick={() => handleHistorySearch(historyItem)}
                     className="flex-1 flex items-center gap-3 text-start"
                   >
-                    <Clock size={14} className="text-surface-400 group-hover:text-primary-500 transition-colors flex-shrink-0" />
+                    <Clock
+                      size={14}
+                      className="text-surface-400 group-hover:text-primary-500 transition-colors flex-shrink-0"
+                    />
                     <span className="text-sm text-surface-700 dark:text-surface-300 truncate">
                       {historyItem}
                     </span>
                   </button>
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       removeFromHistory(historyItem);
                     }}
@@ -304,9 +305,9 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           >
             {filteredResults.length > 0 ? (
               <>
-                <div className="text-[10px] font-black uppercase tracking-widest text-surface-400 px-3 py-2 mb-1 flex justify-between">
-                  <span>Requests</span>
-                  <span className="text-[9px] opacity-60">Use ↑↓ to navigate</span>
+                <div className="px-3 py-2 mb-1 flex justify-between items-center">
+                  <CardSectionTitle>Requests</CardSectionTitle>
+                  <span className="text-[9px] text-surface-400 opacity-60">Use ↑↓ to navigate</span>
                 </div>
                 {filteredResults.map((req, index) => {
                   const isActive = activeIndex === index;

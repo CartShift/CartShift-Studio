@@ -19,7 +19,6 @@ import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
 import { Comment, CreateCommentData } from '@/lib/types/portal';
 
-
 const COMMENTS_COLLECTION = 'portal_comments';
 const MAX_COMMENT_LENGTH = 10000;
 
@@ -80,7 +79,7 @@ async function updateRequestLastComment(
       content: preview,
       userName,
       createdAt: Timestamp.now(), // Use client timestamp for immediate consistency or serverTimestamp if preferred
-    }
+    },
   });
 }
 
@@ -166,9 +165,7 @@ export async function getCommentsByRequest(
     // Build query constraints array
     // Note: We are removing orderBy('createdAt') to avoid needing a composite index for every combination of filters.
     // We will sort in memory instead, which is performant enough for comment threads.
-    const constraints: Parameters<typeof query>[1][] = [
-      where('requestId', '==', requestId),
-    ];
+    const constraints: Parameters<typeof query>[1][] = [where('requestId', '==', requestId)];
 
     if (orgId) {
       constraints.push(where('orgId', '==', orgId));
@@ -207,7 +204,6 @@ export async function getCommentsByRequest(
       const timeB = b.createdAt?.seconds ?? 0;
       return timeA - timeB;
     });
-
   } catch (error: unknown) {
     const firestoreError = error as { code?: string; message?: string };
     if (firestoreError.code === 'permission-denied') {
@@ -246,18 +242,22 @@ export async function addReaction(commentId: string, userId: string, emoji: stri
   const fieldPath = `reactions.${emoji}`;
 
   await updateDoc(docRef, {
-    [fieldPath]: arrayUnion(userId)
+    [fieldPath]: arrayUnion(userId),
   });
 }
 
-export async function removeReaction(commentId: string, userId: string, emoji: string): Promise<void> {
+export async function removeReaction(
+  commentId: string,
+  userId: string,
+  emoji: string
+): Promise<void> {
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
   const fieldPath = `reactions.${emoji}`;
 
   await updateDoc(docRef, {
-    [fieldPath]: arrayRemove(userId)
+    [fieldPath]: arrayRemove(userId),
   });
 }
 
@@ -315,65 +315,62 @@ export function subscribeToRequestComments(
           where('orgId', '==', orgId)
         );
       } else {
-        q = query(
-          collection(db, COMMENTS_COLLECTION),
-          where('requestId', '==', requestId)
-        );
+        q = query(collection(db, COMMENTS_COLLECTION), where('requestId', '==', requestId));
       }
 
       unsubscribe = onSnapshot(
         q,
         snapshot => {
-      let comments = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          requestId: data.requestId,
-          orgId: data.orgId,
-          userId: data.userId,
-          userName: data.userName,
-          userPhotoUrl: data.userPhotoUrl,
-          content: data.content,
-          attachmentIds: data.attachmentIds || [],
-          isInternal: data.isInternal || false,
-          parentId: data.parentId,
-          reactions: data.reactions || {},
-          mentions: data.mentions || [],
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-        } as Comment;
-      });
+          let comments = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              requestId: data.requestId,
+              orgId: data.orgId,
+              userId: data.userId,
+              userName: data.userName,
+              userPhotoUrl: data.userPhotoUrl,
+              content: data.content,
+              attachmentIds: data.attachmentIds || [],
+              isInternal: data.isInternal || false,
+              parentId: data.parentId,
+              reactions: data.reactions || {},
+              mentions: data.mentions || [],
+              createdAt: data.createdAt,
+              updatedAt: data.updatedAt,
+            } as Comment;
+          });
 
-      // Filter out internal comments if the user shouldn't see them
-      if (!showInternalComments) {
-        comments = comments.filter(c => !c.isInternal);
-      }
+          // Filter out internal comments if the user shouldn't see them
+          if (!showInternalComments) {
+            comments = comments.filter(c => !c.isInternal);
+          }
 
-      // Sort in memory by createdAt (oldest first)
-      comments.sort((a, b) => {
-        const timeA = a.createdAt?.seconds ?? 0;
-        const timeB = b.createdAt?.seconds ?? 0;
-        return timeA - timeB;
-      });
+          // Sort in memory by createdAt (oldest first)
+          comments.sort((a, b) => {
+            const timeA = a.createdAt?.seconds ?? 0;
+            const timeB = b.createdAt?.seconds ?? 0;
+            return timeA - timeB;
+          });
 
-      callback(comments);
-    },
-    error => {
-      const firestoreError = error as { code?: string };
+          callback(comments);
+        },
+        error => {
+          const firestoreError = error as { code?: string };
 
-      // Suppress permission errors during logout
-      if (firestoreError.code === 'permission-denied') {
-        const auth = getFirebaseAuth();
-        if (isLoggingOut() || !auth.currentUser) return;
+          // Suppress permission errors during logout
+          if (firestoreError.code === 'permission-denied') {
+            const auth = getFirebaseAuth();
+            if (isLoggingOut() || !auth.currentUser) return;
 
-        console.error(
-          'Permission denied accessing comments. User may not have access to this request.'
-        );
-      } else {
-        console.error('Error in comments snapshot:', error);
-      }
-      callback([]);
-    }
+            console.error(
+              'Permission denied accessing comments. User may not have access to this request.'
+            );
+          } else {
+            console.error('Error in comments snapshot:', error);
+          }
+          callback([]);
+        }
       );
     })
     .catch(error => {

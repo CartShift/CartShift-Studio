@@ -1,11 +1,11 @@
 ---
-title: "Email Marketing for Ecommerce: Flows That Sell (2025)"
-date: "2025-12-18"
-excerpt: "Build an email marketing system that drives revenue: core automations, segmentation, deliverability, and practical copy frameworks for ecommerce stores."
-category: "E-commerce Strategy"
-title_he: "אימייל מרקטינג לאיקומרס: פלואו׳ים שמוכרים (2025)"
-excerpt_he: "בונים מערכת אימייל שמייצרת הכנסות: אוטומציות חובה, סגמנטציה, דליברביליטי ותבניות קופי פרקטיות לחנויות איקומרס."
-category_he: "אסטרטגיית איקומרס"
+title: 'Email Marketing for Ecommerce: Flows That Sell (2025)'
+date: '2025-12-18'
+excerpt: 'Build an email marketing system that drives revenue: core automations, segmentation, deliverability, and practical copy frameworks for ecommerce stores.'
+category: 'E-commerce Strategy'
+title_he: 'אימייל מרקטינג לאיקומרס: פלואו׳ים שמוכרים (2025)'
+excerpt_he: 'בונים מערכת אימייל שמייצרת הכנסות: אוטומציות חובה, סגמנטציה, דליברביליטי ותבניות קופי פרקטיות לחנויות איקומרס.'
+category_he: 'אסטרטגיית איקומרס'
 ---
 
 If your email strategy is "we send a newsletter when we remember", you're not alone. But you are missing the most profitable part of email marketing for ecommerce: automations[^1].

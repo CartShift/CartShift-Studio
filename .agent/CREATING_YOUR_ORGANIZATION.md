@@ -76,6 +76,7 @@ When you navigate to `/portal/org/default-org/settings`, you're viewing a static
 ## Next Steps
 
 Once you have a real organization:
+
 - You can invite team members
 - Upload files
 - Create requests

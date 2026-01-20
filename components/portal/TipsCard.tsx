@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { Lightbulb, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 
 export function TipsCard() {
   const t = useTranslations('portal.dashboard.tips');
@@ -42,9 +42,9 @@ export function TipsCard() {
           <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-[10px] font-black text-blue-600/70 dark:text-blue-400/70 uppercase tracking-widest mb-2">
+          <CardSectionTitle as="h4" className="text-blue-600/70 dark:text-blue-400/70 mb-2">
             {t('title')}
-          </h4>
+          </CardSectionTitle>
           <div className="relative h-12 overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.p

@@ -120,10 +120,7 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
           }
           rightIcon={
             detectedPlatform && (
-              <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
+              <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
                 <span className="text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded-full">
                   {detectedPlatform.name}
                 </span>

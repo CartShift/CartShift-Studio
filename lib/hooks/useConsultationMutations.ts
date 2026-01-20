@@ -8,14 +8,20 @@ export function useConsultationMutations() {
   const t = useTranslations('portal');
 
   const cancelMutation = useMutation({
-    mutationFn: (vars: { consultationId: string; orgId: string; userId: string; userName: string; reason?: string }) =>
+    mutationFn: (vars: {
+      consultationId: string;
+      orgId: string;
+      userId: string;
+      userName: string;
+      reason?: string;
+    }) =>
       cancelConsultation(vars.consultationId, vars.orgId, vars.userId, vars.userName, vars.reason),
     onSuccess: () => {
       toast.success(t('consultations.form.cancelSuccess' as any));
       queryClient.invalidateQueries({ queryKey: ['org-consultations'] });
       queryClient.invalidateQueries({ queryKey: ['all-consultations'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to cancel consultation:', error);
       toast.error(t('consultations.form.failedToCancel' as any));
     },
@@ -28,14 +34,22 @@ export function useConsultationMutations() {
       userId: string;
       userName: string;
       meetingNotes?: string;
-      actionItems?: string[]
-    }) => completeConsultation(vars.consultationId, vars.orgId, vars.userId, vars.userName, vars.meetingNotes, vars.actionItems),
+      actionItems?: string[];
+    }) =>
+      completeConsultation(
+        vars.consultationId,
+        vars.orgId,
+        vars.userId,
+        vars.userName,
+        vars.meetingNotes,
+        vars.actionItems
+      ),
     onSuccess: () => {
       toast.success(t('consultations.form.completeSuccess' as any));
       queryClient.invalidateQueries({ queryKey: ['org-consultations'] });
       queryClient.invalidateQueries({ queryKey: ['all-consultations'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to complete consultation:', error);
       toast.error(t('consultations.form.failedToComplete' as any));
     },

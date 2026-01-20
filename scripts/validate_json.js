@@ -19,7 +19,7 @@ try {
     const startLine = Math.max(0, lines.length - 5);
     const contextLines = content.split('\n').slice(startLine, lines.length + 2);
     contextLines.forEach((l, i) => {
-        console.log(`${startLine + 1 + i}: ${l}`);
+      console.log(`${startLine + 1 + i}: ${l}`);
     });
   }
 }

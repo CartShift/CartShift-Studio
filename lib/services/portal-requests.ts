@@ -153,12 +153,17 @@ export async function getRequestsByOrg(
   } catch (error: unknown) {
     const firestoreError = error as { code?: string; message?: string };
     if (firestoreError.code === 'permission-denied') {
-      console.error('[getRequestsByOrg] Permission denied. This usually means the user is not a member of the organization or the organization document is missing.', {
-        orgId,
-        userId: currentUser.uid,
-        error: firestoreError.message,
-      });
-      throw new Error(`Permission denied accessing requests for organization ${orgId}. Please check your membership.`);
+      console.error(
+        '[getRequestsByOrg] Permission denied. This usually means the user is not a member of the organization or the organization document is missing.',
+        {
+          orgId,
+          userId: currentUser.uid,
+          error: firestoreError.message,
+        }
+      );
+      throw new Error(
+        `Permission denied accessing requests for organization ${orgId}. Please check your membership.`
+      );
     }
     throw error;
   }
@@ -334,12 +339,13 @@ export function subscribeToRequest(
           if (firestoreError.code === 'permission-denied') {
             callback(null, {
               code: 'permission-denied',
-              message: 'You do not have permission to view this request. You may not be a member of this organization.'
+              message:
+                'You do not have permission to view this request. You may not be a member of this organization.',
             });
           } else {
             callback(null, {
               code: firestoreError.code || 'unknown',
-              message: firestoreError.message || 'Failed to load request'
+              message: firestoreError.message || 'Failed to load request',
             });
           }
         }
@@ -349,7 +355,7 @@ export function subscribeToRequest(
       console.error('Error waiting for auth in subscribeToRequest:', error);
       callback(null, {
         code: 'auth-error',
-        message: 'Authentication error. Please try logging in again.'
+        message: 'Authentication error. Please try logging in again.',
       });
     });
 
@@ -422,9 +428,7 @@ export function subscribeToOrgRequests(
   };
 }
 
-export function subscribeToAllRequests(
-  callback: (requests: Request[]) => void
-): () => void {
+export function subscribeToAllRequests(callback: (requests: Request[]) => void): () => void {
   let unsubscribe: (() => void) | null = null;
   let isUnsubscribed = false;
 
@@ -432,10 +436,7 @@ export function subscribeToAllRequests(
     .then(() => {
       if (isUnsubscribed) return;
       const db = getFirestoreDb();
-      const q = query(
-        collection(db, REQUESTS_COLLECTION),
-        orderBy('createdAt', 'desc')
-      );
+      const q = query(collection(db, REQUESTS_COLLECTION), orderBy('createdAt', 'desc'));
 
       unsubscribe = onSnapshot(
         q,
@@ -454,9 +455,12 @@ export function subscribeToAllRequests(
             const auth = getFirebaseAuth();
             if (isLoggingOut() || !auth.currentUser) return;
 
-            console.error('[portal-requests] Permission denied. This query requires agency permissions.', {
-              error: firestoreError.message,
-            });
+            console.error(
+              '[portal-requests] Permission denied. This query requires agency permissions.',
+              {
+                error: firestoreError.message,
+              }
+            );
           } else {
             console.error('[portal-requests] Error in all requests snapshot:', error);
           }
@@ -808,10 +812,7 @@ export async function requestRevision(
  * Toggle pin status for a request (per user)
  * Returns the new pinned state
  */
-export async function togglePinRequest(
-  requestId: string,
-  userId: string
-): Promise<boolean> {
+export async function togglePinRequest(requestId: string, userId: string): Promise<boolean> {
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, REQUESTS_COLLECTION, requestId);
@@ -848,4 +849,3 @@ export async function togglePinRequest(
 export function isRequestPinnedByUser(request: Request, userId: string): boolean {
   return request.pinnedBy?.includes(userId) ?? false;
 }
-

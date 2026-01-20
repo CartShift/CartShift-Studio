@@ -63,6 +63,7 @@
 These images are referenced in code but don't exist. This is causing broken links and missing social previews.
 
 **Files to Create:**
+
 ```
 /public/images/
 ├── og-default.png           # 1200x630px - CRITICAL
@@ -79,6 +80,7 @@ These images are referenced in code but don't exist. This is causing broken link
 ```
 
 **How to Create:**
+
 1. **Fastest (1 hour):** Use [RealFaviconGenerator](https://realfavicongenerator.net/) + [Canva](https://www.canva.com/)
 2. **AI-Powered (30 min):** Use DALL-E/Midjourney with our prompts
 3. **Best Quality:** Hire a designer (2-3 days)
@@ -94,6 +96,7 @@ These images are referenced in code but don't exist. This is causing broken link
 **File:** `.env` (not in repo - create it)
 
 **Add:**
+
 ```env
 GOOGLE_SITE_VERIFICATION=your_verification_code_here
 ```
@@ -107,14 +110,15 @@ GOOGLE_SITE_VERIFICATION=your_verification_code_here
 **File:** `lib/seo.ts` line 130
 
 **Update these URLs:**
+
 ```typescript
 sameAs: [
-  "https://twitter.com/YOUR_ACTUAL_HANDLE",      // Update
-  "https://linkedin.com/company/YOUR_COMPANY",    // Update
-  "https://github.com/YOUR_ORG",                  // Update
-  "https://www.facebook.com/YOUR_PAGE",           // Update
-  "https://www.instagram.com/YOUR_HANDLE",       // Update
-]
+  'https://twitter.com/YOUR_ACTUAL_HANDLE', // Update
+  'https://linkedin.com/company/YOUR_COMPANY', // Update
+  'https://github.com/YOUR_ORG', // Update
+  'https://www.facebook.com/YOUR_PAGE', // Update
+  'https://www.instagram.com/YOUR_HANDLE', // Update
+];
 ```
 
 ---
@@ -143,12 +147,14 @@ Created Files:
 ## SEO Score Improvement
 
 ### Before
+
 - **Overall Score:** 7.5/10
 - **Critical Issues:** 4
 - **High Priority:** 5
 - **Social Proof:** Missing (sameAs: [])
 
 ### After (with images)
+
 - **Overall Score:** 9.0/10
 - **Critical Issues:** 0
 - **High Priority:** 1 (images pending)
@@ -159,6 +165,7 @@ Created Files:
 ## Verification Steps
 
 ### Step 1: Check Changes Work
+
 ```bash
 # Start development server
 npm run dev
@@ -173,6 +180,7 @@ http://localhost:3000/manifest.json
 ### Step 2: Test Online Tools
 
 #### Google Rich Results Test
+
 1. Go to: https://search.google.com/test/rich-results
 2. Enter: `https://cart-shift.com` (or your dev URL)
 3. Check these pass:
@@ -183,11 +191,13 @@ http://localhost:3000/manifest.json
    - ✅ Service (services pages)
 
 #### PageSpeed Insights
+
 1. Go to: https://pagespeed.web.dev/
 2. Test both mobile and desktop
 3. Target: 90+ score on both
 
 #### Social Share Preview
+
 1. Go to: https://www.opengraph.xyz/
 2. Enter your URL
 3. Verify:
@@ -200,6 +210,7 @@ http://localhost:3000/manifest.json
 ## Next Actions (Priority Order)
 
 ### 🔴 DO TODAY
+
 1. **Create Missing Images** (2 hours)
    - Use the image guide: `docs/SEO_IMAGE_ASSETS_REQUIRED.md`
    - Start with critical ones: favicon, OG images
@@ -214,6 +225,7 @@ http://localhost:3000/manifest.json
    - Replace placeholder URLs with real ones
 
 ### 🟡 DO THIS WEEK
+
 4. **Add Noindex to Private Pages** (1 hour)
    - Portal pages
    - Admin pages
@@ -230,6 +242,7 @@ http://localhost:3000/manifest.json
    - Submit: `/sitemap.xml`
 
 ### 🟢 DO THIS MONTH
+
 7. **Optimize Meta Descriptions** (3 hours)
    - All public pages
    - Add emotional triggers
@@ -245,6 +258,7 @@ http://localhost:3000/manifest.json
 ## Expected Timeline
 
 ### Week 1
+
 - ✅ PWA manifest created
 - ✅ Schema markup improved
 - ✅ Robots.txt optimized
@@ -252,16 +266,19 @@ http://localhost:3000/manifest.json
 - ⏳ Set up GSC (you)
 
 ### Week 2
+
 - 📈 Start seeing search engine indexing
 - 📈 Social previews working (with images)
 - 📈 PWA installable on mobile
 
 ### Week 4
+
 - 📈 +15-25% organic traffic
 - 📈 Better rankings for key terms
 - 📈 Improved mobile rankings
 
 ### Week 12
+
 - 📈 +25-50% organic traffic
 - 📈 Rich snippets appearing
 - 📈 Featured snippets for FAQs
@@ -271,18 +288,21 @@ http://localhost:3000/manifest.json
 ## Key Success Metrics
 
 ### Before (Baseline)
+
 - Organic traffic: [Record this]
 - Keywords in top 10: [Record this]
 - Core Web Vitals: [Test and record]
 - Rich snippets: 0%
 
 ### After 30 Days (Target)
+
 - Organic traffic: +25%
 - Keywords in top 10: +15
 - Core Web Vitals: 90% pass rate
 - Rich snippets: 20% of pages
 
 ### After 90 Days (Target)
+
 - Organic traffic: +50%
 - Keywords in top 10: +30
 - Core Web Vitals: 95% pass rate
@@ -293,22 +313,29 @@ http://localhost:3000/manifest.json
 ## Common Issues & Solutions
 
 ### Issue: Images Not Showing in Social Preview
+
 **Solution:**
+
 1. Clear social media caches
 2. Wait 24-48 hours for Facebook/LinkedIn
 3. Use debugging tools to force refresh
 
 ### Issue: Robots.txt Too Restrictive
+
 **Solution:** ✅ Already fixed - we made it less restrictive
 
 ### Issue: Missing Canonical Tags
+
 **Solution:** ✅ Already fixed - added to locale layout
 
 ### Issue: Hreflang Not Working
+
 **Solution:** ✅ Already fixed - added to locale layout
 
 ### Issue: PWA Not Installable
+
 **Solution:**
+
 - Need HTTPS (already with production)
 - Check manifest.json is valid
 - Verify service worker registered (if implementing SW)
@@ -318,11 +345,13 @@ http://localhost:3000/manifest.json
 ## Documentation Created
 
 ### For You (Quick Reference)
+
 - **This file:** Overview of changes
 - **Quick Start:** `docs/SEO_QUICK_START.md`
 - **Image Guide:** `docs/SEO_IMAGE_ASSETS_REQUIRED.md`
 
 ### Full Analysis
+
 - **Technical SEO:** `docs/SEO_TECHNICAL_ANALYSIS.md`
   - 18-point analysis
   - Critical, high, medium, low priority
@@ -334,17 +363,20 @@ http://localhost:3000/manifest.json
 ## Support & Resources
 
 ### Documentation
+
 - All docs in `/docs` folder
 - SEO analysis: 375 lines of detailed analysis
 - Image guide: Step-by-step with prompts
 
 ### Tools
+
 - Google Search Console
 - Rich Results Test
 - PageSpeed Insights
 - Social Share Preview
 
 ### Next Steps
+
 1. Create images (1-2 hours)
 2. Set up GSC (30 min)
 3. Update social links (10 min)
@@ -378,6 +410,7 @@ A: Expect +25-50% organic traffic in 90 days. For e-commerce, this could mean si
 **Great progress!** Your CartShift Studio SEO is now excellent technical-wise. The main blocker is missing images, which are easy to create.
 
 **Your SEO Foundation:**
+
 - ✅ Modern Next.js 16+ setup
 - ✅ Comprehensive structured data
 - ✅ Proper internationalization
@@ -388,11 +421,13 @@ A: Expect +25-50% organic traffic in 90 days. For e-commerce, this could mean si
 - ✅ Hreflang tags
 
 **What's Missing:**
+
 - ⚠️ Images (1-2 hours to create)
 - ⚠️ Google Search Console setup (30 min)
 - ⚠️ Social media links update (10 min)
 
 **After You Create Images:**
+
 - 🚀 All social previews working
 - 🚀 PWA installable
 - 🚀 No 404 errors
@@ -403,4 +438,4 @@ A: Expect +25-50% organic traffic in 90 days. For e-commerce, this could mean si
 
 ---
 
-*Need help? Check the docs in the `/docs` folder. All the details are there.*
+_Need help? Check the docs in the `/docs` folder. All the details are there._

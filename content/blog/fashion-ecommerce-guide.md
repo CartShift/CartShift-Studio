@@ -1,11 +1,11 @@
 ---
-title: "Fashion Ecommerce Guide: Convert More, Return Less (2025)"
-date: "2025-12-18"
-excerpt: "A practical fashion ecommerce guide: product pages that convert, sizing that reduces returns, merchandising, shipping/returns strategy, and retention systems."
-category: "E-commerce Strategy"
-title_he: "מדריך איקומרס אופנה: יותר המרות, פחות החזרות (2025)"
-excerpt_he: "מדריך פרקטי לאיקומרס אופנה: עמודי מוצר שממירים, שיטת מידות שמורידה החזרות, מרצ׳נדייזינג, מדיניות משלוחים והחזרות וריטנשן."
-category_he: "אסטרטגיית איקומרס"
+title: 'Fashion Ecommerce Guide: Convert More, Return Less (2025)'
+date: '2025-12-18'
+excerpt: 'A practical fashion ecommerce guide: product pages that convert, sizing that reduces returns, merchandising, shipping/returns strategy, and retention systems.'
+category: 'E-commerce Strategy'
+title_he: 'מדריך איקומרס אופנה: יותר המרות, פחות החזרות (2025)'
+excerpt_he: 'מדריך פרקטי לאיקומרס אופנה: עמודי מוצר שממירים, שיטת מידות שמורידה החזרות, מרצ׳נדייזינג, מדיניות משלוחים והחזרות וריטנשן.'
+category_he: 'אסטרטגיית איקומרס'
 ---
 
 Fashion ecommerce is a category that looks easy from the outside. Beautiful photos, exciting drops, strong brand energy. Then reality hits: returns. Returns are where profit goes to die if the store doesn’t build confidence before the purchase.

@@ -1,11 +1,11 @@
 ---
 title: "Why Your E-Commerce Store Isn't Converting (And How to Find Out)"
-date: "2025-01-13"
+date: '2025-01-13'
 excerpt: "Traffic but no sales? Discover the 12 hidden conversion killers that could be costing you thousands, and learn how to diagnose exactly what's wrong with your store."
-category: "Conversion Optimization"
-title_he: "למה החנות שלכם לא ממירה (ואיך לגלות את הסיבה)"
-excerpt_he: "יש לכם תנועה אבל אין מכירות? גלו 12 בעיות נסתרות שפוגעות בהמרות ועלולות לעלות לכם אלפי שקלים, ולמדו איך לאבחן בדיוק מה לא עובד."
-category_he: "אופטימיזציית המרות"
+category: 'Conversion Optimization'
+title_he: 'למה החנות שלכם לא ממירה (ואיך לגלות את הסיבה)'
+excerpt_he: 'יש לכם תנועה אבל אין מכירות? גלו 12 בעיות נסתרות שפוגעות בהמרות ועלולות לעלות לכם אלפי שקלים, ולמדו איך לאבחן בדיוק מה לא עובד.'
+category_he: 'אופטימיזציית המרות'
 ---
 
 You've done everything right. Built a beautiful store. Invested in ads. The traffic is coming in. But somehow... sales aren't happening.
@@ -25,12 +25,14 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Every second of load time costs you conversions. Studies show that a 1-second delay in page load time can reduce conversions by 7%. If your store takes 5 seconds to load instead of 2, you could be losing 20%+ of potential customers before they even see your products.
 
 **The Symptoms:**
+
 - High bounce rate on landing pages
 - Low pages per session
 - Poor mobile conversion rates
 - Abandoned carts after the first page
 
 **What to Check:**
+
 - [ ] Time to First Byte (TTFB)
 - [ ] Largest Contentful Paint (LCP)
 - [ ] Total page weight (aim for under 3MB)
@@ -43,12 +45,14 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Mobile commerce now accounts for over 60% of e-commerce traffic, but mobile conversion rates are typically 50% lower than desktop. Why? Because most stores treat mobile as an afterthought.
 
 **The Symptoms:**
+
 - Significant mobile vs. desktop conversion gap
 - High mobile bounce rates
 - Abandoned checkouts on mobile
 - Low mobile session duration
 
 **Common Mobile Issues:**
+
 - Buttons too small to tap
 - Forms that are painful to fill
 - Images that don't scale properly
@@ -60,6 +64,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Online shoppers are skeptical by default. They've heard the horror stories. If your store doesn't scream "legitimate and trustworthy," they'll click back to Google faster than you can say "free shipping."
 
 **Missing Trust Signals:**
+
 - No SSL certificate (HTTPS)
 - Missing or hidden contact information
 - No physical address or phone number
@@ -69,6 +74,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 - Spelling and grammar errors
 
 **Trust Builders to Add:**
+
 - [ ] Security badges (SSL, payment provider logos)
 - [ ] Customer reviews with photos
 - [ ] Clear return policy
@@ -80,6 +86,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Your customer has made the decision to buy. They've added to cart. They're ready to pay. And then... you throw obstacles in their way.
 
 **Checkout Killers:**
+
 - Forced account creation
 - Too many form fields
 - No guest checkout option
@@ -88,18 +95,19 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 - Confusing or multi-page checkout
 - No progress indicator
 
-| Checkout Friction | Impact on Conversions |
-| - | :-: |
-| Forced registration | -35% |
-| Unexpected costs | -48% |
-| Complex checkout | -26% |
-| No guest checkout | -24% |
+| Checkout Friction   | Impact on Conversions |
+| ------------------- | :-------------------: |
+| Forced registration |         -35%          |
+| Unexpected costs    |         -48%          |
+| Complex checkout    |         -26%          |
+| No guest checkout   |         -24%          |
 
 ### 5. Poor Product Pages
 
 **The Problem:** Your product page is your sales pitch. If it doesn't answer every question, address every objection, and create desire, visitors will leave empty-handed.
 
 **What's Missing:**
+
 - Low-quality or too few images
 - No zoom or 360° view
 - Vague or feature-only descriptions
@@ -115,6 +123,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** If visitors can't find what they're looking for within seconds, they won't search harder. They'll leave.
 
 **Navigation Failures:**
+
 - Too many categories
 - Unclear category names
 - No search functionality
@@ -127,6 +136,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** It's not always about being the cheapest. It's about being clear, fair, and providing obvious value.
 
 **Pricing Problems:**
+
 - Hidden costs until checkout
 - No free shipping threshold
 - Prices that seem arbitrary
@@ -138,6 +148,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Your call-to-action button is the most important element on your page. If it's boring, hidden, or confusing, conversions suffer.
 
 **CTA Failures:**
+
 - Button blends into the page
 - Unclear button text ("Submit" instead of "Add to Cart")
 - Multiple competing CTAs
@@ -149,6 +160,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** People look to others for guidance. Without social proof, you're asking customers to be the first to take the risk.
 
 **Social Proof Elements to Add:**
+
 - [ ] Customer reviews and ratings
 - [ ] User-generated photos
 - [ ] Testimonials
@@ -161,6 +173,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** The average cart abandonment rate is around 70%. Most stores do nothing to recover these almost-customers.
 
 **Why Carts Get Abandoned:**
+
 - Unexpected shipping costs
 - Required account creation
 - Complicated checkout
@@ -169,6 +182,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 - Just browsing/comparing
 
 **Recovery Tactics Missing:**
+
 - No abandoned cart emails
 - No exit-intent offers
 - No cart persistance across sessions
@@ -179,6 +193,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Visitors who use search are often your highest-intent customers. If search fails them, you fail them.
 
 **Search Issues:**
+
 - No search or hard-to-find search
 - Poor search results relevance
 - No autocomplete suggestions
@@ -191,6 +206,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 **The Problem:** Technical issues don't just hurt your rankings—they hurt user experience and conversions.
 
 **Hidden Technical Problems:**
+
 - Broken links and 404 errors
 - Missing or duplicate meta data
 - No schema markup (rich snippets)
@@ -200,7 +216,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ## The Real Problem: You Don't Know What You Don't Know
 
-Here's the frustrating truth: most store owners know *something* is wrong, but they don't know *what*. They guess. They tweak random things. They waste time and money on changes that don't move the needle.
+Here's the frustrating truth: most store owners know _something_ is wrong, but they don't know _what_. They guess. They tweak random things. They waste time and money on changes that don't move the needle.
 
 What you need is a **systematic diagnosis**—an honest audit that shows you exactly where your store is failing and what to fix first.
 
@@ -215,6 +231,7 @@ We've built a [free Store Analyzer tool](/tools/store-analyzer) that examines yo
 - **Technical Issues** – What's broken that you can't see?
 
 In under 2 minutes, you'll get a comprehensive report with:
+
 - ✅ Your overall store health score
 - ✅ Specific issues identified
 - ✅ Prioritized recommendations
@@ -227,18 +244,21 @@ In under 2 minutes, you'll get a comprehensive report with:
 Once you've identified your issues (whether through our analyzer or your own audit), here's how to prioritize:
 
 ### Priority 1: Quick Wins (Do This Week)
+
 - Fix any broken functionality
 - Add missing trust signals
 - Clarify your CTAs
 - Remove checkout friction
 
 ### Priority 2: High-Impact (Do This Month)
+
 - Improve page speed
 - Optimize mobile experience
 - Enhance product pages
 - Implement cart recovery
 
 ### Priority 3: Ongoing Optimization
+
 - A/B test key elements
 - Collect and display reviews
 - Refine search experience
@@ -273,6 +293,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 ---
 
 **More resources:**
+
 - [20 Proven E-commerce CRO Strategies](/blog/ecommerce-conversion-rate-optimization) – Deep dive into conversion rate optimization tactics
 - [Speed Up Your Shopify Store](/blog/speed-up-shopify-store) – Detailed guide to fixing performance issues
 
@@ -295,6 +316,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 **הבעיה:** כל שנייה של זמן טעינה עולה לכם בהמרות. מחקרים מראים שעיכוב של שנייה אחת בזמן הטעינה יכול להפחית את ההמרות ב-7%. אם החנות שלכם נטענת ב-5 שניות במקום 2, אתם עלולים להפסיד 20%+ מהלקוחות הפוטנציאליים עוד לפני שהם רואים את המוצרים.
 
 **מה לבדוק:**
+
 - זמן עד לבייט הראשון (TTFB)
 - זמן עד לצביעה הגדולה ביותר (LCP)
 - משקל כולל של הדף (לכוון מתחת ל-3MB)
@@ -305,6 +327,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 **הבעיה:** מסחר במובייל מהווה עכשיו יותר מ-60% מהתנועה באיקומרס, אבל שיעורי ההמרה במובייל בדרך כלל נמוכים ב-50% מדסקטופ. למה? כי רוב החנויות מתייחסות למובייל כמחשבה שנייה.
 
 **בעיות מובייל נפוצות:**
+
 - כפתורים קטנים מדי ללחיצה
 - טפסים שכואב למלא
 - תמונות שלא מותאמות כראוי
@@ -315,6 +338,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 **הבעיה:** קונים באינטרנט סקפטיים כברירת מחדל. אם החנות שלכם לא משדרת "לגיטימית ואמינה", הם יחזרו לגוגל מהר יותר ממה שאתם יכולים להגיד "משלוח חינם".
 
 **אותות אמון חסרים:**
+
 - אין תעודת SSL (HTTPS)
 - פרטי קשר חסרים או מוסתרים
 - אין כתובת פיזית או מספר טלפון
@@ -326,6 +350,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 **הבעיה:** הלקוח שלכם החליט לקנות. הוא הוסיף לעגלה. הוא מוכן לשלם. ואז... אתם זורקים לו מכשולים בדרך.
 
 **רוצחי צ'ק-אאוט:**
+
 - חובת יצירת חשבון
 - יותר מדי שדות טופס
 - אין אפשרות רכישה כאורח
@@ -337,6 +362,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 **הבעיה:** דף המוצר שלכם הוא מצגת המכירה שלכם. אם הוא לא עונה על כל שאלה, מתייחס לכל התנגדות ויוצר רצון, מבקרים יעזבו בידיים ריקות.
 
 **מה חסר:**
+
 - תמונות באיכות נמוכה או מעט מדי תמונות
 - אין זום או תצוגה ב-360°
 - תיאורים מעורפלים או רק פיצ'רים
@@ -373,7 +399,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 
 ## הבעיה האמיתית: אתם לא יודעים מה שאתם לא יודעים
 
-הנה האמת המתסכלת: רוב בעלי החנויות יודעים ש*משהו* לא עובד, אבל הם לא יודעים *מה*. הם מנחשים. הם משנים דברים אקראיים. הם מבזבזים זמן וכסף על שינויים שלא מזיזים את המחט.
+הנה האמת המתסכלת: רוב בעלי החנויות יודעים ש*משהו* לא עובד, אבל הם לא יודעים _מה_. הם מנחשים. הם משנים דברים אקראיים. הם מבזבזים זמן וכסף על שינויים שלא מזיזים את המחט.
 
 מה שאתם צריכים זה **אבחון שיטתי**—ביקורת כנה שמראה לכם בדיוק היכן החנות נכשלת ומה לתקן קודם.
 
@@ -388,6 +414,7 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 - **בעיות טכניות** – מה שבור שאתם לא יכולים לראות?
 
 תוך פחות מ-2 דקות, תקבלו דוח מקיף עם:
+
 - ✅ ציון בריאות כולל לחנות
 - ✅ בעיות ספציפיות שזוהו
 - ✅ המלצות מתועדפות
@@ -400,18 +427,21 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 ברגע שזיהיתם את הבעיות (בין אם דרך הכלי שלנו או ביקורת משלכם), הנה איך לתעדף:
 
 ### עדיפות 1: ניצחונות מהירים (לעשות השבוע)
+
 - תקנו כל פונקציונליות שבורה
 - הוסיפו אותות אמון חסרים
 - הבהירו את הקריאות לפעולה
 - הסירו חיכוך מה-checkout
 
 ### עדיפות 2: השפעה גבוהה (לעשות החודש)
+
 - שפרו מהירות דפים
 - אופטימיזציה לחוויית מובייל
 - שפרו דפי מוצר
 - יישמו שחזור עגלות נטושות
 
 ### עדיפות 3: אופטימיזציה מתמשכת
+
 - בצעו בדיקות A/B לאלמנטים מרכזיים
 - אספו והציגו ביקורות
 - שפרו חוויית חיפוש
@@ -446,5 +476,6 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 ---
 
 **עוד משאבים:**
+
 - [20 אסטרטגיות CRO מוכחות](/blog/ecommerce-conversion-rate-optimization) – צלילה עמוקה לטקטיקות אופטימיזציית המרות
 - [האיצו את חנות השופיפיי שלכם](/blog/speed-up-shopify-store) – מדריך מפורט לתיקון בעיות ביצועים

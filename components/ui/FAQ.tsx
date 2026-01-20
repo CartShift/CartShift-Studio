@@ -106,7 +106,7 @@ export const FAQ: React.FC<FAQProps> = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
                   <div className="px-6 py-5 pt-0 text-surface-600 dark:text-surface-300 leading-relaxed">
@@ -121,4 +121,3 @@ export const FAQ: React.FC<FAQProps> = ({
     </div>
   );
 };
-

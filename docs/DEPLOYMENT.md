@@ -11,6 +11,7 @@ CartShift Studio uses **Firebase App Hosting** for deployment. This runs Next.js
    - Required: Firebase config, site URL, reCAPTCHA key
 
 2. **Build Test**
+
    ```bash
    pnpm run build
    pnpm start
@@ -53,15 +54,18 @@ firebase apphosting:backends:create
 ## Email Setup (Resend)
 
 ### 1. Create Resend Account
+
 1. Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month)
 2. Create an API key (starts with `re_`)
 
 ### 2. Verify Your Domain
+
 1. In Resend dashboard, go to Domains
 2. Add your domain (e.g., `cart-shift.com`)
 3. Add the DNS records Resend provides
 
 ### 3. Set Firebase Functions Secrets
+
 ```bash
 firebase functions:secrets:set RESEND_API_KEY
 firebase functions:secrets:set CONTACT_EMAIL="hello@cart-shift.com"
@@ -70,6 +74,7 @@ firebase functions:secrets:set CONTACT_EMAIL="hello@cart-shift.com"
 ## Cloud Functions
 
 Deploy functions separately:
+
 ```bash
 pnpm run deploy:functions
 ```
@@ -103,14 +108,17 @@ Functions require the **Blaze (pay-as-you-go) plan**.
 ## Troubleshooting
 
 ### Build Errors
+
 - Check Node.js version (20+)
 - Clear `.next` folder: `rm -rf .next`
 - Run `pnpm run lint`
 
 ### Dynamic Routes 404
+
 - Ensure `dynamicParams` is not set to `false`
 - Check route params match file structure
 
 ### Environment Variables
+
 - Verify secrets are set in Firebase Console
 - Check `availability` includes both BUILD and RUNTIME

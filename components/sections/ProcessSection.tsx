@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React from "react";
-import { motion } from "@/lib/motion";
-import { Section, SectionHeader } from "@/components/ui/Section";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { useTranslations } from "next-intl";
+import React from 'react';
+import { motion } from '@/lib/motion';
+import { Section, SectionHeader } from '@/components/ui/Section';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { useTranslations } from 'next-intl';
 
 interface ProcessSectionProps {
   processPath: string;
@@ -27,7 +27,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({ processPath }) =
             key={index}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
           >
             <Card hover glow="glow" className="h-full group relative overflow-hidden">
@@ -51,5 +51,3 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({ processPath }) =
     </Section>
   );
 };
-
-

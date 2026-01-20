@@ -9,24 +9,21 @@ import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
-const errorStateVariants = cva(
-  "flex items-center",
-  {
-    variants: {
-      variant: {
-        default: "py-16 flex-col justify-center text-center",
-        inline: "gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-900/40",
-        fullPage: "min-h-[60vh] flex-col justify-center p-8 text-center",
-      },
+const errorStateVariants = cva('flex items-center', {
+  variants: {
+    variant: {
+      default: 'py-16 flex-col justify-center text-center',
+      inline:
+        'gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-900/40',
+      fullPage: 'min-h-[60vh] flex-col justify-center p-8 text-center',
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
-interface ErrorStateProps
-  extends VariantProps<typeof errorStateVariants> {
+interface ErrorStateProps extends VariantProps<typeof errorStateVariants> {
   title?: string;
   message?: string;
   errorCode?: string;
@@ -57,10 +54,7 @@ export function ErrorState({
 
   if (variant === 'inline') {
     return (
-      <div
-        className={cn(errorStateVariants({ variant }), className)}
-        role="alert"
-      >
+      <div className={cn(errorStateVariants({ variant }), className)} role="alert">
         <AlertCircle size={20} className="text-rose-500 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-rose-900 dark:text-rose-200">
@@ -82,10 +76,7 @@ export function ErrorState({
 
   if (variant === 'fullPage') {
     return (
-      <div
-        className={cn(errorStateVariants({ variant }), className)}
-        role="alert"
-      >
+      <div className={cn(errorStateVariants({ variant }), className)} role="alert">
         <div className="w-24 h-24 bg-rose-50 dark:bg-rose-900/20 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-rose-100 dark:border-rose-900/30 shadow-xl shadow-rose-500/10">
           {icon || <AlertCircle size={44} className="text-rose-500" />}
         </div>
@@ -134,10 +125,7 @@ export function ErrorState({
 
   // Default variant
   return (
-    <div
-      className={cn(errorStateVariants({ variant }), className)}
-      role="alert"
-    >
+    <div className={cn(errorStateVariants({ variant }), className)} role="alert">
       <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-rose-100 dark:border-rose-900/30">
         {icon || <AlertCircle size={28} className="text-rose-500" />}
       </div>
@@ -156,7 +144,7 @@ export function ErrorState({
         {onRetry && (
           <Button size="sm" onClick={onRetry}>
             <RefreshCw size={14} className="me-2" />
-              {t('portal.errorState.retry')}
+            {t('portal.errorState.retry')}
           </Button>
         )}
         {onGoBack && (

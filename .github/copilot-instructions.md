@@ -5,6 +5,7 @@
 ### NEVER EDIT GENERATED FILES
 
 **DO NOT EDIT** these files directly:
+
 - `messages/en.json`
 - `messages/he.json`
 
@@ -13,6 +14,7 @@ These files are **auto-generated** and will be overwritten. They contain a `_met
 ### ALWAYS EDIT SOURCE FILES
 
 Edit translation source files in `messages/src/{locale}/`:
+
 - `messages/src/en/common.json`
 - `messages/src/en/portal.json`
 - `messages/src/en/website.json`
@@ -46,6 +48,7 @@ Edit translation source files in `messages/src/{locale}/`:
 ### Translation Key Pattern
 
 When adding new translations:
+
 1. Add to appropriate source file in `messages/src/{locale}/`
 2. Use dot notation: `portal.quickActions.newRequest`
 3. Run merge script: `npm run i18n:merge`

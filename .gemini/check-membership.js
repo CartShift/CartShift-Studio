@@ -80,7 +80,6 @@ async function checkMembership(orgId) {
     } catch (err) {
       console.error('❌ Error checking organization:', err);
     }
-
   } catch (error) {
     console.error('❌ Error running diagnostic:', error);
     console.log('👉 Make sure you run this in the browser console on the portal page');

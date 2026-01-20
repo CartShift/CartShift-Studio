@@ -11,15 +11,7 @@ export const RequestStatus = z.enum([
   'CANCELED',
 ]);
 
-export const RequestPriority = z.enum([
-  'LOW',
-  'NORMAL',
-  'HIGH',
-  'URGENT',
-]);
+export const RequestPriority = z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']);
 
 export type RequestStatus = z.infer<typeof RequestStatus>;
 export type RequestPriority = z.infer<typeof RequestPriority>;
-
-
-

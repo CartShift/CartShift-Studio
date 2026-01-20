@@ -8,12 +8,14 @@
 ## Immediate Actions (Do Today)
 
 ### 1. Create Missing Images ⚠️ CRITICAL
+
 - **Files needed:** 11 images in `/public/images/`
 - **Time:** 1-2 hours
 - **Tool:** [RealFaviconGenerator](https://realfavicongenerator.net/) + [Canva](https://www.canva.com/)
 - **See:** `docs/SEO_IMAGE_ASSETS_REQUIRED.md`
 
 ### 2. Set Up Google Search Console ⚠️ CRITICAL
+
 ```bash
 # Add to .env file
 GOOGLE_SITE_VERIFICATION=your_verification_code_here
@@ -22,15 +24,17 @@ GOOGLE_SITE_VERIFICATION=your_verification_code_here
 Get your code at: https://search.google.com/search-console
 
 ### 3. Update Social Media Links ⚠️ CRITICAL
+
 Update these URLs in `lib/seo.ts` line 130:
+
 ```typescript
 sameAs: [
-  "https://twitter.com/YOUR_HANDLE",
-  "https://linkedin.com/company/YOUR_COMPANY",
-  "https://github.com/YOUR_ORG",
-  "https://www.facebook.com/YOUR_PAGE",
-  "https://www.instagram.com/YOUR_HANDLE",
-]
+  'https://twitter.com/YOUR_HANDLE',
+  'https://linkedin.com/company/YOUR_COMPANY',
+  'https://github.com/YOUR_ORG',
+  'https://www.facebook.com/YOUR_PAGE',
+  'https://www.instagram.com/YOUR_HANDLE',
+];
 ```
 
 ---
@@ -53,12 +57,14 @@ sameAs: [
 ## Next Week's Tasks
 
 ### High Priority
+
 - [ ] Create all missing OG and favicon images
 - [ ] Add noindex to private/portal pages
 - [ ] Add FAQ schema to service pages
 - [ ] Implement image sitemap
 
 ### Medium Priority
+
 - [ ] Optimize all page meta descriptions
 - [ ] Add breadcrumb schema to all pages
 - [ ] Test Core Web Vitals and fix CLS
@@ -104,6 +110,7 @@ http://localhost:3000/manifest.json
 ## Key SEO Files
 
 ### Configuration Files
+
 ```
 app/
 ├── layout.tsx              # Root layout with PWA links
@@ -121,6 +128,7 @@ lib/
 ```
 
 ### Documentation Files
+
 ```
 docs/
 ├── SEO_TECHNICAL_ANALYSIS.md     # Full 18-point analysis
@@ -133,6 +141,7 @@ docs/
 ## Common SEO Tasks
 
 ### Add New Page with SEO
+
 ```typescript
 import { generateMetadata as genMeta, generateBreadcrumbSchema } from '@/lib/seo';
 
@@ -152,6 +161,7 @@ const breadcrumbSchema = generateBreadcrumbSchema([
 ```
 
 ### Add Noindex to Private Page
+
 ```typescript
 export const metadata: Metadata = {
   robots: {
@@ -162,6 +172,7 @@ export const metadata: Metadata = {
 ```
 
 ### Add FAQ Schema
+
 ```typescript
 import { generateFAQPageSchema } from '@/lib/seo';
 
@@ -178,17 +189,20 @@ const faqSchema = generateFAQPageSchema([
 ## Monitoring Checklist
 
 ### Weekly
+
 - [ ] Check Google Search Console for errors
 - [ ] Monitor organic traffic in Analytics
 - [ ] Check for broken images (404s)
 
 ### Monthly
+
 - [ ] Run PageSpeed Insights test
 - [ ] Review keyword rankings
 - [ ] Check Core Web Vitals in GSC
 - [ ] Update sitemap if new content added
 
 ### Quarterly
+
 - [ ] Full SEO audit
 - [ ] Update meta descriptions for underperforming pages
 - [ ] Review and update keywords
@@ -199,6 +213,7 @@ const faqSchema = generateFAQPageSchema([
 ## Expected Results
 
 ### After 30 Days
+
 - ✅ All social previews working (with images)
 - ✅ PWA installable on mobile
 - ✅ No 404s for image assets
@@ -206,6 +221,7 @@ const faqSchema = generateFAQPageSchema([
 - ✅ Improved mobile rankings
 
 ### After 90 Days
+
 - 📈 +25-50% organic traffic
 - 📈 Better search rankings for key terms
 - 📈 Higher click-through rates
@@ -238,15 +254,18 @@ curl http://localhost:3000/manifest.json
 ## Need Help?
 
 ### Documentation
+
 - Full analysis: `docs/SEO_TECHNICAL_ANALYSIS.md`
 - Image guide: `docs/SEO_IMAGE_ASSETS_REQUIRED.md`
 
 ### Tools
+
 - Google Search Console: https://search.google.com/search-console
 - Rich Results Test: https://search.google.com/test/rich-results
 - PageSpeed Insights: https://pagespeed.web.dev/
 
 ### Next Steps
+
 1. Create the missing images (see image guide)
 2. Set up Google Search Console
 3. Update social media links in schema

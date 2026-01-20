@@ -38,9 +38,7 @@ export function PayPalCheckoutButton({
   if (isRejected) {
     return (
       <div className="text-center py-4">
-        <p className="text-red-500 text-sm">
-          {t('portal.pricing.payment.loadError')}
-        </p>
+        <p className="text-red-500 text-sm">{t('portal.pricing.payment.loadError')}</p>
       </div>
     );
   }
@@ -88,7 +86,7 @@ export function PayPalCheckoutButton({
             onError(t('portal.common.paymentFailedRetry'));
           }
         }}
-        onError={(err) => {
+        onError={err => {
           console.error('PayPal error:', err);
           onError('Payment system error. Please try again.');
         }}

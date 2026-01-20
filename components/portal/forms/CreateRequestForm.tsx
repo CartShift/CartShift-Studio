@@ -32,6 +32,7 @@ import { useTranslations } from 'next-intl';
 import { uploadMultipleFiles, formatFileSize } from '@/lib/services/portal-files';
 import { updateRequest } from '@/lib/services/portal-requests';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { CardSectionTitle } from '@/components/ui/Card';
 
 type RequestFormData = {
   title: string;
@@ -292,10 +293,9 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
         {/* Attachments Section */}
         <div className="space-y-4 pt-4 border-t border-surface-100 dark:border-surface-800">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-[10px] font-black text-surface-400 uppercase tracking-widest flex items-center gap-2">
-              <Paperclip size={14} className="text-blue-500" />
+            <CardSectionTitle icon={Paperclip} iconClassName="text-blue-500">
               {t('portal.requests.new.attachments')}
-            </h3>
+            </CardSectionTitle>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

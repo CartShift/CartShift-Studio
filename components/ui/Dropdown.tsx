@@ -375,22 +375,26 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
       }
 
       // Arrow key navigation
-      const enabledIndices = items.map((item, i) => !item.disabled ? i : -1).filter(i => i !== -1);
+      const enabledIndices = items
+        .map((item, i) => (!item.disabled ? i : -1))
+        .filter(i => i !== -1);
 
       if (event.key === 'ArrowDown') {
         event.preventDefault();
         const currentEnabledIndex = enabledIndices.indexOf(focusedIndex);
-        const nextIndex = currentEnabledIndex < enabledIndices.length - 1
-          ? enabledIndices[currentEnabledIndex + 1]
-          : enabledIndices[0];
+        const nextIndex =
+          currentEnabledIndex < enabledIndices.length - 1
+            ? enabledIndices[currentEnabledIndex + 1]
+            : enabledIndices[0];
         setFocusedIndex(nextIndex);
         itemRefs.current[nextIndex]?.focus();
       } else if (event.key === 'ArrowUp') {
         event.preventDefault();
         const currentEnabledIndex = enabledIndices.indexOf(focusedIndex);
-        const prevIndex = currentEnabledIndex > 0
-          ? enabledIndices[currentEnabledIndex - 1]
-          : enabledIndices[enabledIndices.length - 1];
+        const prevIndex =
+          currentEnabledIndex > 0
+            ? enabledIndices[currentEnabledIndex - 1]
+            : enabledIndices[enabledIndices.length - 1];
         setFocusedIndex(prevIndex);
         itemRefs.current[prevIndex]?.focus();
       } else if (event.key === 'Home') {
@@ -516,7 +520,9 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
               {items.map((item, index) => (
                 <button
                   key={index}
-                  ref={el => { itemRefs.current[index] = el; }}
+                  ref={el => {
+                    itemRefs.current[index] = el;
+                  }}
                   type="button"
                   role="menuitem"
                   tabIndex={focusedIndex === index ? 0 : -1}

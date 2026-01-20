@@ -13,6 +13,7 @@ CartShift Studio demonstrates **excellent foundational UX** with a mature design
 **Overall UX Score:** B+ (85/100)
 
 **Priority Areas:**
+
 1. 🔥 **High Impact, Quick Wins** (1-3 days each)
 2. ⚡ **Medium Impact, Medium Effort** (1-2 weeks each)
 3. 🎯 **Strategic Enhancements** (3-4 weeks each)
@@ -22,6 +23,7 @@ CartShift Studio demonstrates **excellent foundational UX** with a mature design
 ## 1. Loading & Feedback Experience 🔥
 
 ### Current State
+
 - Skeleton loading states exist (DashboardSkeleton, CardSkeleton, WorkboardSkeleton)
 - Button loading states implemented
 - Some components still show spinner or blank states
@@ -29,9 +31,11 @@ CartShift Studio demonstrates **excellent foundational UX** with a mature design
 ### Issues Identified
 
 #### 1.1 Inconsistent Loading Patterns
+
 **Problem:** Different loading states across similar operations
 
 **Examples:**
+
 - Some pages show full skeleton while others show spinner
 - List items load individually rather than as a block
 - No progressive loading for large datasets
@@ -39,9 +43,11 @@ CartShift Studio demonstrates **excellent foundational UX** with a mature design
 **Impact:** User confusion, perceived slowness
 
 #### 1.2 Missing Loading States
+
 **Problem:** Critical async operations without visual feedback
 
 **Components Missing Loading States:**
+
 ```typescript
 // components/portal/PinnedRequests.tsx
 // components/portal/ClientAnalytics.tsx
@@ -51,16 +57,14 @@ CartShift Studio demonstrates **excellent foundational UX** with a mature design
 ### Recommendations
 
 #### 1.1 Implement Progressive Loading
+
 **Priority:** High | **Effort:** 2-3 hours
 
 Add progressive loading for lists and cards:
 
 ```typescript
 // lib/hooks/useProgressiveData.ts
-export function useProgressiveData<T>(
-  data: T[],
-  chunkSize: number = 10
-) {
+export function useProgressiveData<T>(data: T[], chunkSize: number = 10) {
   const [visibleItems, setVisibleItems] = useState<T[]>([]);
 
   useEffect(() => {
@@ -74,6 +78,7 @@ export function useProgressiveData<T>(
 **Benefit:** Faster perceived performance, better UX for large datasets
 
 #### 1.2 Add Skeleton to All Data-Heavy Components
+
 **Priority:** High | **Effort:** 1 day
 
 Create skeleton patterns for missing components:
@@ -93,6 +98,7 @@ export const AnalyticsSkeleton = () => (
 ```
 
 #### 1.3 Optimistic UI Updates
+
 **Priority:** High | **Effort:** 3-5 hours per operation
 
 Add optimistic updates for critical actions:
@@ -101,14 +107,14 @@ Add optimistic updates for critical actions:
 // Example: Pin/Unpin Request
 const pinMutation = useMutation({
   mutationFn: pinRequest,
-  onMutate: async (requestId) => {
+  onMutate: async requestId => {
     await queryClient.cancelQueries(['pinned-requests']);
 
     const previous = queryClient.getQueryData(['pinned-requests']);
 
-    queryClient.setQueryData(['pinned-requests'], (old) => [
+    queryClient.setQueryData(['pinned-requests'], old => [
       ...old,
-      requests.find(r => r.id === requestId)
+      requests.find(r => r.id === requestId),
     ]);
 
     return { previous };
@@ -120,11 +126,12 @@ const pinMutation = useMutation({
   onSuccess: () => {
     toast.success('Request pinned successfully');
     queryClient.invalidateQueries(['pinned-requests']);
-  }
+  },
 });
 ```
 
 **Expected Outcome:**
+
 - 30-40% faster perceived action completion
 - Reduced user anxiety during operations
 - Fewer user errors from double-clicks
@@ -134,6 +141,7 @@ const pinMutation = useMutation({
 ## 2. Error Handling & Recovery 🔥
 
 ### Current State
+
 - Toast notification system (sonner) implemented
 - ErrorState component exists
 - Error boundaries present
@@ -141,9 +149,11 @@ const pinMutation = useMutation({
 ### Issues Identified
 
 #### 2.1 Inconsistent Error Messaging
+
 **Problem:** Error messages vary in clarity and actionability
 
 **Examples:**
+
 ```tsx
 // Some components show generic errors:
 toast.error('Something went wrong'); // ❌ Not helpful
@@ -153,9 +163,11 @@ toast.error('Failed to update settings: Permission denied'); // ✅ Actionable
 ```
 
 #### 2.2 Missing Error Recovery Actions
+
 **Problem:** Users get stuck in error states without clear paths forward
 
 **Components Needing Recovery Actions:**
+
 - File upload failures
 - Integration connection errors
 - Form submission errors
@@ -163,26 +175,29 @@ toast.error('Failed to update settings: Permission denied'); // ✅ Actionable
 ### Recommendations
 
 #### 2.1 Implement Standardized Error Handling
+
 **Priority:** High | **Effort:** 4-6 hours
 
 Create error handling utilities:
 
 ```typescript
 // lib/utils/errorHandling.ts
-export const getErrorMessage = (error: unknown): { title: string; message: string; action?: string } => {
+export const getErrorMessage = (
+  error: unknown
+): { title: string; message: string; action?: string } => {
   if (error instanceof FirebaseError) {
     switch (error.code) {
       case 'permission-denied':
         return {
           title: 'Access Denied',
-          message: 'You don\'t have permission to perform this action.',
-          action: 'Contact your administrator'
+          message: "You don't have permission to perform this action.",
+          action: 'Contact your administrator',
         };
       case 'network-request-failed':
         return {
           title: 'Network Error',
           message: 'Unable to connect to the server.',
-          action: 'Check your internet connection'
+          action: 'Check your internet connection',
         };
       // ... more cases
     }
@@ -201,6 +216,7 @@ export const showErrorToast = (error: unknown) => {
 ```
 
 #### 2.2 Add Retry Mechanisms
+
 **Priority:** High | **Effort:** 2-3 hours
 
 Implement retry for failed operations:
@@ -226,7 +242,7 @@ export function useRetryMutation<T>(
         throw error;
       }
     },
-    ...options
+    ...options,
   });
 
   return { ...mutation, retryCount, retry: () => setRetryCount(0) };
@@ -234,6 +250,7 @@ export function useRetryMutation<T>(
 ```
 
 #### 2.3 Error Recovery UI Patterns
+
 **Priority:** Medium | **Effort:** 1 day
 
 Create reusable error recovery component:
@@ -244,7 +261,7 @@ export const ErrorRecovery = ({
   error,
   onRetry,
   onDismiss,
-  showDetails = false
+  showDetails = false,
 }: ErrorRecoveryProps) => {
   const { title, message, action } = getErrorMessage(error);
 
@@ -256,12 +273,8 @@ export const ErrorRecovery = ({
         </div>
 
         <div className="flex-1">
-          <h3 className="font-bold text-rose-900 dark:text-rose-200 mb-2">
-            {title}
-          </h3>
-          <p className="text-sm text-rose-700 dark:text-rose-300 mb-4">
-            {message}
-          </p>
+          <h3 className="font-bold text-rose-900 dark:text-rose-200 mb-2">{title}</h3>
+          <p className="text-sm text-rose-700 dark:text-rose-300 mb-4">{message}</p>
 
           <div className="flex gap-2">
             {onRetry && (
@@ -300,6 +313,7 @@ export const ErrorRecovery = ({
 ```
 
 **Expected Outcome:**
+
 - 60% reduction in user frustration from errors
 - 40% increase in successful recovery from errors
 - Better error tracking and debugging
@@ -309,6 +323,7 @@ export const ErrorRecovery = ({
 ## 3. Form Experience Enhancement 🔥
 
 ### Current State
+
 - Input component with validation states
 - Form components exist
 - Basic error messaging
@@ -316,24 +331,29 @@ export const ErrorRecovery = ({
 ### Issues Identified
 
 #### 3.1 No Real-Time Validation
+
 **Problem:** Users submit forms with errors that could be caught earlier
 
 **Impact:** Higher form abandonment, user frustration
 
 #### 3.2 Missing Form Progress Indication
+
 **Problem:** Multi-step forms don't show completion progress
 
 **Examples:**
+
 - Create Request Form
 - Onboarding Wizard
 - Create Organization Form
 
 #### 3.3 No Auto-Save
+
 **Problem:** Users lose work if they accidentally close forms
 
 ### Recommendations
 
 #### 3.1 Implement Real-Time Validation
+
 **Priority:** High | **Effort:** 1-2 days
 
 Create validation hook:
@@ -347,38 +367,44 @@ export function useFormValidation<T extends Record<string, any>>(
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const validateField = useCallback((field: keyof T, value: any) => {
-    try {
-      schema.pick({ [field]: true }).parse({ [field]: value });
-      setErrors(prev => ({ ...prev, [field]: '' }));
-      return true;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const message = error.errors[0]?.message || 'Invalid value';
-        setErrors(prev => ({ ...prev, [field]: String(message) }));
+  const validateField = useCallback(
+    (field: keyof T, value: any) => {
+      try {
+        schema.pick({ [field]: true }).parse({ [field]: value });
+        setErrors(prev => ({ ...prev, [field]: '' }));
+        return true;
+      } catch (error) {
+        if (error instanceof ZodError) {
+          const message = error.errors[0]?.message || 'Invalid value';
+          setErrors(prev => ({ ...prev, [field]: String(message) }));
+          return false;
+        }
         return false;
       }
-      return false;
-    }
-  }, [schema]);
+    },
+    [schema]
+  );
 
-  const validateForm = useCallback((data: T) => {
-    try {
-      schema.parse(data);
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        error.errors.forEach(err => {
-          const path = err.path.join('.');
-          fieldErrors[path] = err.message || 'Invalid value';
-        });
-        setErrors(fieldErrors);
+  const validateForm = useCallback(
+    (data: T) => {
+      try {
+        schema.parse(data);
+        setErrors({});
+        return true;
+      } catch (error) {
+        if (error instanceof ZodError) {
+          const fieldErrors: Record<string, string> = {};
+          error.errors.forEach(err => {
+            const path = err.path.join('.');
+            fieldErrors[path] = err.message || 'Invalid value';
+          });
+          setErrors(fieldErrors);
+        }
+        return false;
       }
-      return false;
-    }
-  }, [schema]);
+    },
+    [schema]
+  );
 
   const markTouched = useCallback((field: keyof T) => {
     setTouched(prev => ({ ...prev, [field]: true }));
@@ -390,23 +416,20 @@ export function useFormValidation<T extends Record<string, any>>(
     validateField,
     validateForm,
     markTouched,
-    isValid: Object.keys(errors).length === 0
+    isValid: Object.keys(errors).length === 0,
   };
 }
 ```
 
 #### 3.2 Add Form Progress Indicators
+
 **Priority:** Medium | **Effort:** 1 day
 
 Create progress component:
 
 ```tsx
 // components/ui/FormProgress.tsx
-export const FormProgress = ({
-  steps,
-  currentStep,
-  completedSteps = []
-}: FormProgressProps) => {
+export const FormProgress = ({ steps, currentStep, completedSteps = [] }: FormProgressProps) => {
   const progress = (completedSteps.length / steps.length) * 100;
 
   return (
@@ -415,9 +438,7 @@ export const FormProgress = ({
         <span className="font-medium text-surface-700 dark:text-surface-300">
           Step {currentStep + 1} of {steps.length}
         </span>
-        <span className="text-surface-500">
-          {Math.round(progress)}% complete
-        </span>
+        <span className="text-surface-500">{Math.round(progress)}% complete</span>
       </div>
 
       <div className="h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
@@ -440,9 +461,12 @@ export const FormProgress = ({
               key={step.id}
               className={cn(
                 'px-3 py-1 rounded-full text-xs font-medium transition-colors',
-                isCompleted && 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-                isCurrent && 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
-                isUpcoming && 'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400'
+                isCompleted &&
+                  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+                isCurrent &&
+                  'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
+                isUpcoming &&
+                  'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400'
               )}
             >
               {step.label}
@@ -456,6 +480,7 @@ export const FormProgress = ({
 ```
 
 #### 3.3 Implement Auto-Save
+
 **Priority:** Medium | **Effort:** 2-3 days
 
 Create auto-save hook:
@@ -487,16 +512,17 @@ export function useAutoSave<T>(
 
   // Debounced save
   const debouncedSave = useMemo(
-    () => debounce(async (dataToSave: T) => {
-      try {
-        setIsSaving(true);
-        localStorage.setItem(key, JSON.stringify(dataToSave));
-        await saveFn(dataToSave);
-        setLastSaved(new Date());
-      } finally {
-        setIsSaving(false);
-      }
-    }, debounce),
+    () =>
+      debounce(async (dataToSave: T) => {
+        try {
+          setIsSaving(true);
+          localStorage.setItem(key, JSON.stringify(dataToSave));
+          await saveFn(dataToSave);
+          setLastSaved(new Date());
+        } finally {
+          setIsSaving(false);
+        }
+      }, debounce),
     [key, debounce, saveFn]
   );
 
@@ -518,6 +544,7 @@ export function useAutoSave<T>(
 ```
 
 **Expected Outcome:**
+
 - 50% reduction in form errors
 - 70% reduction in form abandonment
 - 90% reduction in lost work incidents
@@ -527,6 +554,7 @@ export function useAutoSave<T>(
 ## 4. Search & Discovery ⚡
 
 ### Current State
+
 - GlobalSearch component exists
 - MobileSearch component available
 - Search in specific contexts
@@ -534,17 +562,21 @@ export function useAutoSave<T>(
 ### Issues Identified
 
 #### 4.1 No Search History
+
 **Problem:** Users can't access previous searches
 
 #### 4.2 No Search Suggestions
+
 **Problem:** No autocomplete or intelligent suggestions
 
 #### 4.3 Limited Search Contexts
+
 **Problem:** Search only works in certain areas
 
 ### Recommendations
 
 #### 4.1 Add Search History
+
 **Priority:** Medium | **Effort:** 4-6 hours
 
 Implement search history:
@@ -563,16 +595,19 @@ export function useSearchHistory(maxItems: number = 10) {
     }
   }, []);
 
-  const addToHistory = useCallback((query: string) => {
-    if (!query.trim()) return;
+  const addToHistory = useCallback(
+    (query: string) => {
+      if (!query.trim()) return;
 
-    setHistory(prev => {
-      const filtered = prev.filter(q => q !== query);
-      const updated = [query, ...filtered].slice(0, maxItems);
-      localStorage.setItem('search-history', JSON.stringify(updated));
-      return updated;
-    });
-  }, [maxItems]);
+      setHistory(prev => {
+        const filtered = prev.filter(q => q !== query);
+        const updated = [query, ...filtered].slice(0, maxItems);
+        localStorage.setItem('search-history', JSON.stringify(updated));
+        return updated;
+      });
+    },
+    [maxItems]
+  );
 
   const clearHistory = useCallback(() => {
     setHistory([]);
@@ -592,6 +627,7 @@ export function useSearchHistory(maxItems: number = 10) {
 ```
 
 #### 4.2 Add Intelligent Suggestions
+
 **Priority:** Medium | **Effort:** 1-2 days
 
 Implement search suggestions:
@@ -601,7 +637,7 @@ Implement search suggestions:
 export const SearchSuggestions = ({
   query,
   onSelect,
-  context = 'global'
+  context = 'global',
 }: SearchSuggestionsProps) => {
   const { history, addToHistory } = useSearchHistory();
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
@@ -614,13 +650,13 @@ export const SearchSuggestions = ({
     }
 
     // Combine history, recent items, and fuzzy matches
-    const historyMatches = history.filter(h =>
-      h.toLowerCase().includes(query.toLowerCase())
-    ).map(h => ({ type: 'history', value: h }));
+    const historyMatches = history
+      .filter(h => h.toLowerCase().includes(query.toLowerCase()))
+      .map(h => ({ type: 'history', value: h }));
 
-    const recentMatches = recent.filter(r =>
-      r.title.toLowerCase().includes(query.toLowerCase())
-    ).map(r => ({ type: 'recent', value: r.title, href: r.href }));
+    const recentMatches = recent
+      .filter(r => r.title.toLowerCase().includes(query.toLowerCase()))
+      .map(r => ({ type: 'recent', value: r.title, href: r.href }));
 
     setSuggestions([...historyMatches, ...recentMatches]);
   }, [query, history, recent]);
@@ -669,6 +705,7 @@ export const SearchSuggestions = ({
 ```
 
 **Expected Outcome:**
+
 - 60% faster search completion
 - 40% increase in search success rate
 - Better user productivity
@@ -678,6 +715,7 @@ export const SearchSuggestions = ({
 ## 5. Navigation & Wayfinding ⚡
 
 ### Current State
+
 - Sidebar with collapse functionality
 - Breadcrumbs component
 - Navigation groups with permissions
@@ -685,19 +723,23 @@ export const SearchSuggestions = ({
 ### Issues Identified
 
 #### 5.1 No Breadcrumbs in Many Pages
+
 **Problem:** Users lose context in deep navigation
 
 **Missing Breadcrumbs:**
+
 - Request detail pages
 - Pricing detail pages
 - Client detail pages
 
 #### 5.2 No Quick Navigation
+
 **Problem:** No way to quickly jump to frequently used areas
 
 ### Recommendations
 
 #### 5.1 Add Breadcrumbs to All Pages
+
 **Priority:** Medium | **Effort:** 4-6 hours
 
 Implement breadcrumbs:
@@ -708,10 +750,7 @@ export const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
   const t = useTranslations();
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={cn('flex items-center gap-2 text-sm', className)}
-    >
+    <nav aria-label="Breadcrumb" className={cn('flex items-center gap-2 text-sm', className)}>
       <Link href="/" className="text-surface-500 hover:text-primary-600">
         <Home className="w-4 h-4" />
       </Link>
@@ -724,9 +763,7 @@ export const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
             <ChevronRight className="w-4 h-4 text-surface-400" />
 
             {isLast ? (
-              <span className="font-medium text-surface-900 dark:text-white">
-                {item.label}
-              </span>
+              <span className="font-medium text-surface-900 dark:text-white">{item.label}</span>
             ) : (
               <Link
                 href={item.href}
@@ -744,6 +781,7 @@ export const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
 ```
 
 #### 5.2 Add Quick Access Panel
+
 **Priority:** Low | **Effort:** 1-2 days
 
 Create quick access component:
@@ -758,9 +796,7 @@ export const QuickAccess = () => {
     <div className="p-4 space-y-4">
       {/* Recent */}
       <div>
-        <h3 className="text-sm font-bold text-surface-500 uppercase mb-2">
-          Recent
-        </h3>
+        <h3 className="text-sm font-bold text-surface-500 uppercase mb-2">Recent</h3>
         <div className="space-y-1">
           {recent?.map(req => (
             <Link
@@ -768,12 +804,8 @@ export const QuickAccess = () => {
               href={`/requests/${req.id}`}
               className="block p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
             >
-              <div className="text-sm font-medium truncate">
-                {req.title}
-              </div>
-              <div className="text-xs text-surface-500">
-                {formatDate(req.updatedAt)}
-              </div>
+              <div className="text-sm font-medium truncate">{req.title}</div>
+              <div className="text-xs text-surface-500">{formatDate(req.updatedAt)}</div>
             </Link>
           ))}
         </div>
@@ -782,9 +814,7 @@ export const QuickAccess = () => {
       {/* Pinned */}
       {pinned && pinned.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-surface-500 uppercase mb-2">
-            Pinned
-          </h3>
+          <h3 className="text-sm font-bold text-surface-500 uppercase mb-2">Pinned</h3>
           <div className="space-y-1">
             {pinned.map(req => (
               <Link
@@ -794,9 +824,7 @@ export const QuickAccess = () => {
               >
                 <div className="flex items-center gap-2">
                   <Pin className="w-3 h-3 text-primary-500" />
-                  <span className="text-sm font-medium truncate">
-                    {req.title}
-                  </span>
+                  <span className="text-sm font-medium truncate">{req.title}</span>
                 </div>
               </Link>
             ))}
@@ -809,6 +837,7 @@ export const QuickAccess = () => {
 ```
 
 **Expected Outcome:**
+
 - 30% faster navigation
 - Reduced page bounce rate
 - Better user orientation
@@ -818,6 +847,7 @@ export const QuickAccess = () => {
 ## 6. Accessibility Enhancements ⚡
 
 ### Current State
+
 - ARIA attributes partially implemented
 - Focus management good
 - Keyboard navigation partial
@@ -825,16 +855,20 @@ export const QuickAccess = () => {
 ### Issues Identified
 
 #### 6.1 Missing ARIA Labels on Icon-Only Buttons
+
 **Problem:** Screen readers can't identify button purpose
 
 **Components Affected:**
+
 - Icon-only buttons in headers
 - Action buttons without labels
 
 #### 6.2 No Live Region Updates
+
 **Problem:** Dynamic content changes not announced
 
 **Components Needing Live Regions:**
+
 - Toast notifications (partially implemented)
 - Search results
 - Form validation errors
@@ -842,50 +876,33 @@ export const QuickAccess = () => {
 ### Recommendations
 
 #### 6.1 Add ARIA Labels
+
 **Priority:** High | **Effort:** 2-4 hours
 
 Create accessible icon button:
 
 ```tsx
 // components/ui/IconButton.tsx
-export const IconButton = ({
-  icon: Icon,
-  label,
-  ...props
-}: IconButtonProps) => (
-  <button
-    {...props}
-    aria-label={label}
-    className="inline-flex items-center justify-center"
-  >
+export const IconButton = ({ icon: Icon, label, ...props }: IconButtonProps) => (
+  <button {...props} aria-label={label} className="inline-flex items-center justify-center">
     <Icon className="w-5 h-5" />
   </button>
 );
 
 // Usage:
-<IconButton
-  icon={Settings}
-  label="Open settings"
-  onClick={() => {}}
-/>
+<IconButton icon={Settings} label="Open settings" onClick={() => {}} />;
 ```
 
 #### 6.2 Add Live Regions
+
 **Priority:** Medium | **Effort:** 4-6 hours
 
 Implement live regions:
 
 ```tsx
 // components/ui/LiveRegion.tsx
-export const LiveRegion = ({
-  politeness = 'polite',
-  children
-}: LiveRegionProps) => (
-  <div
-    aria-live={politeness}
-    aria-atomic="true"
-    className="sr-only"
-  >
+export const LiveRegion = ({ politeness = 'polite', children }: LiveRegionProps) => (
+  <div aria-live={politeness} aria-atomic="true" className="sr-only">
     {children}
   </div>
 );
@@ -910,6 +927,7 @@ return (
 ```
 
 **Expected Outcome:**
+
 - Full WCAG 2.1 AA compliance
 - Better screen reader experience
 - Improved keyboard navigation
@@ -919,6 +937,7 @@ return (
 ## 7. Performance & Responsiveness 🎯
 
 ### Current State
+
 - Fluid typography implemented
 - Responsive breakpoints defined
 - Image optimization with next/image
@@ -926,38 +945,39 @@ return (
 ### Issues Identified
 
 #### 7.1 Bundle Size Opportunities
+
 **Problem:** Some components can be code-split
 
 **Components for Code Splitting:**
+
 - Heavy charts/analytics
 - Rich text editors
 - File uploaders
 
 #### 7.2 No Virtual Scrolling
+
 **Problem:** Large lists cause performance issues
 
 ### Recommendations
 
 #### 7.1 Implement Code Splitting
+
 **Priority:** Medium | **Effort:** 1-2 days
 
 ```tsx
 // Lazy load heavy components
-const AnalyticsChart = dynamic(
-  () => import('@/components/portal/AnalyticsChart'),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false
-  }
-);
+const AnalyticsChart = dynamic(() => import('@/components/portal/AnalyticsChart'), {
+  loading: () => <ChartSkeleton />,
+  ssr: false,
+});
 
-const RichTextEditor = dynamic(
-  () => import('@/components/ui/RichTextEditor'),
-  { loading: () => <InputSkeleton /> }
-);
+const RichTextEditor = dynamic(() => import('@/components/ui/RichTextEditor'), {
+  loading: () => <InputSkeleton />,
+});
 ```
 
 #### 7.2 Add Virtual Scrolling
+
 **Priority:** Low | **Effort:** 2-3 days
 
 Use `react-window` or `tanstack-virtual`:
@@ -1006,6 +1026,7 @@ export const VirtualList = ({ items, renderItem }: VirtualListProps) => {
 ```
 
 **Expected Outcome:**
+
 - 40% faster initial load
 - Smoother scrolling on large lists
 - Better mobile performance
@@ -1015,6 +1036,7 @@ export const VirtualList = ({ items, renderItem }: VirtualListProps) => {
 ## 8. Mobile Experience Enhancement 🎯
 
 ### Current State
+
 - Responsive breakpoints
 - Mobile sidebar
 - Touch targets (44px minimum)
@@ -1022,19 +1044,23 @@ export const VirtualList = ({ items, renderItem }: VirtualListProps) => {
 ### Issues Identified
 
 #### 8.1 No Swipe Actions
+
 **Problem:** Can't perform quick actions with gestures
 
 **Components for Swipe Actions:**
+
 - Request list items
 - Client list items
 - File list items
 
 #### 8.2 No Pull-to-Refresh
+
 **Problem:** Can't refresh lists with gestures
 
 ### Recommendations
 
 #### 8.1 Add Swipe Actions
+
 **Priority:** Medium | **Effort:** 1-2 days
 
 Use `react-swipeable`:
@@ -1042,11 +1068,7 @@ Use `react-swipeable`:
 ```tsx
 import { useSwipeable } from 'react-swipeable';
 
-export const SwipeableItem = ({
-  children,
-  leftActions,
-  rightActions
-}: SwipeableItemProps) => {
+export const SwipeableItem = ({ children, leftActions, rightActions }: SwipeableItemProps) => {
   const [isSwiping, setIsSwiping] = useState(false);
 
   const handlers = useSwipeable({
@@ -1084,6 +1106,7 @@ export const SwipeableItem = ({
 ```
 
 #### 8.2 Add Pull-to-Refresh
+
 **Priority:** Low | **Effort:** 1 day
 
 Use `react-pull-to-refresh`:
@@ -1091,19 +1114,13 @@ Use `react-pull-to-refresh`:
 ```tsx
 import PullToRefresh from 'react-pull-to-refresh';
 
-export const RefreshableList = ({
-  children,
-  onRefresh
-}: RefreshableListProps) => {
-  return (
-    <PullToRefresh onRefresh={onRefresh}>
-      {children}
-    </PullToRefresh>
-  );
+export const RefreshableList = ({ children, onRefresh }: RefreshableListProps) => {
+  return <PullToRefresh onRefresh={onRefresh}>{children}</PullToRefresh>;
 };
 ```
 
 **Expected Outcome:**
+
 - More intuitive mobile interactions
 - Faster mobile workflows
 - Better mobile engagement
@@ -1113,6 +1130,7 @@ export const RefreshableList = ({
 ## 9. Micro-Interactions & Animations 🎯
 
 ### Current State
+
 - Framer Motion used
 - Smooth transitions
 - Loading states animated
@@ -1120,14 +1138,17 @@ export const RefreshableList = ({
 ### Issues Identified
 
 #### 9.1 Limited Success Feedback
+
 **Problem:** Actions complete without celebration
 
 #### 9.2 No Contextual Animations
+
 **Problem:** Animations don't reinforce meaning
 
 ### Recommendations
 
 #### 9.1 Add Success Celebrations
+
 **Priority:** Low | **Effort:** 4-6 hours
 
 Use `canvas-confetti`:
@@ -1141,7 +1162,7 @@ export const celebrate = (options?: confetti.Options) => {
     particleCount: 100,
     spread: 70,
     origin: { y: 0.6 },
-    ...options
+    ...options,
   });
 };
 
@@ -1162,16 +1183,14 @@ export const celebrateMilestone = () => {
 ```
 
 #### 9.2 Add Contextual Animations
+
 **Priority:** Low | **Effort:** 1 day
 
 Create animation library:
 
 ```tsx
 // components/ui/AnimatedValue.tsx
-export const AnimatedValue = ({
-  value,
-  format = (v) => v
-}: AnimatedValueProps) => {
+export const AnimatedValue = ({ value, format = v => v }: AnimatedValueProps) => {
   const [displayValue, setDisplayValue] = useState(value);
   const prevValue = useRef(value);
 
@@ -1185,10 +1204,7 @@ export const AnimatedValue = ({
       current += step;
       setDisplayValue(current);
 
-      if (
-        (diff > 0 && current < value) ||
-        (diff < 0 && current > value)
-      ) {
+      if ((diff > 0 && current < value) || (diff < 0 && current > value)) {
         requestAnimationFrame(animate);
       } else {
         setDisplayValue(value);
@@ -1204,6 +1220,7 @@ export const AnimatedValue = ({
 ```
 
 **Expected Outcome:**
+
 - More delightful interactions
 - Better emotional connection
 - Higher user satisfaction
@@ -1213,6 +1230,7 @@ export const AnimatedValue = ({
 ## 10. Data Visualization & Insights 🎯
 
 ### Current State
+
 - Charts in analytics components
 - ScoreGauge component
 - AnimatedNumber component
@@ -1220,14 +1238,17 @@ export const AnimatedValue = ({
 ### Issues Identified
 
 #### 10.1 Limited Chart Interactivity
+
 **Problem:** Charts are static, can't explore data
 
 #### 10.2 No Data Insights
+
 **Problem:** No automated insights or recommendations
 
 ### Recommendations
 
 #### 10.1 Add Interactive Charts
+
 **Priority:** Low | **Effort:** 2-3 days
 
 Use `recharts` or `chart.js`:
@@ -1235,11 +1256,7 @@ Use `recharts` or `chart.js`:
 ```tsx
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
-export const InteractiveChart = ({
-  data,
-  xKey,
-  yKey
-}: ChartProps) => {
+export const InteractiveChart = ({ data, xKey, yKey }: ChartProps) => {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart data={data}>
@@ -1267,6 +1284,7 @@ export const InteractiveChart = ({
 ```
 
 **Expected Outcome:**
+
 - Better data exploration
 - Deeper insights
 - More informed decisions
@@ -1276,6 +1294,7 @@ export const InteractiveChart = ({
 ## Implementation Roadmap
 
 ### Phase 1: Quick Wins (Week 1-2)
+
 1. ✅ Implement consistent error handling
 2. ✅ Add skeleton states to all components
 3. ✅ Add ARIA labels to icon-only buttons
@@ -1285,6 +1304,7 @@ export const InteractiveChart = ({
 **Expected Impact:** High user satisfaction boost
 
 ### Phase 2: Core Enhancements (Week 3-6)
+
 1. 🔄 Implement real-time form validation
 2. 🔄 Add form progress indicators
 3. 🔄 Implement auto-save
@@ -1294,6 +1314,7 @@ export const InteractiveChart = ({
 **Expected Impact:** Significant productivity increase
 
 ### Phase 3: Strategic Improvements (Week 7-12)
+
 1. 🎯 Add swipe actions
 2. 🎯 Implement virtual scrolling
 3. 🎯 Add code splitting
@@ -1307,16 +1328,19 @@ export const InteractiveChart = ({
 ## Success Metrics
 
 ### User Satisfaction
+
 - **CSAT Score:** Target 4.5/5 (from current 3.8/5)
 - **NPS:** Target +40 (from current +20)
 - **Task Completion Rate:** Target 95% (from current 85%)
 
 ### Performance
+
 - **Average Task Time:** Target -30% reduction
 - **Form Error Rate:** Target -50% reduction
 - **Page Load Time:** Target <2s (from current 2.5s)
 
 ### Engagement
+
 - **Daily Active Users:** Target +20% increase
 - **Session Duration:** Target +25% increase
 - **Feature Adoption:** Target +15% increase
@@ -1332,6 +1356,7 @@ CartShift Studio has an excellent foundation with room for significant UX improv
 3. **Strategic Impact:** Performance optimizations, mobile gestures, advanced animations
 
 Implementing these improvements will:
+
 - Delight users with smoother, more intuitive interactions
 - Increase productivity with better feedback and guidance
 - Improve accessibility for all users
@@ -1339,6 +1364,7 @@ Implementing these improvements will:
 - Differentiate from competitors
 
 **Next Steps:**
+
 1. Prioritize Phase 1 quick wins
 2. Measure impact with analytics
 3. Iterate based on user feedback

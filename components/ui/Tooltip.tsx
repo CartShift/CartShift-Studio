@@ -15,7 +15,14 @@ interface TooltipProps {
   id?: string;
 }
 
-export function Tooltip({ content, children, side = 'top', className, delay = 0.2, id }: TooltipProps) {
+export function Tooltip({
+  content,
+  children,
+  side = 'top',
+  className,
+  delay = 0.2,
+  id,
+}: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const tooltipId = id || `tooltip-${Math.random().toString(36).substring(2, 9)}`;
@@ -42,9 +49,9 @@ export function Tooltip({ content, children, side = 'top', className, delay = 0.
     top: 'top-full start-1/2 -translate-x-1/2 rtl:translate-x-1/2 border-t-surface-900 dark:border-t-surface-800 border-s-transparent border-e-transparent border-b-transparent',
     bottom:
       'bottom-full start-1/2 -translate-x-1/2 rtl:translate-x-1/2 border-b-surface-900 dark:border-b-surface-800 border-s-transparent border-e-transparent border-t-transparent',
-    start: 'end-full top-1/2 -translate-y-1/2 border-s-surface-900 dark:border-s-surface-800 border-t-transparent border-b-transparent border-e-transparent',
-    end:
-      'start-full top-1/2 -translate-y-1/2 border-e-surface-900 dark:border-e-surface-800 border-t-transparent border-b-transparent border-s-transparent',
+    start:
+      'end-full top-1/2 -translate-y-1/2 border-s-surface-900 dark:border-s-surface-800 border-t-transparent border-b-transparent border-e-transparent',
+    end: 'start-full top-1/2 -translate-y-1/2 border-e-surface-900 dark:border-e-surface-800 border-t-transparent border-b-transparent border-s-transparent',
   };
 
   return (

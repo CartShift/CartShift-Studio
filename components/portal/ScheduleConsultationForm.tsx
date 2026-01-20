@@ -357,7 +357,7 @@ export default function ScheduleConsultationForm({
                         {checkingAvailability ? (
                           <span className="flex items-center gap-1 text-surface-500">
                             <Loader2 size={12} className="animate-spin" />
-                             availability...
+                            availability...
                           </span>
                         ) : hasConflict ? (
                           <motion.div

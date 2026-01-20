@@ -1,9 +1,9 @@
 'use client';
 
-import { Component, ErrorInfo, ReactNode } from "react";
-import { logError } from "@/lib/error-handler";
-import { Button } from "@/components/ui/Button";
-import { useTranslations } from "next-intl";
+import { Component, ErrorInfo, ReactNode } from 'react';
+import { logError } from '@/lib/error-handler';
+import { Button } from '@/components/ui/Button';
+import { useTranslations } from 'next-intl';
 
 interface InnerProps {
   children: ReactNode;
@@ -27,7 +27,7 @@ class ErrorBoundaryInner extends Component<InnerProps, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    logError("ErrorBoundary caught an error", error, {
+    logError('ErrorBoundary caught an error', error, {
       componentStack: errorInfo.componentStack,
     });
   }
@@ -54,7 +54,7 @@ class ErrorBoundaryInner extends Component<InnerProps, State> {
               <p className="text-surface-600 dark:text-surface-300 font-medium">
                 {t('description')}
               </p>
-              {process.env.NODE_ENV !== "production" && this.state.error && (
+              {process.env.NODE_ENV !== 'production' && this.state.error && (
                 <details className="mt-4 text-start">
                   <summary className="cursor-pointer text-sm text-surface-500 dark:text-surface-400 font-bold uppercase tracking-widest">
                     {t('details')}
@@ -90,7 +90,8 @@ class ErrorBoundaryInner extends Component<InnerProps, State> {
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
-}export function ErrorBoundary({ children, fallback }: ErrorBoundaryProps) {
+}
+export function ErrorBoundary({ children, fallback }: ErrorBoundaryProps) {
   const t = useTranslations('errorBoundary');
   return (
     <ErrorBoundaryInner t={t as any} fallback={fallback}>

@@ -3,11 +3,13 @@
 A modern, high-performance, and conversion-optimized ecosystem for CartShift Studio. This project includes a public website and a comprehensive agency/client portal built with Next.js 16+, Firebase, and TanStack Query.
 
 ## Project Vision
+
 CartShift Studio provides a seamless experience for both agency administrators and clients, managing consultations, service requests, workboards, and billing through a unified, avant-garde interface.
 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 20+
 - pnpm (recommended) or npm
 - Firebase CLI (`npm install -g firebase-tools`)
@@ -15,11 +17,13 @@ CartShift Studio provides a seamless experience for both agency administrators a
 ### Installation
 
 1. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 2. Install Firebase Functions dependencies:
+
 ```bash
 cd functions
 pnpm install
@@ -31,6 +35,7 @@ cd ..
    - Fill in your Firebase and API configuration values.
 
 4. Run development server:
+
 ```bash
 pnpm dev
 ```
@@ -83,6 +88,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 See [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for detailed Firebase deployment instructions.
 
 Quick deploy:
+
 ```bash
 npm run deploy
 ```

@@ -1,11 +1,11 @@
 ---
-title: "Mobile Commerce Optimization: Turn Mobile Browsers Into Buyers (2025)"
-date: "2025-12-22"
-excerpt: "Mobile traffic is high, but mobile conversion lags. Learn how to optimize your ecommerce store for mobile: UX, checkout, speed, touch interactions, and mobile-first design patterns that actually convert."
-category: "E-commerce Strategy"
-title_he: "אופטימיזציה למובייל קומרס: להפוך גולשי מובייל לקונים (2025)"
-excerpt_he: "התנועה מהמובייל גבוהה אבל ההמרות נמוכות. למדו איך לייעל את החנות למובייל: UX, צ׳קאאוט, מהירות, אינטראקציות מגע ודפוסי עיצוב mobile-first שממירים."
-category_he: "אסטרטגיית איקומרס"
+title: 'Mobile Commerce Optimization: Turn Mobile Browsers Into Buyers (2025)'
+date: '2025-12-22'
+excerpt: 'Mobile traffic is high, but mobile conversion lags. Learn how to optimize your ecommerce store for mobile: UX, checkout, speed, touch interactions, and mobile-first design patterns that actually convert.'
+category: 'E-commerce Strategy'
+title_he: 'אופטימיזציה למובייל קומרס: להפוך גולשי מובייל לקונים (2025)'
+excerpt_he: 'התנועה מהמובייל גבוהה אבל ההמרות נמוכות. למדו איך לייעל את החנות למובייל: UX, צ׳קאאוט, מהירות, אינטראקציות מגע ודפוסי עיצוב mobile-first שממירים.'
+category_he: 'אסטרטגיית איקומרס'
 ---
 
 Mobile commerce has a conversion problem. The majority of ecommerce traffic now comes from mobile devices, yet mobile conversion rates are typically half of desktop rates.
@@ -20,12 +20,12 @@ Before diving into tactics, let's understand the landscape:
 
 **Traffic vs. Conversion Gap:**
 
-| Metric | Desktop | Mobile |
-| - | :-: | :-: |
-| Traffic share | ~35-40% | ~60-65% |
-| Average conversion rate | 3-4% | 1.5-2% |
-| Average order value | Higher | 10-25% lower |
-| Cart abandonment | ~65% | ~85% |
+| Metric                  | Desktop |    Mobile    |
+| ----------------------- | :-----: | :----------: |
+| Traffic share           | ~35-40% |   ~60-65%    |
+| Average conversion rate |  3-4%   |    1.5-2%    |
+| Average order value     | Higher  | 10-25% lower |
+| Cart abandonment        |  ~65%   |     ~85%     |
 
 The gap is real, but it's not inevitable. Stores that prioritize mobile-first design routinely achieve mobile conversion rates within 80-90% of their desktop rates.
 
@@ -49,11 +49,13 @@ Understanding these behaviors is the foundation for everything that follows.
 On mobile, most interactions happen with the thumb. Design around it.
 
 **Optimal placement:**
+
 - Primary CTAs in the easy-reach zone (bottom third of screen)
 - Navigation accessible without stretching
 - Important actions not buried in corners
 
 **Common mistakes:**
+
 - Tiny tap targets (buttons under 44px)
 - Actions placed in hard-to-reach areas
 - Hamburger menus hiding critical navigation
@@ -137,6 +139,7 @@ Images drive confidence. On mobile, they need to work harder.
 On desktop, you can show everything. On mobile, prioritize.
 
 **Above the fold (first view):**
+
 - Product name
 - Price (and sale price if applicable)
 - Primary image
@@ -144,6 +147,7 @@ On desktop, you can show everything. On mobile, prioritize.
 - Add to cart button
 
 **Expandable sections:**
+
 - Full description
 - Specifications
 - Size guide
@@ -200,12 +204,12 @@ Mobile shoppers expect convenience. Offer payment methods that skip typing.
 
 **High-impact options:**
 
-| Payment Method | Why It Matters |
-| - | :- |
-| Apple Pay / Google Pay | One-tap checkout, massive friction reduction |
-| PayPal | Stored credentials, trusted on mobile |
-| Shop Pay (Shopify) | Remembers info across Shopify stores |
-| Buy Now Pay Later (Klarna, Affirm) | Increases AOV, especially for higher prices |
+| Payment Method                     | Why It Matters                               |
+| ---------------------------------- | :------------------------------------------- |
+| Apple Pay / Google Pay             | One-tap checkout, massive friction reduction |
+| PayPal                             | Stored credentials, trusted on mobile        |
+| Shop Pay (Shopify)                 | Remembers info across Shopify stores         |
+| Buy Now Pay Later (Klarna, Affirm) | Increases AOV, especially for higher prices  |
 
 Stores that add Apple Pay and Google Pay often see 15-30% checkout conversion lifts on mobile.
 
@@ -449,12 +453,12 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 
 **פער תנועה מול המרה:**
 
-| מדד | דסקטופ | מובייל |
-| - | :-: | :-: |
-| נתח תנועה | ~35-40% | ~60-65% |
-| שיעור המרה ממוצע | 3-4% | 1.5-2% |
-| ערך הזמנה ממוצע | גבוה יותר | נמוך ב-10-25% |
-| נטישת עגלה | ~65% | ~85% |
+| מדד              |  דסקטופ   |    מובייל     |
+| ---------------- | :-------: | :-----------: |
+| נתח תנועה        |  ~35-40%  |    ~60-65%    |
+| שיעור המרה ממוצע |   3-4%    |    1.5-2%     |
+| ערך הזמנה ממוצע  | גבוה יותר | נמוך ב-10-25% |
+| נטישת עגלה       |   ~65%    |     ~85%      |
 
 הפער אמיתי, אבל הוא לא גזירת גורל. חנויות שמתעדפות עיצוב mobile-first באופן קבוע משיגות שיעורי המרה במובייל בטווח 80-90% מהדסקטופ שלהן.
 
@@ -478,6 +482,7 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 במובייל, רוב האינטראקציות קורות עם האגודל. תעצבו סביב זה.
 
 **מיקום אופטימלי:**
+
 - CTAs ראשיים באזור הנגיש (שליש תחתון של המסך)
 - ניווט נגיש בלי מתיחה
 - פעולות חשובות לא קבורות בפינות
@@ -541,6 +546,7 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 ### ארכיטקטורת מידע מוצר
 
 **מעל הקיפול (תצוגה ראשונה):**
+
 - שם מוצר
 - מחיר
 - תמונה ראשית
@@ -548,6 +554,7 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 - כפתור הוספה לעגלה
 
 **סקשנים מתרחבים:**
+
 - תיאור מלא
 - מפרט
 - מדריך מידות
@@ -589,12 +596,12 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 
 קונים במובייל מצפים לנוחות.
 
-| שיטת תשלום | למה זה חשוב |
-| - | :- |
+| שיטת תשלום             | למה זה חשוב                             |
+| ---------------------- | :-------------------------------------- |
 | Apple Pay / Google Pay | צ׳קאאוט בלחיצה אחת, הפחתת חיכוך מאסיבית |
-| PayPal | פרטים שמורים, מהימן במובייל |
-| Shop Pay (Shopify) | זוכר מידע בין חנויות שופיפיי |
-| קנה עכשיו שלם אחר כך | מגדיל AOV, במיוחד למחירים גבוהים |
+| PayPal                 | פרטים שמורים, מהימן במובייל             |
+| Shop Pay (Shopify)     | זוכר מידע בין חנויות שופיפיי            |
+| קנה עכשיו שלם אחר כך   | מגדיל AOV, במיוחד למחירים גבוהים        |
 
 חנויות שמוסיפות Apple Pay ו-Google Pay לעתים קרובות רואות עליות של 15-30% בהמרת צ׳קאאוט במובייל.
 

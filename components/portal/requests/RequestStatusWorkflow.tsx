@@ -99,7 +99,12 @@ const WORKFLOW_STAGES: {
     icon: Check,
     color: 'text-emerald-600 dark:text-emerald-400',
     bgColor: 'bg-emerald-100 dark:bg-emerald-900/30',
-    allowedFrom: [REQUEST_STATUS.DELIVERED, REQUEST_STATUS.PAID, REQUEST_STATUS.IN_PROGRESS, REQUEST_STATUS.IN_REVIEW],
+    allowedFrom: [
+      REQUEST_STATUS.DELIVERED,
+      REQUEST_STATUS.PAID,
+      REQUEST_STATUS.IN_PROGRESS,
+      REQUEST_STATUS.IN_REVIEW,
+    ],
   },
   {
     status: REQUEST_STATUS.DECLINED,
@@ -119,9 +124,9 @@ const WORKFLOW_STAGES: {
 
 // Get available transitions from current status
 function getAvailableTransitions(currentStatus: RequestStatus): RequestStatus[] {
-  return WORKFLOW_STAGES
-    .filter(stage => stage.allowedFrom.includes(currentStatus))
-    .map(stage => stage.status);
+  return WORKFLOW_STAGES.filter(stage => stage.allowedFrom.includes(currentStatus)).map(
+    stage => stage.status
+  );
 }
 
 // Get stage info for a status
@@ -130,16 +135,21 @@ function getStageInfo(status: RequestStatus) {
 }
 
 // Determine if a status is "completed" relative to current
-function getStatusState(status: RequestStatus, currentStatus: RequestStatus): 'completed' | 'current' | 'upcoming' {
+function getStatusState(
+  status: RequestStatus,
+  currentStatus: RequestStatus
+): 'completed' | 'current' | 'upcoming' {
   const statusOrder = WORKFLOW_STAGES.map(s => s.status);
   const currentIndex = statusOrder.indexOf(currentStatus);
   const statusIndex = statusOrder.indexOf(status);
 
   // Special cases for terminal states
-  if (currentStatus === REQUEST_STATUS.CLOSED ||
-      currentStatus === REQUEST_STATUS.CANCELED ||
-      currentStatus === REQUEST_STATUS.DECLINED ||
-      currentStatus === REQUEST_STATUS.PAID) {
+  if (
+    currentStatus === REQUEST_STATUS.CLOSED ||
+    currentStatus === REQUEST_STATUS.CANCELED ||
+    currentStatus === REQUEST_STATUS.DECLINED ||
+    currentStatus === REQUEST_STATUS.PAID
+  ) {
     if (status === currentStatus) return 'current';
     return 'completed';
   }
@@ -189,7 +199,11 @@ export function RequestStatusWorkflow({
   // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isDropdownOpen && buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
+      if (
+        isDropdownOpen &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
         const dropdown = document.getElementById('status-workflow-dropdown');
         if (dropdown && dropdown.contains(event.target as Node)) {
           return;
@@ -274,10 +288,10 @@ export function RequestStatusWorkflow({
           </div>
 
           <div className="flex flex-col items-start mr-1">
-             <span className="text-[10px] uppercase font-black text-surface-400 tracking-wider leading-none mb-0.5">
-               {t('requests.detail.currentStatus')}
-             </span>
-             <span className="text-sm font-bold text-surface-900 dark:text-white font-outfit leading-none">
+            <span className="text-[10px] uppercase font-black text-surface-400 tracking-wider leading-none mb-0.5">
+              {t('requests.detail.currentStatus')}
+            </span>
+            <span className="text-sm font-bold text-surface-900 dark:text-white font-outfit leading-none">
               {pendingStatus
                 ? t(`requests.status.${pendingStatus?.toLowerCase()}` as any)
                 : t(`requests.status.${currentStatus.toLowerCase()}` as any)}
@@ -359,13 +373,16 @@ export function RequestStatusWorkflow({
               <div key={stage.status} className="flex flex-col items-center relative group flex-1">
                 {/* Connector Line (Left side - except first) */}
                 {index > 0 && (
-                   <div className={cn(
-                     "absolute top-4 w-full h-0.5 -z-10",
-                     "ltr:right-[50%] rtl:left-[50%]",
-                     getStatusState(stage.status, currentStatus) === 'completed' || getStatusState(stage.status, currentStatus) === 'current'
-                        ? "bg-emerald-500"
-                        : "bg-surface-200 dark:bg-surface-800"
-                   )} />
+                  <div
+                    className={cn(
+                      'absolute top-4 w-full h-0.5 -z-10',
+                      'ltr:right-[50%] rtl:left-[50%]',
+                      getStatusState(stage.status, currentStatus) === 'completed' ||
+                        getStatusState(stage.status, currentStatus) === 'current'
+                        ? 'bg-emerald-500'
+                        : 'bg-surface-200 dark:bg-surface-800'
+                    )}
+                  />
                 )}
 
                 {/* Connector Line (Right side - except last) - Not needed if we use left connector on next items?
@@ -379,8 +396,10 @@ export function RequestStatusWorkflow({
                   className={cn(
                     'w-8 h-8 rounded-full flex items-center justify-center transition-all border-2 bg-white dark:bg-surface-950 z-20',
                     state === 'completed' && 'bg-emerald-500 border-emerald-500',
-                    state === 'current' && cn(stage.bgColor, 'border-current', stage.color, 'scale-110 shadow-sm'),
-                    state === 'upcoming' && 'bg-surface-50 dark:bg-surface-900 border-surface-200 dark:border-surface-800 text-surface-300'
+                    state === 'current' &&
+                      cn(stage.bgColor, 'border-current', stage.color, 'scale-110 shadow-sm'),
+                    state === 'upcoming' &&
+                      'bg-surface-50 dark:bg-surface-900 border-surface-200 dark:border-surface-800 text-surface-300'
                   )}
                 >
                   {state === 'completed' ? (
@@ -388,9 +407,7 @@ export function RequestStatusWorkflow({
                   ) : (
                     <StageIcon
                       size={14}
-                      className={cn(
-                        state === 'current' ? stage.color : 'text-inherit'
-                      )}
+                      className={cn(state === 'current' ? stage.color : 'text-inherit')}
                     />
                   )}
                 </div>
@@ -416,10 +433,10 @@ export function RequestStatusWorkflow({
 
         {/* Progress Colored Line - width depends on current index */}
         <div
-            className="absolute top-4 ltr:left-0 rtl:right-0 h-0.5 bg-emerald-500 transition-all duration-500 ease-out z-0"
-            style={{
-                width: `${(mainWorkflowStages.findIndex(s => s.status === currentStatus) / (Math.min(mainWorkflowStages.length, 8) - 1)) * 100}%`
-            }}
+          className="absolute top-4 ltr:left-0 rtl:right-0 h-0.5 bg-emerald-500 transition-all duration-500 ease-out z-0"
+          style={{
+            width: `${(mainWorkflowStages.findIndex(s => s.status === currentStatus) / (Math.min(mainWorkflowStages.length, 8) - 1)) * 100}%`,
+          }}
         />
       </div>
     </div>

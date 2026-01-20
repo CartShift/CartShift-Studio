@@ -15,7 +15,10 @@ import { Notification } from '@/lib/types/portal';
 
 const NOTIFICATIONS_COLLECTION = 'portal_notifications';
 
-export async function getNotifications(userId: string, options?: { limit?: number }): Promise<Notification[]> {
+export async function getNotifications(
+  userId: string,
+  options?: { limit?: number }
+): Promise<Notification[]> {
   await waitForAuth();
   const db = getFirestoreDb();
   const q = query(
@@ -26,7 +29,7 @@ export async function getNotifications(userId: string, options?: { limit?: numbe
   );
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
+  return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
   })) as Notification[];
@@ -64,9 +67,7 @@ export async function markAllNotificationsAsRead(userId: string): Promise<void> 
   );
 
   const snapshot = await getDocs(q);
-  const updates = snapshot.docs.map((doc) =>
-    updateDoc(doc.ref, { read: true })
-  );
+  const updates = snapshot.docs.map(doc => updateDoc(doc.ref, { read: true }));
 
   await Promise.all(updates);
 }
@@ -90,23 +91,27 @@ export function subscribeToNotifications(
         ...(options?.limit ? [limit(options.limit)] : [])
       );
 
-      unsubscribe = onSnapshot(q, (snapshot) => {
-        const notifications = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Notification[];
-        callback(notifications);
-      }, (error) => {
-        // Suppress permission errors during logout
-        if (error.code === 'permission-denied') {
-          const auth = getFirebaseAuth();
-          if (isLoggingOut() || !auth.currentUser) {
-            return;
+      unsubscribe = onSnapshot(
+        q,
+        snapshot => {
+          const notifications = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          })) as Notification[];
+          callback(notifications);
+        },
+        error => {
+          // Suppress permission errors during logout
+          if (error.code === 'permission-denied') {
+            const auth = getFirebaseAuth();
+            if (isLoggingOut() || !auth.currentUser) {
+              return;
+            }
           }
+          console.error('Error in notifications snapshot:', error);
+          callback([]);
         }
-        console.error('Error in notifications snapshot:', error);
-        callback([]);
-      });
+      );
     })
     .catch(error => {
       console.error('Error waiting for auth in subscribeToNotifications:', error);
@@ -138,18 +143,22 @@ export function subscribeToUnreadCount(
         where('read', '==', false)
       );
 
-      unsubscribe = onSnapshot(q, (snapshot) => {
-        callback(snapshot.size);
-      }, (error) => {
-        if (error.code === 'permission-denied') {
-          const auth = getFirebaseAuth();
-          if (isLoggingOut() || !auth.currentUser) {
-            return;
+      unsubscribe = onSnapshot(
+        q,
+        snapshot => {
+          callback(snapshot.size);
+        },
+        error => {
+          if (error.code === 'permission-denied') {
+            const auth = getFirebaseAuth();
+            if (isLoggingOut() || !auth.currentUser) {
+              return;
+            }
           }
+          console.error('Error in unread count snapshot:', error);
+          callback(0);
         }
-        console.error('Error in unread count snapshot:', error);
-        callback(0);
-      });
+      );
     })
     .catch(error => {
       console.error('Error waiting for auth in subscribeToUnreadCount:', error);
@@ -163,4 +172,3 @@ export function subscribeToUnreadCount(
     }
   };
 }
-

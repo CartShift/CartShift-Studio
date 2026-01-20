@@ -283,3 +283,30 @@ export const CardFooter = ({
     </div>
   );
 };
+
+// Card Section Title - Portal-style uppercase section headers
+export const CardSectionTitle = ({
+  children,
+  icon: Icon,
+  iconClassName,
+  className,
+  as: Component = 'h3',
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement> & {
+  icon?: React.ComponentType<{ size?: number; className?: string }>;
+  iconClassName?: string;
+  as?: 'h3' | 'h4' | 'h5';
+}) => {
+  return (
+    <Component
+      className={cn(
+        'text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest flex items-center gap-2',
+        className
+      )}
+      {...props}
+    >
+      {Icon && <Icon size={14} className={iconClassName} />}
+      {children}
+    </Component>
+  );
+};

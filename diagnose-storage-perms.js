@@ -9,7 +9,8 @@
   try {
     // Get Firebase instances
     const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
-    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    const { getFirestore, doc, getDoc } =
+      await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
 
     const auth = getAuth();
     const db = getFirestore();
@@ -74,8 +75,10 @@
 
     // Summary for Storage Rules
     console.log('📋 STORAGE RULES EVALUATION SUMMARY');
-    console.log('=' .repeat(60));
-    console.log(`isAgencyUser(): ${userData.isAgency === true || userData.accountType === 'AGENCY' ? '✅ PASS' : '❌ FAIL'}`);
+    console.log('='.repeat(60));
+    console.log(
+      `isAgencyUser(): ${userData.isAgency === true || userData.accountType === 'AGENCY' ? '✅ PASS' : '❌ FAIL'}`
+    );
 
     for (const orgId of orgs) {
       const orgDoc = await getDoc(doc(db, 'portal_organizations', orgId));
@@ -91,9 +94,10 @@
       console.log(`  - isAgencyUser: ${isAgency ? '✅' : '❌'}`);
       console.log(`  - isOrgCreator: ${isCreator ? '✅' : '❌'}`);
       console.log(`  - hasMemberDoc: ${hasMembership ? '✅' : '❌'}`);
-      console.log(`  RESULT: ${isAgency || isCreator || hasMembership ? '✅ SHOULD ALLOW UPLOAD' : '❌ WILL DENY UPLOAD'}`);
+      console.log(
+        `  RESULT: ${isAgency || isCreator || hasMembership ? '✅ SHOULD ALLOW UPLOAD' : '❌ WILL DENY UPLOAD'}`
+      );
     }
-
   } catch (error) {
     console.error('❌ Diagnostic failed:', error);
   }

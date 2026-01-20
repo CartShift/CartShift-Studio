@@ -3,6 +3,7 @@
 ## Current Status ✅
 
 The team invitation functionality now includes:
+
 - ✅ Creates invite records in Firestore
 - ✅ Validates that the user isn't already a member
 - ✅ Prevents duplicate invites
@@ -21,6 +22,7 @@ The email system uses **Resend** for transactional emails. When an invite is cre
    - Create an API key in the dashboard
 
 2. **Add to Firebase Secrets:**
+
    ```bash
    firebase functions:secrets:set RESEND_API_KEY
    # Paste your API key when prompted
@@ -34,6 +36,7 @@ The email system uses **Resend** for transactional emails. When an invite is cre
 ### Email Templates
 
 Templates are located in `functions/emails/`:
+
 - `base.html` - Base layout wrapper
 - `team_invite.html` - Team invitation
 - `new_request.html` - New request notification
@@ -54,6 +57,7 @@ Templates are located in `functions/emails/`:
 ### Testing
 
 To test emails:
+
 1. Create an invite from the Team page
 2. Check Resend dashboard for delivery status
 3. Check `email_failures` collection for any errors
@@ -75,6 +79,7 @@ Email delivered to recipient
 ## Fallback: Manual Sharing
 
 If Resend is not configured, invites still work via manual link sharing:
+
 - Copy link button is always available
 - User can share via any channel (Slack, WhatsApp, etc.)
 - System logs `no_api_key` when email is skipped

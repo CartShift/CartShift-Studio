@@ -11,23 +11,54 @@ const srcDir = path.join(messagesDir, 'src');
 // Define which top-level keys go into which category
 const categories = {
   common: [
-    'nav', 'floatingActions', 'errorBoundary', 'breadcrumbs', 'toast',
-    'errorState', 'emptyState', 'common', 'navigation', 'faq', 'seo',
-    'notFound', 'stickyCta'
+    'nav',
+    'floatingActions',
+    'errorBoundary',
+    'breadcrumbs',
+    'toast',
+    'errorState',
+    'emptyState',
+    'common',
+    'navigation',
+    'faq',
+    'seo',
+    'notFound',
+    'stickyCta',
   ],
   website: [
-    'hero', 'heroForm', 'about', 'shopify', 'wordpress', 'blog', 'blogTeaser',
-    'blogPost', 'contact', 'pricing', 'maintenance', 'work', 'testimonials',
-    'whyChoose', 'servicesOverview', 'ctaBanner', 'footer', 'process', 'stats',
-    'industries', 'industriesContent'
+    'hero',
+    'heroForm',
+    'about',
+    'shopify',
+    'wordpress',
+    'blog',
+    'blogTeaser',
+    'blogPost',
+    'contact',
+    'pricing',
+    'maintenance',
+    'work',
+    'testimonials',
+    'whyChoose',
+    'servicesOverview',
+    'ctaBanner',
+    'footer',
+    'process',
+    'stats',
+    'industries',
+    'industriesContent',
   ],
   portal: [
-    'portal', 'agency', 'requests', 'team', 'consultations', 'dashboard',
-    'activity', 'onboarding'
+    'portal',
+    'agency',
+    'requests',
+    'team',
+    'consultations',
+    'dashboard',
+    'activity',
+    'onboarding',
   ],
-  legal: [
-    'privacy', 'terms'
-  ]
+  legal: ['privacy', 'terms'],
 };
 
 function splitTranslations(locale) {

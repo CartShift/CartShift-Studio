@@ -1,11 +1,11 @@
 ---
-title: "E-commerce Conversion Rate Optimization: 20 Proven Strategies That Work"
-date: "2024-12-20"
-excerpt: "Discover 20 proven strategies to increase your e-commerce conversion rate. Learn how to turn more visitors into customers and boost your revenue."
-category: "E-commerce Strategy"
-title_he: "אופטימיזציה לשיעור המרה באיקומרס: 20 אסטרטגיות שעובדות"
-excerpt_he: "גלו 20 אסטרטגיות מוכחות להגדלת שיעור ההמרה בחנות האיקומרס שלכם. למדו איך להפוך יותר מבקרים ללקוחות ולהגדיל את ההכנסות."
-category_he: "אסטרטגיית איקומרס"
+title: 'E-commerce Conversion Rate Optimization: 20 Proven Strategies That Work'
+date: '2024-12-20'
+excerpt: 'Discover 20 proven strategies to increase your e-commerce conversion rate. Learn how to turn more visitors into customers and boost your revenue.'
+category: 'E-commerce Strategy'
+title_he: 'אופטימיזציה לשיעור המרה באיקומרס: 20 אסטרטגיות שעובדות'
+excerpt_he: 'גלו 20 אסטרטגיות מוכחות להגדלת שיעור ההמרה בחנות האיקומרס שלכם. למדו איך להפוך יותר מבקרים ללקוחות ולהגדיל את ההכנסות.'
+category_he: 'אסטרטגיית איקומרס'
 ---
 
 Conversion rate optimization (CRO) is the process of improving your website to turn more visitors into customers. For e-commerce stores, even a small increase in conversion rate can have a massive impact on revenue.
@@ -20,13 +20,13 @@ This guide covers 20 proven strategies that successful e-commerce stores use to 
 
 **Industry Averages:**
 
-| Industry | Average Conversion Rate | Top Performers |
-| - | :-: | :-: |
-| Overall e-commerce | 2.5-3% | 4-5%+ |
-| Fashion | 1.5-2.5% | 3-4% |
-| Electronics | 1-2% | 2.5-3% |
-| Home & Garden | 2-3% | 3.5-4% |
-| Health & Beauty | 2.5-3.5% | 4-5% |
+| Industry           | Average Conversion Rate | Top Performers |
+| ------------------ | :---------------------: | :------------: |
+| Overall e-commerce |         2.5-3%          |     4-5%+      |
+| Fashion            |        1.5-2.5%         |      3-4%      |
+| Electronics        |          1-2%           |     2.5-3%     |
+| Home & Garden      |          2-3%           |     3.5-4%     |
+| Health & Beauty    |        2.5-3.5%         |      4-5%      |
 
 **Remember:** Your conversion rate depends on many factors:
 

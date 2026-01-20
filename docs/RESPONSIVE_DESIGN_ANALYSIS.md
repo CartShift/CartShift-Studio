@@ -306,15 +306,15 @@ html {
 
 ### UI Components
 
-| Component              | Mobile Optimized | Touch Friendly | Responsive Grid | Notes                   |
-| ---------------------- | ---------------- | -------------- | --------------- | ----------------------- |
-| Button                 | ✅               | ✅             | N/A             | Full-width option added |
-| Card                   | ✅               | ✅             | N/A             | Padding optimized       |
-| Section                | ✅               | N/A            | ✅              | Spacing improved        |
-| FAQ                    | ✅               | ✅             | N/A             | Touch targets increased |
-| Icon                   | ✅               | ✅             | N/A             | Already optimal         |
-| Logo                   | ✅               | N/A            | N/A             | Scales properly         |
-| FloatingActions        | ✅               | ✅             | N/A             | Replaced WhatsAppFloatingButton |
+| Component       | Mobile Optimized | Touch Friendly | Responsive Grid | Notes                           |
+| --------------- | ---------------- | -------------- | --------------- | ------------------------------- |
+| Button          | ✅               | ✅             | N/A             | Full-width option added         |
+| Card            | ✅               | ✅             | N/A             | Padding optimized               |
+| Section         | ✅               | N/A            | ✅              | Spacing improved                |
+| FAQ             | ✅               | ✅             | N/A             | Touch targets increased         |
+| Icon            | ✅               | ✅             | N/A             | Already optimal                 |
+| Logo            | ✅               | N/A            | N/A             | Scales properly                 |
+| FloatingActions | ✅               | ✅             | N/A             | Replaced WhatsAppFloatingButton |
 
 ### Layout Components
 

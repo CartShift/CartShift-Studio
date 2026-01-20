@@ -1,4 +1,4 @@
-import {routing} from './routing';
+import { routing } from './routing';
 import messages from '../messages/en.json';
 
 declare module 'next-intl' {
@@ -7,4 +7,3 @@ declare module 'next-intl' {
     Messages: typeof messages;
   }
 }
-

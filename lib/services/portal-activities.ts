@@ -48,7 +48,7 @@ export async function getRequestActivities(
   }
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
+  return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
   })) as ActivityLog[];
@@ -82,18 +82,21 @@ export async function getOrgActivities(
 
   try {
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as ActivityLog[];
   } catch (error: unknown) {
     const firestoreError = error as { code?: string; message?: string };
     if (firestoreError.code === 'permission-denied') {
-      console.error('[getOrgActivities] Permission denied. User may not be a member of the organization.', {
-        orgId,
-        userId: currentUser.uid,
-        error: firestoreError.message,
-      });
+      console.error(
+        '[getOrgActivities] Permission denied. User may not be a member of the organization.',
+        {
+          orgId,
+          userId: currentUser.uid,
+          error: firestoreError.message,
+        }
+      );
       throw new Error(
         `Permission denied accessing activities for organization ${orgId}. Please check your membership.`
       );
@@ -123,14 +126,14 @@ export function subscribeToOrgActivities(
 
       unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
-          const activities = snapshot.docs.map((doc) => ({
+        snapshot => {
+          const activities = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
           })) as ActivityLog[];
           callback(activities);
         },
-        (error) => {
+        error => {
           // Suppress permission errors during logout
           if (error.code === 'permission-denied') {
             const auth = getFirebaseAuth();
@@ -193,14 +196,14 @@ export function subscribeToRequestActivities(
 
       unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
-          const activities = snapshot.docs.map((doc) => ({
+        snapshot => {
+          const activities = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
           })) as ActivityLog[];
           callback(activities);
         },
-        (error) => {
+        error => {
           // Suppress permission errors during logout
           if (error.code === 'permission-denied') {
             const auth = getFirebaseAuth();

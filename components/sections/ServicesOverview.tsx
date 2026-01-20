@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Icon } from '@/components/ui/Icon';
@@ -103,4 +103,3 @@ export const ServicesOverview: React.FC = () => {
     </Section>
   );
 };
-

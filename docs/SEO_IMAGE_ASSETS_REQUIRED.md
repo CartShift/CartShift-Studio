@@ -20,6 +20,7 @@ Your CartShift Studio SEO implementation references several images that **DO NOT
 **Purpose:** Social media sharing, rich snippets, search previews
 
 #### Primary OG Image
+
 - **Filename:** `og-default.png`
 - **Dimensions:** 1200x630px (1.91:1 aspect ratio)
 - **Format:** PNG (or WebP for better compression)
@@ -27,6 +28,7 @@ Your CartShift Studio SEO implementation references several images that **DO NOT
 - **Usage:** `lib/seo.ts` line 4
 
 **Design Requirements:**
+
 ```
 Background: Dark (#0f172a) or gradient
 Logo: CartShift Studio logo (centered)
@@ -37,18 +39,21 @@ File size: < 300KB
 ```
 
 #### Homepage OG Image
+
 - **Filename:** `og-home.png`
 - **Dimensions:** 1200x630px
 - **Required for:** Homepage specific social sharing
 - **Design:** Hero section style with "Free Consultation" CTA
 
 #### Shopify Service OG Image
+
 - **Filename:** `og-shopify.png`
 - **Dimensions:** 1200x630px
 - **Required for:** Shopify services page
 - **Design:** Shopify branding with "Expert Shopify Development"
 
 #### WordPress Service OG Image
+
 - **Filename:** `og-wordpress.png`
 - **Dimensions:** 1200x630px
 - **Required for:** WordPress services page
@@ -61,6 +66,7 @@ File size: < 300KB
 **Purpose:** Browser tabs, bookmarks, PWA, mobile apps
 
 #### Favicon ICO
+
 - **Filename:** `favicon.ico`
 - **Dimensions:** 32x32px (embedded multiple sizes recommended: 16x16, 32x32, 48x48)
 - **Format:** ICO
@@ -68,18 +74,21 @@ File size: < 300KB
 - **Tool:** Use [Favicon.io](https://favicon.io/) or [RealFaviconGenerator](https://realfavicongenerator.net/)
 
 #### Favicon 16x16
+
 - **Filename:** `favicon-16x16.png`
 - **Dimensions:** 16x16px
 - **Format:** PNG
 - **Required for:** High DPI displays
 
 #### Favicon 32x32
+
 - **Filename:** `favicon-32x32.png`
 - **Dimensions:** 32x32px
 - **Format:** PNG
 - **Required for:** Standard display
 
 #### Apple Touch Icon
+
 - **Filename:** `apple-touch-icon.png`
 - **Dimensions:** 180x180px
 - **Format:** PNG
@@ -88,6 +97,7 @@ File size: < 300KB
 - **Note:** iOS automatically adds rounded corners and gloss
 
 #### PWA Icon 192x192
+
 - **Filename:** `icon-192.png`
 - **Dimensions:** 192x192px
 - **Format:** PNG
@@ -95,6 +105,7 @@ File size: < 300KB
 - **Design:** Simple, recognizable logo
 
 #### PWA Icon 512x512
+
 - **Filename:** `icon-512.png`
 - **Dimensions:** 512x512px
 - **Format:** PNG
@@ -108,6 +119,7 @@ File size: < 300KB
 **Purpose:** Twitter sharing, social media previews
 
 #### Large Card Image
+
 - **Filename:** `twitter-card.png`
 - **Dimensions:** 1200x600px (2:1 aspect ratio)
 - **Format:** PNG or WebP
@@ -121,6 +133,7 @@ File size: < 300KB
 **Purpose:** Brand consistency, structured data, trust signals
 
 #### Primary Logo
+
 - **Filename:** `logo.png` or `logo.svg`
 - **Dimensions:** 512x512px (square for structured data)
 - **Format:** SVG (preferred) or PNG
@@ -132,6 +145,7 @@ File size: < 300KB
 ## Current Image Inventory
 
 ### Existing Images ✅
+
 ```
 public/images/
 ├── CartShift-Logo-Full.svg (Logo - good)
@@ -141,6 +155,7 @@ public/images/
 ```
 
 ### Missing Images ❌
+
 ```
 public/images/
 ├── og-default.png ❌ CRITICAL
@@ -164,12 +179,14 @@ public/images/
 ### Option 1: Use Online Generators (Fastest)
 
 #### For Favicons & App Icons
+
 1. Visit [RealFaviconGenerator](https://realfavicongenerator.net/)
 2. Upload your logo (`CartShift-Logo-Full.svg`)
 3. Download all generated files
 4. Copy to `/public/images/` directory
 
 #### For OG Images
+
 1. Use [Canva](https://www.canva.com/) or [Figma](https://www.figma.com/)
 2. Create 1200x630px design
 3. Export as PNG with quality 80%
@@ -178,6 +195,7 @@ public/images/
 ### Option 2: Use AI Image Generators
 
 **Prompt for DALL-E / Midjourney:**
+
 ```
 Professional e-commerce development agency branding image, dark theme, modern tech company aesthetic, CartShift Studio logo, Shopify and WordPress icons, clean minimalist design, 1200x630px, high quality, web optimized
 ```
@@ -185,6 +203,7 @@ Professional e-commerce development agency branding image, dark theme, modern te
 ### Option 3: Hire Designer (Best Quality)
 
 **Requirements:**
+
 - Deliver all images in PNG format
 - SVG version of logo (if not available)
 - WebP versions for better compression
@@ -196,15 +215,17 @@ Professional e-commerce development agency branding image, dark theme, modern te
 ## Image Optimization Guidelines
 
 ### File Size Targets
-| Image Type | Max Size | Recommended Size |
-|------------|----------|------------------|
-| OG Images | 300KB | 100-200KB |
-| Twitter Cards | 200KB | 80-150KB |
-| Favicon | 50KB | 5-15KB |
-| App Icons | 100KB | 20-50KB |
-| Logos | 200KB | 50-100KB |
+
+| Image Type    | Max Size | Recommended Size |
+| ------------- | -------- | ---------------- |
+| OG Images     | 300KB    | 100-200KB        |
+| Twitter Cards | 200KB    | 80-150KB         |
+| Favicon       | 50KB     | 5-15KB           |
+| App Icons     | 100KB    | 20-50KB          |
+| Logos         | 200KB    | 50-100KB         |
 
 ### Optimization Tools
+
 1. **Compression:**
    - [TinyPNG](https://tinypng.com/)
    - [Squoosh](https://squoosh.app/)
@@ -225,22 +246,26 @@ Professional e-commerce development agency branding image, dark theme, modern te
 Once images are created, verify:
 
 ### Social Media Previews
+
 - [ ] Test with [Twitter Card Validator](https://cards-dev.twitter.com/validator)
 - [ ] Test with [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
 - [ ] Test with [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/)
 
 ### Structured Data
+
 - [ ] Validate with [Google Rich Results Test](https://search.google.com/test/rich-results)
 - [ ] Test organization schema image
 - [ ] Test article schema images (blog posts)
 
 ### PWA Installation
+
 - [ ] Install app on Chrome
 - [ ] Verify icon appears correctly
 - [ ] Test splash screen on mobile
 - [ ] Verify home screen icon on iOS
 
 ### Favicon Display
+
 - [ ] Check browser tab in Chrome
 - [ ] Check browser tab in Safari
 - [ ] Check browser tab in Firefox
@@ -252,18 +277,21 @@ Once images are created, verify:
 ## Priority Implementation Order
 
 ### Week 1 - Critical (Do First)
+
 1. `og-default.png` - Blocking all social previews
 2. `favicon.ico` - Critical for browser tabs
 3. `apple-touch-icon.png` - iOS PWA support
 4. `icon-192.png` & `icon-512.png` - Android PWA support
 
 ### Week 2 - High Priority
+
 5. `og-home.png` - Homepage social sharing
 6. `og-shopify.png` - Shopify service page
 7. `og-wordpress.png` - WordPress service page
 8. `favicon-16x16.png` & `favicon-32x32.png` - High DPI displays
 
 ### Week 3 - Medium Priority
+
 9. `twitter-card.png` - Twitter optimization
 10. `logo.png` - Organization schema consistency
 11. Additional service OG images as needed
@@ -293,17 +321,20 @@ npm run dev
 ## Resources
 
 ### Design Inspiration
+
 - [Dribbble - Brand Identity](https://dribbble.com/search/brand-identity)
 - [Behance - Tech Companies](https://www.behance.net/search/projects?search=tech%20company)
 - [Brand Guidelines Examples](https://www.brand guideline examples.com/)
 
 ### Tools
+
 - [Canva - Free Design Tool](https://www.canva.com/)
 - [Figma - Professional Design](https://www.figma.com/)
 - [Photopea - Free Photoshop Alternative](https://www.photopea.com/)
 - [Remove.bg - Background Removal](https://www.remove.bg/)
 
 ### Testing
+
 - [Social Share Preview](https://www.socialsharepreview.com/)
 - [Meta Tags Preview](https://metatags.io/)
 - [Open Graph Preview](https://www.opengraph.xyz/)

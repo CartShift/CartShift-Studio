@@ -24,9 +24,7 @@ export default async function PortalLayout({
       <GoogleAnalytics />
       <AnalyticsProvider enableScrollTracking={false}>
         <PortalProviders>
-          <SubdomainHandler>
-            {children}
-          </SubdomainHandler>
+          <SubdomainHandler>{children}</SubdomainHandler>
         </PortalProviders>
       </AnalyticsProvider>
     </>

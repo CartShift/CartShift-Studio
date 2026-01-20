@@ -76,7 +76,8 @@
         "scheduled_consultation": "Consultation scheduled",
         "completed_consultation": "Consultation completed",
         "canceled_consultation": "Consultation canceled",
-        "marked_no_show": "Marked as no-show"
+        "marked_no_show": "Marked as no-show",
+        "status_changed": "Request status updated"
       },
       "filters": {
         "all": "All Activity",

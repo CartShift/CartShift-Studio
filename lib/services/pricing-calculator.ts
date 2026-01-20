@@ -17,8 +17,8 @@ import {
 // Approximate exchange rates (ILS base)
 const EXCHANGE_RATES: Record<Currency, number> = {
   ILS: 1,
-  USD: 0.27,  // 1 ILS ≈ $0.27
-  EUR: 0.25,  // 1 ILS ≈ €0.25
+  USD: 0.27, // 1 ILS ≈ $0.27
+  EUR: 0.25, // 1 ILS ≈ €0.25
 };
 
 /**
@@ -250,11 +250,7 @@ export function formatCalculatorPrice(amountInCents: number, currency: Currency)
 /**
  * Format price range for display
  */
-export function formatPriceRange(
-  minCents: number,
-  maxCents: number,
-  currency: Currency
-): string {
+export function formatPriceRange(minCents: number, maxCents: number, currency: Currency): string {
   const config = CURRENCY_CONFIG[currency];
   const minAmount = minCents / 100;
   const maxAmount = maxCents / 100;
@@ -285,7 +281,7 @@ export function generateLineItemDescription(
   locale: string = 'en'
 ): string {
   const typeLabels: Record<RequestType, { en: string; he: string }> = {
-    feature: { en: 'New Feature Development', he: 'פיתוח פיצ\'ר חדש' },
+    feature: { en: 'New Feature Development', he: "פיתוח פיצ'ר חדש" },
     bug: { en: 'Bug Fix', he: 'תיקון באג' },
     optimization: { en: 'Performance Optimization', he: 'אופטימיזציה' },
     content: { en: 'Content Update', he: 'עדכון תוכן' },
@@ -301,8 +297,11 @@ export function generateLineItemDescription(
   };
 
   const isHebrew = locale === 'he';
-  const typeLabel = typeLabels[requestType]?.[isHebrew ? 'he' : 'en'] ?? typeLabels.other[isHebrew ? 'he' : 'en'];
-  const effortLabel = effortLabels[effortLevel]?.[isHebrew ? 'he' : 'en'] ?? effortLabels.medium[isHebrew ? 'he' : 'en'];
+  const typeLabel =
+    typeLabels[requestType]?.[isHebrew ? 'he' : 'en'] ?? typeLabels.other[isHebrew ? 'he' : 'en'];
+  const effortLabel =
+    effortLabels[effortLevel]?.[isHebrew ? 'he' : 'en'] ??
+    effortLabels.medium[isHebrew ? 'he' : 'en'];
 
   return isHebrew ? `${typeLabel} - ${effortLabel}` : `${effortLabel} ${typeLabel}`;
 }

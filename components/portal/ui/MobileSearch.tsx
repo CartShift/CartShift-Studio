@@ -10,6 +10,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { isRTLLocale } from '@/lib/locale-config';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { CardSectionTitle } from '@/components/ui/Card';
 
 const mobileSearchItemVariants = cva(
   'w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-start group',
@@ -214,9 +215,9 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                   <>
                     {/* Quick Links */}
                     <div className="p-4 border-b border-surface-100 dark:border-surface-800">
-                      <h3 className="text-[10px] font-black uppercase tracking-widest text-surface-400 mb-3">
+                      <CardSectionTitle className="mb-3">
                         Quick Links
-                      </h3>
+                      </CardSectionTitle>
                       <div className="space-y-1">
                         {quickLinks.map(link => (
                           <button
@@ -240,10 +241,9 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                     {recentSearches.length > 0 && (
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-[10px] font-black uppercase tracking-widest text-surface-400 flex items-center gap-2">
-                            <Clock size={12} />
+                          <CardSectionTitle icon={Clock}>
                             Recent
-                          </h3>
+                          </CardSectionTitle>
                           <button
                             onClick={clearSearches}
                             className="flex items-center gap-1 text-[9px] font-medium text-surface-400 hover:text-rose-500 transition-colors"
@@ -257,7 +257,10 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                           {recentSearches.map((search, idx) => (
                             <div
                               key={idx}
-                              className={cn(mobileSearchItemVariants({ variant: 'default' }), 'group pr-2')}
+                              className={cn(
+                                mobileSearchItemVariants({ variant: 'default' }),
+                                'group pr-2'
+                              )}
                             >
                               <button
                                 onClick={() => handleSearch(search)}
@@ -268,7 +271,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                                 </span>
                               </button>
                               <button
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   removeFromHistory(search);
                                 }}

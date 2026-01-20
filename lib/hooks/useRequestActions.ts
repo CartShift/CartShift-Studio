@@ -182,12 +182,7 @@ export function useRequestActions({
 
     setIsMarkingFree(true);
     try {
-      await markRequestAsFree(
-        requestId!,
-        orgId!,
-        userData!.id,
-        userData!.name || userData!.email
-      );
+      await markRequestAsFree(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
       toast.success(t('markedAsFree'), t('markedAsFreeDesc'));
       return true;
     } catch (err) {
@@ -204,12 +199,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     setIsAccepting(true);
-      try {
-        await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-        toast.success(t('quoteAccepted'), t('quoteAcceptedDesc'));
-      } catch (err) {
-        console.error('Error accepting quote:', err);
-        toast.error(t('quoteAcceptFailed'), t('quoteAcceptFailedDesc'));
+    try {
+      await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+      toast.success(t('quoteAccepted'), t('quoteAcceptedDesc'));
+    } catch (err) {
+      console.error('Error accepting quote:', err);
+      toast.error(t('quoteAcceptFailed'), t('quoteAcceptFailedDesc'));
     } finally {
       setIsAccepting(false);
     }
@@ -220,12 +215,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     setIsDeclining(true);
-      try {
-        await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-        toast.info(t('quoteDeclined'), t('quoteDeclinedDesc'));
-      } catch (err) {
-        console.error('Error declining quote:', err);
-        toast.error(t('quoteDeclineFailed'), t('quoteDeclineFailedDesc'));
+    try {
+      await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+      toast.info(t('quoteDeclined'), t('quoteDeclinedDesc'));
+    } catch (err) {
+      console.error('Error declining quote:', err);
+      toast.error(t('quoteDeclineFailed'), t('quoteDeclineFailedDesc'));
     } finally {
       setIsDeclining(false);
     }
@@ -236,12 +231,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     setIsWork(true);
-      try {
-        await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-        toast.success(t('workStarted'), t('workStartedDesc'));
-      } catch (err) {
-        console.error('Error starting work:', err);
-        toast.error(t('workStartFailed'), t('workStartFailedDesc'));
+    try {
+      await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+      toast.success(t('workStarted'), t('workStartedDesc'));
+    } catch (err) {
+      console.error('Error starting work:', err);
+      toast.error(t('workStartFailed'), t('workStartFailedDesc'));
     } finally {
       setIsWork(false);
     }
@@ -284,7 +279,10 @@ export function useRequestActions({
           specialistId,
           specialistName
         );
-        toast.success(t('specialistAssigned'), t('specialistAssignedDesc', { name: specialistName }));
+        toast.success(
+          t('specialistAssigned'),
+          t('specialistAssignedDesc', { name: specialistName })
+        );
       } catch (err) {
         console.error('Error assigning specialist:', err);
         toast.error(t('specialistAssignFailed'), t('specialistAssignFailedDesc'));
@@ -370,7 +368,10 @@ export function useRequestActions({
           action: 'STATUS_CHANGED',
           details: { status: newStatus },
         });
-        toast.success(t('statusUpdated'), t('statusUpdatedDesc', { status: newStatus.toLowerCase() }));
+        toast.success(
+          t('statusUpdated'),
+          t('statusUpdatedDesc', { status: newStatus.toLowerCase() })
+        );
       } catch (error) {
         console.error('Error updating status:', error);
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));

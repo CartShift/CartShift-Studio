@@ -60,19 +60,17 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
     >
       {/* Impact Badge */}
       <div className="flex items-center justify-between mb-3">
-        <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${config.badgeColor}`}>
+        <span
+          className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${config.badgeColor}`}
+        >
           <Icon className="w-3 h-3" />
           {config.label}
         </span>
-        <span className="text-xs text-surface-500 dark:text-surface-400">
-          {sectionName}
-        </span>
+        <span className="text-xs text-surface-500 dark:text-surface-400">{sectionName}</span>
       </div>
 
       {/* Title */}
-      <h4 className="font-semibold text-surface-900 dark:text-white mb-3 leading-snug">
-        {title}
-      </h4>
+      <h4 className="font-semibold text-surface-900 dark:text-white mb-3 leading-snug">{title}</h4>
 
       {/* CTA Link */}
       <Link

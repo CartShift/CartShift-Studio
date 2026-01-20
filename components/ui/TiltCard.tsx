@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useRef, useState, useEffect } from "react";
-import { motion } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import React, { useRef, useState, useEffect } from 'react';
+import { motion } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 
 interface TiltCardProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ interface TiltCardProps {
 
 export const TiltCard: React.FC<TiltCardProps> = ({
   children,
-  className = "",
+  className = '',
   tiltStrength = 10,
   glare = true,
 }) => {
@@ -48,7 +48,7 @@ export const TiltCard: React.FC<TiltCardProps> = ({
   return (
     <motion.div
       ref={ref}
-      className={cn("relative", className)}
+      className={cn('relative', className)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ perspective: isTouchDevice ? undefined : 1000 }}
@@ -58,8 +58,8 @@ export const TiltCard: React.FC<TiltCardProps> = ({
           rotateX: tilt.rotateX,
           rotateY: tilt.rotateY,
         }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        style={{ transformStyle: isTouchDevice ? undefined : "preserve-3d" }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        style={{ transformStyle: isTouchDevice ? undefined : 'preserve-3d' }}
         className="relative"
       >
         {children}
@@ -67,7 +67,7 @@ export const TiltCard: React.FC<TiltCardProps> = ({
         {glare && !isTouchDevice && (
           <motion.div
             className="absolute inset-0 pointer-events-none rounded-inherit overflow-hidden"
-            style={{ borderRadius: "inherit" }}
+            style={{ borderRadius: 'inherit' }}
             animate={{
               background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
             }}
@@ -77,4 +77,3 @@ export const TiltCard: React.FC<TiltCardProps> = ({
     </motion.div>
   );
 };
-

@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import {
-  getInvite,
-  acceptInvite,
-  cancelInvite
-} from '@/lib/services/portal-organizations';
+import { getInvite, acceptInvite, cancelInvite } from '@/lib/services/portal-organizations';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

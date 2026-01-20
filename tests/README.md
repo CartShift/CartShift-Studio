@@ -36,11 +36,13 @@ pnpm test:ui
 ## Test Coverage
 
 ### Authentication
+
 - Login form validation
 - Error handling
 - Redirect logic
 
 ### Portal Root
+
 - Loading states
 - Authentication redirects
 - Agency user routing
@@ -48,22 +50,26 @@ pnpm test:ui
 - Onboarding flow
 
 ### Dashboard
+
 - Loading states
 - Access control
 - Data subscription
 - Error handling
 
 ### Settings
+
 - Organization settings
 - User profile
 - Notification preferences
 
 ### Requests
+
 - Request list rendering
 - Filtering and search
 - Access control
 
 ### Portal Shell
+
 - Navigation rendering
 - Authentication checks
 - Authorization logic
@@ -71,6 +77,7 @@ pnpm test:ui
 ## Mocking
 
 The test suite uses comprehensive mocks for:
+
 - Firebase Auth
 - Firestore
 - Next.js navigation

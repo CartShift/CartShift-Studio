@@ -36,7 +36,6 @@ try {
 
   console.log('\n⚠️  Note: For production, add the above to firestore.indexes.json');
   console.log('and run: firebase deploy --only firestore:indexes\n');
-
 } catch (error) {
   console.error('❌ Error deploying indexes:', error);
   process.exit(1);

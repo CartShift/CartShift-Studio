@@ -23,10 +23,10 @@ export default function IntegrationCard({
   return (
     <div
       className={cn(
-        "relative p-6 rounded-2xl border-2 transition-all",
+        'relative p-6 rounded-2xl border-2 transition-all',
         comingSoon
-          ? "bg-surface-50/50 dark:bg-surface-900/30 border-surface-100 dark:border-surface-800/50 opacity-60"
-          : "bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800"
+          ? 'bg-surface-50/50 dark:bg-surface-900/30 border-surface-100 dark:border-surface-800/50 opacity-60'
+          : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800'
       )}
     >
       {comingSoon && (
@@ -38,7 +38,7 @@ export default function IntegrationCard({
       <div className="flex items-start gap-4 mb-4">
         <div
           className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center shadow-md bg-gradient-to-br",
+            'w-12 h-12 rounded-xl flex items-center justify-center shadow-md bg-gradient-to-br',
             iconGradient
           )}
         >
@@ -48,9 +48,7 @@ export default function IntegrationCard({
           <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
             {title}
           </h3>
-          <p className="text-sm text-surface-500 dark:text-surface-400">
-            {description}
-          </p>
+          <p className="text-sm text-surface-500 dark:text-surface-400">{description}</p>
         </div>
       </div>
 

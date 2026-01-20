@@ -1,13 +1,14 @@
 import { setRequestLocale } from 'next-intl/server';
-import { generateMetadata as genMeta, generateBreadcrumbSchema } from "@/lib/seo";
-import Script from "next/script";
-import type { Metadata } from "next";
-import TermsContent from "./TermsContent";
+import { generateMetadata as genMeta, generateBreadcrumbSchema } from '@/lib/seo';
+import Script from 'next/script';
+import type { Metadata } from 'next';
+import TermsContent from './TermsContent';
 
 export const metadata: Metadata = genMeta({
-  title: "Terms of Service",
-  description: "CartShift Studio terms of service. Read our terms and conditions for using our website and services.",
-  url: "/terms",
+  title: 'Terms of Service',
+  description:
+    'CartShift Studio terms of service. Read our terms and conditions for using our website and services.',
+  url: '/terms',
   keywords: ['terms of service', 'terms and conditions', 'legal', 'user agreement'],
 });
 
@@ -15,8 +16,8 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: "Home", url: "/" },
-    { name: "Terms of Service", url: "/terms" }
+    { name: 'Home', url: '/' },
+    { name: 'Terms of Service', url: '/terms' },
   ]);
 
   return (

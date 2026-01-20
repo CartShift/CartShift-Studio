@@ -58,7 +58,7 @@ export function usePortalNotifications({
 
     const unsubscribeNotifications = subscribeToNotifications(
       userId,
-      (data) => {
+      data => {
         if (internalMounted) {
           setNotifications(data);
         }
@@ -66,7 +66,7 @@ export function usePortalNotifications({
       { limit }
     );
 
-    const unsubscribeUnreadCount = subscribeToUnreadCount(userId, (count) => {
+    const unsubscribeUnreadCount = subscribeToUnreadCount(userId, count => {
       if (internalMounted) {
         setUnreadCount(count);
       }

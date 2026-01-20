@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from "@/lib/motion";
+import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { Icon } from '@/components/ui/Icon';
 
@@ -51,10 +51,7 @@ export const Process: React.FC = () => {
         <div className="absolute top-1/2 start-1/2 rtl:translate-x-1/2 ltr:-translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary-500/5 to-transparent rounded-full"></div>
       </div>
 
-      <SectionHeader
-        title={t('process.title')}
-        subtitle={t('process.subtitle')}
-      />
+      <SectionHeader title={t('process.title')} subtitle={t('process.subtitle')} />
 
       {/* Process Timeline */}
       <div className="relative">
@@ -139,4 +136,3 @@ export const Process: React.FC = () => {
     </Section>
   );
 };
-

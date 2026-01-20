@@ -29,12 +29,12 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
 
       unsubscribe = onAuthStateChanged(
         auth,
-        (currentUser) => {
+        currentUser => {
           if (!isMountedRef.current) return;
           setUser(currentUser);
           set(false);
         },
-        (err) => {
+        err => {
           if (!isMountedRef.current) return;
           console.error('[useFirebaseAuth] Auth state error:', err);
           setError(err);

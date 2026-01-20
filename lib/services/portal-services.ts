@@ -16,7 +16,9 @@ import { isLoggingOut } from '@/lib/services/auth';
 
 const SERVICES_COLLECTION = 'portal_services';
 
-export async function createService(data: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+export async function createService(
+  data: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> {
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = await addDoc(collection(db, SERVICES_COLLECTION), {
@@ -27,7 +29,10 @@ export async function createService(data: Omit<Service, 'id' | 'createdAt' | 'up
   return docRef.id;
 }
 
-export async function updateService(id: string, data: Partial<Omit<Service, 'id' | 'createdAt' | 'updatedAt'>>): Promise<void> {
+export async function updateService(
+  id: string,
+  data: Partial<Omit<Service, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<void> {
   await waitForAuth();
   const db = getFirestoreDb();
   const serviceRef = doc(db, SERVICES_COLLECTION, id);
@@ -61,21 +66,18 @@ export function subscribeToServices(callback: (services: Service[]) => void): ()
     .then(() => {
       if (isUnsubscribed) return;
       const db = getFirestoreDb();
-      const q = query(
-        collection(db, SERVICES_COLLECTION),
-        orderBy('name', 'asc')
-      );
+      const q = query(collection(db, SERVICES_COLLECTION), orderBy('name', 'asc'));
 
       unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
+        snapshot => {
           const services = snapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
           })) as Service[];
           callback(services);
         },
-        (error) => {
+        error => {
           const firestoreError = error as { code?: string; message?: string };
 
           if (firestoreError.code === 'permission-denied') {

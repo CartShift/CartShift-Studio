@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -946,10 +946,10 @@ export default function sClient() {
               </Card>
 
               <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-                <h4 className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-6 px-1">
+                <CardSectionTitle as="h4" className="mb-6">
                   {t('portal.settings.security.session.title')}
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-1">
+                </CardSectionTitle>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-2.5">
                       {t('portal.settings.security.session.email')}

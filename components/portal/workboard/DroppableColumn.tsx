@@ -7,35 +7,32 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { PlusCircle, MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const columnIndicatorVariants = cva(
-  "w-2 h-2 rounded-full",
-  {
-    variants: {
-      color: {
-        slate: "bg-surface-500",
-        blue: "bg-blue-500",
-        amber: "bg-amber-500",
-        emerald: "bg-emerald-500",
-      }
+const columnIndicatorVariants = cva('w-2 h-2 rounded-full', {
+  variants: {
+    color: {
+      slate: 'bg-surface-500',
+      blue: 'bg-blue-500',
+      amber: 'bg-amber-500',
+      emerald: 'bg-emerald-500',
     },
-    defaultVariants: {
-      color: "slate",
-    }
-  }
-);
+  },
+  defaultVariants: {
+    color: 'slate',
+  },
+});
 
 const droppableAreaVariants = cva(
-  "space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto portal-scrollbar min-h-[200px] rounded-2xl p-2 transition-colors duration-200",
+  'space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto portal-scrollbar min-h-[200px] rounded-2xl p-2 transition-colors duration-200',
   {
     variants: {
       isOver: {
-        true: "bg-blue-50/50 dark:bg-blue-500/5 ring-2 ring-blue-500/30 ring-inset",
-        false: "",
-      }
+        true: 'bg-blue-50/50 dark:bg-blue-500/5 ring-2 ring-blue-500/30 ring-inset',
+        false: '',
+      },
     },
     defaultVariants: {
       isOver: false,
-    }
+    },
   }
 );
 
@@ -91,10 +88,7 @@ export function DroppableColumn({
 
       {/* Droppable Area */}
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
-        <div
-          ref={setNodeRef}
-          className={cn(droppableAreaVariants({ isOver }))}
-        >
+        <div ref={setNodeRef} className={cn(droppableAreaVariants({ isOver }))}>
           {itemCount === 0 ? (
             <div className="py-12 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl flex flex-col items-center justify-center text-center opacity-50">
               <PlusCircle size={24} className="mb-2 text-surface-400" />

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { AnimatePresence, motion } from "@/lib/motion";
+import { AnimatePresence, motion } from '@/lib/motion';
 
 export const OfflineIndicator = () => {
   const [isOffline, setIsOffline] = useState(false);

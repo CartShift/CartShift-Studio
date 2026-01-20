@@ -72,7 +72,7 @@ export function usePortalAuthState({
   // Calculate Display User Data for Impersonation
   const displayUserData = useMemo(() => {
     if (isImpersonating && impersonatedAccountId && userData) {
-      const org = fullOrganizations.find((o) => o.id === impersonatedAccountId);
+      const org = fullOrganizations.find(o => o.id === impersonatedAccountId);
       if (org) {
         return {
           ...userData,

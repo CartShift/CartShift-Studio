@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { useRouter } from '@/i18n/navigation';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
@@ -313,9 +313,9 @@ export default function RequestDetailClient() {
       {/* Agency Status Workflow - Full Width */}
       {showAgencyActions && (
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950 p-6">
-          <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-4 uppercase tracking-widest">
+          <CardSectionTitle as="h4" className="mb-4">
             {t('requests.detail.workflowActions')}
-          </h4>
+          </CardSectionTitle>
           <RequestStatusWorkflow
             currentStatus={request.status}
             onStatusChange={handleStatusChange}
@@ -375,9 +375,9 @@ export default function RequestDetailClient() {
             <div className="space-y-6 animate-in slide-in-from-start-4 duration-500">
               {/* Details Card */}
               <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-                <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-4">
+                <CardSectionTitle className="mb-4">
                   {t('requests.detail.details')}
-                </h3>
+                </CardSectionTitle>
                 <div className="text-surface-600 dark:text-surface-300 leading-relaxed whitespace-pre-wrap font-medium">
                   {request.description}
                 </div>
@@ -439,17 +439,12 @@ export default function RequestDetailClient() {
               isSubmitting={isSubmittingComment}
             />
           ) : (
-            <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
-              <h3 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest flex items-center gap-2 px-1">
-                <Clock size={14} className="text-blue-500" /> {t('requests.detail.historyTitle')}
-              </h3>
-              <Card
-                noPadding
-                className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950"
-              >
-                <ActivityTimeline activities={activities} orgId={orgId as string} />
-              </Card>
-            </div>
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950 animate-in slide-in-from-bottom-4 duration-500">
+              <CardSectionTitle icon={Clock} iconClassName="text-blue-500" className="mb-4">
+                {t('requests.detail.historyTitle')}
+              </CardSectionTitle>
+              <ActivityTimeline activities={activities} orgId={orgId as string} />
+            </Card>
           )}
         </div>
 
@@ -458,10 +453,14 @@ export default function RequestDetailClient() {
           {/* Agency Add Pricing Section - For NEW requests without pricing */}
           {showAgencyActions && request.status === 'NEW' && !request.isBillable && (
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-              <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest flex items-center gap-2">
-                <DollarSign size={14} className="text-green-500" />
+              <CardSectionTitle
+                as="h4"
+                icon={DollarSign}
+                iconClassName="text-green-500"
+                className="mb-6"
+              >
                 {t('requests.detail.addPricing')}
-              </h4>
+              </CardSectionTitle>
 
               {!showPricingForm ? (
                 <div className="space-y-3">
@@ -569,11 +568,13 @@ export default function RequestDetailClient() {
                             </button>
                           )}
                         </div>
-                        {item.quantity > 0 && item.unitPrice >= 0 && item.unitPrice !== undefined && (
-                          <div className="text-end text-xs font-bold text-surface-500">
-                            = {formatCurrency(item.unitPrice * item.quantity, pricingCurrency)}
-                          </div>
-                        )}
+                        {item.quantity > 0 &&
+                          item.unitPrice >= 0 &&
+                          item.unitPrice !== undefined && (
+                            <div className="text-end text-xs font-bold text-surface-500">
+                              = {formatCurrency(item.unitPrice * item.quantity, pricingCurrency)}
+                            </div>
+                          )}
                       </div>
                     ))}
                   </div>
@@ -626,10 +627,14 @@ export default function RequestDetailClient() {
           {/* Pricing Section - Show if request has pricing or is free */}
           {(request.isBillable || request.isFree) && (
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-              <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest flex items-center gap-2">
-                <DollarSign size={14} className="text-green-500" />
+              <CardSectionTitle
+                as="h4"
+                icon={DollarSign}
+                iconClassName="text-green-500"
+                className="mb-6"
+              >
                 {t('requests.detail.pricingTitle')}
-              </h4>
+              </CardSectionTitle>
 
               {request.isFree ? (
                 <div className="p-4 bg-violet-50/50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800/30 rounded-2xl">
@@ -664,7 +669,10 @@ export default function RequestDetailClient() {
                       </div>
                       <div className="text-end ms-4">
                         <p className="font-bold text-surface-900 dark:text-white text-sm">
-                          {formatCurrency(item.unitPrice * item.quantity, request.currency || 'USD')}
+                          {formatCurrency(
+                            item.unitPrice * item.quantity,
+                            request.currency || 'USD'
+                          )}
                         </p>
                         <p className="text-xs text-surface-500 dark:text-surface-400">
                           {item.quantity} ×{' '}
@@ -775,9 +783,9 @@ export default function RequestDetailClient() {
 
           {/* Quick Actions Card - File upload, delete, etc. */}
           <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-            <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest">
+            <CardSectionTitle as="h4" className="mb-6">
               {t('common.actions')}
-            </h4>
+            </CardSectionTitle>
             <div className="space-y-2">
               {showAgencyActions &&
                 request.status !== 'CLOSED' &&
@@ -857,13 +865,11 @@ export default function RequestDetailClient() {
           {/* Assigned Specialist Card */}
           <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
             <div className="flex items-center justify-between mb-6">
-              <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest">
-                {t('requests.detail.assignedSpecialist')}
-              </h4>
+              <CardSectionTitle as="h4">{t('requests.detail.assignedSpecialist')}</CardSectionTitle>
               {showAgencyActions && (
                 <div className="relative group/assign">
                   <select
-                    className="absolute inset-0 opacity-0 cursor-pointer w-full"
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full z-10"
                     onChange={e => {
                       const selected = agencyTeam.find(m => m.id === e.target.value);
                       if (selected)

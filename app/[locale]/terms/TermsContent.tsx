@@ -67,7 +67,9 @@ export default function TermsContent() {
           <div className="flex items-center gap-4 mt-6 pt-6 border-t border-surface-200/60 dark:border-surface-800">
             <div className="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-500">
               <Icon name="calendar" size={16} />
-              <span>{t('lastUpdated')}: {LAST_UPDATED}</span>
+              <span>
+                {t('lastUpdated')}: {LAST_UPDATED}
+              </span>
             </div>
           </div>
         </div>
@@ -83,56 +85,121 @@ export default function TermsContent() {
                 {t('toc')}
               </h3>
               <nav className="space-y-1 max-h-[calc(100vh-150px)] overflow-y-auto">
-                <a href="#agreement" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">1</span>
+                <a
+                  href="#agreement"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    1
+                  </span>
                   <span className="truncate">{t('sections.agreement.title')}</span>
                 </a>
-                <a href="#services" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">2</span>
+                <a
+                  href="#services"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    2
+                  </span>
                   <span className="truncate">{t('sections.services.title')}</span>
                 </a>
-                <a href="#projectAgreements" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">3</span>
+                <a
+                  href="#projectAgreements"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    3
+                  </span>
                   <span className="truncate">{t('sections.projectAgreements.title')}</span>
                 </a>
-                <a href="#payment" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">4</span>
+                <a
+                  href="#payment"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    4
+                  </span>
                   <span className="truncate">{t('sections.payment.title')}</span>
                 </a>
-                <a href="#ip" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">5</span>
+                <a
+                  href="#ip"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    5
+                  </span>
                   <span className="truncate">{t('sections.ip.title')}</span>
                 </a>
-                <a href="#clientResponsibilities" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">6</span>
+                <a
+                  href="#clientResponsibilities"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    6
+                  </span>
                   <span className="truncate">{t('sections.clientResponsibilities.title')}</span>
                 </a>
-                <a href="#liability" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">7</span>
+                <a
+                  href="#liability"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    7
+                  </span>
                   <span className="truncate">{t('sections.liability.title')}</span>
                 </a>
-                <a href="#warranties" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">8</span>
+                <a
+                  href="#warranties"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    8
+                  </span>
                   <span className="truncate">{t('sections.warranties.title')}</span>
                 </a>
-                <a href="#termination" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">9</span>
+                <a
+                  href="#termination"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    9
+                  </span>
                   <span className="truncate">{t('sections.termination.title')}</span>
                 </a>
-                <a href="#confidentiality" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">10</span>
+                <a
+                  href="#confidentiality"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    10
+                  </span>
                   <span className="truncate">{t('sections.confidentiality.title')}</span>
                 </a>
-                <a href="#governingLaw" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">11</span>
+                <a
+                  href="#governingLaw"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    11
+                  </span>
                   <span className="truncate">{t('sections.governingLaw.title')}</span>
                 </a>
-                <a href="#changes" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">12</span>
+                <a
+                  href="#changes"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    12
+                  </span>
                   <span className="truncate">{t('sections.changes.title')}</span>
                 </a>
-                <a href="#contact" className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all">
-                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">13</span>
+                <a
+                  href="#contact"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                >
+                  <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
+                    13
+                  </span>
                   <span className="truncate">{t('sections.contact.title')}</span>
                 </a>
               </nav>
@@ -157,9 +224,16 @@ export default function TermsContent() {
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.services.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-500/10 dark:bg-accent-500/20 flex items-center justify-center mt-0.5">
-                      <Icon name="check" size={12} className="text-accent-600 dark:text-accent-400" />
+                      <Icon
+                        name="check"
+                        size={12}
+                        className="text-accent-600 dark:text-accent-400"
+                      />
                     </span>
                     <span>{item}</span>
                   </li>
@@ -168,14 +242,25 @@ export default function TermsContent() {
             </Section>
 
             {/* Section 3: Project Agreements */}
-            <Section id="projectAgreements" number={3} title={t('sections.projectAgreements.title')}>
+            <Section
+              id="projectAgreements"
+              number={3}
+              title={t('sections.projectAgreements.title')}
+            >
               <p className="text-surface-600 dark:text-surface-400 mb-4">
                 {t('sections.projectAgreements.intro')}
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {(t.raw('sections.projectAgreements.items') as string[]).map((item, index) => (
-                  <div key={index} className="flex items-center gap-2 p-3 rounded-lg bg-surface-100/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/50">
-                    <Icon name="file-text" size={16} className="text-purple-600 dark:text-purple-400" />
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 p-3 rounded-lg bg-surface-100/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/50"
+                  >
+                    <Icon
+                      name="file-text"
+                      size={16}
+                      className="text-purple-600 dark:text-purple-400"
+                    />
                     <span className="text-sm text-surface-700 dark:text-surface-300">{item}</span>
                   </div>
                 ))}
@@ -189,7 +274,10 @@ export default function TermsContent() {
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.payment.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success/10 dark:bg-success/20 flex items-center justify-center mt-0.5">
                       <Icon name="dollar-sign" size={12} className="text-success" />
                     </span>
@@ -206,7 +294,10 @@ export default function TermsContent() {
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.ip.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 flex items-center justify-center mt-0.5">
                       <Icon name="award" size={12} className="text-amber-600 dark:text-amber-400" />
                     </span>
@@ -217,13 +308,20 @@ export default function TermsContent() {
             </Section>
 
             {/* Section 6: Client Responsibilities */}
-            <Section id="clientResponsibilities" number={6} title={t('sections.clientResponsibilities.title')}>
+            <Section
+              id="clientResponsibilities"
+              number={6}
+              title={t('sections.clientResponsibilities.title')}
+            >
               <p className="text-surface-600 dark:text-surface-400 mb-4">
                 {t('sections.clientResponsibilities.intro')}
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.clientResponsibilities.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mt-0.5">
                       <Icon name="user" size={12} className="text-blue-600 dark:text-blue-400" />
                     </span>
@@ -237,7 +335,11 @@ export default function TermsContent() {
             <Section id="liability" number={7} title={t('sections.liability.title')}>
               <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/60 dark:border-amber-500/20">
                 <div className="flex items-start gap-3">
-                  <Icon name="alert-triangle" size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <Icon
+                    name="alert-triangle"
+                    size={20}
+                    className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                  />
                   <p className="text-surface-700 dark:text-surface-300">
                     {t('sections.liability.content')}
                   </p>
@@ -259,7 +361,10 @@ export default function TermsContent() {
               </p>
               <ul className="space-y-3">
                 {(t.raw('sections.termination.items') as string[]).map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-surface-600 dark:text-surface-400">
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-surface-600 dark:text-surface-400"
+                  >
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center mt-0.5">
                       <Icon name="x" size={12} className="text-surface-500" />
                     </span>
@@ -273,7 +378,11 @@ export default function TermsContent() {
             <Section id="confidentiality" number={10} title={t('sections.confidentiality.title')}>
               <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/60 dark:border-emerald-500/20">
                 <div className="flex items-start gap-3">
-                  <Icon name="lock" size={20} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <Icon
+                    name="lock"
+                    size={20}
+                    className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5"
+                  />
                   <p className="text-surface-700 dark:text-surface-300">
                     {t('sections.confidentiality.content')}
                   </p>
@@ -285,7 +394,11 @@ export default function TermsContent() {
             <Section id="governingLaw" number={11} title={t('sections.governingLaw.title')}>
               <div className="p-4 rounded-xl bg-surface-100/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/50">
                 <div className="flex items-start gap-3">
-                  <Icon name="globe" size={20} className="text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                  <Icon
+                    name="globe"
+                    size={20}
+                    className="text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5"
+                  />
                   <p className="text-surface-700 dark:text-surface-300">
                     {t('sections.governingLaw.content')}
                   </p>
@@ -309,7 +422,9 @@ export default function TermsContent() {
                 <div className="flex items-center gap-3">
                   <Icon name="mail" size={20} className="text-purple-600 dark:text-purple-400" />
                   <div>
-                    <span className="text-sm text-surface-500 dark:text-surface-500">{t('sections.contact.email')}:</span>
+                    <span className="text-sm text-surface-500 dark:text-surface-500">
+                      {t('sections.contact.email')}:
+                    </span>
                     <a
                       href="mailto:hello@cart-shift.com"
                       className="block text-purple-600 dark:text-purple-400 font-medium hover:underline"

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 interface JsonLdProps {
   data: Record<string, unknown> | Record<string, unknown>[];
@@ -23,9 +23,9 @@ export function JsonLd({ data, id }: JsonLdProps) {
 
 export function generateGraphSchema(schemas: Record<string, unknown>[]) {
   return {
-    "@context": "https://schema.org",
-    "@graph": schemas.map(schema => {
-      const { "@context": _, ...rest } = schema;
+    '@context': 'https://schema.org',
+    '@graph': schemas.map(schema => {
+      const { '@context': _, ...rest } = schema;
       return rest;
     }),
   };

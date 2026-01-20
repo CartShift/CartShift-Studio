@@ -5,7 +5,7 @@ import { Timestamp } from '@/lib/types/portal';
 import { CheckCircle2, Circle, Plus, GripVertical, Trash2, Calendar, Clock } from 'lucide-react';
 import { Milestone, MILESTONE_STATUS, Request, MilestoneStatus } from '@/lib/types/portal';
 import { updateRequestMilestones, updateMilestoneStatus } from '@/lib/services/portal-requests';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';

@@ -79,7 +79,10 @@ interface InputProps
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, success, className, leftIcon, rightIcon, hint, disabled, id, ...props }, ref) => {
+  (
+    { label, error, success, className, leftIcon, rightIcon, hint, disabled, id, ...props },
+    ref
+  ) => {
     const state = error ? 'error' : success ? 'success' : 'default';
     const hasRightContent = Boolean(rightIcon || error || success);
 
