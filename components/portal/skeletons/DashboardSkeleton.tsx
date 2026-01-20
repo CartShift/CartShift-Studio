@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 const skeletonCardVariants = cva(
-  'p-6 rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950',
+  'p-6 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50',
   {
     variants: {
       variant: {
@@ -76,7 +76,7 @@ export function DashboardSkeleton() {
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-16" />
               </div>
-              <div className="p-4 rounded-xl border border-surface-200 dark:border-surface-800 space-y-3">
+              <div className="p-4 rounded-xl border border-surface-200/50 dark:border-surface-800/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-4 w-12" />

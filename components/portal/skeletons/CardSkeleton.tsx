@@ -18,7 +18,7 @@ const cardSkeletonVariants = cva('', {
 });
 
 const cardSkeletonItemVariants = cva(
-  'rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950',
+  'rounded-2xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50',
   {
     variants: {
       variant: {
@@ -87,7 +87,7 @@ export function CardSkeleton({ variant = 'default', count = 1, className }: Card
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-3/4" />
         </div>
-        <div className="flex items-center gap-3 pt-4 border-t border-surface-100 dark:border-surface-800">
+        <div className="flex items-center gap-3 pt-4 border-t border-surface-100/50 dark:border-surface-800/50">
           <Skeleton className="h-6 w-16 rounded-full" />
           <Skeleton className="h-6 w-20 rounded-full" />
           <div className="flex-1" />
