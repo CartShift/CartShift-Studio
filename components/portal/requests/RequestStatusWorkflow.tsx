@@ -429,7 +429,7 @@ export function RequestStatusWorkflow({
         </div>
 
         {/* Background Grey Line */}
-        <div className="absolute top-4 ltr:left-0 rtl:right-0 w-full h-0.5 bg-surface-100 dark:bg-surface-800 -z-0" />
+        <div className="absolute top-4 ltr:left-0 rtl:right-0 w-full h-0.5 bg-surface-100 dark:bg-surface-800 z-0" />
 
         {/* Progress Colored Line - width depends on current index */}
         <div
