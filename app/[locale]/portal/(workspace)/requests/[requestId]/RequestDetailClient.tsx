@@ -34,6 +34,7 @@ import { InvoiceDownloadButton } from '@/components/portal/invoices/InvoiceDownl
 import { ActivityTimeline } from '@/components/portal/ActivityTimeline';
 import { PayPalProvider } from '@/components/providers/PayPalProvider';
 import { PayPalCheckoutButton } from '@/components/portal/PayPalCheckoutButton';
+import { RequestStatusWorkflow } from '@/components/portal/requests/RequestStatusWorkflow';
 
 // Consolidated hooks (no more inline state duplication!)
 import { useRequestDetail } from '@/lib/hooks/useRequestDetail';
@@ -308,6 +309,20 @@ export default function RequestDetailClient() {
           />
         </div>
       </motion.div>
+
+      {/* Agency Status Workflow - Full Width */}
+      {showAgencyActions && (
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950 p-6">
+          <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-4 uppercase tracking-widest">
+            {t('requests.detail.workflowActions')}
+          </h4>
+          <RequestStatusWorkflow
+            currentStatus={request.status}
+            onStatusChange={handleStatusChange}
+            className="w-full"
+          />
+        </Card>
+      )}
 
       {/* Tabs */}
       <div className="flex items-center gap-1 p-1 bg-surface-100 dark:bg-surface-900 rounded-2xl w-full overflow-x-auto scrollbar-hide">
@@ -758,10 +773,10 @@ export default function RequestDetailClient() {
             </Card>
           )}
 
-          {/* Workflow Actions Card */}
+          {/* Quick Actions Card - File upload, delete, etc. */}
           <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
             <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest">
-              {t('requests.detail.workflowActions')}
+              {t('common.actions')}
             </h4>
             <div className="space-y-2">
               {showAgencyActions &&

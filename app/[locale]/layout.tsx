@@ -51,74 +51,83 @@ function loadMessages(locale: 'en' | 'he') {
   }
 }
 
-export const metadata: Metadata = {
-  title: {
-    default: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
-    template: '%s | CartShift Studio',
-  },
-  description:
-    'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.',
-  keywords: [
-    'Shopify development',
-    'WordPress development',
-    'e-commerce agency',
-    'Shopify store setup',
-    'WooCommerce development',
-    'e-commerce migration',
-    'custom Shopify theme',
-    'Shopify SEO',
-    'online store development',
-  ],
-  metadataBase: new URL(siteUrl),
-  alternates: {
-    canonical: siteUrl,
-    languages: {
-      en: `${siteUrl}/en`,
-      he: `${siteUrl}/he`,
-      'x-default': `${siteUrl}/en`,
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const canonicalUrl = `${siteUrl}/${locale}`;
+
+  return {
+    title: {
+      default: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
+      template: '%s | CartShift Studio',
     },
-  },
-  openGraph: {
-    type: 'website',
-    siteName: 'CartShift Studio',
-    title: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
     description:
-      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
-    url: siteUrl,
-    images: [
-      {
-        url: `${siteUrl}/images/CarShift-Icon-Colored.png`,
-        width: 512,
-        height: 512,
-        alt: 'CartShift Studio - E-commerce Development Agency',
-      },
+      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.',
+    keywords: [
+      'Shopify development',
+      'WordPress development',
+      'e-commerce agency',
+      'Shopify store setup',
+      'WooCommerce development',
+      'e-commerce migration',
+      'custom Shopify theme',
+      'Shopify SEO',
+      'online store development',
     ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'CartShift Studio | E-commerce Development Agency',
-    description:
-      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
-    images: [`${siteUrl}/images/CarShift-Icon-Colored.png`],
-    creator: '@cartshiftstudio',
-    site: '@cartshiftstudio',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        en: `${siteUrl}/en`,
+        he: `${siteUrl}/he`,
+        'x-default': `${siteUrl}/en`,
+      },
+    },
+    openGraph: {
+      type: 'website',
+      siteName: 'CartShift Studio',
+      title: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
+      description:
+        'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
+      url: canonicalUrl,
+      images: [
+        {
+          url: `${siteUrl}/images/CarShift-Icon-Colored.png`,
+          width: 512,
+          height: 512,
+          alt: 'CartShift Studio - E-commerce Development Agency',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'CartShift Studio | E-commerce Development Agency',
+      description:
+        'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
+      images: [`${siteUrl}/images/CarShift-Icon-Colored.png`],
+      creator: '@cartshiftstudio',
+      site: '@cartshiftstudio',
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION,
-  },
-  category: 'technology',
-};
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION,
+    },
+    category: 'technology',
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));
@@ -172,12 +181,6 @@ export default async function LocaleLayout({
               }}
             >
               <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
-                <head>
-                  <link rel="canonical" href={canonicalUrl} />
-                  <link rel="alternate" hrefLang="en" href={`${siteUrl}/en`} />
-                  <link rel="alternate" hrefLang="he" href={`${siteUrl}/he`} />
-                  <link rel="alternate" hrefLang="x-default" href={`${siteUrl}/en`} />
-                </head>
                 <LocaleAttributes />
                 <GeoLocaleRedirect />
                 <GoogleAnalytics />

@@ -510,7 +510,10 @@
         "assetsSubtitle": "Browse files and design iterations",
         "versionHistory": "Version History",
         "noAttachments": "No attachments found",
-        "noAttachmentsDesc": "Files shared in discussion will appear here."
+        "noAttachmentsDesc": "Files shared in discussion will appear here.",
+        "currentStatus": "Current Status",
+        "moveTo": "Move to",
+        "workflowHint": "Click to change the request status"
       },
       "toast": {
         "invalidPricing": "Invalid pricing",

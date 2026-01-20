@@ -27,6 +27,7 @@ import {
   Comment,
 } from '@/lib/types/portal';
 import { Timestamp } from 'firebase/firestore';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface UseRequestActionsParams {
   request: Request | null;
@@ -106,6 +107,7 @@ export function useRequestActions({
 }: UseRequestActionsParams): UseRequestActionsResult {
   const toast = useToast();
   const t = useTranslations('portal.requests.toast');
+  const queryClient = useQueryClient();
 
   //  states
   const [isAddingPricing, setIsAddingPricing] = useState(false);
@@ -356,6 +358,10 @@ export function useRequestActions({
 
       try {
         await updateRequestStatus(requestId!, newStatus);
+
+        // Invalidate request query to trigger refetch
+        queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+
         await logActivity({
           orgId: orgId!,
           requestId: requestId!,
@@ -370,7 +376,7 @@ export function useRequestActions({
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, isAgency, toast]
+    [canPerformAction, requestId, orgId, userData, isAgency, toast, queryClient]
   );
 
   // Send comment with optimistic update
