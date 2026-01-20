@@ -4,5 +4,7 @@ import { routing } from './i18n/routing';
 export default createMiddleware(routing);
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  // Exclude: api, _next, _vercel, __ (Firebase auth), and files with extensions
+  matcher: ['/((?!api|_next|_vercel|__|.*\\..*).*)'
+]
 };

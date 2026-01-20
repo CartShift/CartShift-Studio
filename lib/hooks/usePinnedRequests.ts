@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import { togglePinRequest, isRequestPinnedByUser } from '@/lib/services/portal-requests';
 import { usePortalAuth } from './usePortalAuth';
 import { useRequests } from './useRequests';
@@ -31,7 +30,6 @@ export function usePinnedRequests(_orgId?: string) {
   const orgId = _orgId || resolvedOrgId;
   const userId = userData?.id;
   const queryClient = useQueryClient();
-  const t = useTranslations('portal.requests.toast');
 
   // Sync with global loading state
   useEffect(() => {
@@ -139,7 +137,7 @@ export function usePinnedRequests(_orgId?: string) {
           });
         });
 
-        toast.error(t('pinUpdateFailed'));
+        toast.error('Failed to update pin status');
       } finally {
         // Clear loading state (shared across all instances)
         globalRequestIds.delete(requestId);
