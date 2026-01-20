@@ -287,7 +287,7 @@ export function RequestStatusWorkflow({
             )}
           </div>
 
-          <div className="flex flex-col items-start mr-1">
+          <div className="flex flex-col items-start me-1">
             <span className="text-[10px] uppercase font-black text-surface-400 tracking-wider leading-none mb-0.5">
               {t('requests.detail.currentStatus')}
             </span>

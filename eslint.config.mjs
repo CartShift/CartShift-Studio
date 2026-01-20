@@ -99,7 +99,7 @@ export default [
             ...(nextPlugin.configs["core-web-vitals"]?.rules || {}),
 
             // TypeScript rules
-            "@typescript-eslint/no-unused-vars": ["warn", {
+            "@typescript-eslint/no-unused-vars": ["error", {
                 argsIgnorePattern: "^_",
                 varsIgnorePattern: "^_",
                 caughtErrorsIgnorePattern: "^_",

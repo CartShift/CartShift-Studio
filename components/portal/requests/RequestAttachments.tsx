@@ -21,7 +21,7 @@ import {
   formatFileSize,
   getFileIcon,
 } from '@/lib/services/portal-files';
-import { Card, CardSectionTitle } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { FileImage } from '@/components/ui/FileImage';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
