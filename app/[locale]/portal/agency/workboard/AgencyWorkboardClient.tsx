@@ -53,7 +53,7 @@ export default function AgencyWorkboardClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
   const router = useRouter();
-  const { userData, loading: auth, isAuthenticated, user } = usePortalAuth();
+  const { userData, loading: auth, isAuthenticated, user, isImpersonating } = usePortalAuth();
   const { organizations } = useAgencyClients();
   const { switchOrg } = useOrg();
   const [requests, setRequests] = useState<Request[]>([]);
@@ -300,7 +300,20 @@ export default function AgencyWorkboardClient() {
     return <WorkboardSkeleton />;
   }
 
-  if (!auth && isAuthenticated && !userData?.isAgency) {
+  if (
+    (!auth && isAuthenticated && !userData?.isAgency && !isImpersonating) ||
+    (isImpersonating && userData?.isAgency === false)
+  ) {
+    if (isImpersonating) {
+      return (
+        <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
+            Redirecting to Client View...
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />
