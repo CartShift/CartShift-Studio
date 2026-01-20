@@ -30,7 +30,5 @@ export type NewsletterSubscriptionData = z.infer<typeof newsletterSubscriptionSc
 export function validateNewsletterSubscription(data: unknown): { success: true; data: NewsletterSubscriptionData } | { success: false; errors: z.ZodError } {
   const result = newsletterSubscriptionSchema.safeParse(data);  if (result.success) {
     return { success: true, data: result.data };
-  }
-
-  return { success: false, errors: result.error };
+  }  return { success: false, errors: result.error };
 }

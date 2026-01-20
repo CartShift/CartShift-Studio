@@ -334,6 +334,9 @@ export interface Request {
   currency?: Currency;
   validUntil?: Timestamp;
   quotedAt?: Timestamp;
+  isFree?: boolean;
+  markedFreeAt?: Timestamp;
+  markedFreeBy?: string;
 
   // Client response to quote
   clientNotes?: string;

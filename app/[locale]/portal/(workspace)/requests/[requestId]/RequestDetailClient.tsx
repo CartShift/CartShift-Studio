@@ -163,6 +163,8 @@ export default function RequestDetailClient() {
   const {
     handleAddPricing,
     isAddingPricing,
+    handleMarkAsFree,
+    isMarkingFree,
     handleAcceptQuote,
     handleDeclineQuote,
     isAccepting,
@@ -447,14 +449,29 @@ export default function RequestDetailClient() {
               </h4>
 
               {!showPricingForm ? (
-                <Button
-                  variant="outline"
-                  className="w-full h-12 border-dashed border-2 border-green-300 dark:border-green-700 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
-                  onClick={() => setShowPricingForm(true)}
-                >
-                  <Plus size={18} className="me-2" />
-                  {t('requests.detail.addQuote')}
-                </Button>
+                <div className="space-y-3">
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 border-dashed border-2 border-green-300 dark:border-green-700 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    onClick={() => setShowPricingForm(true)}
+                  >
+                    <Plus size={18} className="me-2" />
+                    {t('requests.detail.addQuote')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 border-dashed border-2 border-violet-300 dark:border-violet-700 text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20"
+                    onClick={handleMarkAsFree}
+                    disabled={isMarkingFree}
+                  >
+                    {isMarkingFree ? (
+                      <Loader2 size={18} className="me-2 animate-spin" />
+                    ) : (
+                      <Check size={18} className="me-2" />
+                    )}
+                    {t('requests.detail.markAsFree')}
+                  </Button>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {/* Currency Selector */}
@@ -591,60 +608,77 @@ export default function RequestDetailClient() {
             </Card>
           )}
 
-          {/* Pricing Section - Show if request has pricing */}
-          {request.isBillable && request.lineItems && request.lineItems.length > 0 && (
+          {/* Pricing Section - Show if request has pricing or is free */}
+          {(request.isBillable || request.isFree) && (
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
               <h4 className="text-[10px] font-black text-surface-400 dark:text-surface-500 mb-6 uppercase tracking-widest flex items-center gap-2">
                 <DollarSign size={14} className="text-green-500" />
                 {t('requests.detail.pricingTitle')}
               </h4>
-              <div className="space-y-3">
-                {request.lineItems.map(item => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-900 rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-surface-900 dark:text-white text-sm">
-                        {item.description}
-                      </p>
-                      {item.notes && (
-                        <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                          {item.notes}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-end ms-4">
-                      <p className="font-bold text-surface-900 dark:text-white text-sm">
-                        {formatCurrency(item.unitPrice * item.quantity, request.currency || 'USD')}
-                      </p>
-                      <p className="text-xs text-surface-500 dark:text-surface-400">
-                        {item.quantity} ×{' '}
-                        {formatCurrency(item.unitPrice, request.currency || 'USD')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                <div className="pt-3 mt-3 border-t border-surface-200 dark:border-surface-800 flex items-center justify-between">
-                  <span className="text-sm font-bold text-surface-600 dark:text-surface-400">
-                    {t('requests.detail.total')}
-                  </span>
-                  <span className="text-xl font-black text-surface-900 dark:text-white font-outfit">
-                    {formatCurrency(request.totalAmount || 0, request.currency || 'USD')}
-                  </span>
-                </div>
 
-                {/* Invoice Download (for paid requests) */}
-                {request.paidAt && organization && (
-                  <div className="mt-4">
-                    <InvoiceDownloadButton
-                      request={request}
-                      organization={organization}
-                      className="w-full"
-                    />
+              {request.isFree ? (
+                <div className="p-4 bg-violet-50/50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800/30 rounded-2xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg text-violet-600">
+                      <Zap size={16} fill="currentColor" />
+                    </div>
+                    <span className="text-sm font-bold text-violet-900 dark:text-violet-100 font-outfit">
+                      {t('common.free')}
+                    </span>
                   </div>
-                )}
-              </div>
+                  <p className="text-xs text-violet-600/80 dark:text-violet-400/80 leading-relaxed font-medium">
+                    {t('requests.detail.freeDesc')}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {request.lineItems?.map(item => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-900 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-surface-900 dark:text-white text-sm">
+                          {item.description}
+                        </p>
+                        {item.notes && (
+                          <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                            {item.notes}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-end ms-4">
+                        <p className="font-bold text-surface-900 dark:text-white text-sm">
+                          {formatCurrency(item.unitPrice * item.quantity, request.currency || 'USD')}
+                        </p>
+                        <p className="text-xs text-surface-500 dark:text-surface-400">
+                          {item.quantity} ×{' '}
+                          {formatCurrency(item.unitPrice, request.currency || 'USD')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="pt-3 mt-3 border-t border-surface-200 dark:border-surface-800 flex items-center justify-between">
+                    <span className="text-sm font-bold text-surface-600 dark:text-surface-400">
+                      {t('requests.detail.total')}
+                    </span>
+                    <span className="text-xl font-black text-surface-900 dark:text-white font-outfit">
+                      {formatCurrency(request.totalAmount || 0, request.currency || 'USD')}
+                    </span>
+                  </div>
+
+                  {/* Invoice Download (for paid requests) */}
+                  {request.paidAt && organization && (
+                    <div className="mt-4">
+                      <InvoiceDownloadButton
+                        request={request}
+                        organization={organization}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Client Accept/Decline Buttons - Only for QUOTED status */}
               {showClientActions && request.status === 'QUOTED' && (
@@ -708,7 +742,7 @@ export default function RequestDetailClient() {
                         title: request.title,
                         totalAmount: request.totalAmount || 0,
                         currency: request.currency || 'USD',
-                        lineItems: request.lineItems,
+                        lineItems: request.lineItems || [],
                         status: 'ACCEPTED',
                         createdBy: request.createdBy,
                         createdByName: request.createdByName || '',

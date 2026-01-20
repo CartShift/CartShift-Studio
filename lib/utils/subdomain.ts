@@ -29,7 +29,7 @@ export function isPortalSubdomain(): boolean {
 
 export function isMainDomain(): boolean {
   if (!isBrowser()) return false;
-  if (isDevelopment()) return true;
+  if (isDevelopment()) return false; // In dev, treat everything as internal routing
   const hostname = getHostname();
   return hostname === MAIN_DOMAIN || hostname === `www.${MAIN_DOMAIN}`;
 }

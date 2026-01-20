@@ -490,6 +490,8 @@
         "acceptQuote": "Accept Quote",
         "decline": "Decline",
         "pricingTitle": "Pricing",
+        "markAsFree": "Mark as Free",
+        "freeDesc": "This request is handled as a standard complimentary service.",
         "history": "History",
         "historyTitle": "Request Timeline",
         "revisionDesc": "Please describe the changes you would like to see. Be as specific as possible to help our team deliver the perfect result.",
@@ -553,7 +555,11 @@
         "requestDeleted": "Request deleted",
         "requestDeletedDesc": "The request has been permanently removed",
         "deleteFailed": "Failed to delete request",
-        "deleteFailedDesc": "Please try again"
+        "deleteFailedDesc": "Please try again",
+        "markedAsFree": "Marked as free",
+        "markedAsFreeDesc": "Work can begin without payment required",
+        "markAsFreeFailed": "Failed to mark as free",
+        "markAsFreeFailedDesc": "Please try again"
       },
       "types": {
         "feature": "New Feature",

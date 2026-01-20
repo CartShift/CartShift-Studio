@@ -551,6 +551,37 @@ export async function addPricingToRequest(
 }
 
 /**
+ * Agency marks a request as free (no billing) and moves it directly to IN_PROGRESS
+ */
+export async function markRequestAsFree(
+  requestId: string,
+  orgId: string,
+  userId: string,
+  userName: string
+): Promise<void> {
+  await waitForAuth();
+  const db = getFirestoreDb();
+  await updateDoc(doc(db, REQUESTS_COLLECTION, requestId), {
+    isBillable: false,
+    isFree: true,
+    lineItems: [],
+    totalAmount: 0,
+    status: REQUEST_STATUS.IN_PROGRESS,
+    markedFreeAt: serverTimestamp(),
+    markedFreeBy: userId,
+    updatedAt: serverTimestamp(),
+  });
+
+  await logActivity({
+    orgId,
+    requestId,
+    userId,
+    userName,
+    action: 'MARKED_AS_FREE',
+  });
+}
+
+/**
  * Client accepts the quoted price
  */
 export async function acceptRequest(

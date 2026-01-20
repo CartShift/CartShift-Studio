@@ -583,6 +583,11 @@ export default function RequestsClient() {
                                 </Badge>
                               )}
                             </motion.div>
+                            {req.isFree && (
+                              <Badge variant="green" className="text-[10px] ms-2">
+                                {t('portal.common.free')}
+                              </Badge>
+                            )}
 
                             <span className="text-[10px] font-bold text-surface-400 font-outfit">
                               {req.createdAt?.toDate
@@ -750,6 +755,11 @@ export default function RequestsClient() {
                                     </Badge>
                                   )}
                                 </motion.div>
+                                {req.isFree && (
+                                  <Badge variant="green" className="ms-2">
+                                    {t('portal.common.free')}
+                                  </Badge>
+                                )}
                               </div>
                             </td>
                             <td className="px-3 md:px-6 py-4">

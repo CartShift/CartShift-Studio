@@ -9,7 +9,7 @@ import {
   useCallback,
   ReactNode,
 } from 'react';
-import { getPortalSubdomainUrl } from '@/lib/utils/portal-paths';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const STORAGE_KEY = 'cartshift_impersonated_account_id';
 
@@ -41,24 +41,17 @@ export function ImpersonationProvider({ children }: { children: ReactNode }) {
     setImpersonatedAccountId(accountId);
     sessionStorage.setItem(STORAGE_KEY, accountId);
 
-    // Redirect to the client's dashboard
-    // Get current locale from path (e.g. /en/portal -> en)
-    const pathParts = window.location.pathname.split('/');
-    const locale = pathParts[1] || 'en'; // default to en
-
-    // Use subdomain URL for redirect
-    window.location.href = getPortalSubdomainUrl('/dashboard/', locale);
+    // Redirect to the client's dashboard using context-aware path
+    window.location.href = getPortalPath('/dashboard/');
   }, []);
 
   const exitImpersonation = useCallback(() => {
     setImpersonatedAccountId(null);
     sessionStorage.removeItem(STORAGE_KEY);
 
-    // Redirect back to agency dashboard
-    const pathParts = window.location.pathname.split('/');
-    const locale = pathParts[1] || 'en';
+    // Redirect back to agency dashboard using context-aware path
 
-    window.location.href = getPortalSubdomainUrl('/agency/', locale);
+    window.location.href = getPortalPath('/agency/');
   }, []);
 
   const value = useMemo(

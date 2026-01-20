@@ -8,6 +8,7 @@ import {
   markRequestPaid,
   startRequestWork,
   addPricingToRequest,
+  markRequestAsFree,
   assignRequest,
   requestRevision,
   updateRequestStatus,
@@ -40,6 +41,8 @@ interface UseRequestActionsResult {
   // Pricing actions
   handleAddPricing: (lineItems: PricingLineItem[], currency: Currency) => Promise<boolean>;
   isAddingPricing: boolean;
+  handleMarkAsFree: () => Promise<boolean>;
+  isMarkingFree: boolean;
 
   // Quote actions
   handleAcceptQuote: () => Promise<void>;
@@ -106,6 +109,7 @@ export function useRequestActions({
 
   //  states
   const [isAddingPricing, setIsAddingPricing] = useState(false);
+  const [isMarkingFree, setIsMarkingFree] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
   const [isWork, setIsWork] = useState(false);
@@ -169,6 +173,29 @@ export function useRequestActions({
     },
     [canPerformAction, requestId, orgId, userData, toast, t]
   );
+
+  // Mark as free (agency only)
+  const handleMarkAsFree = useCallback(async (): Promise<boolean> => {
+    if (!canPerformAction()) return false;
+
+    setIsMarkingFree(true);
+    try {
+      await markRequestAsFree(
+        requestId!,
+        orgId!,
+        userData!.id,
+        userData!.name || userData!.email
+      );
+      toast.success(t('markedAsFree'), t('markedAsFreeDesc'));
+      return true;
+    } catch (err) {
+      console.error('Error marking as free:', err);
+      toast.error(t('markAsFreeFailed'), t('markAsFreeFailedDesc'));
+      return false;
+    } finally {
+      setIsMarkingFree(false);
+    }
+  }, [canPerformAction, requestId, orgId, userData, toast, t]);
 
   // Accept quote
   const handleAcceptQuote = useCallback(async () => {
@@ -437,6 +464,8 @@ export function useRequestActions({
   return {
     handleAddPricing,
     isAddingPricing,
+    handleMarkAsFree,
+    isMarkingFree,
     handleAcceptQuote,
     handleDeclineQuote,
     isAccepting,
