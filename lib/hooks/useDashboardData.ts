@@ -10,6 +10,7 @@ import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { getOrgActivities } from '@/lib/services/portal-activities';
 import { getMemberByUserId, ensureMembership } from '@/lib/services/portal-organizations';
 import { useToast } from '@/components/portal/ui';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export function useDashboardData() {
   const orgId = useResolvedOrgId();
@@ -99,7 +100,7 @@ export function useDashboardData() {
         toast.error(t('accessDenied'), t('accessDeniedDesc'));
         // Redirect to dashboard after a short delay
         setTimeout(() => {
-          router.push('/portal/dashboard');
+          router.push(getPortalPath('/dashboard/'));
         }, 2000);
         return false;
       }

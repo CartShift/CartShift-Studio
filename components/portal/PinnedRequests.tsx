@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { Pin, ExternalLink, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Request } from '@/lib/types/portal';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
 import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface PinnedRequestsProps {
   requests: Request[];
@@ -24,7 +25,7 @@ interface PinnedRequestsProps {
 export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
   requests,
   orgId,
-  locale,
+  locale: _locale, // Deprecated - kept for backwards compatibility
   isAgency = false,
   className,
 }) => {
@@ -69,7 +70,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
                 <Link
-                  href={`/${locale}/portal/requests/${request.id}`}
+                  href={getPortalPath(`/requests/${request.id}`)}
                   className="group/link flex items-center gap-2"
                 >
                   <span className="text-sm font-medium text-surface-900 dark:text-white truncate group-hover/link:text-primary-600 dark:group-hover/link:text-primary-400 transition-colors">

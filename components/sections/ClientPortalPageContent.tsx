@@ -8,6 +8,7 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { PageHero } from '@/components/sections/PageHero';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import {
   LayoutDashboard,
   MessageSquareText,
@@ -465,7 +466,7 @@ export const ClientPortalPageContent: React.FC = () => {
               {portalInfo.cta.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/portal">
+              <Link href={getPortalPath('/')}>
                 <Button
                   size="lg"
                   className="w-full sm:w-auto group bg-white text-surface-900 hover:bg-white/90"

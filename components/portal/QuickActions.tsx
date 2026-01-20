@@ -7,6 +7,7 @@ import { Plus, Calendar, Upload, Zap, ArrowRight, LucideIcon } from 'lucide-reac
 import { Card } from '@/components/ui/Card';
 import { Link } from '@/i18n/navigation';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const quickActionIconVariants = cva(
   'w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110',
@@ -43,19 +44,19 @@ export function QuickActions() {
     {
       icon: Plus,
       label: t('portal.quickActions.newRequest'),
-      href: '/portal/requests/new/',
+      href: getPortalPath('/requests/new/'),
       intent: 'blue',
     },
     {
       icon: Calendar,
       label: t('portal.quickActions.schedule'),
-      href: '/portal/consultations?action=schedule',
+      href: getPortalPath('/consultations?action=schedule'),
       intent: 'purple',
     },
     {
       icon: Upload,
       label: t('portal.quickActions.upload'),
-      href: '/portal/requests?action=upload',
+      href: getPortalPath('/requests?action=upload'),
       intent: 'emerald',
     },
   ];

@@ -50,14 +50,31 @@ With App Hosting, Next.js handles routing at runtime:
 
 ### Client-Side URL Generation
 
-The utilities detect subdomain and generate correct URLs:
+The `getPortalPath()` utility is subdomain-aware and automatically generates the correct URLs:
 
 ```tsx
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
-// On main domain: '/portal/dashboard/'
-// On subdomain: '/dashboard/'
-getPortalPath('/dashboard/');
+// On main domain (cart-shift.com):
+getPortalPath('/dashboard/'); // → 'https://portal.cart-shift.com/en/dashboard/'
+
+// On portal subdomain (portal.cart-shift.com):
+getPortalPath('/dashboard/'); // → '/dashboard/'
+
+// In development (localhost):
+getPortalPath('/dashboard/'); // → '/portal/dashboard/'
+```
+
+**Key behaviors:**
+- **Main domain → Subdomain redirect**: When users click portal links on `cart-shift.com`, they are directed to `portal.cart-shift.com`
+- **Internal navigation**: Within the portal subdomain, links stay relative for seamless navigation
+- **Development**: Uses `/portal/...` paths for local Next.js routing
+
+For full subdomain URLs (e.g., for emails or sharing):
+```tsx
+import { getPortalSubdomainUrl } from '@/lib/utils/portal-paths';
+
+getPortalSubdomainUrl('/requests/', 'en'); // → 'https://portal.cart-shift.com/en/requests/'
 ```
 
 ## Setup Steps

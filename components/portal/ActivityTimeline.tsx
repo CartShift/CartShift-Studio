@@ -20,6 +20,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils';
 import { ActivityLog, Timestamp } from '@/lib/types/portal';
 import { Link } from '@/i18n/navigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale, isRTLLocale } from '@/lib/locale-config';
 
@@ -205,7 +206,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
               )}
 
               <Link
-                href={activity.requestId ? `/portal/requests/${activity.requestId}` : '#'}
+                href={activity.requestId ? getPortalPath(`/requests/${activity.requestId}`) : '#'}
                 className={cn(
                   'flex items-start gap-4 p-4 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-all cursor-pointer group hover-lift-sm',
                   isHe && 'flex-row-reverse text-end'

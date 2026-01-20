@@ -1132,7 +1132,8 @@
       "level": "Level 2",
       "notifications": "Notifications",
       "noNotifications": "No notifications",
-      "markAllRead": "Mark all as read"
+      "markAllRead": "Mark all as read",
+      "profileMenu": "Profile menu"
     },
     "accountType": {
       "client": "Client",

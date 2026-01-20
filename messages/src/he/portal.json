@@ -1145,7 +1145,8 @@
       "level": "Level 2",
       "notifications": "התראות",
       "noNotifications": "אין התראות",
-      "markAllRead": "סמן הכל כנקרא"
+      "markAllRead": "סמן הכל כנקרא",
+      "profileMenu": "תפריט פרופיל"
     },
     "accountType": {
       "client": "לקוח",

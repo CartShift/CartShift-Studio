@@ -9,6 +9,7 @@ import {
   useCallback,
   ReactNode,
 } from 'react';
+import { getPortalSubdomainUrl } from '@/lib/utils/portal-paths';
 
 const STORAGE_KEY = 'cartshift_impersonated_account_id';
 
@@ -45,8 +46,8 @@ export function ImpersonationProvider({ children }: { children: ReactNode }) {
     const pathParts = window.location.pathname.split('/');
     const locale = pathParts[1] || 'en'; // default to en
 
-    // Ensure we don't double slash
-    window.location.href = `/${locale}/portal`;
+    // Use subdomain URL for redirect
+    window.location.href = getPortalSubdomainUrl('/dashboard/', locale);
   }, []);
 
   const exitImpersonation = useCallback(() => {
@@ -57,7 +58,7 @@ export function ImpersonationProvider({ children }: { children: ReactNode }) {
     const pathParts = window.location.pathname.split('/');
     const locale = pathParts[1] || 'en';
 
-    window.location.href = `/${locale}/portal/agency`;
+    window.location.href = getPortalSubdomainUrl('/agency/', locale);
   }, []);
 
   const value = useMemo(
