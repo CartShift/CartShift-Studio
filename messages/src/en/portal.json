@@ -130,6 +130,7 @@
     },
     "common": {
       "loading": "Loading...",
+      "client": "Client",
       "error": "Something went wrong",
       "unknownError": "Unknown error",
       "authRequired": "Authentication required",
@@ -204,7 +205,9 @@
       "connected": "Connected",
       "deleteSuccess": "Deleted successfully",
       "deleteError": "Failed to delete",
-      "clearFilters": "Clear Filters"
+      "clearFilters": "Clear Filters",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes"
     },
     "access": {
       "restrictedTitle": "Access Restricted",

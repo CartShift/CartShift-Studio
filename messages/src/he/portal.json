@@ -130,6 +130,7 @@
     },
     "common": {
       "loading": "טוען...",
+      "client": "לקוח",
       "error": "משהו השתבש",
       "retry": "נסה שוב",
       "noData": "אין נתונים זמינים",
@@ -204,7 +205,9 @@
       "estimated": "משוער",
       "connected": "מחובר",
       "deleteError": "המחיקה נכשלה",
-      "clearFilters": "נקה מסננים"
+      "clearFilters": "נקה מסננים",
+      "saving": "שומר...",
+      "saveChanges": "שמור שינויים"
     },
     "access": {
       "restrictedTitle": "הגישה מוגבלת",

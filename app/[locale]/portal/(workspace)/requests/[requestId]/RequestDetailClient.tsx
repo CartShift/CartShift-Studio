@@ -157,6 +157,7 @@ export default function RequestDetailClient() {
     showAgencyActions,
     showClientActions,
     setComments,
+    clientOrganization,
   } = useRequestDetail();
 
   // ========== CONSOLIDATED ACTION HOOKS ==========
@@ -375,13 +376,38 @@ export default function RequestDetailClient() {
             <div className="space-y-6 animate-in slide-in-from-start-4 duration-500">
               {/* Details Card */}
               <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-                <CardSectionTitle className="mb-4">
-                  {t('requests.detail.details')}
-                </CardSectionTitle>
+                <CardSectionTitle className="mb-4">{t('requests.detail.details')}</CardSectionTitle>
                 <div className="text-surface-600 dark:text-surface-300 leading-relaxed whitespace-pre-wrap font-medium">
                   {request.description}
                 </div>
-                <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Client Info - Agency Only */}
+                  {isAgency && clientOrganization && (
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-xl bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 shadow-sm shrink-0">
+                        {clientOrganization.branding?.iconUrl ? (
+                          <img
+                            src={clientOrganization.branding.iconUrl}
+                            alt={clientOrganization.name}
+                            className="w-4 h-4 object-cover rounded-full"
+                          />
+                        ) : (
+                          <UserIcon size={16} className="text-surface-400" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest truncate">
+                          {t('common.client')}
+                        </p>
+                        <Link
+                          href={`/portal/agency/clients/${clientOrganization.id}`}
+                          className="text-sm font-bold text-surface-900 dark:text-white font-outfit hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate block"
+                        >
+                          {clientOrganization.name}
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-xl bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 shadow-sm">
                       <Calendar size={16} className="text-surface-400" />

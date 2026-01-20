@@ -17,6 +17,7 @@ export interface UseRequestDetailResult {
   comments: Comment[];
   activities: ActivityLog[];
   organization: Organization | null;
+  clientOrganization: Organization | null;
   agencyTeam: PortalUser[];
 
   // Auth & IDs
@@ -100,6 +101,14 @@ export function useRequestDetail(): UseRequestDetailResult {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // 6. Client Organization (based on request.orgId)
+  const { data: clientOrganization } = useQuery({
+    queryKey: ['organization', request?.orgId],
+    queryFn: () => getOrganization(request!.orgId),
+    enabled: Boolean(request?.orgId && isAuthenticated),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
   // Helper to update comments optimistically or manually
   // This bridges the gap for components expecting setComments
   const setComments = (action: React.SetStateAction<Comment[]>) => {
@@ -126,6 +135,7 @@ export function useRequestDetail(): UseRequestDetailResult {
     comments,
     activities,
     organization: organization || null,
+    clientOrganization: clientOrganization || null,
     agencyTeam,
     userData: userData as PortalUser | null,
     isAgency,

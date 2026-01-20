@@ -203,10 +203,10 @@ export const EditClientModal = ({
               disabled={loading}
               className="flex-1 font-outfit"
             >
-              {t('common.cancel' as any)}
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={loading} className="flex-1 font-outfit">
-              {loading ? t('common.saving' as any) : t('common.saveChanges' as any)}
+              {loading ? t('common.saving') : t('common.saveChanges')}
             </Button>
           </ModalFooter>
         </form>
