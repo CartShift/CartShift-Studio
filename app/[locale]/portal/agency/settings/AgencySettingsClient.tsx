@@ -206,7 +206,7 @@ export default function AgencysClient() {
   }, [activeTab]);
 
   const handleCancelInvite = async (inviteId: string) => {
-    if (!confirm(t('portal.common.confirm' as any))) return;
+    if (!confirm(t('common.confirm' as any))) return;
     setCancellingInvite(inviteId);
     try {
       await cancelInvite(inviteId);
@@ -226,7 +226,7 @@ export default function AgencysClient() {
       const currentUser = auth.currentUser;
 
       if (!currentUser || !currentUser.uid) {
-        throw new Error(t('portal.common.userNotAuthenticated' as any));
+        throw new Error(t('common.userNotAuthenticated' as any));
       }
 
       const userId = currentUser.uid;
@@ -282,8 +282,7 @@ export default function AgencysClient() {
       );
     } catch (error) {
       console.error('Error saving agency profile:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : t('portal.common.unknownError' as any);
+      const errorMessage = error instanceof Error ? error.message : t('common.unknownError' as any);
       alert(`Failed to save settings: ${errorMessage}`);
     } finally {
       setSaving(false);
@@ -296,7 +295,7 @@ export default function AgencysClient() {
   };
 
   const handleDeleteService = async (serviceId: string) => {
-    if (!confirm(t('portal.common.confirm' as any))) return;
+    if (!confirm(t('common.confirm' as any))) return;
     try {
       await deleteService(serviceId);
     } catch (error) {
@@ -1237,7 +1236,7 @@ export default function AgencysClient() {
                           )}
                         </h4>
                         <p className="text-xs text-surface-500 line-clamp-2 min-h-[2rem]">
-                          {service.description || t('portal.common.noDescription' as any)}
+                          {service.description || t('common.noDescription' as any)}
                         </p>
                       </div>
 
@@ -1318,13 +1317,13 @@ export default function AgencysClient() {
                       >
                         <div className="flex items-center gap-3 mb-3">
                           <Avatar
-                            name={member.name || t('portal.consultations.userFallback' as any)}
+                            name={member.name || t('consultations.userFallback' as any)}
                             size="md"
                             className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
                           />
                           <div>
                             <p className="font-bold text-surface-900 dark:text-white font-outfit">
-                              {member.name || t('portal.common.unnamedUser' as any)}
+                              {member.name || t('common.unnamedUser' as any)}
                             </p>
                             <p className="text-xs font-bold text-surface-400 uppercase tracking-tight">
                               {member.email}
@@ -1383,15 +1382,13 @@ export default function AgencysClient() {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <Avatar
-                                  name={
-                                    member.name || t('portal.consultations.userFallback' as any)
-                                  }
+                                  name={member.name || t('consultations.userFallback' as any)}
                                   size="sm"
                                   className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
                                 />
                                 <div>
                                   <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
-                                    {member.name || t('portal.common.unnamedUser' as any)}
+                                    {member.name || t('common.unnamedUser' as any)}
                                   </p>
                                   <p className="text-[10px] font-bold text-surface-400 uppercase tracking-tight">
                                     {member.email}
@@ -1470,7 +1467,7 @@ export default function AgencysClient() {
                           <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter">
                             {invite.createdAt?.toDate
                               ? invite.createdAt.toDate().toLocaleDateString()
-                              : t('portal.common.sentRecently' as any)}
+                              : t('common.sentRecently' as any)}
                           </span>
                           <button
                             onClick={() => handleCancelInvite(invite.id)}

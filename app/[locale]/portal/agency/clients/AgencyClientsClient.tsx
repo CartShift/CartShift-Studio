@@ -26,7 +26,7 @@ const ClientActionMenu = ({
   org: { id: string; name: string; [key: string]: any };
   onViewAsClient: (id: string) => void;
   onDelete: (id: string, name: string) => void;
-  t: (key: string) => string;
+  t: ReturnType<typeof useTranslations<'portal'>>;
   router: ReturnType<typeof useRouter>;
 }) => (
   <Dropdown
