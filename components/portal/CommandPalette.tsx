@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from '@/i18n/navigation';
 import { motion, AnimatePresence } from '@/lib/motion';
 import {
-  Search,
   LayoutDashboard,
   LayoutList,
   Users,
@@ -14,6 +14,7 @@ import {
   FileText,
   ClipboardList,
   Calendar,
+  Command,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
@@ -84,6 +85,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   const orgId = useResolvedOrgId();
   const { isAgency } = usePortalAuth();
   const [requests, setRequests] = useState<Request[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Subscribe to requests
   useEffect(() => {
@@ -273,17 +275,17 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   // Reset index when query changes
   useEffect(() => setActiveIndex(0), [query]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[5vh] md:pt-[15vh] px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-surface-950/40 backdrop-blur-sm"
             onClick={() => handleOpenChange(false)}
           />
 
@@ -292,30 +294,35 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
             transition={{ duration: 0.15 }}
-            className="w-full max-w-xl bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden relative z-10 flex flex-col max-h-[60vh]"
+            className="relative w-full max-w-2xl bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden flex flex-col max-h-[90vh] md:max-h-[70vh]"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center border-b border-surface-100 dark:border-surface-800 px-4 py-3">
-              <Search className="w-5 h-5 text-surface-400 me-3" />
+            {/* Search Input */}
+            <div className="flex items-center gap-3 p-4 border-b border-surface-100 dark:border-surface-800">
+              <Command size={18} className="text-surface-400" />
               <input
+                ref={inputRef}
                 autoFocus
                 type="text"
-                placeholder={t('portal.commandPalette.placeholder')}
+                placeholder={t('portal.header.searchPlaceholder')}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder:text-surface-400 text-lg"
+                className="flex-1 bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder-surface-400 text-base"
               />
-              <button
-                onClick={() => handleOpenChange(false)}
-                className="text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 p-1"
-              >
-                <div className="text-xs bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded font-medium border border-surface-200 dark:border-surface-700">
-                  ESC
-                </div>
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => handleOpenChange(false)}
+                  className="text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 p-1"
+                >
+                  <div className="text-[10px] bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded font-medium border border-surface-200 dark:border-surface-700">
+                    ESC
+                  </div>
+                </button>
+              </div>
             </div>
 
-            <div className="overflow-y-auto py-2 flex-1 scrollbar-hide">
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 min-h-0">
               {filteredCommands.length === 0 ? (
                 <div className="py-8 text-center text-surface-500">
                   <p>{t('portal.commandPalette.noResults')}</p>
@@ -370,6 +377,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

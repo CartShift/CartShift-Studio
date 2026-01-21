@@ -165,7 +165,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
             <PortalHeader
               onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
-              onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
+              onMobileSearchToggle={() => setIsCommandPaletteOpen(true)}
               userData={state.userData as HeaderUserData | null}
               accountType={state.accountType}
               userRole={state.memberRole}
