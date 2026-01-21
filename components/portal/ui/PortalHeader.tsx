@@ -13,7 +13,7 @@ import { ACCOUNT_TYPE, AccountType, Notification } from '@/lib/types/portal';
 import { cva } from 'class-variance-authority';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useRouter } from '@/i18n/navigation';
-import { LogOut, Settings, User, Building2 } from 'lucide-react';
+import { LogOut, Settings, User, Building2, ExternalLink } from 'lucide-react';
 
 const notificationButtonVariants = cva(
   'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300',
@@ -81,6 +81,11 @@ export function PortalHeader({
   const router = useRouter();
 
   const profileItems = [
+    {
+      label: t('portal.header.visitWebsite'),
+      icon: <ExternalLink size={16} />,
+      onClick: () => window.open('/', '_blank'),
+    },
     {
       label: t('portal.settings.tabs.profile'),
       icon: <User size={16} />,

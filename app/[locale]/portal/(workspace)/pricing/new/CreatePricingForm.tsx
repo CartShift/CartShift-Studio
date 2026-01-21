@@ -65,7 +65,7 @@ export default function CreatePricingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userData } = usePortalAuth();
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [is, setIs] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -601,13 +601,13 @@ export default function CreatePricingForm() {
             {/* Subtotal, Tax, Total */}
             <div className="mx-6 mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 space-y-3">
               <div className="flex items-center justify-between text-sm text-surface-500">
-                <span>{t('portal.pricing.form.subtotal' as any) || 'Subtotal'}</span>
+                <span>{t('pricing.form.subtotal')}</span>
                 <span>{formatCurrency(subtotal, watchedCurrency)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm text-surface-500">
                 <div className="flex items-center gap-2">
-                  <span>{t('portal.pricing.form.tax' as any) || 'VAT (17%)'}</span>
+                  <span>{t('pricing.form.tax')}</span>
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -621,7 +621,7 @@ export default function CreatePricingForm() {
 
               <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800/50">
                 <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
-                  {t('portal.pricing.form.total')}
+                  {t('pricing.form.total')}
                 </span>
                 <span className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
                   {formatCurrency(totalAmount, watchedCurrency)}
@@ -636,13 +636,13 @@ export default function CreatePricingForm() {
           {/* Currency & Validity */}
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.settings' as never) || 's'}
+              {t('pricing.form.settings')}
             </h3>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.currency')}
+                  {t('pricing.form.currency')}
                 </label>
                 <select {...register('currency')} className="portal-input w-full">
                   {Object.entries(CURRENCY).map(([key, value]) => (
@@ -655,7 +655,7 @@ export default function CreatePricingForm() {
 
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.validUntil')}
+                  {t('pricing.form.validUntil')}
                 </label>
                 <div className="relative">
                   <CalendarIcon
@@ -675,7 +675,7 @@ export default function CreatePricingForm() {
           {/* Client Info */}
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.clientInfo' as never) || 'Client Info'}
+              {t('pricing.form.clientInfo')}
             </h3>
 
             <div className="space-y-4">

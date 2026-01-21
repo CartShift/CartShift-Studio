@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-01-21T20:15:38.457Z
+ * Last updated: 2026-01-21T21:14:06.778Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -1324,6 +1324,7 @@ export interface Portal {
     noNotifications: string;
     markAllRead: string;
     profileMenu: string;
+    visitWebsite: string;
   };
   impersonation: {
     viewingAs: string;
@@ -4692,6 +4693,7 @@ export type TranslationKey =
   | 'portal.header.profileMenu'
   | 'portal.header.search'
   | 'portal.header.searchPlaceholder'
+  | 'portal.header.visitWebsite'
   | 'portal.impersonation.client'
   | 'portal.impersonation.exitView'
   | 'portal.impersonation.viewAsClient'

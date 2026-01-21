@@ -188,7 +188,53 @@ GOOGLE_SITE_VERIFICATION=your_verification_code
 
 ## High Priority Improvements
 
-### 5. 🟠 Overly Restrictive Robots.txt
+### 5. 🟠 Blog Post Indexing Issue (FIXED 2026-01-27)
+
+**Impact:** High - Blog posts not appearing in Google Search Console index
+
+**Issue Found:**
+
+- Sitemap generates URLs with locale prefix: `/en/blog/slug` and `/he/blog/slug`
+- Article schema and breadcrumb schema were using URLs WITHOUT locale prefix: `/blog/slug`
+- This URL mismatch confused Google's crawler about which URLs to index
+- Only 1 blog post was indexed out of 16 total posts
+
+**Root Cause:**
+
+- Schema markup URLs didn't match sitemap URLs
+- Canonical URLs in metadata were correct, but structured data URLs were inconsistent
+
+**Solution Applied:**
+
+1. ✅ Fixed article schema URL to include locale prefix: `${baseUrl}/${locale}/blog/${post.slug}`
+2. ✅ Fixed breadcrumb schema URLs to include locale prefix
+3. ✅ Fixed blog listing page collection schema URLs to include locale prefix
+4. ✅ Updated blog listing page metadata generation to use `generateMetadata` function with locale
+
+**Files Changed:**
+
+- `app/[locale]/blog/[slug]/page.tsx` - Fixed article and breadcrumb schema URLs
+- `app/[locale]/blog/page.tsx` - Fixed collection schema URLs and metadata generation
+
+**Next Steps for User:**
+
+1. Deploy the changes to production
+2. In Google Search Console:
+   - Go to Sitemaps section
+   - Submit/Resubmit sitemap: `https://cart-shift.com/sitemap.xml`
+   - Use "Request Indexing" for individual blog post URLs if needed
+3. Monitor indexing status in Google Search Console (may take 1-2 weeks)
+4. Verify all 16 blog posts × 2 locales = 32 URLs appear in sitemap
+
+**Expected Result:**
+
+- All blog posts should be indexed within 1-2 weeks after deployment
+- Both English and Hebrew versions should be indexed
+- Structured data should match sitemap URLs for better SEO
+
+---
+
+### 6. 🟠 Overly Restrictive Robots.txt
 
 **Impact:** Medium-High - Indexing, discoverability
 
@@ -228,7 +274,7 @@ disallow: [
 
 ---
 
-### 6. 🟠 Missing Noindex Tags on Private Pages
+### 7. 🟠 Missing Noindex Tags on Private Pages
 
 **Impact:** Medium - Index quality, duplicate content
 
@@ -257,7 +303,7 @@ export const metadata: Metadata = {
 
 ---
 
-### 7. 🟠 Missing hreflang Tags in HTML Head
+### 8. 🟠 Missing hreflang Tags in HTML Head
 
 **Impact:** Medium - International SEO, duplicate content
 

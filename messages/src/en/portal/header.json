@@ -11,7 +11,8 @@
       "notifications": "Notifications",
       "noNotifications": "No notifications",
       "markAllRead": "Mark all as read",
-      "profileMenu": "Profile menu"
+      "profileMenu": "Profile menu",
+      "visitWebsite": "Visit Website"
     }
   }
 }

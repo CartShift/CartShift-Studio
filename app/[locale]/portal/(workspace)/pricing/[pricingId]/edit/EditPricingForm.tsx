@@ -71,7 +71,7 @@ export default function EditPricingForm() {
   const pricingId = useResolvedPricingId();
   const router = useRouter();
   const { userData, isAgency } = usePortalAuth();
-  const t = useTranslations();
+  const t = useTranslations('portal');
 
   const [isLoading, setIsLoading] = useState(true);
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
@@ -95,9 +95,9 @@ export default function EditPricingForm() {
           .array(
             z.object({
               id: z.string(),
-              description: z.string().min(1, t('portal.common.descriptionRequired')),
-              quantity: z.number().min(1, t('portal.pricing.form.errors.quantityMustBeAtLeast1')),
-              unitPrice: z.number().min(0, t('portal.pricing.form.errors.priceMustBePositive')),
+              description: z.string().min(1, t('common.descriptionRequired')),
+              quantity: z.number().min(1, t('pricing.form.errors.quantityMustBeAtLeast1')),
+              unitPrice: z.number().min(0, t('pricing.form.errors.priceMustBePositive')),
               notes: z.string().optional(),
             })
           )
@@ -145,7 +145,7 @@ export default function EditPricingForm() {
   // Fetch pricing request data
   useEffect(() => {
     if (!orgId || !pricingId || typeof orgId !== 'string' || typeof pricingId !== 'string') {
-      setErrorMessage(t('portal.common.error' as never));
+      setErrorMessage(t('common.error'));
       setIsLoading(false);
       return;
     }
@@ -206,7 +206,7 @@ export default function EditPricingForm() {
         });
       } catch (err) {
         console.error('Failed to fetch pricing request:', err);
-        setErrorMessage(t('portal.pricing.form.errors.failedToLoad'));
+        setErrorMessage(t('pricing.form.errors.failedToLoad'));
       } finally {
         setIsLoading(false);
       }
@@ -241,7 +241,7 @@ export default function EditPricingForm() {
       !pricingId ||
       typeof pricingId !== 'string'
     ) {
-      setErrorMessage(t('portal.common.authRequired'));
+      setErrorMessage(t('common.authRequired'));
       setSubmitStatus('error');
       return;
     }
@@ -300,9 +300,7 @@ export default function EditPricingForm() {
     return (
       <div className="py-20 flex flex-col items-center justify-center space-y-3">
         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-        <p className="text-sm font-bold text-surface-400 font-outfit">
-          {t('portal.common.loading' as any)}
-        </p>
+        <p className="text-sm font-bold text-surface-400 font-outfit">{t('common.loading')}</p>
       </div>
     );
   }
@@ -311,12 +309,10 @@ export default function EditPricingForm() {
     return (
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
-        <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-          {t('portal.common.error' as any)}
-        </h2>
+        <h2 className="text-xl font-bold text-surface-900 dark:text-white">{t('common.error')}</h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{errorMessage}</p>
         <Link href="/portal/pricing/">
-          <Button>{t('portal.common.back' as any)}</Button>
+          <Button>{t('common.back')}</Button>
         </Link>
       </div>
     );
@@ -331,7 +327,7 @@ export default function EditPricingForm() {
           Only agency members can edit pricing offers.
         </p>
         <Link href="/portal/pricing/">
-          <Button>{t('portal.common.back' as any)}</Button>
+          <Button>{t('common.back')}</Button>
         </Link>
       </div>
     );
@@ -363,7 +359,7 @@ export default function EditPricingForm() {
         <Link href={`/portal/pricing/${pricingId}/`}>
           <Button variant="ghost" className="flex items-center gap-2">
             <ArrowLeft size={18} />
-            {t('portal.common.back' as any)}
+            {t('common.back')}
           </Button>
         </Link>
       </div>
@@ -371,10 +367,10 @@ export default function EditPricingForm() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.pricing.editOffer')}
+            {t('pricing.editOffer')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.pricing.editOfferDescription')}
+            {t('pricing.editOfferDescription')}
           </p>
         </div>
         {pricingRequest && (
@@ -389,19 +385,19 @@ export default function EditPricingForm() {
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.offerDetails')}
+              {t('pricing.form.offerDetails')}
             </h3>
 
             <div className="space-y-4">
               {/* Title */}
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.titleLabel')} *
+                  {t('pricing.form.titleLabel')} *
                 </label>
                 <input
                   {...register('title')}
                   type="text"
-                  placeholder={t('portal.pricing.form.titlePlaceholder')}
+                  placeholder={t('pricing.form.titlePlaceholder')}
                   className={cn(
                     'portal-input w-full',
                     errors.title && 'border-red-500 focus:ring-red-500'
@@ -418,12 +414,12 @@ export default function EditPricingForm() {
               {/* Description */}
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.descriptionLabel')}
+                  {t('pricing.form.descriptionLabel')}
                 </label>
                 <textarea
                   {...register('description')}
                   rows={3}
-                  placeholder={t('portal.pricing.form.descriptionPlaceholder')}
+                  placeholder={t('pricing.form.descriptionPlaceholder')}
                   className="portal-input w-full resize-none"
                 />
               </div>
@@ -437,18 +433,17 @@ export default function EditPricingForm() {
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
                     <FileText className="inline w-5 h-5 me-2" />
-                    {t('portal.pricing.includedRequests')}
+                    {t('pricing.includedRequests')}
                   </h3>
                   <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
-                    {t('portal.pricing.form.linkedRequestsNote' as never) ||
-                      t('portal.pricing.form.linkedRequestsLabel')}
+                    {t('pricing.form.linkedRequestsLabel')}
                   </p>
                 </div>
                 <Badge variant="blue">
                   {linkedRequests.length}{' '}
                   {linkedRequests.length === 1
-                    ? t('portal.pricing.form.selected_singular')
-                    : t('portal.pricing.form.selected')}
+                    ? t('pricing.form.selected_singular')
+                    : t('pricing.form.selected')}
                 </Badge>
               </div>
 
@@ -502,7 +497,7 @@ export default function EditPricingForm() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.form.lineItems')}
+                {t('pricing.form.lineItems')}
               </h3>
               <button
                 type="button"
@@ -512,16 +507,16 @@ export default function EditPricingForm() {
                 className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
               >
                 <Plus size={16} />
-                {t('portal.pricing.form.addItem')}
+                {t('pricing.form.addItem')}
               </button>
             </div>
 
             <div className="space-y-4">
               {/* Header */}
               <div className="grid grid-cols-12 gap-3 px-1 text-xs font-black text-surface-400 uppercase tracking-wider">
-                <div className="col-span-5">{t('portal.pricing.form.itemDescription')}</div>
-                <div className="col-span-2 text-center">{t('portal.pricing.form.quantity')}</div>
-                <div className="col-span-3">{t('portal.pricing.form.unitPrice')}</div>
+                <div className="col-span-5">{t('pricing.form.itemDescription')}</div>
+                <div className="col-span-2 text-center">{t('pricing.form.quantity')}</div>
+                <div className="col-span-3">{t('pricing.form.unitPrice')}</div>
                 <div className="col-span-2"></div>
               </div>
 
@@ -590,7 +585,7 @@ export default function EditPricingForm() {
                   <AlertCircle size={14} />
                   {typeof errors.lineItems.message === 'string'
                     ? errors.lineItems.message
-                    : t('portal.pricing.form.errors.checkLineItems')}
+                    : t('pricing.form.errors.checkLineItems')}
                 </p>
               )}
             </div>
@@ -599,13 +594,13 @@ export default function EditPricingForm() {
             {/* Subtotal, Tax, Total */}
             <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 space-y-3">
               <div className="flex items-center justify-between text-sm text-surface-500">
-                <span>{t('portal.pricing.form.subtotal' as any) || 'Subtotal'}</span>
+                <span>{t('pricing.form.subtotal')}</span>
                 <span>{formatCurrency(subtotal, watchedCurrency)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm text-surface-500">
                 <div className="flex items-center gap-2">
-                  <span>{t('portal.pricing.form.tax' as any) || 'VAT (17%)'}</span>
+                  <span>{t('pricing.form.tax')}</span>
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -619,7 +614,7 @@ export default function EditPricingForm() {
 
               <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800/50">
                 <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
-                  {t('portal.pricing.form.total')}
+                  {t('pricing.form.total')}
                 </span>
                 <span className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
                   {formatCurrency(totalAmount, watchedCurrency)}
@@ -634,13 +629,13 @@ export default function EditPricingForm() {
           {/* Currency & Validity */}
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.settings')}
+              {t('pricing.form.settings')}
             </h3>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.currency')}
+                  {t('pricing.form.currency')}
                 </label>
                 <select {...register('currency')} className="portal-input w-full">
                   {Object.entries(CURRENCY).map(([key, value]) => (
@@ -653,7 +648,7 @@ export default function EditPricingForm() {
 
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.validUntil')}
+                  {t('pricing.form.validUntil')}
                 </label>
                 <div className="relative">
                   <CalendarIcon
@@ -673,25 +668,25 @@ export default function EditPricingForm() {
           {/* Client Info */}
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.clientInfo')}
+              {t('pricing.form.clientInfo')}
             </h3>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.clientName')}
+                  {t('pricing.form.clientName')}
                 </label>
                 <input
                   {...register('clientName')}
                   type="text"
-                  placeholder={t('portal.common.namePlaceholder')}
+                  placeholder={t('common.namePlaceholder')}
                   className="portal-input w-full"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.clientEmail')}
+                  {t('pricing.form.clientEmail')}
                 </label>
                 <input
                   {...register('clientEmail')}
@@ -706,12 +701,12 @@ export default function EditPricingForm() {
           {/* Agency Notes */}
           <Card className="p-6">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.agencyNotes')}
+              {t('pricing.form.agencyNotes')}
             </h3>
             <textarea
               {...register('agencyNotes')}
               rows={4}
-              placeholder={t('portal.pricing.form.agencyNotesPlaceholder')}
+              placeholder={t('pricing.form.agencyNotesPlaceholder')}
               className="portal-input w-full resize-none text-sm"
             />
           </Card>
@@ -736,9 +731,7 @@ export default function EditPricingForm() {
                 className="w-full h-12 flex items-center justify-center gap-2"
               >
                 {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
-                {isSending
-                  ? t('portal.pricing.form.sending')
-                  : t('portal.pricing.form.sendToClient')}
+                {isSending ? t('pricing.form.sending') : t('pricing.form.sendToClient')}
               </Button>
             )}
 
@@ -754,7 +747,7 @@ export default function EditPricingForm() {
               ) : (
                 <Save size={18} />
               )}
-              {t('portal.pricing.form.saveChanges')}
+              {t('pricing.form.saveChanges')}
             </Button>
 
             <button
@@ -762,7 +755,7 @@ export default function EditPricingForm() {
               onClick={() => router.back()}
               className="w-full h-10 text-sm font-bold text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors"
             >
-              {t('portal.common.cancel')}
+              {t('common.cancel')}
             </button>
           </div>
         </div>

@@ -43,7 +43,7 @@ export default function FilesClient() {
     name: string;
     storagePath?: string;
   } | null>(null);
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const locale = useLocale();
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function FilesClient() {
         setFiles(data);
       } catch (err) {
         console.error('Error fetching files:', err);
-        setError(t('portal.common.error'));
+        setError(t('common.error'));
       } finally {
         set(false);
       }
@@ -234,8 +234,7 @@ export default function FilesClient() {
                             variant="gray"
                             className="text-[9px] font-black border-surface-200 dark:border-surface-800"
                           >
-                            {file.mimeType.split('/').pop()?.toUpperCase() ||
-                              t('portal.common.file' as any)}
+                            {file.mimeType.split('/').pop()?.toUpperCase() || t('common.file')}
                           </Badge>
                           <span className="text-xs font-bold text-surface-500 font-outfit">
                             {formatFileSize(file.size)}

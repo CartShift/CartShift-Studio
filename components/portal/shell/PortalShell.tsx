@@ -31,7 +31,7 @@ import { ImpersonationBanner } from '../ui/ImpersonationBanner';
 import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }: PortalShellProps) {
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const locale = useLocale();
 
   const state = usePortalShellState({
@@ -44,8 +44,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
-    ? getAgencyNavGroups((key: string) => t(key as any))
-    : getClientNavGroups((key: string) => t(key as any));
+    ? getAgencyNavGroups((key: string) => t(key))
+    : getClientNavGroups((key: string) => t(key));
 
   // Calculate if breadcrumbs should be shown
   const showBreadcrumbs = (() => {
@@ -81,7 +81,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-always-on-top focus:px-6 focus:py-3 focus:bg-blue-600 focus:text-white focus:font-bold focus:rounded-2xl focus:shadow-xl focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 focus:outline-none focus:text-lg"
       >
-        {t('portal.accessibility.skipToContent')}
+        {t('accessibility.skipToContent')}
       </a>
 
       {showState ? (

@@ -133,7 +133,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
               <div className="space-y-3">
                 <div className="flex items-start gap-3 bg-white/10 rounded-xl p-4">
                   <BarChart3 className="w-5 h-5 text-amber-300 flex-shrink-0 mt-0.5" />
-                  <div className="text-left">
+                  <div className="text-start">
                     <h3 className="font-semibold text-white mb-1">
                       {t('exitIntent.feature1Title')}
                     </h3>
@@ -143,7 +143,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
 
                 <div className="flex items-start gap-3 bg-white/10 rounded-xl p-4">
                   <CheckCircle className="w-5 h-5 text-emerald-300 flex-shrink-0 mt-0.5" />
-                  <div className="text-left">
+                  <div className="text-start">
                     <h3 className="font-semibold text-white mb-1">
                       {t('exitIntent.feature2Title')}
                     </h3>
@@ -175,7 +175,10 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {t('exitIntent.cta')}
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight
+                  size={18}
+                  className="rtl:-scale-x-100 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
+                />
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Button>

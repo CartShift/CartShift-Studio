@@ -73,7 +73,7 @@ export default async function BlogPostPage({
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
-  const articleUrl = `${baseUrl}/blog/${post.slug}`;
+  const articleUrl = `${baseUrl}/${locale}/blog/${post.slug}`;
 
   const articleSchema = generateArticleSchema({
     title: post.title,
@@ -87,8 +87,8 @@ export default async function BlogPostPage({
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: baseUrl },
-    { name: 'Blog', url: `${baseUrl}/blog` },
+    { name: 'Home', url: `${baseUrl}/${locale}` },
+    { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
     { name: post.title, url: articleUrl },
   ]);
 

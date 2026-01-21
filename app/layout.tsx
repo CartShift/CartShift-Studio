@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   description: 'Expert Shopify & WordPress development agency',
   icons: {
     icon: '/favicon.ico',
+    apple: [
+      { url: '/apple-touch-icon.png' },
+      { url: '/apple-touch-icon-ipad-76x76.png', sizes: '76x76' },
+      { url: '/apple-touch-icon-ipad-retina-152x152.png', sizes: '152x152' },
+      { url: '/apple-touch-icon-iphone-60x60.png', sizes: '60x60' },
+      { url: '/apple-touch-icon-iphone-retina-120x120.png', sizes: '120x120' },
+    ],
   },
 };
 
@@ -27,10 +34,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html suppressHydrationWarning className={`${outfit.variable} ${rubik.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         {process.env.GOOGLE_SITE_VERIFICATION && (
           <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION} />
         )}

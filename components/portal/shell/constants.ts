@@ -16,22 +16,22 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 
 // Define valid navigation translation keys
 type NavTranslationKey =
-  | 'portal.sidebar.nav.dashboard'
-  | 'portal.sidebar.nav.requests'
-  | 'portal.sidebar.nav.pricing'
-  | 'portal.sidebar.nav.files'
-  | 'portal.sidebar.nav.settings'
-  | 'portal.sidebar.nav.team'
-  | 'portal.sidebar.nav.consultations'
-  | 'portal.sidebar.nav.review'
-  | 'portal.sidebar.nav.workboard'
-  | 'portal.sidebar.nav.sales'
-  | 'portal.sidebar.nav.clients'
-  | 'portal.sidebar.nav.pricing'
-  | 'portal.sidebar.nav.testimonials'
-  | 'portal.sidebar.nav.help'
-  | 'portal.sidebar.nav.agency_dashboard'
-  | 'portal.sidebar.nav.agency_settings';
+  | 'sidebar.nav.dashboard'
+  | 'sidebar.nav.requests'
+  | 'sidebar.nav.pricing'
+  | 'sidebar.nav.files'
+  | 'sidebar.nav.settings'
+  | 'sidebar.nav.team'
+  | 'sidebar.nav.consultations'
+  | 'sidebar.nav.review'
+  | 'sidebar.nav.workboard'
+  | 'sidebar.nav.sales'
+  | 'sidebar.nav.clients'
+  | 'sidebar.nav.pricing'
+  | 'sidebar.nav.testimonials'
+  | 'sidebar.nav.help'
+  | 'sidebar.nav.agency_dashboard'
+  | 'sidebar.nav.agency_settings';
 
 // Type-safe translation function for navigation
 interface NavTranslationFunction {
@@ -63,13 +63,13 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.workboard'),
+          label: t('sidebar.nav.workboard'),
           icon: Kanban,
           href: getPortalPath('/agency/workboard/'),
           // Accessible by all agency members
         },
         {
-          label: t('portal.sidebar.nav.sales'),
+          label: t('sidebar.nav.sales'),
           icon: TrendingUp,
           href: getPortalPath('/agency/sales/'),
           roles: PERMISSIONS.VIEW_SALES_DASHBOARD,
@@ -79,19 +79,19 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.clients'),
+          label: t('sidebar.nav.clients'),
           icon: Users,
           href: getPortalPath('/agency/clients/'),
           roles: PERMISSIONS.MANAGE_CLIENTS,
         },
         {
-          label: t('portal.sidebar.nav.requests'),
+          label: t('sidebar.nav.requests'),
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
           // Accessible by all
         },
         {
-          label: t('portal.sidebar.nav.consultations'),
+          label: t('sidebar.nav.consultations'),
           icon: Calendar,
           href: getPortalPath('/agency/consultations/'),
           roles: PERMISSIONS.MANAGE_CLIENTS,
@@ -101,13 +101,13 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.pricing'),
+          label: t('sidebar.nav.pricing'),
           icon: DollarSign,
           href: getPortalPath('/agency/pricing/'),
           roles: PERMISSIONS.MANAGE_PRICING,
         },
         {
-          label: t('portal.sidebar.nav.testimonials'),
+          label: t('sidebar.nav.testimonials'),
           icon: Star,
           href: getPortalPath('/agency/testimonials/'),
           roles: PERMISSIONS.MANAGE_CLIENTS,
@@ -117,7 +117,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.settings'),
+          label: t('sidebar.nav.settings'),
           icon: Settings,
           href: getPortalPath('/agency/settings/'),
           roles: PERMISSIONS.MANAGE_SETTINGS,
@@ -132,12 +132,12 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.dashboard'),
+          label: t('sidebar.nav.dashboard'),
           icon: LayoutDashboard,
           href: getPortalPath('/dashboard/'),
         },
         {
-          label: t('portal.sidebar.nav.requests'),
+          label: t('sidebar.nav.requests'),
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
         },
@@ -146,17 +146,17 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.team'),
+          label: t('sidebar.nav.team'),
           icon: Users,
           href: getPortalPath('/team/'),
         },
         {
-          label: t('portal.sidebar.nav.files'),
+          label: t('sidebar.nav.files'),
           icon: FolderOpen,
           href: getPortalPath('/files/'),
         },
         {
-          label: t('portal.sidebar.nav.consultations'),
+          label: t('sidebar.nav.consultations'),
           icon: Calendar,
           href: getPortalPath('/consultations/'),
         },
@@ -165,12 +165,12 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.pricing'),
+          label: t('sidebar.nav.pricing'),
           icon: DollarSign,
           href: getPortalPath('/pricing/'),
         },
         {
-          label: t('portal.sidebar.nav.review'),
+          label: t('sidebar.nav.review'),
           icon: Star,
           href: getPortalPath('/review/'),
         },
@@ -179,7 +179,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     {
       items: [
         {
-          label: t('portal.sidebar.nav.settings'),
+          label: t('sidebar.nav.settings'),
           icon: Settings,
           href: getPortalPath('/settings/'),
         },

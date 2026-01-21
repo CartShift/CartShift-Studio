@@ -23,11 +23,11 @@ const ClientActionMenu = ({
   t,
   router,
 }: {
-  org: any;
+  org: { id: string; name: string; [key: string]: any };
   onViewAsClient: (id: string) => void;
   onDelete: (id: string, name: string) => void;
-  t: any;
-  router: any;
+  t: (key: string) => string;
+  router: ReturnType<typeof useRouter>;
 }) => (
   <Dropdown
     trigger={
@@ -123,14 +123,14 @@ export default function AgencyClientsClient() {
         await setDoc(userRef, {
           ...updateData,
           email: user.email,
-          name: user.displayName || t('common.agencyAdmin' as any),
+          name: user.displayName || t('common.agencyAdmin'),
           createdAt: new Date(),
         });
       }
       window.location.reload();
     } catch (err) {
       console.error('Repair failed:', err);
-      alert(t('agency.repairFailed' as any));
+      alert(t('agency.repairFailed'));
     } finally {
       setIsRepairing(false);
     }

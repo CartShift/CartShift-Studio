@@ -69,13 +69,13 @@
   },
   "exitIntent": {
     "heading": "Before you go...",
-    "subheading": "Get a free consultation for your project",
-    "feature1Title": "Store Performance Analysis",
-    "feature1Description": "Get insights into your store's performance and identify growth opportunities.",
-    "feature2Title": "Expert Consultation",
-    "feature2Description": "Work with our team to optimize your store and boost conversions.",
-    "description": "We'd love to hear about what you're building and see how we can help.",
-    "learnMore": "Learn more about our services",
-    "cta": "Book a Free Call"
+    "subheading": "Let us help you take your business to the next level",
+    "feature1Title": "In-Depth Store Analysis",
+    "feature1Description": "We'll review your store's performance and uncover growth opportunities you didn't know existed.",
+    "feature2Title": "Expert Guidance",
+    "feature2Description": "Work together to improve your store, optimize conversions, and increase sales.",
+    "description": "We'd love to hear about your project and understand how we can help you succeed.",
+    "learnMore": "Read more about our services",
+    "cta": "Book a Free Consultation"
   }
 }
