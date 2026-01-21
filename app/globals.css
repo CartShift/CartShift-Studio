@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TEMP BUILD TEST - DELETE AFTER CONFIRMING */
+body::before {
+  content: 'CSS BUILD: JAN-21-V4';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999999;
+  background: magenta;
+  color: white;
+  padding: 30px 60px;
+  font-size: 32px;
+  font-weight: bold;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
 :root {
   --background: #f0f4f8;
   --foreground: #1e293b;

@@ -4,6 +4,9 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
+// Toggle subdomain functionality - set to false to disable portal subdomain routing
+const ENABLE_PORTAL_SUBDOMAIN = false;
+
 export default function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
@@ -18,6 +21,11 @@ export default function middleware(request: NextRequest) {
     pathname.startsWith('/_vercel') ||
     pathname.startsWith('/__') // Firebase auth
   ) {
+    return intlMiddleware(request);
+  }
+
+  // If subdomain functionality is disabled, just use intl middleware
+  if (!ENABLE_PORTAL_SUBDOMAIN) {
     return intlMiddleware(request);
   }
 
@@ -42,12 +50,18 @@ export default function middleware(request: NextRequest) {
     }
 
     // Internally rewrite to /portal folder
+    const rewriteUrl = request.nextUrl.clone();
     if (hasLocale && pathParts[2] !== 'portal') {
       const locale = pathParts[1];
       const rest = pathParts.slice(2).join('/');
-      request.nextUrl.pathname = `/${locale}/portal/${rest}`;
+      rewriteUrl.pathname = `/${locale}/portal/${rest}`;
     } else if (!hasLocale && !pathname.startsWith('/portal')) {
-      request.nextUrl.pathname = `/portal${pathname === '/' ? '' : pathname}`;
+      rewriteUrl.pathname = `/portal${pathname === '/' ? '' : pathname}`;
+    }
+
+    // Must use NextResponse.rewrite() - modifying request.nextUrl doesn't trigger rewrite
+    if (rewriteUrl.pathname !== pathname) {
+      return NextResponse.rewrite(rewriteUrl);
     }
   }
 
