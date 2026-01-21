@@ -184,12 +184,12 @@ export default function RequestsClient() {
     setIsDeleting(true);
     try {
       await deleteRequest(requestToDelete);
-      toast.success(t('common.deleteSuccess' as any));
+      toast.success(t('portal.common.deleteSuccess'));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
       console.error('Failed to delete request:', error);
-      toast.error(t('common.deleteError' as any));
+      toast.error(t('portal.common.deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -267,10 +267,10 @@ export default function RequestsClient() {
 
     if (uniqueOrgIds.length > 1) {
       const orgNames = uniqueOrgIds
-        .map(id => organizations[id]?.name || t('common.unknown'))
+        .map(id => organizations[id]?.name || t('portal.common.unknown'))
         .join(', ');
       alert(
-        `${t('agency.errors.sameOrgRequired' as any) || 'All selected requests must belong to the same organization.'}\n\n` +
+        `${t('portal.agency.errors.sameOrgRequired') || 'All selected requests must belong to the same organization.'}\n\n` +
           `Selected requests are from: ${orgNames}`
       );
       return;
@@ -398,10 +398,10 @@ export default function RequestsClient() {
                 )}
               >
                 {filter === 'All'
-                  ? t('common.all' as any)
+                  ? t('common.all')
                   : isAgency
-                    ? t(`requests.status.${filter.toLowerCase()}` as any)
-                    : t(`requests.clientStatus.${filter.toLowerCase()}` as any)}
+                    ? t(`requests.status.${filter.toLowerCase()}`)
+                    : t(`requests.clientStatus.${filter.toLowerCase()}`)}
               </button>
             ))}
             {/* Organization Filter - Agency Only */}
@@ -676,13 +676,13 @@ export default function RequestsClient() {
                                   {isAgency ? (
                                     <Badge variant={getStatusBadgeVariant(req.status)}>
                                       {t(
-                                        `requests.status.${req.status?.toLowerCase() || 'new'}` as any
+                                        `requests.status.${(req.status?.toLowerCase() || 'new') as keyof typeof t}`
                                       )}
                                     </Badge>
                                   ) : (
                                     <Badge variant={getClientStatusBadgeVariant(req.status)}>
                                       {t(
-                                        `requests.clientStatus.${CLIENT_STATUS_MAP[req.status]?.toLowerCase() || 'submitted'}` as any
+                                        `requests.clientStatus.${(CLIENT_STATUS_MAP[req.status]?.toLowerCase() || 'submitted') as keyof typeof t}`
                                       )}
                                     </Badge>
                                   )}
@@ -710,7 +710,7 @@ export default function RequestsClient() {
                                 />
                                 <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
                                   {t(
-                                    `requests.priority.${req.priority?.toLowerCase() || 'normal'}` as any
+                                    `requests.priority.${(req.priority?.toLowerCase() || 'normal') as keyof typeof t}`
                                   )}
                                 </span>
                               </div>

@@ -83,12 +83,12 @@ function SignupForm() {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/email-already-in-use'
-          ? t('auth.errors.emailInUse' as any)
+          ? t('portal.auth.errors.emailInUse')
           : firebaseError.code === 'auth/invalid-email'
-            ? t('auth.errors.invalidEmail' as any)
+            ? t('portal.auth.errors.invalidEmail')
             : firebaseError.code === 'auth/weak-password'
-              ? t('auth.errors.weakPassword' as any)
-              : firebaseError.message || t('auth.errors.generic' as any);
+              ? t('portal.auth.errors.weakPassword')
+              : firebaseError.message || t('portal.auth.errors.generic');
       setError(errorMessage);
     } finally {
       set(false);
@@ -158,7 +158,7 @@ function SignupForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors z-10"
                   aria-label={
-                    showPassword ? t('auth.hidePassword' as any) : t('auth.showPassword' as any)
+                    showPassword ? t('portal.auth.hidePassword') : t('portal.auth.showPassword')
                   }
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -180,7 +180,7 @@ function SignupForm() {
                     ))}
                   </div>
                   <p className="text-xs text-surface-500 dark:text-surface-400">
-                    {strengthLabels[strength - 1] || t('auth.passwordStrength.veryWeak' as any)}
+                    {strengthLabels[strength - 1] || t('portal.auth.passwordStrength.veryWeak')}
                   </p>
                 </div>
               )}
@@ -206,8 +206,8 @@ function SignupForm() {
                   className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors z-10"
                   aria-label={
                     showConfirmPassword
-                      ? t('auth.hidePassword' as any)
-                      : t('auth.showPassword' as any)
+                      ? t('portal.auth.hidePassword')
+                      : t('portal.auth.showPassword')
                   }
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}

@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTeam } from '@/lib/hooks/useTeam';
+import { OrganizationMember, UserRole } from '@/lib/types/portal';
 
 export default function TeamClient() {
   const orgId = useResolvedOrgId();
@@ -58,7 +59,7 @@ export default function TeamClient() {
     }
   };
 
-  const handleRemoveMember = async (member: any) => {
+  const handleRemoveMember = async (member: OrganizationMember) => {
     if (!confirm(t('team.removeMemberConfirm', { name: member.name || member.email }))) return;
 
     try {
@@ -69,7 +70,7 @@ export default function TeamClient() {
     }
   };
 
-  const handleChangeRole = async (memberId: string, newRole: any) => {
+  const handleChangeRole = async (memberId: string, newRole: UserRole) => {
     try {
       await updateMemberRole(memberId, newRole);
     } catch (error) {

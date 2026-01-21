@@ -42,7 +42,7 @@ function DashboardClientContent() {
   const greeting = useMemo(() => {
     const key = getGreetingKey();
     const firstName = userData?.name?.split(' ')[0] || '';
-    return t(`dashboard.greeting.${key}` as any, { name: firstName } as any);
+    return t(`dashboard.greeting.${key}`, { name: firstName });
   }, [t, userData?.name]);
 
   // Collapsible Service Status Logic

@@ -4,8 +4,7 @@ import { Skeleton, SkeletonAvatar } from '@/components/ui/Skeleton';
 
 export function PortalState() {
   return (
-    <>
-      {/* Container that matches side-by-side layout of shell */}
+    <div className="flex min-h-screen w-full bg-surface-50 dark:bg-surface-950">
       {/* Sidebar Skeleton - Matches PortalSidebar.tsx */}
       <div className="hidden md:flex md:w-[var(--sidebar-width-expanded)] flex-col border-e border-surface-200/50 dark:border-surface-800/30 bg-white dark:bg-surface-950/80 shrink-0 shadow-2xl shadow-surface-950/20 z-[70]">
         {/* Brand - Matches SidebarBrand.tsx */}
@@ -97,6 +96,6 @@ export function PortalState() {
           </div>
         </main>
       </div>
-    </>
+    </div>
   );
 }

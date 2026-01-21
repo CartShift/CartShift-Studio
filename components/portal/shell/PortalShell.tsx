@@ -85,9 +85,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
       </a>
 
       {showState ? (
-        <div className="flex min-h-screen bg-surface-50 dark:bg-surface-950">
-          <PortalState />
-        </div>
+        <PortalState />
       ) : showAccessDenied ? (
         <PortalAccessDenied />
       ) : (

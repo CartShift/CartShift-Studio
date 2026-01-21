@@ -117,7 +117,7 @@ export default function AgencyPricingClient() {
       return () => unsubscribe();
     } catch (err) {
       console.error('Failed to subscribe to pricing requests:', err);
-      setError(t('common.error' as any));
+      setError(t('common.error'));
       set(false);
       // Return void explicitly for catch block
       return;
@@ -186,10 +186,10 @@ export default function AgencyPricingClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('common.error' as any)}
+          {t('common.error')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
-        <Button onClick={() => window.location.reload()}>{t('common.retry' as any)}</Button>
+        <Button onClick={() => window.location.reload()}>{t('common.retry')}</Button>
       </div>
     );
   }
@@ -200,10 +200,10 @@ export default function AgencyPricingClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('pricing.title' as any)}
+            {t('pricing.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('agency.pricing.subtitle' as any) || 'Manage pricing offers across all clients'}
+            {t('agency.pricing.subtitle') || 'Manage pricing offers across all clients'}
           </p>
         </div>
         <div className="flex gap-2">
@@ -212,11 +212,11 @@ export default function AgencyPricingClient() {
             onClick={() => router.push(getPortalPath('/agency/calculator/'))}
           >
             <Calculator size={18} className="me-2" />
-            {t('pricing.calculator' as any)}
+            {t('pricing.calculator')}
           </Button>
           <Button onClick={() => setShowNewOfferModal(true)}>
             <Plus size={18} className="me-2" />
-            {t('pricing.newOffer' as any)}
+            {t('pricing.newOffer')}
           </Button>
         </div>
       </div>
@@ -230,7 +230,7 @@ export default function AgencyPricingClient() {
             </div>
             <div>
               <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest">
-                {t('common.total' as any)}
+                {t('pricing.form.total')}
               </p>
               <p className="text-2xl font-black text-blue-700 dark:text-blue-400">
                 {statsData.total}
@@ -246,7 +246,7 @@ export default function AgencyPricingClient() {
             </div>
             <div>
               <p className="text-[10px] font-black text-amber-600/70 uppercase tracking-widest">
-                {t('pricing.status.sent' as any)}
+                {t('pricing.status.sent')}
               </p>
               <p className="text-2xl font-black text-amber-700 dark:text-amber-400">
                 {statsData.sent}
@@ -262,7 +262,7 @@ export default function AgencyPricingClient() {
             </div>
             <div>
               <p className="text-[10px] font-black text-purple-600/70 uppercase tracking-widest">
-                {t('pricing.status.accepted' as any)}
+                {t('pricing.status.accepted')}
               </p>
               <p className="text-2xl font-black text-purple-700 dark:text-purple-400">
                 {statsData.accepted}
@@ -278,7 +278,7 @@ export default function AgencyPricingClient() {
             </div>
             <div>
               <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest">
-                {t('agency.pricing.revenue' as any)}
+                {t('agency.pricing.revenue')}
               </p>
               <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400">
                 {formatCurrency(statsData.totalRevenue, 'USD')}
@@ -302,7 +302,7 @@ export default function AgencyPricingClient() {
             />
             <input
               type="text"
-              placeholder={t('header.searchPlaceholder' as any)}
+              placeholder={t('header.searchPlaceholder')}
               className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full font-outfit"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
@@ -310,7 +310,7 @@ export default function AgencyPricingClient() {
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
             <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
-              <Filter size={12} /> {t('common.filter' as any)}:
+              <Filter size={12} /> {t('common.filter')}:
             </div>
             {filters.map(filter => (
               <button
@@ -324,8 +324,8 @@ export default function AgencyPricingClient() {
                 )}
               >
                 {filter === 'All'
-                  ? t('common.all' as any)
-                  : t(`pricing.status.${filter.toLowerCase() as PricingStatusKey}` as any)}
+                  ? t('common.all')
+                  : t(`pricing.status.${filter.toLowerCase() as PricingStatusKey}`)}
               </button>
             ))}
           </div>
@@ -337,7 +337,7 @@ export default function AgencyPricingClient() {
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               <p className="text-sm font-bold text-surface-400 font-outfit">
-                {t('common.loading' as any)}
+                {t('common.loading')}
               </p>
             </div>
           ) : filteredRequests.length > 0 ? (
@@ -377,9 +377,7 @@ export default function AgencyPricingClient() {
                           PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
                         )}
                       >
-                        {t(
-                          `portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}` as any
-                        )}
+                        {t(`pricing.status.${req.status.toLowerCase() as PricingStatusKey}`)}
                       </Badge>
                     </div>
 
@@ -387,14 +385,14 @@ export default function AgencyPricingClient() {
                       {/* Organization */}
                       <div className="space-y-1">
                         <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                          {t('agency.clientOrg' as any)}
+                          {t('agency.clientOrg')}
                         </p>
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded flex items-center justify-center text-white text-[10px] font-bold">
                             {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
                           </div>
                           <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[100px]">
-                            {organizations[req.orgId]?.name || t('common.unknown' as any)}
+                            {organizations[req.orgId]?.name || t('common.unknown')}
                           </span>
                         </div>
                       </div>
@@ -402,7 +400,7 @@ export default function AgencyPricingClient() {
                       {/* Total Amount */}
                       <div className="space-y-1">
                         <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                          {t('pricing.form.total' as any)}
+                          {t('pricing.form.total')}
                         </p>
                         <div className="flex items-center gap-1.5">
                           <DollarSign size={14} className="text-green-500 opacity-70" />
@@ -415,14 +413,14 @@ export default function AgencyPricingClient() {
                       {/* Created Date */}
                       <div className="space-y-1">
                         <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                          {t('common.date' as any)}
+                          {t('common.date')}
                         </p>
                         <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
                           {req.createdAt?.toDate
                             ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
                                 locale: getDateLocale(locale),
                               })
-                            : t('common.recently' as any)}
+                            : t('common.recently')}
                         </span>
                       </div>
 
@@ -433,7 +431,7 @@ export default function AgencyPricingClient() {
                         </p>
                         <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
                           {req.status === PRICING_STATUS.DRAFT
-                            ? t('pricing.status.draft' as any)
+                            ? t('pricing.status.draft')
                             : req.sentAt?.toDate
                               ? format(req.sentAt.toDate(), 'MMM d', {
                                   locale: getDateLocale(locale),
@@ -453,7 +451,7 @@ export default function AgencyPricingClient() {
                         }}
                       >
                         <Eye size={16} className="me-2" />
-                        {t('common.view' as any)}
+                        {t('common.view')}
                       </Button>
 
                       {req.status === PRICING_STATUS.DRAFT && (
@@ -463,7 +461,7 @@ export default function AgencyPricingClient() {
                           className="bg-green-600 hover:bg-green-700 text-white"
                         >
                           <Send size={16} className="me-2" />
-                          {t('common.send' as any)}
+                          Send
                         </Button>
                       )}
                     </div>
@@ -476,22 +474,22 @@ export default function AgencyPricingClient() {
                 <thead>
                   <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
                     <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
-                      {t('pricing.form.titleLabel' as any)}
+                      {t('pricing.form.titleLabel')}
                     </th>
                     <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
-                      {t('agency.clientOrg' as any)}
+                      {t('agency.clientOrg')}
                     </th>
                     <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                      {t('common.status' as any)}
+                      {t('common.status')}
                     </th>
                     <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                      {t('pricing.form.total' as any)}
+                      {t('pricing.form.total')}
                     </th>
                     <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                      {t('common.date' as any)}
+                      {t('common.date')}
                     </th>
                     <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
-                      {t('common.actions' as any)}
+                      {t('common.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -531,7 +529,7 @@ export default function AgencyPricingClient() {
                             {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
                           </div>
                           <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[150px]">
-                            {organizations[req.orgId]?.name || t('common.unknown' as any)}
+                            {organizations[req.orgId]?.name || t('common.unknown')}
                           </span>
                         </div>
                       </td>
@@ -542,9 +540,7 @@ export default function AgencyPricingClient() {
                               PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
                             )}
                           >
-                            {t(
-                              `portal.pricing.status.${req.status.toLowerCase() as PricingStatusKey}` as any
-                            )}
+                            {t(`pricing.status.${req.status.toLowerCase() as PricingStatusKey}`)}
                           </Badge>
                         </div>
                       </td>
@@ -563,11 +559,11 @@ export default function AgencyPricingClient() {
                               ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
                                   locale: getDateLocale(locale),
                                 })
-                              : t('common.recently' as any)}
+                              : t('common.recently')}
                           </span>
                           <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
                             {req.status === PRICING_STATUS.DRAFT
-                              ? t('pricing.status.draft' as any)
+                              ? t('pricing.status.draft')
                               : req.sentAt?.toDate
                                 ? format(req.sentAt.toDate(), 'MMM d', {
                                     locale: getDateLocale(locale),
@@ -612,14 +608,14 @@ export default function AgencyPricingClient() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('common.noData' as any)}
+                  {t('common.noData')}
                 </h3>
                 <p className="text-surface-500 dark:text-surface-400 text-sm max-w-sm font-medium">
-                  {t('pricing.noOffersAgency' as any)}
+                  {t('pricing.noOffersAgency')}
                 </p>
                 <Button onClick={() => setShowNewOfferModal(true)} className="mt-4">
                   <Plus size={16} className="me-2" />
-                  {t('pricing.newOffer' as any)}
+                  {t('pricing.newOffer')}
                 </Button>
               </div>
             </div>
@@ -643,7 +639,7 @@ export default function AgencyPricingClient() {
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
               >
-                {t('common.prev' as any)}
+                {t('common.prev')}
               </Button>
               <Button
                 variant="outline"
@@ -652,7 +648,7 @@ export default function AgencyPricingClient() {
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
               >
-                {t('common.next' as any)}
+                {t('common.next')}
               </Button>
             </div>
           </div>
@@ -666,11 +662,9 @@ export default function AgencyPricingClient() {
             <div className="p-6 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('pricing.selectClient' as any)}
+                  {t('pricing.selectClient')}
                 </h2>
-                <p className="text-sm text-surface-500 mt-1">
-                  {t('pricing.selectClientDesc' as any)}
-                </p>
+                <p className="text-sm text-surface-500 mt-1">{t('pricing.selectClientDesc')}</p>
               </div>
               <button
                 onClick={() => setShowNewOfferModal(false)}
@@ -688,7 +682,7 @@ export default function AgencyPricingClient() {
                 />
                 <input
                   type="text"
-                  placeholder={t('common.search' as any) + '...'}
+                  placeholder={t('header.searchPlaceholder')}
                   className="portal-input ps-10 h-10 w-full"
                   value={orgSearchQuery}
                   onChange={e => setOrgSearchQuery(e.target.value)}
@@ -735,10 +729,10 @@ export default function AgencyPricingClient() {
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, requestId: null })}
         onConfirm={processSend}
-        title={t('pricing.form.sendConfirm' as any)}
-        description={t('pricing.form.sendConfirm' as any)}
-        confirmText={t('pricing.form.sendToClient' as any)}
-        cancelText={t('common.cancel' as any)}
+        title={t('pricing.form.sendConfirm')}
+        description={t('pricing.form.sendConfirm')}
+        confirmText={t('pricing.form.sendToClient')}
+        cancelText={t('common.cancel')}
         is={!!processingId}
       />
     </div>

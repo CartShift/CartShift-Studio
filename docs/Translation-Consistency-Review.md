@@ -366,6 +366,13 @@ portal.{section}.{item}Count         - ICU pluralization: "{count, plural, ...}"
 - ✅ All color classes support both light and dark modes properly
 - ✅ Merged translation files
 
+### 2026-01-21 - Translation Key Fix
+
+- ✅ Fixed incorrect translation key reference in `AgencyPricingClient.tsx`
+- ✅ Removed duplicate `portal` prefix from pricing status keys
+- ✅ Fixed: `portal.pricing.status.sent` → `pricing.status.sent`
+- ✅ The component already uses `useTranslations('portal')`, so only `pricing.status.*` needed
+
 **Dependencies Removed:**
 
 - `@hello-pangea/dnd` (^18.0.1)

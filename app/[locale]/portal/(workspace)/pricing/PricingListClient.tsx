@@ -100,17 +100,17 @@ export default function PricingListClient() {
       await sendPricingRequest(requestId);
     } catch (err) {
       console.error('Failed to send pricing request:', err);
-      alert(t('pricing.sendFailed' as any));
+      alert(t('pricing.form.sendFailed'));
     }
   };
 
   const handleDelete = async (requestId: string) => {
-    if (!confirm(t('pricing.deleteConfirm' as any))) return;
+    if (!confirm(t('pricing.form.deleteConfirm'))) return;
     try {
       await deletePricingRequest(requestId);
     } catch (err) {
       console.error('Failed to delete pricing request:', err);
-      alert(t('pricing.deleteFailed' as any));
+      alert(t('pricing.form.deleteFailed'));
     }
   };
 
