@@ -3,11 +3,22 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { Plus, Calendar, Upload, Zap, ArrowRight, LucideIcon } from 'lucide-react';
+import {
+  Plus,
+  Calendar,
+  Upload,
+  Zap,
+  ArrowRight,
+  LucideIcon,
+  Users,
+  BarChart,
+  FilePlus,
+} from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Link } from '@/i18n/navigation';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 
 const quickActionIconVariants = cva(
   'w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110',
@@ -37,10 +48,11 @@ interface Action {
 export function QuickActions() {
   const t = useTranslations();
   const orgId = useResolvedOrgId();
+  const { isAgency } = usePortalAuth();
 
   if (!orgId) return null;
 
-  const actions: Action[] = [
+  const clientActions: Action[] = [
     {
       icon: Plus,
       label: t('portal.quickActions.newRequest'),
@@ -60,6 +72,29 @@ export function QuickActions() {
       intent: 'emerald',
     },
   ];
+
+  const agencyActions: Action[] = [
+    {
+      icon: Users,
+      label: t('portal.quickActions.addClient'),
+      href: getPortalPath('/agency/clients/new'),
+      intent: 'blue',
+    },
+    {
+      icon: FilePlus,
+      label: t('portal.quickActions.createProposal'),
+      href: getPortalPath('/requests/new'), // Or specific proposal path if exists
+      intent: 'purple',
+    },
+    {
+      icon: BarChart,
+      label: t('portal.quickActions.viewReports'),
+      href: getPortalPath('/agency/sales'),
+      intent: 'emerald',
+    },
+  ];
+
+  const actions = isAgency ? agencyActions : clientActions;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

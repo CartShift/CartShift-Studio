@@ -182,7 +182,12 @@ body {
     scroll-behavior: smooth;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
-    scrollbar-gutter: stable;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scrollbar-gutter: stable;
+    }
   }
 
   [dir='rtl'] {
@@ -1929,13 +1934,19 @@ body {
 
   .portal-content {
     @apply flex-1 w-full max-w-[1600px] mx-auto p-6 md:p-6 lg:p-8 space-y-6 overflow-y-auto overflow-x-hidden;
-    scrollbar-gutter: stable;
     /* Start visible to prevent flash - animation only for non-reduced-motion users */
     opacity: 1;
   }
 
   [dir='rtl'] .portal-content {
     direction: rtl;
+  }
+
+  /* Scrollbar gutter only on desktop to prevent asymmetry on mobile overlay scrollbars */
+  @media (min-width: 768px) {
+    .portal-content {
+      scrollbar-gutter: stable;
+    }
   }
 
   /* Only apply animations when user hasn't requested reduced motion */

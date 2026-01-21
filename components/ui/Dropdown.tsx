@@ -33,10 +33,15 @@ const dropdownItemVariants = cva(
         true: 'opacity-50 cursor-not-allowed',
         false: '',
       },
+      active: {
+        true: 'bg-slate-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400',
+        false: '',
+      },
     },
     defaultVariants: {
       variant: 'default',
       isDisabled: false,
+      active: false,
     },
   }
 );
@@ -46,6 +51,7 @@ export interface DropdownItem extends VariantProps<typeof dropdownItemVariants> 
   onClick: () => void;
   icon?: React.ReactNode;
   disabled?: boolean;
+  active?: boolean;
 }
 
 interface DropdownProps extends VariantProps<typeof dropdownMenuVariants> {
@@ -56,6 +62,7 @@ interface DropdownProps extends VariantProps<typeof dropdownMenuVariants> {
 
 export function Dropdown({ trigger, items, align = 'right', className = '' }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+
   const [focusedIndex, setFocusedIndex] = useState(-1); // For keyboard navigation
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
   const [position, setPosition] = useState({
@@ -477,7 +484,11 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
                     }}
                     disabled={item.disabled}
                     className={cn(
-                      dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled }),
+                      dropdownItemVariants({
+                        variant: item.variant,
+                        isDisabled: item.disabled,
+                        active: item.active,
+                      }),
                       'py-4 text-base'
                     )}
                   >
@@ -536,7 +547,11 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
                   }}
                   disabled={item.disabled}
                   className={cn(
-                    dropdownItemVariants({ variant: item.variant, isDisabled: item.disabled }),
+                    dropdownItemVariants({
+                      variant: item.variant,
+                      isDisabled: item.disabled,
+                      active: item.active,
+                    }),
                     focusedIndex === index && 'bg-slate-100 dark:bg-slate-800'
                   )}
                 >

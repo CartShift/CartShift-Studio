@@ -215,9 +215,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                   <>
                     {/* Quick Links */}
                     <div className="p-4 border-b border-surface-100 dark:border-surface-800">
-                      <CardSectionTitle className="mb-3">
-                        Quick Links
-                      </CardSectionTitle>
+                      <CardSectionTitle className="mb-3">Quick Links</CardSectionTitle>
                       <div className="space-y-1">
                         {quickLinks.map(link => (
                           <button
@@ -241,9 +239,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                     {recentSearches.length > 0 && (
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <CardSectionTitle icon={Clock}>
-                            Recent
-                          </CardSectionTitle>
+                          <CardSectionTitle icon={Clock}>Recent</CardSectionTitle>
                           <button
                             onClick={clearSearches}
                             className="flex items-center gap-1 text-[9px] font-medium text-surface-400 hover:text-rose-500 transition-colors"
@@ -259,7 +255,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                               key={idx}
                               className={cn(
                                 mobileSearchItemVariants({ variant: 'default' }),
-                                'group pr-2'
+                                'group pe-2'
                               )}
                             >
                               <button

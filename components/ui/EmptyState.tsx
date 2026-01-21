@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link } from '@/i18n/navigation';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { LucideIcon, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 import { EmptyStateIllustration } from '@/components/ui/EmptyStateIllustration';
 
 const emptyStateVariants = cva('flex flex-col items-center justify-center text-center p-8', {
@@ -17,11 +19,21 @@ const emptyStateVariants = cva('flex flex-col items-center justify-center text-c
   },
 });
 
+interface ActionButton {
+  label: string;
+  href?: string;
+  onClick?: () => void;
+  icon?: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
+}
+
 interface EmptyStateProps extends VariantProps<typeof emptyStateVariants> {
   icon: LucideIcon;
   title: string;
   description: string;
   action?: React.ReactNode;
+  primaryAction?: ActionButton;
+  secondaryAction?: ActionButton;
   className?: string;
   illustration?: 'activity' | 'requests' | 'files';
 }
@@ -31,6 +43,8 @@ export const EmptyState = ({
   title,
   description,
   action,
+  primaryAction,
+  secondaryAction,
   variant,
   className,
   illustration,
@@ -56,9 +70,48 @@ export const EmptyState = ({
         {description}
       </p>
 
-      {action && (
-        <div className="flex animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
+      {/* Render Actions */}
+      {(action || primaryAction || secondaryAction) && (
+        <div className="flex flex-col sm:flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
           {action}
+
+          {primaryAction &&
+            (primaryAction.href ? (
+              <Link href={primaryAction.href}>
+                <Button variant="primary" className="gap-2" onClick={primaryAction.onClick}>
+                  {primaryAction.icon}
+                  {primaryAction.label}
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="primary" onClick={primaryAction.onClick} className="gap-2">
+                {primaryAction.icon}
+                {primaryAction.label}
+              </Button>
+            ))}
+
+          {secondaryAction &&
+            (secondaryAction.href ? (
+              <Link href={secondaryAction.href}>
+                <Button
+                  variant={secondaryAction.variant === 'ghost' ? 'ghost' : 'outline'}
+                  className="gap-2"
+                  onClick={secondaryAction.onClick}
+                >
+                  {secondaryAction.icon}
+                  {secondaryAction.label}
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                variant={secondaryAction.variant === 'ghost' ? 'ghost' : 'outline'}
+                onClick={secondaryAction.onClick}
+                className="gap-2"
+              >
+                {secondaryAction.icon}
+                {secondaryAction.label}
+              </Button>
+            ))}
         </div>
       )}
     </div>

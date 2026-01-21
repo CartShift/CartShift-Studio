@@ -295,7 +295,7 @@ export const CardSectionTitle = ({
 }: React.HTMLAttributes<HTMLHeadingElement> & {
   icon?: React.ComponentType<{ size?: number; className?: string }>;
   iconClassName?: string;
-  as?: 'h3' | 'h4' | 'h5';
+  as?: 'h2' | 'h3' | 'h4' | 'h5';
 }) => {
   return (
     <Component

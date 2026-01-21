@@ -135,12 +135,12 @@ export function useTopClients(limit: number = 5) {
  * Combined hook for fetching all sales analytics data
  * Useful for the main dashboard that needs everything
  */
-export function useSalesAnalytics() {
+export function useSalesAnalytics(months: number = 6) {
   const { loading: auth, isAgency } = usePortalAuth();
 
   const metricsQuery = useSalesMetrics();
   const revenueQuery = useClientRevenueData();
-  const monthlyQuery = useMonthlyRevenue(6);
+  const monthlyQuery = useMonthlyRevenue(months);
   const topClientsQuery = useTopClients(5);
 
   const is =

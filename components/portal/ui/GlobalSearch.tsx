@@ -119,19 +119,6 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
     };
   }, [orgId, isAgency]);
 
-  // Global Shortcut: Cmd/Ctrl + K
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        inputRef.current?.focus();
-        setIsOpen(true);
-      }
-    };
-    document.addEventListener('keydown', handleGlobalKeyDown);
-    return () => document.removeEventListener('keydown', handleGlobalKeyDown);
-  }, []);
-
   // Filter results when query changes
   useEffect(() => {
     if (!query.trim()) {
@@ -229,11 +216,6 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           className={cn(searchInputVariants({ isFocused }))}
           aria-label="Search"
         />
-        <div className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
-          <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500">
-            <span className="text-xs">⌘</span>K
-          </kbd>
-        </div>
       </div>
 
       <AnimatePresence>
@@ -246,9 +228,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
             className="absolute top-full start-0 end-0 mt-2 bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden z-modal p-2"
           >
             <div className="px-3 py-2 mb-1 flex justify-between items-center">
-              <CardSectionTitle icon={Clock}>
-                Recent Searches
-              </CardSectionTitle>
+              <CardSectionTitle icon={Clock}>Recent Searches</CardSectionTitle>
               <button
                 onClick={e => {
                   e.stopPropagation();

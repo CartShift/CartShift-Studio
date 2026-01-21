@@ -272,7 +272,7 @@ export function RequestStatusWorkflow({
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           disabled={isUpdating || availableTransitions.length === 0}
           className={cn(
-            'flex items-center gap-3 pr-4 pl-2 py-2 rounded-full border transition-all',
+            'flex items-center gap-3 pe-4 ps-2 py-2 rounded-full border transition-all',
             'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700',
             availableTransitions.length > 0 && !isUpdating
               ? 'hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer shadow-sm hover:shadow-md'
@@ -302,7 +302,7 @@ export function RequestStatusWorkflow({
             <ChevronDown
               size={16}
               className={cn(
-                'text-surface-400 transition-transform ml-1',
+                'text-surface-400 transition-transform ms-1',
                 isDropdownOpen && 'rotate-180'
               )}
             />

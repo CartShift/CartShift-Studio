@@ -18,7 +18,7 @@ import {
   Trash2,
   Settings,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
@@ -602,67 +602,65 @@ export default function AgencyClientDetailClient({
           </div>
 
           {/* Recent Activity */}
-          <div>
-            <div className="flex items-center justify-between mb-6 px-2">
-              <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.recentActivity' as any)}
-              </h2>
-            </div>
-
-            <Card
-              noPadding
-              className="border-surface-200 dark:border-surface-800 shadow-sm overflow-hidden"
+          <Card
+            noPadding
+            className="border-surface-200 dark:border-surface-800 shadow-sm overflow-hidden"
+          >
+            <CardSectionTitle
+              as="h2"
+              className="mb-0 px-6 pt-6 pb-4 border-b border-surface-100 dark:border-surface-800 uppercase tracking-tight"
             >
-              {recentActivities.length > 0 ? (
-                <div className="divide-y divide-surface-50 dark:divide-surface-800">
-                  {recentActivities.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="p-5 flex items-start gap-4 group hover:bg-surface-50/30 dark:hover:bg-surface-900/30 transition-colors"
-                    >
-                      <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <Activity size={18} className="text-blue-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                          {t(`activity.actions.${activity.action?.toLowerCase() || ''}` as any) ||
-                            (activity.action ? activity.action.replace(/_/g, ' ') : 'Activity')}
+              {t('agency.clients.detail.sections.recentActivity' as any)}
+            </CardSectionTitle>
+            {recentActivities.length > 0 ? (
+              <div className="divide-y divide-surface-50 dark:divide-surface-800">
+                {recentActivities.map((activity, index) => (
+                  <div
+                    key={index}
+                    className="p-5 flex items-start gap-4 group hover:bg-surface-50/30 dark:hover:bg-surface-900/30 transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <Activity size={18} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-surface-900 dark:text-white mb-1">
+                        {t(`activity.actions.${activity.action?.toLowerCase() || ''}` as any) ||
+                          (activity.action ? activity.action.replace(/_/g, ' ') : 'Activity')}
+                      </p>
+                      {activity.details && typeof activity.details.requestTitle === 'string' && (
+                        <p className="text-xs text-surface-500 truncate">
+                          {activity.details.requestTitle}
                         </p>
-                        {activity.details && typeof activity.details.requestTitle === 'string' && (
-                          <p className="text-xs text-surface-500 truncate">
-                            {activity.details.requestTitle}
-                          </p>
-                        )}
-                      </div>
-                      {activity.createdAt?.toDate && (
-                        <div className="flex items-center gap-1.5 text-surface-400 flex-shrink-0">
-                          <Clock size={12} />
-                          <span className="text-[10px] font-bold uppercase tracking-tighter">
-                            {isMounted
-                              ? formatDistanceToNow(activity.createdAt.toDate(), {
-                                  addSuffix: true,
-                                  locale: getDateLocale(locale),
-                                })
-                              : '—'}
-                          </span>
-                        </div>
                       )}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-16 text-center">
-                  <Activity className="w-12 h-12 text-surface-200 dark:text-surface-800 mx-auto mb-3" />
-                  <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                    {t('agency.clients.detail.activity.emptyTitle' as any)}
-                  </h3>
-                  <p className="text-xs text-surface-500">
-                    {t('agency.clients.detail.activity.emptyDesc' as any)}
-                  </p>
-                </div>
-              )}
-            </Card>
-          </div>
+                    {activity.createdAt?.toDate && (
+                      <div className="flex items-center gap-1.5 text-surface-400 flex-shrink-0">
+                        <Clock size={12} />
+                        <span className="text-[10px] font-bold uppercase tracking-tighter">
+                          {isMounted
+                            ? formatDistanceToNow(activity.createdAt.toDate(), {
+                                addSuffix: true,
+                                locale: getDateLocale(locale),
+                              })
+                            : '—'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-16 text-center">
+                <Activity className="w-12 h-12 text-surface-200 dark:text-surface-800 mx-auto mb-3" />
+                <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1">
+                  {t('agency.clients.detail.activity.emptyTitle' as any)}
+                </h3>
+                <p className="text-xs text-surface-500">
+                  {t('agency.clients.detail.activity.emptyDesc' as any)}
+                </p>
+              </div>
+            )}
+          </Card>
         </div>
 
         {/* Right Column - Client Info & Team */}

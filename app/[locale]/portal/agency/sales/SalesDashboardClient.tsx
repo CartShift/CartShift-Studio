@@ -15,11 +15,15 @@ import { Loader2, ShieldCheck, RefreshCw, TrendingUp, Download, BarChart3 } from
 import { useSalesAnalytics } from '@/lib/hooks/useSalesAnalytics';
 import { Card } from '@/components/ui/Card';
 import { Link } from '@/i18n/navigation';
+import { InsightsPanel } from '@/components/portal/sales/InsightsPanel';
+import { useState } from 'react';
+import { Select } from '@/components/ui/Select';
 
 export default function SalesDashboardClient() {
   const t = useTranslations('portal');
   const { userData, loading: auth, isAuthenticated, user, isImpersonating } = usePortalAuth();
-  const { metrics, loading, refetch } = useSalesAnalytics();
+  const [period, setPeriod] = useState('6'); // Default to 6 months
+  const { metrics, loading, refetch } = useSalesAnalytics(parseInt(period));
 
   // Check if there's any sales data
   const hasData = metrics && (metrics.totalRevenue > 0 || metrics.totalProposals > 0);
@@ -81,6 +85,17 @@ export default function SalesDashboardClient() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Select
+            value={period}
+            onChange={e => setPeriod(e.target.value)}
+            className="w-[160px]"
+            options={[
+              { value: '1', label: t('sales.chart.lastMonth') },
+              { value: '6', label: t('sales.chart.last6Months') },
+              { value: '12', label: t('sales.chart.lastYear') },
+            ]}
+          />
+
           <Button
             variant="outline"
             onClick={() => refetch()}
@@ -120,7 +135,14 @@ export default function SalesDashboardClient() {
           </div>
         </Card>
       ) : (
-        <SalesPerformance variant="full" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <SalesPerformance variant="full" />
+          </div>
+          <div className="lg:col-span-1">
+            {metrics && <InsightsPanel metrics={metrics} loading={loading} />}
+          </div>
+        </div>
       )}
     </div>
   );

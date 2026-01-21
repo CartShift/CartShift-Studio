@@ -5,6 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import nextPlugin from "@next/eslint-plugin-next";
 import importPlugin from "eslint-plugin-import";
+import rtlPlugin from "./eslint-plugins/rtl-logical-properties.mjs";
 
 export default [
     // Global ignores - files/directories that don't need linting
@@ -50,6 +51,9 @@ export default [
             "scripts/**",
             "dev-pro.mjs",
 
+            // Custom ESLint plugins
+            "eslint-plugins/**",
+
             // Config files
             "*.config.js",
             "*.config.mjs",
@@ -78,6 +82,7 @@ export default [
             "jsx-a11y": jsxA11y,
             "@next/next": nextPlugin,
             import: importPlugin,
+            "rtl": rtlPlugin,
         },
         languageOptions: {
             ecmaVersion: "latest",
@@ -117,18 +122,8 @@ export default [
             // General rules
             "prefer-const": "warn",
             "no-console": "off",
-            // Custom rules
-            "no-restricted-syntax": [
-                "warn",
-                {
-                    "selector": "JSXAttribute[name.name='className'] > Literal[value=/(\\s|^)(ml-|mr-|pl-|pr-|left-|right-)/]",
-                    "message": "Use logical properties (ms-, me-, ps-, pe-, start-, end-) instead of physical ones (ml-, mr-, pl-, pr-, left-, right-) for better RTL support."
-                },
-                {
-                    "selector": "JSXAttribute[name.name='className'] TemplateElement[value.raw=/(\\s|^)(ml-|mr-|pl-|pr-|left-|right-)/]",
-                    "message": "Use logical properties (ms-, me-, ps-, pe-, start-, end-) instead of physical ones (ml-, mr-, pl-, pr-, left-, right-) for better RTL support."
-                }
-            ],
+            // RTL logical properties - auto-fixable
+            "rtl/enforce-logical-properties": "warn",
         },
     },
     {

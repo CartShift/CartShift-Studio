@@ -153,10 +153,15 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('', className)}>
       {/* Filter Buttons */}
       {showFilters && activities.length > 0 && (
-        <div className={cn('flex items-center gap-2 pb-2', isHe && 'flex-row-reverse')}>
+        <div
+          className={cn(
+            'flex items-center gap-2 px-6 py-4 border-b border-surface-100 dark:border-surface-800',
+            isHe && 'flex-row-reverse'
+          )}
+        >
           <Filter className="w-4 h-4 text-surface-400" />
           <div className="flex gap-1.5">
             {filterButtons.map(filter => (
@@ -174,7 +179,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
 
       {/* Filtered Empty State */}
       {visibleActivities.length === 0 && activeFilter !== 'all' && (
-        <div className="text-center py-8 text-surface-500 dark:text-surface-400">
+        <div className="text-center py-8 px-6 text-surface-500 dark:text-surface-400">
           <p className="text-sm font-medium">{tActivity('noFilteredActivity')}</p>
         </div>
       )}
@@ -208,7 +213,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
               <Link
                 href={activity.requestId ? getPortalPath(`/requests/${activity.requestId}`) : '#'}
                 className={cn(
-                  'flex items-start gap-4 p-4 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-all cursor-pointer group hover-lift-sm',
+                  'flex items-start gap-4 px-6 py-4 hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-all cursor-pointer group',
                   isHe && 'flex-row-reverse text-end'
                 )}
               >

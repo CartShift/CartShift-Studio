@@ -58,6 +58,7 @@ interface PortalHeaderProps {
   orgId?: string;
   onSignOut: () => Promise<void>;
   viewTransitionName?: string;
+  onOpenCommandPalette?: () => void;
 }
 
 export function PortalHeader({
@@ -74,6 +75,7 @@ export function PortalHeader({
   orgId,
   onSignOut,
   viewTransitionName,
+  onOpenCommandPalette,
 }: PortalHeaderProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -131,6 +133,16 @@ export function PortalHeader({
           isAgency={accountType === ACCOUNT_TYPE.AGENCY}
           className="hidden lg:block w-72 xl:w-96"
         />
+        <button
+          onClick={onOpenCommandPalette}
+          className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100/50 hover:bg-surface-100 dark:bg-surface-800/30 dark:hover:bg-surface-800 rounded-lg transition-colors border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
+          title="Command Palette (Cmd+K)"
+        >
+          <span className="hidden xl:inline">{t('portal.header.commands')}</span>
+          <kbd className="inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500 dark:text-surface-400">
+            <span className="text-xs">⌘</span>K
+          </kbd>
+        </button>
       </div>
 
       <div className="flex items-center gap-2 md:gap-4 lg:gap-6">

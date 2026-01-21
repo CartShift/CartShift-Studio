@@ -10,8 +10,6 @@ import {
   Palette,
   HelpCircle,
   Clock,
-  Flame,
-  Users,
   Calculator,
   ChevronDown,
   Plus,
@@ -103,11 +101,9 @@ export function EmbeddedCalculator({
   const {
     requestType,
     effortLevel,
-    modifiers,
     setRequestType,
     setEffortLevel,
     setCurrency,
-    toggleModifier,
     result,
     formattedPrice,
   } = usePricingCalculator({ defaultCurrency: currency });
@@ -191,41 +187,6 @@ export function EmbeddedCalculator({
             className="overflow-hidden"
           >
             <div className="p-4 pt-0 space-y-5">
-              {/* Modifiers Row */}
-              <div className="flex flex-wrap gap-2">
-                {/* Urgent Toggle */}
-                <button
-                  type="button"
-                  onClick={() => toggleModifier('urgent')}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all text-sm font-medium',
-                    modifiers.isUrgent
-                      ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-300'
-                      : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300'
-                  )}
-                >
-                  <Flame size={16} />
-                  {t('portal.pricing.modifiers.urgent')}
-                  {modifiers.isUrgent && <span className="text-xs opacity-70">+20%</span>}
-                </button>
-
-                {/* Recurring Client Toggle */}
-                <button
-                  type="button"
-                  onClick={() => toggleModifier('recurring')}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all text-sm font-medium',
-                    modifiers.isRecurringClient
-                      ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700 text-green-700 dark:text-green-300'
-                      : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300'
-                  )}
-                >
-                  <Users size={16} />
-                  {t('portal.pricing.modifiers.recurring')}
-                  {modifiers.isRecurringClient && <span className="text-xs opacity-70">-10%</span>}
-                </button>
-              </div>
-
               {/* Request Type Selection */}
               <div className="space-y-2">
                 <label className="text-xs font-black text-surface-500 uppercase tracking-widest">

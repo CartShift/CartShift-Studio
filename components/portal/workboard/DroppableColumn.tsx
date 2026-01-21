@@ -45,6 +45,7 @@ interface DroppableColumnProps extends VariantProps<typeof columnIndicatorVarian
   onAddClick?: () => void;
   onMoreClick?: () => void;
   emptyMessage?: string;
+  isAdding?: boolean;
 }
 
 export function DroppableColumn({
@@ -57,6 +58,7 @@ export function DroppableColumn({
   onAddClick,
   onMoreClick,
   emptyMessage,
+  isAdding = false,
 }: DroppableColumnProps) {
   const t = useTranslations();
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -89,7 +91,7 @@ export function DroppableColumn({
       {/* Droppable Area */}
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className={cn(droppableAreaVariants({ isOver }))}>
-          {itemCount === 0 ? (
+          {itemCount === 0 && !isAdding ? (
             <div className="py-12 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl flex flex-col items-center justify-center text-center opacity-50">
               <PlusCircle size={24} className="mb-2 text-surface-400" />
               <span className="text-[10px] font-black uppercase tracking-widest text-surface-400">

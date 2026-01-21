@@ -1,6 +1,7 @@
 'use client';
 
 import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { getLocaleDirection, getLocaleFontFamily } from '@/lib/locale-config';
@@ -15,6 +16,7 @@ import { PortalState } from './PortalLoadingState';
 import { PortalAccessDenied } from './PortalAccessDenied';
 import { getAgencyNavGroups, getClientNavGroups } from './constants';
 import { usePortalShellState } from './hooks/usePortalShellState';
+import { useMobileNavBadges } from './hooks/useMobileNavBadges';
 import { PortalShellProps } from './types';
 
 // Existing UI components
@@ -22,7 +24,9 @@ import { OfflineIndicator } from '../ui/OfflineIndicator';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
 import { MobileSearch } from '../ui/MobileSearch';
 import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
-import { NotificationDropdown } from '../ui/NotificationDropdown';
+import { NotificationDropdown } from '@/components/portal/ui/NotificationDropdown';
+import { MobileBottomNav } from '@/components/portal/shell/MobileBottomNav';
+import { CommandPalette } from '@/components/portal/CommandPalette';
 import { OnboardingTour } from '../OnboardingTour';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
 import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
@@ -35,6 +39,9 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
     orgIdProp: orgId,
     isAgencyPage,
   });
+
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const mobileNavBadges = useMobileNavBadges(state.isAgency);
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
@@ -150,7 +157,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               'transition-all duration-300',
               state.isSidebarOpen
                 ? 'md:ps-[var(--sidebar-width-expanded)]'
-                : 'md:ps-[var(--sidebar-width-collapsed)]'
+                : 'md:ps-[var(--sidebar-width-collapsed)]',
+              'pb-16 md:pb-0' // Add padding for bottom nav on mobile
             )}
           >
             <ImpersonationBanner />
@@ -172,6 +180,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               orgId={state.effectiveOrgId}
               onSignOut={state.handleSignOut}
               viewTransitionName="header"
+              onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
             />
 
             {/* Page Content Container */}
@@ -187,9 +196,12 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               )}
               <div className="portal-reveal">{children}</div>
             </main>
+
+            <MobileBottomNav isAgency={state.isAgency} badges={mobileNavBadges} />
           </div>
 
           {/* Portal Elements */}
+          <CommandPalette isOpen={isCommandPaletteOpen} onOpenChange={setIsCommandPaletteOpen} />
           {state.mounted && typeof document !== 'undefined' && document.body
             ? createPortal(
                 <NotificationDropdown
