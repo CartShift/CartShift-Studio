@@ -85,12 +85,28 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Deployment
 
-See [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for detailed Firebase deployment instructions.
+**Current:** Vercel (with Firebase Auth, Firestore, and Cloud Functions)
 
-Quick deploy:
+See [VERCEL_MIGRATION.md](./docs/VERCEL_MIGRATION.md) for detailed Firebase Auth configuration on Vercel.
+
+### Firebase Services
+
+- ✅ **Authentication** - Proxied via Next.js routes to Firebase Hosting
+- ✅ **Firestore Database** - Direct client connection
+- ✅ **Storage** - Direct client connection
+- ✅ **Cloud Functions** - Deployed separately to Firebase
+
+### Quick Deploy
 
 ```bash
-npm run deploy
+# Deploy to Vercel
+vercel --prod
+
+# Deploy Firebase Cloud Functions
+pnpm run deploy:functions
+
+# Deploy Firestore/Storage rules
+pnpm run deploy:rules
 ```
 
 ## Translations

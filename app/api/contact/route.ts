@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { submitContactForm } from '@/lib/services/contact';
 import { logError, createErrorResponse } from '@/lib/error-handler';
+import { checkRateLimit } from '@/lib/services/rate-limiter';
 
-/**
- * In-memory rate limiting map.
- * NOTE: This approach works for single-instance deployments but will NOT persist
- * across serverless function invocations (e.g., Vercel). For production serverless
- * environments, consider using Vercel KV, Upstash Redis, or a similar external store.
- */
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 
 function getRateLimitKey(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
@@ -23,35 +17,30 @@ function getRateLimitKey(request: NextRequest): string {
   return `ua:${userAgent}`;
 }
 
-function checkRateLimit(key: string): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(key);
-
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-
-  if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
-
 export async function POST(request: NextRequest) {
   try {
     const rateLimitKey = getRateLimitKey(request);
 
-    if (!checkRateLimit(rateLimitKey)) {
+    const rateLimitResult = await checkRateLimit(
+      rateLimitKey,
+      RATE_LIMIT_MAX_REQUESTS,
+      RATE_LIMIT_WINDOW
+    );
+
+    if (!rateLimitResult.allowed) {
+      const retryAfter = rateLimitResult.resetAt
+        ? Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
+        : 60;
       return NextResponse.json(
         createErrorResponse('Too many requests. Please try again later.', 429),
         {
           status: 429,
           headers: {
-            'Retry-After': '60',
+            'Retry-After': retryAfter.toString(),
             'Content-Type': 'application/json',
+            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetAt?.toString() || '',
           },
         }
       );
@@ -80,7 +69,11 @@ export async function POST(request: NextRequest) {
       { success: true },
       {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining?.toString() || '0',
+        },
       }
     );
   } catch (error) {
