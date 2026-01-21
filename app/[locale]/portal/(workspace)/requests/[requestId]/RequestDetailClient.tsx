@@ -311,11 +311,6 @@ export default function RequestDetailClient() {
         </div>
       </motion.div>
 
-      {/* BUILD TEST MARKER - Remove after confirming deployment works */}
-      <div className="bg-red-500 text-white p-4 rounded-xl text-center font-bold">
-        BUILD MARKER: 2026-01-21-TEST-A
-      </div>
-
       {/* Agency Status Workflow - Full Width */}
       {showAgencyActions && (
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950 p-6">

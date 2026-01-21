@@ -21,6 +21,23 @@ export default async function PortalLayout({
   // SubdomainHandler manages routing for portal.cart-shift.com subdomain
   return (
     <>
+      {/* TEMP BUILD TEST - DELETE AFTER CONFIRMING */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 99999,
+          background: 'red',
+          color: 'white',
+          padding: '10px',
+          textAlign: 'center',
+          fontWeight: 'bold',
+        }}
+      >
+        BUILD: JAN-21-2026-V2
+      </div>
       <GoogleAnalytics />
       <AnalyticsProvider enableScrollTracking={false}>
         <PortalProviders>
