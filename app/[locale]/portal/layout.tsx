@@ -4,6 +4,9 @@ import { setRequestLocale } from 'next-intl/server';
 import { PortalProviders } from '@/components/portal/providers/PortalProviders';
 import { SubdomainHandler } from '@/components/portal/SubdomainHandler';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+
 export default async function PortalLayout({
   children,
   params,
@@ -12,6 +15,7 @@ export default async function PortalLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const buildTimestamp = new Date().toISOString();
 
   // Enable static rendering for portal pages
   setRequestLocale(locale as 'en' | 'he');
@@ -36,7 +40,7 @@ export default async function PortalLayout({
           fontWeight: 'bold',
         }}
       >
-        BUILD: JAN-21-2026-V2
+        BUILD TIMESTAMP: {buildTimestamp}
       </div>
       <GoogleAnalytics />
       <AnalyticsProvider enableScrollTracking={false}>
