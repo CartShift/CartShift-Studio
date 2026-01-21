@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': response.headers.get('Content-Type') || 'text/html',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-        // Important: Allow framing for Firebase Auth
-        'X-Frame-Options': 'SAMEORIGIN',
+        // Important: Allow framing for Firebase Auth (remove X-Frame-Options)
+        // Vercel/Next.js handles this differently
       },
     });
   } catch (error) {

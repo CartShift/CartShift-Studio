@@ -11,14 +11,14 @@ export default function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
 
-  // 1. Skip internal paths
+  // 1. Skip internal paths completely
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/_vercel') ||
     pathname.startsWith('/__')
   ) {
-    return intlMiddleware(request);
+    return NextResponse.next();
   }
 
   // 2. Check if we're on the portal subdomain
@@ -73,6 +73,9 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Exclude: api, _next, _vercel, __ (Firebase auth), and files with extensions
-  matcher: ['/((?!api|_next|_vercel|__|.*\\..*).*)'],
+  // Skip internal paths completely: api, _next, _vercel, __ (Firebase auth), and files with extensions
+  matcher: [
+    // Match all paths except excluded ones
+    '/((?!api|_next|_vercel|__|.*\\..*).*)',
+  ],
 };
