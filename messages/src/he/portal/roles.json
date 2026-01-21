@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "roles": {
+      "owner": "בעלים",
+      "admin": "מנהל",
+      "sales_manager": "מנהל מכירות",
+      "developer": "מפתח",
+      "member": "חבר",
+      "viewer": "צופה"
+    }
+  }
+}

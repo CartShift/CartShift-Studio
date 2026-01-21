@@ -1,0 +1,23 @@
+{
+  "portal": {
+    "googleCalendar": {
+      "title": "לוח שנה של Google",
+      "description": "סנכרן פגישות ייעוץ עם לוח השנה של Google וקבל קישורי Meet באופן אוטומטי.",
+      "connect": "חבר לוח שנה Google",
+      "connecting": "מתחבר...",
+      "disconnect": "נתק",
+      "disconnectConfirm": "האם אתה בטוח שברצונך לנתק את לוח השנה של Google?",
+      "syncNow": "סנכרן עכשיו",
+      "syncing": "מסנכרן...",
+      "account": "חשבון",
+      "lastSync": "סונכרן לאחרונה",
+      "calendars": "לוחות שנה",
+      "feature1": "יצירה אוטומטית של אירועים עבור פגישות ייעוץ",
+      "feature2": "קבל קישורי Google Meet באופן אוטומטי",
+      "feature3": "צפה בזמינות שלך בפורטל",
+      "connected": "מחובר",
+      "targetCalendar": "לוח שנה יעד",
+      "targetCalendarDescription": "אירועים ייווצרו בלוח שנה זה, ובדיקות זמינות יבדקו מולו."
+    }
+  }
+}

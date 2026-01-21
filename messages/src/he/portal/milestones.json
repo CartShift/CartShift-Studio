@@ -1,0 +1,38 @@
+{
+  "portal": {
+    "milestones": {
+      "noMilestones": "אין שלבי פרויקט מוגדרים",
+      "noMilestonesForProject": "אין שלבי פרויקט מוגדרים לפרויקט זה",
+      "projectProgress": "התקדמות הפרויקט",
+      "milestonesCompleted": "שלבים הושלמו",
+      "current": "נוכחי",
+      "due": "יעד:",
+      "days": "ימים",
+      "tbd": "טרם נקבע",
+      "newMilestone": "שלב חדש",
+      "editMilestones": "עריכת שלבי פרויקט",
+      "milestoneTitle": "שם השלב",
+      "descriptionOptional": "תיאור (אופציונלי)",
+      "deliverablesDescription": "משימות לשלב זה",
+      "done": "סגור",
+      "addMilestone": "הוסף שלב",
+      "addNewPhase": "הוסף שלב חדש",
+      "cancel": "ביטול",
+      "discard": "בטל שינויים",
+      "saveMilestones": "שמור שלבים",
+      "applyPipelineUpdates": "החל עדכוני צינור",
+      "saveError": "שגיאה בשמירה. נסו שוב.",
+      "title": "שלבי הפרויקט",
+      "subtitle": "מעקב התקדמות ושלבים קרובים",
+      "managePipeline": "ניהול צינור",
+      "overallProgress": "התקדמות כללית",
+      "target": "יעד:",
+      "status": {
+        "pending": "ממתין",
+        "inProgress": "בביצוע",
+        "completed": "הושלם",
+        "blocked": "חסום"
+      }
+    }
+  }
+}

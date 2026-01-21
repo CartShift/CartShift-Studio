@@ -20,7 +20,6 @@ import { useMobileNavBadges } from './hooks/useMobileNavBadges';
 import { PortalShellProps } from './types';
 
 // Existing UI components
-import { OfflineIndicator } from '../ui/OfflineIndicator';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
 import { MobileSearch } from '../ui/MobileSearch';
 import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
@@ -77,8 +76,6 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
       )}
       dir={getLocaleDirection(locale)}
     >
-      <OfflineIndicator />
-
       {/* Skip to main content link for accessibility - enhanced visibility on focus */}
       <a
         href="#main-content"

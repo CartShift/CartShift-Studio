@@ -1,0 +1,56 @@
+{
+  "portal": {
+    "files": {
+      "title": "Files & Assets",
+      "subtitle": "Unified storage for all your project documents and resources.",
+      "upload": "Upload Asset",
+      "searchPlaceholder": "Search by filename...",
+      "totalFiles": "Total Files",
+      "totalFiles_singular": "Total File",
+      "recentlyAdded": "Recently Added",
+      "table": {
+        "identity": "Asset Identity",
+        "metadata": "Metadata",
+        "format": "Format",
+        "transmission": "Transmission",
+        "actions": "Actions",
+        "addedBy": "Added by",
+        "system": "System"
+      },
+      "actions": {
+        "download": "Download",
+        "share": "Share",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete this file?",
+        "remove": "Remove",
+        "deleted": "File deleted successfully",
+        "deleteFailed": "Failed to delete file"
+      },
+      "imageLabels": {
+        "remove": "Remove Image",
+        "change": "Change Image"
+      },
+      "empty": {
+        "title": "No assets syncronized",
+        "search": "We couldn't find any files matching your search.",
+        "noFiles": "This organization workspace is currently empty.",
+        "uploadFirst": "Upload First Asset",
+        "syncing": "Syncing your assets..."
+      },
+      "error": {
+        "title": "Asset Sync Error",
+        "retry": "Retry Sync"
+      },
+      "uploadForm": {
+        "title": "Upload File",
+        "browse": "Click to browse files",
+        "maxSize": "Maximum file size: 10MB",
+        "uploading": "Uploading...",
+        "errorSize": "File size must be less than 10MB",
+        "errorGeneric": "Failed to upload file. Please try again.",
+        "cancel": "Cancel",
+        "submit": "Upload File"
+      }
+    }
+  }
+}

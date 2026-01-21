@@ -439,6 +439,7 @@
       "searchPlaceholder": "Search articles...",
       "allCategories": "All",
       "articles": "articles",
+      "articles_singular": "article",
       "sort": {
         "newest": "Newest First",
         "oldest": "Oldest First",
@@ -598,6 +599,7 @@
       "tableOfContentsFull": "Table of Contents",
       "shareArticle": "Share Article",
       "sections": "sections",
+      "sections_singular": "section",
       "minRead": "min read",
       "share": "Share:",
       "expertServices": "Expert Services",
@@ -1298,6 +1300,7 @@
       },
       "greatJob": "Great Job! Your store is optimized.",
       "issuesFound": "{count} Critical Issues Detected",
+      "issuesFound_singular": "{count} Critical Issue Detected",
       "readyToScale": "Your store is ready to scale.",
       "losingSales": "These issues are likely costing you conversions.",
       "needsImprovement": "Needs Improvement",
@@ -1306,6 +1309,7 @@
       "impactLabel": "Impact: {impact} • {section}",
       "dontLetIssuesHurtSales": "Don't Let These Issues Hurt Sales",
       "expertsCanFix": "Our experts can fix these {count} critical errors for you. Book a free consultation to verify the plan.",
+      "expertsCanFix_singular": "Our experts can fix this {count} critical error for you. Book a free consultation to verify the plan.",
       "trustedBy": "Trusted by 50+ stores",
       "fullReportSent": "Your comprehensive report has been sent! It includes detailed findings, step-by-step fixes, Core Web Vitals analysis, and a prioritized 30-day action plan.",
       "analyzeDifferentUrl": "Analyze a different URL"

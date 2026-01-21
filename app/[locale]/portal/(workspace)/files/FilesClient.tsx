@@ -182,7 +182,10 @@ export default function FilesClient() {
           </div>
           <div className="flex items-center gap-3">
             <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-[10px] font-black text-surface-500 uppercase tracking-widest">
-              {files.length} {t('portal.files.totalFiles')}
+              {files.length}{' '}
+              {files.length === 1
+                ? t('portal.files.totalFiles_singular')
+                : t('portal.files.totalFiles')}
             </div>
           </div>
         </div>

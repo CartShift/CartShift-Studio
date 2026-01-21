@@ -1,0 +1,261 @@
+{
+  "portal": {
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage organization preferences and workspace.",
+      "tabs": {
+        "general": "General",
+        "profile": "My Profile",
+        "notifications": "Notifications",
+        "security": "Security",
+        "billing": "Billing",
+        "branding": "Branding"
+      },
+      "branding": {
+        "title": "Agency Branding",
+        "subtitle": "Customize your portal's look, feel, and identity.",
+        "logo": {
+          "title": "Logo",
+          "description": "Displayed on login screens and headers.",
+          "upload": "Upload Logo",
+          "remove": "Remove"
+        },
+        "icon": {
+          "title": "Icon / Mark",
+          "description": "Used for collapsed sidebars and favicons.",
+          "upload": "Upload Icon",
+          "remove": "Remove"
+        },
+        "colors": {
+          "title": "Colors",
+          "description": "Define your brand's color palette.",
+          "primary": "Primary Color",
+          "primaryDesc": "Used for active states, primary buttons, and links.",
+          "accent": "Accent Color",
+          "accentDesc": "Used for secondary actions and highlights."
+        },
+        "typography": {
+          "title": "Typography",
+          "description": "Choose a font family for your portal.",
+          "fontFamily": "Font Family",
+          "english": "English Font",
+          "hebrew": "Hebrew Font"
+        },
+        "borderRadius": {
+          "title": "Border Radius",
+          "description": "Adjust the roundness of UI elements.",
+          "sharp": "Sharp",
+          "soft": "Soft",
+          "round": "Round"
+        },
+        "darkmode": {
+          "invertLogo": "Invert logo color in dark mode (Black → White)"
+        }
+      },
+      "profile": {
+        "title": "Personal Profile",
+        "subtitle": "Manage your individual identity and appearance",
+        "name": "Full Name",
+        "namePlaceholder": "Your Name",
+        "email": "Email Address",
+        "avatar": {
+          "title": "Profile Photo",
+          "desc": "Upload a professional thumbnail to represent you across the portal.",
+          "upload": "Upload Photo",
+          "change": "Change Photo",
+          "removing": "Removing...",
+          "remove": "Remove",
+          "sizeError": "Image size must be less than 2MB",
+          "uploadSuccess": "Profile photo updated",
+          "uploadError": "Failed to upload photo",
+          "removeSuccess": "Profile photo removed",
+          "removeError": "Failed to remove photo"
+        },
+        "save": "Update Profile",
+        "success": "Your profile has been updated!",
+        "error": "Failed to update profile"
+      },
+      "general": {
+        "onboarding": {
+          "title": "Restart Tour",
+          "description": "Re-experience the portal walkthrough to discover new features.",
+          "button": "Start Tour",
+          "success": "Onboarding will start on next page load",
+          "error": "Failed to reset onboarding status"
+        },
+        "title": "Organization Profile",
+        "subtitle": "Basic information and appearance",
+        "logoLabel": "Organization Logo",
+        "logoUpload": "Upload Logo",
+        "logoChange": "Change Logo",
+        "logoRemove": "Remove Logo",
+        "logoHint": "PNG, JPG up to 2MB. Square images work best.",
+        "logo": {
+          "sizeError": "Logo size must be less than 2MB",
+          "uploadSuccess": "Organization logo updated",
+          "uploadError": "Failed to upload logo",
+          "removeSuccess": "Organization logo removed",
+          "removeError": "Failed to remove logo"
+        },
+        "orgName": "Organization Name",
+        "orgNamePlaceholder": "e.g. Acme Corp",
+        "industry": "Industry / Niche",
+        "industryPlaceholder": "e.g. Tech, SaaS",
+        "website": "Business Website",
+        "websitePlaceholder": "https://acme.com",
+        "bio": "Business Overview",
+        "bioPlaceholder": "Give us brief context on what you do...",
+        "save": "Save Profile",
+        "saving": "Processing...",
+        "success": "Profile updated successfully!",
+        "error": "Failed to save settings",
+        "permissionDenied": "You do not have permission to access this organization",
+        "orgNotFound": "Organization not found",
+        "newWorkspace": {
+          "title": "New Workspace",
+          "description": "Need another workspace? Create a separate organization for a different team.",
+          "button": "Create Organization"
+        },
+        "dangerZone": {
+          "title": "Danger Zone",
+          "description": "Permanently delete this organization and all of its data. This action is not reversible.",
+          "button": "Delete Workspace"
+        },
+        "storeIntegrations": "Store Integrations",
+        "integrations": {
+          "shopify": {
+            "title": "Shopify Store Access",
+            "description": "Enable fast, secure collaborator access to your Shopify store.",
+            "storeUrl": "Store URL",
+            "collaboratorCode": "Collaborator Code",
+            "status": {
+              "pending": "Pending",
+              "requested": "Access Requested",
+              "connected": "Connected",
+              "revoked": "Revoked"
+            },
+            "statusMessages": {
+              "pending": "Waiting for your agency to request access to your store.",
+              "requested": "Access has been requested. Please approve in your Shopify admin.",
+              "connected": "Your agency has full collaborator access to your store."
+            },
+            "features": {
+              "feature1": "Enable fast theme customizations and updates",
+              "feature2": "Allow your agency to manage apps and integrations",
+              "feature3": "Secure collaborator access with no staff seat used"
+            },
+            "form": {
+              "storeUrl": "Your Shopify Store URL",
+              "storeUrlHint": "Enter your store's .myshopify.com URL (e.g., yourstore.myshopify.com)",
+              "collaboratorCode": "Collaborator Request Code",
+              "collaboratorCodeHint": "Found in Shopify Admin > Settings > Users > Security. Leave empty if not enabled.",
+              "optional": "optional",
+              "infoTitle": "Where to find the collaborator code?",
+              "infoDesc": "In your Shopify admin, go to Settings > Users and permissions > Security. If enabled, you'll see a 4-digit code.",
+              "save": "Save Store Details",
+              "saving": "Saving...",
+              "cancel": "Cancel"
+            },
+            "actions": {
+              "connect": "Connect Store",
+              "edit": "Edit Store Details"
+            },
+            "errors": {
+              "invalidDomain": "Please enter a valid .myshopify.com domain",
+              "invalidCode": "Collaborator code must be 4 digits",
+              "saveFailed": "Failed to save. Please try again."
+            },
+            "toast": {
+              "settingsSaved": "Shopify settings saved successfully",
+              "accessRequestSubmitted": "Access request submitted",
+              "accessRequestFailed": "Failed to submit access request",
+              "storeConnected": "Shopify store connected",
+              "connectFailed": "Failed to connect Shopify store"
+            },
+            "agency": {
+              "notConnected": "Shopify Store Not Connected",
+              "notConnectedDesc": "The client hasn't connected their Shopify store yet.",
+              "requestAccess": "Request Collaborator Access",
+              "markRequested": "Mark as Requested",
+              "markConnected": "Mark as Connected",
+              "openPartnerDashboard": "Open Partner Dashboard",
+              "openAdmin": "Open Store Admin"
+            }
+          }
+        }
+      },
+      "notifications": {
+        "title": "Channels & Alerts",
+        "subtitle": "Email Delivery Settings",
+        "requestUpdate": {
+          "label": "Request Milestone Updates",
+          "desc": "Notifications for every movement in your project lifecycle."
+        },
+        "commentAlerts": {
+          "label": "Real-time Comment Alerts",
+          "desc": "Stay in the loop when specialists or team members reply."
+        },
+        "statusChange": {
+          "label": "Direct Delivery Status",
+          "desc": "High-priority alerts for 'Delivered' and 'In Review' statuses."
+        },
+        "marketing": {
+          "label": "Product & Design News",
+          "desc": "Occasional insights from our studio on scaling your business."
+        },
+        "syncing": "Syncing changes...",
+        "saved": "Settings Active",
+        "pushBeta": "Looking for browser alerts?",
+        "pushBetaSub": "Beta testing starts Early 2026"
+      },
+      "security": {
+        "title": "Security Layer",
+        "subtitle": "Control your access",
+        "changePassword": {
+          "title": "Change Password",
+          "desc": "Reset your password via a secure verification link sent to your email.",
+          "button": "Request Reset Link",
+          "sent": "Link Sent",
+          "success": "Link Sent",
+          "error": "Failed to send reset link."
+        },
+        "mfa": {
+          "title": "Two-Factor Auth (MFA)",
+          "desc": "Add a mobile authenticator app for maximum account protection.",
+          "badge": "Pipeline 2026"
+        },
+        "session": {
+          "title": "Active Session Details",
+          "email": "Email ID",
+          "provider": "Identity Provider",
+          "mailService": "Mail Service"
+        }
+      },
+      "billing": {
+        "title": "Investment & Plans",
+        "nextPayment": "Pro Partner Status",
+        "priority": "Partner Priority",
+        "proStatus": "Active Partner",
+        "investment": "Monthly Investment",
+        "workflowLimit": "Active Workflows",
+        "teamAvailability": "Team Availability",
+        "perMonth": "/month",
+        "unlimited": "Unlimited",
+        "seats": "10 Active Seats",
+        "stripeDashboard": "Stripe Portal",
+        "invoicingHistory": "Billing History",
+        "activeSubscription": "Active Subscription",
+        "enterpriseStatus": "Contact for details",
+        "plans": {
+          "free": "Free Tier",
+          "pro": "Studio Pro",
+          "enterprise": "Enterprise"
+        },
+        "encrypted": {
+          "title": "Bank-Grade Encryption",
+          "desc": "All transaction data is handled securely via Stripe, protected by AES-256 encryption. We never store your full payment details."
+        }
+      }
+    }
+  }
+}

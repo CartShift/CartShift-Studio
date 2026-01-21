@@ -1,0 +1,69 @@
+/**
+ * Watch for changes in translation source files and re-merge automatically
+ * Usage: node scripts/merge-translations-watch.js
+ */
+const fs = require('fs');
+const path = require('path');
+const { exec } = require('child_process');
+
+const messagesDir = path.join(__dirname, '..', 'messages');
+const srcDir = path.join(messagesDir, 'src');
+
+console.log('👀 Watching for translation changes in messages/src/...\n');
+
+let isMerging = false;
+let pendingMerge = false;
+
+function runMerge() {
+  if (isMerging) {
+    pendingMerge = true;
+    return;
+  }
+
+  isMerging = true;
+  console.log('🔄 Changes detected. Merging...');
+
+  exec('node scripts/merge-translations.js', { cwd: path.join(__dirname, '..') }, (error, stdout, stderr) => {
+    isMerging = false;
+
+    if (error) {
+      console.error('❌ Merge failed:');
+      console.error(stderr || stdout);
+    } else {
+      console.log(stdout.trim());
+      // Also regenerate types if merge is successful
+      exec('node scripts/generate-i18n-types.js', { cwd: path.join(__dirname, '..') }, (typeErr, typeOut) => {
+        if (typeErr) console.error('❌ Type generation failed:', typeOut);
+        else console.log('✅ Types regenerated');
+      });
+    }
+
+    if (pendingMerge) {
+      pendingMerge = false;
+      runMerge();
+    } else {
+      console.log('\n👀 Waiting for changes...');
+    }
+  });
+}
+
+// Watch recursively (Node 18+ supports recursive watch on Windows/macOS)
+try {
+  const watcher = fs.watch(srcDir, { recursive: true }, (eventType, filename) => {
+    if (filename && filename.endsWith('.json')) {
+      // Debounce slightly or just run
+      runMerge();
+    }
+  });
+
+  watcher.on('error', (err) => {
+    console.error('Watch error:', err);
+  });
+
+  // Initial run
+  runMerge();
+
+} catch (err) {
+  console.error('Failed to setup watcher. Ensure you are using Node 18+');
+  console.error(err);
+}

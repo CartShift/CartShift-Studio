@@ -1,0 +1,10 @@
+{
+  "portal": {
+    "access": {
+      "restrictedTitle": "הגישה מוגבלת",
+      "restrictedMessage": "לפרופיל הנוכחי שלך אין את ההרשאות המתאימות לגשת לסביבת העבודה של ארגון זה.",
+      "switchWorkspace": "החלף סביבת עבודה",
+      "contactSupport": "צור קשר עם התמיכה"
+    }
+  }
+}

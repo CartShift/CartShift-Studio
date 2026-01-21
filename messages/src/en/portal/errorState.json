@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "errorState": {
+      "title": "Something went wrong",
+      "message": "We encountered an error while processing your request. Please try again.",
+      "retry": "Try Again",
+      "goBack": "Go Back",
+      "home": "Go Home",
+      "contactSupport": "Contact Support"
+    }
+  }
+}

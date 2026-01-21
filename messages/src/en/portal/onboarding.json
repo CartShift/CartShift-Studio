@@ -1,0 +1,73 @@
+{
+  "portal": {
+    "onboarding": {
+      "skip": "Skip tour",
+      "step": "Step",
+      "prev": "Back",
+      "next": "Next",
+      "start": "Let's Go!",
+      "goToStep": "Go to step",
+      "keyboardHint": "Use arrow keys to navigate, Enter to continue, Esc to skip",
+      "steps": {
+        "welcome": {
+          "title": "Welcome to CartShift Portal!",
+          "description": "We're thrilled to have you here. Let's take a quick tour to help you get started with your new workspace."
+        },
+        "dashboard": {
+          "title": "Your Dashboard",
+          "description": "This is your command center. See an overview of your projects, track progress, and quickly access recent activity."
+        },
+        "requests": {
+          "title": "Submit Requests",
+          "description": "Need something done? Create requests for new features, bug fixes, optimizations, or any other work. Our team will review and get started."
+        },
+        "pricing": {
+          "title": "Pricing & Quotes",
+          "description": "Review pricing proposals from our team, accept quotes, and manage payments — all in one place."
+        },
+        "team": {
+          "title": "Team Collaboration",
+          "description": "Invite colleagues to your workspace. Everyone on your team can submit requests and track progress together."
+        },
+        "notifications": {
+          "title": "Stay Updated",
+          "description": "Never miss an update. We'll notify you when there's activity on your requests or important status changes."
+        },
+        "complete": {
+          "title": "You're All Set!",
+          "description": "Your workspace is ready. Start by creating your first request or explore the dashboard to see what's possible."
+        }
+      },
+      "welcome": {
+        "title": "Welcome to CartShift",
+        "subtitle": "Let's get your workspace set up",
+        "description": "We'll help you set up your organization and get you ready to collaborate with our team.",
+        "cta": "Let's Get Started"
+      },
+      "info": {
+        "title": "Tell us about your organization",
+        "subtitle": "This helps us tailor the experience for you"
+      },
+      "form": {
+        "orgNameLabel": "Organization Name",
+        "orgNamePlaceholder": "e.g. Acme Corp",
+        "orgNameHint": "This will be the name of your workspace",
+        "industryLabel": "Industry",
+        "industrySelectPlaceholder": "Select your industry",
+        "sizeLabel": "Company Size",
+        "sizeSelectPlaceholder": "Select company size",
+        "employeesLabel": "employees",
+        "createButton": "Create Organization",
+        "createError": "Failed to create organization. Please try again."
+      },
+      "completion": {
+        "title": "All Set!",
+        "subtitle": "Your workspace is ready",
+        "description": "You can now invite team members, submit requests, and track your projects.",
+        "cta": "Go to Dashboard"
+      },
+      "back": "Back",
+      "error": "Something went wrong. Please try again."
+    }
+  }
+}

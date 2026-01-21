@@ -412,7 +412,10 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </span>
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-0.5 rounded-full">
-                        {headings.length} {t('blogPost.content.sections')}
+                        {headings.length}{' '}
+                        {headings.length === 1
+                          ? t('blogPost.content.sections_singular')
+                          : t('blogPost.content.sections')}
                       </span>
                       <svg
                         className={`w-5 h-5 text-surface-500 dark:text-surface-400 transition-transform duration-300 ${mobileTocOpen ? 'rotate-180' : ''}`}

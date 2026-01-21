@@ -1,0 +1,27 @@
+{
+  "portal": {
+    "invite": {
+      "title": "הוזמנתם!",
+      "subtitle": "הוזמנתם להצטרף לארגון",
+      "error": "שגיאת הזמנה",
+      "notFound": "הזמנה לא נמצאה",
+      "expired": "פג תוקף ההזמנה",
+      "expiredDesc": "הזמנה זו פגה.",
+      "alreadyAccepted": "כבר התקבלה",
+      "alreadyAcceptedDesc": "הזמנה זו כבר התקבלה בעבר.",
+      "success": "ההזמנה התקבלה!",
+      "redirecting": "מעביר אתכם לארגון...",
+      "invitedEmail": "אימייל מוזמן:",
+      "role": "תפקיד:",
+      "invitedBy": "הוזמן על ידי:",
+      "expires": "פג תוקף:",
+      "guestIntro": "כדי לקבל את ההזמנה, עליכם ליצור חשבון",
+      "createAccount": "צור חשבון",
+      "signIn": "התחבר",
+      "alreadyHasAccount": "כבר יש לכם חשבון? לחצו על \"התחבר\" למעלה",
+      "accept": "קבל הזמנה",
+      "accepting": "מקבל...",
+      "emailMismatch": "הזמנה זו נשלחה ל-{email}, אבל אתם מחוברים כ-{userEmail}. אנא התחברו עם כתובת האימייל הנכונה."
+    }
+  }
+}

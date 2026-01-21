@@ -1,0 +1,10 @@
+{
+  "portal": {
+    "impersonation": {
+      "viewingAs": "צופה בתור",
+      "exitView": "צא מצפייה",
+      "client": "לקוח",
+      "viewAsClient": "צפה כלקוח"
+    }
+  }
+}

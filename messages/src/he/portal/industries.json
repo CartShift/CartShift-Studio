@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "industries": {
+      "ecommerce": "מסחר אלקטרוני",
+      "saas": "תוכנה כשירות (SaaS)",
+      "agency": "סוכנות",
+      "education": "חינוך",
+      "healthcare": "בריאות",
+      "other": "אחר"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "portal": {
+    "quickActions": {
+      "title": "פעולות מהירות",
+      "subtitle": "משימות נפוצות עבורך",
+      "newRequest": "בקשה חדשה",
+      "newRequestDesc": "הגש בקשה חדשה לעיצוב",
+      "schedule": "קבע שיחה",
+      "scheduleDesc": "קבע שיחת ייעוץ",
+      "upload": "העלה קובץ",
+      "uploadDesc": "שתף קבצים ונכסים",
+      "addClient": "הוסף לקוח",
+      "addClientDesc": "צרף לקוח חדש",
+      "createProposal": "צור הצעת מחיר",
+      "createProposalDesc": "טיוטת הצעת מחיר חדשה",
+      "viewReports": "צפה בדוחות",
+      "viewReportsDesc": "בדוק ביצועי מכירות"
+    }
+  }
+}

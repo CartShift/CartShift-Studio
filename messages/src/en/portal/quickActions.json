@@ -1,0 +1,20 @@
+{
+  "portal": {
+    "quickActions": {
+      "title": "Quick Actions",
+      "subtitle": "Common tasks for you",
+      "newRequest": "New Request",
+      "newRequestDesc": "Submit a new design request",
+      "schedule": "Schedule Call",
+      "scheduleDesc": "Book a consultation call",
+      "upload": "Upload File",
+      "uploadDesc": "Share files and assets",
+      "addClient": "Add Client",
+      "addClientDesc": "Onboard a new client",
+      "createProposal": "Create Proposal",
+      "createProposalDesc": "Draft a new quote",
+      "viewReports": "View Reports",
+      "viewReportsDesc": "Check sales performance"
+    }
+  }
+}

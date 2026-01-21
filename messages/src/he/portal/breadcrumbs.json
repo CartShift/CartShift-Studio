@@ -1,0 +1,22 @@
+{
+  "portal": {
+    "breadcrumbs": {
+      "home": "בית",
+      "portal": "פורטל",
+      "organization": "ארגון",
+      "dashboard": "לוח בקרה",
+      "requests": "בקשות",
+      "settings": "הגדרות",
+      "team": "צוות",
+      "files": "קבצים",
+      "pricing": "תמחור",
+      "consultations": "פגישות ייעוץ",
+      "agency": "סוכנות",
+      "workboard": "לוח עבודה",
+      "clients": "לקוחות",
+      "new": "חדש",
+      "calculator": "מחשבון",
+      "sales": "לוח מכירות"
+    }
+  }
+}

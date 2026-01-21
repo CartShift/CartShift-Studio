@@ -70,8 +70,6 @@ interface RequestPricingCalculatorProps {
   onLineItemsChange: (items: LineItemOutput[]) => void;
   /** Currency for calculations */
   currency: Currency;
-  /**  state */
-  is?: boolean;
   /** Error message */
   error?: string | null;
   /** Callback to open quick add request modal/form */
@@ -103,7 +101,6 @@ export function RequestPricingCalculator({
   onSelectionChange,
   onLineItemsChange,
   currency,
-  is = false,
   error = null,
   onQuickAddRequest,
   className,
@@ -214,7 +211,7 @@ export function RequestPricingCalculator({
 
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Global s */}
+      {/* Global settings section */}
       <GlobalModifiers
         urgent={globalUrgent}
         recurring={globalRecurring}
@@ -234,7 +231,6 @@ export function RequestPricingCalculator({
         expandedRequests={expandedRequests}
         pricingResults={pricingResults}
         currency={currency}
-        is={is}
         error={error}
       />
 
@@ -268,7 +264,10 @@ export function RequestPricingCalculator({
                 {t('portal.pricing.quote.total')}
               </h4>
               <p className="text-sm text-surface-600 dark:text-surface-400">
-                {selectedRequestIds.length} {t('portal.pricing.requests')}
+                {selectedRequestIds.length}{' '}
+                {selectedRequestIds.length === 1
+                  ? t('portal.pricing.requests_singular')
+                  : t('portal.pricing.requests')}
               </p>
             </div>
             <div className="text-end">

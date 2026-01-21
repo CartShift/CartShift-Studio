@@ -1,0 +1,56 @@
+{
+  "portal": {
+    "files": {
+      "title": "קבצים ונכסים",
+      "subtitle": "אחסון מאוחד לכל מסמכי הפרויקט והמשאבים שלך.",
+      "upload": "העלאת נכס",
+      "searchPlaceholder": "חפש לפי שם קובץ...",
+      "totalFiles": "סה״כ קבצים",
+      "totalFiles_singular": "סה״כ קובץ",
+      "recentlyAdded": "נוסף לאחרונה",
+      "table": {
+        "identity": "זהות נכס",
+        "metadata": "מטא-דאטה",
+        "format": "פורמט",
+        "transmission": "העברה",
+        "actions": "פעולות",
+        "addedBy": "נוסף ע״י",
+        "system": "המערכת"
+      },
+      "actions": {
+        "download": "הורדה",
+        "share": "שיתוף",
+        "delete": "מחיקה",
+        "deleteConfirm": "האם אתם בטוחים שברצונכם למחוק קובץ זה?",
+        "remove": "הסר",
+        "deleted": "הקובץ נמחק בהצלחה",
+        "deleteFailed": "מחיקת הקובץ נכשלה"
+      },
+      "imageLabels": {
+        "remove": "הסר תמונה",
+        "change": "שנה תמונה"
+      },
+      "empty": {
+        "title": "אין נכסים מסונכרנים",
+        "search": "לא מצאנו קבצים התואמים לחיפוש שלך.",
+        "noFiles": "סביבת עבודה זו ריקה כרגע.",
+        "uploadFirst": "העלה נכס ראשון",
+        "syncing": "מסנכרן את הנכסים שלך..."
+      },
+      "error": {
+        "title": "שגיאת סנכרון נכסים",
+        "retry": "נסה שוב"
+      },
+      "uploadForm": {
+        "title": "העלאת קובץ",
+        "browse": "לחצו כדי לעיין בקבצים",
+        "maxSize": "גודל קובץ מקסימלי: 10MB",
+        "uploading": "מעלה...",
+        "errorSize": "גודל הקובץ חייב להיות קטן מ-10MB",
+        "errorGeneric": "העלאת הקובץ נכשלה. אנא נסו שוב.",
+        "cancel": "ביטול",
+        "submit": "העלה קובץ"
+      }
+    }
+  }
+}

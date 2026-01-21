@@ -1,0 +1,261 @@
+{
+  "portal": {
+    "settings": {
+      "title": "הגדרות",
+      "subtitle": "ניהול העדפות ארגון וסביבת עבודה.",
+      "tabs": {
+        "general": "כללי",
+        "profile": "הפרופיל שלי",
+        "notifications": "התראות",
+        "security": "אבטחה",
+        "billing": "חיובים",
+        "branding": "מיתוג"
+      },
+      "branding": {
+        "title": "מיתוג הסוכנות",
+        "subtitle": "התאם אישית את המראה, התחושה והזהות של הפורטל שלך.",
+        "logo": {
+          "title": "לוגו",
+          "description": "מוצג במסכי התחברות ובכותרות.",
+          "upload": "העלה לוגו",
+          "remove": "הסר"
+        },
+        "icon": {
+          "title": "אייקון / סמל",
+          "description": "משמש עבור סרגלי צד מכווצים ואייקונים בדפדפן.",
+          "upload": "העלה סמל",
+          "remove": "הסר"
+        },
+        "colors": {
+          "title": "צבעים",
+          "description": "הגדר את פלטת הצבעים של המותג שלך.",
+          "primary": "צבע ראשי",
+          "primaryDesc": "משמש למצבים פעילים, כפתורים ראשיים וקישורים.",
+          "accent": "צבע משני",
+          "accentDesc": "משמש לפעולות משניות והדגשות."
+        },
+        "typography": {
+          "title": "טיפוגרפיה",
+          "description": "בחר משפחת גופנים עבור הפורטל שלך.",
+          "fontFamily": "משפחת גופנים",
+          "english": "גופן אנגלית",
+          "hebrew": "גופן עברית"
+        },
+        "borderRadius": {
+          "title": "רדיוס גבול",
+          "description": "התאם את העגלגלות של אלמנטים בממשק.",
+          "sharp": "חד",
+          "soft": "רך",
+          "round": "עגול"
+        },
+        "darkmode": {
+          "invertLogo": "הפוך צבע לוגו במצב כהה (שחור ← לבן)"
+        }
+      },
+      "profile": {
+        "title": "פרופיל אישי",
+        "subtitle": "נהל את הזהות האישית והמראה שלך",
+        "name": "שם מלא",
+        "namePlaceholder": "השם שלך",
+        "email": "כתובת אימייל",
+        "avatar": {
+          "title": "תמונת פרופיל",
+          "desc": "העלה תמונה מקצועית שתייצג אותך ברחבי הפורטל.",
+          "upload": "העלאת תמונה",
+          "change": "שינוי תמונה",
+          "removing": "מסיר...",
+          "remove": "הסרה",
+          "sizeError": "גודל התמונה חייב להיות קטן מ-2MB",
+          "uploadSuccess": "תמונת הפרופיל עודכנה",
+          "uploadError": "העלאת התמונה נכשלה",
+          "removeSuccess": "תמונת הפרופיל הוסרה",
+          "removeError": "הסרת התמונה נכשלה"
+        },
+        "save": "עדכן פרופיל",
+        "success": "הפרופיל שלך עודכן בהצלחה!",
+        "error": "עדכון הפרופיל נכשל"
+      },
+      "general": {
+        "title": "פרופיל אירגוני",
+        "subtitle": "מידע בסיסי ומראה",
+        "logoLabel": "לוגו הארגון",
+        "logoUpload": "העלאת לוגו",
+        "logoChange": "שינוי לוגו",
+        "logoRemove": "הסרת לוגו",
+        "logoHint": "PNG, JPG עד 2MB. תמונות מרובעות עובדות הכי טוב.",
+        "logo": {
+          "sizeError": "גודל הלוגו חייב להיות קטן מ-2MB",
+          "uploadSuccess": "לוגו הארגון עודכן",
+          "uploadError": "העלאת הלוגו נכשלה",
+          "removeSuccess": "לוגו הארגון הוסר",
+          "removeError": "הסרת הלוגו נכשלה"
+        },
+        "orgName": "שם הארגון",
+        "orgNamePlaceholder": "לדוגמה: Acme Corp",
+        "industry": "תעשייה / נישה",
+        "industryPlaceholder": "לדוגמה: טכנולוגיה, SaaS",
+        "website": "אתר עסקי",
+        "websitePlaceholder": "https://acme.com",
+        "bio": "סקירה עסקית",
+        "bioPlaceholder": "תן לנו הקשר קצר על מה אתם עושים...",
+        "save": "שמור פרופיל",
+        "saving": "מעבד...",
+        "success": "הפרופיל עודכן בהצלחה!",
+        "error": "שמירת ההגדרות נכשלה",
+        "permissionDenied": "אין לך הרשאה לגשת לארגון זה",
+        "orgNotFound": "הארגון לא נמצא",
+        "newWorkspace": {
+          "title": "סביבת עבודה חדשה",
+          "description": "צריך סביבת עבודה נוספת? צור ארגון נפרד לצוות אחר.",
+          "button": "צור ארגון"
+        },
+        "onboarding": {
+          "title": "הפעל סיור מחדש",
+          "description": "חווה מחדש את הסיור בפורטל כדי לגלות תכונות חדשות.",
+          "button": "התחל סיור",
+          "success": "הסיור יתחיל בטעינת הדף הבאה",
+          "error": "איפוס סטטוס ההדרכה נכשל"
+        },
+        "dangerZone": {
+          "title": "אזור סכנה",
+          "description": "מחק לצמיתות ארגון זה ואת כל הנתונים שלו. פעולה זו אינה הפיכה.",
+          "button": "מחק סביבת עבודה"
+        },
+        "storeIntegrations": "אינטגרציות חנות",
+        "integrations": {
+          "shopify": {
+            "title": "גישה לחנות Shopify",
+            "description": "אפשר גישת שותף מהירה ומאובטחת לחנות Shopify שלך.",
+            "storeUrl": "כתובת החנות",
+            "collaboratorCode": "קוד שותף",
+            "status": {
+              "pending": "ממתין",
+              "requested": "גישה התבקשה",
+              "connected": "מחובר",
+              "revoked": "בוטל"
+            },
+            "statusMessages": {
+              "pending": "ממתין לסוכנות שלך לבקש גישה לחנות שלך.",
+              "requested": "גישה התבקשה. אנא אשר בניהול החנות שלך ב-Shopify.",
+              "connected": "לסוכנות שלך יש גישת שותף מלאה לחנות שלך."
+            },
+            "features": {
+              "feature1": "אפשר התאמות ועדכוני תבניות מהירים",
+              "feature2": "אפשר לסוכנות שלך לנהל אפליקציות ואינטגרציות",
+              "feature3": "גישת שותף מאובטחת ללא שימוש במושב צוות"
+            },
+            "form": {
+              "storeUrl": "כתובת חנות Shopify שלך",
+              "storeUrlHint": "הזן את כתובת .myshopify.com של החנות שלך (לדוגמה: yourstore.myshopify.com)",
+              "collaboratorCode": "קוד בקשת שותף",
+              "collaboratorCodeHint": "נמצא בניהול Shopify > הגדרות > משתמשים > אבטחה. השאר ריק אם לא מופעל.",
+              "optional": "אופציונלי",
+              "infoTitle": "איפה למצוא את קוד השותף?",
+              "infoDesc": "בניהול Shopify שלך, עבור להגדרות > משתמשים והרשאות > אבטחה. אם מופעל, תראה קוד בן 4 ספרות.",
+              "save": "שמור פרטי חנות",
+              "saving": "שומר...",
+              "cancel": "ביטול"
+            },
+            "actions": {
+              "connect": "חבר חנות",
+              "edit": "ערוך פרטי חנות"
+            },
+            "errors": {
+              "invalidDomain": "אנא הזן כתובת .myshopify.com תקינה",
+              "invalidCode": "קוד שותף חייב להכיל 4 ספרות",
+              "saveFailed": "השמירה נכשלה. אנא נסה שוב."
+            },
+            "toast": {
+              "settingsSaved": "הגדרות Shopify נשמרו בהצלחה",
+              "accessRequestSubmitted": "בקשת גישה נשלחה",
+              "accessRequestFailed": "נכשל בשליחת בקשת גישה",
+              "storeConnected": "חנות Shopify מחוברת",
+              "connectFailed": "נכשל בחיבור לחנות Shopify"
+            },
+            "agency": {
+              "notConnected": "חנות Shopify לא מחוברת",
+              "notConnectedDesc": "הלקוח עדיין לא חיבר את חנות Shopify שלו.",
+              "requestAccess": "בקש גישת שותף",
+              "markRequested": "סמן כהתבקש",
+              "markConnected": "סמן כמחובר",
+              "openPartnerDashboard": "פתח לוח שותפים",
+              "openAdmin": "פתח ניהול חנות"
+            }
+          }
+        }
+      },
+      "notifications": {
+        "title": "ערוצים והתראות",
+        "subtitle": "הגדרות מסירת דוא״ל",
+        "requestUpdate": {
+          "label": "עדכוני אבני דרך בבקשות",
+          "desc": "התראות על כל תזוזה במחזור החיים של הפרויקט שלך."
+        },
+        "commentAlerts": {
+          "label": "התראות תגובה בזמן אמת",
+          "desc": "הישאר מעודכן כאשר מומחים או חברי צוות מגיבים."
+        },
+        "statusChange": {
+          "label": "סטטוס מסירה ישיר",
+          "desc": "התראות בעדיפות גבוהה לסטטוסים 'סופק' ו-'בבדיקה'."
+        },
+        "marketing": {
+          "label": "חדשות מוצר ועיצוב",
+          "desc": "תובנות מזדמנות מהסטודיו שלנו על הגדלת העסק שלך."
+        },
+        "syncing": "מסנכרן שינויים...",
+        "saved": "ההגדרות פעילות",
+        "pushBeta": "מחפש התראות דפדפן?",
+        "pushBetaSub": "בדיקות בטא מתחילות בתחילת 2026"
+      },
+      "security": {
+        "title": "שכבת אבטחה",
+        "subtitle": "שלוט בגישה שלך",
+        "changePassword": {
+          "title": "שנה סיסמה",
+          "desc": "אפס את הסיסמה שלך באמצעות קישור אימות מאובטח שישלח למייל שלך.",
+          "button": "בקש קישור לאיפוס",
+          "sent": "קישור נשלח",
+          "success": "קישור נשלח",
+          "error": "שליחת קישור לאיפוס נכשלה."
+        },
+        "mfa": {
+          "title": "אימות דו-שלבי (MFA)",
+          "desc": "הוסף אפליקציית אימות ניידת להגנה מירבית על החשבון.",
+          "badge": "בצנרת 2026"
+        },
+        "session": {
+          "title": "פרטי סשן פעיל",
+          "email": "מזהה אימייל",
+          "provider": "ספק זהות",
+          "mailService": "שירות מייל"
+        }
+      },
+      "billing": {
+        "title": "השקעה ותוכניות",
+        "nextPayment": "סטטוס שותף מקצועי",
+        "priority": "עדיפות שותפים",
+        "proStatus": "שותף פעיל",
+        "investment": "השקעה חודשית",
+        "workflowLimit": "תהליכי עבודה פעילים",
+        "teamAvailability": "זמינות צוות",
+        "perMonth": "/חודש",
+        "unlimited": "ללא הגבלה",
+        "seats": "10 מושבים פעילים",
+        "stripeDashboard": "פורטל Stripe",
+        "invoicingHistory": "היסטוריית חיובים",
+        "activeSubscription": "מנוי פעיל",
+        "enterpriseStatus": "צרו קשר לפרטים",
+        "plans": {
+          "free": "מסלול חופשי",
+          "pro": "סטודיו פרו",
+          "enterprise": "ארגוני"
+        },
+        "encrypted": {
+          "title": "הצפנה ברמת בנק",
+          "desc": "כל נתוני העסקאות מטופלים בצורה מאובטחת דרך Stripe, מוגנים על ידי הצפנת AES-256. אנחנו לעולם לא שומרים את פרטי התשלום המלאים שלך."
+        }
+      }
+    }
+  }
+}

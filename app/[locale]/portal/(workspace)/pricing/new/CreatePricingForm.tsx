@@ -229,6 +229,7 @@ export default function CreatePricingForm() {
 
   const watchedLineItems = watch('lineItems');
   const watchedCurrency = watch('currency');
+  const watchedIncludeTax = watch('includeTax');
 
   // Handle line items generated from calculator
   const handleCalculatorLineItems = useCallback(
@@ -278,13 +279,13 @@ export default function CreatePricingForm() {
         unitPrice: Math.round((item.unitPrice || 0) * 100), // Convert to cents
       })
     );
-    const taxRate = watch('includeTax') ? 0.17 : 0;
+    const taxRate = watchedIncludeTax ? 0.17 : 0;
     const subtotal = calculateTotalAmount(items, 0); // items sum
     const taxAmount = Math.round(subtotal * taxRate);
     const totalAmount = subtotal + taxAmount;
 
     return { totalAmount, subtotal, taxAmount };
-  }, [watchedLineItems, watch('includeTax')]);
+  }, [watchedLineItems, watchedIncludeTax]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (!userData?.id || !orgId || typeof orgId !== 'string') {
@@ -441,7 +442,6 @@ export default function CreatePricingForm() {
             onSelectionChange={setSelectedRequestIds}
             onLineItemsChange={handleCalculatorLineItems}
             currency={watchedCurrency}
-            is={loadingRequests}
             error={requestsError}
             onQuickAddRequest={() => router.push(getPortalPath('/requests/new'))}
             orgId={orgId!}

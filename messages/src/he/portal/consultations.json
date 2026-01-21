@@ -1,0 +1,61 @@
+{
+  "portal": {
+    "consultations": {
+      "title": "פגישות ייעוץ",
+      "subtitle": "ניהול פגישות ייעוץ ללקוחות",
+      "clientSubtitle": "צפו בפגישות מתוכננות והיסטוריית הייעוץ שלכם",
+      "schedule": "תיאום פגישה",
+      "scheduleCall": "תאמו שיחה",
+      "scheduleNow": "תאמו עכשיו",
+      "searchPlaceholder": "חיפוש פגישות...",
+      "upcoming": "פגישות קרובות",
+      "past": "פגישות קודמות",
+      "notes": "סיכום פגישה",
+      "actionItems": "משימות לביצוע",
+      "stats": {
+        "upcoming": "קרובות",
+        "completed": "הושלמו",
+        "canceled": "בוטלו",
+        "total": "סה\"כ"
+      },
+      "empty": {
+        "title": "לא נמצאו פגישות",
+        "description": "תאמו את פגישת הייעוץ הראשונה שלכם",
+        "noClientOrganizations": "לא נמצאו ארגוני לקוחות"
+      },
+      "noUpcoming": "אין פגישות קרובות",
+      "noUpcomingDesc": "מוכנים לדון בפרויקט שלכם? תאמו שיחה עם הצוות שלנו.",
+      "agenda": "סדר יום",
+      "join": "הצטרף",
+      "cancel": "בטל",
+      "minutes": "דק'",
+      "userFallback": "משתמש",
+      "types": {
+        "onboarding": "שיחת הכרות",
+        "strategy": "פגישת אסטרטגיה",
+        "project_review": "סקירת פרויקט",
+        "support": "שיחת תמיכה"
+      },
+      "status": {
+        "scheduled": "מתוכנן",
+        "completed": "הושלם",
+        "canceled": "בוטל",
+        "no_show": "לא הופיע"
+      },
+      "form": {
+        "type": "סוג",
+        "title": "כותרת הפגישה",
+        "titlePlaceholder": "למשל: דיון אסטרטגי",
+        "date": "תאריך",
+        "time": "שעה",
+        "duration": "משך זמן",
+        "notes": "סדר יום / הערות",
+        "notesPlaceholder": "מה תדונו?",
+        "failedToCancel": "ביטול הפגישה נכשל",
+        "notFound": "פגישה לא נמצאה",
+        "calendarConflict": "יש התנגשות בלוח השנה. האם אתם רוצים להמשיך בכל זאת?",
+        "cancelConfirm": "האם אתם בטוחים שברצונכם לבטל את הפגישה הזו?"
+      }
+    }
+  }
+}

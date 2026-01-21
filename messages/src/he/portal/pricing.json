@@ -1,0 +1,183 @@
+{
+  "portal": {
+    "pricing": {
+      "title": "הצעות מחיר",
+      "subtitle": "צור ונהל הצעות מחיר ללקוחות.",
+      "selectClient": "בחר לקוח",
+      "selectClientDesc": "בחר לקוח כדי ליצור עבורו הצעת מחיר",
+      "newOffer": "הצעה חדשה",
+      "editOffer": "עריכת הצעת מחיר",
+      "editOfferDescription": "עדכן את הצעת המחיר שלך.",
+      "status": {
+        "draft": "טיוטה",
+        "sent": "נשלח",
+        "client_edited": "נערך על ידי לקוח",
+        "accepted": "אושר",
+        "paid": "שולם",
+        "declined": "נדחה",
+        "expired": "פג תוקף",
+        "canceled": "בוטל"
+      },
+      "noOffersAgency": "צרו את הצעת המחיר הראשונה שלכם כדי להתחיל.",
+      "noOffersClient": "אין הצעות מחיר זמינות עדיין.",
+      "includedRequests": "בקשות כלולות",
+      "form": {
+        "offerDetails": "פרטי הצעה",
+        "titleLabel": "כותרת ההצעה",
+        "titlePlaceholder": "לדוגמה, הצעה לעיצוב מחדש של האתר",
+        "descriptionLabel": "תיאור",
+        "descriptionPlaceholder": "תאר מה כוללת הצעה זו...",
+        "createNewDescription": "צרו הצעת מחיר חדשה ללקוח שלכם.",
+        "lineItems": "פריטים",
+        "subtotal": "סכום ביניים",
+        "tax": "מע״מ",
+        "lineItemsFromCalculator": "נוצר מבקשות נבחרות - ניתן לערוך לפי הצורך",
+        "addItem": "הוסף פריט",
+        "itemDescription": "תיאור",
+        "quantity": "כמות",
+        "unitPrice": "מחיר יחידה",
+        "total": "סה״כ",
+        "currency": "מטבע",
+        "validUntil": "בתוקף עד",
+        "clientName": "שם הלקוח",
+        "clientEmail": "אימייל הלקוח",
+        "agencyNotes": "הערות פנימיות",
+        "saveDraft": "שמור טיוטה",
+        "sendToClient": "שלח ללקוח",
+        "sending": "שולח...",
+        "saveChanges": "שמור שינויים",
+        "saving": "שומר...",
+        "linkedRequestsNote": "לא ניתן לשנות בקשות מקושרות לאחר יצירה.",
+        "linkedRequestsLabel": "בקשות מקושרות להצעה זו",
+        "selectRequests": "בחירת בקשות",
+        "selectRequestsDescription": "בחר בקשות לכלול בהצעת מחיר זו",
+        "selected": "נבחרו",
+        "selected_singular": "נבחר",
+        "noRequestsAvailable": "אין בקשות זמינות",
+        "allRequestsInOffers": "כל הבקשות כבר נמצאות בהצעות מחיר או שולמו",
+        "settings": "הגדרות",
+        "clientInfo": "פרטי לקוח",
+        "errors": {
+          "titleTooLong": "הכותרת ארוכה מדי",
+          "titleTooShort": "הכותרת חייבת להכיל לפחות 3 תווים",
+          "priceMustBePositive": "המחיר חייב להיות חיובי",
+          "quantityMustBeAtLeast1": "הכמות חייבת להיות לפחות 1",
+          "checkLineItems": "אנא בדקו את פריטי השורה",
+          "notFound": "הצעת מחיר לא נמצאה",
+          "failedToLoad": "טעינת הצעת המחיר נכשלה"
+        },
+        "sendConfirm": "לשלוח את הצעת המחיר הזו ללקוח?",
+        "sendFailed": "השליחה נכשלה. אנא נסו שוב.",
+        "deleteConfirm": "האם אתם בטוחים שברצונכם למחוק את הצעת המחיר הזו?",
+        "deleteFailed": "המחיקה נכשלה. אנא נסו שוב.",
+        "itemDescriptionPlaceholder": "שירות או מוצר...",
+        "agencyNotesPlaceholder": "הערות פנימיות (לא נראות ללקוח)...",
+        "createOffer": "צור הצעה"
+      },
+      "detail": {
+        "breakdown": "פירוט המחיר",
+        "subtotal": "סכום ביניים",
+        "yourNotes": "ההערות שלך",
+        "addNotes": "הוסף הערות לסוכנות...",
+        "acceptOffer": "אשר הצעה",
+        "declineOffer": "דחה",
+        "payNow": "שלם עכשיו",
+        "paymentComplete": "התשלום הושלם",
+        "paidOn": "שולם בתאריך",
+        "transactionId": "מזהה עסקה"
+      },
+      "payment": {
+        "loadError": "טעינת מערכת התשלום נכשלה. אנא רעננו את הדף.",
+        "statusUnknown": "לא ידוע"
+      },
+      "clientView": {
+        "title": "הצעות מחיר",
+        "subtitle": "סקור ונהל הצעות מחיר מהסוכנות.",
+        "pending": "ממתין לאישור",
+        "accepted": "מוכן לתשלום",
+        "paid": "הושלם"
+      },
+      "calculator": "מחשבון",
+      "calculatorTitle": "מחשבון תמחור",
+      "calculatorSubtitle": "הערכת מחיר לפי סוג בקשה ורמת מאמץ",
+      "globalSettings": "הגדרות הצעה",
+      "globalSettingsDesc": "מטבע ומודיפיירים חלים על כל הפריטים",
+      "globalModifiers": "מודיפיירים גלובליים",
+      "toast": {
+        "configUpdated": "תצורת תמחור עודכנה",
+        "configUpdateFailed": "נכשל בעדכון תצורת התמחור",
+        "modifiersApplied": "מודיפיירים גלובליים חלו על כל הבקשות",
+        "modifiersApplyFailed": "נכשל בהחלת מודיפיירים גלובליים",
+        "configRemoved": "תצורת התמחור הוסרה",
+        "configRemoveFailed": "נכשל בהסרת תצורת התמחור"
+      },
+      "selectAndPrice": "בחר ותמחר בקשות",
+      "selectAndPriceDesc": "בחר בקשות לכלול בהצעת המחיר שלך",
+      "quickAddRequest": "הוסף מהיר",
+      "applyToAll": "החל על הכל",
+      "request": "בקשה",
+      "requests": "בקשות",
+      "requests_singular": "בקשה",
+      "itemBuilder": "הוסף פריט",
+      "itemBuilderDesc": "הגדר והוסף פריטים להצעה",
+      "itemPrice": "מחיר פריט",
+      "customPrice": "מחיר מותאם אישית",
+      "overriddenPrice": "מחיר מותאם",
+      "calculatedPrice": "מחושב",
+      "resetToCalculated": "איפוס",
+      "effortLevel": "רמת מאמץ",
+      "effort": {
+        "low": "נמוך",
+        "medium": "בינוני",
+        "high": "גבוה",
+        "complex": "מורכב"
+      },
+      "modifiers": {
+        "title": "מודיפיירים",
+        "urgent": "עבודה דחופה",
+        "urgentDesc": "תוספת 50%",
+        "bundle": "הנחת חבילה",
+        "bundleDesc": "הנחה 10% מ-3 פריטים",
+        "recurring": "לקוח חוזר",
+        "recurringDesc": "הנחת נאמנות 5%"
+      },
+      "result": {
+        "basePrice": "מחיר בסיס",
+        "adjustments": "התאמות",
+        "estimatedTotal": "סה״כ משוער",
+        "breakdown": "צפה בפירוט"
+      },
+      "actions": {
+        "reset": "אפס",
+        "createOffer": "צור הצעת מחיר",
+        "applyToForm": "החל על הטופס",
+        "addToQuote": "הוסף להצעה",
+        "clearQuote": "נקה הצעה"
+      },
+      "quote": {
+        "items": "פריטים בהצעה",
+        "total": "סה״כ הצעה",
+        "empty": "טרם נוספו פריטים",
+        "remove": "הסר",
+        "currencyLocked": "המטבע נעול כדי להתאים לפריטים הקיימים בהצעה",
+        "jobsCount": "{count, plural, =1 {עבודה אחת} other {# עבודות}}",
+        "base": "בסיס",
+        "totalHours": "סה\"כ",
+        "reviewItems": "סקור את הפריטים לפני יצירת הצעה"
+      },
+      "tips": {
+        "title": "טיפים מהירים",
+        "tip1": "השתמשו ב'מורכב' לפרויקטים של מספר שבועות",
+        "tip2": "הנחת חבילה חלה כאשר 3+ פריטים בהצעה",
+        "tip3": "הנחת לקוח חוזר בונה מערכות יחסים ארוכות טווח"
+      },
+      "effortGuide": {
+        "title": "מדריך רמות מאמץ"
+      },
+      "valueProps": {
+        "title": "למה לתמחר נכון",
+        "description": "הערכות מדויקות בונות אמון ומפחיתות את זמן המשא ומתן. השתמשו במחשבון זה ליישור ציפיות מוקדם."
+      }
+    }
+  }
+}

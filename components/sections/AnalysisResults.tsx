@@ -133,8 +133,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
                   {results.overallScore >= 80
                     ? t('analyzer.results.greatJob') || 'Great Job! Your store is optimized.'
-                    : t('analyzer.results.issuesFound', { count: priorityRecs.length }) ||
-                      `Attention Needed: ${priorityRecs.length} Critical Issues Detected`}
+                    : priorityRecs.length === 1
+                      ? t('analyzer.results.issuesFound_singular', {
+                          count: priorityRecs.length,
+                        }) || `Attention Needed: ${priorityRecs.length} Critical Issue Detected`
+                      : t('analyzer.results.issuesFound', { count: priorityRecs.length }) ||
+                        `Attention Needed: ${priorityRecs.length} Critical Issues Detected`}
                 </h3>
                 <p className="text-white/90 text-base leading-relaxed">
                   {results.overallScore >= 80
@@ -389,8 +393,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <p
                   className={`text-base mb-8 leading-relaxed ${isDark ? 'text-white/70' : 'text-surface-600'}`}
                 >
-                  {t('analyzer.results.expertsCanFix', { count: priorityRecs.length }) ||
-                    `Our experts can fix these ${priorityRecs.length} critical errors for you. Book a free consultation to verify the plan.`}
+                  {priorityRecs.length === 1
+                    ? t('analyzer.results.expertsCanFix_singular', {
+                        count: priorityRecs.length,
+                      }) ||
+                      `Our experts can fix this ${priorityRecs.length} critical error for you. Book a free consultation to verify the plan.`
+                    : t('analyzer.results.expertsCanFix', { count: priorityRecs.length }) ||
+                      `Our experts can fix these ${priorityRecs.length} critical errors for you. Book a free consultation to verify the plan.`}
                 </p>
               </div>
 

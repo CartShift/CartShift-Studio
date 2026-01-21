@@ -1,0 +1,183 @@
+{
+  "portal": {
+    "pricing": {
+      "title": "Pricing Offers",
+      "subtitle": "Create and manage pricing proposals for clients.",
+      "selectClient": "Select Client",
+      "selectClientDesc": "Choose a client to create an offer for",
+      "newOffer": "New Offer",
+      "editOffer": "Edit Pricing Offer",
+      "editOfferDescription": "Update your pricing proposal.",
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "client_edited": "Client Edited",
+        "accepted": "Accepted",
+        "paid": "Paid",
+        "declined": "Declined",
+        "expired": "Expired",
+        "canceled": "Canceled"
+      },
+      "noOffersAgency": "Create your first pricing offer to get started.",
+      "noOffersClient": "No pricing offers available yet.",
+      "includedRequests": "Included Requests",
+      "form": {
+        "offerDetails": "Offer Details",
+        "titleLabel": "Offer Title",
+        "titlePlaceholder": "e.g., Website Redesign Proposal",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Describe what this offer includes...",
+        "createNewDescription": "Create a new pricing proposal for your client.",
+        "lineItems": "Line Items",
+        "subtotal": "Subtotal",
+        "tax": "Tax",
+        "lineItemsFromCalculator": "Generated from selected requests - edit as needed",
+        "addItem": "Add Item",
+        "itemDescription": "Description",
+        "quantity": "Qty",
+        "unitPrice": "Unit Price",
+        "total": "Total",
+        "currency": "Currency",
+        "validUntil": "Valid Until",
+        "clientName": "Client Name",
+        "clientEmail": "Client Email",
+        "agencyNotes": "Internal Notes",
+        "saveDraft": "Save Draft",
+        "sendToClient": "Send to Client",
+        "sending": "Sending...",
+        "saveChanges": "Save Changes",
+        "saving": "Saving...",
+        "linkedRequestsNote": "Linked requests cannot be changed after creation.",
+        "linkedRequestsLabel": "Requests linked to this offer",
+        "selectRequests": "Select Requests",
+        "selectRequestsDescription": "Choose requests to include in this pricing offer",
+        "selected": "selected",
+        "selected_singular": "selected",
+        "noRequestsAvailable": "No requests available",
+        "allRequestsInOffers": "All requests are already in pricing offers or paid",
+        "settings": "Settings",
+        "clientInfo": "Client Info",
+        "errors": {
+          "titleTooLong": "Title is too long",
+          "titleTooShort": "Title must be at least 3 characters",
+          "priceMustBePositive": "Price must be positive",
+          "quantityMustBeAtLeast1": "Quantity must be at least 1",
+          "checkLineItems": "Please check line items",
+          "notFound": "Pricing offer not found",
+          "failedToLoad": "Failed to load pricing offer"
+        },
+        "sendConfirm": "Send this pricing offer to the client?",
+        "sendFailed": "Failed to send. Please try again.",
+        "deleteConfirm": "Are you sure you want to delete this pricing offer?",
+        "deleteFailed": "Failed to delete. Please try again.",
+        "itemDescriptionPlaceholder": "Service or product...",
+        "agencyNotesPlaceholder": "Internal notes (not visible to client)...",
+        "createOffer": "Create Offer"
+      },
+      "detail": {
+        "breakdown": "Pricing Breakdown",
+        "subtotal": "Subtotal",
+        "yourNotes": "Your Notes",
+        "addNotes": "Add notes for the agency...",
+        "acceptOffer": "Accept Offer",
+        "declineOffer": "Decline",
+        "payNow": "Pay Now",
+        "paymentComplete": "Payment Complete",
+        "paidOn": "Paid on",
+        "transactionId": "Transaction ID"
+      },
+      "payment": {
+        "loadError": "Failed to load payment system. Please refresh the page.",
+        "statusUnknown": "UNKNOWN"
+      },
+      "clientView": {
+        "title": "Pricing Requests",
+        "subtitle": "Review and manage pricing offers from the agency.",
+        "pending": "Pending Review",
+        "accepted": "Ready to Pay",
+        "paid": "Completed"
+      },
+      "calculator": "Calculator",
+      "calculatorTitle": "Pricing Calculator",
+      "calculatorSubtitle": "Estimate pricing based on request type and effort",
+      "globalSettings": "Quote Settings",
+      "globalSettingsDesc": "Currency and modifiers apply to all items",
+      "globalModifiers": "Global Modifiers",
+      "toast": {
+        "configUpdated": "Pricing configuration updated",
+        "configUpdateFailed": "Failed to update pricing configuration",
+        "modifiersApplied": "Global modifiers applied to all requests",
+        "modifiersApplyFailed": "Failed to apply global modifiers",
+        "configRemoved": "Pricing configuration removed",
+        "configRemoveFailed": "Failed to remove pricing configuration"
+      },
+      "selectAndPrice": "Select & Price Requests",
+      "selectAndPriceDesc": "Choose requests to include in your pricing offer",
+      "quickAddRequest": "Quick Add",
+      "applyToAll": "Apply to All",
+      "request": "Request",
+      "requests": "Requests",
+      "requests_singular": "Request",
+      "itemBuilder": "Add Item",
+      "itemBuilderDesc": "Configure and add items to your quote",
+      "itemPrice": "Item Price",
+      "customPrice": "Custom Price",
+      "overriddenPrice": "Custom Price",
+      "calculatedPrice": "Calculated",
+      "resetToCalculated": "Reset",
+      "effortLevel": "Effort Level",
+      "effort": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "complex": "Complex"
+      },
+      "modifiers": {
+        "title": "Modifiers",
+        "urgent": "Urgent Work",
+        "urgentDesc": "+50% surcharge",
+        "bundle": "Bundle Discount",
+        "bundleDesc": "-10% for 3+ items",
+        "recurring": "Recurring Client",
+        "recurringDesc": "-5% loyalty discount"
+      },
+      "result": {
+        "basePrice": "Base Price",
+        "adjustments": "Adjustments",
+        "estimatedTotal": "Estimated Total",
+        "breakdown": "View Breakdown"
+      },
+      "actions": {
+        "reset": "Reset",
+        "createOffer": "Create Pricing Offer",
+        "applyToForm": "Apply to Form",
+        "addToQuote": "Add to Quote",
+        "clearQuote": "Clear Quote"
+      },
+      "quote": {
+        "items": "Items in Quote",
+        "total": "Quote Total",
+        "empty": "No items added yet",
+        "remove": "Remove",
+        "currencyLocked": "Currency is locked to match current quote items",
+        "jobsCount": "{count, plural, =1 {1 Job} other {# Jobs}}",
+        "base": "base",
+        "totalHours": "total",
+        "reviewItems": "Review items before creating offer"
+      },
+      "tips": {
+        "title": "Quick Tips",
+        "tip1": "Use 'Complex' effort for multi-week projects",
+        "tip2": "Bundle discount applies when 3+ items are quoted together",
+        "tip3": "Recurring client discount builds long-term relationships"
+      },
+      "effortGuide": {
+        "title": "Effort Guide"
+      },
+      "valueProps": {
+        "title": "Why Price Right",
+        "description": "Accurate estimates build trust and reduce negotiation time. Use this calculator to align expectations early."
+      }
+    }
+  }
+}

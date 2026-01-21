@@ -1,0 +1,14 @@
+{
+  "portal": {
+    "accessibility": {
+      "skipToContent": "דלג לתוכן הראשי",
+      "openMenu": "פתח תפריט",
+      "closeMenu": "סגור תפריט",
+      "helpCenter": "מרכז עזרה",
+      "notifications": "צפה בהתראות",
+      "userProfile": "פרופיל משתמש",
+      "search": "חיפוש",
+      "searchPlaceholder": "חיפוש..."
+    }
+  }
+}

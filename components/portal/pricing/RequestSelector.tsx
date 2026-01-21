@@ -20,7 +20,6 @@ interface RequestSelectorProps {
   expandedRequests: Set<string>;
   pricingResults: any[];
   currency: Currency;
-  is?: boolean;
   error?: string | null;
 }
 
@@ -37,7 +36,6 @@ export function RequestSelector({
   expandedRequests,
   pricingResults,
   currency,
-  is,
   error,
 }: RequestSelectorProps) {
   const t = useTranslations();
@@ -72,7 +70,10 @@ export function RequestSelector({
           <div className="flex items-center gap-2">
             {selectedRequestIds.length > 0 && (
               <Badge variant="blue">
-                {selectedRequestIds.length} {t('portal.pricing.form.selected')}
+                {selectedRequestIds.length}{' '}
+                {selectedRequestIds.length === 1
+                  ? t('portal.pricing.form.selected_singular')
+                  : t('portal.pricing.form.selected')}
               </Badge>
             )}
             {onQuickAddRequest && (
@@ -93,11 +94,7 @@ export function RequestSelector({
       </div>
 
       <div className="divide-y divide-surface-100 dark:divide-surface-800">
-        {is ? (
-          <div className="p-8 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="p-8 text-center">
             <div className="w-10 h-10 mx-auto mb-3 text-red-500 flex items-center justify-center">
               {/* AlertCircle icon would be imported */}

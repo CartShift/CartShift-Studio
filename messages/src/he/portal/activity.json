@@ -1,0 +1,34 @@
+{
+  "portal": {
+    "activity": {
+      "title": "פעילות אחרונה",
+      "actions": {
+        "created_request": "בקשת פרויקט חדשה הוגשה",
+        "assigned_request": "מומחה הוקצה לפרויקט",
+        "added_pricing": "הצעת מחיר הופקה לבדיקה",
+        "accepted_quote": "היקף הפרויקט והצעת המחיר אושרו",
+        "declined_quote": "התבקש שינוי בהצעת המחיר",
+        "requested_revision": "נדרשה תיקון",
+        "started_work": "הפרויקט עבר לשלב הביצוע",
+        "paid_request": "התשלום אומת ואובטח",
+        "added_comment": "הודעה חדשה בדיון",
+        "added_attachment": "קובץ מצורף נוסף",
+        "scheduled_consultation": "פגישת ייעוץ נקבעה",
+        "completed_consultation": "פגישת ייעוץ הושלמה",
+        "canceled_consultation": "פגישת ייעוץ בוטלה",
+        "marked_no_show": "סומן כלא הגיע",
+        "marked_as_free": "סומן כחינם",
+        "status_changed": "סטטוס הבקשה עודכן"
+      },
+      "filters": {
+        "all": "כל הפעילות",
+        "requests": "בקשות",
+        "comments": "הערות",
+        "payments": "תשלומים"
+      },
+      "noActivity": "אין פעילות אחרונה",
+      "noActivityDescription": "פעילות מהבקשות שלך תופיע כאן",
+      "noFilteredActivity": "אין פעילות התואמת למסנן זה"
+    }
+  }
+}

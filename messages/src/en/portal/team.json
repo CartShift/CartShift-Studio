@@ -1,0 +1,59 @@
+{
+  "portal": {
+    "team": {
+      "title": "Team Members",
+      "subtitle": "Manage collaborators and permissions for this organization.",
+      "invite": "Invite Colleague",
+      "activeMembers": "Active Members",
+      "anonymous": "Anonymous User",
+      "workspaceAccess": "Workspace Access",
+      "pending": "Pending Invitations",
+      "cancel": "Cancel",
+      "sent": "Sent",
+      "copyLink": "COPY LINK",
+      "copied": "COPIED",
+      "noInvites": "No pending invites",
+      "noInvitesSub": "Your team is fully active and synced up.",
+      "guideNote": "Team members will receive an email to join this workspace. They can only see requests within this organization.",
+      "workspaceGuide": "Workspace Guide",
+      "capacity": "Seat Capacity",
+      "activeSeats": "Active Seats",
+      "upgrade": "Upgrade",
+      "roles": {
+        "owner": "Primary",
+        "member": "Active",
+        "admin": "Admin",
+        "viewer": "Viewer"
+      },
+      "inviteForm": {
+        "title": "Invite Team Member",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "colleague@company.com",
+        "roleLabel": "Role & Permissions",
+        "cancel": "Cancel",
+        "submit": "Send Invite",
+        "sending": "Sending...",
+        "roles": {
+          "admin": "Admin - Full access",
+          "sales_manager": "Sales Manager - Pipeline & Deals",
+          "developer": "Developer - Technical Access",
+          "member": "Member - Standard access",
+          "viewer": "Viewer - Read-only access"
+        },
+        "errors": {
+          "email": "Please enter a valid email address",
+          "role": "Please select a role",
+          "generic": "Failed to send invite. Please try again."
+        }
+      },
+      "errors": {
+        "load": "Failed to load team information.",
+        "cancelInvite": "Failed to cancel invite"
+      },
+      "confirmCancel": "Are you sure you want to cancel this invitation?",
+      "changeRole": "Change Role",
+      "removeMember": "Remove Member",
+      "removeMemberConfirm": "Remove {name} from team?"
+    }
+  }
+}

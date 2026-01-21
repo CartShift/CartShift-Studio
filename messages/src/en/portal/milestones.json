@@ -1,0 +1,38 @@
+{
+  "portal": {
+    "milestones": {
+      "noMilestones": "No milestones defined yet",
+      "noMilestonesForProject": "No milestones defined for this project",
+      "projectProgress": "Project Progress",
+      "milestonesCompleted": "milestones completed",
+      "current": "Current",
+      "due": "Due:",
+      "days": "days",
+      "tbd": "TBD",
+      "newMilestone": "New Milestone",
+      "editMilestones": "Edit Milestones",
+      "milestoneTitle": "Milestone title",
+      "descriptionOptional": "Description (optional)",
+      "deliverablesDescription": "Deliverables for this phase",
+      "done": "Done",
+      "addMilestone": "Add Milestone",
+      "addNewPhase": "Add New Phase",
+      "cancel": "Cancel",
+      "discard": "Discard",
+      "saveMilestones": "Save Milestones",
+      "applyPipelineUpdates": "Apply Pipeline Updates",
+      "saveError": "Failed to save. Please try again.",
+      "title": "Project Milestones",
+      "subtitle": "Track progress and upcoming phases",
+      "managePipeline": "Manage Pipeline",
+      "overallProgress": "Overall Progress",
+      "target": "Target:",
+      "status": {
+        "pending": "Pending",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "blocked": "Blocked"
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "portal": {
+    "activity": {
+      "title": "Recent Activity",
+      "actions": {
+        "created_request": "New project request filed",
+        "assigned_request": "Specialist assigned to project",
+        "added_pricing": "Quote issued for review",
+        "accepted_quote": "Project scope & quote approved",
+        "declined_quote": "Revision requested on quote",
+        "requested_revision": "Revision requested",
+        "started_work": "Project moved to production",
+        "paid_request": "Payment verified & secured",
+        "added_comment": "New message in discussion",
+        "added_attachment": "Attachment added",
+        "scheduled_consultation": "Consultation scheduled",
+        "completed_consultation": "Consultation completed",
+        "canceled_consultation": "Consultation canceled",
+        "marked_no_show": "Marked as no-show",
+        "marked_as_free": "Marked as free",
+        "status_changed": "Request status updated"
+      },
+      "filters": {
+        "all": "All Activity",
+        "requests": "Requests",
+        "comments": "Comments",
+        "payments": "Payments"
+      },
+      "noActivity": "No recent activity",
+      "noActivityDescription": "Activity from your requests will appear here",
+      "noFilteredActivity": "No activity matches this filter"
+    }
+  }
+}

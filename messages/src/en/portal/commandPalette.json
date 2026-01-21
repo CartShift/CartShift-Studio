@@ -1,0 +1,26 @@
+{
+  "portal": {
+    "commandPalette": {
+      "placeholder": "Type a command or search...",
+      "noResults": "No results found.",
+      "headings": {
+        "actions": "Actions",
+        "requests": "Requests",
+        "navigation": "Navigation"
+      },
+      "items": {
+        "addClient": "Add Client",
+        "dashboard": "Dashboard",
+        "settings": "Settings",
+        "workboard": "Workboard",
+        "clients": "Clients",
+        "salesRevenue": "Sales & Revenue"
+      },
+      "footer": {
+        "toNavigate": "to navigate",
+        "toSelect": "to select",
+        "toClose": "to close"
+      }
+    }
+  }
+}

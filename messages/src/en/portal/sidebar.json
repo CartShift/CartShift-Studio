@@ -1,0 +1,25 @@
+{
+  "portal": {
+    "sidebar": {
+      "title": "CartShift",
+      "subtitle": "Studio Portal",
+      "collapse": "Collapse",
+      "close": "Close",
+      "signOut": "Sign Out",
+      "nav": {
+        "workboard": "Workboard",
+        "sales": "Sales Dashboard",
+        "clients": "Clients",
+        "settings": "Settings",
+        "dashboard": "Dashboard",
+        "requests": "Requests",
+        "pricing": "Pricing Offers",
+        "team": "Team",
+        "files": "Files",
+        "consultations": "Consultations",
+        "review": "Leave a Review",
+        "testimonials": "Testimonials"
+      }
+    }
+  }
+}

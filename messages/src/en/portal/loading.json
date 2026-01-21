@@ -1,0 +1,13 @@
+{
+  "portal": {
+    "loading": {
+      "init": "Initializing Studio Environment",
+      "workspace": "Accessing Secure Workspace",
+      "auth": {
+        "login": "Loading sign in...",
+        "signup": "Loading signup...",
+        "invite": "Loading invitation..."
+      }
+    }
+  }
+}

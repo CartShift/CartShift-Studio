@@ -1,0 +1,14 @@
+{
+  "portal": {
+    "accessibility": {
+      "skipToContent": "Skip to main content",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "helpCenter": "Help center",
+      "notifications": "View notifications",
+      "userProfile": "User profile",
+      "search": "Search",
+      "searchPlaceholder": "Search..."
+    }
+  }
+}

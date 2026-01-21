@@ -439,6 +439,7 @@
       "searchPlaceholder": "חיפוש מאמרים...",
       "allCategories": "הכל",
       "articles": "מאמרים",
+      "articles_singular": "מאמר",
       "sort": {
         "newest": "החדשים ביותר",
         "oldest": "הישנים ביותר",
@@ -598,6 +599,7 @@
       "tableOfContentsFull": "תוכן עניינים",
       "shareArticle": "שתף מאמר",
       "sections": "חלקים",
+      "sections_singular": "חלק",
       "minRead": "דקות קריאה",
       "share": "שתף:",
       "expertServices": "שירותי מומחים",
@@ -1288,6 +1290,7 @@
       },
       "greatJob": "עבודה מצוינת! החנות שלכם מותאמת.",
       "issuesFound": "{count} בעיות קריטיות זוהו",
+      "issuesFound_singular": "{count} בעיה קריטית זוהתה",
       "readyToScale": "החנות שלכם מוכנה להתרחבות.",
       "losingSales": "הבעיות האלה כנראה עולות לכם בהמרות.",
       "needsImprovement": "דורש שיפור",
@@ -1296,6 +1299,7 @@
       "impactLabel": "השפעה: {impact} • {section}",
       "dontLetIssuesHurtSales": "אל תתנו לבעיות האלה לפגוע במכירות",
       "expertsCanFix": "המומחים שלנו יכולים לתקן את {count} השגיאות הקריטיות האלה עבורכם. קבעו שיחת ייעוץ חינמית לאימות התוכנית.",
+      "expertsCanFix_singular": "המומחים שלנו יכולים לתקן את {count} השגיאה הקריטית הזו עבורכם. קבעו שיחת ייעוץ חינמית לאימות התוכנית.",
       "trustedBy": "מהימן על ידי 50+ חנויות",
       "fullReportSent": "הדוח המקיף שלכם נשלח! הוא כולל ממצאים מפורטים, צעדי תיקון מדויקים, ניתוח Core Web Vitals, ותוכנית פעולה מתועדפת ל-30 יום.",
       "analyzeDifferentUrl": "נתחו כתובת אחרת"

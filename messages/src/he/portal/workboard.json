@@ -1,0 +1,25 @@
+{
+  "portal": {
+    "workboard": {
+      "filters": {
+        "search": "חיפוש בקשות...",
+        "myRequests": "הבקשות שלי",
+        "sortBy": "מיון לפי",
+        "newest": "הכי חדש",
+        "priority": "עדיפות"
+      },
+      "columns": {
+        "backlog": "משימות",
+        "inProgress": "בטיפול",
+        "review": "בבדיקה",
+        "delivered": "נמסר"
+      },
+      "emptyColumn": "אין בקשות בעמודה זו",
+      "moveError": "ההעברה נכשלה",
+      "common": {
+        "noRequests": "לא נמצאו בקשות",
+        "dragToMove": "גרור כרטיסים כדי להעביר אותם"
+      }
+    }
+  }
+}

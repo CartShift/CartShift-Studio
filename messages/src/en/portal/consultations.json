@@ -1,0 +1,61 @@
+{
+  "portal": {
+    "consultations": {
+      "title": "Consultations",
+      "subtitle": "Manage client meetings and consultations",
+      "clientSubtitle": "View your scheduled meetings and consultation history",
+      "schedule": "Schedule Consultation",
+      "scheduleCall": "Schedule a Call",
+      "scheduleNow": "Schedule Now",
+      "searchPlaceholder": "Search consultations...",
+      "upcoming": "Upcoming",
+      "past": "Past Consultations",
+      "notes": "Meeting Notes",
+      "actionItems": "Action Items",
+      "stats": {
+        "upcoming": "Upcoming",
+        "completed": "Completed",
+        "canceled": "Canceled",
+        "total": "Total"
+      },
+      "empty": {
+        "title": "No consultations found",
+        "description": "Schedule your first consultation to get started",
+        "noClientOrganizations": "No client organizations found"
+      },
+      "noUpcoming": "No upcoming consultations",
+      "noUpcomingDesc": "Ready to discuss your project? Schedule a call with our team.",
+      "agenda": "Agenda",
+      "join": "Join",
+      "cancel": "Cancel",
+      "minutes": "min",
+      "userFallback": "User",
+      "types": {
+        "onboarding": "Onboarding Call",
+        "strategy": "Strategy Session",
+        "project_review": "Project Review",
+        "support": "Support Call"
+      },
+      "status": {
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "canceled": "Canceled",
+        "no_show": "No Show"
+      },
+      "form": {
+        "type": "Type",
+        "title": "Meeting Title",
+        "titlePlaceholder": "e.g., Strategy Discussion",
+        "date": "Date",
+        "time": "Time",
+        "duration": "Duration",
+        "notes": "Agenda / Notes",
+        "notesPlaceholder": "What will you discuss?",
+        "failedToCancel": "Failed to cancel consultation",
+        "notFound": "Consultation not found",
+        "calendarConflict": "There is a calendar conflict. Do you want to proceed anyway?",
+        "cancelConfirm": "Are you sure you want to cancel this consultation?"
+      }
+    }
+  }
+}

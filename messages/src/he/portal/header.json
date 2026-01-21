@@ -1,0 +1,17 @@
+{
+  "portal": {
+    "header": {
+      "search": "חיפוש...",
+      "searchPlaceholder": "חיפוש במשאבים...",
+      "commands": "פקודות",
+      "authorizedMember": "חבר מורשה",
+      "agencyPartner": "שותף סוכנות",
+      "enterprise": "ארגון",
+      "level": "Level 2",
+      "notifications": "התראות",
+      "noNotifications": "אין התראות",
+      "markAllRead": "סמן הכל כנקרא",
+      "profileMenu": "תפריט פרופיל"
+    }
+  }
+}

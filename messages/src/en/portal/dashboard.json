@@ -1,0 +1,117 @@
+{
+  "portal": {
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Overview of your active projects and recent activity.",
+      "greeting": {
+        "morning": "Good morning, {name}!",
+        "afternoon": "Good afternoon, {name}!",
+        "evening": "Good evening, {name}!",
+        "default": "Hello, {name}!"
+      },
+      "loading": "Crunching your data...",
+      "error": {
+        "title": "Dashboard Error",
+        "retry": "Retry"
+      },
+      "toast": {
+        "accessDenied": "Access Denied",
+        "accessDeniedDesc": "You do not have permission to view this organization"
+      },
+      "actions": {
+        "newRequest": "New Request",
+        "viewAll": "View all",
+        "createFirst": "Create First Request"
+      },
+      "stats": {
+        "total": "Total Requests",
+        "active": "Active Tasks",
+        "review": "In Review",
+        "completed": "Completed"
+      },
+      "recent": {
+        "title": "Recent Requests",
+        "empty": {
+          "title": "No requests yet",
+          "description": "Start by creating your first request to get the ball rolling."
+        }
+      },
+      "insight": {
+        "title": "Insight",
+        "partner": "Growth Partner",
+        "free": {
+          "title": "Free Starter",
+          "description": "You're on our Free plan. Perfect for small projects and getting started with our studio."
+        },
+        "pro": {
+          "title": "Pro Partner",
+          "description": "You're currently on the Pro plan. Enjoy priority design support and 24-hour turnaround."
+        },
+        "enterprise": {
+          "title": "Enterprise Partner",
+          "description": "Unlimited capacity and dedicated strategic support for your scaling commerce business."
+        },
+        "viewBenefits": "View Plan Benefits"
+      },
+      "serviceStatus": {
+        "title": "Service Status",
+        "design": "Design Pipeline",
+        "active": "Active",
+        "dev": "Dev Capacity",
+        "peak": "Peak Load",
+        "avgResponse": "Avg. Response",
+        "responseTime": "< 2 hours",
+        "etaLabel": "ETA for new requests",
+        "days": "days"
+      },
+      "analytics": {
+        "title": "Analytics Overview",
+        "totalRequests": "Total Requests",
+        "activeRequests": "Active Requests",
+        "completed": "Completed",
+        "avgResolution": "Avg. Resolution",
+        "totalSpend": "Total Spend",
+        "days": "days",
+        "inProgress": "Currently in progress",
+        "delivered": "Successfully delivered",
+        "payments": "Payments completed",
+        "last30Days": "in last 30 days",
+        "noData": "No Data Yet",
+        "noDataDesc": "Create your first request to see analytics"
+      },
+      "tips": {
+        "title": "Pro Tips",
+        "items": [
+          "Be specific about the goals and expected outcomes of this request.",
+          "Include links to any design references, examples, or inspiration.",
+          "Break down complex tasks into smaller, focused requests for faster delivery.",
+          "Mention any deadlines or time-sensitive requirements upfront."
+        ]
+      },
+      "pinned": {
+        "title": "Pinned Requests",
+        "pin": "Pin request",
+        "unpin": "Unpin request"
+      },
+      "activity": {
+        "title": "Recent Activity",
+        "noActivity": "No recent activity",
+        "actions": {
+          "created_request": "New project request submitted",
+          "assigned_request": "Specialist assigned to project",
+          "added_pricing": "Price quote generated for review",
+          "accepted_quote": "Project scope and quote approved",
+          "declined_quote": "Quote revision requested",
+          "started_work": "Project moved to execution phase",
+          "paid_request": "Payment verified and secured",
+          "added_comment": "New message in discussion"
+        }
+      },
+      "ecommerceTitle": "E-commerce Command Center",
+      "ecommerceSubtitle": "Monitor your conversion roadmap, performance metrics, and active project lifecycles.",
+      "pipeline": {
+        "emptyDescription": "No requests match your current filters. Try adjusting your search or filter criteria."
+      }
+    }
+  }
+}

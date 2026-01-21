@@ -1,0 +1,30 @@
+{
+  "portal": {
+    "organization": {
+      "createForm": {
+        "title": "Create New Organization",
+        "nameLabel": "Organization Name *",
+        "namePlaceholder": "e.g. Acme Corporation",
+        "websiteLabel": "Website",
+        "websitePlaceholder": "https://example.com",
+        "industryLabel": "Industry",
+        "industryPlaceholder": "e.g. E-commerce, SaaS, Marketing",
+        "responsibleAgentLabel": "Responsible Agent",
+        "responsibleAgentPlaceholder": "Select responsible agent...",
+        "note": "Note:",
+        "noteText": "You will be set as the owner of this organization and can invite team members later.",
+        "cancel": "Cancel",
+        "submit": "Create Organization",
+        "submitting": "Creating...",
+        "errors": {
+          "name": "Organization name must be at least 3 characters",
+          "nameLong": "Name is too long",
+          "website": "Please enter a valid URL",
+          "industry": "Industry must be at least 2 characters",
+          "auth": "You must be logged in to create an organization",
+          "generic": "Failed to create organization. Please try again."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "portal": {
+    "invoices": {
+      "generatingInvoice": "Generating Invoice...",
+      "downloadInvoice": "Download Invoice",
+      "loadingPdf": "Loading PDF..."
+    }
+  }
+}

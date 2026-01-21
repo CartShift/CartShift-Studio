@@ -1,0 +1,373 @@
+{
+  "portal": {
+    "agency": {
+      "clientOrg": "ארגון לקוח",
+      "accessDeniedTitle": "גישה נדחתה",
+      "notRegisteredAsAdmin": "החשבון שלכם ({email}) לא רשום כמנהל סוכנות.",
+      "repairPermissions": "תיקון הרשאות",
+      "repairFailed": "תיקון ההרשאות נכשל. בדקו את הקונסולה לפרטים.",
+      "errors": {
+        "sameOrgRequired": "אנא בחרו בקשות מאותו ארגון לקוח."
+      },
+      "agencyOnly": "פיצ׳ר זה זמין רק למנהלי סוכנות.",
+      "pricing": {
+        "subtitle": "ניהול הצעות מחיר בכל ארגוני הלקוחות.",
+        "revenue": "הכנסות"
+      },
+      "testimonials": {
+        "title": "המלצות לקוחות",
+        "subtitle": "סקירה וניהול המלצות שהוגשו על ידי הלקוחות שלכם.",
+        "loading": "טוען המלצות...",
+        "empty": "אין המלצות עדיין",
+        "emptyDesc": "המלצות לקוחות יופיעו כאן לאחר שיוגשו.",
+        "filters": {
+          "all": "הכל",
+          "pending": "ממתין לבדיקה",
+          "approved": "אושר",
+          "rejected": "נדחה"
+        },
+        "status": {
+          "pending": "ממתין",
+          "approved": "אושר",
+          "rejected": "נדחה"
+        },
+        "card": {
+          "rating": "דירוג",
+          "submitted": "הוגש",
+          "company": "חברה",
+          "recommends": "ממליץ",
+          "viewDetails": "צפה בפרטים",
+          "approve": "אשר",
+          "reject": "דחה",
+          "aspects": "דירוג היבטים",
+          "communication": "תקשורת",
+          "quality": "איכות עבודה",
+          "timeliness": "עמידה בזמנים",
+          "value": "תמורה"
+        },
+        "modal": {
+          "title": "פרטי המלצה",
+          "adminNotes": "הערות מנהל",
+          "adminNotesPlaceholder": "הוסף הערות פנימיות על המלצה זו...",
+          "approve": "אשר המלצה",
+          "reject": "דחה המלצה",
+          "approving": "מאשר...",
+          "rejecting": "דוחה..."
+        },
+        "toast": {
+          "approved": "ההמלצה אושרה בהצלחה",
+          "rejected": "ההמלצה נדחתה",
+          "error": "נכשל בעדכון סטטוס ההמלצה",
+          "loadFailed": "נכשל בטעינת ההמלצות"
+        },
+        "stats": {
+          "total": "סה״כ",
+          "pending": "ממתינים",
+          "approved": "אושרו",
+          "avgRating": "דירוג ממוצע"
+        },
+        "export": {
+          "button": "ייצוא",
+          "json": "ייצוא כ-JSON",
+          "jsonDesc": "למפתחים ואינטגרציות",
+          "code": "ייצוא כ-TypeScript",
+          "codeDesc": "קטע קוד מוכן לשימוש",
+          "success": "ההמלצות יוצאו בהצלחה",
+          "noApproved": "אין המלצות מאושרות לייצוא"
+        }
+      },
+      "workboard": {
+        "title": "לוח עבודה פרויקטים",
+        "subtitle": "סטטוס בזמן אמת של כל פרויקטי הלקוחות הפעילים בסוכנות.",
+        "loading": "מסנכרן לוח קנבן...",
+        "roadmap": "מפת דרכים רבעון 4",
+        "assign": "הקצה פריט",
+        "emptyColumn": "אין משימות פעילות",
+        "moved": "הכרטיס הועבר",
+        "moveError": "ההעברה נכשלה",
+        "columns": {
+          "backlog": "חדש וצבר",
+          "inProgress": "בטיפול",
+          "review": "משוב וסקירה",
+          "delivered": "נמסר"
+        },
+        "viewRequest": "הצג בקשה",
+        "filter": {
+          "myRequests": "הבקשות שלי"
+        }
+      },
+      "clients": {
+        "filter": {
+          "myClients": "הלקוחות שלי"
+        },
+        "title": "תיק לקוחות",
+        "subtitle": "גישה ישירה וניהול לכל הארגונים השותפים.",
+        "onboard": "צרף לקוח חדש",
+        "searchPlaceholder": "חפש לפי שם חברה...",
+        "deleteTitle": "מחק לקוח",
+        "deleteConfirm": "האם אתה בטוח שברצונך למחוק את {name}? פעולה זו תשבית את סביבת העבודה שלהם.",
+        "activeAccounts": "חשבונות פעילים",
+        "export": "ייצוא ביצועים",
+        "loading": "מאחזר תיק לקוחות...",
+        "tickets": "כרטיסים פתוחים",
+        "members": "חברים",
+        "dashboard": "כנס ללוח הבקרה",
+        "you": "אתה",
+        "viewAsClient": "צפה כלקוח",
+        "table": {
+          "client": "לקוח",
+          "plan": "תוכנית",
+          "requests": "בקשות",
+          "revenue": "הכנסות",
+          "joined": "הצטרף"
+        },
+        "emptyTitle": "לא נמצאו לקוחות",
+        "emptyDesc": "או שאין לך לקוחות פעילים או שהם לא תואמים לקריטריוני החיפוש שלך.",
+        "manageClient": "נהל לקוח",
+        "badge": {
+          "active": "פעיל",
+          "inactive": "לא פעיל",
+          "suspended": "מושעה"
+        },
+        "plans": {
+          "free": "מסלול חופשי",
+          "pro": "שותף פרו",
+          "enterprise": "שותף ארגוני"
+        },
+        "enterprise": "שותף ארגוני",
+        "noClientId": "לא סופק מזהה לקוח",
+        "unexpectedError": "אירעה שגיאה בלתי צפויה",
+        "detail": {
+          "loading": "טוען פרטי לקוח...",
+          "backToClients": "חזרה ללקוחות",
+          "overview": "סקירת לקוח",
+          "viewDashboard": "צפה בלוח בקרה של לקוח",
+          "editClient": "ערוך לקוח",
+          "stats": {
+            "totalRequests": "סה״כ בקשות",
+            "activeRequests": "בקשות פעילות",
+            "completedRequests": "הושלמו",
+            "teamMembers": "חברי צוות",
+            "avgResolution": "זמן סיום ממוצע",
+            "totalRevenue": "סה״כ הכנסות",
+            "days": "ימים",
+            "lastActive": "פעילות אחרונה",
+            "joinedDate": "לקוח מאז"
+          },
+          "sections": {
+            "information": "פרטי לקוח",
+            "recentActivity": "פעילות אחרונה",
+            "requests": "בקשות אחרונות",
+            "team": "חברי צוות"
+          },
+          "info": {
+            "website": "אתר אינטרנט",
+            "industry": "תעשייה",
+            "plan": "תוכנית",
+            "status": "סטטוס",
+            "email": "אימייל ליצירת קשר",
+            "phone": "טלפון",
+            "responsibleAgent": "סוכן אחראי",
+            "unassigned": "לא הוקצה"
+          },
+          "actions": {
+            "createRequest": "צור בקשה עבור לקוח",
+            "viewAllRequests": "צפה בכל הבקשות",
+            "managePlan": "נהל תוכנית",
+            "sendEmail": "שלח אימייל",
+            "exportData": "ייצא נתוני לקוח"
+          },
+          "requests": {
+            "viewAll": "צפה בהכל",
+            "emptyTitle": "אין בקשות עדיין",
+            "emptyDesc": "לקוח זה טרם יצר בקשות."
+          },
+          "team": {
+            "viewAll": "צפה בכל החברים",
+            "owner": "בעלים",
+            "admin": "מנהל",
+            "member": "חבר",
+            "emptyTitle": "אין חברי צוות",
+            "emptyDesc": "לקוח זה טרם הזמין חברי צוות.",
+            "removeMemberTitle": "הסר חבר צוות",
+            "removeMemberDesc": "האם אתם בטוחים שברצונכם להסיר משתמש זה מארגון הלקוח? הוא יאבד את הגישה לפורטל הלקוח."
+          },
+          "activity": {
+            "emptyTitle": "אין פעילות אחרונה",
+            "emptyDesc": "טרם נרשמה פעילות ללקוח זה."
+          }
+        }
+      },
+      "settings": {
+        "title": "הגדרות סוכנות",
+        "subtitle": "ניהול הגדרות גלובליות של הסוכנות וברירות מחדל של הצוות.",
+        "tabs": {
+          "profile": "פרופיל סוכנות",
+          "services": "חבילות שירות",
+          "team": "צוות פנימי",
+          "integrations": "אינטגרציות",
+          "billing": "תשלומים"
+        },
+        "profile": {
+          "title": "פרופיל סוכנות",
+          "nameLabel": "שם הסוכנות",
+          "namePlaceholder": "שם הסוכנות שלך",
+          "emailLabel": "אימייל תמיכה",
+          "emailPlaceholder": "support@agency.com",
+          "websiteLabel": "אתר הסוכנות",
+          "websitePlaceholder": "https://agency.com",
+          "phoneLabel": "מספר טלפון",
+          "phonePlaceholder": "+972-50-000-0000",
+          "descLabel": "תיאור הסוכנות",
+          "descPlaceholder": "תיאור קצר על הסוכנות והשירותים שלכם...",
+          "save": "שמור שינויים",
+          "saving": "שומר...",
+          "failedToUpload": "העלאת התמונה נכשלה",
+          "success": "ההגדרות נשמרו בהצלחה!"
+        },
+        "team": {
+          "title": "צוות פנימי",
+          "subtitle": "ניהול חברי צוות הסוכנות והרשאות.",
+          "invite": "הזמן חבר צוות",
+          "table": {
+            "member": "חבר",
+            "status": "סטטוס",
+            "joined": "הצטרף",
+            "action": "פעולה"
+          },
+          "active": "פעיל",
+          "inactive": "לא פעיל",
+          "suspended": "מושעה",
+          "edit": "עריכה",
+          "noMembers": "לא נמצאו חברי צוות",
+          "pendingInvites": "הזמנות ממתינות",
+          "cancelInvite": "בטל"
+        },
+        "services": {
+          "title": "קטלוג שירותים",
+          "subtitle": "הגדר את הצעות השירותים שלך וסוגי המחירים.",
+          "add": "הוסף שירות",
+          "empty": "טרם הוגדרו שירותים",
+          "emptyTitle": "הקטלוג שלך ריק",
+          "emptyDesc": "הוסף שירותים לקטלוג שלך כדי ליצור במהירות הצעות מחיר לבקשות לקוחות.",
+          "createFirst": "צור את השירות הראשון שלך",
+          "basePriceLabel": "מחיר בסיס",
+          "inactive": "לא פעיל",
+          "form": {
+            "addTitle": "הוספת שירות חדש",
+            "addSubtitle": "צור שירות חדש עבור הלקוחות שלך.",
+            "editTitle": "עריכת שירות",
+            "editSubtitle": "עדכן את פרטי השירות בקטלוג.",
+            "fields": {
+              "name": "שם השירות",
+              "namePlaceholder": "למשל: תחזוקת אתר",
+              "basePrice": "מחיר בסיס",
+              "currency": "מטבע",
+              "category": "קטגוריה",
+              "categoryPlaceholder": "למשל: פיתוח, עיצוב, SEO",
+              "description": "תיאור",
+              "descriptionPlaceholder": "תאר בקצרה מה השירות כולל...",
+              "active": "פעיל וגלוי ללקוחות"
+            },
+            "actions": {
+              "create": "צור שירות",
+              "update": "עדכן שירות",
+              "cancel": "ביטול"
+            },
+            "errors": {
+              "required": "שם ומחיר הם שדות חובה",
+              "failed": "שמירת השירות נכשלה"
+            }
+          }
+        },
+        "integrations": {
+          "subtitle": "חבר את הכלים האהובים עליך",
+          "connected": "מחובר",
+          "googleCalendar": {
+            "title": "לוח שנה של Google",
+            "description": "סנכרן פגישות ייעוץ עם לוח השנה של Google וקבל קישורי Meet באופן אוטומטי.",
+            "connect": "חבר לוח שנה Google",
+            "connecting": "מתחבר...",
+            "disconnect": "נתק",
+            "disconnectConfirm": "האם אתה בטוח שברצונך לנתק את לוח השנה של Google?",
+            "syncNow": "סנכרן עכשיו",
+            "syncing": "מסנכרן...",
+            "account": "חשבון",
+            "lastSync": "סונכרן לאחרונה",
+            "calendars": "לוחות שנה",
+            "feature1": "יצירה אוטומטית של אירועים עבור פגישות ייעוץ",
+            "feature2": "קבל קישורי Google Meet באופן אוטומטי",
+            "feature3": "צפה בזמינות שלך בפורטל"
+          },
+          "slack": {
+            "title": "Slack",
+            "description": "קבל התראות בסביבת העבודה שלך ב-Slack"
+          },
+          "stripe": {
+            "title": "Stripe",
+            "description": "קבל תשלומים על הצעות המחיר שלך"
+          },
+          "shopify": {
+            "title": "גישה לחנות Shopify",
+            "description": "אפשר גישת שותף מהירה ומאובטחת לחנות Shopify שלך.",
+            "storeUrl": "כתובת החנות",
+            "collaboratorCode": "קוד שותף",
+            "status": {
+              "pending": "ממתין",
+              "requested": "גישה התבקשה",
+              "connected": "מחובר",
+              "revoked": "בוטל"
+            },
+            "statusMessages": {
+              "pending": "ממתין לסוכנות שלך לבקש גישה לחנות שלך.",
+              "requested": "גישה התבקשה. אנא אשר בניהול החנות שלך ב-Shopify.",
+              "connected": "לסוכנות שלך יש גישת שותף מלאה לחנות שלך."
+            },
+            "features": {
+              "feature1": "אפשר התאמות ועדכוני תבניות מהירים",
+              "feature2": "אפשר לסוכנות שלך לנהל אפליקציות ואינטגרציות",
+              "feature3": "גישת שותף מאובטחת ללא שימוש במושב צוות"
+            },
+            "form": {
+              "storeUrl": "כתובת חנות Shopify שלך",
+              "storeUrlHint": "הזן את כתובת .myshopify.com של החנות שלך (לדוגמה: yourstore.myshopify.com)",
+              "collaboratorCode": "קוד בקשת שותף",
+              "collaboratorCodeHint": "נמצא בניהול Shopify > הגדרות > משתמשים > אבטחה. השאר ריק אם לא מופעל.",
+              "optional": "אופציונלי",
+              "infoTitle": "איפה למצוא את קוד השותף?",
+              "infoDesc": "בניהול Shopify שלך, עבור להגדרות > משתמשים והרשאות > אבטחה. אם מופעל, תראה קוד בן 4 ספרות.",
+              "save": "שמור פרטי חנות",
+              "saving": "שומר...",
+              "cancel": "ביטול"
+            },
+            "actions": {
+              "connect": "חבר חנות",
+              "edit": "ערוך פרטי חנות"
+            },
+            "errors": {
+              "invalidDomain": "אנא הזן כתובת .myshopify.com תקינה",
+              "invalidCode": "קוד שותף חייב להכיל 4 ספרות",
+              "saveFailed": "השמירה נכשלה. אנא נסה שוב."
+            },
+            "toast": {
+              "settingsSaved": "הגדרות Shopify נשמרו בהצלחה",
+              "accessRequestSubmitted": "בקשת גישה נשלחה",
+              "accessRequestFailed": "נכשל בשליחת בקשת גישה",
+              "storeConnected": "חנות Shopify מחוברת",
+              "connectFailed": "נכשל בחיבור לחנות Shopify"
+            },
+            "agency": {
+              "notConnected": "חנות Shopify לא מחוברת",
+              "notConnectedDesc": "הלקוח עדיין לא חיבר את חנות Shopify שלו.",
+              "requestAccess": "בקש גישת שותף",
+              "markRequested": "סמן כהתבקש",
+              "markConnected": "סמן כמחובר",
+              "openPartnerDashboard": "פתח לוח שותפים",
+              "openAdmin": "פתח ניהול חנות"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "portal": {
+    "header": {
+      "search": "Search...",
+      "searchPlaceholder": "Search global resources...",
+      "commands": "Commands",
+      "authorizedMember": "Authorized Member",
+      "agencyPartner": "Agency Partner",
+      "enterprise": "Enterprise",
+      "level": "Level 2",
+      "notifications": "Notifications",
+      "noNotifications": "No notifications",
+      "markAllRead": "Mark all as read",
+      "profileMenu": "Profile menu"
+    }
+  }
+}

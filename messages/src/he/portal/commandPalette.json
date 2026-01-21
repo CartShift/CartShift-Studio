@@ -1,0 +1,26 @@
+{
+  "portal": {
+    "commandPalette": {
+      "placeholder": "הקלד פקודה או חפש...",
+      "noResults": "לא נמצאו תוצאות.",
+      "headings": {
+        "actions": "פעולות",
+        "requests": "בקשות",
+        "navigation": "ניווט"
+      },
+      "items": {
+        "addClient": "הוסף לקוח",
+        "dashboard": "לוח בקרה",
+        "settings": "הגדרות",
+        "workboard": "לוח עבודה",
+        "clients": "לקוחות",
+        "salesRevenue": "מכירות והכנסות"
+      },
+      "footer": {
+        "toNavigate": "לניווט",
+        "toSelect": "לבחירה",
+        "toClose": "לסגירה"
+      }
+    }
+  }
+}

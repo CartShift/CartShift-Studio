@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "accountType": {
+      "client": "Client",
+      "agency": "Agency",
+      "badge": {
+        "client": "Client Account",
+        "agency": "Agency Partner"
+      }
+    }
+  }
+}

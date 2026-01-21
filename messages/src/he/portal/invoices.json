@@ -1,0 +1,9 @@
+{
+  "portal": {
+    "invoices": {
+      "generatingInvoice": "מייצר חשבונית...",
+      "downloadInvoice": "הורד חשבונית",
+      "loadingPdf": "טוען PDF..."
+    }
+  }
+}

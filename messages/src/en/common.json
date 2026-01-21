@@ -34,14 +34,7 @@
     "learnMore": "Learn More",
     "contactUs": "Contact Us",
     "getStarted": "Get Started",
-    "viewWork": "View Our Work",
-    "exitIntent": {
-      "title": "Before you go...",
-      "subtitle": "Get a free consultation for your project",
-      "description": "We'd love to hear about what you're building and see how we can help.",
-      "cta": "Book a Free Call",
-      "dismiss": "Not now"
-    }
+    "viewWork": "View Our Work"
   },
   "navigation": {
     "home": "Home",

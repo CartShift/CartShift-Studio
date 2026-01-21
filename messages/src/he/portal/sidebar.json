@@ -1,0 +1,25 @@
+{
+  "portal": {
+    "sidebar": {
+      "title": "CartShift",
+      "subtitle": "Studio Portal",
+      "collapse": "כווץ",
+      "close": "סגור",
+      "signOut": "התנתק",
+      "nav": {
+        "workboard": "לוח עבודה",
+        "sales": "לוח מכירות",
+        "clients": "לקוחות",
+        "settings": "הגדרות",
+        "dashboard": "לוח בקרה",
+        "requests": "בקשות",
+        "pricing": "הצעות מחיר",
+        "team": "צוות",
+        "files": "קבצים",
+        "consultations": "פגישות ייעוץ",
+        "review": "השאר המלצה",
+        "testimonials": "המלצות"
+      }
+    }
+  }
+}

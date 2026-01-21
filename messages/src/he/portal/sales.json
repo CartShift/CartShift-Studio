@@ -1,0 +1,82 @@
+{
+  "portal": {
+    "sales": {
+      "metrics": {
+        "totalRevenue": "סה״כ הכנסות",
+        "pendingRevenue": "הכנסות בהמתנה",
+        "activeClients": "לקוחות פעילים",
+        "avgDealSize": "גודל עסקה ממוצע",
+        "pending": "בהמתנה",
+        "allTime": "כל הזמנים",
+        "thisMonth": "החודש",
+        "total": "סה״כ",
+        "conversionRate": "שיעור המרה",
+        "proposals": "הצעות",
+        "newClients": "לקוחות חדשים",
+        "avgCloseTime": "זמן סגירה ממוצע",
+        "revenue": "הכנסות"
+      },
+      "dashboard": {
+        "loading": "טוען נתוני מכירות...",
+        "title": "דשבורד מכירות",
+        "subtitle": "עקוב אחר הכנסות, מדדי ביצוע ותובנות לקוחות",
+        "refresh": "רענן",
+        "exportReport": "ייצא דו״ח"
+      },
+      "empty": {
+        "title": "אין נתוני מכירות עדיין",
+        "subtitle": "התחל ליצור הצעות מחיר כדי לעקוב אחר ביצועי המכירות שלך.",
+        "hint": "הצעות מחיר שאושרו יופיעו כאן כהכנסות."
+      },
+      "performance": {
+        "title": "סקירת ביצועים",
+        "subtitle": "מדדים מרכזיים במבט אחד"
+      },
+      "chart": {
+        "monthlyRevenue": "הכנסות חודשיות",
+        "lastMonth": "חודש אחרון",
+        "last6Months": "6 חודשים אחרונים",
+        "lastYear": "שנה אחרונה"
+      },
+      "topClients": {
+        "title": "לקוחות מובילים",
+        "subtitle": "לפי הכנסות",
+        "noData": "אין נתוני לקוחות עדיין"
+      },
+      "proposals": {
+        "title": "פעילות הצעות מחיר",
+        "subtitle": "פילוח לפי סטטוס",
+        "total": "סה״כ",
+        "thisMonth": "החודש",
+        "accepted": "אושרו",
+        "paid": "שולמו",
+        "declined": "נדחו"
+      },
+      "insights": {
+        "title": "תובנות AI",
+        "growth": {
+          "title": "צמיחה בהכנסות",
+          "description": "ההכנסות עלו ב-{percent}% ביחס לתקופה הקודמת.",
+          "action": "צפה בפרטים"
+        },
+        "decline": {
+          "title": "ירידה בהכנסות",
+          "description": "ההכנסות בירידה ביחס לתקופה הקודמת. שקול לצאת במבצע.",
+          "action": "צפה בתוכנית פעולה"
+        },
+        "conversion": {
+          "high": {
+            "title": "המרה גבוהה",
+            "description": "שיעור קבלת ההצעות שלך מצוין (>50%).",
+            "action": "המשך כך"
+          },
+          "low": {
+            "title": "המרה נמוכה",
+            "description": "שיעור קבלת ההצעות נמוך מ-50%. מומלץ לבצע מעקב.",
+            "action": "צפה בהצעות ממתינות"
+          }
+        }
+      }
+    }
+  }
+}

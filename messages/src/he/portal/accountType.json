@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "accountType": {
+      "client": "לקוח",
+      "agency": "סוכנות",
+      "badge": {
+        "client": "חשבון לקוח",
+        "agency": "שותף סוכנות"
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "portal": {
+    "workboard": {
+      "filters": {
+        "search": "Search requests...",
+        "myRequests": "My Requests",
+        "sortBy": "Sort by",
+        "newest": "Newest",
+        "priority": "Priority"
+      },
+      "columns": {
+        "backlog": "Backlog",
+        "inProgress": "In Progress",
+        "review": "In Review",
+        "delivered": "Delivered"
+      },
+      "emptyColumn": "No requests in this column",
+      "moveError": "Failed to move item",
+      "common": {
+        "noRequests": "No requests found",
+        "dragToMove": "Drag cards to move them"
+      }
+    }
+  }
+}

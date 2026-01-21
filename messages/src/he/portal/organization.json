@@ -1,0 +1,30 @@
+{
+  "portal": {
+    "organization": {
+      "createForm": {
+        "title": "יצירת ארגון חדש",
+        "nameLabel": "שם הארגון *",
+        "namePlaceholder": "לדוגמה: Acme Corporation",
+        "websiteLabel": "אתר אינטרנט",
+        "websitePlaceholder": "https://example.com",
+        "industryLabel": "תעשייה",
+        "industryPlaceholder": "לדוגמה: איקומרס, SaaS, שיווק",
+        "responsibleAgentLabel": "סוכן אחראי",
+        "responsibleAgentPlaceholder": "בחר סוכן אחראי...",
+        "note": "הערה:",
+        "noteText": "אתם תוגדרו כבעלי הארגון ותוכלו להזמין חברי צוות מאוחר יותר.",
+        "cancel": "ביטול",
+        "submit": "צור ארגון",
+        "submitting": "יוצר...",
+        "errors": {
+          "name": "שם הארגון חייב להכיל לפחות 3 תווים",
+          "nameLong": "השם ארוך מדי",
+          "website": "אנא הזן כתובת אתר תקינה",
+          "industry": "תעשייה חייבת להכיל לפחות 2 תווים",
+          "auth": "עליכם להיות מחוברים כדי ליצור ארגון",
+          "generic": "יצירת הארגון נכשלה. אנא נסו שוב."
+        }
+      }
+    }
+  }
+}

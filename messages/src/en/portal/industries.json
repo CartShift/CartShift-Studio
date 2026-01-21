@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "industries": {
+      "ecommerce": "E-commerce",
+      "saas": "SaaS",
+      "agency": "Agency",
+      "education": "Education",
+      "healthcare": "Healthcare",
+      "other": "Other"
+    }
+  }
+}

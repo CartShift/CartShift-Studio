@@ -1,0 +1,23 @@
+{
+  "portal": {
+    "googleCalendar": {
+      "title": "Google Calendar",
+      "description": "Sync consultations with your Google Calendar and get automatic Meet links.",
+      "connect": "Connect Google Calendar",
+      "connecting": "Connecting...",
+      "disconnect": "Disconnect",
+      "disconnectConfirm": "Are you sure you want to disconnect Google Calendar?",
+      "syncNow": "Sync Now",
+      "syncing": "Syncing...",
+      "account": "Account",
+      "lastSync": "Last synced",
+      "calendars": "Calendars",
+      "feature1": "Auto-create calendar events for consultations",
+      "feature2": "Get Google Meet links automatically",
+      "feature3": "View your availability in the portal",
+      "connected": "Connected",
+      "targetCalendar": "Target Calendar",
+      "targetCalendarDescription": "Events will be created in this calendar, and availability checks will check against it."
+    }
+  }
+}

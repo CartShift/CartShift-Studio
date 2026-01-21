@@ -1,0 +1,27 @@
+{
+  "portal": {
+    "invite": {
+      "title": "You're Invited!",
+      "subtitle": "You've been invited to join an organization",
+      "error": "Invite Error",
+      "notFound": "Invite not found",
+      "expired": "Invite Expired",
+      "expiredDesc": "This invite has expired.",
+      "alreadyAccepted": "Already Accepted",
+      "alreadyAcceptedDesc": "This invite has already been accepted.",
+      "success": "Invite Accepted!",
+      "redirecting": "Redirecting you to the organization...",
+      "invitedEmail": "Invited email:",
+      "role": "Role:",
+      "invitedBy": "Invited by:",
+      "expires": "Expires:",
+      "guestIntro": "To accept this invite, you need an account",
+      "createAccount": "Create Account",
+      "signIn": "Sign In",
+      "alreadyHasAccount": "Already have an account? Click \"Sign In\" above",
+      "accept": "Accept Invite",
+      "accepting": "Accepting...",
+      "emailMismatch": "This invite was sent to {email}, but you're signed in as {userEmail}. Please sign in with the correct email address."
+    }
+  }
+}

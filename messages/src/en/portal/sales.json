@@ -1,0 +1,82 @@
+{
+  "portal": {
+    "sales": {
+      "metrics": {
+        "totalRevenue": "Total Revenue",
+        "pendingRevenue": "Pending Revenue",
+        "activeClients": "Active Clients",
+        "avgDealSize": "Avg. Deal Size",
+        "pending": "Pending",
+        "allTime": "All time",
+        "thisMonth": "This Month",
+        "total": "total",
+        "conversionRate": "Conversion Rate",
+        "proposals": "proposals",
+        "newClients": "New Clients",
+        "avgCloseTime": "Avg. Close Time",
+        "revenue": "Revenue"
+      },
+      "dashboard": {
+        "loading": "Loading sales data...",
+        "title": "Sales Dashboard",
+        "subtitle": "Track revenue, performance metrics, and client insights",
+        "refresh": "Refresh",
+        "exportReport": "Export Report"
+      },
+      "empty": {
+        "title": "No Sales Data Yet",
+        "subtitle": "Start creating pricing offers to track your sales performance.",
+        "hint": "Accepted quotes will appear here as revenue."
+      },
+      "performance": {
+        "title": "Performance Overview",
+        "subtitle": "Key metrics at a glance"
+      },
+      "chart": {
+        "monthlyRevenue": "Monthly Revenue",
+        "lastMonth": "Last Month",
+        "last6Months": "Last 6 Months",
+        "lastYear": "Last Year"
+      },
+      "topClients": {
+        "title": "Top Clients",
+        "subtitle": "By revenue",
+        "noData": "No client data yet"
+      },
+      "proposals": {
+        "title": "Proposal Activity",
+        "subtitle": "Status breakdown",
+        "total": "Total",
+        "thisMonth": "This Month",
+        "accepted": "Accepted",
+        "paid": "Paid",
+        "declined": "Declined"
+      },
+      "insights": {
+        "title": "AI Insights",
+        "growth": {
+          "title": "Revenue Growth",
+          "description": "Revenue is up by {percent}% compared to last period.",
+          "action": "View Details"
+        },
+        "decline": {
+          "title": "Revenue Decline",
+          "description": "Revenue is down compared to last period. Consider running a promotion.",
+          "action": "View Action Plan"
+        },
+        "conversion": {
+          "high": {
+            "title": "High Conversion",
+            "description": "Your proposal acceptance rate is excellent (>50%).",
+            "action": "Keep it up"
+          },
+          "low": {
+            "title": "Low Conversion",
+            "description": "Proposal acceptance rate is below 50%. Follow up on pending quotes.",
+            "action": "View Pending"
+          }
+        }
+      }
+    }
+  }
+}

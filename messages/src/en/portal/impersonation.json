@@ -1,0 +1,10 @@
+{
+  "portal": {
+    "impersonation": {
+      "viewingAs": "Viewing as",
+      "exitView": "Exit View",
+      "client": "Client",
+      "viewAsClient": "View as Client"
+    }
+  }
+}

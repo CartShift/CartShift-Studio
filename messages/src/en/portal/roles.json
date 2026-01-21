@@ -1,0 +1,12 @@
+{
+  "portal": {
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "sales_manager": "Sales Manager",
+      "developer": "Developer",
+      "member": "Member",
+      "viewer": "Viewer"
+    }
+  }
+}

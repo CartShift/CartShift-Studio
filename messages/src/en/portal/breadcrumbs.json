@@ -1,0 +1,22 @@
+{
+  "portal": {
+    "breadcrumbs": {
+      "home": "Home",
+      "portal": "Portal",
+      "organization": "Organization",
+      "dashboard": "Dashboard",
+      "requests": "Requests",
+      "settings": "Settings",
+      "team": "Team",
+      "files": "Files",
+      "pricing": "Pricing",
+      "consultations": "Consultations",
+      "agency": "Agency",
+      "workboard": "Workboard",
+      "clients": "Clients",
+      "new": "New",
+      "calculator": "Calculator",
+      "sales": "Sales Dashboard"
+    }
+  }
+}

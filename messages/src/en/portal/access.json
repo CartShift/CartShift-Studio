@@ -1,0 +1,10 @@
+{
+  "portal": {
+    "access": {
+      "restrictedTitle": "Access Restricted",
+      "restrictedMessage": "Your account current profile doesn't have the necessary permissions to access this specific organization workspace.",
+      "switchWorkspace": "Switch Workspaces",
+      "contactSupport": "Contact Support"
+    }
+  }
+}

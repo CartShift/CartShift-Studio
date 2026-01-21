@@ -76,7 +76,7 @@ export default function EditPricingForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -140,6 +140,7 @@ export default function EditPricingForm() {
 
   const watchedLineItems = watch('lineItems');
   const watchedCurrency = watch('currency');
+  const watchedIncludeTax = watch('includeTax');
 
   // Fetch pricing request data
   useEffect(() => {
@@ -224,13 +225,13 @@ export default function EditPricingForm() {
       quantity: item.quantity || 0,
       unitPrice: Math.round((item.unitPrice || 0) * 100), // Convert to cents
     }));
-    const taxRate = watch('includeTax') ? 0.17 : 0;
+    const taxRate = watchedIncludeTax ? 0.17 : 0;
     const subtotal = calculateTotalAmount(items, 0);
     const taxAmount = Math.round(subtotal * taxRate);
     const totalAmount = subtotal + taxAmount;
 
     return { totalAmount, subtotal, taxAmount };
-  }, [watchedLineItems, watch('includeTax')]);
+  }, [watchedLineItems, watchedIncludeTax]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (
@@ -246,7 +247,7 @@ export default function EditPricingForm() {
     }
 
     setIsSubmitting(true);
-    if (shouldSend) setIsDeleting(true);
+    if (shouldSend) setIsSending(true);
     setSubmitStatus('idle');
     setErrorMessage(null);
 
@@ -289,7 +290,7 @@ export default function EditPricingForm() {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
-      setIsDeleting(false);
+      setIsSending(false);
     }
   };
 
@@ -444,7 +445,10 @@ export default function EditPricingForm() {
                   </p>
                 </div>
                 <Badge variant="blue">
-                  {linkedRequests.length} {t('portal.pricing.form.selected')}
+                  {linkedRequests.length}{' '}
+                  {linkedRequests.length === 1
+                    ? t('portal.pricing.form.selected_singular')
+                    : t('portal.pricing.form.selected')}
                 </Badge>
               </div>
 
@@ -731,8 +735,8 @@ export default function EditPricingForm() {
                 disabled={isSubmitting}
                 className="w-full h-12 flex items-center justify-center gap-2"
               >
-                {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
-                {isDeleting
+                {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
+                {isSending
                   ? t('portal.pricing.form.sending')
                   : t('portal.pricing.form.sendToClient')}
               </Button>
@@ -745,7 +749,7 @@ export default function EditPricingForm() {
               disabled={isSubmitting}
               className="w-full h-12 flex items-center justify-center gap-2"
             >
-              {isSubmitting && !isDeleting ? (
+              {isSubmitting && !isSending ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <Save size={18} />

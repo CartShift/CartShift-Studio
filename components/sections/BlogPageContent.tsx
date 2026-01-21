@@ -227,7 +227,10 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
               {/* Sort and Results Count */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-surface-600 dark:text-surface-400">
-                  {filteredAndSortedPosts.length} {t('blog.content.articles')}
+                  {filteredAndSortedPosts.length}{' '}
+                  {filteredAndSortedPosts.length === 1
+                    ? t('blog.content.articles_singular')
+                    : t('blog.content.articles')}
                 </span>
                 <select
                   value={sortBy}

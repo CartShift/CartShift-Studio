@@ -1,0 +1,25 @@
+{
+  "portal": {
+    "analytics": {
+      "totalRequests": "Total Requests",
+      "activeRequests": "Active Requests",
+      "activeRequestsSubtitle": "Currently in progress",
+      "completed": "Completed",
+      "completedSubtitle": "Successfully delivered",
+      "totalSpend": "Total Spend",
+      "totalSpendSubtitle": "Payments completed",
+      "noDataYet": "No Data Yet",
+      "noDataDescription": "Create your first request to see analytics",
+      "inLast30Days": "in last 30 days",
+      "total": "Total",
+      "active": "Active",
+      "done": "Done",
+      "avgResolution": "Avg. Resolution",
+      "days": "days",
+      "completionRate": "Completion Rate",
+      "of": "of",
+      "requestsCompleted": "requests completed",
+      "inProgress": "in progress"
+    }
+  }
+}

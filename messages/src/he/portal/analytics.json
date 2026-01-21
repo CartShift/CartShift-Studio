@@ -1,0 +1,25 @@
+{
+  "portal": {
+    "analytics": {
+      "totalRequests": "סה״כ בקשות",
+      "activeRequests": "בקשות פעילות",
+      "activeRequestsSubtitle": "בטיפול כעת",
+      "completed": "הושלמו",
+      "completedSubtitle": "נמסרו בהצלחה",
+      "totalSpend": "סה״כ הוצאות",
+      "totalSpendSubtitle": "תשלומים שבוצעו",
+      "noDataYet": "אין נתונים עדיין",
+      "noDataDescription": "צור את הבקשה הראשונה שלך כדי לראות ניתוחים",
+      "inLast30Days": "ב-30 יום אחרונים",
+      "total": "סה״כ",
+      "active": "פעילות",
+      "done": "הושלמו",
+      "avgResolution": "זמן ממוצע לסיום",
+      "days": "ימים",
+      "completionRate": "שיעור השלמה",
+      "of": "מתוך",
+      "requestsCompleted": "בקשות הושלמו",
+      "inProgress": "בטיפול כעת"
+    }
+  }
+}

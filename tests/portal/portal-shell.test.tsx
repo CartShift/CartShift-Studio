@@ -97,9 +97,6 @@ vi.mock('@/components/portal/shell/ImpersonationBanner', () => ({
 vi.mock('@/components/ui/ModalBackdrop', () => ({
   ModalBackdrop: () => null,
 }));
-vi.mock('@/components/portal/ui/OfflineIndicator', () => ({
-  OfflineIndicator: () => null,
-}));
 vi.mock('@/components/portal/ui/Breadcrumbs', () => ({
   Breadcrumbs: () => <div>Breadcrumbs</div>,
 }));

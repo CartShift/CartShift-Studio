@@ -1,0 +1,38 @@
+{
+  "portal": {
+    "emptyState": {
+      "requests": {
+        "title": "No requests yet",
+        "description": "Create your first request to get started with our services."
+      },
+      "team": {
+        "title": "No team members",
+        "description": "Invite your team members to collaborate on this workspace."
+      },
+      "files": {
+        "title": "No files uploaded",
+        "description": "Upload files to share with your team and agency."
+      },
+      "notifications": {
+        "title": "All caught up!",
+        "description": "You have no new notifications at this time."
+      },
+      "calendar": {
+        "title": "No consultations scheduled",
+        "description": "Schedule a consultation to discuss your project."
+      },
+      "pricing": {
+        "title": "No pricing offers",
+        "description": "Pricing proposals will appear here once created."
+      },
+      "messages": {
+        "title": "No messages yet",
+        "description": "Start a conversation or wait for updates."
+      },
+      "generic": {
+        "title": "Nothing here yet",
+        "description": "This section is empty. Check back later!"
+      }
+    }
+  }
+}
