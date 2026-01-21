@@ -24,8 +24,9 @@ General UI elements (buttons, common errors) live in `messages/src/{locale}/comm
    - Add the corresponding key to `messages/src/he/`.
 
 2. **Watch Mode**:
-   - Run `npm run i18n:watch` in a separate terminal while developing.
-   - Changes will be automatically merged and types regenerated.
+   - The watch mode is now **integrated into `npm run dev`**.
+   - It runs automatically in the background, merging changes and regenerating types as you save files.
+   - You can also run it standalone via `npm run i18n:watch` if needed.
 
 3. **Validation**:
    - Run `npm run i18n:validate` to check for missing keys or mismatching parameters.

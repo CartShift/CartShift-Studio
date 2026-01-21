@@ -74,6 +74,18 @@ const services = {
     cwd: '.',
     readyPattern: /All emulators ready/,
   },
+  i18n: {
+    name: 'I18N',
+    color: c.brightMagenta,
+    bgColor: c.bgMagenta,
+    icon: '🌍',
+    url: '',
+    healthUrl: '',
+    command: 'node',
+    args: ['scripts/merge-translations-watch.js'],
+    cwd: '.',
+    readyPattern: /Watching for translation changes/,
+  },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -105,8 +117,9 @@ function showServiceInfo() {
   console.log(`
 ${c.gray}┌──────────────────────────────────────────────────────────────────────────┐${c.reset}
 ${c.gray}│${c.reset}  ${c.brightGreen}${c.bold}🌐 WEB${c.reset}       ${c.cyan}http://localhost:3000${c.reset}        ${c.dim}Next.js 15 • React 19${c.reset}   ${c.gray}│${c.reset}
-${c.gray}│${c.reset}  ${c.brightYellow}${c.bold}🔥 FNC${c.reset}       ${c.cyan}http://localhost:4000${c.reset}        ${c.dim}Cloud Functions${c.reset}         ${c.gray}│${c.reset}
-${c.gray}└──────────────────────────────────────────────────────────────────────────┘${c.reset}
+${c.gray}│${c.reset}  ${c.brightYellow}${c.bold}🔥 FNC${c.reset}       ${c.cyan}http://localhost:4000${c.reset}        ${c.dim}Cloud Functions${c.reset}         ${c.gray}│
+│  ${c.brightMagenta}${c.bold}🌍 I18N${c.reset}       ${c.dim}Watch Mode${c.reset}                   ${c.dim}Auto-merge & Types${c.reset}      ${c.gray}│
+└──────────────────────────────────────────────────────────────────────────┘${c.reset}
 `);
 
   console.log(`${c.dim}────────────────────────────────────────────────────────────────────────────${c.reset}`);
@@ -414,6 +427,7 @@ async function startAllServices() {
 
   // Optionally start firebase if needed, currently set to start
   promiseList.push(startService('funcs', services.funcs));
+  promiseList.push(startService('i18n', services.i18n));
 
   await Promise.all(promiseList);
 
@@ -494,11 +508,13 @@ function showQuickStatus() {
   const now = new Date().toLocaleTimeString('en-US', { hour12: false });
   const webStatus = serviceStatus.get('web') || 'unknown';
   const funcsStatus = serviceStatus.get('funcs') || 'unknown';
+  const i18nStatus = serviceStatus.get('i18n') || 'unknown';
 
   const webIcon = webStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
   const funcsIcon = funcsStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
+  const i18nIcon = i18nStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
 
-  console.log(`\n${c.dim}[${now}]${c.reset} ${webIcon} WEB  ${funcsIcon} FNC\n`);
+  console.log(`\n${c.dim}[${now}]${c.reset} ${webIcon} WEB  ${funcsIcon} FNC  ${i18nIcon} I18N\n`);
 }
 
 function setupInputHandler() {
