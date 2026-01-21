@@ -47,6 +47,53 @@ import { toast } from 'sonner';
 import { Request } from '@/lib/types/portal'; // Explicit import to avoid DOM Request conflict
 import { EditRequestModal } from '@/components/portal/requests/EditRequestModal';
 
+const getStatusTranslationKey = (status: string | undefined): string => {
+  const statusMap: Record<string, string> = {
+    new: 'requests.status.new',
+    needs_info: 'requests.status.needs_info',
+    quoted: 'requests.status.quoted',
+    accepted: 'requests.status.accepted',
+    declined: 'requests.status.declined',
+    queued: 'requests.status.queued',
+    in_progress: 'requests.status.in_progress',
+    in_review: 'requests.status.in_review',
+    delivered: 'requests.status.delivered',
+    paid: 'requests.status.paid',
+    closed: 'requests.status.closed',
+    canceled: 'requests.status.canceled',
+  };
+  return statusMap[status?.toLowerCase() || 'new'] || 'requests.status.new';
+};
+
+const getClientStatusTranslationKey = (
+  status: string | undefined,
+  isAgencyStatus: boolean = false
+): string => {
+  const statusMap: Record<string, string> = {
+    submitted: 'requests.clientStatus.submitted',
+    in_progress: 'requests.clientStatus.in_progress',
+    in_review: 'requests.clientStatus.in_review',
+    completed: 'requests.clientStatus.completed',
+  };
+  if (isAgencyStatus) {
+    const mappedStatus = CLIENT_STATUS_MAP[status as keyof typeof CLIENT_STATUS_MAP];
+    return (
+      statusMap[mappedStatus?.toLowerCase() || 'submitted'] || 'requests.clientStatus.submitted'
+    );
+  }
+  return statusMap[status?.toLowerCase() || 'submitted'] || 'requests.clientStatus.submitted';
+};
+
+const getPriorityTranslationKey = (priority: string | undefined): string => {
+  const priorityMap: Record<string, string> = {
+    low: 'requests.priority.low',
+    normal: 'requests.priority.normal',
+    high: 'requests.priority.high',
+    urgent: 'requests.priority.urgent',
+  };
+  return priorityMap[priority?.toLowerCase() || 'normal'] || 'requests.priority.normal';
+};
+
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
@@ -184,12 +231,12 @@ export default function RequestsClient() {
     setIsDeleting(true);
     try {
       await deleteRequest(requestToDelete);
-      toast.success(t('portal.common.deleteSuccess'));
+      toast.success(t('common.deleteSuccess'));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
       console.error('Failed to delete request:', error);
-      toast.error(t('portal.common.deleteError'));
+      toast.error(t('common.deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -267,11 +314,10 @@ export default function RequestsClient() {
 
     if (uniqueOrgIds.length > 1) {
       const orgNames = uniqueOrgIds
-        .map(id => organizations[id]?.name || t('portal.common.unknown'))
+        .map(id => organizations[id]?.name || t('common.unknown'))
         .join(', ');
       alert(
-        `${t('portal.agency.errors.sameOrgRequired') || 'All selected requests must belong to the same organization.'}\n\n` +
-          `Selected requests are from: ${orgNames}`
+        `${t('agency.errors.sameOrgRequired')}\n\n` + `Selected requests are from: ${orgNames}`
       );
       return;
     }
@@ -400,8 +446,8 @@ export default function RequestsClient() {
                 {filter === 'All'
                   ? t('common.all')
                   : isAgency
-                    ? t(`requests.status.${filter.toLowerCase()}`)
-                    : t(`requests.clientStatus.${filter.toLowerCase()}`)}
+                    ? t(getStatusTranslationKey(filter) as any)
+                    : t(getClientStatusTranslationKey(filter, false) as any)}
               </button>
             ))}
             {/* Organization Filter - Agency Only */}
@@ -675,15 +721,11 @@ export default function RequestsClient() {
                                 <motion.div>
                                   {isAgency ? (
                                     <Badge variant={getStatusBadgeVariant(req.status)}>
-                                      {t(
-                                        `requests.status.${(req.status?.toLowerCase() || 'new') as keyof typeof t}`
-                                      )}
+                                      {t(getStatusTranslationKey(req.status) as any)}
                                     </Badge>
                                   ) : (
                                     <Badge variant={getClientStatusBadgeVariant(req.status)}>
-                                      {t(
-                                        `requests.clientStatus.${(CLIENT_STATUS_MAP[req.status]?.toLowerCase() || 'submitted') as keyof typeof t}`
-                                      )}
+                                      {t(getClientStatusTranslationKey(req.status, true) as any)}
                                     </Badge>
                                   )}
                                 </motion.div>
@@ -709,9 +751,7 @@ export default function RequestsClient() {
                                   )}
                                 />
                                 <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
-                                  {t(
-                                    `requests.priority.${(req.priority?.toLowerCase() || 'normal') as keyof typeof t}`
-                                  )}
+                                  {t(getPriorityTranslationKey(req.priority) as any)}
                                 </span>
                               </div>
                             </td>
