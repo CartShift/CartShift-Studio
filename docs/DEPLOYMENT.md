@@ -1,124 +1,51 @@
-# Firebase App Hosting Deployment Guide
+# Deployment Guide
 
-## Overview
+## Vercel Deployment
 
-CartShift Studio uses **Firebase App Hosting** for deployment. This runs Next.js as a server (standalone mode) on Google Cloud Run, providing full SSR, API routes, and dynamic routing support.
-
-## Pre-Deployment Checklist
-
-1. **Environment Variables**
-   - Configure secrets in `apphosting.yaml` or Firebase Console
-   - Required: Firebase config, site URL, reCAPTCHA key
-
-2. **Build Test**
-
-   ```bash
-   pnpm run build
-   pnpm start
-   ```
-
-3. **Firestore & Storage Rules**
-   ```bash
-   pnpm run deploy:rules
-   ```
-
-## Firebase App Hosting Configuration
-
-Configuration is in `apphosting.yaml`:
-
-```yaml
-runConfig:
-  minInstances: 0
-  maxInstances: 10
-  concurrency: 80
-  cpu: 1
-  memoryMiB: 1024
-
-env:
-  - variable: NEXT_PUBLIC_SITE_URL
-    value: https://cart-shift.com
-    availability:
-      - BUILD
-      - RUNTIME
-  # ... other env vars
-```
-
-## Deployment
-
-Firebase App Hosting deploys automatically on push to your connected branch. Manual deployment:
-
-```bash
-firebase apphosting:backends:create
-```
-
-## Email Setup (Resend)
-
-### 1. Create Resend Account
-
-1. Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month)
-2. Create an API key (starts with `re_`)
-
-### 2. Verify Your Domain
-
-1. In Resend dashboard, go to Domains
-2. Add your domain (e.g., `cart-shift.com`)
-3. Add the DNS records Resend provides
-
-### 3. Set Firebase Functions Secrets
-
-```bash
-firebase functions:secrets:set RESEND_API_KEY
-firebase functions:secrets:set CONTACT_EMAIL="hello@cart-shift.com"
-```
-
-## Cloud Functions
-
-Deploy functions separately:
-
-```bash
-pnpm run deploy:functions
-```
-
-Functions require the **Blaze (pay-as-you-go) plan**.
-
-## Custom Domain Setup
-
-1. Go to Firebase Console → App Hosting
-2. Add custom domain
-3. Follow DNS configuration instructions
-4. SSL is automatically provisioned
-
-## Post-Deployment
-
-1. **Verify Deployment**
-   - Check all pages load correctly
-   - Test dynamic routes (requests, pricing, etc.)
-   - Test form submissions
-   - Verify analytics tracking
-
-2. **SEO Verification**
-   - Submit sitemap to Google Search Console
-   - Verify robots.txt is accessible
-
-3. **Monitoring**
-   - Use Firebase Console for app metrics
-   - Monitor Cloud Run logs
-   - Check function logs: `firebase functions:log`
-
-## Troubleshooting
-
-### Build Errors
-
-- Check Node.js version (20+)
-- Clear `.next` folder: `rm -rf .next`
-- Run `pnpm run lint`
-
-### Dynamic Routes 404
-
-- Ensure `dynamicParams` is not set to `false`
-- Check route params match file structure
+This project is configured for deployment on [Vercel](https://vercel.com). A `vercel.json` file is included in the root to ensure best practices and security headers are applied.
 
 ### Environment Variables
 
-- Verify secrets are set in Firebase Console
-- Check `availability` includes both BUILD and RUNTIME
+The application requires specific environment variables to function correctly. When deploying to Vercel, you must add these variables in the **Project Settings > Environment Variables** section.
+
+#### Required Variables
+
+These variables **MUST** be set for the build to succeed and the application to run.
+
+| Variable                            | Description                         |
+| ----------------------------------- | ----------------------------------- |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`      | Firebase API Key                    |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`  | Firebase Auth Domain                |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`   | Firebase Project ID                 |
+| `NEXT_PUBLIC_FIREBASE_FUNCTION_URL` | URL of the Firebase Cloud Functions |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`       | Firebase App ID                     |
+
+#### Optional but Recommended
+
+| Variable                                   | Description                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`                     | The production URL of your site (e.g. `https://cartshift-studio.vercel.app`). Important for SEO and Metadata. |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | Firebase Storage Bucket                                                                                       |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase Messaging Sender ID                                                                                  |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`             | Google Client ID (for Auth)                                                                                   |
+| `NEXT_PUBLIC_GA_ID`                        | Google Analytics ID                                                                                           |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER`              | WhatsApp Number for contact links                                                                             |
+| `GOOGLE_SITE_VERIFICATION`                 | Google Site Verification Code                                                                                 |
+
+### Build Settings (Vercel)
+
+The `vercel.json` and `package.json` are configured to handle the build automatically.
+
+- **Framework Preset**: Next.js
+- **Build Command**: `pnpm run build`
+- **Install Command**: `pnpm install`
+- **Output Directory**: `.next` (Default)
+
+### Node.js Version
+
+The project specifies `"node": ">=18.17.0"` in `package.json`. Vercel should automatically select a compatible Node.js version (e.g., Node 18 or 20).
+
+### Troubleshooting
+
+- If the build fails with "Missing required environment variables", ensuring the variables listed above are added to Vercel.
+- The `scripts/validate-env.mjs` script runs before build to prevent broken deployments.
