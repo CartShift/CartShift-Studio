@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-01-21T21:14:06.778Z
+ * Last updated: 2026-01-21T21:23:30.785Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -1033,6 +1033,7 @@ export interface Portal {
     saving: string;
     saveChanges: string;
     featureComingSoon: string;
+    file: string;
   };
   consultations: {
     title: string;
@@ -4440,6 +4441,7 @@ export type TranslationKey =
   | 'portal.common.failedToRemove'
   | 'portal.common.failedToSubscribe'
   | 'portal.common.featureComingSoon'
+  | 'portal.common.file'
   | 'portal.common.filter'
   | 'portal.common.free'
   | 'portal.common.general'

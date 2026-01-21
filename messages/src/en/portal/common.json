@@ -86,7 +86,8 @@
       "clearFilters": "Clear Filters",
       "saving": "Saving...",
       "saveChanges": "Save Changes",
-      "featureComingSoon": "Feature Coming Soon"
+      "featureComingSoon": "Feature Coming Soon",
+      "file": "File"
     }
   }
 }

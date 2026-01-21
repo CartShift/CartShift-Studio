@@ -88,7 +88,7 @@ export default function FilesClient() {
   };
 
   const handleDeleteFile = async (fileId: string, storagePath: string) => {
-    if (!confirm(t('portal.files.actions.deleteConfirm'))) return;
+    if (!confirm(t('files.actions.deleteConfirm'))) return;
 
     setFile(fileId);
     try {
@@ -99,7 +99,7 @@ export default function FilesClient() {
       }
     } catch (error) {
       console.error('Error deleting file:', error);
-      alert(t('portal.files.actions.deleteFailed'));
+      alert(t('files.actions.deleteFailed'));
     } finally {
       setFile(null);
     }
@@ -134,10 +134,10 @@ export default function FilesClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.files.error.title')}
+          {t('files.error.title')}
         </h2>
         <p className="text-surface-500 max-w-sm font-medium">{error}</p>
-        <Button onClick={() => window.location.reload()}>{t('portal.files.error.retry')}</Button>
+        <Button onClick={() => window.location.reload()}>{t('files.error.retry')}</Button>
       </div>
     );
   }
@@ -147,10 +147,10 @@ export default function FilesClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.files.title')}
+            {t('files.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.files.subtitle')}
+            {t('files.subtitle')}
           </p>
         </div>
         <Button
@@ -158,7 +158,7 @@ export default function FilesClient() {
           className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
         >
           <Upload size={18} />
-          {t('portal.files.upload')}
+          {t('files.upload')}
         </Button>
       </div>
 
@@ -174,7 +174,7 @@ export default function FilesClient() {
             />
             <input
               type="text"
-              placeholder={t('portal.files.searchPlaceholder')}
+              placeholder={t('files.searchPlaceholder')}
               className="w-full ps-11 pe-4 py-2.5 rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-surface-900 dark:text-white"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
@@ -183,9 +183,7 @@ export default function FilesClient() {
           <div className="flex items-center gap-3">
             <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-[10px] font-black text-surface-500 uppercase tracking-widest">
               {files.length}{' '}
-              {files.length === 1
-                ? t('portal.files.totalFiles_singular')
-                : t('portal.files.totalFiles')}
+              {files.length === 1 ? t('files.totalFiles_singular') : t('files.totalFiles')}
             </div>
           </div>
         </div>
@@ -241,8 +239,8 @@ export default function FilesClient() {
                           </span>
                         </div>
                         <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter block">
-                          {t('portal.files.table.addedBy')}{' '}
-                          {file.uploadedByName || t('portal.files.table.system')}
+                          {t('files.table.addedBy')}{' '}
+                          {file.uploadedByName || t('files.table.system')}
                         </span>
                       </div>
                     </div>
@@ -253,7 +251,7 @@ export default function FilesClient() {
                           ? format(file.uploadedAt.toDate(), 'MMM d, yyyy', {
                               locale: getDateLocale(locale),
                             })
-                          : t('portal.common.recently')}
+                          : t('common.recently')}
                       </span>
 
                       <div className="flex items-center gap-2">
@@ -290,19 +288,19 @@ export default function FilesClient() {
                 <thead>
                   <tr className="bg-surface-50/50 dark:bg-surface-900/50">
                     <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
-                      {t('portal.files.table.identity')}
+                      {t('files.table.identity')}
                     </th>
                     <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
-                      {t('portal.files.table.metadata')}
+                      {t('files.table.metadata')}
                     </th>
                     <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
-                      {t('portal.files.table.format')}
+                      {t('files.table.format')}
                     </th>
                     <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
-                      {t('portal.files.table.transmission')}
+                      {t('files.table.transmission')}
                     </th>
                     <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit text-end">
-                      {t('portal.files.table.actions')}
+                      {t('files.table.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -343,8 +341,8 @@ export default function FilesClient() {
                               {file.originalName}
                             </span>
                             <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter mt-1">
-                              {t('portal.files.table.addedBy')}{' '}
-                              {file.uploadedByName || t('portal.files.table.system')}
+                              {t('files.table.addedBy')}{' '}
+                              {file.uploadedByName || t('files.table.system')}
                             </span>
                           </div>
                         </div>
@@ -359,8 +357,7 @@ export default function FilesClient() {
                           variant="gray"
                           className="text-[9px] font-black border-surface-200 dark:border-surface-800"
                         >
-                          {file.mimeType.split('/').pop()?.toUpperCase() ||
-                            t('portal.common.file' as any)}
+                          {file.mimeType.split('/').pop()?.toUpperCase() || t('common.file')}
                         </Badge>
                       </td>
                       <td className="px-6 py-5">
@@ -369,7 +366,7 @@ export default function FilesClient() {
                             ? format(file.uploadedAt.toDate(), 'MMM d, yyyy', {
                                 locale: getDateLocale(locale),
                               })
-                            : t('portal.common.recently')}
+                            : t('common.recently')}
                         </span>
                       </td>
                       <td className="px-6 py-5 text-end">
@@ -393,7 +390,7 @@ export default function FilesClient() {
                             onClick={() => handleDeleteFile(file.id, file.storagePath)}
                             disabled={deletingFile === file.id}
                             className="w-9 h-9 flex items-center justify-center text-surface-400 hover:text-rose-500 transition-colors rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-transparent hover:border-rose-100 dark:hover:border-rose-900/30 disabled:opacity-50"
-                            title={t('portal.files.actions.delete')}
+                            title={t('files.actions.delete')}
                           >
                             {deletingFile === file.id ? (
                               <Loader2 size={16} className="animate-spin" />
@@ -411,10 +408,8 @@ export default function FilesClient() {
           ) : (
             <EmptyState
               icon={FileText}
-              title={t('portal.files.empty.title')}
-              description={
-                searchQuery ? t('portal.files.empty.search') : t('portal.files.empty.noFiles')
-              }
+              title={t('files.empty.title')}
+              description={searchQuery ? t('files.empty.search') : t('files.empty.noFiles')}
               action={
                 !searchQuery && (
                   <Button
@@ -423,7 +418,7 @@ export default function FilesClient() {
                     size="sm"
                     className="mt-6 font-outfit border-surface-200 dark:border-surface-800"
                   >
-                    {t('portal.files.empty.uploadFirst')}
+                    {t('files.empty.uploadFirst')}
                   </Button>
                 )
               }

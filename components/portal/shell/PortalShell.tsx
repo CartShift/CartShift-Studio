@@ -44,8 +44,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
-    ? getAgencyNavGroups((key: string) => t(key))
-    : getClientNavGroups((key: string) => t(key));
+    ? getAgencyNavGroups(key => t(key as any))
+    : getClientNavGroups(key => t(key as any));
 
   // Calculate if breadcrumbs should be shown
   const showBreadcrumbs = (() => {

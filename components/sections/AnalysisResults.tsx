@@ -238,7 +238,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                     <span
                       className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
                     >
-                      {t(`sections.${key as keyof typeof t}`)}
+                      {t(`sections.${key}` as any)}
                     </span>
                   </div>
                   <span
