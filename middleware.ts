@@ -5,64 +5,68 @@ import { routing } from './i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 // Toggle subdomain functionality - set to false to disable portal subdomain routing
-const ENABLE_PORTAL_SUBDOMAIN = false;
+const ENABLE_PORTAL_SUBDOMAIN = true;
 
 export default function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
 
-  // 1. Skip if it's localhost or internal Next.js/Firebase path
-  const isDev = hostname.includes('localhost') || hostname.includes('127.0.0.1');
-
+  // 1. Skip internal paths
   if (
-    isDev ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/_vercel') ||
-    pathname.startsWith('/__') // Firebase auth
+    pathname.startsWith('/__')
   ) {
     return intlMiddleware(request);
   }
 
-  // If subdomain functionality is disabled, just use intl middleware
-  if (!ENABLE_PORTAL_SUBDOMAIN) {
-    return intlMiddleware(request);
-  }
+  // 2. Check if we're on the portal subdomain
+  const isPortalSubdomain =
+    ENABLE_PORTAL_SUBDOMAIN &&
+    (hostname.startsWith('portal.cart-shift.com') || hostname.startsWith('portal.localhost'));
 
-  const isPortalSubdomain = hostname.startsWith('portal.cart-shift.com');
-
-  // 2. Handle main domain -> portal subdomain redirect
-  // If user visits cart-shift.com/en/portal/... redirect to portal.cart-shift.com/en/...
-  if (!isPortalSubdomain && pathname.includes('/portal/')) {
+  // 3. Main domain: redirect /portal/ paths to subdomain
+  if (ENABLE_PORTAL_SUBDOMAIN && !isPortalSubdomain && pathname.includes('/portal/')) {
     const newPathname = pathname.replace('/portal/', '/') || '/';
-    return NextResponse.redirect(new URL(newPathname, `https://portal.cart-shift.com`));
+    const redirectUrl = new URL(newPathname, `https://portal.cart-shift.com`);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // 3. Handle portal subdomain -> internal mapping
+  // 4. Portal subdomain: rewrite all paths to /portal/
   if (isPortalSubdomain) {
-    const pathParts = pathname.split('/');
-    const hasLocale = routing.locales.includes(pathParts[1] as any);
-
-    // If they access portal.cart-shift.com/en/portal/... redirect to clean URL /en/...
-    if (hasLocale && pathParts[2] === 'portal') {
-      const cleanPath = `/${pathParts[1]}/${pathParts.slice(3).join('/')}`;
-      return NextResponse.redirect(new URL(cleanPath, request.url));
+    // Check if path already contains /portal/ to avoid double-rewriting
+    if (pathname.includes('/portal/') || pathname.includes('/portal')) {
+      // Already has /portal, redirect to clean URL
+      const cleanPath = pathname.replace(/\/portal\/?/, '/') || '/';
+      if (cleanPath !== pathname) {
+        return NextResponse.redirect(new URL(cleanPath, request.url));
+      }
+      return intlMiddleware(request);
     }
 
-    // Internally rewrite to /portal folder
+    // Rewrite: /en/dashboard -> /en/portal/dashboard
+    const pathParts = pathname.split('/').filter(Boolean);
+    const hasLocale = pathParts[0] && routing.locales.includes(pathParts[0] as 'en' | 'he');
+
+    let rewritePath: string;
+    if (hasLocale) {
+      const locale = pathParts[0];
+      const rest = pathParts.slice(1).join('/');
+      rewritePath = `/${locale}/portal/${rest}`;
+    } else {
+      // No locale - let intl middleware handle adding it, but prepend portal
+      rewritePath = `/portal${pathname === '/' ? '' : pathname}`;
+    }
+
+    // Ensure trailing slash consistency
+    if (pathname.endsWith('/') && !rewritePath.endsWith('/')) {
+      rewritePath += '/';
+    }
+
     const rewriteUrl = request.nextUrl.clone();
-    if (hasLocale && pathParts[2] !== 'portal') {
-      const locale = pathParts[1];
-      const rest = pathParts.slice(2).join('/');
-      rewriteUrl.pathname = `/${locale}/portal/${rest}`;
-    } else if (!hasLocale && !pathname.startsWith('/portal')) {
-      rewriteUrl.pathname = `/portal${pathname === '/' ? '' : pathname}`;
-    }
-
-    // Must use NextResponse.rewrite() - modifying request.nextUrl doesn't trigger rewrite
-    if (rewriteUrl.pathname !== pathname) {
-      return NextResponse.rewrite(rewriteUrl);
-    }
+    rewriteUrl.pathname = rewritePath;
+    return NextResponse.rewrite(rewriteUrl);
   }
 
   return intlMiddleware(request);

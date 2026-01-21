@@ -4,9 +4,6 @@ import { setRequestLocale } from 'next-intl/server';
 import { PortalProviders } from '@/components/portal/providers/PortalProviders';
 import { SubdomainHandler } from '@/components/portal/SubdomainHandler';
 
-// Force dynamic rendering - no caching
-export const dynamic = 'force-dynamic';
-
 export default async function PortalLayout({
   children,
   params,
@@ -15,7 +12,6 @@ export default async function PortalLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const buildTimestamp = new Date().toISOString();
 
   // Enable static rendering for portal pages
   setRequestLocale(locale as 'en' | 'he');
@@ -25,23 +21,6 @@ export default async function PortalLayout({
   // SubdomainHandler manages routing for portal.cart-shift.com subdomain
   return (
     <>
-      {/* TEMP BUILD TEST - DELETE AFTER CONFIRMING */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 99999,
-          background: 'red',
-          color: 'white',
-          padding: '10px',
-          textAlign: 'center',
-          fontWeight: 'bold',
-        }}
-      >
-        BUILD TIMESTAMP: {buildTimestamp}
-      </div>
       <GoogleAnalytics />
       <AnalyticsProvider enableScrollTracking={false}>
         <PortalProviders>
