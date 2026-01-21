@@ -26,7 +26,7 @@ export default function InviteClient() {
   const [accepting, setAccepting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const t = useTranslations();
+  const t = useTranslations('portal');
 
   useEffect(() => {
     async function fetchInvite() {
@@ -34,7 +34,7 @@ export default function InviteClient() {
       if (typeof window === 'undefined') return;
 
       if (!code || typeof code !== 'string') {
-        setError(t('portal.auth.errors.invalidCode'));
+        setError(t('auth.errors.invalidCode'));
         set(false);
         return;
       }
@@ -43,7 +43,7 @@ export default function InviteClient() {
         const inviteData = await getInvite(code);
 
         if (!inviteData) {
-          setError(t('portal.auth.errors.inviteNotFound'));
+          setError(t('auth.errors.inviteNotFound'));
           set(false);
           return;
         }
@@ -53,8 +53,8 @@ export default function InviteClient() {
         if (inviteData.status !== 'pending') {
           setError(
             inviteData.status === 'accepted'
-              ? t('portal.auth.errors.alreadyAccepted')
-              : t('portal.auth.errors.expired')
+              ? t('auth.errors.alreadyAccepted')
+              : t('auth.errors.expired')
           );
         } else if (inviteData.expiresAt?.toDate && inviteData.expiresAt.toDate() < new Date()) {
           // Update expired status if user is authenticated, otherwise just show error
@@ -65,11 +65,11 @@ export default function InviteClient() {
               console.error('Error updating invite status:', err);
             }
           }
-          setError(t('portal.auth.errors.expired'));
+          setError(t('auth.errors.expired'));
         }
       } catch (error: unknown) {
         console.error('Error fetching invite:', error);
-        setError(t('portal.auth.errors.genericInvite'));
+        setError(t('auth.errors.genericInvite'));
       } finally {
         set(false);
       }
@@ -100,7 +100,7 @@ export default function InviteClient() {
       }, 2000);
     } catch (error: unknown) {
       console.error('Error accepting invite:', error);
-      setError(error instanceof Error ? error.message : t('portal.auth.errors.generic'));
+      setError(error instanceof Error ? error.message : t('auth.errors.generic'));
     } finally {
       setAccepting(false);
     }
@@ -120,17 +120,17 @@ export default function InviteClient() {
         <Card className="max-w-md w-full">
           <div className="text-center space-y-4">
             <Mail className="w-12 h-12 text-primary mx-auto" />
-            <h1 className="text-2xl font-bold">{t('portal.invite.title')}</h1>
-            <p className="text-muted-foreground">{t('portal.invite.guestIntro')}</p>
+            <h1 className="text-2xl font-bold">{t('invite.title')}</h1>
+            <p className="text-muted-foreground">{t('invite.guestIntro')}</p>
             <div className="space-y-2">
               <Link href={getPortalPath(`/signup?redirect=/invite/${code}/`)} className="block">
                 <Button className="w-full shadow-lg shadow-blue-500/20">
-                  {t('portal.invite.createAccount')}
+                  {t('invite.createAccount')}
                 </Button>
               </Link>
               <Link href={getPortalPath(`/login?redirect=/invite/${code}/`)} className="block">
                 <Button variant="outline" className="w-full">
-                  {t('portal.invite.signIn')}
+                  {t('invite.signIn')}
                 </Button>
               </Link>
             </div>
@@ -146,10 +146,10 @@ export default function InviteClient() {
         <Card className="max-w-md w-full">
           <div className="text-center space-y-4">
             <XCircle className="w-12 h-12 text-destructive mx-auto" />
-            <h1 className="text-2xl font-bold">{t('portal.invite.error')}</h1>
+            <h1 className="text-2xl font-bold">{t('invite.error')}</h1>
             <p className="text-muted-foreground">{error}</p>
             <Link href={getPortalPath('/login/')}>
-              <Button>{t('portal.invite.signIn')}</Button>
+              <Button>{t('invite.signIn')}</Button>
             </Link>
           </div>
         </Card>
@@ -173,26 +173,26 @@ export default function InviteClient() {
             {success ? (
               <>
                 <CheckCircle2 className="w-12 h-12 text-success mx-auto" />
-                <h1 className="text-2xl font-bold">{t('portal.invite.success')}</h1>
-                <p className="text-muted-foreground">{t('portal.invite.redirecting')}</p>
+                <h1 className="text-2xl font-bold">{t('invite.success')}</h1>
+                <p className="text-muted-foreground">{t('invite.redirecting')}</p>
               </>
             ) : isAccepted ? (
               <>
                 <CheckCircle2 className="w-12 h-12 text-success mx-auto" />
-                <h1 className="text-2xl font-bold">{t('portal.invite.alreadyAccepted')}</h1>
-                <p className="text-muted-foreground">{t('portal.invite.alreadyAcceptedDesc')}</p>
+                <h1 className="text-2xl font-bold">{t('invite.alreadyAccepted')}</h1>
+                <p className="text-muted-foreground">{t('invite.alreadyAcceptedDesc')}</p>
               </>
             ) : isExpired ? (
               <>
                 <XCircle className="w-12 h-12 text-destructive mx-auto" />
-                <h1 className="text-2xl font-bold">{t('portal.invite.expired')}</h1>
-                <p className="text-muted-foreground">{t('portal.invite.expiredDesc')}</p>
+                <h1 className="text-2xl font-bold">{t('invite.expired')}</h1>
+                <p className="text-muted-foreground">{t('invite.expiredDesc')}</p>
               </>
             ) : (
               <>
                 <Mail className="w-12 h-12 text-primary mx-auto" />
-                <h1 className="text-2xl font-bold">{t('portal.invite.title')}</h1>
-                <p className="text-muted-foreground">{t('portal.invite.subtitle')}</p>
+                <h1 className="text-2xl font-bold">{t('invite.title')}</h1>
+                <p className="text-muted-foreground">{t('invite.subtitle')}</p>
               </>
             )}
           </div>
@@ -202,25 +202,25 @@ export default function InviteClient() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">{t('portal.invite.invitedEmail')}</span>
+                  <span className="text-muted-foreground">{t('invite.invitedEmail')}</span>
                   <span className="font-medium">{invite.email}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Shield className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">{t('portal.invite.role')}</span>
+                  <span className="text-muted-foreground">{t('invite.role')}</span>
                   <Badge variant="gray">{invite.role}</Badge>
                 </div>
                 {invite.invitedByName && (
                   <div className="flex items-center gap-2 text-sm">
                     <User className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{t('portal.invite.invitedBy')}</span>
+                    <span className="text-muted-foreground">{t('invite.invitedBy')}</span>
                     <span className="font-medium">{invite.invitedByName}</span>
                   </div>
                 )}
                 {invite.expiresAt?.toDate && (
                   <div className="flex items-center gap-2 text-sm">
                     <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{t('portal.invite.expires')}</span>
+                    <span className="text-muted-foreground">{t('invite.expires')}</span>
                     <span className="font-medium">{format(invite.expiresAt.toDate(), 'PPp')}</span>
                   </div>
                 )}
@@ -235,7 +235,7 @@ export default function InviteClient() {
               {!isAuthenticated ? (
                 <div className="space-y-3">
                   <p className="text-sm text-surface-600 dark:text-surface-400 text-center font-medium">
-                    {t('portal.invite.guestIntro')}
+                    {t('invite.guestIntro')}
                   </p>
                   <div className="space-y-2">
                     <Link
@@ -245,7 +245,7 @@ export default function InviteClient() {
                       className="block"
                     >
                       <Button className="w-full shadow-lg shadow-blue-500/20">
-                        {t('portal.invite.createAccount')}
+                        {t('invite.createAccount')}
                       </Button>
                     </Link>
                     <Link
@@ -253,18 +253,18 @@ export default function InviteClient() {
                       className="block"
                     >
                       <Button variant="outline" className="w-full">
-                        {t('portal.invite.signIn')}
+                        {t('invite.signIn')}
                       </Button>
                     </Link>
                   </div>
                   <p className="text-xs text-surface-500 dark:text-surface-400 text-center">
-                    {t('portal.invite.alreadyHasAccount')}
+                    {t('invite.alreadyHasAccount')}
                   </p>
                 </div>
               ) : !emailMatch ? (
                 <div className="p-3 bg-warning/10 border border-warning/20 rounded-md">
                   <p className="text-sm text-warning">
-                    {t('portal.invite.emailMismatch', {
+                    {t('invite.emailMismatch', {
                       email: invite.email,
                       userEmail: user?.email || '',
                     })}
@@ -275,10 +275,10 @@ export default function InviteClient() {
                   {accepting ? (
                     <>
                       <Loader2 className="w-4 h-4 me-2 animate-spin" />
-                      {t('portal.invite.accepting')}
+                      {t('invite.accepting')}
                     </>
                   ) : (
-                    t('portal.invite.accept')
+                    t('invite.accept')
                   )}
                 </Button>
               ) : null}

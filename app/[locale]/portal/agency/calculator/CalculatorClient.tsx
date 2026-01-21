@@ -11,7 +11,7 @@ import { PricingCalculator } from '@/components/portal/pricing/PricingCalculator
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function CalculatorClient() {
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const locale = useLocale();
   const router = useRouter();
   const { isAgency, loading: auth } = usePortalAuth();
@@ -53,12 +53,12 @@ export default function CalculatorClient() {
           <DollarSign className="w-10 h-10 text-surface-400" />
         </div>
         <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-          {t('portal.common.accessDenied')}
+          {t('common.accessDenied')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-md mb-6">
-          {t('portal.agency.agencyOnly')}
+          {t('agency.agencyOnly')}
         </p>
-        <Button onClick={() => router.push(getPortalPath('/'))}>{t('portal.common.goBack')}</Button>
+        <Button onClick={() => router.push(getPortalPath('/'))}>{t('common.goBack')}</Button>
       </div>
     );
   }
@@ -78,10 +78,10 @@ export default function CalculatorClient() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-              {t('portal.pricing.calculatorTitle')}
+              {t('pricing.calculatorTitle')}
             </h1>
             <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-              {t('portal.pricing.calculatorSubtitle')}
+              {t('pricing.calculatorSubtitle')}
             </p>
           </div>
         </div>
@@ -106,21 +106,21 @@ export default function CalculatorClient() {
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </div>
               <h3 className="font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.tips.title')}
+                {t('pricing.tips.title')}
               </h3>
             </div>
             <ul className="space-y-3 text-sm text-surface-600 dark:text-surface-400">
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1">•</span>
-                <span>{t('portal.pricing.tips.tip1')}</span>
+                <span>{t('pricing.tips.tip1')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1">•</span>
-                <span>{t('portal.pricing.tips.tip2')}</span>
+                <span>{t('pricing.tips.tip2')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 mt-1">•</span>
-                <span>{t('portal.pricing.tips.tip3')}</span>
+                <span>{t('pricing.tips.tip3')}</span>
               </li>
             </ul>
           </Card>
@@ -132,33 +132,33 @@ export default function CalculatorClient() {
                 <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <h3 className="font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.effortGuide.title')}
+                {t('pricing.effortGuide.title')}
               </h3>
             </div>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-green-600 dark:text-green-400 font-medium">
-                  {t('portal.pricing.effort.low')}
+                  {t('pricing.effort.low')}
                 </span>
-                <span className="text-surface-500">1-4 {t('portal.common.hours')}</span>
+                <span className="text-surface-500">1-4 {t('common.hours')}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-blue-600 dark:text-blue-400 font-medium">
-                  {t('portal.pricing.effort.medium')}
+                  {t('pricing.effort.medium')}
                 </span>
-                <span className="text-surface-500">4-12 {t('portal.common.hours')}</span>
+                <span className="text-surface-500">4-12 {t('common.hours')}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-amber-600 dark:text-amber-400 font-medium">
-                  {t('portal.pricing.effort.high')}
+                  {t('pricing.effort.high')}
                 </span>
-                <span className="text-surface-500">12-24 {t('portal.common.hours')}</span>
+                <span className="text-surface-500">12-24 {t('common.hours')}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-purple-600 dark:text-purple-400 font-medium">
-                  {t('portal.pricing.effort.complex')}
+                  {t('pricing.effort.complex')}
                 </span>
-                <span className="text-surface-500">24+ {t('portal.common.hours')}</span>
+                <span className="text-surface-500">24+ {t('common.hours')}</span>
               </div>
             </div>
           </Card>
@@ -170,11 +170,11 @@ export default function CalculatorClient() {
                 <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h3 className="font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.valueProps.title')}
+                {t('pricing.valueProps.title')}
               </h3>
             </div>
             <p className="text-sm text-surface-600 dark:text-surface-400">
-              {t('portal.pricing.valueProps.description')}
+              {t('pricing.valueProps.description')}
             </p>
           </Card>
         </div>

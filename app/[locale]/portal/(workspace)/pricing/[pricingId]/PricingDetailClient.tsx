@@ -34,7 +34,7 @@ import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
 export default function PricingDetailClient() {
   const orgId = useResolvedOrgId();
   const pricingId = useResolvedPricingId();
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const { isAgency } = usePortalAuth();
 
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
@@ -44,7 +44,7 @@ export default function PricingDetailClient() {
 
   useEffect(() => {
     if (!orgId || !pricingId || typeof orgId !== 'string' || typeof pricingId !== 'string') {
-      setError(t('portal.common.error' as never));
+      setError(t('common.error' as never));
       set(false);
       return undefined;
     }
@@ -62,7 +62,7 @@ export default function PricingDetailClient() {
         }
       } catch (err) {
         console.error('Failed to fetch pricing request:', err);
-        setError(t('portal.common.error' as never));
+        setError(t('common.error' as never));
       } finally {
         set(false);
       }
@@ -77,7 +77,7 @@ export default function PricingDetailClient() {
       <div className="py-20 flex flex-col items-center justify-center space-y-3">
         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
         <p className="text-sm font-bold text-surface-400 font-outfit">
-          {t('portal.common.loading' as any)}
+          {t('common.loading' as any)}
         </p>
       </div>
     );
@@ -88,11 +88,11 @@ export default function PricingDetailClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-          {t('portal.common.error' as any)}
+          {t('common.error' as any)}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
         <Link href="/portal/pricing/">
-          <Button>{t('portal.common.back' as any)}</Button>
+          <Button>{t('common.back' as any)}</Button>
         </Link>
       </div>
     );
@@ -108,7 +108,7 @@ export default function PricingDetailClient() {
           <Link href="/portal/pricing/">
             <Button variant="ghost" className="flex items-center gap-2">
               <ArrowLeft size={18} />
-              {t('portal.common.back' as any)}
+              {t('common.back' as any)}
             </Button>
           </Link>
           {isAgency &&
@@ -117,7 +117,7 @@ export default function PricingDetailClient() {
               <Link href={`/portal/pricing/${pricingId}/edit`}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Pencil size={18} />
-                  {t('portal.common.edit' as any)}
+                  {t('common.edit' as any)}
                 </Button>
               </Link>
             )}
@@ -136,7 +136,7 @@ export default function PricingDetailClient() {
               )}
             </div>
             <Badge variant={statusColor}>
-              {t(`portal.pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
+              {t(`pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
             </Badge>
           </div>
 
@@ -144,7 +144,7 @@ export default function PricingDetailClient() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs font-black text-surface-400 uppercase tracking-widest mb-1">
-                  {t('portal.pricing.form.total' as any)}
+                  {t('pricing.form.total' as any)}
                 </p>
                 <p className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
                   {formatCurrency(pricingRequest.totalAmount, pricingRequest.currency)}
@@ -152,10 +152,10 @@ export default function PricingDetailClient() {
               </div>
               <div>
                 <p className="text-xs font-black text-surface-400 uppercase tracking-widest mb-1">
-                  {t('portal.common.status' as any)}
+                  {t('common.status' as any)}
                 </p>
                 <Badge variant={statusColor}>
-                  {t(`portal.pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
+                  {t(`pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
                 </Badge>
               </div>
             </div>
@@ -164,7 +164,7 @@ export default function PricingDetailClient() {
           {pricingRequest.lineItems && pricingRequest.lineItems.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-                {t('portal.pricing.form.lineItems' as never)}
+                {t('pricing.form.lineItems' as never)}
               </h3>
               <div className="space-y-2">
                 {pricingRequest.lineItems.map(item => (
@@ -201,7 +201,7 @@ export default function PricingDetailClient() {
             <div className="mb-6">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
                 <FileText className="inline w-5 h-5 me-2" />
-                {t('portal.pricing.includedRequests')}
+                {t('pricing.includedRequests')}
               </h3>
               <div className="space-y-2">
                 {linkedRequests.map(request => {
@@ -218,8 +218,8 @@ export default function PricingDetailClient() {
                           </h4>
                           <Badge variant="gray" className="text-xs">
                             {request.type
-                              ? t(`portal.requests.type.${request.type.toLowerCase()}` as any)
-                              : t('portal.requests.type.design')}
+                              ? t(`requests.type.${request.type.toLowerCase()}` as any)
+                              : t('requests.type.design')}
                           </Badge>
                           <Badge
                             variant={
@@ -230,9 +230,9 @@ export default function PricingDetailClient() {
                             className="text-xs"
                           >
                             {isAgency
-                              ? t(`portal.requests.status.${request.status.toLowerCase()}` as any)
+                              ? t(`requests.status.${request.status.toLowerCase()}` as any)
                               : t(
-                                  `portal.requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
+                                  `requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
                                 )}
                           </Badge>
                         </div>

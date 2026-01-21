@@ -37,7 +37,7 @@ export default function TeamClient() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [cancellingInvite, setCancellingInvite] = useState<string | null>(null);
   const [copiedInviteId, setCopiedInviteId] = useState<string | null>(null);
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const locale = useLocale();
 
   const handleInviteSuccess = async () => {
@@ -45,28 +45,27 @@ export default function TeamClient() {
   };
 
   const handleCancelInvite = async (inviteId: string) => {
-    if (!confirm(t('portal.team.confirmCancel'))) return;
+    if (!confirm(t('team.confirmCancel'))) return;
 
     setCancellingInvite(inviteId);
     try {
       await cancelInvite(inviteId);
     } catch (error) {
       console.error('Error cancelling invite:', error);
-      alert(t('portal.team.errors.cancelInvite'));
+      alert(t('team.errors.cancelInvite'));
     } finally {
       setCancellingInvite(null);
     }
   };
 
   const handleRemoveMember = async (member: any) => {
-    if (!confirm(t('portal.team.removeMemberConfirm', { name: member.name || member.email })))
-      return;
+    if (!confirm(t('team.removeMemberConfirm', { name: member.name || member.email }))) return;
 
     try {
       await removeMember(member.id, orgId as string, member.userId);
     } catch (error) {
       console.error('Error removing member:', error);
-      alert(t('portal.common.error'));
+      alert(t('common.error'));
     }
   };
 
@@ -75,7 +74,7 @@ export default function TeamClient() {
       await updateMemberRole(memberId, newRole);
     } catch (error) {
       console.error('Error changing role:', error);
-      alert(t('portal.common.error'));
+      alert(t('common.error'));
     }
   };
 
@@ -125,12 +124,12 @@ export default function TeamClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.common.error')}
+          {t('common.error')}
         </h2>
         <p className="text-surface-500 max-w-sm font-medium">
           {error instanceof Error ? error.message : error || 'Unknown error'}
         </p>
-        <Button onClick={() => window.location.reload()}>{t('portal.common.retry')}</Button>
+        <Button onClick={() => window.location.reload()}>{t('common.retry')}</Button>
       </div>
     );
   }
@@ -140,10 +139,10 @@ export default function TeamClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.team.title')}
+            {t('team.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.team.subtitle')}
+            {t('team.subtitle')}
           </p>
         </div>
         <Button
@@ -151,7 +150,7 @@ export default function TeamClient() {
           className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
         >
           <UserPlus size={18} />
-          {t('portal.team.invite')}
+          {t('team.invite')}
         </Button>
       </div>
 
@@ -162,9 +161,7 @@ export default function TeamClient() {
             className="border-surface-200 dark:border-surface-800 shadow-sm !overflow-visible bg-white dark:bg-surface-950"
             style={{ overflow: 'visible' }}
           >
-            <CardSectionTitle className="p-5 pb-0">
-              {t('portal.team.activeMembers')}
-            </CardSectionTitle>
+            <CardSectionTitle className="p-5 pb-0">{t('team.activeMembers')}</CardSectionTitle>
             <div
               className="divide-y divide-surface-100 dark:divide-surface-800 !overflow-visible"
               style={{ overflow: 'visible' }}
@@ -184,7 +181,7 @@ export default function TeamClient() {
                     />
                     <div>
                       <h4 className="font-bold text-surface-900 dark:text-white leading-none mb-1.5 font-outfit">
-                        {member.name || t('portal.team.anonymous')}
+                        {member.name || t('team.anonymous')}
                       </h4>
                       <p className="text-xs font-bold text-surface-400">{member.email}</p>
                     </div>
@@ -198,13 +195,11 @@ export default function TeamClient() {
                         {member.role}
                       </span>
                       <span className="text-[9px] text-surface-400 font-bold uppercase tracking-tighter">
-                        {t('portal.team.workspaceAccess')}
+                        {t('team.workspaceAccess')}
                       </span>
                     </div>
                     <Badge variant={member.role === 'owner' ? 'blue' : 'green'}>
-                      {member.role === 'owner'
-                        ? t('portal.team.roles.owner')
-                        : t('portal.team.roles.member')}
+                      {member.role === 'owner' ? t('team.roles.owner') : t('team.roles.member')}
                     </Badge>
                     <div className="!overflow-visible relative" style={{ overflow: 'visible' }}>
                       <Dropdown
@@ -215,7 +210,7 @@ export default function TeamClient() {
                         }
                         items={[
                           {
-                            label: t('portal.team.changeRole'),
+                            label: t('team.changeRole'),
                             onClick: () => {
                               const newRole = member.role === 'admin' ? 'member' : 'admin';
                               handleChangeRole(member.id, newRole);
@@ -224,7 +219,7 @@ export default function TeamClient() {
                             disabled: member.role === 'owner',
                           },
                           {
-                            label: t('portal.team.removeMember'),
+                            label: t('team.removeMember'),
                             onClick: () => handleRemoveMember(member),
                             icon: <UserMinus size={16} />,
                             variant: 'danger',
@@ -242,7 +237,7 @@ export default function TeamClient() {
 
         <div>
           <Card className="space-y-6 border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
-            <CardSectionTitle>{t('portal.team.pending')}</CardSectionTitle>
+            <CardSectionTitle>{t('team.pending')}</CardSectionTitle>
             {invites.length > 0 ? (
               invites.map(invite => (
                 <div key={invite.id} className="space-y-4">
@@ -263,7 +258,7 @@ export default function TeamClient() {
                       {cancellingInvite === invite.id ? (
                         <Loader2 size={12} className="animate-spin" />
                       ) : (
-                        t('portal.team.cancel')
+                        t('team.cancel')
                       )}
                     </button>
                   </div>
@@ -271,8 +266,8 @@ export default function TeamClient() {
                     <span className="flex items-center gap-1.5 uppercase tracking-tighter">
                       <Clock size={12} className="text-surface-300" />
                       {invite.createdAt?.toDate
-                        ? `${t('portal.team.sent')} ${format(invite.createdAt.toDate(), 'MMM d', { locale: getDateLocale(locale) })}`
-                        : t('portal.common.recently')}
+                        ? `${t('team.sent')} ${format(invite.createdAt.toDate(), 'MMM d', { locale: getDateLocale(locale) })}`
+                        : t('common.recently')}
                     </span>
                     <button
                       onClick={() => copyInviteLink(invite.id)}
@@ -285,11 +280,11 @@ export default function TeamClient() {
                     >
                       {copiedInviteId === invite.id ? (
                         <>
-                          <CheckCircle2 size={12} /> {t('portal.team.copied')}
+                          <CheckCircle2 size={12} /> {t('team.copied')}
                         </>
                       ) : (
                         <>
-                          <Copy size={12} /> {t('portal.team.copyLink')}
+                          <Copy size={12} /> {t('team.copyLink')}
                         </>
                       )}
                     </button>
@@ -300,8 +295,8 @@ export default function TeamClient() {
             ) : (
               <EmptyState
                 icon={Mail}
-                title={t('portal.team.noInvites')}
-                description={t('portal.team.noInvitesSub')}
+                title={t('team.noInvites')}
+                description={t('team.noInvitesSub')}
                 variant="default"
                 className="py-12"
               />
@@ -310,7 +305,7 @@ export default function TeamClient() {
             <div className="pt-4 border-t border-surface-100 dark:border-surface-800">
               <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100/50 dark:border-blue-900/20 mb-6">
                 <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed font-bold uppercase tracking-tight">
-                  {t('portal.team.guideNote')}
+                  {t('team.guideNote')}
                 </p>
               </div>
               <Button
@@ -318,7 +313,7 @@ export default function TeamClient() {
                 size="sm"
                 className="w-full h-11 text-xs font-bold uppercase tracking-widest border-surface-200 dark:border-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-900 font-outfit"
               >
-                {t('portal.team.workspaceGuide')}
+                {t('team.workspaceGuide')}
               </Button>
             </div>
           </Card>
@@ -327,9 +322,7 @@ export default function TeamClient() {
             <div className="absolute -end-8 -bottom-8 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-bold text-sm text-white font-outfit">
-                  {t('portal.team.capacity')}
-                </h4>
+                <h4 className="font-bold text-sm text-white font-outfit">{t('team.capacity')}</h4>
                 <ShieldAlert size={16} className="text-amber-500" />
               </div>
               <div className="w-full bg-surface-800 h-2.5 rounded-full overflow-hidden mb-4 p-0.5">
@@ -340,11 +333,10 @@ export default function TeamClient() {
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-[10px] text-surface-400 font-black uppercase tracking-widest">
-                  <span className="text-white">{members.length}</span> / 10{' '}
-                  {t('portal.team.activeSeats')}
+                  <span className="text-white">{members.length}</span> / 10 {t('team.activeSeats')}
                 </p>
                 <button className="text-[10px] text-blue-400 font-black uppercase tracking-widest hover:text-blue-300 transition-colors">
-                  {t('portal.team.upgrade')}
+                  {t('team.upgrade')}
                 </button>
               </div>
             </div>

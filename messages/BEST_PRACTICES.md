@@ -41,13 +41,30 @@ General UI elements (buttons, common errors) live in `messages/src/{locale}/comm
 ## 🧩 TypeScript Types
 
 Types are automatically generated into `types/i18n.ts`.
-Use `useTranslations()` hook with the correct namespace.
+**Always use `useTranslations('portal')` for portal translations** - this provides better type safety and cleaner code.
 
 ```tsx
-// Example with strict typing
-import { Portal } from '~/lib/types/i18n';
+// ✅ CORRECT: Use namespaced hook for portal translations
 import { useTranslations } from 'next-intl';
 
-const t = useTranslations<Portal>('portal'); // Typesafe!
-<h1>{t('dashboard.title')}</h1>;
+const t = useTranslations('portal'); // Typesafe!
+<h1>{t('dashboard.title')}</h1>; // No 'portal.' prefix needed
+
+// ❌ WRONG: Don't use useTranslations() without namespace
+const t = useTranslations();
+<h1>{t('portal.dashboard.title')}</h1>; // Avoid this pattern
 ```
+
+### Standardized Pattern (2026-01-21)
+
+**All portal files now use:**
+
+- `useTranslations('portal')` - Namespaced hook
+- Keys without `portal.` prefix (e.g., `t('files.title')` not `t('portal.files.title')`)
+
+**Benefits:**
+
+- Better TypeScript type safety and autocomplete
+- Cleaner, shorter translation keys
+- Consistent pattern across entire codebase
+- Easier refactoring and maintenance

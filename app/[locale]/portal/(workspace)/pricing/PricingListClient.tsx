@@ -51,7 +51,7 @@ export default function PricingListClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const locale = useLocale();
   const { isAgency } = usePortalAuth();
 
@@ -83,7 +83,7 @@ export default function PricingListClient() {
       return () => unsubscribe();
     } catch (err) {
       console.error('Failed to subscribe to pricing requests:', err);
-      setError(t('portal.common.error'));
+      setError(t('common.error'));
       set(false);
       return undefined;
     }
@@ -100,17 +100,17 @@ export default function PricingListClient() {
       await sendPricingRequest(requestId);
     } catch (err) {
       console.error('Failed to send pricing request:', err);
-      alert(t('portal.pricing.sendFailed' as any));
+      alert(t('pricing.sendFailed' as any));
     }
   };
 
   const handleDelete = async (requestId: string) => {
-    if (!confirm(t('portal.pricing.deleteConfirm' as any))) return;
+    if (!confirm(t('pricing.deleteConfirm' as any))) return;
     try {
       await deletePricingRequest(requestId);
     } catch (err) {
       console.error('Failed to delete pricing request:', err);
-      alert(t('portal.pricing.deleteFailed' as any));
+      alert(t('pricing.deleteFailed' as any));
     }
   };
 
@@ -136,10 +136,10 @@ export default function PricingListClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.common.error')}
+          {t('common.error')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
-        <Button onClick={() => window.location.reload()}>{t('portal.common.retry')}</Button>
+        <Button onClick={() => window.location.reload()}>{t('common.retry')}</Button>
       </div>
     );
   }
@@ -149,17 +149,17 @@ export default function PricingListClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.pricing.title')}
+            {t('pricing.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.pricing.subtitle')}
+            {t('pricing.subtitle')}
           </p>
         </div>
         {isAgency && (
           <Link href="/portal/pricing/new/">
             <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit">
               <Plus size={18} />
-              {t('portal.pricing.newOffer')}
+              {t('pricing.newOffer')}
             </Button>
           </Link>
         )}
@@ -178,7 +178,7 @@ export default function PricingListClient() {
             />
             <input
               type="text"
-              placeholder={t('portal.header.searchPlaceholder')}
+              placeholder={t('header.searchPlaceholder')}
               className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full font-outfit"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
@@ -186,7 +186,7 @@ export default function PricingListClient() {
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
             <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
-              <Filter size={12} /> {t('portal.common.filter')}:
+              <Filter size={12} /> {t('common.filter')}:
             </div>
             {filters.map(filter => (
               <button
@@ -200,8 +200,8 @@ export default function PricingListClient() {
                 )}
               >
                 {filter === 'All'
-                  ? t('portal.common.all')
-                  : t(`portal.pricing.status.${filter.toLowerCase()}` as never)}
+                  ? t('common.all')
+                  : t(`pricing.status.${filter.toLowerCase()}` as never)}
               </button>
             ))}
           </div>
@@ -213,7 +213,7 @@ export default function PricingListClient() {
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               <p className="text-sm font-bold text-surface-400 font-outfit">
-                {t('portal.common.loading')}
+                {t('common.loading')}
               </p>
             </div>
           ) : filteredRequests.length > 0 ? (
@@ -248,14 +248,14 @@ export default function PricingListClient() {
                         )}
                         className="text-[10px] shrink-0"
                       >
-                        {t(`portal.pricing.status.${req.status.toLowerCase()}` as never)}
+                        {t(`pricing.status.${req.status.toLowerCase()}` as never)}
                       </Badge>
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800">
                       <div className="flex flex-col">
                         <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                          {t('portal.pricing.form.total')}
+                          {t('pricing.form.total')}
                         </span>
                         <span className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
                           {formatCurrency(req.totalAmount, req.currency)}
@@ -263,12 +263,12 @@ export default function PricingListClient() {
                       </div>
                       <div className="flex flex-col items-end">
                         <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                          {t('portal.common.date')}
+                          {t('common.date')}
                         </span>
                         <span className="text-xs font-bold text-surface-600 dark:text-surface-300 font-outfit">
                           {req.createdAt?.toDate
                             ? format(req.createdAt.toDate(), 'MMM d, yyyy')
-                            : t('portal.common.recently')}
+                            : t('common.recently')}
                         </span>
                       </div>
                     </div>
@@ -282,19 +282,19 @@ export default function PricingListClient() {
                   <thead>
                     <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
                       <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
-                        {t('portal.pricing.form.titleLabel')}
+                        {t('pricing.form.titleLabel')}
                       </th>
                       <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                        {t('portal.common.status')}
+                        {t('common.status')}
                       </th>
                       <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                        {t('portal.pricing.form.total')}
+                        {t('pricing.form.total')}
                       </th>
                       <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
-                        {t('portal.common.date')}
+                        {t('common.date')}
                       </th>
                       <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
-                        {t('portal.common.actions')}
+                        {t('common.actions')}
                       </th>
                     </tr>
                   </thead>
@@ -332,7 +332,7 @@ export default function PricingListClient() {
                                 PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
                               )}
                             >
-                              {t(`portal.pricing.status.${req.status.toLowerCase()}` as never)}
+                              {t(`pricing.status.${req.status.toLowerCase()}` as never)}
                             </Badge>
                           </div>
                         </td>
@@ -351,11 +351,11 @@ export default function PricingListClient() {
                                 ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
                                     locale: getDateLocale(locale),
                                   })
-                                : t('portal.common.recently')}
+                                : t('common.recently')}
                             </span>
                             <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
                               {req.status === PRICING_STATUS.DRAFT
-                                ? t('portal.pricing.status.draft')
+                                ? t('pricing.status.draft')
                                 : req.sentAt?.toDate
                                   ? format(req.sentAt.toDate(), 'MMM d', {
                                       locale: getDateLocale(locale),
@@ -396,7 +396,7 @@ export default function PricingListClient() {
                               }
                               items={[
                                 {
-                                  label: t('portal.common.view'),
+                                  label: t('common.view'),
                                   icon: <Eye size={14} />,
                                   onClick: () => router.push(`/portal/pricing/${req.id}`),
                                 },
@@ -405,7 +405,7 @@ export default function PricingListClient() {
                                   req.status === PRICING_STATUS.SENT)
                                   ? [
                                       {
-                                        label: t('portal.common.edit'),
+                                        label: t('common.edit'),
                                         icon: <Pencil size={14} />,
                                         onClick: () =>
                                           router.push(`/portal/pricing/${req.id}/edit`),
@@ -424,7 +424,7 @@ export default function PricingListClient() {
                                 ...(isAgency
                                   ? [
                                       {
-                                        label: t('portal.common.delete'),
+                                        label: t('common.delete'),
                                         icon: <Trash2 size={14} />,
                                         variant: 'danger' as const,
                                         onClick: () => handleDelete(req.id),
@@ -449,18 +449,16 @@ export default function PricingListClient() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('portal.common.noData')}
+                  {t('common.noData')}
                 </h3>
                 <p className="text-surface-500 dark:text-surface-400 text-sm max-w-sm font-medium">
-                  {isAgency
-                    ? t('portal.pricing.noOffersAgency')
-                    : t('portal.pricing.noOffersClient')}
+                  {isAgency ? t('pricing.noOffersAgency') : t('pricing.noOffersClient')}
                 </p>
               </div>
               {isAgency && !searchQuery && activeFilter === 'All' && (
                 <Link href="/portal/pricing/new/" className="pt-4">
                   <Button className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/10">
-                    {t('portal.pricing.newOffer')}
+                    {t('pricing.newOffer')}
                   </Button>
                 </Link>
               )}
@@ -471,7 +469,7 @@ export default function PricingListClient() {
         {!loading && filteredRequests.length > 0 && (
           <div className="p-5 border-t border-surface-100 dark:border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
             <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-              {t('portal.common.showing', {
+              {t('common.showing', {
                 count: paginatedRequests.length,
                 total: filteredRequests.length,
               })}
@@ -484,7 +482,7 @@ export default function PricingListClient() {
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
               >
-                {t('portal.common.prev')}
+                {t('common.prev')}
               </Button>
               <Button
                 variant="outline"
@@ -493,7 +491,7 @@ export default function PricingListClient() {
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
               >
-                {t('portal.common.next')}
+                {t('common.next')}
               </Button>
             </div>
           </div>

@@ -31,7 +31,7 @@ function getGreetingKey(): 'morning' | 'afternoon' | 'evening' | 'default' {
 }
 
 function DashboardClientContent() {
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const params = useParams();
   const locale = (typeof params.locale === 'string' ? params.locale : 'en') as 'en' | 'he';
 
@@ -42,7 +42,7 @@ function DashboardClientContent() {
   const greeting = useMemo(() => {
     const key = getGreetingKey();
     const firstName = userData?.name?.split(' ')[0] || '';
-    return t(`portal.dashboard.greeting.${key}`, { name: firstName });
+    return t(`dashboard.greeting.${key}` as any, { name: firstName } as any);
   }, [t, userData?.name]);
 
   // Collapsible Service Status Logic
@@ -86,16 +86,12 @@ function DashboardClientContent() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.dashboard.error.title')}
+          {t('dashboard.error.title')}
         </h2>
         <p className="text-surface-500 max-w-sm">
-          {error === 'access_denied'
-            ? t('portal.access.restrictedMessage')
-            : t('portal.common.error')}
+          {error === 'access_denied' ? t('access.restrictedMessage') : t('common.error')}
         </p>
-        <Button onClick={() => window.location.reload()}>
-          {t('portal.dashboard.error.retry')}
-        </Button>
+        <Button onClick={() => window.location.reload()}>{t('dashboard.error.retry')}</Button>
       </div>
     );
   }
@@ -114,7 +110,7 @@ function DashboardClientContent() {
             <span className="text-gradient-brand">{greeting}</span>
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.dashboard.subtitle')}
+            {t('dashboard.subtitle')}
           </p>
         </div>
       </motion.div>
@@ -140,7 +136,7 @@ function DashboardClientContent() {
               as="h2"
               className="mb-0 px-6 pt-6 pb-4 border-b border-surface-100 dark:border-surface-800"
             >
-              {t('portal.activity.title')}
+              {t('activity.title')}
             </CardSectionTitle>
             <Suspense
               fallback={
@@ -183,7 +179,7 @@ function DashboardClientContent() {
                 iconClassName="text-blue-500"
                 className="mb-0 group-hover:text-primary-600 transition-colors"
               >
-                {t('portal.dashboard.serviceStatus.title')}
+                {t('dashboard.serviceStatus.title')}
               </CardSectionTitle>
               <ChevronDown
                 className={cn(
@@ -206,21 +202,21 @@ function DashboardClientContent() {
               <div className="pt-6 space-y-5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                    {t('portal.dashboard.serviceStatus.design')}
+                    {t('dashboard.serviceStatus.design')}
                   </span>
                   <span className="text-emerald-500 font-black flex items-center gap-2 text-[10px] uppercase tracking-widest">
                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    {t('portal.dashboard.serviceStatus.active')}
+                    {t('dashboard.serviceStatus.active')}
                   </span>
                 </div>
                 <Card variant="glass" padding="lg">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                      {t('portal.dashboard.serviceStatus.dev')}
+                      {t('dashboard.serviceStatus.dev')}
                     </span>
                     <span className="text-amber-500 font-black flex items-center gap-2 text-[10px] uppercase tracking-widest">
                       <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-                      {t('portal.dashboard.serviceStatus.peak')}
+                      {t('dashboard.serviceStatus.peak')}
                     </span>
                   </div>
                   <div className="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
@@ -232,16 +228,15 @@ function DashboardClientContent() {
                     />
                   </div>
                   <p className="mt-3 text-[10px] text-surface-400 font-bold uppercase tracking-tight">
-                    {t('portal.dashboard.serviceStatus.etaLabel')}: 4-6{' '}
-                    {t('portal.dashboard.serviceStatus.days')}
+                    {t('dashboard.serviceStatus.etaLabel')}: 4-6 {t('dashboard.serviceStatus.days')}
                   </p>
                 </Card>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                    {t('portal.dashboard.serviceStatus.avgResponse')}
+                    {t('dashboard.serviceStatus.avgResponse')}
                   </span>
                   <span className="text-surface-900 dark:text-white font-black text-[10px] uppercase tracking-widest">
-                    {t('portal.dashboard.serviceStatus.responseTime')}
+                    {t('dashboard.serviceStatus.responseTime')}
                   </span>
                 </div>
               </div>

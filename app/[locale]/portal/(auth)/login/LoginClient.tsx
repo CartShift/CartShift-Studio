@@ -25,8 +25,8 @@ type LoginData = z.infer<ReturnType<typeof getLoginSchema>>;
 
 const getLoginSchema = (t: (path: string) => string) =>
   z.object({
-    email: z.string().email(t('portal.auth.errors.invalidEmail')),
-    password: z.string().min(6, t('portal.auth.errors.weakPassword')),
+    email: z.string().email(t('auth.errors.invalidEmail')),
+    password: z.string().min(6, t('auth.errors.weakPassword')),
     rememberMe: z.boolean().optional(),
   });
 
@@ -37,7 +37,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { navigateToPortal, getPortalHref } = usePortalNavigation();
   const searchParams = useSearchParams();
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const redirectPath = searchParams.get('redirect');
   const { branding } = useBranding();
 
@@ -57,20 +57,20 @@ function LoginForm() {
     setError(null);
     try {
       await signInWithGoogle();
-      toast.success(t('portal.auth.login.success' as any));
+      toast.success(t('auth.login.success' as any));
       navigateToPortal(redirectPath || '/');
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/popup-closed-by-user'
-          ? t('portal.auth.errors.popupClosed' as any)
+          ? t('auth.errors.popupClosed' as any)
           : firebaseError.code === 'auth/popup-blocked'
-            ? t('portal.auth.errors.popupBlocked' as any)
+            ? t('auth.errors.popupBlocked' as any)
             : firebaseError.code === 'auth/cancelled-popup-request'
-              ? t('portal.auth.errors.popupCancelled' as any)
+              ? t('auth.errors.popupCancelled' as any)
               : firebaseError.code === 'auth/account-exists-with-different-credential'
-                ? t('portal.auth.errors.account' as any)
-                : firebaseError.message || t('portal.auth.errors.generic' as any);
+                ? t('auth.errors.account' as any)
+                : firebaseError.message || t('auth.errors.generic' as any);
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -83,21 +83,21 @@ function LoginForm() {
     setError(null);
     try {
       await loginWithEmail(data.email, data.password);
-      toast.success(t('portal.auth.login.success' as any));
+      toast.success(t('auth.login.success' as any));
       navigateToPortal(redirectPath || '/');
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/user-not-found'
-          ? t('portal.auth.errors.userNot' as any)
+          ? t('auth.errors.userNot' as any)
           : firebaseError.code === 'auth/wrong-password' ||
               firebaseError.code === 'auth/invalid-credential'
-            ? t('portal.auth.errors.wrongPassword' as any)
+            ? t('auth.errors.wrongPassword' as any)
             : firebaseError.code === 'auth/invalid-email'
-              ? t('portal.auth.errors.invalidEmail' as any)
+              ? t('auth.errors.invalidEmail' as any)
               : firebaseError.code === 'auth/too-many-requests'
-                ? t('portal.auth.errors.too-many-requests' as any)
-                : firebaseError.message || t('portal.auth.errors.generic' as any);
+                ? t('auth.errors.too-many-requests' as any)
+                : firebaseError.message || t('auth.errors.generic' as any);
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -131,11 +131,9 @@ function LoginForm() {
 
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
-            {t('portal.auth.login.title')}
+            {t('auth.login.title')}
           </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('portal.auth.login.subtitle')}
-          </p>
+          <p className="text-surface-500 dark:text-surface-400 mt-1">{t('auth.login.subtitle')}</p>
         </div>
       </div>
 
@@ -143,7 +141,7 @@ function LoginForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <Input
-              label={t('portal.auth.login.email')}
+              label={t('auth.login.email')}
               type="email"
               placeholder="yours@example.com"
               error={errors.email?.message}
@@ -155,13 +153,13 @@ function LoginForm() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                  {t('portal.auth.login.password')}
+                  {t('auth.login.password')}
                 </label>
                 <Link
                   href={getPortalHref('/forgot-password/')}
                   className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                 >
-                  {t('portal.auth.login.forgotPassword')}
+                  {t('auth.login.forgotPassword')}
                 </Link>
               </div>
               <div className="relative">
@@ -179,9 +177,7 @@ function LoginForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors z-10"
                   aria-label={
-                    showPassword
-                      ? t('portal.auth.hidePassword' as any)
-                      : t('portal.auth.showPassword' as any)
+                    showPassword ? t('auth.hidePassword' as any) : t('auth.showPassword' as any)
                   }
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -200,7 +196,7 @@ function LoginForm() {
                 htmlFor="rememberMe"
                 className="text-xs font-medium text-surface-500 dark:text-surface-400 cursor-pointer select-none"
               >
-                {t('portal.auth.login.rememberMe' as any)}
+                {t('auth.login.rememberMe' as any)}
               </label>
             </div>
           </div>
@@ -208,7 +204,7 @@ function LoginForm() {
           <FormError message={error} />
 
           <Button type="submit" loading={loading} className="w-full h-11">
-            <span>{t('portal.auth.login.signIn')}</span>
+            <span>{t('auth.login.signIn')}</span>
             <ArrowRight size={16} />
           </Button>
 
@@ -218,7 +214,7 @@ function LoginForm() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-white dark:bg-surface-900 px-2 text-surface-500">
-                {t('portal.auth.login.sso')}
+                {t('auth.login.sso')}
               </span>
             </div>
           </div>
@@ -249,12 +245,12 @@ function LoginForm() {
                 fill="#EA4335"
               />
             </svg>
-            <span>{t('portal.auth.login.google')}</span>
+            <span>{t('auth.login.google')}</span>
           </Button>
         </form>
 
         <p className="text-center text-sm text-surface-500 dark:text-surface-400 mt-6">
-          {t('portal.auth.login.noAccount')}{' '}
+          {t('auth.login.noAccount')}{' '}
           <Link
             href={
               redirectPath
@@ -271,7 +267,7 @@ function LoginForm() {
               navigateToPortal(path);
             }}
           >
-            {t('portal.auth.login.createOne')}
+            {t('auth.login.createOne')}
           </Link>
         </p>
       </Card>
@@ -279,7 +275,7 @@ function LoginForm() {
       {/* Footer */}
       <div className="flex items-center justify-center gap-2 text-surface-400 text-xs mt-8">
         <ShieldCheck size={14} />
-        <span>{t('portal.auth.login.secure')}</span>
+        <span>{t('auth.login.secure')}</span>
         <span className="mx-1">•</span>
         <span>&copy; {new Date().getFullYear()} CartShift Studio</span>
       </div>
@@ -288,14 +284,14 @@ function LoginForm() {
 }
 
 export default function LoginClient() {
-  const t = useTranslations();
+  const t = useTranslations('portal');
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
       <Suspense
         fallback={
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-surface-500">{t('portal.loading.auth.login')}</p>
+            <p className="text-surface-500">{t('loading.auth.login')}</p>
           </div>
         }
       >

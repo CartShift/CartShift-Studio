@@ -59,6 +59,22 @@ TypeScript type checking is included in the lint script to match what `next buil
 - Linting and type checking are consistent
 - No surprises during CI/CD builds
 
+## Custom ESLint Plugins
+
+### RTL Logical Properties (`rtl/enforce-logical-properties`)
+
+Enforces logical CSS properties (ms-, me-, ps-, pe-, start-, end-) instead of physical ones (ml-, mr-, pl-, pr-, left-, right-) for better RTL support.
+
+### Portal Translations (`portal-translations/enforce-portal-translations`)
+
+Enforces standardized translation pattern for portal files:
+
+- Must use `useTranslations('portal')` in portal files
+- Must NOT use `'portal.'` prefix when using namespaced hook
+- Auto-fixable violations
+
+See [ESLint Translation Rule](./ESLINT_TRANSLATION_RULE.md) for detailed documentation.
+
 ## Future Fix
 
 When Next.js fixes the `next lint` compatibility issue with flat config, we can switch back to using `next lint` for better integration with Next.js tooling.

@@ -50,7 +50,7 @@ import { EditRequestModal } from '@/components/portal/requests/EditRequestModal'
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const { loading: auth, isAgency } = usePortalAuth();
 
   // Edit & Archive logic
@@ -60,10 +60,10 @@ export default function RequestsClient() {
     // "Archive" means CLOSED in this context
     try {
       await updateRequestStatus(req.id, 'CLOSED');
-      toast.success(t('portal.requests.toast.statusUpdated'));
+      toast.success(t('requests.toast.statusUpdated'));
     } catch (e) {
       console.error(e);
-      toast.error(t('portal.common.error'));
+      toast.error(t('common.error'));
     }
   };
   const { requests, loading: _requests, error: requestsError } = useRequests();
@@ -184,12 +184,12 @@ export default function RequestsClient() {
     setIsDeleting(true);
     try {
       await deleteRequest(requestToDelete);
-      toast.success(t('portal.common.deleteSuccess' as any));
+      toast.success(t('common.deleteSuccess' as any));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
       console.error('Failed to delete request:', error);
-      toast.error(t('portal.common.deleteError' as any));
+      toast.error(t('common.deleteError' as any));
     } finally {
       setIsDeleting(false);
     }
@@ -267,10 +267,10 @@ export default function RequestsClient() {
 
     if (uniqueOrgIds.length > 1) {
       const orgNames = uniqueOrgIds
-        .map(id => organizations[id]?.name || t('portal.common.unknown'))
+        .map(id => organizations[id]?.name || t('common.unknown'))
         .join(', ');
       alert(
-        `${t('portal.agency.errors.sameOrgRequired' as any) || 'All selected requests must belong to the same organization.'}\n\n` +
+        `${t('agency.errors.sameOrgRequired' as any) || 'All selected requests must belong to the same organization.'}\n\n` +
           `Selected requests are from: ${orgNames}`
       );
       return;
@@ -306,10 +306,10 @@ export default function RequestsClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.common.error')}
+          {t('common.error')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
-        <Button onClick={() => window.location.reload()}>{t('portal.common.retry')}</Button>
+        <Button onClick={() => window.location.reload()}>{t('common.retry')}</Button>
       </div>
     );
   }
@@ -322,13 +322,13 @@ export default function RequestsClient() {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        title={t('portal.common.deleteConfirmTitle') || 'Delete Request?'}
+        title={t('common.deleteConfirmTitle') || 'Delete Request?'}
         description={
-          t('portal.common.deleteConfirm') ||
+          t('common.deleteConfirm') ||
           'Are you sure you want to delete this request? This action cannot be undone.'
         }
-        confirmText={t('portal.common.delete')}
-        cancelText={t('portal.common.cancel')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         variant="danger"
         is={isDeleting}
       />
@@ -347,10 +347,10 @@ export default function RequestsClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit truncate">
-            {t('portal.requests.title')}
+            {t('requests.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium truncate font-outfit">
-            {t('portal.dashboard.subtitle')}
+            {t('dashboard.subtitle')}
           </p>
         </div>
         <Link href="/portal/requests/new/" className="flex-shrink-0">
@@ -360,7 +360,7 @@ export default function RequestsClient() {
             leftIcon={<Plus size={18} />}
             className="font-outfit whitespace-nowrap"
           >
-            {t('portal.requests.newRequest')}
+            {t('requests.newRequest')}
           </Button>
         </Link>
       </div>
@@ -376,7 +376,7 @@ export default function RequestsClient() {
             />
             <input
               type="text"
-              placeholder={t('portal.header.searchPlaceholder')}
+              placeholder={t('header.searchPlaceholder')}
               className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full min-w-0 font-outfit"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
@@ -384,7 +384,7 @@ export default function RequestsClient() {
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide min-w-0 flex-1">
             <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
-              <Filter size={12} /> {t('portal.common.filter')}:
+              <Filter size={12} /> {t('common.filter')}:
             </div>
             {filters.map(filter => (
               <button
@@ -398,10 +398,10 @@ export default function RequestsClient() {
                 )}
               >
                 {filter === 'All'
-                  ? t('portal.common.all' as any)
+                  ? t('common.all' as any)
                   : isAgency
-                    ? t(`portal.requests.status.${filter.toLowerCase()}` as any)
-                    : t(`portal.requests.clientStatus.${filter.toLowerCase()}` as any)}
+                    ? t(`requests.status.${filter.toLowerCase()}` as any)
+                    : t(`requests.clientStatus.${filter.toLowerCase()}` as any)}
               </button>
             ))}
             {/* Organization Filter - Agency Only */}
@@ -414,7 +414,7 @@ export default function RequestsClient() {
                   className="portal-input h-10 px-3 pe-8 text-sm font-bold bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-700 min-w-[140px] max-w-[200px] truncate"
                 >
                   <option value="all">
-                    {t('portal.common.all')} ({organizationsList.length})
+                    {t('common.all')} ({organizationsList.length})
                   </option>
                   {organizationsList.map(org => (
                     <option key={org.id} value={org.id}>
@@ -433,9 +433,7 @@ export default function RequestsClient() {
                 className="shrink-0 min-h-[40px] touch-manipulation"
               >
                 <MousePointer2 size={16} className="me-1.5" />
-                {isSelectionMode
-                  ? t('portal.common.cancel')
-                  : t('portal.requests.createPricingOffer')}
+                {isSelectionMode ? t('common.cancel') : t('requests.createPricingOffer')}
               </Button>
             )}
           </div>
@@ -451,8 +449,8 @@ export default function RequestsClient() {
               <span className="text-sm font-bold text-blue-800 dark:text-blue-200">
                 {selectedRequestIds.length}{' '}
                 {selectedRequestIds.length === 1
-                  ? t('portal.requests.selected_singular')
-                  : t('portal.requests.selected')}
+                  ? t('requests.selected_singular')
+                  : t('requests.selected')}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -463,7 +461,7 @@ export default function RequestsClient() {
                 className="text-surface-600 dark:text-surface-300 min-h-[40px] touch-manipulation"
               >
                 <X size={14} className="me-1" />
-                {t('portal.common.cancel')}
+                {t('common.cancel')}
               </Button>
               <Button
                 size="sm"
@@ -472,7 +470,7 @@ export default function RequestsClient() {
                 className="bg-green-600 hover:bg-green-700 text-white min-h-[40px] touch-manipulation disabled:opacity-50"
               >
                 <DollarSign size={14} className="me-1" />
-                {t('portal.requests.createPricingOffer')}
+                {t('requests.createPricingOffer')}
               </Button>
             </div>
           </div>
@@ -569,19 +567,19 @@ export default function RequestsClient() {
                           <th className="px-3 py-4 w-12">{/* Selection column */}</th>
                         )}
                         <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest min-w-[200px]">
-                          {t('portal.requests.table.title')}
+                          {t('requests.table.title')}
                         </th>
                         <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center whitespace-nowrap">
-                          {t('portal.requests.table.status')}
+                          {t('requests.table.status')}
                         </th>
                         <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center whitespace-nowrap">
-                          {t('portal.requests.table.priority')}
+                          {t('requests.table.priority')}
                         </th>
                         <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center whitespace-nowrap hidden md:table-cell">
-                          {t('portal.requests.table.created')}
+                          {t('requests.table.created')}
                         </th>
                         <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end whitespace-nowrap">
-                          {t('portal.common.actions')}
+                          {t('common.actions')}
                         </th>
                       </tr>
                     </thead>
@@ -643,7 +641,7 @@ export default function RequestsClient() {
                                   </button>
                                 ) : req.pricingOfferId ? (
                                   <Badge variant="green" className="text-[9px]">
-                                    {t('portal.requests.hasPricing')}
+                                    {t('requests.hasPricing')}
                                   </Badge>
                                 ) : null}
                               </td>
@@ -653,7 +651,7 @@ export default function RequestsClient() {
                               <div className="flex flex-col min-w-0">
                                 {isAgency && req.orgId && (
                                   <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider truncate mb-0.5">
-                                    {organizations[req.orgId]?.name || t('portal.common.unknown')}
+                                    {organizations[req.orgId]?.name || t('common.unknown')}
                                   </span>
                                 )}
                                 <motion.span
@@ -678,20 +676,20 @@ export default function RequestsClient() {
                                   {isAgency ? (
                                     <Badge variant={getStatusBadgeVariant(req.status)}>
                                       {t(
-                                        `portal.requests.status.${req.status?.toLowerCase() || 'new'}` as any
+                                        `requests.status.${req.status?.toLowerCase() || 'new'}` as any
                                       )}
                                     </Badge>
                                   ) : (
                                     <Badge variant={getClientStatusBadgeVariant(req.status)}>
                                       {t(
-                                        `portal.requests.clientStatus.${CLIENT_STATUS_MAP[req.status]?.toLowerCase() || 'submitted'}` as any
+                                        `requests.clientStatus.${CLIENT_STATUS_MAP[req.status]?.toLowerCase() || 'submitted'}` as any
                                       )}
                                     </Badge>
                                   )}
                                 </motion.div>
                                 {req.isFree && (
                                   <Badge variant="green" className="ms-2">
-                                    {t('portal.common.free')}
+                                    {t('common.free')}
                                   </Badge>
                                 )}
                               </div>
@@ -712,7 +710,7 @@ export default function RequestsClient() {
                                 />
                                 <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
                                   {t(
-                                    `portal.requests.priority.${req.priority?.toLowerCase() || 'normal'}` as any
+                                    `requests.priority.${req.priority?.toLowerCase() || 'normal'}` as any
                                   )}
                                 </span>
                               </div>
@@ -726,10 +724,10 @@ export default function RequestsClient() {
                                     ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
                                         locale: getDateLocale(locale),
                                       })
-                                    : t('portal.common.recently')}
+                                    : t('common.recently')}
                                 </span>
                                 <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
-                                  {t('portal.requests.table.created')}
+                                  {t('requests.table.created')}
                                 </span>
                               </div>
                             </td>
@@ -756,17 +754,17 @@ export default function RequestsClient() {
                                   }
                                   items={[
                                     {
-                                      label: t('portal.common.edit'),
+                                      label: t('common.edit'),
                                       onClick: () => setRequestToEdit(req),
                                       icon: <Edit size={16} />,
                                     },
                                     {
-                                      label: t('portal.common.archive'),
+                                      label: t('common.archive'),
                                       onClick: () => handleArchiveClick(req),
                                       icon: <Archive size={16} />,
                                     },
                                     {
-                                      label: t('portal.common.delete'),
+                                      label: t('common.delete'),
                                       onClick: () => handleDeleteClick(req.id),
                                       icon: <Trash2 size={16} />,
                                       variant: 'danger',
@@ -785,11 +783,11 @@ export default function RequestsClient() {
             ) : (
               <EmptyState
                 icon={Search}
-                title={t('portal.requests.emptyTitle')}
+                title={t('requests.emptyTitle')}
                 description={
                   debouncedSearchQuery || activeFilter !== 'All'
-                    ? t('portal.requests.emptySearch')
-                    : t('portal.requests.emptyDescription')
+                    ? t('requests.emptySearch')
+                    : t('requests.emptyDescription')
                 }
                 action={
                   !debouncedSearchQuery && activeFilter === 'All' ? (
@@ -799,7 +797,7 @@ export default function RequestsClient() {
                         className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/20"
                       >
                         <Plus size={18} className="me-2" />
-                        {t('portal.requests.newRequest')}
+                        {t('requests.newRequest')}
                       </Button>
                     </Link>
                   ) : (
@@ -810,7 +808,7 @@ export default function RequestsClient() {
                         setActiveFilter('All');
                       }}
                     >
-                      {t('portal.common.clearFilters')}
+                      {t('common.clearFilters')}
                     </Button>
                   )
                 }

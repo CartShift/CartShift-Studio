@@ -8,7 +8,7 @@ import { handleOAuthCallback } from '@/lib/services/portal-google-calendar';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function OAuthCallbackClient() {
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();
@@ -33,7 +33,7 @@ export default function OAuthCallbackClient() {
 
       if (!code || !state) {
         setStatus('error');
-        setErrorMessage(t('portal.common.missingOAuthParams'));
+        setErrorMessage(t('common.missingOAuthParams'));
         return;
       }
 
@@ -47,7 +47,7 @@ export default function OAuthCallbackClient() {
         }, 2000);
       } else {
         setStatus('error');
-        setErrorMessage(result.error || t('portal.common.unknownError'));
+        setErrorMessage(result.error || t('common.unknownError'));
       }
     }
 

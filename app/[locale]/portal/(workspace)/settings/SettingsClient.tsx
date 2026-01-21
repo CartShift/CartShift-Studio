@@ -50,7 +50,7 @@ export default function sClient() {
   const { switchOrg } = useOrg();
   const router = useRouter();
   const { user, userData } = usePortalAuth();
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(true);
   const [showCreateOrgModal, setShowCreateOrgModal] = useState(false);
@@ -161,12 +161,12 @@ export default function sClient() {
             bio: org.bio || '',
           });
         } else {
-          const errorMsg = t('portal.settings.general.orgNotFound');
+          const errorMsg = t('settings.general.orgNotFound');
           showFeedback(
             'error',
             typeof errorMsg === 'string' && errorMsg !== 'portal.settings.general.orgNotFound'
               ? errorMsg
-              : t('portal.common.organizationNotFound')
+              : t('common.organizationNotFound')
           );
         }
       } catch (error: unknown) {
@@ -174,7 +174,7 @@ export default function sClient() {
 
         const firestoreError = error as { code?: string; message?: string };
         if (firestoreError.code === 'permission-denied') {
-          const errorMsg = t('portal.settings.general.permissionDenied');
+          const errorMsg = t('settings.general.permissionDenied');
           const message =
             typeof errorMsg === 'string' && errorMsg !== 'portal.settings.general.permissionDenied'
               ? errorMsg
@@ -184,12 +184,12 @@ export default function sClient() {
             router.push(getPortalPath('/'));
           }, 2000);
         } else {
-          const errorMsg = t('portal.settings.general.error');
+          const errorMsg = t('settings.general.error');
           const message =
             firestoreError.message ||
             (typeof errorMsg === 'string' && errorMsg !== 'portal.settings.general.error'
               ? errorMsg
-              : t('portal.requests.form.failedToSave'));
+              : t('requests.form.failedToSave'));
           showFeedback('error', message);
         }
       } finally {
@@ -234,7 +234,7 @@ export default function sClient() {
     if (!orgId || typeof orgId !== 'string') return;
 
     if (orgId === 'default-org') {
-      showFeedback('error', t('portal.settings.general.error'));
+      showFeedback('error', t('settings.general.error'));
       return;
     }
 
@@ -246,13 +246,10 @@ export default function sClient() {
         industry: formData.industry,
         bio: formData.bio,
       });
-      showFeedback('success', t('portal.settings.general.success'));
+      showFeedback('success', t('settings.general.success'));
     } catch (error: unknown) {
       console.error('Error saving settings:', error);
-      showFeedback(
-        'error',
-        error instanceof Error ? error.message : t('portal.settings.general.error')
-      );
+      showFeedback('error', error instanceof Error ? error.message : t('settings.general.error'));
     } finally {
       setSaving(false);
     }
@@ -279,7 +276,7 @@ export default function sClient() {
       setTimeout(() => setResetSent(false), 5000);
     } catch (error) {
       console.error('Error sending reset email:', error);
-      showFeedback('error', t('portal.settings.security.changePassword.error'));
+      showFeedback('error', t('settings.security.changePassword.error'));
     }
   };
 
@@ -291,25 +288,25 @@ export default function sClient() {
         onboardingComplete: false,
         onboardingSkipped: false,
       });
-      showFeedback('success', t('portal.settings.general.onboarding.success'));
+      showFeedback('success', t('settings.general.onboarding.success'));
       // Reload to trigger onboarding
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch (error) {
       console.error('Error restarting onboarding:', error);
-      showFeedback('error', t('portal.settings.general.onboarding.error'));
+      showFeedback('error', t('settings.general.onboarding.error'));
     } finally {
       setRestartingOnboarding(false);
     }
   };
 
   const tabs = [
-    { id: 'general', label: t('portal.settings.tabs.general'), icon: Building2 },
-    { id: 'profile', label: t('portal.settings.tabs.profile'), icon: UserIcon },
-    { id: 'notifications', label: t('portal.settings.tabs.notifications'), icon: Bell },
-    { id: 'security', label: t('portal.settings.tabs.security'), icon: Shield },
-    { id: 'billing', label: t('portal.settings.tabs.billing'), icon: CreditCard },
+    { id: 'general', label: t('settings.tabs.general'), icon: Building2 },
+    { id: 'profile', label: t('settings.tabs.profile'), icon: UserIcon },
+    { id: 'notifications', label: t('settings.tabs.notifications'), icon: Bell },
+    { id: 'security', label: t('settings.tabs.security'), icon: Shield },
+    { id: 'billing', label: t('settings.tabs.billing'), icon: CreditCard },
   ];
 
   const handleProfileSave = async () => {
@@ -320,10 +317,10 @@ export default function sClient() {
         name: profileFormData.name,
         photoUrl: profileFormData.photoUrl,
       });
-      showFeedback('success', t('portal.settings.profile.success'));
+      showFeedback('success', t('settings.profile.success'));
     } catch (error) {
       console.error('Error saving profile:', error);
-      showFeedback('error', t('portal.settings.profile.error'));
+      showFeedback('error', t('settings.profile.error'));
     } finally {
       setProfile(false);
     }
@@ -334,7 +331,7 @@ export default function sClient() {
     if (!file || !user) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      showFeedback('error', t('portal.settings.profile.avatar.sizeError'));
+      showFeedback('error', t('settings.profile.avatar.sizeError'));
       return;
     }
 
@@ -342,10 +339,10 @@ export default function sClient() {
     try {
       const url = await uploadUserProfilePicture(user.uid, file);
       setProfileFormData(prev => ({ ...prev, photoUrl: url }));
-      showFeedback('success', t('portal.settings.profile.avatar.uploadSuccess'));
+      showFeedback('success', t('settings.profile.avatar.uploadSuccess'));
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      showFeedback('error', t('portal.settings.profile.avatar.uploadError'));
+      showFeedback('error', t('settings.profile.avatar.uploadError'));
     } finally {
       setUploadingAvatar(false);
     }
@@ -356,10 +353,10 @@ export default function sClient() {
     try {
       await deleteUserProfilePicture(user.uid, profileFormData.photoUrl);
       setProfileFormData(prev => ({ ...prev, photoUrl: '' }));
-      showFeedback('success', t('portal.settings.profile.avatar.removeSuccess'));
+      showFeedback('success', t('settings.profile.avatar.removeSuccess'));
     } catch (error) {
       console.error('Error removing avatar:', error);
-      showFeedback('error', t('portal.settings.profile.avatar.removeError'));
+      showFeedback('error', t('settings.profile.avatar.removeError'));
     }
   };
 
@@ -383,7 +380,7 @@ export default function sClient() {
     if (!file || !orgId || typeof orgId !== 'string') return;
 
     if (file.size > 2 * 1024 * 1024) {
-      showFeedback('error', t('portal.settings.general.logo.sizeError'));
+      showFeedback('error', t('settings.general.logo.sizeError'));
       return;
     }
 
@@ -391,10 +388,10 @@ export default function sClient() {
     try {
       const url = await uploadOrganizationLogo(orgId, file);
       setOrganization(prev => (prev ? { ...prev, logoUrl: url } : null));
-      showFeedback('success', t('portal.settings.general.logo.uploadSuccess'));
+      showFeedback('success', t('settings.general.logo.uploadSuccess'));
     } catch (error) {
       console.error('Error uploading org logo:', error);
-      showFeedback('error', t('portal.settings.general.logo.uploadError'));
+      showFeedback('error', t('settings.general.logo.uploadError'));
     } finally {
       setUploadingOrgLogo(false);
     }
@@ -405,10 +402,10 @@ export default function sClient() {
     try {
       await deleteOrganizationLogo(orgId, organization.logoUrl);
       setOrganization(prev => (prev ? { ...prev, logoUrl: undefined } : null));
-      showFeedback('success', t('portal.settings.general.logo.removeSuccess'));
+      showFeedback('success', t('settings.general.logo.removeSuccess'));
     } catch (error) {
       console.error('Error removing org logo:', error);
-      showFeedback('error', t('portal.settings.general.logo.removeError'));
+      showFeedback('error', t('settings.general.logo.removeError'));
     }
   };
 
@@ -417,7 +414,7 @@ export default function sClient() {
       <div className="flex flex-col items-center justify-center py-40 space-y-4">
         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
         <p className="text-surface-500 font-bold font-outfit uppercase tracking-widest text-xs">
-          {t('portal.common.loading')}
+          {t('common.loading')}
         </p>
       </div>
     );
@@ -428,10 +425,10 @@ export default function sClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.settings.title')}
+            {t('settings.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('portal.settings.subtitle')}
+            {t('settings.subtitle')}
           </p>
         </div>
       </div>
@@ -481,10 +478,10 @@ export default function sClient() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                      {t('portal.settings.general.title')}
+                      {t('settings.general.title')}
                     </h3>
                     <p className="text-xs font-bold text-surface-400 uppercase tracking-widest mt-0.5">
-                      {t('portal.settings.general.subtitle')}
+                      {t('settings.general.subtitle')}
                     </p>
                   </div>
                 </div>
@@ -493,7 +490,7 @@ export default function sClient() {
                   {/* Organization Logo Upload */}
                   <div className="pb-6 border-b border-surface-100 dark:border-surface-800">
                     <label className="block text-xs font-black uppercase tracking-widest text-surface-500 dark:text-surface-400 mb-4">
-                      {t('portal.settings.general.logoLabel')}
+                      {t('settings.general.logoLabel')}
                     </label>
                     <div className="flex items-center gap-6">
                       <div className="relative group">
@@ -501,7 +498,7 @@ export default function sClient() {
                           {organization?.logoUrl ? (
                             <img
                               src={organization.logoUrl}
-                              alt={organization.name || t('portal.common.organizationLogo')}
+                              alt={organization.name || t('common.organizationLogo')}
                               className="w-full h-full object-cover"
                               onError={handleLogoError}
                             />
@@ -521,7 +518,7 @@ export default function sClient() {
                       <div className="flex flex-col gap-2">
                         <label className="portal-btn portal-btn-secondary text-xs cursor-pointer">
                           <Camera size={14} />
-                          {t('portal.settings.general.logoUpload')}
+                          {t('settings.general.logoUpload')}
                           <input
                             type="file"
                             accept="image/*"
@@ -536,11 +533,11 @@ export default function sClient() {
                             disabled={uploadingOrgLogo}
                             className="text-xs font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition-colors disabled:opacity-50"
                           >
-                            {t('portal.settings.general.logoRemove')}
+                            {t('settings.general.logoRemove')}
                           </button>
                         )}
                         <p className="text-[10px] text-surface-400 dark:text-surface-500 mt-1">
-                          {t('portal.settings.general.logoHint')}
+                          {t('settings.general.logoHint')}
                         </p>
                       </div>
                     </div>
@@ -548,35 +545,35 @@ export default function sClient() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input
-                      label={t('portal.settings.general.orgName')}
+                      label={t('settings.general.orgName')}
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      placeholder={t('portal.settings.general.orgNamePlaceholder')}
+                      placeholder={t('settings.general.orgNamePlaceholder')}
                     />
                     <Input
-                      label={t('portal.settings.general.industry')}
+                      label={t('settings.general.industry')}
                       value={formData.industry}
                       onChange={e => setFormData({ ...formData, industry: e.target.value })}
-                      placeholder={t('portal.settings.general.industryPlaceholder')}
+                      placeholder={t('settings.general.industryPlaceholder')}
                     />
                   </div>
                   <Input
-                    label={t('portal.settings.general.website')}
+                    label={t('settings.general.website')}
                     type="url"
                     value={formData.website}
                     onChange={e => setFormData({ ...formData, website: e.target.value })}
-                    placeholder={t('portal.settings.general.websitePlaceholder')}
+                    placeholder={t('settings.general.websitePlaceholder')}
                   />
                   <div>
                     <label className="block text-xs font-black text-surface-400 uppercase tracking-widest mb-2.5">
-                      {t('portal.settings.general.bio')}
+                      {t('settings.general.bio')}
                     </label>
                     <textarea
                       value={formData.bio}
                       onChange={e => setFormData({ ...formData, bio: e.target.value })}
                       rows={4}
                       className="w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 focus:bg-white dark:focus:bg-surface-950 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-surface-900 dark:text-white text-sm font-medium leading-relaxed"
-                      placeholder={t('portal.settings.general.bioPlaceholder')}
+                      placeholder={t('settings.general.bioPlaceholder')}
                     />
                   </div>
                 </div>
@@ -587,9 +584,7 @@ export default function sClient() {
                     className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
-                    {saving
-                      ? t('portal.settings.general.saving')
-                      : t('portal.settings.general.save')}
+                    {saving ? t('settings.general.saving') : t('settings.general.save')}
                   </Button>
                 </div>
               </Card>
@@ -598,27 +593,27 @@ export default function sClient() {
                 <Card className="border-emerald-200 dark:border-emerald-900/20 bg-emerald-50/20 dark:bg-emerald-900/5 shadow-sm">
                   <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-2 font-outfit">
                     <Plus size={20} />
-                    {t('portal.settings.general.newWorkspace.title')}
+                    {t('settings.general.newWorkspace.title')}
                   </h3>
                   <p className="text-xs text-surface-500 dark:text-surface-400 mb-6 font-medium leading-relaxed">
-                    {t('portal.settings.general.newWorkspace.description')}
+                    {t('settings.general.newWorkspace.description')}
                   </p>
                   <Button
                     onClick={() => setShowCreateOrgModal(true)}
                     className="w-full shadow-lg shadow-emerald-500/10 bg-emerald-600 hover:bg-emerald-700 font-outfit"
                   >
                     <Plus size={18} className="me-2" />
-                    {t('portal.settings.general.newWorkspace.button')}
+                    {t('settings.general.newWorkspace.button')}
                   </Button>
                 </Card>
 
                 <Card className="border-blue-200 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm">
                   <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2 font-outfit">
                     <RefreshCw size={20} />
-                    {t('portal.settings.general.onboarding.title')}
+                    {t('settings.general.onboarding.title')}
                   </h3>
                   <p className="text-xs text-surface-500 dark:text-surface-400 mb-6 font-medium leading-relaxed">
-                    {t('portal.settings.general.onboarding.description')}
+                    {t('settings.general.onboarding.description')}
                   </p>
                   <Button
                     onClick={handleRestartOnboarding}
@@ -627,7 +622,7 @@ export default function sClient() {
                     className="w-full shadow-lg shadow-blue-500/10 border-blue-300 dark:border-blue-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-outfit"
                   >
                     <RefreshCw size={18} className="me-2" />
-                    {t('portal.settings.general.onboarding.button')}
+                    {t('settings.general.onboarding.button')}
                   </Button>
                 </Card>
               </div>
@@ -636,7 +631,7 @@ export default function sClient() {
               {organization && (
                 <div className="mt-8">
                   <h3 className="text-sm font-black text-surface-500 uppercase tracking-widest mb-4 px-1">
-                    {t('portal.settings.general.storeIntegrations')}
+                    {t('settings.general.storeIntegrations')}
                   </h3>
                   <ShopifyStoreIntegration
                     organization={organization}
@@ -654,17 +649,17 @@ export default function sClient() {
               <Card className="border-rose-200 dark:border-rose-900/20 bg-rose-50/20 dark:bg-rose-900/5 shadow-sm">
                 <h3 className="text-lg font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-2 font-outfit">
                   <Trash2 size={20} />
-                  {t('portal.settings.general.dangerZone.title')}
+                  {t('settings.general.dangerZone.title')}
                 </h3>
                 <p className="text-xs text-surface-500 dark:text-surface-400 mb-6 font-medium leading-relaxed">
-                  {t('portal.settings.general.dangerZone.description')}
+                  {t('settings.general.dangerZone.description')}
                 </p>
                 <Button
                   variant="danger"
                   size="sm"
                   className="shadow-lg shadow-rose-500/10 font-outfit"
                 >
-                  {t('portal.settings.general.dangerZone.button')}
+                  {t('settings.general.dangerZone.button')}
                 </Button>
               </Card>
             </div>
@@ -679,10 +674,10 @@ export default function sClient() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                      {t('portal.settings.profile.title')}
+                      {t('settings.profile.title')}
                     </h3>
                     <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-0.5">
-                      {t('portal.settings.profile.subtitle')}
+                      {t('settings.profile.subtitle')}
                     </p>
                   </div>
                 </div>
@@ -716,10 +711,10 @@ export default function sClient() {
 
                     <div className="flex-1 text-center md:text-start">
                       <h4 className="font-bold text-surface-900 dark:text-white mb-1 font-outfit">
-                        {t('portal.settings.profile.avatar.title')}
+                        {t('settings.profile.avatar.title')}
                       </h4>
                       <p className="text-xs text-surface-500 dark:text-surface-400 mb-4 font-medium max-w-xs">
-                        {t('portal.settings.profile.avatar.desc')}
+                        {t('settings.profile.avatar.desc')}
                       </p>
                       <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                         <Button
@@ -731,15 +726,15 @@ export default function sClient() {
                           }
                         >
                           {profileFormData.photoUrl
-                            ? t('portal.settings.profile.avatar.change')
-                            : t('portal.settings.profile.avatar.upload')}
+                            ? t('settings.profile.avatar.change')
+                            : t('settings.profile.avatar.upload')}
                         </Button>
                         {profileFormData.photoUrl && (
                           <button
                             onClick={removeAvatar}
                             className="text-xs font-bold text-rose-500 hover:text-rose-600 px-3 py-2 transition-colors"
                           >
-                            {t('portal.settings.profile.avatar.remove')}
+                            {t('settings.profile.avatar.remove')}
                           </button>
                         )}
                       </div>
@@ -749,16 +744,16 @@ export default function sClient() {
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <Input
-                        label={t('portal.settings.profile.name')}
+                        label={t('settings.profile.name')}
                         value={profileFormData.name}
                         onChange={e =>
                           setProfileFormData({ ...profileFormData, name: e.target.value })
                         }
-                        placeholder={t('portal.settings.profile.namePlaceholder')}
+                        placeholder={t('settings.profile.namePlaceholder')}
                       />
                       <div className="opacity-60 grayscale pointer-events-none">
                         <Input
-                          label={t('portal.settings.profile.email')}
+                          label={t('settings.profile.email')}
                           value={user?.email || ''}
                           readOnly
                           placeholder="email@example.com"
@@ -775,9 +770,7 @@ export default function sClient() {
                     className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
-                    {profile
-                      ? t('portal.settings.general.saving')
-                      : t('portal.settings.profile.save')}
+                    {profile ? t('settings.general.saving') : t('settings.profile.save')}
                   </Button>
                 </div>
               </Card>
@@ -793,18 +786,18 @@ export default function sClient() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                      {t('portal.settings.notifications.title')}
+                      {t('settings.notifications.title')}
                     </h3>
                     <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-0.5">
-                      {t('portal.settings.notifications.subtitle')}
+                      {t('settings.notifications.subtitle')}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-6">
                   <Switch
-                    label={t('portal.settings.notifications.requestUpdate.label')}
-                    description={t('portal.settings.notifications.requestUpdate.desc')}
+                    label={t('settings.notifications.requestUpdate.label')}
+                    description={t('settings.notifications.requestUpdate.desc')}
                     checked={notificationPrefs.emailOnRequestUpdate}
                     onChange={checked =>
                       handleSaveNotificationPrefs({
@@ -815,8 +808,8 @@ export default function sClient() {
                   />
                   <div className="h-px bg-surface-50 dark:bg-surface-900" />
                   <Switch
-                    label={t('portal.settings.notifications.commentAlerts.label')}
-                    description={t('portal.settings.notifications.commentAlerts.desc')}
+                    label={t('settings.notifications.commentAlerts.label')}
+                    description={t('settings.notifications.commentAlerts.desc')}
                     checked={notificationPrefs.emailOnNewComment}
                     onChange={checked =>
                       handleSaveNotificationPrefs({
@@ -827,8 +820,8 @@ export default function sClient() {
                   />
                   <div className="h-px bg-surface-50 dark:bg-surface-900" />
                   <Switch
-                    label={t('portal.settings.notifications.statusChange.label')}
-                    description={t('portal.settings.notifications.statusChange.desc')}
+                    label={t('settings.notifications.statusChange.label')}
+                    description={t('settings.notifications.statusChange.desc')}
                     checked={notificationPrefs.emailOnStatusChange}
                     onChange={checked =>
                       handleSaveNotificationPrefs({
@@ -839,8 +832,8 @@ export default function sClient() {
                   />
                   <div className="h-px bg-surface-50 dark:bg-surface-900" />
                   <Switch
-                    label={t('portal.settings.notifications.marketing.label')}
-                    description={t('portal.settings.notifications.marketing.desc')}
+                    label={t('settings.notifications.marketing.label')}
+                    description={t('settings.notifications.marketing.desc')}
                     checked={notificationPrefs.marketingEmails}
                     onChange={checked =>
                       handleSaveNotificationPrefs({
@@ -855,12 +848,12 @@ export default function sClient() {
                   {notif ? (
                     <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 animate-pulse tracking-widest uppercase">
                       <Loader2 size={12} className="animate-spin" />
-                      {t('portal.settings.notifications.syncing')}
+                      {t('settings.notifications.syncing')}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-[10px] font-black text-surface-400 tracking-widest uppercase">
                       <CheckCircle2 size={12} className="text-emerald-500" />
-                      {t('portal.settings.notifications.saved')}
+                      {t('settings.notifications.saved')}
                     </div>
                   )}
                 </div>
@@ -868,9 +861,9 @@ export default function sClient() {
 
               <Card className="bg-surface-50/50 dark:bg-surface-900/30 border-surface-200 dark:border-surface-800 text-center py-10 rounded-3xl">
                 <p className="text-[11px] font-bold text-surface-500 dark:text-surface-400 max-w-sm mx-auto uppercase tracking-widest leading-relaxed">
-                  {t('portal.settings.notifications.pushBeta')} <br />
+                  {t('settings.notifications.pushBeta')} <br />
                   <span className="text-blue-500 mt-2 block">
-                    {t('portal.settings.notifications.pushBetaSub')}
+                    {t('settings.notifications.pushBetaSub')}
                   </span>
                 </p>
               </Card>
@@ -886,10 +879,10 @@ export default function sClient() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                      {t('portal.settings.security.title')}
+                      {t('settings.security.title')}
                     </h3>
                     <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-0.5">
-                      {t('portal.settings.security.subtitle')}
+                      {t('settings.security.subtitle')}
                     </p>
                   </div>
                 </div>
@@ -898,10 +891,10 @@ export default function sClient() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-surface-50 dark:bg-surface-900/50 border border-surface-100 dark:border-surface-800 group hover:border-blue-200 dark:hover:border-blue-900/30 transition-colors">
                     <div className="space-y-1">
                       <h4 className="font-bold text-surface-900 dark:text-white text-base font-outfit">
-                        {t('portal.settings.security.changePassword.title')}
+                        {t('settings.security.changePassword.title')}
                       </h4>
                       <p className="text-xs font-medium text-surface-500 leading-relaxed">
-                        {t('portal.settings.security.changePassword.desc')}
+                        {t('settings.security.changePassword.desc')}
                       </p>
                     </div>
                     <Button
@@ -917,11 +910,10 @@ export default function sClient() {
                     >
                       {resetSent ? (
                         <div className="flex items-center gap-2">
-                          <CheckCircle2 size={16} />{' '}
-                          {t('portal.settings.security.changePassword.sent')}
+                          <CheckCircle2 size={16} /> {t('settings.security.changePassword.sent')}
                         </div>
                       ) : (
-                        t('portal.settings.security.changePassword.button')
+                        t('settings.security.changePassword.button')
                       )}
                     </Button>
                   </div>
@@ -929,17 +921,17 @@ export default function sClient() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-surface-50/50 dark:bg-surface-900/20 border border-surface-100/50 dark:border-surface-800/50 opacity-60">
                     <div className="space-y-1">
                       <h4 className="font-bold text-surface-900 dark:text-white text-base font-outfit">
-                        {t('portal.settings.security.mfa.title')}
+                        {t('settings.security.mfa.title')}
                       </h4>
                       <p className="text-xs font-medium text-surface-500 leading-relaxed">
-                        {t('portal.settings.security.mfa.desc')}
+                        {t('settings.security.mfa.desc')}
                       </p>
                     </div>
                     <Badge
                       variant="gray"
                       className="font-black uppercase tracking-widest text-[9px]"
                     >
-                      {t('portal.settings.security.mfa.badge')}
+                      {t('settings.security.mfa.badge')}
                     </Badge>
                   </div>
                 </div>
@@ -947,12 +939,12 @@ export default function sClient() {
 
               <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <CardSectionTitle as="h4" className="mb-6">
-                  {t('portal.settings.security.session.title')}
+                  {t('settings.security.session.title')}
                 </CardSectionTitle>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-2.5">
-                      {t('portal.settings.security.session.email')}
+                      {t('settings.security.session.email')}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
                       {user?.email}
@@ -960,12 +952,12 @@ export default function sClient() {
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest mb-2.5">
-                      {t('portal.settings.security.session.provider')}
+                      {t('settings.security.session.provider')}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white capitalize font-outfit flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
                       {user?.providerData[0]?.providerId.split('.')[0] ||
-                        t('portal.settings.security.session.mailService')}
+                        t('settings.security.session.mailService')}
                     </p>
                   </div>
                 </div>
@@ -987,7 +979,7 @@ export default function sClient() {
                         {formData.name}
                       </Badge>
                       <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest bg-blue-500/30 px-3 py-1 rounded-full">
-                        {organization?.plan?.toUpperCase() || t('portal.common.free')}
+                        {organization?.plan?.toUpperCase() || t('common.free')}
                       </span>
                     </div>
                     <h3 className="text-2xl font-bold mb-1 font-outfit uppercase tracking-tight">
@@ -997,12 +989,12 @@ export default function sClient() {
                               typeof t
                             >[0]
                           )
-                        : t('portal.settings.billing.plans.free' as Parameters<typeof t>[0])}
+                        : t('settings.billing.plans.free' as Parameters<typeof t>[0])}
                     </h3>
                     <p className="text-sm text-blue-100/70 font-medium font-outfit uppercase tracking-wider">
                       {organization?.plan === 'enterprise'
-                        ? t('portal.settings.billing.enterpriseStatus')
-                        : t('portal.settings.billing.activeSubscription')}
+                        ? t('settings.billing.enterpriseStatus')
+                        : t('settings.billing.activeSubscription')}
                     </p>
                   </div>
                 </div>
@@ -1011,7 +1003,7 @@ export default function sClient() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
                       <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                        {t('portal.settings.billing.investment')}
+                        {t('settings.billing.investment')}
                       </p>
                       <p className="text-2xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
                         {organization?.plan === 'pro'
@@ -1022,43 +1014,43 @@ export default function sClient() {
                         <span className="text-sm font-medium opacity-40 ms-1">
                           {organization?.plan === 'enterprise'
                             ? ''
-                            : t('portal.settings.billing.perMonth')}
+                            : t('settings.billing.perMonth')}
                         </span>
                       </p>
                     </div>
                     <div className="space-y-1.5">
                       <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                        {t('portal.settings.billing.workflowLimit')}
+                        {t('settings.billing.workflowLimit')}
                       </p>
                       <p className="text-2xl font-bold text-emerald-500 font-outfit flex items-center gap-2">
                         {organization?.plan === 'pro' || organization?.plan === 'enterprise'
-                          ? t('portal.settings.billing.unlimited')
+                          ? t('settings.billing.unlimited')
                           : '1 Request'}
                       </p>
                     </div>
                     <div className="space-y-1.5">
                       <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
-                        {t('portal.settings.billing.teamAvailability')}
+                        {t('settings.billing.teamAvailability')}
                       </p>
                       <p className="text-2xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
                         {organization?.plan === 'free'
                           ? '2 Seats'
                           : organization?.plan === 'pro'
                             ? '10 Seats'
-                            : t('portal.settings.billing.unlimited')}
+                            : t('settings.billing.unlimited')}
                       </p>
                     </div>
                   </div>
 
                   <div className="pt-8 border-t border-surface-100 dark:border-surface-800 flex flex-wrap gap-4">
                     <Button className="flex items-center gap-2 font-outfit px-8 shadow-xl shadow-blue-500/10 h-11">
-                      <CreditCard size={18} /> {t('portal.settings.billing.stripeDashboard')}
+                      <CreditCard size={18} /> {t('settings.billing.stripeDashboard')}
                     </Button>
                     <Button
                       variant="outline"
                       className="flex items-center gap-2 font-outfit px-8 border-surface-200 dark:border-surface-800 h-11"
                     >
-                      {t('portal.settings.billing.invoicingHistory')}
+                      {t('settings.billing.invoicingHistory')}
                     </Button>
                   </div>
                 </div>
@@ -1071,10 +1063,10 @@ export default function sClient() {
                   </div>
                   <div>
                     <h4 className="font-bold text-surface-900 dark:text-white mb-1.5 font-outfit">
-                      {t('portal.settings.billing.encrypted.title')}
+                      {t('settings.billing.encrypted.title')}
                     </h4>
                     <p className="text-xs text-surface-500 dark:text-surface-400 leading-relaxed font-medium">
-                      {t('portal.settings.billing.encrypted.desc')}
+                      {t('settings.billing.encrypted.desc')}
                     </p>
                   </div>
                 </div>

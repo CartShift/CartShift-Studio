@@ -6,6 +6,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import nextPlugin from "@next/eslint-plugin-next";
 import importPlugin from "eslint-plugin-import";
 import rtlPlugin from "./eslint-plugins/rtl-logical-properties.mjs";
+import portalTranslationsPlugin from "./eslint-plugins/portal-translations.mjs";
 
 export default [
     // Global ignores - files/directories that don't need linting
@@ -83,6 +84,7 @@ export default [
             "@next/next": nextPlugin,
             import: importPlugin,
             "rtl": rtlPlugin,
+            "portal-translations": portalTranslationsPlugin,
         },
         languageOptions: {
             ecmaVersion: "latest",
@@ -124,6 +126,9 @@ export default [
             "no-console": "off",
             // RTL logical properties - auto-fixable
             "rtl/enforce-logical-properties": "warn",
+            
+            // Portal translation pattern enforcement
+            "portal-translations/enforce-portal-translations": "error",
         },
     },
     {

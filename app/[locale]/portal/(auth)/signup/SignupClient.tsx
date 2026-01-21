@@ -27,18 +27,18 @@ type SignupData = z.infer<ReturnType<typeof getSignupSchema>>;
 const getSignupSchema = (t: (path: string) => string) =>
   z
     .object({
-      name: z.string().min(2, t('portal.auth.errors.nameTooShort')),
-      email: z.string().email(t('portal.auth.errors.invalidEmail')),
+      name: z.string().min(2, t('auth.errors.nameTooShort')),
+      email: z.string().email(t('auth.errors.invalidEmail')),
       password: z
         .string()
-        .min(6, t('portal.auth.errors.passwordTooShort'))
+        .min(6, t('auth.errors.passwordTooShort'))
         .refine(password => /[a-zA-Z]/.test(password) && /[0-9]/.test(password), {
-          message: t('portal.auth.errors.passwordRequirements'),
+          message: t('auth.errors.passwordRequirements'),
         }),
       confirmPassword: z.string(),
     })
     .refine(data => data.password === data.confirmPassword, {
-      message: t('portal.auth.errors.matchPassword'),
+      message: t('auth.errors.matchPassword'),
       path: ['confirmPassword'],
     });
 
@@ -49,7 +49,7 @@ function SignupForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { navigateToPortal, getPortalHref } = usePortalNavigation();
   const searchParams = useSearchParams();
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const redirectPath = searchParams.get('redirect');
 
   const signupSchema = useMemo(() => getSignupSchema((path: string) => t(path as any)), [t]);
@@ -83,12 +83,12 @@ function SignupForm() {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/email-already-in-use'
-          ? t('portal.auth.errors.emailInUse' as any)
+          ? t('auth.errors.emailInUse' as any)
           : firebaseError.code === 'auth/invalid-email'
-            ? t('portal.auth.errors.invalidEmail' as any)
+            ? t('auth.errors.invalidEmail' as any)
             : firebaseError.code === 'auth/weak-password'
-              ? t('portal.auth.errors.weakPassword' as any)
-              : firebaseError.message || t('portal.auth.errors.generic' as any);
+              ? t('auth.errors.weakPassword' as any)
+              : firebaseError.message || t('auth.errors.generic' as any);
       setError(errorMessage);
     } finally {
       set(false);
@@ -110,11 +110,9 @@ function SignupForm() {
         </div>
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
-            {t('portal.auth.signup.title')}
+            {t('auth.signup.title')}
           </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('portal.auth.signup.subtitle')}
-          </p>
+          <p className="text-surface-500 dark:text-surface-400 mt-1">{t('auth.signup.subtitle')}</p>
         </div>
       </div>
 
@@ -122,9 +120,9 @@ function SignupForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <Input
-              label={t('portal.auth.signup.fullName')}
+              label={t('auth.signup.fullName')}
               type="text"
-              placeholder={t('portal.common.namePlaceholder')}
+              placeholder={t('common.namePlaceholder')}
               error={errors.name?.message}
               success={touchedFields.name && !errors.name}
               leftIcon={<User size={18} />}
@@ -132,7 +130,7 @@ function SignupForm() {
             />
 
             <Input
-              label={t('portal.auth.signup.email')}
+              label={t('auth.signup.email')}
               type="email"
               placeholder="yours@example.com"
               error={errors.email?.message}
@@ -143,7 +141,7 @@ function SignupForm() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                {t('portal.auth.signup.password')}
+                {t('auth.signup.password')}
               </label>
               <div className="relative">
                 <Input
@@ -160,9 +158,7 @@ function SignupForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors z-10"
                   aria-label={
-                    showPassword
-                      ? t('portal.auth.hidePassword' as any)
-                      : t('portal.auth.showPassword' as any)
+                    showPassword ? t('auth.hidePassword' as any) : t('auth.showPassword' as any)
                   }
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -184,8 +180,7 @@ function SignupForm() {
                     ))}
                   </div>
                   <p className="text-xs text-surface-500 dark:text-surface-400">
-                    {strengthLabels[strength - 1] ||
-                      t('portal.auth.passwordStrength.veryWeak' as any)}
+                    {strengthLabels[strength - 1] || t('auth.passwordStrength.veryWeak' as any)}
                   </p>
                 </div>
               )}
@@ -193,7 +188,7 @@ function SignupForm() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                {t('portal.auth.signup.confirmPassword')}
+                {t('auth.signup.confirmPassword')}
               </label>
               <div className="relative">
                 <Input
@@ -211,8 +206,8 @@ function SignupForm() {
                   className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors z-10"
                   aria-label={
                     showConfirmPassword
-                      ? t('portal.auth.hidePassword' as any)
-                      : t('portal.auth.showPassword' as any)
+                      ? t('auth.hidePassword' as any)
+                      : t('auth.showPassword' as any)
                   }
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -228,13 +223,13 @@ function SignupForm() {
           )}
 
           <Button type="submit" loading={loading} className="w-full h-11">
-            <span>{t('portal.auth.signup.createAccount')}</span>
+            <span>{t('auth.signup.createAccount')}</span>
             <ArrowRight size={16} />
           </Button>
         </form>
 
         <p className="text-center text-sm text-surface-500 dark:text-surface-400 mt-6">
-          {t('portal.auth.signup.alreadyHaveAccount')}{' '}
+          {t('auth.signup.alreadyHaveAccount')}{' '}
           <Link
             href={
               redirectPath
@@ -243,7 +238,7 @@ function SignupForm() {
             }
             className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
-            {t('portal.auth.signup.signIn')}
+            {t('auth.signup.signIn')}
           </Link>
         </p>
       </Card>
@@ -251,7 +246,7 @@ function SignupForm() {
       {/* Footer */}
       <div className="flex items-center justify-center gap-2 text-surface-400 text-xs mt-8">
         <ShieldCheck size={14} />
-        <span>{t('portal.auth.signup.secure')}</span>
+        <span>{t('auth.signup.secure')}</span>
         <span className="mx-1">•</span>
         <span>&copy; {new Date().getFullYear()} CartShift Studio</span>
       </div>
@@ -260,14 +255,14 @@ function SignupForm() {
 }
 
 export default function SignupClient() {
-  const t = useTranslations();
+  const t = useTranslations('portal');
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
       <Suspense
         fallback={
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-surface-500">{t('portal.loading.auth.signup')}</p>
+            <p className="text-surface-500">{t('loading.auth.signup')}</p>
           </div>
         }
       >

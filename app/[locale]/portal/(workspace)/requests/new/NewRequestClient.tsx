@@ -9,7 +9,7 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 
 export default function NewRequestClient() {
   const orgId = useResolvedOrgId();
-  const t = useTranslations();
+  const t = useTranslations('portal');
 
   if (!orgId || typeof orgId !== 'string') {
     return <div className="text-center py-20 text-surface-500">Invalid organization ID</div>;
@@ -26,10 +26,10 @@ export default function NewRequestClient() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-            {t('portal.requests.new.title')}
+            {t('requests.new.title')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('portal.requests.new.subtitle')}
+            {t('requests.new.subtitle')}
           </p>
         </div>
       </div>
@@ -44,13 +44,13 @@ export default function NewRequestClient() {
         <div className="space-y-6">
           <Card className="bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/20 shadow-sm">
             <h3 className="font-bold text-blue-900 dark:text-blue-400 mb-2 flex items-center gap-2">
-              <Info size={18} /> {t('portal.requests.new.tips.title')}
+              <Info size={18} /> {t('requests.new.tips.title')}
             </h3>
             <ul className="text-xs text-blue-800/80 dark:text-blue-300/80 space-y-2 list-disc ps-4 leading-relaxed">
-              <li>{t('portal.requests.new.tips.tip1')}</li>
-              <li>{t('portal.requests.new.tips.tip2')}</li>
-              <li>{t('portal.requests.new.tips.tip3')}</li>
-              <li>{t('portal.requests.new.tips.tip4')}</li>
+              <li>{t('requests.new.tips.tip1')}</li>
+              <li>{t('requests.new.tips.tip2')}</li>
+              <li>{t('requests.new.tips.tip3')}</li>
+              <li>{t('requests.new.tips.tip4')}</li>
             </ul>
           </Card>
         </div>
