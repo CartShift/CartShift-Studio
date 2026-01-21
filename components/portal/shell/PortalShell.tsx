@@ -77,6 +77,24 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
       )}
       dir={getLocaleDirection(locale)}
     >
+      {/* TEMP BUILD TEST - DELETE AFTER CONFIRMING */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 99999,
+          background: 'lime',
+          color: 'black',
+          padding: '20px',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '24px',
+        }}
+      >
+        🚨 BUILD TEST JAN-21-V3 🚨
+      </div>
       <OfflineIndicator />
 
       {/* Skip to main content link for accessibility - enhanced visibility on focus */}
