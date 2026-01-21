@@ -105,7 +105,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
 
               <button
                 onClick={() => unpinRequest(request.id)}
-                className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-amber-200/50 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-all"
+                className="p-1.5 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-amber-200/50 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-all"
                 aria-label={t('portal.dashboard.pinned.unpin')}
               >
                 <X size={14} />

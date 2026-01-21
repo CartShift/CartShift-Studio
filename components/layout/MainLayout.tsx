@@ -4,7 +4,6 @@ import { Footer } from './Footer';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingActions } from '@/components/ui/FloatingActions';
 import { ExitIntentModal } from '@/components/ui/ExitIntentModal';
-import { SocialProofToast } from '@/components/ui/SocialProofToast';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 
 interface MainLayoutProps {
@@ -28,7 +27,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <Footer />
         <FloatingActions />
         <ExitIntentModal delay={5000} />
-        <SocialProofToast />
         <CookieConsent />
       </div>
     </ErrorBoundary>

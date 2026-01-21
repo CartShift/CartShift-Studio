@@ -79,7 +79,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               <Logo size="sm" />
               <button
                 onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400 transition-colors"
+                className="w-11 h-11 flex items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400 transition-colors"
                 aria-label="Close menu"
               >
                 <Icon name="x" size={20} />

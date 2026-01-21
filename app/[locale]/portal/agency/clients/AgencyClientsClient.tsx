@@ -2,14 +2,60 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Plus, Loader2, ShieldCheck, Users } from 'lucide-react';
+import { Plus, Loader2, ShieldCheck, Users, Ticket, TrendingUp } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { deleteOrganization } from '@/lib/services/portal-organizations';
 import { RevenueSummary } from '@/components/portal/clients/RevenueSummary';
 import { ClientsFilterBar } from '@/components/portal/clients/ClientsFilterBar';
 import { ClientCard } from '@/components/portal/clients/ClientCard';
 import { ClientList } from '@/components/portal/clients/ClientList';
-import { Link } from '@/i18n/navigation';
+import { Badge } from '@/components/ui/Badge';
+import { Avatar } from '@/components/ui/Avatar';
+import { Dropdown } from '@/components/ui/Dropdown';
+import { MoreVertical, ArrowUpRight, Eye, Trash2 } from 'lucide-react';
+
+// Helper component for Client Action Menu to reduce interaction code duplication
+const ClientActionMenu = ({
+  org,
+  onViewAsClient,
+  onDelete,
+  t,
+  router,
+}: {
+  org: any;
+  onViewAsClient: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
+  t: any;
+  router: any;
+}) => (
+  <Dropdown
+    trigger={
+      <button className="text-surface-400 hover:text-surface-900 dark:hover:text-white p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
+        <MoreVertical size={20} />
+      </button>
+    }
+    align="right"
+    items={[
+      {
+        label: t('agency.clients.detail.overview'),
+        icon: <ArrowUpRight size={14} />,
+        onClick: () => router.push(`/portal/agency/clients/${org.id}/`),
+      },
+      {
+        label: t('agency.clients.viewAsClient'),
+        icon: <Eye size={14} />,
+        onClick: () => onViewAsClient(org.id),
+      },
+      {
+        label: t('common.delete') || 'Delete',
+        icon: <Trash2 size={14} />,
+        variant: 'danger',
+        onClick: () => onDelete(org.id, org.name),
+      },
+    ]}
+  />
+);
+import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
@@ -17,9 +63,16 @@ import { useImpersonation } from '@/lib/context/ImpersonationContext';
 
 export default function AgencyClientsClient() {
   const t = useTranslations('portal');
+  const router = useRouter();
   const { loading: auth, isAuthenticated, user, isImpersonating } = usePortalAuth();
   const { organizations, loading: clients, userData } = useAgencyClients();
   const { viewAsClient } = useImpersonation();
+
+  const formatRev = (amount: number) => {
+    if (amount >= 1000000) return `$${(amount / 1000000).toFixed(1)}M`;
+    if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}K`;
+    return `$${amount.toLocaleString()}`;
+  };
 
   const [loading, set] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -210,26 +263,112 @@ export default function AgencyClientsClient() {
 
       {/* Client List/Grid */}
       {filteredOrgs.length > 0 ? (
-        viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <>
+          {/* Mobile View (Always List) */}
+          <div className="md:hidden space-y-3">
             {filteredOrgs.map(org => (
-              <ClientCard
+              <div
                 key={org.id}
-                client={org}
-                isMyClient={org.responsibleAgencyUserId === user?.uid}
+                className="flex flex-col gap-3 p-4 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl shadow-sm"
+              >
+                {/* Top Row: Identity & Actions */}
+                <div className="flex items-start justify-between">
+                  <div
+                    className="flex items-center gap-3"
+                    onClick={() => router.push(`/portal/agency/clients/${org.id}/`)}
+                  >
+                    <Avatar
+                      src={org.logoUrl}
+                      name={org.name}
+                      size="md"
+                      className="rounded-xl border border-surface-200 dark:border-surface-700 mt-1"
+                    />
+                    <div>
+                      <h3 className="font-bold text-surface-900 dark:text-white truncate text-base leading-tight mb-1">
+                        {org.name}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge
+                          variant={org.status === 'inactive' ? 'gray' : 'green'}
+                          className="text-[9px] font-black uppercase tracking-widest h-4 px-1.5"
+                        >
+                          {org.status ? t(`agency.clients.badge.${org.status}` as any) : 'Active'}
+                        </Badge>
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300">
+                          <ShieldCheck
+                            size={12}
+                            className={
+                              org.plan === 'enterprise' ? 'text-purple-500' : 'text-emerald-500'
+                            }
+                          />
+                          <span className="text-[10px] font-black uppercase tracking-widest leading-none">
+                            {org.plan ? t(`agency.clients.plans.${org.plan}` as any) : 'Basic'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <ClientActionMenu
+                    org={org}
+                    onViewAsClient={viewAsClient}
+                    onDelete={(id, name) => setOrgToDelete({ id, name })}
+                    t={t}
+                    router={router}
+                  />
+                </div>
+
+                {/* Divider */}
+                <div className="h-px w-full bg-surface-100 dark:bg-surface-800" />
+
+                {/* Bottom Row: Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-surface-400 font-black uppercase tracking-widest mb-0.5">
+                      {t('sales.metrics.revenue')}
+                    </span>
+                    <div className="flex items-center gap-1.5 font-bold text-surface-900 dark:text-white">
+                      <TrendingUp size={14} className="text-emerald-500" />
+                      <span>{formatRev(org.totalRevenue || 0)}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-surface-400 font-black uppercase tracking-widest mb-0.5">
+                      {t('agency.clients.tickets')}
+                    </span>
+                    <div className="flex items-center gap-1.5 font-bold text-surface-900 dark:text-white">
+                      <Ticket size={14} className="text-blue-500" />
+                      <span>{org.requestCount || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View (Grid/List Toggle) */}
+          <div className="hidden md:block">
+            {viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredOrgs.map(org => (
+                  <ClientCard
+                    key={org.id}
+                    client={org}
+                    isMyClient={org.responsibleAgencyUserId === user?.uid}
+                    onViewAsClient={viewAsClient}
+                    onDelete={(id, name) => setOrgToDelete({ id, name })}
+                  />
+                ))}
+              </div>
+            ) : (
+              <ClientList
+                clients={filteredOrgs}
+                currentUserId={user?.uid}
                 onViewAsClient={viewAsClient}
                 onDelete={(id, name) => setOrgToDelete({ id, name })}
               />
-            ))}
+            )}
           </div>
-        ) : (
-          <ClientList
-            clients={filteredOrgs}
-            currentUserId={user?.uid}
-            onViewAsClient={viewAsClient}
-            onDelete={(id, name) => setOrgToDelete({ id, name })}
-          />
-        )
+        </>
       ) : (
         <div className="col-span-full py-20 text-center bg-white dark:bg-surface-900 rounded-3xl border border-surface-200 dark:border-surface-800 border-dashed">
           <Users className="w-16 h-16 text-surface-100 dark:text-surface-800 mx-auto mb-4" />

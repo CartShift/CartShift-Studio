@@ -26,8 +26,16 @@ export default function middleware(request: NextRequest) {
     ENABLE_PORTAL_SUBDOMAIN &&
     (hostname.startsWith('portal.cart-shift.com') || hostname.startsWith('portal.localhost'));
 
-  // 3. Main domain: redirect /portal/ paths to subdomain
-  if (ENABLE_PORTAL_SUBDOMAIN && !isPortalSubdomain && pathname.includes('/portal/')) {
+  // 2.5. Check if we're on localhost (skip subdomain redirects in development)
+  const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+
+  // 3. Main domain: redirect /portal/ paths to subdomain (skip on localhost)
+  if (
+    ENABLE_PORTAL_SUBDOMAIN &&
+    !isPortalSubdomain &&
+    !isLocalhost &&
+    pathname.includes('/portal/')
+  ) {
     const newPathname = pathname.replace('/portal/', '/') || '/';
     const redirectUrl = new URL(newPathname, `https://portal.cart-shift.com`);
     return NextResponse.redirect(redirectUrl);

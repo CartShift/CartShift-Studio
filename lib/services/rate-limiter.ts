@@ -35,6 +35,13 @@ export async function checkRateLimit(
   maxRequests: number = 5,
   windowMs: number = 60000 // 1 minute default
 ): Promise<RateLimitResult> {
+  // Prevent server-side execution of client SDK code
+  if (typeof window === 'undefined') {
+    // TODO: Implement server-side rate limiting using firebase-admin or Redis
+    // For now, allow request to prevent 500 Internal Server Errors
+    return { allowed: true, remaining: maxRequests, resetAt: Date.now() + windowMs };
+  }
+
   const db = getFirestoreDb();
   const now = Date.now();
   const windowStart = now - windowMs;
@@ -135,7 +142,9 @@ export async function checkRateLimit(
           if (count >= maxRequests) {
             return { allowed: false, remaining: 0, resetAt: timestamp + windowMs };
           }
-          sessionStorage.setItem(localKey, JSON.stringify({ count: count + 1, timestamp: now }));
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem(localKey, JSON.stringify({ count: count + 1, timestamp: now }));
+          }
           return {
             allowed: true,
             remaining: maxRequests - count - 1,
@@ -145,7 +154,9 @@ export async function checkRateLimit(
       }
     }
 
-    sessionStorage.setItem(localKey, JSON.stringify({ count: 1, timestamp: now }));
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(localKey, JSON.stringify({ count: 1, timestamp: now }));
+    }
     return { allowed: true, remaining: maxRequests - 1, resetAt: now + windowMs };
   }
 }

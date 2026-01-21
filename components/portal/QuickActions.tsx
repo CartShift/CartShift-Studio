@@ -122,7 +122,7 @@ export function QuickActions() {
                 <div
                   className={cn(
                     quickActionIconVariants({ intent: action.intent }),
-                    'w-10 h-10 rounded-lg shrink-0'
+                    'w-11 h-11 rounded-lg shrink-0'
                   )}
                 >
                   <action.icon size={18} className="stroke-[2.5]" />

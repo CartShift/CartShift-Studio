@@ -54,11 +54,11 @@ export function shouldSuppressPermissionError(): boolean {
 /**
  * Wraps a Firestore error handler to suppress expected permission errors
  */
-export function wrapFirestoreErrorHandler<T extends (...args: any[]) => any>(
-  handler: T,
+export function wrapFirestoreErrorHandler<TArgs extends any[], TReturn>(
+  handler: (...args: TArgs) => TReturn,
   context?: string
-): T {
-  return ((...args: any[]) => {
+): (...args: TArgs) => TReturn {
+  return (...args: TArgs) => {
     const error = args[0];
 
     if (isPermissionError(error) && shouldSuppressPermissionError()) {
@@ -66,12 +66,12 @@ export function wrapFirestoreErrorHandler<T extends (...args: any[]) => any>(
       if (context && process.env.NODE_ENV === 'development') {
         console.debug(`[${context}] Suppressed permission error during auth transition`);
       }
-      return;
+      return undefined as unknown as TReturn;
     }
 
     // Call original handler for all other errors
     return handler(...args);
-  }) as T;
+  };
 }
 
 /**

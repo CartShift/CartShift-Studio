@@ -28,12 +28,12 @@ const NavItem = ({ href, icon: Icon, label, isActive, badge }: NavItemProps) => 
   <Link
     href={href}
     className={cn(
-      'relative flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors active:opacity-70',
+      'relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-colors active:opacity-70',
       isActive ? 'text-primary-600 dark:text-primary-400' : 'text-surface-400 dark:text-surface-500'
     )}
   >
     {isActive && <span className="absolute top-0 inset-x-4 h-0.5 bg-primary-500 rounded-full" />}
-    <span className="relative">
+    <span className="relative flex items-center justify-center">
       <Icon size={22} strokeWidth={isActive ? 2.25 : 1.75} />
       {badge !== undefined && badge > 0 && (
         <span className="absolute -top-1.5 -end-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white bg-rose-500 rounded-full shadow-sm">
@@ -41,7 +41,9 @@ const NavItem = ({ href, icon: Icon, label, isActive, badge }: NavItemProps) => 
         </span>
       )}
     </span>
-    <span className={cn('text-[10px] font-medium', isActive && 'font-semibold')}>{label}</span>
+    <span className={cn('text-[10px] font-medium leading-tight', isActive && 'font-semibold')}>
+      {label}
+    </span>
   </Link>
 );
 
@@ -182,8 +184,8 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
   }, [currentIndex, navItems.length, navigateToIndex]);
 
   return (
-    <nav className="fixed bottom-0 start-0 end-0 z-50 bg-white dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 md:hidden pb-safe">
-      <div className="flex items-stretch h-16">
+    <nav className="fixed bottom-0 start-0 end-0 z-50 bg-white dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 md:hidden">
+      <div className="flex items-center justify-around h-16 px-2">
         {navItems.map(({ href, icon, labelKey, badgeKey }) => (
           <NavItem
             key={href}

@@ -14,7 +14,7 @@ import { updatePortalUser } from '@/lib/services/portal-users';
 import { uploadAgencyAsset, uploadUserProfilePicture } from '@/lib/services/portal-uploads';
 import { updateGlobalBranding } from '@/lib/services/portal-branding';
 import { getFirebaseAuth } from '@/lib/firebase';
-import { PortalUser, Invite } from '@/lib/types/portal';
+import { PortalUser, Invite, Agency } from '@/lib/types/portal';
 import { subscribeToAgencyInvites, cancelInvite } from '@/lib/services/portal-organizations';
 import { useTranslations } from 'next-intl';
 import { Avatar } from '@/components/ui/Avatar';
@@ -112,31 +112,20 @@ export default function AgencysClient() {
             name: data.name || '',
             email: data.email || '',
             website: data.website || '',
-            phone: data.phone || '',
-            description: data.description || '',
-            branding: data.branding || {
-              primaryColor: '',
-              accentColor: '',
+            phone: data.contactInfo?.phone || '',
+            description: '',
+            branding: {
+              primaryColor: data.branding?.primaryColor || '',
+              accentColor: data.branding?.accentColor || '',
+              logoUrl: data.logoUrl,
+              iconUrl: data.iconUrl,
             },
           });
 
           // Apply theme if exists
           if (data.branding) {
-            const {
-              primaryColor,
-              accentColor,
-              fontFamily,
-              fontFamilyEn,
-              fontFamilyHe,
-              borderRadius,
-            } = data.branding;
-            applyTheme(
-              primaryColor,
-              accentColor,
-              fontFamilyEn || fontFamily,
-              borderRadius,
-              fontFamilyHe
-            );
+            const { primaryColor, accentColor } = data.branding;
+            applyTheme(primaryColor, accentColor, undefined, undefined, undefined);
           }
         }
       } catch (error) {
@@ -242,13 +231,19 @@ export default function AgencysClient() {
 
       const userId = currentUser.uid;
 
-      const data = {
+      const data: Partial<Exclude<Agency, 'id'>> = {
         name: profile.name,
         email: profile.email,
         website: profile.website,
-        phone: profile.phone,
-        description: profile.description,
-        branding: profile.branding,
+        contactInfo: {
+          phone: profile.phone,
+        },
+        logoUrl: profile.branding?.logoUrl,
+        iconUrl: profile.branding?.iconUrl,
+        branding: {
+          primaryColor: profile.branding?.primaryColor,
+          accentColor: profile.branding?.accentColor,
+        },
       };
 
       await updateAgency(userId, data);
@@ -1447,7 +1442,12 @@ export default function AgencysClient() {
 
               {/* Pending Invites Section */}
               <div className="mt-10">
-                <CardSectionTitle as="h4" icon={User} iconClassName="text-blue-500" className="mb-4 px-1">
+                <CardSectionTitle
+                  as="h4"
+                  icon={User}
+                  iconClassName="text-blue-500"
+                  className="mb-4 px-1"
+                >
                   {t('agency.settings.team.pendingInvites')}
                 </CardSectionTitle>
 

@@ -162,13 +162,15 @@ export const CreateOrganizationForm = ({ onSuccess, onCancel }: CreateOrganizati
 
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                {t('organization.createForm.responsibleAgentLabel' as any) || 'Responsible Agent'}
+                {t('organization.createForm.responsibleAgentLabel' as any)}
               </label>
               <select
                 className="w-full rounded-xl border transition-all duration-200 bg-white dark:bg-surface-900/80 text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none h-10 text-sm font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)] border-surface-200/80 dark:border-white/[0.08] hover:border-surface-300 dark:hover:border-white/[0.12] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:ring-primary-400/20 dark:focus:border-primary-400 px-3 font-outfit"
                 {...register('responsibleAgencyUserId')}
               >
-                <option value="">Select responsible agent...</option>
+                <option value="">
+                  {t('organization.createForm.responsibleAgentPlaceholder' as any)}
+                </option>
                 {agencyMembers.map(member => (
                   <option key={member.id} value={member.id}>
                     {member.name || member.email}

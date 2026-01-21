@@ -199,6 +199,26 @@ export interface OrganizationMember {
   removedAt?: Timestamp;
 }
 
+export interface Agency {
+  id: string;
+  name: string;
+  email?: string;
+  logoUrl?: string; // Full logo
+  iconUrl?: string; // Small icon
+  website?: string;
+  accountType: 'AGENCY';
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  branding?: {
+    primaryColor?: string;
+    accentColor?: string;
+  };
+  contactInfo?: {
+    phone?: string;
+    address?: string;
+  };
+}
+
 export interface PortalUser {
   id: string;
   email: string;

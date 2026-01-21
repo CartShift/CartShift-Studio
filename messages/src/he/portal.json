@@ -248,7 +248,8 @@
       "connected": "מחובר",
       "deleteError": "המחיקה נכשלה",
       "clearFilters": "נקה מסננים",
-      "saving": "שומר..."
+      "saving": "שומר...",
+      "featureComingSoon": "תכונה בקרוב"
     },
     "access": {
       "restrictedTitle": "הגישה מוגבלת",
@@ -416,6 +417,7 @@
         "priority": "עדיפות"
       },
       "title": "בקשות פרויקט",
+      "title_singular": "בקשה",
       "newRequest": "בקשה חדשה",
       "emptyTitle": "לא נמצאו בקשות",
       "emptyDescription": "צנרת הפרויקטים שלך ריקה. צור בקשה חדשה כדי להתחיל לעבוד.",
@@ -429,8 +431,10 @@
         "updated": "עודכן"
       },
       "selected": "בקשות נבחרו",
+      "selected_singular": "בקשה נבחרה",
       "createPricingOffer": "צור הצעת מחיר",
       "requestsIncluded": "בקשות כלולות",
+      "requestsIncluded_singular": "בקשה כלולה",
       "selectedRequests": "בקשות נבחרות",
       "hasPricing": "מתומחר",
       "createAndSend": "צור ושלח הצעה",
@@ -585,7 +589,8 @@
         "noAttachmentsDesc": "קבצים שישותפו בדיון יופיעו כאן.",
         "currentStatus": "סטטוס נוכחי",
         "moveTo": "העבר ל",
-        "workflowHint": "לחץ לשינוי סטטוס הבקשה"
+        "workflowHint": "לחץ לשינוי סטטוס הבקשה",
+        "notDesc": "לא סופק תיאור"
       },
       "milestones": {
         "title": "שלבי הפרויקט",
@@ -858,6 +863,7 @@
       "upload": "העלאת נכס",
       "searchPlaceholder": "חפש לפי שם קובץ...",
       "totalFiles": "סה״כ קבצים",
+      "totalFiles_singular": "סה״כ קובץ",
       "recentlyAdded": "נוסף לאחרונה",
       "table": {
         "identity": "זהות נכס",
@@ -912,6 +918,8 @@
         "websitePlaceholder": "https://example.com",
         "industryLabel": "תעשייה",
         "industryPlaceholder": "לדוגמה: איקומרס, SaaS, שיווק",
+        "responsibleAgentLabel": "סוכן אחראי",
+        "responsibleAgentPlaceholder": "בחר סוכן אחראי...",
         "note": "הערה:",
         "noteText": "אתם תוגדרו כבעלי הארגון ותוכלו להזמין חברי צוות מאוחר יותר.",
         "cancel": "ביטול",
@@ -1863,6 +1871,7 @@
         "selectRequests": "בחירת בקשות",
         "selectRequestsDescription": "בחר בקשות לכלול בהצעת מחיר זו",
         "selected": "נבחרו",
+        "selected_singular": "נבחר",
         "noRequestsAvailable": "אין בקשות זמינות",
         "allRequestsInOffers": "כל הבקשות כבר נמצאות בהצעות מחיר או שולמו",
         "settings": "הגדרות",
@@ -1926,6 +1935,7 @@
       "applyToAll": "החל על הכל",
       "request": "בקשה",
       "requests": "בקשות",
+      "requests_singular": "בקשה",
       "itemBuilder": "הוסף פריט",
       "itemBuilderDesc": "הגדר והוסף פריטים להצעה",
       "itemPrice": "מחיר פריט",

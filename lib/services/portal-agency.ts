@@ -10,7 +10,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth } from '@/lib/firebase';
-import { PortalUser, ACCOUNT_TYPE } from '@/lib/types/portal';
+import { PortalUser, ACCOUNT_TYPE, Agency } from '@/lib/types/portal';
 
 const USERS_COLLECTION = 'portal_users';
 const AGENCIES_COLLECTION = 'agencies';
@@ -34,7 +34,7 @@ export async function getAgencyTeam(): Promise<PortalUser[]> {
 /**
  * Fetches an agency profile by its ID.
  */
-export async function getAgency(agencyId: string): Promise<any | null> {
+export async function getAgency(agencyId: string): Promise<Agency | null> {
   const db = getFirestoreDb();
   const docRef = doc(db, AGENCIES_COLLECTION, agencyId);
   const docSnap = await getDoc(docRef);
@@ -46,13 +46,16 @@ export async function getAgency(agencyId: string): Promise<any | null> {
   return {
     id: docSnap.id,
     ...docSnap.data(),
-  };
+  } as Agency;
 }
 
 /**
  * Updates an agency profile.
  */
-export async function updateAgency(agencyId: string, data: any): Promise<void> {
+export async function updateAgency(
+  agencyId: string,
+  data: Partial<Exclude<Agency, 'id'>>
+): Promise<void> {
   const db = getFirestoreDb();
   const docRef = doc(db, AGENCIES_COLLECTION, agencyId);
   await setDoc(

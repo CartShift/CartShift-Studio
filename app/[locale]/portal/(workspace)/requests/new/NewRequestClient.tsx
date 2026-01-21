@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Info } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
-import { CreateRequestForm } from '@/components/portal/forms/CreateRequestForm';
+import { RequestForm } from '@/components/portal/forms/RequestForm';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
@@ -37,7 +37,7 @@ export default function NewRequestClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
-            <CreateRequestForm orgId={orgId} />
+            <RequestForm orgId={orgId} mode="create" />
           </Card>
         </div>
 

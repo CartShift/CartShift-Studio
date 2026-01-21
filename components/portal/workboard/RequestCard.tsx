@@ -56,7 +56,7 @@ export function RequestCard({
         >
           <div
             className={cn(
-              'w-5 h-5 rounded border flex items-center justify-center transition-colors cursor-pointer',
+              'w-6 h-6 rounded border flex items-center justify-center transition-colors cursor-pointer',
               selected
                 ? 'bg-blue-500 border-blue-500 text-white'
                 : 'bg-white dark:bg-surface-800 border-surface-300 dark:border-surface-600 hover:border-blue-400'
@@ -70,7 +70,7 @@ export function RequestCard({
       {/* Actions (Hover) - Hide if selectable/selected to avoid clutter */}
       {!selectable && (
         <div
-          className="absolute top-2 end-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          className="absolute top-2 end-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
           onClick={e => e.stopPropagation()}
         >
           <Dropdown

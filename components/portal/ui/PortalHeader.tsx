@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Menu, Bell } from 'lucide-react';
+import { Menu, Bell, Command } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -142,6 +142,13 @@ export function PortalHeader({
           <kbd className="inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500 dark:text-surface-400">
             <span className="text-xs">⌘</span>K
           </kbd>
+        </button>
+        <button
+          onClick={onOpenCommandPalette}
+          className="md:hidden p-2 text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors"
+          aria-label={t('portal.header.commands')}
+        >
+          <Command size={20} />
         </button>
       </div>
 

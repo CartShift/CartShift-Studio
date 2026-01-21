@@ -92,6 +92,9 @@ export default function AgencyWorkboardClient() {
     null
   );
 
+  // Mobile Tabs State
+  const [activeMobileTab, setActiveMobileTab] = useState('backlog');
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -373,60 +376,84 @@ export default function AgencyWorkboardClient() {
         onPriorityFilterChange={setPriorityFilter}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start pb-20 mt-8">
+      {/* Mobile Column Tabs */}
+      <div className="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 no-scrollbar snap-x">
+        {columns.map(col => (
+          <button
+            key={col.id}
+            onClick={() => setActiveMobileTab(col.id)}
+            className={cn(
+              'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors snap-center whitespace-nowrap',
+              activeMobileTab === col.id
+                ? 'bg-surface-900 text-white dark:bg-white dark:text-surface-900'
+                : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-400'
+            )}
+          >
+            {col.title}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start pb-20 mt-4 md:mt-8">
         {columns.map(column => {
           const columnRequests = getRequestsForColumn(column);
-          return (
-            <DroppableColumn
-              key={column.id}
-              id={column.id}
-              title={column.title}
-              itemIds={columnRequests.map(r => r.id)}
-              itemCount={columnRequests.length}
-              color={column.color}
-              emptyMessage={t('workboard.emptyColumn')}
-              onAddClick={() => setCreatingInColumnId(column.id)}
-              isAdding={creatingInColumnId === column.id}
-            >
-              {creatingInColumnId === column.id && (
-                <InlineRequestForm
-                  columnId={column.id}
-                  organizations={organizations}
-                  onSubmit={handleCreateRequest}
-                  onCancel={() => setCreatingInColumnId(null)}
-                  isSubmitting={isCreating}
-                />
-              )}
+          const isHiddenOnMobile = activeMobileTab !== column.id;
 
-              {columnRequests.map(req => (
-                <DraggableCard key={req.id} id={req.id} disabled={isSelectionMode}>
-                  <div
-                    onClick={e => {
-                      if (isSelectionMode) {
-                        e.stopPropagation();
-                        handleToggleSelection(req.id);
-                      } else {
-                        switchOrg(req.orgId);
-                        router.push(getPortalPath(`/requests/${req.id}/`));
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    className={cn('outline-none rounded-2xl', isSelectionMode && 'cursor-default')}
-                  >
-                    <RequestCard
-                      request={req}
-                      locale={locale}
-                      isMounted={isMounted}
-                      onDelete={() => setRequestToDelete({ id: req.id, title: req.title })}
-                      selectable={isSelectionMode}
-                      selected={selectedRequests.has(req.id)}
-                      onSelect={() => handleToggleSelection(req.id)}
-                    />
-                  </div>
-                </DraggableCard>
-              ))}
-            </DroppableColumn>
+          return (
+            <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden md:block')}>
+              <DroppableColumn
+                id={column.id}
+                title={column.title}
+                itemIds={columnRequests.map(r => r.id)}
+                itemCount={columnRequests.length}
+                color={column.color}
+                emptyMessage={t('workboard.emptyColumn')}
+                onAddClick={() => setCreatingInColumnId(column.id)}
+                isAdding={creatingInColumnId === column.id}
+              >
+                {creatingInColumnId === column.id && (
+                  <InlineRequestForm
+                    columnId={column.id}
+                    organizations={organizations}
+                    onSubmit={handleCreateRequest}
+                    onCancel={() => setCreatingInColumnId(null)}
+                    isSubmitting={isCreating}
+                  />
+                )}
+
+                {columnRequests.map(req => (
+                  <DraggableCard key={req.id} id={req.id} disabled={isSelectionMode}>
+                    <div
+                      onClick={e => {
+                        if (isSelectionMode) {
+                          e.stopPropagation();
+                          handleToggleSelection(req.id);
+                        } else {
+                          switchOrg(req.orgId);
+                          router.push(getPortalPath(`/requests/${req.id}/`));
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      className={cn(
+                        'outline-none rounded-2xl',
+                        isSelectionMode && 'cursor-default'
+                      )}
+                    >
+                      <RequestCard
+                        request={req}
+                        locale={locale}
+                        isMounted={isMounted}
+                        onDelete={() => setRequestToDelete({ id: req.id, title: req.title })}
+                        selectable={isSelectionMode}
+                        selected={selectedRequests.has(req.id)}
+                        onSelect={() => handleToggleSelection(req.id)}
+                      />
+                    </div>
+                  </DraggableCard>
+                ))}
+              </DroppableColumn>
+            </div>
           );
         })}
       </div>

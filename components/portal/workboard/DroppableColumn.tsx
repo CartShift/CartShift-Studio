@@ -22,7 +22,7 @@ const columnIndicatorVariants = cva('w-2 h-2 rounded-full', {
 });
 
 const droppableAreaVariants = cva(
-  'space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto portal-scrollbar min-h-[200px] rounded-2xl p-2 transition-colors duration-200',
+  'space-y-3 max-h-[calc(100dvh-220px)] md:max-h-[calc(100vh-280px)] overflow-y-auto portal-scrollbar min-h-[200px] rounded-2xl p-2 transition-colors duration-200',
   {
     variants: {
       isOver: {

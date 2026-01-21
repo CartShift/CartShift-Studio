@@ -44,7 +44,7 @@ export function WorkboardSkeleton() {
       </div>
 
       {/* Kanban Columns */}
-      <div className="grid grid-cols-1 md:md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
         {[1, 2, 3, 4].map(col => (
           <div key={col} className="space-y-4">
             {/* Column Header */}
