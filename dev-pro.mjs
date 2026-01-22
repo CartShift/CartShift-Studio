@@ -364,6 +364,9 @@ function startService(key, service) {
         // Skip noisy lines
         if (/^\s*$/.test(line) || /DEP0060/.test(line)) continue;
 
+        // Filter I18N verbosity
+        if (service.name === 'I18N' && /Files:|Keys:|Size:|Merging translation files/.test(line)) continue;
+
         const prefix = formatPrefix(service, type);
         console.log(`${prefix} ${c.dim}│${c.reset} ${line}`);
       }

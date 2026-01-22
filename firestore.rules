@@ -299,6 +299,11 @@ service cloud.firestore {
       allow create, update, delete: if isAuthenticated() && isAgencyUser();
     }
 
+    match /system_settings/{settingId} {
+      allow read: if true;
+      allow write: if isAgencyUser();
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

@@ -10,46 +10,14 @@ import { ConditionalLayout } from '@/components/layout/ConditionalLayout';
 import { MotionProvider } from '@/lib/motion';
 import { MotionConfig } from '@/lib/motion';
 import Script from 'next/script';
-import { NextIntlClientProvider } from 'next-intl';
-import { hasLocale } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { BrandingProvider } from '@/components/providers/BrandingProvider';
 import { Logger } from '@/lib/logger';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
-
-function loadMessages(locale: 'en' | 'he') {
-  try {
-    const filePath = join(process.cwd(), 'messages', `${locale}.json`);
-    const fileContents = readFileSync(filePath, 'utf8');
-    const trimmed = fileContents.trim();
-    return JSON.parse(trimmed);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    Logger.error('Failed to load messages', { locale, error: errorMessage });
-
-    if (locale === 'en') {
-      throw new Error(`Failed to load English messages: ${errorMessage}`);
-    }
-
-    try {
-      const fallbackPath = join(process.cwd(), 'messages', 'en.json');
-      const fallbackContents = readFileSync(fallbackPath, 'utf8');
-      const trimmed = fallbackContents.trim();
-      return JSON.parse(trimmed);
-    } catch (fallbackError) {
-      const fallbackMessage =
-        fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
-      throw new Error(
-        `Failed to load both ${locale} and fallback (en) messages. ${locale} error: ${errorMessage}. Fallback error: ${fallbackMessage}`
-      );
-    }
-  }
-}
 
 export async function generateMetadata({
   params,
@@ -149,7 +117,7 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const messages = loadMessages(locale as 'en' | 'he');
+  const messages = await getMessages();
   const orgSchema = generateOrganizationSchema();
 
   let schemaJson: string;

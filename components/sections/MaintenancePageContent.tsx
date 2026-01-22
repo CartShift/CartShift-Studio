@@ -10,7 +10,10 @@ import { Icon } from '@/components/ui/Icon';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { PageHero } from '@/components/sections/PageHero';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { useEffect } from 'react';
 
 interface PlanCardProps {
   name: string;
@@ -102,6 +105,19 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
 export const MaintenancePageContent: React.FC = () => {
   const t = useTranslations();
+  const router = useRouter();
+  const { settings: systemSettings, loading: settingsLoading } = useSystemSettings();
+  const { isAgency, loading: authLoading } = usePortalAuth();
+
+  useEffect(() => {
+    if (!settingsLoading && !authLoading) {
+      if (!systemSettings.isMaintenancePageVisible && !isAgency) {
+        router.replace('/');
+      }
+    }
+  }, [systemSettings, isAgency, settingsLoading, authLoading, router]);
+
+  if (settingsLoading || authLoading) return null;
 
   const maintenance = t.raw('maintenance' as any) as {
     hero: { title: string; subtitle: string; description: string; badge: string };

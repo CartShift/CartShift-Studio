@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-01-22T14:27:19.994Z
+ * Last updated: 2026-01-22T20:19:39.101Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -51,6 +51,7 @@ export interface Common {
   contactUs: string;
   getStarted: string;
   viewWork: string;
+  hidden: string;
 }
 
 export interface Navigation {
@@ -662,6 +663,19 @@ export interface Portal {
         team: string;
         integrations: string;
         billing: string;
+        system: string;
+      };
+      system: {
+        title: string;
+        subtitle: string;
+        pricingPage: {
+          title: string;
+          description: string;
+        };
+        maintenancePage: {
+          title: string;
+          description: string;
+        };
       };
       profile: {
         title: string;
@@ -1034,6 +1048,7 @@ export interface Portal {
     saveChanges: string;
     featureComingSoon: string;
     file: string;
+    hidden: string;
   };
   consultations: {
     title: string;
@@ -3667,6 +3682,7 @@ export type TranslationKey =
   | 'clientPortalPage.preview.title'
   | 'common.contactUs'
   | 'common.getStarted'
+  | 'common.hidden'
   | 'common.learnMore'
   | 'common.viewWork'
   | 'contact.emailLabel'
@@ -4225,10 +4241,17 @@ export type TranslationKey =
   | 'portal.agency.settings.services.subtitle'
   | 'portal.agency.settings.services.title'
   | 'portal.agency.settings.subtitle'
+  | 'portal.agency.settings.system.maintenancePage.description'
+  | 'portal.agency.settings.system.maintenancePage.title'
+  | 'portal.agency.settings.system.pricingPage.description'
+  | 'portal.agency.settings.system.pricingPage.title'
+  | 'portal.agency.settings.system.subtitle'
+  | 'portal.agency.settings.system.title'
   | 'portal.agency.settings.tabs.billing'
   | 'portal.agency.settings.tabs.integrations'
   | 'portal.agency.settings.tabs.profile'
   | 'portal.agency.settings.tabs.services'
+  | 'portal.agency.settings.tabs.system'
   | 'portal.agency.settings.tabs.team'
   | 'portal.agency.settings.team.active'
   | 'portal.agency.settings.team.cancelInvite'
@@ -4447,6 +4470,7 @@ export type TranslationKey =
   | 'portal.common.general'
   | 'portal.common.getStarted'
   | 'portal.common.goBack'
+  | 'portal.common.hidden'
   | 'portal.common.hours'
   | 'portal.common.imageTooLarge'
   | 'portal.common.loading'

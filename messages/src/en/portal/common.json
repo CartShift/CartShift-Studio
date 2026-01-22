@@ -87,7 +87,8 @@
       "saving": "Saving...",
       "saveChanges": "Save Changes",
       "featureComingSoon": "Feature Coming Soon",
-      "file": "File"
+      "file": "File",
+      "hidden": "Hidden"
     }
   }
 }

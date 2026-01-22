@@ -206,7 +206,20 @@
           "services": "Service Packages",
           "team": "Internal Team",
           "integrations": "Integrations",
-          "billing": "Payouts"
+          "billing": "Payouts",
+          "system": "System Access"
+        },
+        "system": {
+          "title": "System Settings",
+          "subtitle": "Control global visibility of pages and features.",
+          "pricingPage": {
+            "title": "Public Pricing Page",
+            "description": "Show the pricing page link in the main navigation and allow public access."
+          },
+          "maintenancePage": {
+            "title": "Maintenance Page",
+            "description": "Show the maintenance packages link in the main navigation and allow public access."
+          }
         },
         "profile": {
           "title": "Agency Profile",

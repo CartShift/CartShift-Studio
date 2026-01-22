@@ -5,7 +5,17 @@ import { useSearchParams } from 'next/navigation';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Shield, CreditCard, Save, Loader2, Camera, User, Palette, Building2 } from 'lucide-react';
+import {
+  Shield,
+  CreditCard,
+  Save,
+  Loader2,
+  Camera,
+  User,
+  Palette,
+  Building2,
+  Settings,
+} from 'lucide-react';
 import { applyTheme } from '@/lib/utils/theme-generator';
 import { cn } from '@/lib/utils';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -34,6 +44,8 @@ import {
   disconnectCalendar,
   isGoogleCalendarConfigured,
 } from '@/lib/services/portal-google-calendar';
+import { Switch } from '@/components/ui/Switch';
+import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
 
 interface AgencyProfile {
   name: string;
@@ -91,6 +103,7 @@ export default function AgencysClient() {
   });
   const [savingProfile, setIsProfileSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const { settings: systemSettings, updateSettings: updateSystemSettings } = useSystemSettings();
 
   // Sync activeTab with URL parameter when it changes
   useEffect(() => {
@@ -330,6 +343,7 @@ export default function AgencysClient() {
     { id: 'team', label: t('agency.settings.tabs.team'), icon: User },
     { id: 'integrations', label: t('agency.settings.tabs.integrations'), icon: Shield },
     { id: 'billing', label: t('agency.settings.tabs.billing'), icon: CreditCard },
+    { id: 'system', label: t('agency.settings.tabs.system'), icon: Settings },
   ];
 
   const handleProfileSave = async () => {
@@ -522,6 +536,34 @@ export default function AgencysClient() {
                   <Save size={18} />
                   {savingProfile ? t('settings.general.saving') : t('settings.profile.save')}
                 </Button>
+              </div>
+            </Card>
+          )}
+
+          {activeTab === 'system' && (
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
+              <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-6 font-outfit">
+                {t('agency.settings.system.title')}
+              </h3>
+              <p className="text-sm text-surface-500 dark:text-surface-400 mb-8">
+                {t('agency.settings.system.subtitle')}
+              </p>
+
+              <div className="space-y-6">
+                <Switch
+                  checked={systemSettings.isPricingPageVisible}
+                  onChange={checked => updateSystemSettings({ isPricingPageVisible: checked })}
+                  label={t('agency.settings.system.pricingPage.title')}
+                  description={t('agency.settings.system.pricingPage.description')}
+                  className="bg-surface-50 dark:bg-surface-900/30 rounded-xl border border-surface-200 dark:border-surface-800/50 p-4"
+                />
+                <Switch
+                  checked={systemSettings.isMaintenancePageVisible}
+                  onChange={checked => updateSystemSettings({ isMaintenancePageVisible: checked })}
+                  label={t('agency.settings.system.maintenancePage.title')}
+                  description={t('agency.settings.system.maintenancePage.description')}
+                  className="bg-surface-50 dark:bg-surface-900/30 rounded-xl border border-surface-200 dark:border-surface-800/50 p-4"
+                />
               </div>
             </Card>
           )}

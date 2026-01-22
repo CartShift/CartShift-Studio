@@ -103,16 +103,18 @@ export default function AgencyPricingClient() {
   useEffect(() => {
     setError(null);
 
-    try {
-      const unsubscribe = subscribeToAllPricingRequests(data => {
-        setRequests(data);
-        setIsLoading(false);
-      });
+    const unsubscribe = subscribeToAllPricingRequests(data => {
+      setRequests(data);
+      setIsLoading(false);
+    });
 
-      return () => unsubscribe();
-    } catch (err) {
-      console.error('Failed to unsubscribe from pricing requests:', err);
-    }
+    return () => {
+      try {
+        unsubscribe();
+      } catch (err) {
+        console.error('Failed to unsubscribe from pricing requests:', err);
+      }
+    };
   }, [t]);
 
   // Reset to page 1 when filter or search changes

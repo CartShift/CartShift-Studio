@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useDirection } from '@/lib/i18n-utils';
 import { useNavigationState, DropdownType } from '@/lib/hooks/useNavigationState';
+import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
 
 import { MobileMenu } from './MobileMenu';
 
@@ -23,6 +24,9 @@ export const Header: React.FC = () => {
   const isRtl = direction === 'rtl';
   const { user } = usePortalAuth();
   const isLoggedIn = !!user;
+  const { settings: systemSettings } = useSystemSettings();
+  const isPricingVisible = systemSettings.isPricingPageVisible;
+  const isMaintenanceVisible = systemSettings.isMaintenancePageVisible;
 
   // Unified navigation state - Issue #1 fix
   const { state, actions, refs } = useNavigationState();
@@ -38,7 +42,7 @@ export const Header: React.FC = () => {
         submenu: [
           { name: t('servicesOverview.shopify.title'), href: '/solutions/shopify' },
           { name: t('servicesOverview.wordpress.title'), href: '/solutions/wordpress' },
-          { name: t('nav.maintenance'), href: '/maintenance' },
+          ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
         ],
       },
       {
@@ -47,7 +51,7 @@ export const Header: React.FC = () => {
         dropdownType: 'company' as DropdownType,
         submenu: [
           { name: t('nav.work'), href: '/work' },
-          { name: t('nav.pricing'), href: '/pricing' },
+          ...(isPricingVisible ? [{ name: t('nav.pricing'), href: '/pricing' }] : []),
           { name: t('nav.about'), href: '/about' },
         ],
       },
@@ -66,7 +70,7 @@ export const Header: React.FC = () => {
       { name: t('nav.blog'), href: '/blog' },
       { name: t('nav.contact'), href: '/contact' },
     ],
-    [t]
+    [t, isPricingVisible]
   );
 
   // Helper to get the correct ref based on dropdown type

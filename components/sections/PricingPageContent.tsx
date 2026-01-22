@@ -10,8 +10,10 @@ import { Icon } from '@/components/ui/Icon';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { PageHero } from '@/components/sections/PageHero';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { trackPricingView, trackPackageClick } from '@/lib/analytics';
+import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 
 interface PackageCardProps {
   name: string;
@@ -113,11 +115,25 @@ const PackageCard: React.FC<PackageCardProps> = ({
 
 export const PricingPageContent: React.FC = () => {
   const t = useTranslations();
+  const router = useRouter();
+  const { settings: systemSettings, loading: settingsLoading } = useSystemSettings();
+  const { isAgency, loading: authLoading } = usePortalAuth();
+
+  // Redirect if hidden and not admin
+  useEffect(() => {
+    if (!settingsLoading && !authLoading) {
+      if (!systemSettings.isPricingPageVisible && !isAgency) {
+        router.replace('/');
+      }
+    }
+  }, [systemSettings, isAgency, settingsLoading, authLoading, router]);
 
   // Track pricing page view
   useEffect(() => {
     trackPricingView();
   }, []);
+
+  if (settingsLoading || authLoading) return null;
 
   const pricingData = t.raw('pricing' as any) as any;
 

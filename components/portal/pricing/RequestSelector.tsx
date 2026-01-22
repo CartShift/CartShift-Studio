@@ -159,8 +159,7 @@ export function RequestSelector({
                   <div
                     className={cn(
                       'flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center',
-                      colors.bg,
-                      colors.text
+                      colors
                     )}
                     aria-hidden="true"
                   >

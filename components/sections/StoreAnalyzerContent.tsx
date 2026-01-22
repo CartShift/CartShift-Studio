@@ -26,46 +26,7 @@ import {
 import { trackEvent } from '@/lib/analytics';
 import { Logger } from '@/lib/logger';
 
-export interface AnalysisResult {
-  storeUrl: string;
-  overallScore: number;
-  platform: string | null;
-  sections: {
-    performance: SectionResult;
-    seo: SectionResult;
-    accessibility: SectionResult;
-    bestPractices: SectionResult;
-    cart: SectionResult;
-    trust: SectionResult;
-  };
-  coreWebVitals?: {
-    lcp?: { value: number; rating: string };
-    cls?: { value: number; rating: string };
-    fid?: { value: number; rating: string };
-  };
-  generatedAt: string;
-}
-
-export interface SectionResult {
-  name: string;
-  score: number;
-  status: 'critical' | 'warning' | 'good' | 'excellent';
-  findings: Finding[];
-  recommendations: Recommendation[];
-}
-
-export interface Finding {
-  type: 'positive' | 'issue';
-  title: string;
-  description: string;
-  example?: string;
-}
-
-export interface Recommendation {
-  title: string;
-  impact: 'high' | 'medium' | 'low';
-  serviceLink?: string;
-}
+import type { AnalysisResult } from '@/lib/types/analyzer';
 
 type AnalyzerState = 'form' | 'analyzing' | 'results';
 

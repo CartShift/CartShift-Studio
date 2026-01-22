@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { trackNewsletterSignup } from '@/lib/analytics';
 import { subscribeNewsletter } from '@/lib/services/newsletter-client';
+import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
 
 export const Footer: React.FC = () => {
   const t = useTranslations();
@@ -17,12 +18,17 @@ export const Footer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentYear, setCurrentYear] = useState(2026);
 
+  const { settings: systemSettings } = useSystemSettings();
+
+  const isPricingVisible = systemSettings.isPricingPageVisible;
+  const isMaintenanceVisible = systemSettings.isMaintenancePageVisible;
+
   const footerLinks = {
     solutions: [
       { name: t('footer.links.shopify'), href: '/solutions/shopify' },
       { name: t('footer.links.wordpress'), href: '/solutions/wordpress' },
-      { name: t('nav.pricing'), href: '/pricing' },
-      { name: t('nav.maintenance'), href: '/maintenance' },
+      ...(isPricingVisible ? [{ name: t('nav.pricing'), href: '/pricing' }] : []),
+      ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
     ],
     tools: [
       { name: t('analyzer.hero.title') || 'Store Analyzer', href: '/tools/store-analyzer' },
