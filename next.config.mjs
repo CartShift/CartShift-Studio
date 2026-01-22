@@ -20,6 +20,9 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
 
   transpilePackages: ['next-intl', '@react-pdf/renderer'],
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'date-fns', 'framer-motion', '@nivo/core', '@nivo/line'],
+  },
   images: {
     unoptimized: false,
     formats: ['image/avif', 'image/webp'],

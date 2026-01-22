@@ -83,11 +83,11 @@ export const HomepageIntro: React.FC = () => {
             </motion.h2>
 
             <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: '100px' }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="h-1 bg-gradient-to-r from-primary-500 to-accent-500 rtl:bg-gradient-to-l mx-auto rounded-full opacity-80"
+              className="h-1 w-[100px] bg-gradient-to-r from-primary-500 to-accent-500 rtl:bg-gradient-to-l mx-auto rounded-full opacity-80"
             />
           </div>
 
@@ -151,9 +151,9 @@ export const HomepageIntro: React.FC = () => {
                   <item.icon size={24} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-surface-900 dark:text-white mb-2">
+                  <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-2">
                     {item.label}
-                  </h4>
+                  </h3>
                   <p className="text-base text-surface-500 dark:text-surface-400 leading-normal">
                     {item.desc}
                   </p>

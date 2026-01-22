@@ -45,6 +45,7 @@ import {
   generateLineItemId,
 } from '@/lib/types/pricing';
 import { Request } from '@/lib/types/portal';
+import { TAX_RATE, REDIRECT_DELAY } from '@/lib/constants/pricing';
 
 interface LineItemInput {
   id: string;
@@ -105,7 +106,7 @@ export default function EditPricingForm() {
         currency: z.enum(['USD', 'ILS', 'EUR']),
         validUntil: z.string().optional(),
         clientName: z.string().optional(),
-        clientEmail: z.string().email().optional().or(z.literal('')),
+        clientEmail: z.string().optional().or(z.literal('')),
         agencyNotes: z.string().optional(),
         includeTax: z.boolean(),
       }),
@@ -181,7 +182,7 @@ export default function EditPricingForm() {
           id: item.id,
           description: item.description,
           quantity: item.quantity,
-          unitPrice: item.unitPrice / 100, // Convert from cents to dollars
+          unitPrice: item.unitPrice / 100,
           notes: item.notes,
         }));
 
@@ -225,7 +226,7 @@ export default function EditPricingForm() {
       quantity: item.quantity || 0,
       unitPrice: Math.round((item.unitPrice || 0) * 100), // Convert to cents
     }));
-    const taxRate = watchedIncludeTax ? 0.17 : 0;
+    const taxRate = watchedIncludeTax ? TAX_RATE : 0;
     const subtotal = calculateTotalAmount(items, 0);
     const taxAmount = Math.round(subtotal * taxRate);
     const totalAmount = subtotal + taxAmount;
@@ -271,7 +272,7 @@ export default function EditPricingForm() {
         clientEmail: data.clientEmail,
         agencyNotes: data.agencyNotes,
         requestIds: linkedRequests.map(r => r.id),
-        taxRate: data.includeTax ? 0.17 : 0,
+        taxRate: data.includeTax ? TAX_RATE : 0,
       });
 
       // If sending, update status to SENT
@@ -283,7 +284,7 @@ export default function EditPricingForm() {
 
       setTimeout(() => {
         router.push(`/portal/pricing/${pricingId}/`);
-      }, 1500);
+      }, REDIRECT_DELAY);
     } catch (error) {
       console.error('Failed to update pricing request:', error);
       setErrorMessage('Failed to update pricing offer. Please try again.');

@@ -5,15 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { ParallaxLayer } from '@/components/ui/Parallax';
 import { BackgroundShapes } from '@/components/ui/BackgroundShapes';
-import {
-  fadeInLeft,
-  fadeInRight,
-  heroTag,
-  heroContent,
-  heroImage,
-  staggerContainer,
-  platformIcon,
-} from '@/lib/animation-variants';
+import { heroTag, heroContent, staggerContainer, platformIcon } from '@/lib/animation-variants';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
 import { getScheduleUrl } from '@/lib/schedule';
@@ -82,13 +74,10 @@ export const Hero: React.FC = () => {
 
       <div className="max-w-7xl mx-auto relative z-dropdown w-full pb-4 md:pb-20 lg:pb-0">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={isRtl ? fadeInRight : fadeInLeft}
-            className="space-y-8 md:space-y-10"
-          >
+          <div className="space-y-8 md:space-y-10">
             <motion.div
+              initial="hidden"
+              animate="visible"
               variants={heroTag}
               className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white/90 dark:bg-white/5 border border-surface-300/50 dark:border-white/10 backdrop-blur-md shadow-premium"
             >
@@ -111,6 +100,8 @@ export const Hero: React.FC = () => {
 
             <motion.div
               className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-5"
+              initial="hidden"
+              animate="visible"
               variants={heroContent}
               custom={0.6}
             >
@@ -193,8 +184,8 @@ export const Hero: React.FC = () => {
                       className="group relative"
                       title={platform.name}
                     >
-                      <div className="w-10 h-10 md:w-11 md:h-11 p-2 md:p-2.5 rounded-xl bg-white/70 dark:bg-white/5 border border-surface-200/60 dark:border-white/10 backdrop-blur-sm shadow-sm transition-all duration-300 group-hover:border-surface-300 dark:group-hover:border-white/20 group-hover:shadow-md">
-                        <div className="relative w-full h-full grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300 dark:invert dark:opacity-70 dark:group-hover:invert-0 dark:group-hover:opacity-100">
+                      <div className="w-10 h-10 md:w-11 md:h-11 p-2 md:p-2.5 rounded-xl bg-white/70 dark:bg-white/5 border border-surface-200/60 dark:border-white/10 backdrop-blur-sm shadow-sm transition-[border-color,box-shadow,opacity,filter] duration-300 group-hover:border-surface-300 dark:group-hover:border-white/20 group-hover:shadow-md">
+                        <div className="relative w-full h-full grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-[filter,opacity] duration-300 dark:invert dark:opacity-70 dark:group-hover:invert-0 dark:group-hover:opacity-100">
                           <Image
                             src={platform.iconPath}
                             alt={`${platform.name} logo`}
@@ -208,16 +199,11 @@ export const Hero: React.FC = () => {
                 </motion.div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={heroImage}
-            className="relative hidden lg:block"
-          >
+          <div className="relative hidden lg:block">
             <HeroIllustration />
-          </motion.div>
+          </div>
         </div>
       </div>
 

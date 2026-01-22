@@ -23,6 +23,8 @@ import {
   Info,
 } from 'lucide-react';
 import { getScheduleUrl } from '@/lib/schedule';
+import { PRIORITY_RECOMMENDATIONS_COUNT } from '@/lib/constants/pricing';
+import { ANIMATION_DELAY_STEP, ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/constants/ui';
 
 interface AnalysisResultsProps {
   results: AnalysisResult;
@@ -227,7 +229,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 key={key}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + index * 0.08 }}
+                transition={{ delay: 0.15 + index * ANIMATION_DELAY_STEP }}
                 className={`border rounded-xl p-4 ${isDark ? 'bg-surface-950/30 border-white/5 hover:border-white/10' : 'bg-white border-surface-200 hover:border-surface-300'} transition-colors`}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -263,7 +265,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                     className={`h-full ${section.score >= 80 ? 'bg-emerald-500' : section.score >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                     initial={{ width: 0 }}
                     animate={{ width: `${section.score}%` }}
-                    transition={{ delay: 0.3 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
+                    transition={{
+                      delay: 0.3 + index * ANIMATION_DELAY_STEP * 1.25,
+                      duration: ANIMATION_DURATION,
+                      ease: ANIMATION_EASING,
+                    }}
                   />
                 </div>
               </motion.div>
@@ -277,7 +283,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: PRIORITY_RECOMMENDATIONS_COUNT * ANIMATION_DELAY_STEP * 0.5 }}
         >
           <div className="flex items-center gap-2 mb-4">
             <XCircle className="w-5 h-5 text-amber-500" />
@@ -295,7 +301,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 title={rec.title}
                 sectionName={rec.sectionName}
                 impact={rec.impact}
-                delay={0.55 + index * 0.08}
+                delay={
+                  PRIORITY_RECOMMENDATIONS_COUNT * ANIMATION_DELAY_STEP * 0.55 +
+                  index * ANIMATION_DELAY_STEP
+                }
               />
             ))}
           </div>
@@ -306,7 +315,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: PRIORITY_RECOMMENDATIONS_COUNT * ANIMATION_DELAY_STEP * 0.7 }}
         className={`border rounded-2xl p-6 md:p-8 ${isDark ? 'bg-gradient-to-br from-primary-500/5 to-accent-500/5 border-primary-500/20' : 'bg-gradient-to-br from-surface-50 to-white border-surface-200 shadow-sm'}`}
       >
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">

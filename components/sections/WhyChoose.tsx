@@ -151,15 +151,17 @@ export const WhyChoose: React.FC = () => {
                 className={`${getGridClass(index)} group`}
               >
                 <div
-                  className={`
-                  h-full relative rounded-3xl transition-all duration-500 ease-out
+                  className={
+                    `
+                  h-full relative rounded-3xl transition-[transform,shadow,box-shadow,background-color] duration-500 ease-out
                   ${
                     isFeature(index)
                       ? 'p-8 md:p-10 bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 text-white shadow-2xl shadow-primary-500/25 group-hover:shadow-[0_25px_60px_-12px_rgba(99,102,241,0.4)] overflow-visible'
                       : 'p-6 md:p-7 liquid-glass liquid-glass-highlight liquid-glass-animated-border overflow-hidden'
                   }
                   group-hover:-translate-y-1
-                `}
+                ` + ` transform-gpu`
+                  }
                 >
                   {/* Decorative gradient overlay for featured card */}
                   {isFeature(index) && (
@@ -180,7 +182,7 @@ export const WhyChoose: React.FC = () => {
                     <div className="mb-6">
                       <div
                         className={`
-                        inline-flex items-center justify-center rounded-2xl transition-all duration-300
+                        inline-flex items-center justify-center rounded-2xl transition-colors duration-300
                         ${
                           isFeature(index)
                             ? 'w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm group-hover:bg-white/30'

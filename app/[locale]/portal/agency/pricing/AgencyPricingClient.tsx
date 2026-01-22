@@ -23,7 +23,6 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import {
   PricingRequest,
-  PricingStatus,
   PRICING_STATUS_CONFIG,
   PRICING_STATUS,
   formatCurrency,
@@ -31,44 +30,39 @@ import {
 import { subscribeToAllPricingRequests, sendPricingRequest } from '@/lib/services/pricing-requests';
 import { getAllOrganizations } from '@/lib/services/portal-organizations';
 import { Organization } from '@/lib/types/portal';
-import { format } from 'date-fns';
-import { getDateLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-// Centralized utilities
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-
-// mapStatusColor moved to lib/utils/portal-helpers.ts
+import { DateDisplay, OrgDisplay, filterAndPaginatePricingRequests } from '@/lib/utils/portal-ui';
+import { ITEMS_PER_PAGE } from '@/lib/constants/pricing';
+import { format } from 'date-fns';
+import { getDateLocale } from '@/lib/locale-config';
 
 export default function AgencyPricingClient() {
   const [requests, setRequests] = useState<PricingRequest[]>([]);
   const [organizations, setOrganizations] = useState<Record<string, Organization>>({});
-  const [loading, set] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showNewOfferModal, setShowNewOfferModal] = useState(false);
   const [orgSearchQuery, setOrgSearchQuery] = useState('');
-  const itemsPerPage = 10;
   const t = useTranslations('portal');
   const locale = useLocale();
   const router = useRouter();
   const { switchOrg } = useOrg();
   const { isAuthenticated, loading: auth, user, isAgency } = usePortalAuth();
 
-  const [processingId, setId] = useState<string | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; requestId: string | null }>({
     isOpen: false,
     requestId: null,
   });
-
-  // Type helper for translations
-  type PricingStatusKey = Lowercase<PricingStatus>;
 
   const filters = [
     'All',
@@ -89,6 +83,8 @@ export default function AgencyPricingClient() {
       return;
     }
 
+    setIsLoading(true);
+
     async function fetchOrganizations() {
       try {
         const orgs = await getAllOrganizations();
@@ -105,22 +101,17 @@ export default function AgencyPricingClient() {
   }, [auth, isAuthenticated, user]);
 
   useEffect(() => {
-    set(true);
     setError(null);
 
     try {
       const unsubscribe = subscribeToAllPricingRequests(data => {
         setRequests(data);
-        set(false);
+        setIsLoading(false);
       });
 
       return () => unsubscribe();
     } catch (err) {
-      console.error('Failed to subscribe to pricing requests:', err);
-      setError(t('common.error'));
-      set(false);
-      // Return void explicitly for catch block
-      return;
+      console.error('Failed to unsubscribe from pricing requests:', err);
     }
   }, [t]);
 
@@ -129,7 +120,7 @@ export default function AgencyPricingClient() {
     setCurrentPage(1);
   }, [activeFilter, searchQuery]);
 
-  const handleSend = async (requestId: string) => {
+  const handleSend = (requestId: string) => {
     setConfirmModal({ isOpen: true, requestId });
   };
 
@@ -138,36 +129,22 @@ export default function AgencyPricingClient() {
     if (!requestId) return;
 
     setConfirmModal(prev => ({ ...prev, isOpen: false }));
-    setId(requestId);
+    setProcessingId(requestId);
 
     try {
       await sendPricingRequest(requestId);
     } catch (err) {
       console.error('Failed to send pricing request:', err);
-      // You might want to show a toast here instead of alert, but keeping logic simpler for now or rely on global error handler
     } finally {
-      setId(null);
+      setProcessingId(null);
     }
   };
 
-  const filteredRequests = requests.filter(req => {
-    const matchesFilter = activeFilter === 'All' || req.status === activeFilter;
-    const orgName = organizations[req.orgId]?.name || '';
-    const matchesSearch =
-      req.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (req.id?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-      orgName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
-  const paginatedRequests = filteredRequests.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Type helper for translations
+  type PricingStatusKey = Lowercase<'DRAFT' | 'SENT' | 'ACCEPTED' | 'PAID' | 'DECLINED'>;
 
   const handlePrevPage = () => setCurrentPage(p => Math.max(1, p - 1));
-  const handleNextPage = () => setCurrentPage(p => Math.min(totalPages, p + 1));
+  const handleNextPage = (totalPages: number) => setCurrentPage(p => Math.min(totalPages, p + 1));
 
   // Stats
   const statsData = {
@@ -180,6 +157,15 @@ export default function AgencyPricingClient() {
       .filter(r => r.status === PRICING_STATUS.PAID)
       .reduce((sum, r) => sum + r.totalAmount, 0),
   };
+
+  const { paginatedRequests, totalPages } = filterAndPaginatePricingRequests(
+    requests,
+    activeFilter,
+    searchQuery,
+    organizations,
+    currentPage,
+    ITEMS_PER_PAGE
+  );
 
   if (error) {
     return (
@@ -333,14 +319,14 @@ export default function AgencyPricingClient() {
 
         {/* Table Content */}
         <div className="overflow-x-auto">
-          {loading ? (
+          {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               <p className="text-sm font-bold text-surface-400 font-outfit">
                 {t('common.loading')}
               </p>
             </div>
-          ) : filteredRequests.length > 0 ? (
+          ) : paginatedRequests.length > 0 ? (
             <>
               {/* Mobile View: Cards */}
               <div className="md:hidden space-y-4 p-4">
@@ -387,14 +373,11 @@ export default function AgencyPricingClient() {
                         <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
                           {t('agency.clientOrg')}
                         </p>
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded flex items-center justify-center text-white text-[10px] font-bold">
-                            {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
-                          </div>
-                          <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[100px]">
-                            {organizations[req.orgId]?.name || t('common.unknown')}
-                          </span>
-                        </div>
+                        <OrgDisplay
+                          orgId={req.orgId}
+                          orgName={organizations[req.orgId]?.name || ''}
+                          size="sm"
+                        />
                       </div>
 
                       {/* Total Amount */}
@@ -415,13 +398,11 @@ export default function AgencyPricingClient() {
                         <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
                           {t('common.date')}
                         </p>
-                        <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
-                          {req.createdAt?.toDate
-                            ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
-                                locale: getDateLocale(locale),
-                              })
-                            : t('common.recently')}
-                        </span>
+                        <DateDisplay
+                          timestamp={req.createdAt}
+                          locale={locale}
+                          formatStr="MMM d, yyyy"
+                        />
                       </div>
 
                       {/* Status Date (Draft/Sent) */}
@@ -429,15 +410,13 @@ export default function AgencyPricingClient() {
                         <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
                           {req.status === PRICING_STATUS.DRAFT ? 'Status' : 'Sent'}
                         </p>
-                        <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
-                          {req.status === PRICING_STATUS.DRAFT
-                            ? t('pricing.status.draft')
-                            : req.sentAt?.toDate
-                              ? format(req.sentAt.toDate(), 'MMM d', {
-                                  locale: getDateLocale(locale),
-                                })
-                              : '-'}
-                        </span>
+                        <DateDisplay
+                          timestamp={req.status === PRICING_STATUS.DRAFT ? undefined : req.sentAt}
+                          locale={locale}
+                          formatStr="MMM d"
+                          showStatusDateOnly={true}
+                          status={req.status}
+                        />
                       </div>
                     </div>
 
@@ -524,14 +503,11 @@ export default function AgencyPricingClient() {
                         </button>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                            {(organizations[req.orgId]?.name || '?')[0].toUpperCase()}
-                          </div>
-                          <span className="text-sm font-bold text-surface-700 dark:text-surface-300 truncate max-w-[150px]">
-                            {organizations[req.orgId]?.name || t('common.unknown')}
-                          </span>
-                        </div>
+                        <OrgDisplay
+                          orgId={req.orgId}
+                          orgName={organizations[req.orgId]?.name || ''}
+                          size="md"
+                        />
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-center">
@@ -555,11 +531,11 @@ export default function AgencyPricingClient() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col items-center">
                           <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
-                            {req.createdAt?.toDate
-                              ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
-                                  locale: getDateLocale(locale),
-                                })
-                              : t('common.recently')}
+                            <DateDisplay
+                              timestamp={req.createdAt}
+                              locale={locale}
+                              formatStr="MMM d, yyyy"
+                            />
                           </span>
                           <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
                             {req.status === PRICING_STATUS.DRAFT
@@ -623,12 +599,12 @@ export default function AgencyPricingClient() {
         </div>
 
         {/* Footer info */}
-        {!loading && filteredRequests.length > 0 && (
+        {!isLoading && paginatedRequests.length > 0 && (
           <div className="p-5 border-t border-surface-100 dark:border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
             <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
               {t('common.showing', {
                 count: paginatedRequests.length,
-                total: filteredRequests.length,
+                total: paginatedRequests.length,
               })}
             </span>
             <div className="flex items-center gap-2">
@@ -636,7 +612,7 @@ export default function AgencyPricingClient() {
                 variant="outline"
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
-                onClick={handlePrevPage}
+                onClick={() => handlePrevPage()}
                 disabled={currentPage === 1}
               >
                 {t('common.prev')}
@@ -645,7 +621,7 @@ export default function AgencyPricingClient() {
                 variant="outline"
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
-                onClick={handleNextPage}
+                onClick={() => handleNextPage(totalPages)}
                 disabled={currentPage === totalPages}
               >
                 {t('common.next')}

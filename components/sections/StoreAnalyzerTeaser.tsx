@@ -208,9 +208,9 @@ export const StoreAnalyzerTeaser: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-surface-900 dark:text-white mb-0.5">
+                    <h3 className="text-sm font-semibold text-surface-900 dark:text-white mb-0.5">
                       {t(`storeAnalyzerTeaser.features.${feature.key}.title`)}
-                    </h4>
+                    </h3>
                     <p className="text-xs text-surface-500 dark:text-surface-400 leading-snug">
                       {t(`storeAnalyzerTeaser.features.${feature.key}.description`)}
                     </p>
