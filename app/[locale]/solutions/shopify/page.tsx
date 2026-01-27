@@ -9,24 +9,34 @@ import {
 import Script from 'next/script';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = genMeta({
-  title: 'Shopify Development Services | Custom Stores & Migration | CartShift Studio',
-  description:
-    'Expert Shopify development services: store setup, custom features, performance optimization, and migration. Trusted by 100+ e-commerce businesses. Free consultation today!',
-  url: '/solutions/shopify',
-  keywords: [
-    'Shopify development',
-    'Shopify store setup',
-    'custom Shopify theme',
-    'Shopify migration',
-    'Shopify developer',
-    'Shopify SEO',
-    'Shopify performance optimization',
-    'Shopify app development',
-    'hire Shopify developer',
-    'Shopify agency',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'Shopify Development Services | Custom Stores & Migration | CartShift Studio',
+      description:
+        'Expert Shopify development services: store setup, custom features, performance optimization, and migration. Trusted by 100+ e-commerce businesses. Free consultation today!',
+      url: '/solutions/shopify',
+      keywords: [
+        'Shopify development',
+        'Shopify store setup',
+        'custom Shopify theme',
+        'Shopify migration',
+        'Shopify developer',
+        'Shopify SEO',
+        'Shopify performance optimization',
+        'Shopify app development',
+        'hire Shopify developer',
+        'Shopify agency',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 export default async function ShopifyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

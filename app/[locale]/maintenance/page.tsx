@@ -8,19 +8,29 @@ import {
 import Script from 'next/script';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = genMeta({
-  title: 'Maintenance & Support Plans | Keep Your Store Running',
-  description:
-    'Monthly support plans for Shopify stores. Updates, backups, monitoring, and dedicated support. Plans starting at $299/month.',
-  url: '/maintenance',
-  keywords: [
-    'maintenance plans',
-    'Shopify support',
-    'e-commerce maintenance',
-    'website support',
-    'monthly support',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'Maintenance & Support Plans | Keep Your Store Running',
+      description:
+        'Monthly support plans for Shopify stores. Updates, backups, monitoring, and dedicated support. Plans starting at $299/month.',
+      url: '/maintenance',
+      keywords: [
+        'maintenance plans',
+        'Shopify support',
+        'e-commerce maintenance',
+        'website support',
+        'monthly support',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 const maintenanceFaqs = [
   {

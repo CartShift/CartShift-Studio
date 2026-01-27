@@ -9,20 +9,30 @@ import { getAllCaseStudies } from '@/lib/case-studies';
 import Script from 'next/script';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = genMeta({
-  title: 'Our Work | Shopify & WordPress Projects',
-  description:
-    'See our recent e-commerce projects. Shopify stores, WordPress sites, migrations, and optimizations. Real results for real businesses.',
-  url: '/work',
-  keywords: [
-    'portfolio',
-    'case studies',
-    'e-commerce projects',
-    'Shopify examples',
-    'WordPress examples',
-    'client work',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'Our Work | Shopify & WordPress Projects',
+      description:
+        'See our recent e-commerce projects. Shopify stores, WordPress sites, migrations, and optimizations. Real results for real businesses.',
+      url: '/work',
+      keywords: [
+        'portfolio',
+        'case studies',
+        'e-commerce projects',
+        'Shopify examples',
+        'WordPress examples',
+        'client work',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 export default async function WorkPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

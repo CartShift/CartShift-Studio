@@ -46,14 +46,6 @@ export async function generateMetadata({
       'online store development',
     ],
     metadataBase: new URL(siteUrl),
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        en: `${siteUrl}/en`,
-        he: `${siteUrl}/he`,
-        'x-default': `${siteUrl}/en`,
-      },
-    },
     openGraph: {
       type: 'website',
       siteName: 'CartShift Studio',

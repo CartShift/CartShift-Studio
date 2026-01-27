@@ -1,3 +1,4 @@
+import { setRequestLocale } from 'next-intl/server';
 import { AboutTemplate } from '@/components/templates/AboutTemplate';
 import {
   generateMetadata as genMeta,
@@ -8,21 +9,29 @@ import {
 import Script from 'next/script';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = genMeta({
-  title: 'About CartShift Studio | Expert E-commerce Development Team',
-  description:
-    'Meet the team behind CartShift Studio. Expert Shopify and WordPress developers dedicated to building custom e-commerce solutions for your business.',
-  url: '/about',
-  keywords: [
-    'about us',
-    'e-commerce team',
-    'Shopify developers',
-    'WordPress experts',
-    'CartShift Studio team',
-  ],
-});
-
-import { setRequestLocale } from 'next-intl/server';
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'About CartShift Studio | Expert E-commerce Development Team',
+      description:
+        'Meet the team behind CartShift Studio. Expert Shopify and WordPress developers dedicated to building custom e-commerce solutions for your business.',
+      url: '/about',
+      keywords: [
+        'about us',
+        'e-commerce team',
+        'Shopify developers',
+        'WordPress experts',
+        'CartShift Studio team',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

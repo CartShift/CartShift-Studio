@@ -8,24 +8,34 @@ import {
 } from '@/lib/seo';
 import Script from 'next/script';
 
-export const metadata: Metadata = genMeta({
-  title: 'Free E-Commerce Store Analyzer | Instant Audit Tool',
-  description:
-    'Get a free, comprehensive audit of your Shopify, WooCommerce, or Magento store. Analyze performance, SEO, UX, and get actionable recommendations in minutes.',
-  url: '/tools/store-analyzer',
-  keywords: [
-    'shopify audit',
-    'ecommerce audit tool',
-    'store analyzer',
-    'free store audit',
-    'woocommerce analyzer',
-    'magento audit',
-    'ecommerce performance checker',
-    'online store health check',
-    'conversion rate optimization',
-    'ecommerce seo audit',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'Free E-Commerce Store Analyzer | Instant Audit Tool',
+      description:
+        'Get a free, comprehensive audit of your Shopify, WooCommerce, or Magento store. Analyze performance, SEO, UX, and get actionable recommendations in minutes.',
+      url: '/tools/store-analyzer',
+      keywords: [
+        'shopify audit',
+        'ecommerce audit tool',
+        'store analyzer',
+        'free store audit',
+        'woocommerce analyzer',
+        'magento audit',
+        'ecommerce performance checker',
+        'online store health check',
+        'conversion rate optimization',
+        'ecommerce seo audit',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 export default async function StoreAnalyzerPage({
   params,

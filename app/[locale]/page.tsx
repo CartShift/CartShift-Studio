@@ -19,24 +19,34 @@ import { setRequestLocale } from 'next-intl/server';
 import Script from 'next/script';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = genMeta({
-  title: 'E-commerce Development Agency | Shopify & WordPress Experts | CartShift Studio',
-  description:
-    '🚀 Transform your e-commerce vision into reality. Expert Shopify & WordPress development with 50+ successful launches. Custom stores, migrations, and optimization. Get your free consultation today!',
-  url: '/',
-  keywords: [
-    'Shopify development agency',
-    'WordPress e-commerce',
-    'custom Shopify store',
-    'e-commerce development',
-    'Shopify migration',
-    'WooCommerce development',
-    'online store design',
-    'Shopify experts',
-    'e-commerce consultants',
-    'Shopify developers',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'E-commerce Development Agency | Shopify & WordPress Experts | CartShift Studio',
+      description:
+        '🚀 Transform your e-commerce vision into reality. Expert Shopify & WordPress development with 50+ successful launches. Custom stores, migrations, and optimization. Get your free consultation today!',
+      url: '/',
+      keywords: [
+        'Shopify development agency',
+        'WordPress e-commerce',
+        'custom Shopify store',
+        'e-commerce development',
+        'Shopify migration',
+        'WooCommerce development',
+        'online store design',
+        'Shopify experts',
+        'e-commerce consultants',
+        'Shopify developers',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -10,20 +10,30 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = genMeta({
-  title: 'Pricing & Packages | Shopify & WordPress Development',
-  description:
-    'Transparent pricing for Shopify and WordPress development. Packages starting at $500. No hidden fees. Get a custom quote.',
-  url: '/pricing',
-  keywords: [
-    'Shopify development pricing',
-    'WordPress development cost',
-    'e-commerce development packages',
-    'Shopify store cost',
-    'web development pricing',
-    'affordable Shopify developer',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'Pricing & Packages | Shopify & WordPress Development',
+      description:
+        'Transparent pricing for Shopify and WordPress development. Packages starting at $500. No hidden fees. Get a custom quote.',
+      url: '/pricing',
+      keywords: [
+        'Shopify development pricing',
+        'WordPress development cost',
+        'e-commerce development packages',
+        'Shopify store cost',
+        'web development pricing',
+        'affordable Shopify developer',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 const pricingFaqs = [
   {

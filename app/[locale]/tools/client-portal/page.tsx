@@ -8,23 +8,33 @@ import {
 } from '@/lib/seo';
 import Script from 'next/script';
 
-export const metadata: Metadata = genMeta({
-  title: 'Client Portal | Project Management Made Simple',
-  description:
-    'Manage your projects with ease. Track requests, review progress, share files, and communicate with our team — all in one place. No more email chains or lost messages.',
-  url: '/tools/client-portal',
-  keywords: [
-    'client portal',
-    'project management',
-    'request tracking',
-    'file sharing',
-    'team collaboration',
-    'project dashboard',
-    'real-time updates',
-    'client communication',
-    'project transparency',
-  ],
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return genMeta(
+    {
+      title: 'Client Portal | Project Management Made Simple',
+      description:
+        'Manage your projects with ease. Track requests, review progress, share files, and communicate with our team — all in one place. No more email chains or lost messages.',
+      url: '/tools/client-portal',
+      keywords: [
+        'client portal',
+        'project management',
+        'request tracking',
+        'file sharing',
+        'team collaboration',
+        'project dashboard',
+        'real-time updates',
+        'client communication',
+        'project transparency',
+      ],
+    },
+    locale as 'en' | 'he'
+  );
+}
 
 export default async function ClientPortalPage({
   params,
