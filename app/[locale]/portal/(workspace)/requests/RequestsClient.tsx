@@ -399,7 +399,7 @@ export default function RequestsClient() {
             {t('dashboard.subtitle')}
           </p>
         </div>
-        <Link href="/portal/requests/new/" className="flex-shrink-0">
+        <Link href={getPortalPath('/requests/new/')} className="flex-shrink-0">
           <Button
             as="div"
             variant="primary"
@@ -831,7 +831,7 @@ export default function RequestsClient() {
                 }
                 action={
                   !debouncedSearchQuery && activeFilter === 'All' ? (
-                    <Link href="/portal/requests/new/">
+                    <Link href={getPortalPath('/requests/new/')}>
                       <Button
                         as="div"
                         className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/20"

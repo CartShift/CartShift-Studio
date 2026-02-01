@@ -21,13 +21,13 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedPricingId } from '@/lib/hooks/useResolvedPricingId';
 import { PayPalProvider } from '@/components/providers/PayPalProvider';
 import { PayPalCheckoutButton } from '@/components/portal/PayPalCheckoutButton';
-// Centralized utilities
 import {
   getPricingStatusBadgeVariant,
   getStatusBadgeVariant,
   getClientStatusBadgeVariant,
 } from '@/lib/utils/portal-helpers';
 import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 // mapStatusColor moved to lib/utils/portal-helpers.ts
 
@@ -91,7 +91,7 @@ export default function PricingDetailClient() {
           {t('common.error' as any)}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
-        <Link href="/portal/pricing/">
+        <Link href={getPortalPath('/pricing/')}>
           <Button>{t('common.back' as any)}</Button>
         </Link>
       </div>
@@ -105,7 +105,7 @@ export default function PricingDetailClient() {
     <PayPalProvider>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="flex items-center justify-between">
-          <Link href="/portal/pricing/">
+          <Link href={getPortalPath('/pricing/')}>
             <Button variant="ghost" className="flex items-center gap-2">
               <ArrowLeft size={18} />
               {t('common.back' as any)}
@@ -114,7 +114,7 @@ export default function PricingDetailClient() {
           {isAgency &&
             (pricingRequest.status === PRICING_STATUS.DRAFT ||
               pricingRequest.status === PRICING_STATUS.SENT) && (
-              <Link href={`/portal/pricing/${pricingId}/edit`}>
+              <Link href={getPortalPath(`/pricing/${pricingId}/edit`)}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Pencil size={18} />
                   {t('common.edit' as any)}
@@ -208,7 +208,7 @@ export default function PricingDetailClient() {
                   return (
                     <Link
                       key={request.id}
-                      href={`/portal/requests/${request.id}`}
+                      href={getPortalPath(`/requests/${request.id}`)}
                       className="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-900 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group"
                     >
                       <div className="flex-1 min-w-0">

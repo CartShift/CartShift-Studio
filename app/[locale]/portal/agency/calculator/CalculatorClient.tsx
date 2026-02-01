@@ -71,7 +71,7 @@ export default function CalculatorClient() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push('/portal/agency/pricing/')}
+            onClick={() => router.push(getPortalPath('/agency/pricing/'))}
             className="text-surface-500 hover:text-surface-700"
           >
             <ArrowLeft size={18} className={cn(isRTL && 'rotate-180')} />

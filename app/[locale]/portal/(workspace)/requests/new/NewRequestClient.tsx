@@ -6,6 +6,7 @@ import { RequestForm } from '@/components/portal/forms/RequestForm';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function NewRequestClient() {
   const orgId = useResolvedOrgId();
@@ -19,7 +20,7 @@ export default function NewRequestClient() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center gap-4">
         <Link
-          href="/portal/requests/"
+          href={getPortalPath('/requests/')}
           className="p-2.5 border border-surface-200 dark:border-surface-800 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors shadow-sm bg-white dark:bg-surface-950"
         >
           <ArrowLeft size={20} className="text-surface-500" />

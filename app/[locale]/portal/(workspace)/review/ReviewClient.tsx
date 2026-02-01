@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TestimonialForm } from '@/components/portal/TestimonialForm';
 import { useRouter } from '@/i18n/navigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 // Why Share Card
 function WhyShareCard() {
@@ -135,7 +136,7 @@ export default function ReviewClient() {
   const handleSuccess = () => {
     // Redirect to dashboard after successful submission
     setTimeout(() => {
-      router.push('/portal/dashboard/');
+      router.push(getPortalPath('/dashboard/'));
     }, 2000);
   };
 

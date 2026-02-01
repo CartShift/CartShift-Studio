@@ -3,6 +3,7 @@
 import { CreateOrganizationForm } from '@/components/portal/forms/CreateOrganizationForm';
 import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function CreateClientClient() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function CreateClientClient() {
       <CreateOrganizationForm
         onSuccess={orgId => {
           switchOrg(orgId);
-          router.push('/portal/dashboard/');
+          router.push(getPortalPath('/dashboard/'));
         }}
         onCancel={() => router.back()}
       />

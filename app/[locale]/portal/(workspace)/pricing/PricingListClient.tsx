@@ -38,6 +38,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 // Centralized utilities
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 // mapStatusColor moved to lib/utils/portal-helpers.ts
 
@@ -156,7 +157,7 @@ export default function PricingListClient() {
           </p>
         </div>
         {isAgency && (
-          <Link href="/portal/pricing/new/">
+          <Link href={getPortalPath('/pricing/new/')}>
             <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit">
               <Plus size={18} />
               {t('pricing.newOffer')}
@@ -223,7 +224,7 @@ export default function PricingListClient() {
                 {paginatedRequests.map(req => (
                   <div
                     key={req.id}
-                    onClick={() => router.push(`/portal/pricing/${req.id}/`)}
+                    onClick={() => router.push(getPortalPath(`/pricing/${req.id}/`))}
                     className="bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-4 shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
                   >
                     <div className="flex items-start justify-between mb-3">
@@ -306,7 +307,7 @@ export default function PricingListClient() {
                       >
                         <td className="px-6 py-4">
                           <Link
-                            href={`/portal/pricing/${req.id}/`}
+                            href={getPortalPath(`/pricing/${req.id}/`)}
                             className="flex flex-col max-w-md"
                           >
                             <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
@@ -366,7 +367,7 @@ export default function PricingListClient() {
                         </td>
                         <td className="px-6 py-4 text-end">
                           <div className="flex items-center justify-end gap-1">
-                            <Link href={`/portal/pricing/${req.id}/`}>
+                            <Link href={getPortalPath(`/pricing/${req.id}/`)}>
                               <button className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
                                 <Eye size={16} />
                               </button>
@@ -374,7 +375,7 @@ export default function PricingListClient() {
                             {isAgency &&
                               (req.status === PRICING_STATUS.DRAFT ||
                                 req.status === PRICING_STATUS.SENT) && (
-                                <Link href={`/portal/pricing/${req.id}/edit`}>
+                                <Link href={getPortalPath(`/pricing/${req.id}/edit`)}>
                                   <button className="p-2 text-surface-400 hover:text-amber-600 dark:hover:text-amber-400 transition-all rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
                                     <Pencil size={16} />
                                   </button>
@@ -398,7 +399,7 @@ export default function PricingListClient() {
                                 {
                                   label: t('common.view'),
                                   icon: <Eye size={14} />,
-                                  onClick: () => router.push(`/portal/pricing/${req.id}`),
+                                  onClick: () => router.push(getPortalPath(`/pricing/${req.id}`)),
                                 },
                                 ...(isAgency &&
                                 (req.status === PRICING_STATUS.DRAFT ||
@@ -408,7 +409,7 @@ export default function PricingListClient() {
                                         label: t('common.edit'),
                                         icon: <Pencil size={14} />,
                                         onClick: () =>
-                                          router.push(`/portal/pricing/${req.id}/edit`),
+                                          router.push(getPortalPath(`/pricing/${req.id}/edit`)),
                                       },
                                     ]
                                   : []),
@@ -456,7 +457,7 @@ export default function PricingListClient() {
                 </p>
               </div>
               {isAgency && !searchQuery && activeFilter === 'All' && (
-                <Link href="/portal/pricing/new/" className="pt-4">
+                <Link href={getPortalPath('/pricing/new/')} className="pt-4">
                   <Button className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/10">
                     {t('pricing.newOffer')}
                   </Button>

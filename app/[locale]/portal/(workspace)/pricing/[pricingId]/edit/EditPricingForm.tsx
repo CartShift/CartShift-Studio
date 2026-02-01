@@ -46,6 +46,7 @@ import {
 } from '@/lib/types/pricing';
 import { Request } from '@/lib/types/portal';
 import { TAX_RATE, REDIRECT_DELAY } from '@/lib/constants/pricing';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface LineItemInput {
   id: string;
@@ -283,7 +284,7 @@ export default function EditPricingForm() {
       setSubmitStatus('success');
 
       setTimeout(() => {
-        router.push(`/portal/pricing/${pricingId}/`);
+        router.push(getPortalPath(`/pricing/${pricingId}/`));
       }, REDIRECT_DELAY);
     } catch (error) {
       console.error('Failed to update pricing request:', error);
@@ -312,7 +313,7 @@ export default function EditPricingForm() {
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">{t('common.error')}</h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{errorMessage}</p>
-        <Link href="/portal/pricing/">
+        <Link href={getPortalPath('/pricing/')}>
           <Button>{t('common.back')}</Button>
         </Link>
       </div>
@@ -327,7 +328,7 @@ export default function EditPricingForm() {
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">
           Only agency members can edit pricing offers.
         </p>
-        <Link href="/portal/pricing/">
+        <Link href={getPortalPath('/pricing/')}>
           <Button>{t('common.back')}</Button>
         </Link>
       </div>
@@ -357,7 +358,7 @@ export default function EditPricingForm() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-4">
-        <Link href={`/portal/pricing/${pricingId}/`}>
+        <Link href={getPortalPath(`/pricing/${pricingId}/`)}>
           <Button variant="ghost" className="flex items-center gap-2">
             <ArrowLeft size={18} />
             {t('common.back')}

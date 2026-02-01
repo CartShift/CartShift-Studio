@@ -58,6 +58,7 @@ import {
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 // ============================================
 // SUBCOMPONENTS (Extracted for clarity)
@@ -122,7 +123,7 @@ function ErrorState({ error, t }: { error: string | null; t: ReturnType<typeof u
       <p className="text-surface-500 mt-2 max-w-sm mx-auto font-medium">
         {t('requests.detail.notDesc')}
       </p>
-      <Link href="/portal/requests/" className="mt-8 inline-block">
+      <Link href={getPortalPath('/requests/')} className="mt-8 inline-block">
         <Button variant="outline" className="font-outfit">
           {t('requests.detail.backToRequests')}
         </Button>
@@ -253,7 +254,7 @@ export default function RequestDetailClient() {
     const success = await handleDeleteRequest();
     console.log('[RequestDetail] Delete result:', success);
     if (success) {
-      router.push('/portal/requests/');
+      router.push(getPortalPath('/requests/'));
     }
   };
 
@@ -264,7 +265,7 @@ export default function RequestDetailClient() {
         className="flex flex-col md:flex-row md:items-center gap-6 p-4 rounded-xl"
       >
         <Link
-          href="/portal/requests/"
+          href={getPortalPath('/requests/')}
           className="p-2.5 border border-surface-200 dark:border-surface-800 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors shadow-sm bg-white dark:bg-surface-950"
         >
           <ArrowLeft size={20} className="text-surface-500" />
@@ -400,7 +401,7 @@ export default function RequestDetailClient() {
                           {t('common.client')}
                         </p>
                         <Link
-                          href={`/portal/agency/clients/${clientOrganization.id}`}
+                          href={getPortalPath(`/agency/clients/${clientOrganization.id}`)}
                           className="text-sm font-bold text-surface-900 dark:text-white font-outfit hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate block"
                         >
                           {clientOrganization.name}

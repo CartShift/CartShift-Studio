@@ -8,6 +8,7 @@ import {
   markNotificationAsRead,
   markAllNotificationsAsRead,
 } from '@/lib/services/portal-notifications';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import type { Notification } from '@/lib/types/portal';
 
 interface UsePortalNotificationsOptions {
@@ -106,7 +107,10 @@ export function usePortalNotifications({
         markNotificationAsRead(notification.id);
       }
       if (notification.link) {
-        router.push(notification.link);
+        // Normalize the link using getPortalPath to handle both /portal/ prefix
+        // in development and relative paths on portal subdomain
+        const normalizedLink = getPortalPath(notification.link);
+        router.push(normalizedLink);
         setIsNotificationOpen(false);
       }
     },

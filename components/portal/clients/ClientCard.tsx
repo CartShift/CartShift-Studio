@@ -16,6 +16,7 @@ import {
   Ticket,
 } from 'lucide-react';
 import { Organization } from '@/lib/types/portal';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface AgencyClient extends Organization {
   totalRevenue?: number;
@@ -97,7 +98,7 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
               {
                 label: t('agency.clients.detail.overview'),
                 icon: <ArrowUpRight size={14} />,
-                onClick: () => router.push(`/portal/agency/clients/${client.id}/`),
+                onClick: () => router.push(getPortalPath(`/agency/clients/${client.id}/`)),
               },
               {
                 label: t('agency.clients.viewAsClient'),
@@ -154,7 +155,7 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
       {/* Footer Action */}
       <div className="px-5 py-3 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-100 dark:border-surface-800 rounded-b-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/10 transition-colors">
         <Link
-          href={`/portal/agency/clients/${client.id}/`}
+          href={getPortalPath(`/agency/clients/${client.id}/`)}
           className="flex items-center justify-between text-surface-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-xs font-bold uppercase tracking-widest"
         >
           {t('agency.clients.manageClient')}

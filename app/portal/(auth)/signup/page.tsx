@@ -12,6 +12,7 @@ import { Card } from '@/components/ui/Card';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { signUpWithEmail } from '@/lib/services/auth';
 import { useTranslations } from 'next-intl';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 type SignupData = z.infer<ReturnType<typeof getSignupSchema>>;
 
@@ -70,9 +71,9 @@ function SignupForm() {
     try {
       await signUpWithEmail(data.email, data.password, data.name);
       if (mounted && router) {
-        router.push(redirectPath || '/portal/');
+        router.push(redirectPath || getPortalPath('/'));
       } else {
-        window.location.href = redirectPath || '/portal/';
+        window.location.href = redirectPath || getPortalPath('/');
       }
     } catch (error: unknown) {
       console.error('Signup error:', error);
@@ -157,8 +158,8 @@ function SignupForm() {
             <Link
               href={
                 redirectPath
-                  ? `/portal/login?redirect=${encodeURIComponent(redirectPath)}`
-                  : '/portal/login/'
+                  ? getPortalPath(`/login?redirect=${encodeURIComponent(redirectPath)}`)
+                  : getPortalPath('/login/')
               }
               className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >

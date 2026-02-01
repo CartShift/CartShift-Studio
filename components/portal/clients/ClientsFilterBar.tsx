@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface ClientsFilterBarProps {
   searchQuery: string;
@@ -96,7 +97,7 @@ export function ClientsFilterBar({
 
         {/* Add Client Button (Mobile sometimes helpful here, but typically in header) */}
         <div className="md:hidden">
-          <Link href="/portal/agency/clients/new/">
+          <Link href={getPortalPath('/agency/clients/new/')}>
             <Button
               size="sm"
               className="h-10 w-10 p-0 rounded-full flex items-center justify-center"

@@ -40,3 +40,5 @@ firebase-debug.*.log
 next-env.d.ts
 
 build_out/
+.vercel
+.env*.local

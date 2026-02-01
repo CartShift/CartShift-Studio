@@ -1,2 +1,0 @@
-npm warn Unknown project config "shamefully-hoist". This will stop working in the next major version of npm.
-Invalid project directory provided, no such directory: C:\Users\yotam\Desktop\Personal Projects\CartShift Studio\lint

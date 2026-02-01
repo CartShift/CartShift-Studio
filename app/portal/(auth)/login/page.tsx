@@ -14,6 +14,7 @@ import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { toast } from 'sonner';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 type LoginData = z.infer<ReturnType<typeof getLoginSchema>>;
 
@@ -43,7 +44,7 @@ function LoginForm() {
     try {
       await signInWithGoogle();
       toast.success(t('portal.auth.login.success' as any));
-      router.push(redirectPath || '/portal/');
+      router.push(redirectPath || getPortalPath('/'));
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
@@ -82,7 +83,7 @@ function LoginForm() {
     try {
       await loginWithEmail(data.email, data.password);
       toast.success(t('portal.auth.login.success' as any));
-      router.push(redirectPath || '/portal/');
+      router.push(redirectPath || getPortalPath('/'));
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
@@ -137,7 +138,7 @@ function LoginForm() {
                   {t('portal.auth.login.password')}
                 </label>
                 <Link
-                  href="/portal/forgot-password/"
+                  href={getPortalPath('/forgot-password/')}
                   className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   {t('portal.auth.login.forgotPassword')}
@@ -209,8 +210,8 @@ function LoginForm() {
           <Link
             href={
               redirectPath
-                ? `/portal/signup?redirect=${encodeURIComponent(redirectPath)}`
-                : '/portal/signup'
+                ? getPortalPath(`/signup?redirect=${encodeURIComponent(redirectPath)}`)
+                : getPortalPath('/signup')
             }
             className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >

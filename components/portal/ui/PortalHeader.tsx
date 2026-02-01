@@ -14,6 +14,7 @@ import { cva } from 'class-variance-authority';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useRouter } from '@/i18n/navigation';
 import { LogOut, Settings, User, Building2, ExternalLink } from 'lucide-react';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 const notificationButtonVariants = cva(
   'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300',
@@ -92,22 +93,24 @@ export function PortalHeader({
       onClick: () =>
         router.push(
           userData?.isAgency
-            ? '/portal/agency/settings?tab=profile'
-            : '/portal/settings?tab=profile'
+            ? getPortalPath('/agency/settings?tab=profile')
+            : getPortalPath('/settings?tab=profile')
         ),
     },
     {
       label: t('portal.settings.title'),
       icon: <Settings size={16} />,
       onClick: () =>
-        router.push(userData?.isAgency ? '/portal/agency/settings' : '/portal/settings'),
+        router.push(
+          userData?.isAgency ? getPortalPath('/agency/settings') : getPortalPath('/settings')
+        ),
     },
     ...(userData?.isAgency
       ? [
           {
             label: t('portal.sidebar.nav.settings'),
             icon: <Building2 size={16} />,
-            onClick: () => router.push('/portal/agency/settings'),
+            onClick: () => router.push(getPortalPath('/agency/settings')),
           },
         ]
       : []),

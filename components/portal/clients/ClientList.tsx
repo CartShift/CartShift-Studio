@@ -7,6 +7,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { MoreVertical, ArrowUpRight, Eye, Trash2, ShieldCheck } from 'lucide-react';
 import { Organization } from '@/lib/types/portal';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface AgencyClient extends Organization {
   totalRevenue?: number;
@@ -71,7 +72,7 @@ export function ClientList({ clients, currentUserId, onViewAsClient, onDelete }:
                       />
                       <div>
                         <Link
-                          href={`/portal/agency/clients/${client.id}/`}
+                          href={getPortalPath(`/agency/clients/${client.id}/`)}
                           className="font-bold text-surface-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors block leading-tight"
                         >
                           {client.name}
@@ -132,7 +133,8 @@ export function ClientList({ clients, currentUserId, onViewAsClient, onDelete }:
                         {
                           label: t('agency.clients.detail.overview'),
                           icon: <ArrowUpRight size={14} />,
-                          onClick: () => router.push(`/portal/agency/clients/${client.id}/`),
+                          onClick: () =>
+                            router.push(getPortalPath(`/agency/clients/${client.id}/`)),
                         },
                         {
                           label: t('agency.clients.viewAsClient'),

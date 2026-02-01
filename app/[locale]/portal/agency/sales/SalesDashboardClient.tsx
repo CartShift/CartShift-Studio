@@ -16,6 +16,7 @@ import { useSalesAnalytics } from '@/lib/hooks/useSalesAnalytics';
 import { Card } from '@/components/ui/Card';
 import { Link } from '@/i18n/navigation';
 import { InsightsPanel } from '@/components/portal/sales/InsightsPanel';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useState } from 'react';
 import { Select } from '@/components/ui/Select';
 
@@ -129,7 +130,7 @@ export default function SalesDashboardClient() {
             <p className="text-sm text-surface-400 dark:text-surface-500 mb-6">
               {t('sales.empty.hint')}
             </p>
-            <Link href="/portal/agency/pricing">
+            <Link href={getPortalPath('/agency/pricing')}>
               <Button variant="primary">{t('agency.pricing.subtitle')}</Button>
             </Link>
           </div>

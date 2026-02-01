@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface NavItemProps {
   href: string;
@@ -66,29 +67,41 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
   const touchStartY = useRef<number | null>(null);
 
   const isActive = (path: string) => {
-    if (path === '/portal/dashboard' || path === '/portal/agency/workboard') {
+    const dashboardPath = getPortalPath('/dashboard');
+    const workboardPath = getPortalPath('/agency/workboard');
+    if (path === dashboardPath || path === workboardPath) {
       return pathname === path;
     }
     return pathname?.startsWith(path);
   };
 
   const clientNav = [
-    { href: '/portal/dashboard', icon: Home, labelKey: 'dashboard' as const, badgeKey: undefined },
     {
-      href: '/portal/requests',
+      href: getPortalPath('/dashboard'),
+      icon: Home,
+      labelKey: 'dashboard' as const,
+      badgeKey: undefined,
+    },
+    {
+      href: getPortalPath('/requests'),
       icon: LayoutList,
       labelKey: 'requests' as const,
       badgeKey: 'requests' as const,
     },
-    { href: '/portal/files', icon: FolderOpen, labelKey: 'files' as const, badgeKey: undefined },
     {
-      href: '/portal/consultations',
+      href: getPortalPath('/files'),
+      icon: FolderOpen,
+      labelKey: 'files' as const,
+      badgeKey: undefined,
+    },
+    {
+      href: getPortalPath('/consultations'),
       icon: CalendarClock,
       labelKey: 'consultations' as const,
       badgeKey: 'consultations' as const,
     },
     {
-      href: '/portal/settings',
+      href: getPortalPath('/settings'),
       icon: Settings,
       labelKey: 'settings' as const,
       badgeKey: undefined,
@@ -97,31 +110,31 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
 
   const agencyNav = [
     {
-      href: '/portal/agency/workboard',
+      href: getPortalPath('/agency/workboard'),
       icon: Kanban,
       labelKey: 'workboard' as const,
       badgeKey: 'workboard' as const,
     },
     {
-      href: '/portal/agency/clients',
+      href: getPortalPath('/agency/clients'),
       icon: Users,
       labelKey: 'clients' as const,
       badgeKey: 'clients' as const,
     },
     {
-      href: '/portal/agency/pricing',
+      href: getPortalPath('/agency/pricing'),
       icon: DollarSign,
       labelKey: 'pricing' as const,
       badgeKey: 'pricing' as const,
     },
     {
-      href: '/portal/agency/sales',
+      href: getPortalPath('/agency/sales'),
       icon: BarChart3,
       labelKey: 'sales' as const,
       badgeKey: undefined,
     },
     {
-      href: '/portal/agency/settings',
+      href: getPortalPath('/agency/settings'),
       icon: Settings,
       labelKey: 'settings' as const,
       badgeKey: undefined,

@@ -40,7 +40,7 @@ const ClientActionMenu = ({
       {
         label: t('agency.clients.detail.overview'),
         icon: <ArrowUpRight size={14} />,
-        onClick: () => router.push(`/portal/agency/clients/${org.id}/`),
+        onClick: () => router.push(getPortalPath(`/agency/clients/${org.id}/`)),
       },
       {
         label: t('agency.clients.viewAsClient'),
@@ -61,6 +61,7 @@ import { useTranslations } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { useImpersonation } from '@/lib/context/ImpersonationContext';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 export default function AgencyClientsClient() {
   const t = useTranslations('portal');
@@ -236,7 +237,7 @@ export default function AgencyClientsClient() {
               {t('agency.clients.subtitle')}
             </p>
           </div>
-          <Link href="/portal/agency/clients/new/">
+          <Link href={getPortalPath('/agency/clients/new/')}>
             <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20">
               <Plus size={18} />
               {t('agency.clients.onboard')}
@@ -283,7 +284,7 @@ export default function AgencyClientsClient() {
                   <div className="flex items-start justify-between">
                     <div
                       className="flex items-center gap-3"
-                      onClick={() => router.push(`/portal/agency/clients/${org.id}/`)}
+                      onClick={() => router.push(getPortalPath(`/agency/clients/${org.id}/`))}
                     >
                       <Avatar
                         src={org.logoUrl}
@@ -386,7 +387,7 @@ export default function AgencyClientsClient() {
             <p className="text-surface-500 dark:text-surface-400 text-sm mt-1 max-w-sm mx-auto">
               {t('agency.clients.emptyDesc')}
             </p>
-            <Link href="/portal/agency/clients/new/">
+            <Link href={getPortalPath('/agency/clients/new/')}>
               <Button className="mt-8 h-11 px-8" variant="outline">
                 {t('agency.clients.onboard')}
               </Button>
