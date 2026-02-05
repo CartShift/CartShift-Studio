@@ -106,12 +106,17 @@ async function sendEmail(apiKey, options, attempt = 1) {
         const html = await (0, exports.renderEmail)(options.templateName, options.data);
         const text = await (0, render_1.render)(
         // @ts-ignore - Dynamic dispatch mostly safe here or we can use specific function
-        options.templateName === 'new_request' ? (0, NewRequest_1.default)(options.data) :
-            options.templateName === 'status_update' ? (0, StatusUpdate_1.default)(options.data) :
-                options.templateName === 'milestone_completed' ? (0, MilestoneCompleted_1.default)(options.data) :
-                    options.templateName === 'quote_received' ? (0, QuoteReceived_1.default)(options.data) :
-                        options.templateName === 'payment_receipt' ? (0, PaymentReceipt_1.default)(options.data) :
-                            (0, NewComment_1.default)(options.data), { plainText: true });
+        options.templateName === 'new_request'
+            ? (0, NewRequest_1.default)(options.data)
+            : options.templateName === 'status_update'
+                ? (0, StatusUpdate_1.default)(options.data)
+                : options.templateName === 'milestone_completed'
+                    ? (0, MilestoneCompleted_1.default)(options.data)
+                    : options.templateName === 'quote_received'
+                        ? (0, QuoteReceived_1.default)(options.data)
+                        : options.templateName === 'payment_receipt'
+                            ? (0, PaymentReceipt_1.default)(options.data)
+                            : (0, NewComment_1.default)(options.data), { plainText: true });
         const emailPayload = {
             from: exports.EMAIL_CONFIG.from,
             to: Array.isArray(options.to) ? options.to : [options.to],
@@ -125,7 +130,8 @@ async function sendEmail(apiKey, options, attempt = 1) {
                 ...(options.tags || []),
             ],
             headers: {
-                'X-Entity-Ref-ID': options.idempotencyKey || generateIdempotencyKey(options.to, options.subject, options.templateName, options.uniqueId),
+                'X-Entity-Ref-ID': options.idempotencyKey ||
+                    generateIdempotencyKey(options.to, options.subject, options.templateName, options.uniqueId),
                 ...(options.headers || {}),
             },
         };
@@ -210,12 +216,17 @@ async function sendBatchEmails(apiKey, emails) {
             const html = await (0, exports.renderEmail)(opt.templateName, opt.data);
             const text = await (0, render_1.render)(
             // @ts-ignore
-            opt.templateName === 'new_request' ? (0, NewRequest_1.default)(opt.data) :
-                opt.templateName === 'status_update' ? (0, StatusUpdate_1.default)(opt.data) :
-                    opt.templateName === 'milestone_completed' ? (0, MilestoneCompleted_1.default)(opt.data) :
-                        opt.templateName === 'quote_received' ? (0, QuoteReceived_1.default)(opt.data) :
-                            opt.templateName === 'payment_receipt' ? (0, PaymentReceipt_1.default)(opt.data) :
-                                (0, NewComment_1.default)(opt.data), { plainText: true });
+            opt.templateName === 'new_request'
+                ? (0, NewRequest_1.default)(opt.data)
+                : opt.templateName === 'status_update'
+                    ? (0, StatusUpdate_1.default)(opt.data)
+                    : opt.templateName === 'milestone_completed'
+                        ? (0, MilestoneCompleted_1.default)(opt.data)
+                        : opt.templateName === 'quote_received'
+                            ? (0, QuoteReceived_1.default)(opt.data)
+                            : opt.templateName === 'payment_receipt'
+                                ? (0, PaymentReceipt_1.default)(opt.data)
+                                : (0, NewComment_1.default)(opt.data), { plainText: true });
             return {
                 from: exports.EMAIL_CONFIG.from,
                 to: Array.isArray(opt.to) ? opt.to : [opt.to],
@@ -223,7 +234,11 @@ async function sendBatchEmails(apiKey, emails) {
                 html,
                 text,
                 reply_to: exports.EMAIL_CONFIG.replyTo,
-                tags: [...exports.EMAIL_CONFIG.defaultTags, { name: 'template', value: opt.templateName }, ...(opt.tags || [])],
+                tags: [
+                    ...exports.EMAIL_CONFIG.defaultTags,
+                    { name: 'template', value: opt.templateName },
+                    ...(opt.tags || []),
+                ],
             };
         }));
         const { data: result, error } = await client.batch.send(emailPayloads);
@@ -309,24 +324,46 @@ function parseWebhookEvent(req, webhookSecret) {
 }
 const WEBHOOK_EVENT_HANDLERS = {
     'email.sent': async (admin, data) => {
-        await updateEmailLog(admin, data.email_id, { status: 'sent', sentAt: new Date(data.created_at) });
+        await updateEmailLog(admin, data.email_id, {
+            status: 'sent',
+            sentAt: new Date(data.created_at),
+        });
     },
     'email.delivered': async (admin, data) => {
-        await updateEmailLog(admin, data.email_id, { status: 'delivered', deliveredAt: new Date(data.created_at) });
+        await updateEmailLog(admin, data.email_id, {
+            status: 'delivered',
+            deliveredAt: new Date(data.created_at),
+        });
     },
     'email.bounced': async (admin, data) => {
         var _a;
-        await updateEmailLog(admin, data.email_id, { status: 'bounced', bouncedAt: new Date(data.created_at), bounceReason: ((_a = data.bounce) === null || _a === void 0 ? void 0 : _a.message) || 'Unknown' });
+        await updateEmailLog(admin, data.email_id, {
+            status: 'bounced',
+            bouncedAt: new Date(data.created_at),
+            bounceReason: ((_a = data.bounce) === null || _a === void 0 ? void 0 : _a.message) || 'Unknown',
+        });
     },
     'email.opened': async (admin, data) => {
-        await updateEmailLog(admin, data.email_id, { opened: true, openedAt: admin.firestore.FieldValue.arrayUnion(new Date(data.created_at)) });
+        await updateEmailLog(admin, data.email_id, {
+            opened: true,
+            openedAt: admin.firestore.FieldValue.arrayUnion(new Date(data.created_at)),
+        });
     },
     'email.clicked': async (admin, data) => {
         var _a;
-        await updateEmailLog(admin, data.email_id, { clicked: true, clicks: admin.firestore.FieldValue.arrayUnion({ url: (_a = data.click) === null || _a === void 0 ? void 0 : _a.link, at: new Date(data.created_at) }) });
+        await updateEmailLog(admin, data.email_id, {
+            clicked: true,
+            clicks: admin.firestore.FieldValue.arrayUnion({
+                url: (_a = data.click) === null || _a === void 0 ? void 0 : _a.link,
+                at: new Date(data.created_at),
+            }),
+        });
     },
     'email.complained': async (admin, data) => {
-        await updateEmailLog(admin, data.email_id, { status: 'complained', complainedAt: new Date(data.created_at) });
+        await updateEmailLog(admin, data.email_id, {
+            status: 'complained',
+            complainedAt: new Date(data.created_at),
+        });
     },
 };
 async function updateEmailLog(admin, emailId, updates) {
@@ -334,7 +371,10 @@ async function updateEmailLog(admin, emailId, updates) {
         const logsRef = admin.firestore().collection('email_logs');
         const snapshot = await logsRef.where('emailId', '==', emailId).limit(1).get();
         if (!snapshot.empty) {
-            await snapshot.docs[0].ref.update({ ...updates, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+            await snapshot.docs[0].ref.update({
+                ...updates,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
         }
     }
     catch (error) {
@@ -366,7 +406,7 @@ async function addToAudience(apiKey, contactData) {
             properties: {
                 source: source || 'website',
                 added_at: new Date().toISOString(),
-                ...properties
+                ...properties,
             },
         };
         const { data, error } = await client.contacts.create(contactPayload);

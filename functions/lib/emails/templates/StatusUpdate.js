@@ -7,7 +7,7 @@ const Layout_1 = require("../components/Layout");
 const Button_1 = require("../components/Button");
 const StatusBadge_1 = require("../components/StatusBadge");
 const theme_1 = require("../theme");
-const StatusUpdate = ({ requestTitle, statusLabel, actionUrl, }) => {
+const StatusUpdate = ({ requestTitle, statusLabel, actionUrl }) => {
     // Map label to visual type
     const getStatusType = (label) => {
         const l = label.toLowerCase();

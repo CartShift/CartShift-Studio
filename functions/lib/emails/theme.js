@@ -28,7 +28,7 @@ exports.theme = {
         error: {
             bg: '#fee2e2', // Red-100
             text: '#991b1b', // Red-800
-        }
+        },
     },
     spacing: {
         s1: '4px',
@@ -56,6 +56,6 @@ exports.theme = {
     },
     fontFamily: {
         sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    }
+    },
 };
 //# sourceMappingURL=theme.js.map

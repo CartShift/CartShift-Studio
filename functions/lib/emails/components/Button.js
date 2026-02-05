@@ -4,7 +4,7 @@ exports.ActionButton = void 0;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const components_1 = require("@react-email/components");
 const theme_1 = require("../theme");
-const ActionButton = ({ href, children, variant = 'primary', fullWidth = false }) => {
+const ActionButton = ({ href, children, variant = 'primary', fullWidth = false, }) => {
     const isPrimary = variant === 'primary';
     const buttonStyle = {
         ...styles.base,

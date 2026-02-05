@@ -6,7 +6,7 @@ const components_1 = require("@react-email/components");
 const Layout_1 = require("../components/Layout");
 const Button_1 = require("../components/Button");
 const theme_1 = require("../theme");
-const QuoteReceived = ({ requestTitle, totalAmount, actionUrl, }) => {
+const QuoteReceived = ({ requestTitle, totalAmount, actionUrl }) => {
     return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { title: "New Quote", preview: `You received a quote for ${requestTitle}`, children: [(0, jsx_runtime_1.jsx)(components_1.Heading, { style: styles.heading, children: "Quote Ready for Review" }), (0, jsx_runtime_1.jsxs)(components_1.Text, { style: styles.intro, children: ["We have prepared a quote for your request ", (0, jsx_runtime_1.jsx)("strong", { children: requestTitle }), "."] }), (0, jsx_runtime_1.jsxs)(components_1.Section, { style: styles.card, children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.amountLabel, children: "TOTAL ESTIMATE" }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.amount, children: totalAmount }), (0, jsx_runtime_1.jsx)(components_1.Hr, { style: styles.divider }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.note, children: "This quote includes all deliverables discussed. Please review and approve to proceed." })] }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, variant: "primary", children: "Review & Approve" }) })] }));
 };
 exports.QuoteReceived = QuoteReceived;

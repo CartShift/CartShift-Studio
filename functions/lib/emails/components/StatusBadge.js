@@ -6,7 +6,7 @@ const components_1 = require("@react-email/components");
 const theme_1 = require("../theme");
 const StatusBadge = ({ children, type = 'neutral' }) => {
     const style = styles[type] || styles.neutral;
-    return ((0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.base, ...style }, children: children }));
+    return (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.base, ...style }, children: children });
 };
 exports.StatusBadge = StatusBadge;
 const baseStyle = {
