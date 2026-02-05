@@ -30,6 +30,8 @@ import {
   subscribeToOrganization,
   getOrganizationMembers,
   removeMember,
+  getInvitesByOrg,
+  cancelInvite,
 } from '@/lib/services/portal-organizations';
 import { subscribeToOrgRequests } from '@/lib/services/portal-requests';
 import { subscribeToOrgActivities } from '@/lib/services/portal-activities';
@@ -39,6 +41,7 @@ import {
   ActivityLog,
   OrganizationMember,
   PortalUser,
+  Invite,
 } from '@/lib/types/portal';
 import { getPortalUser } from '@/lib/services/portal-users';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -69,6 +72,7 @@ export default function AgencyClientDetailClient({
   const [requests, setRequests] = useState<Request[]>([]);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<Invite[]>([]);
   const [responsibleAgent, setResponsibleAgent] = useState<PortalUser | null>(null);
   const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +82,7 @@ export default function AgencyClientDetailClient({
   const [isRemoveMemberOpen, setIsRemoveMemberOpen] = useState(false);
   const [isRemovingMember, setIsRemovingMember] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [resendingInvite, setResendingInvite] = useState<string | null>(null);
 
   useEffect(() => {
     if (!clientId) {
@@ -219,6 +224,10 @@ export default function AgencyClientDetailClient({
     try {
       const membersList = await getOrganizationMembers(clientId);
       setMembers(membersList);
+
+      // Also fetch pending invites
+      const invites = await getInvitesByOrg(clientId);
+      setPendingInvites(invites.filter(inv => inv.isClientInvite && inv.status === 'pending'));
     } catch (err) {
       console.error('[AgencyClientDetail] Error loading members:', err);
     }
@@ -244,6 +253,23 @@ export default function AgencyClientDetailClient({
       // setError('Failed to remove member'); // Don't block the whole page
     } finally {
       setIsRemovingMember(false);
+    }
+  };
+
+  const handleResendInvite = async (inviteId: string, _email: string) => {
+    setResendingInvite(inviteId);
+    try {
+      // Cancel the old invite
+      await cancelInvite(inviteId);
+      // Trigger the invite modal to open with pre-filled email
+      setIsInviteModalOpen(true);
+      toast.success('Previous invitation cancelled. Please send a new one.');
+      await fetchMembers(); // Refresh the list
+    } catch (err) {
+      console.error('Failed to resend invite:', err);
+      toast.error('Failed to resend invitation');
+    } finally {
+      setResendingInvite(null);
     }
   };
 
@@ -833,12 +859,19 @@ export default function AgencyClientDetailClient({
               <div className="flex items-center gap-2 mb-5">
                 <Users size={16} className="text-blue-600" />
                 <span className="text-sm font-black text-surface-900 dark:text-white">
-                  {members.length} {members.length === 1 ? 'Member' : 'Members'}
+                  {members.length + pendingInvites.length}{' '}
+                  {members.length + pendingInvites.length === 1 ? 'Member' : 'Members'}
+                  {pendingInvites.length > 0 && (
+                    <span className="text-amber-600 dark:text-amber-400 ms-1">
+                      ({pendingInvites.length} pending)
+                    </span>
+                  )}
                 </span>
               </div>
 
-              {members.length > 0 ? (
+              {members.length > 0 || pendingInvites.length > 0 ? (
                 <div className="space-y-4">
+                  {/* Active Members */}
                   {members.slice(0, 5).map((member, index) => (
                     <div key={index} className="flex items-center gap-3 group">
                       <Avatar
@@ -868,6 +901,45 @@ export default function AgencyClientDetailClient({
                       </button>
                     </div>
                   ))}
+
+                  {/* Pending Invites */}
+                  {pendingInvites.map(invite => (
+                    <div
+                      key={invite.id}
+                      className="flex items-center gap-3 group border-s-2 border-amber-400 ps-2"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center flex-shrink-0">
+                        <Mail size={14} className="text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-surface-900 dark:text-white truncate">
+                          {invite.email}
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          Invitation pending
+                        </p>
+                      </div>
+                      <Badge
+                        variant="yellow"
+                        className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
+                      >
+                        Invited
+                      </Badge>
+                      <button
+                        onClick={() => handleResendInvite(invite.id, invite.email)}
+                        disabled={resendingInvite === invite.id}
+                        className="p-1.5 text-surface-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 disabled:opacity-50"
+                        title="Resend invitation"
+                      >
+                        {resendingInvite === invite.id ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Mail size={14} />
+                        )}
+                      </button>
+                    </div>
+                  ))}
+
                   {members.length > 5 && (
                     <button
                       onClick={() => {
