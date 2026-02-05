@@ -4,6 +4,9 @@ import { z } from 'zod';
 const DEFAULT_FIREBASE_FUNCTION_URL =
   'https://us-central1-cartshiftstudio.cloudfunctions.net/contactForm';
 
+// Default company contact email
+const DEFAULT_CONTACT_EMAIL = 'hello@cart-shift.com';
+
 const envSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().default('https://cart-shift.com'),
   NEXT_PUBLIC_GA_ID: z.string().optional(),
@@ -20,6 +23,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().optional(),
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().optional(),
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1, 'Firebase App ID is required'),
+  CONTACT_EMAIL: z.string().email().default(DEFAULT_CONTACT_EMAIL),
 });
 
 // Parse with safeParse for better error handling during build
@@ -34,6 +38,7 @@ const parseResult = envSchema.safeParse({
   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  CONTACT_EMAIL: process.env.CONTACT_EMAIL || DEFAULT_CONTACT_EMAIL,
 });
 
 if (!parseResult.success) {
@@ -60,5 +65,6 @@ export const env = parseResult.success
       NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
         process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      CONTACT_EMAIL: process.env.CONTACT_EMAIL || DEFAULT_CONTACT_EMAIL,
       NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
     };

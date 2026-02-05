@@ -20,6 +20,9 @@ const RATE_LIMIT_WINDOW = 60 * 1000;
 const CONTACT_RATE_LIMIT_MAX_REQUESTS = 5;
 const NEWSLETTER_RATE_LIMIT_MAX_REQUESTS = 3;
 
+// Default company contact email from environment or fallback
+const DEFAULT_CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'hello@cart-shift.com';
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
       .map(origin => origin.trim())
@@ -332,7 +335,7 @@ exports.contactForm = onRequest(
         const resend = new Resend(apiKey);
         await resend.emails.send({
           from: 'CartShift Studio <noreply@cart-shift.com>',
-          to: contactEmail.value() || 'hello@cart-shift.com',
+          to: contactEmail.value() || DEFAULT_CONTACT_EMAIL,
           reply_to: email,
           subject: `New Contact Form: ${name}`,
           html: `
@@ -446,7 +449,7 @@ exports.onPortalRequestCreated = onDocumentCreated(
       .doc(requestData.orgId)
       .get();
 
-    let toEmail = contactEmail.value() || 'hello@cart-shift.com';
+    let toEmail = contactEmail.value() || DEFAULT_CONTACT_EMAIL;
     let orgName = 'Unknown Organization';
 
     if (orgSnap.exists) {
@@ -720,7 +723,7 @@ exports.onPortalCommentCreated = onDocumentCreated(
       targetEmail = await getUserEmail(requestData.createdBy);
     } else {
       // Client commented -> Notify responsible agent or admin
-      targetEmail = contactEmail.value() || 'hello@cart-shift.com';
+      targetEmail = contactEmail.value() || DEFAULT_CONTACT_EMAIL;
 
       // Fetch org to check for responsible agent
       const orgSnap = await admin
@@ -2897,7 +2900,7 @@ function generateStoreAnalysisPDF(results, storeUrl, texts, isRtl) {
 
     // Contact Info
     doc.fontSize(11).fillColor(colors.muted).font('Helvetica');
-    doc.text('Questions? Contact us at hello@cart-shift.com', 50, 620, {
+    doc.text(`Questions? Contact us at ${DEFAULT_CONTACT_EMAIL}`, 50, 620, {
       width: 495,
       align: 'center',
     });

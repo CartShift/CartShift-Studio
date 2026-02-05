@@ -13,9 +13,12 @@ function getResendClient(apiKey) {
   return resendClient;
 }
 
+// Default company contact email from environment or fallback
+const DEFAULT_CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'hello@cart-shift.com';
+
 const EMAIL_CONFIG = {
   from: 'CartShift Studio <noreply@cart-shift.com>',
-  replyTo: 'hello@cart-shift.com',
+  replyTo: DEFAULT_CONTACT_EMAIL,
   retryAttempts: 3,
   retryDelayMs: 1000,
   defaultTags: [
