@@ -7,7 +7,11 @@ import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { inviteClient } from '@/lib/services/portal-organizations';
+import {
+  inviteClient,
+  cancelInvite,
+  getPendingClientInvites,
+} from '@/lib/services/portal-organizations';
 import { getRequestsByClientEmail } from '@/lib/services/portal-requests';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -38,6 +42,8 @@ export const InviteClientForm = ({
 }: InviteClientFormProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingInviteId, setExistingInviteId] = useState<string | null>(null);
+  const [cancellingExisting, setCancellingExisting] = useState(false);
   const { userData } = usePortalAuth();
   const t = useTranslations();
 
@@ -53,12 +59,32 @@ export const InviteClientForm = ({
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<InviteClientFormData>({
     resolver: zodResolver(inviteSchema),
     defaultValues: {
       email: preSelectedEmail || '',
     },
   });
+
+  const handleCancelAndResend = async (email: string) => {
+    if (!existingInviteId) return;
+
+    setCancellingExisting(true);
+    try {
+      await cancelInvite(existingInviteId);
+      setExistingInviteId(null);
+      setError(null);
+      toast.success('Previous invitation cancelled');
+      // Now try to send again
+      await onSubmit({ email });
+    } catch (err) {
+      console.error('Failed to cancel existing invite:', err);
+      toast.error('Failed to cancel previous invitation');
+    } finally {
+      setCancellingExisting(false);
+    }
+  };
 
   const onSubmit = async (data: InviteClientFormData) => {
     setLoading(true);
@@ -86,6 +112,23 @@ export const InviteClientForm = ({
       console.error('Client invite error:', error);
       const errorMsg =
         error instanceof Error ? error.message : t('portal.clientInvite.errors.generic');
+
+      // Check if error is about existing invitation
+      if (errorMsg.includes('invitation has already been sent')) {
+        // Fetch the existing invite to get its ID
+        try {
+          const pendingInvites = await getPendingClientInvites(data.email);
+          const existingInvite = pendingInvites.find(
+            inv => inv.orgId === orgId && inv.isClientInvite
+          );
+          if (existingInvite) {
+            setExistingInviteId(existingInvite.id);
+          }
+        } catch (fetchError) {
+          console.error('Failed to fetch existing invite:', fetchError);
+        }
+      }
+
       setError(errorMsg);
       toast.error(errorMsg);
     } finally {
@@ -133,7 +176,19 @@ export const InviteClientForm = ({
 
               {error && (
                 <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 border border-red-200 dark:border-red-800">
-                  <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+                  <p className="text-sm text-red-800 dark:text-red-200 mb-2">{error}</p>
+                  {existingInviteId && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCancelAndResend(getValues('email'))}
+                      loading={cancellingExisting}
+                      className="mt-2"
+                    >
+                      Cancel Previous & Resend
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
