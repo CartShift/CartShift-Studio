@@ -415,6 +415,7 @@ export interface Invite {
   isAgency?: boolean;
   invitedBy: string;
   invitedByName: string;
+  code: string; // Unique code for the invite URL
   status: 'pending' | 'accepted' | 'expired';
   expiresAt: Timestamp;
   createdAt: Timestamp;

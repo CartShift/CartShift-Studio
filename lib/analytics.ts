@@ -48,6 +48,64 @@ export const trackCaseStudyScroll = (projectName: string, scrollDepth: number) =
 
 export const trackPricingView = () => trackEvent('pricing_view');
 
+// Store Analyzer tracking
+export const trackAnalyzerStarted = (storeUrl: string) => {
+  trackEvent('store_analysis_started', { store_url: storeUrl });
+};
+
+export const trackAnalyzerCompleted = (params: {
+  storeUrl: string;
+  overallScore: number;
+  platform: string;
+  duration: number;
+  hasPuppeteer: boolean;
+  hasVisualAnalysis: boolean;
+  hasProductAnalysis: boolean;
+}) => {
+  trackEvent('store_analysis_completed', {
+    store_url: params.storeUrl,
+    overall_score: params.overallScore,
+    platform: params.platform,
+    duration_ms: params.duration,
+    has_puppeteer: params.hasPuppeteer,
+    has_visual_analysis: params.hasVisualAnalysis,
+    has_product_analysis: params.hasProductAnalysis,
+  });
+};
+
+export const trackAnalyzerFailed = (params: {
+  storeUrl: string;
+  errorMessage: string;
+  errorType: 'network' | 'timeout' | 'validation' | 'server' | 'unknown';
+  duration?: number;
+}) => {
+  trackEvent('store_analysis_failed', {
+    store_url: params.storeUrl,
+    error_message: params.errorMessage,
+    error_type: params.errorType,
+    duration_ms: params.duration,
+  });
+};
+
+export const trackAnalyzerServiceFailure = (params: {
+  serviceName: 'puppeteer' | 'pagespeed' | 'competitor' | 'ai' | 'cache' | 'benchmark';
+  errorMessage: string;
+  gracefulDegradation: boolean;
+}) => {
+  trackEvent('analyzer_service_failure', {
+    service_name: params.serviceName,
+    error_message: params.errorMessage,
+    graceful_degradation: params.gracefulDegradation,
+  });
+};
+
+export const trackAnalyzerFeatureUnavailable = (featureName: string, reason: string) => {
+  trackEvent('analyzer_feature_unavailable', {
+    feature_name: featureName,
+    reason: reason,
+  });
+};
+
 export const trackPackageClick = (packageName: string) => {
   trackEvent('package_click', { package_name: packageName });
 };

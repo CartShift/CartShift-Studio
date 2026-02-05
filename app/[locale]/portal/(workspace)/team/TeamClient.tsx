@@ -79,10 +79,10 @@ export default function TeamClient() {
     }
   };
 
-  const copyInviteLink = (inviteId: string) => {
-    const inviteLink = `${window.location.origin}/portal/invite/${inviteId}`;
+  const copyInviteLink = (invite: Invite) => {
+    const inviteLink = `${window.location.origin}/portal/invite/${invite.code}`;
     navigator.clipboard.writeText(inviteLink);
-    setCopiedInviteId(inviteId);
+    setCopiedInviteId(invite.id);
     setTimeout(() => setCopiedInviteId(null), 2000);
   };
 
@@ -271,7 +271,7 @@ export default function TeamClient() {
                         : t('common.recently')}
                     </span>
                     <button
-                      onClick={() => copyInviteLink(invite.id)}
+                      onClick={() => copyInviteLink(invite)}
                       className={cn(
                         'flex items-center gap-1.5 uppercase tracking-widest transition-colors',
                         copiedInviteId === invite.id

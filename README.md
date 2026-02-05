@@ -117,9 +117,44 @@ pnpm run deploy:rules
 - Run `npm run i18n:merge` to regenerate output files
 - See [messages/README.md](./messages/README.md) for complete documentation
 
+## Store Analyzer
+
+The Store Analyzer is a free tool that provides comprehensive e-commerce store audits.
+
+### Features
+
+- 📊 Performance, SEO, Accessibility, and Best Practices analysis (via Google PageSpeed API)
+- 📸 Visual analysis with mobile/desktop screenshots (via Puppeteer)
+- 🛒 Product page auditing and cart actionability testing
+- 🤖 AI readiness and structured data analysis
+- 🎯 Competitor analysis and market positioning
+- 📈 Benchmark comparison with industry standards
+
+### Setup & Diagnostics
+
+```bash
+# Check if Puppeteer/Chrome is available
+pnpm diagnose:puppeteer
+
+# Test the analyzer (requires dev server)
+pnpm test:analyzer
+```
+
+### Troubleshooting
+
+If the analyzer fails or visual analysis is skipped:
+
+1. Run diagnostics: `pnpm diagnose:puppeteer`
+2. See [docs/STORE_ANALYZER_SETUP.md](./docs/STORE_ANALYZER_SETUP.md) for detailed setup
+3. See [docs/STORE_ANALYZER_FIX.md](./docs/STORE_ANALYZER_FIX.md) for recent bug fixes
+
+**Note**: The analyzer gracefully degrades if Puppeteer/Chrome is unavailable. Core metrics (Performance, SEO, Accessibility) will still work via the PageSpeed API.
+
 ## Documentation
 
 - [messages/README.md](./messages/README.md) - Translation files structure and workflow
+- [docs/STORE_ANALYZER_SETUP.md](./docs/STORE_ANALYZER_SETUP.md) - Store Analyzer setup and deployment guide
+- [docs/STORE_ANALYZER_FIX.md](./docs/STORE_ANALYZER_FIX.md) - Recent bug fixes and improvements
 - [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - Firebase deployment guide
 - [TESTING.md](./docs/TESTING.md) - Testing checklist
 - [PROJECT_SUMMARY.md](./docs/PROJECT_SUMMARY.md) - Implementation summary

@@ -9,6 +9,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
   onSnapshot,
   serverTimestamp,
   Timestamp,
@@ -472,6 +473,10 @@ export async function createInvite(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7); // 7 day expiry
 
+  // Generate unique invite code
+  const inviteCode =
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
   const inviteData = {
     orgId: orgId || null,
     email: data.email.toLowerCase().trim(),
@@ -479,12 +484,15 @@ export async function createInvite(
     isAgency: data.isAgency || false,
     invitedBy,
     invitedByName,
+    code: inviteCode,
     status: 'pending' as const,
     expiresAt: Timestamp.fromDate(expiresAt),
     createdAt: serverTimestamp(),
   };
 
   const docRef = await addDoc(collection(db, INVITES_COLLECTION), inviteData);
+
+  console.log(`[Invite] Created invite ${docRef.id} with code ${inviteCode} for ${data.email}`);
 
   return {
     id: docRef.id,
@@ -494,11 +502,31 @@ export async function createInvite(
 }
 
 /**
- * Fetches an invite by its ID.
+ * Fetches an invite by its code or ID.
+ * First tries to fetch by code (for invite URLs), then falls back to ID.
  */
-export async function getInvite(inviteId: string): Promise<Invite | null> {
+export async function getInvite(codeOrId: string): Promise<Invite | null> {
   const db = getFirestoreDb();
-  const docRef = doc(db, INVITES_COLLECTION, inviteId);
+
+  // Try fetching by code first (for invite URLs)
+  const qByCode = query(
+    collection(db, INVITES_COLLECTION),
+    where('code', '==', codeOrId),
+    limit(1)
+  );
+
+  const codeSnapshot = await getDocs(qByCode);
+
+  if (!codeSnapshot.empty) {
+    const docSnap = codeSnapshot.docs[0];
+    return {
+      id: docSnap.id,
+      ...docSnap.data(),
+    } as Invite;
+  }
+
+  // Fallback: try fetching by document ID
+  const docRef = doc(db, INVITES_COLLECTION, codeOrId);
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {

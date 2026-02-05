@@ -245,14 +245,26 @@ export function RequestStatusWorkflow({
   }, [isDropdownOpen]);
 
   const availableTransitions = getAvailableTransitions(currentStatus);
+  console.log('[RequestStatusWorkflow] Available transitions:', {
+    currentStatus,
+    availableTransitions,
+  });
   const currentStage = getStageInfo(currentStatus);
   const CurrentIcon = currentStage.icon;
 
   const handleStatusChange = async (newStatus: RequestStatus) => {
+    console.log('[RequestStatusWorkflow] Status change requested:', {
+      from: currentStatus,
+      to: newStatus,
+    });
     setPendingStatus(newStatus);
     setIsDropdownOpen(false);
     try {
+      console.log('[RequestStatusWorkflow] Calling onStatusChange...');
       await onStatusChange(newStatus);
+      console.log('[RequestStatusWorkflow] onStatusChange completed successfully');
+    } catch (error) {
+      console.error('[RequestStatusWorkflow] Error in onStatusChange:', error);
     } finally {
       setPendingStatus(null);
     }

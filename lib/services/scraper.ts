@@ -7,26 +7,69 @@ export interface ScraperResult {
   productAnalysis: ProductAnalysis | undefined;
 }
 
+// Check if Puppeteer/Chrome is available
+let puppeteerAvailable: boolean | null = null;
+
+async function checkPuppeteerAvailability(): Promise<boolean> {
+  if (puppeteerAvailable !== null) return puppeteerAvailable;
+
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      timeout: 5000,
+    });
+    await browser.close();
+    puppeteerAvailable = true;
+    Logger.debug('Puppeteer is available');
+    return true;
+  } catch (error) {
+    Logger.warn('Puppeteer is not available', { error });
+    puppeteerAvailable = false;
+    return false;
+  }
+}
+
 export class ScraperService {
   static async scrape(url: string): Promise<ScraperResult> {
+    // Quick check if Puppeteer is available before attempting
+    const isAvailable = await checkPuppeteerAvailability();
+    if (!isAvailable) {
+      Logger.warn('Skipping visual/product analysis - Puppeteer unavailable');
+      return { visualAnalysis: null, productAnalysis: undefined };
+    }
+
     let browser = null;
     try {
       Logger.debug('Starting ScraperService for ' + url);
       const startTime = Date.now();
 
-      browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage', // Docker/CloudRun optimization
-          '--disable-gpu',
-          '--single-process', // Sometimes clearer for cleanup
-        ],
-        timeout: 30000,
-      });
+      // Try to launch browser with extended timeout and better error handling
+      try {
+        browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--single-process',
+            '--disable-software-rasterizer',
+            '--disable-extensions',
+          ],
+          timeout: 30000,
+        });
+      } catch (launchError) {
+        Logger.error('Puppeteer launch failed', launchError);
+        // Return graceful fallback instead of crashing
+        return { visualAnalysis: null, productAnalysis: undefined };
+      }
 
       const page = await browser.newPage();
+
+      // Set a default timeout for all operations
+      page.setDefaultTimeout(20000);
+      page.setDefaultNavigationTimeout(25000);
 
       // Optimization: Block extensive resources if possible, but we need images for visual audit.
       // Maybe block ads/trackers? For now keep simple to avoid breaking site layout.
@@ -35,8 +78,8 @@ export class ScraperService {
       // Mobile Viewport first
       await page.setViewport({ width: 375, height: 667, isMobile: true });
 
-      // Timeout 25s to leave buffer
-      await page.goto(url, { waitUntil: 'networkidle2', timeout: 25000 });
+      // Timeout 25s to leave buffer - use domcontentloaded for faster response
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 25000 });
 
       // Mobile Screenshot
       const mobileScreenshot = await page.screenshot({
@@ -127,7 +170,8 @@ export class ScraperService {
 
       if (productUrl) {
         try {
-          await page.goto(productUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+          // Use a shorter timeout and domcontentloaded for product page
+          await page.goto(productUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
           const analysis = await page.evaluate(() => {
             const buyButton = document.querySelector(

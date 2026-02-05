@@ -228,6 +228,7 @@ export async function getActiveRequestsByOrg(orgId: string): Promise<Request[]> 
 // ============================================
 
 export async function updateRequest(requestId: string, data: UpdateRequestData): Promise<void> {
+  console.log('[updateRequest] Updating request:', { requestId, data });
   return withRetry(async () => {
     await waitForAuth();
     const db = getFirestoreDb();
@@ -240,13 +241,17 @@ export async function updateRequest(requestId: string, data: UpdateRequestData):
     // Handle status change to closed
     if (data.status === REQUEST_STATUS.CLOSED || data.status === REQUEST_STATUS.CANCELED) {
       updateData.closedAt = serverTimestamp();
+      console.log('[updateRequest] Adding closedAt timestamp');
     }
 
+    console.log('[updateRequest] Calling updateDoc with data:', updateData);
     await updateDoc(docRef, updateData);
+    console.log('[updateRequest] Update completed successfully');
   });
 }
 
 export async function updateRequestStatus(requestId: string, status: RequestStatus): Promise<void> {
+  console.log('[updateRequestStatus] Called with:', { requestId, status });
   return updateRequest(requestId, { status });
 }
 

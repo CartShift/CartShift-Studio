@@ -198,56 +198,125 @@ export function useRequestActions({
   const handleAcceptQuote = useCallback(async () => {
     if (!canPerformAction()) return;
 
+    // Optimistic update
+    const previousRequest = queryClient.getQueryData(['request', requestId]);
+
     setIsAccepting(true);
     try {
+      // Optimistically update UI
+      queryClient.setQueryData(['request', requestId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          status: REQUEST_STATUS.ACCEPTED,
+          acceptedAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        };
+      });
+
       await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+      await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
       toast.success(t('quoteAccepted'), t('quoteAcceptedDesc'));
     } catch (err) {
       console.error('Error accepting quote:', err);
+      // Rollback on error
+      if (previousRequest) {
+        queryClient.setQueryData(['request', requestId], previousRequest);
+      }
       toast.error(t('quoteAcceptFailed'), t('quoteAcceptFailedDesc'));
     } finally {
       setIsAccepting(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast]);
+  }, [canPerformAction, requestId, orgId, userData, toast, queryClient, t]);
 
   // Decline quote
   const handleDeclineQuote = useCallback(async () => {
     if (!canPerformAction()) return;
 
+    // Optimistic update
+    const previousRequest = queryClient.getQueryData(['request', requestId]);
+
     setIsDeclining(true);
     try {
+      // Optimistically update UI
+      queryClient.setQueryData(['request', requestId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          status: REQUEST_STATUS.DECLINED,
+          updatedAt: Timestamp.now(),
+        };
+      });
+
       await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+      await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
       toast.info(t('quoteDeclined'), t('quoteDeclinedDesc'));
     } catch (err) {
       console.error('Error declining quote:', err);
+      // Rollback on error
+      if (previousRequest) {
+        queryClient.setQueryData(['request', requestId], previousRequest);
+      }
       toast.error(t('quoteDeclineFailed'), t('quoteDeclineFailedDesc'));
     } finally {
       setIsDeclining(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast]);
+  }, [canPerformAction, requestId, orgId, userData, toast, queryClient, t]);
 
   // Start work
   const handleStartWork = useCallback(async () => {
     if (!canPerformAction()) return;
 
+    // Optimistic update
+    const previousRequest = queryClient.getQueryData(['request', requestId]);
+
     setIsWork(true);
     try {
+      // Optimistically update UI
+      queryClient.setQueryData(['request', requestId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          status: REQUEST_STATUS.IN_PROGRESS,
+          updatedAt: Timestamp.now(),
+        };
+      });
+
       await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
+      await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
       toast.success(t('workStarted'), t('workStartedDesc'));
     } catch (err) {
       console.error('Error starting work:', err);
+      // Rollback on error
+      if (previousRequest) {
+        queryClient.setQueryData(['request', requestId], previousRequest);
+      }
       toast.error(t('workStartFailed'), t('workStartFailedDesc'));
     } finally {
       setIsWork(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast]);
+  }, [canPerformAction, requestId, orgId, userData, toast, queryClient, t]);
 
   // Payment success
   const handlePaymentSuccess = useCallback(
     async (result: { paymentId?: string }) => {
       if (!canPerformAction() || !result.paymentId) return;
 
+      // Optimistic update
+      const previousRequest = queryClient.getQueryData(['request', requestId]);
+
       try {
+        // Optimistically update UI
+        queryClient.setQueryData(['request', requestId], (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            status: REQUEST_STATUS.PAID,
+            paymentId: result.paymentId,
+            updatedAt: Timestamp.now(),
+          };
+        });
+
         await markRequestPaid(
           requestId!,
           orgId!,
@@ -255,13 +324,18 @@ export function useRequestActions({
           userData!.name || userData!.email,
           result.paymentId
         );
+        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
         toast.success(t('paymentSuccess'), t('paymentSuccessDesc'));
       } catch (err) {
         console.error('Error marking as paid:', err);
+        // Rollback on error
+        if (previousRequest) {
+          queryClient.setQueryData(['request', requestId], previousRequest);
+        }
         toast.error(t('paymentRecorded'), t('paymentRecordedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, t]
+    [canPerformAction, requestId, orgId, userData, toast, queryClient, t]
   );
 
   // Assign specialist
@@ -269,8 +343,22 @@ export function useRequestActions({
     async (specialistId: string, specialistName: string) => {
       if (!canPerformAction()) return;
 
+      // Optimistic update
+      const previousRequest = queryClient.getQueryData(['request', requestId]);
+
       setIsAssigning(true);
       try {
+        // Optimistically update UI
+        queryClient.setQueryData(['request', requestId], (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            assignedTo: specialistId,
+            assignedToName: specialistName,
+            updatedAt: Timestamp.now(),
+          };
+        });
+
         await assignRequest(
           requestId!,
           orgId!,
@@ -279,18 +367,23 @@ export function useRequestActions({
           specialistId,
           specialistName
         );
+        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
         toast.success(
           t('specialistAssigned'),
           t('specialistAssignedDesc', { name: specialistName })
         );
       } catch (err) {
         console.error('Error assigning specialist:', err);
+        // Rollback on error
+        if (previousRequest) {
+          queryClient.setQueryData(['request', requestId], previousRequest);
+        }
         toast.error(t('specialistAssignFailed'), t('specialistAssignFailedDesc'));
       } finally {
         setIsAssigning(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, t]
+    [canPerformAction, requestId, orgId, userData, toast, queryClient, t]
   );
 
   // Request revision
@@ -298,8 +391,21 @@ export function useRequestActions({
     async (notes: string): Promise<boolean> => {
       if (!canPerformAction() || !notes.trim()) return false;
 
+      // Optimistic update
+      const previousRequest = queryClient.getQueryData(['request', requestId]);
+
       setIsSubmittingRevision(true);
       try {
+        // Optimistically update UI - move back to IN_PROGRESS
+        queryClient.setQueryData(['request', requestId], (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            status: REQUEST_STATUS.IN_PROGRESS,
+            updatedAt: Timestamp.now(),
+          };
+        });
+
         await requestRevision(
           requestId!,
           orgId!,
@@ -307,17 +413,22 @@ export function useRequestActions({
           userData!.name || userData!.email,
           notes.trim()
         );
+        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
         toast.success(t('revisionRequested'), t('revisionRequestedDesc'));
         return true;
       } catch (err) {
         console.error('Failed to request revision:', err);
+        // Rollback on error
+        if (previousRequest) {
+          queryClient.setQueryData(['request', requestId], previousRequest);
+        }
         toast.error(t('revisionFailed'), t('revisionFailedDesc'));
         return false;
       } finally {
         setIsSubmittingRevision(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, t]
+    [canPerformAction, requestId, orgId, userData, toast, queryClient, t]
   );
 
   // File upload
@@ -352,14 +463,52 @@ export function useRequestActions({
   // Status change
   const handleStatusChange = useCallback(
     async (newStatus: RequestStatus) => {
-      if (!canPerformAction() || !isAgency) return;
+      console.log('[handleStatusChange] Attempting status change to:', newStatus);
+      console.log('[handleStatusChange] Current state:', {
+        requestId,
+        orgId,
+        isAgency,
+        userData: !!userData,
+      });
+
+      if (!canPerformAction()) {
+        console.error('[handleStatusChange] Cannot perform action - missing required data');
+        toast.error(t('statusUpdateFailed'), 'Missing required information');
+        return;
+      }
+
+      if (!isAgency) {
+        console.error('[handleStatusChange] User is not an agency user');
+        toast.error(t('statusUpdateFailed'), 'Only agency users can change request status');
+        return;
+      }
+
+      // Optimistic update: Store previous state
+      const previousRequest = queryClient.getQueryData(['request', requestId]);
+      console.log('[handleStatusChange] Previous request state:', previousRequest);
 
       try {
+        // Optimistically update the UI immediately
+        console.log('[handleStatusChange] Applying optimistic update...');
+        queryClient.setQueryData(['request', requestId], (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            status: newStatus,
+            updatedAt: Timestamp.now(),
+          };
+        });
+
+        console.log('[handleStatusChange] Updating request status in Firebase...');
         await updateRequestStatus(requestId!, newStatus);
+        console.log('[handleStatusChange] Status updated successfully');
 
-        // Invalidate request query to trigger refetch
-        queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+        // Invalidate to ensure fresh data from server
+        console.log('[handleStatusChange] Invalidating queries for server sync...');
+        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+        console.log('[handleStatusChange] Queries invalidated');
 
+        console.log('[handleStatusChange] Logging activity...');
         await logActivity({
           orgId: orgId!,
           requestId: requestId!,
@@ -368,16 +517,26 @@ export function useRequestActions({
           action: 'STATUS_CHANGED',
           details: { status: newStatus },
         });
+        console.log('[handleStatusChange] Activity logged');
+
         toast.success(
           t('statusUpdated'),
           t('statusUpdatedDesc', { status: newStatus.toLowerCase() })
         );
       } catch (error) {
-        console.error('Error updating status:', error);
+        console.error('[handleStatusChange] Error updating status:', error);
+
+        // Rollback optimistic update on error
+        console.log('[handleStatusChange] Rolling back optimistic update...');
+        if (previousRequest) {
+          queryClient.setQueryData(['request', requestId], previousRequest);
+          console.log('[handleStatusChange] Rollback complete');
+        }
+
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, isAgency, toast, queryClient]
+    [canPerformAction, requestId, orgId, userData, isAgency, toast, queryClient, t]
   );
 
   // Send comment with optimistic update

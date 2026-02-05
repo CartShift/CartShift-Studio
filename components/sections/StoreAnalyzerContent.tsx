@@ -50,6 +50,7 @@ export const StoreAnalyzerContent: React.FC = () => {
     setState('analyzing');
     setAnalyzingProgress(0);
 
+    const startTime = Date.now();
     trackEvent('store_analysis_started', { store_url: data.storeUrl });
 
     // Start the API call immediately
@@ -90,11 +91,32 @@ export const StoreAnalyzerContent: React.FC = () => {
       const result = await response.json();
       setResults(result);
 
+      const duration = Date.now() - startTime;
       trackEvent('store_analysis_completed', {
         store_url: data.storeUrl,
         overall_score: result.overallScore,
         platform: result.platform || 'unknown',
+        duration_ms: duration,
+        has_puppeteer: !!(result.visualAnalysis || result.productAnalysis),
+        has_visual_analysis: !!result.visualAnalysis,
+        has_product_analysis: !!result.productAnalysis,
+        has_competitor_analysis: !!result.competitorAnalysis?.competitors?.length,
+        has_ai_analysis: !!result.aiAnalysis,
       });
+
+      // Track feature unavailability
+      if (!result.visualAnalysis) {
+        trackEvent('analyzer_feature_unavailable', {
+          feature_name: 'visual_analysis',
+          reason: 'puppeteer_unavailable',
+        });
+      }
+      if (!result.productAnalysis) {
+        trackEvent('analyzer_feature_unavailable', {
+          feature_name: 'product_analysis',
+          reason: 'no_product_page_or_puppeteer_unavailable',
+        });
+      }
 
       if (data.subscribeNewsletter) {
         trackEvent('newsletter_signup', { signup_location: 'store_analyzer' });
@@ -106,10 +128,29 @@ export const StoreAnalyzerContent: React.FC = () => {
       setState('results');
     } catch (error) {
       Logger.error('Analysis error', error, { storeUrl: data.storeUrl });
+
+      const duration = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      // Classify error type
+      let errorType: 'network' | 'timeout' | 'validation' | 'server' | 'unknown' = 'unknown';
+      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        errorType = 'network';
+      } else if (errorMessage.includes('timeout') || errorMessage.includes('timed out')) {
+        errorType = 'timeout';
+      } else if (errorMessage.includes('invalid') || errorMessage.includes('required')) {
+        errorType = 'validation';
+      } else if (errorMessage.includes('500') || errorMessage.includes('failed')) {
+        errorType = 'server';
+      }
+
       trackEvent('store_analysis_failed', {
         store_url: data.storeUrl,
-        error_message: error instanceof Error ? error.message : String(error),
+        error_message: errorMessage,
+        error_type: errorType,
+        duration_ms: duration,
       });
+
       alert('We could not analyze this store. Please verify the URL and try again.');
       setState('form');
     }

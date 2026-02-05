@@ -563,25 +563,58 @@ export class AnalyzerService {
     // 7. Product Page Audit (Slow, crawls)
 
     // PARALLEL EXECUTION OF HEAVY TASKS
-    // 4. Competitor Analysis (Regex/HTML)
-    // 5. Scraper Analysis (Visual + Product via Puppeteer)
-    // 6. AI Readiness Analysis (Fast, local)
-    // 7. PageSpeed API
-
-    // We already fired PageSpeed (line 395) but we awaited it.
-    // Optimization: Depending on usage, we could have fired it without await and awaited here.
-    // But since logic depends on pageSpeedData above, we keep it sequential or refactor logic.
-    // For now, let's just make sure Puppeteer is efficient.
-
-    // NOTE: PageSpeed was already awaited above at line 395.
-    // If we want total parallel, we need to restructure `sections` creation.
-    // However, merging the two Puppeteer tasks into one ScraperService call should yield 2x speedup on that part alone.
-
+    // Execute all external services in parallel with individual error handling
+    const serviceStartTime = Date.now();
     const [competitorData, scraperData, aiData] = await Promise.all([
-      CompetitorService.analyzeCompetitors(html, normalizedUrl),
-      ScraperService.scrape(normalizedUrl),
-      Promise.resolve(AIReadinessService.analyze(html)),
+      CompetitorService.analyzeCompetitors(html, normalizedUrl).catch(err => {
+        console.error('Competitor analysis failed', err);
+        // Track service failure for monitoring
+        if (typeof window !== 'undefined') {
+          import('@/lib/analytics').then(({ trackEvent }) => {
+            trackEvent('analyzer_service_failure', {
+              service_name: 'competitor',
+              error_message: err.message || String(err),
+              graceful_degradation: true,
+            });
+          });
+        }
+        return { competitors: [], marketPosition: 'niche' as const };
+      }),
+      ScraperService.scrape(normalizedUrl).catch(err => {
+        console.error('Scraper service failed', err);
+        // Track Puppeteer failures
+        if (typeof window !== 'undefined') {
+          import('@/lib/analytics').then(({ trackEvent }) => {
+            trackEvent('analyzer_service_failure', {
+              service_name: 'puppeteer',
+              error_message: err.message || String(err),
+              graceful_degradation: true,
+            });
+          });
+        }
+        return { visualAnalysis: null, productAnalysis: undefined };
+      }),
+      Promise.resolve(AIReadinessService.analyze(html)).catch(err => {
+        console.error('AI analysis failed', err);
+        if (typeof window !== 'undefined') {
+          import('@/lib/analytics').then(({ trackEvent }) => {
+            trackEvent('analyzer_service_failure', {
+              service_name: 'ai',
+              error_message: err.message || String(err),
+              graceful_degradation: true,
+            });
+          });
+        }
+        return {
+          score: 50,
+          schemaImplemented: false,
+          hasStructuredData: false,
+          recommendations: ['Run a structured data audit'],
+        };
+      }),
     ]);
+
+    console.log(`External services completed in ${Date.now() - serviceStartTime}ms`);
 
     // Destructure scraper results
     const { visualAnalysis: visualData, productAnalysis: productData } = scraperData;
@@ -622,9 +655,14 @@ export class AnalyzerService {
     };
 
     // Cache & Save Benchmark (Fire and forget-ish, using Promise.all to ensure completion before func end)
+    // Both operations have individual error handling to prevent failures
     await Promise.all([
-      CacheService.set(cacheKey, result, 86400),
-      BenchmarkService.saveBenchmark(result, html),
+      CacheService.set(cacheKey, result, 86400).catch(err =>
+        console.error('Cache set failed', err)
+      ),
+      BenchmarkService.saveBenchmark(result, html).catch(err =>
+        console.error('Benchmark save failed', err)
+      ),
     ]);
 
     return result;
