@@ -113,8 +113,8 @@ export const InviteClientForm = ({
       const errorMsg =
         error instanceof Error ? error.message : t('portal.clientInvite.errors.generic');
 
-      // Check if error is about existing invitation
-      if (errorMsg.includes('invitation has already been sent')) {
+      // Check if error is about existing invitation (match both "invite" and "invitation")
+      if (errorMsg.toLowerCase().includes('already been sent to this email')) {
         // Fetch the existing invite to get its ID
         try {
           const pendingInvites = await getPendingClientInvites(data.email);
