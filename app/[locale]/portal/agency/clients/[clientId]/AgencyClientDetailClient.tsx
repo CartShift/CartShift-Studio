@@ -51,6 +51,7 @@ import { getDateLocale, getDateLocaleString } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { toast } from 'sonner';
 
 export default function AgencyClientDetailClient({
   clientId: initialClientId,
