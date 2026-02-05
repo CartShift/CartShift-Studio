@@ -40,72 +40,33 @@ export function useNotificationPositioning({
     if (!buttonRef.current || !dropdownRef.current) return;
 
     const buttonRect = buttonRef.current.getBoundingClientRect();
-    const isRTL = document.documentElement.dir === 'rtl';
+
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-
-    const maxDropdownWidth = Math.min(dropdownWidth, viewportWidth - padding * 2);
 
     let top = buttonRect.bottom + gap;
     let right: number | undefined;
     let left: number | undefined;
 
-    // Calculate horizontal positioning
-    const spaceOnRight = viewportWidth - buttonRect.right;
-    const spaceOnLeft = buttonRect.left;
+    // Horizontal positioning
+    const isRightHalf = buttonRect.left + buttonRect.width / 2 > viewportWidth / 2;
 
-    if (isRTL) {
-      // RTL layout positioning
-      if (spaceOnRight >= maxDropdownWidth + padding) {
-        right = viewportWidth - buttonRect.right;
-        left = undefined;
-      } else if (spaceOnLeft >= maxDropdownWidth + padding) {
-        left = Math.max(padding, buttonRect.left - maxDropdownWidth);
-        right = undefined;
-      } else {
-        right = padding;
-        left = undefined;
-      }
-
-      // Adjust right position if needed
-      if (right !== undefined) {
-        const actualWidth = Math.min(maxDropdownWidth, viewportWidth - right - padding);
-        if (right + actualWidth > viewportWidth - padding) {
-          right = padding;
-        }
-      }
-      if (left !== undefined && left < padding) {
-        left = padding;
-      }
+    if (isRightHalf) {
+      // Align right edge of dropdown with right edge of button
+      right = viewportWidth - buttonRect.right;
+      left = undefined;
     } else {
-      // LTR layout positioning
-      if (spaceOnRight >= maxDropdownWidth + padding) {
-        right = viewportWidth - buttonRect.right;
-        left = undefined;
-      } else if (spaceOnLeft >= maxDropdownWidth + padding) {
-        left = Math.max(padding, buttonRect.left - maxDropdownWidth);
-        right = undefined;
-      } else {
-        right = padding;
-        left = undefined;
-      }
+      // Align left edge of dropdown with left edge of button
+      left = buttonRect.left;
+      right = undefined;
+    }
 
-      // Adjust positions if needed
-      if (right !== undefined) {
-        const actualWidth = Math.min(maxDropdownWidth, viewportWidth - right - padding);
-        if (right + actualWidth > viewportWidth - padding) {
-          right = padding;
-        }
-      }
-      if (left !== undefined) {
-        const actualWidth = Math.min(maxDropdownWidth, viewportWidth - left - padding);
-        if (left + actualWidth > viewportWidth - padding) {
-          left = viewportWidth - actualWidth - padding;
-        }
-        if (left < padding) {
-          left = padding;
-        }
-      }
+    // Ensure horizontal safety (keep within padding)
+    if (right !== undefined && right < padding) {
+      right = padding;
+    }
+    if (left !== undefined && left < padding) {
+      left = padding;
     }
 
     // Vertical positioning - ensure dropdown fits in viewport

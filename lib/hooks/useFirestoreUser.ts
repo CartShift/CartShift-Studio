@@ -122,6 +122,15 @@ export function useFirestoreUser(
       return;
     }
 
+    // Use refs for callbacks to avoid re-subscription when callbacks change
+    const onUserDataRef = useRef(options.onUserData);
+    const onNoUserDocumentRef = useRef(options.onNoUserDocument);
+
+    useEffect(() => {
+      onUserDataRef.current = options.onUserData;
+      onNoUserDocumentRef.current = options.onNoUserDocument;
+    }, [options.onUserData, options.onNoUserDocument]);
+
     // Ensure auth token is ready before accessing Firestore
     const initSubscription = async () => {
       try {
@@ -164,7 +173,7 @@ export function useFirestoreUser(
             setUserData(prevData =>
               userDataEqual(prevData, newUserData) ? prevData : newUserData
             );
-            options.onUserData?.(newUserData);
+            onUserDataRef.current?.(newUserData);
           } else {
             // No Firestore document - create fallback
             console.warn(
@@ -176,7 +185,7 @@ export function useFirestoreUser(
             setUserData(prevData =>
               userDataEqual(prevData, fallbackData) ? prevData : fallbackData
             );
-            options.onNoUserDocument?.(fallbackData);
+            onNoUserDocumentRef.current?.(fallbackData);
           }
           set(false);
         },
@@ -228,7 +237,7 @@ export function useFirestoreUser(
       isMountedRef.current = false;
       cleanupSubscription();
     };
-  }, [user, refreshKey, pathname, cleanupSubscription, options]);
+  }, [user, refreshKey, pathname, cleanupSubscription]); // Removed options from dependency
 
   return {
     userData,

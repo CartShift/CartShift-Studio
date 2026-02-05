@@ -455,9 +455,35 @@ export class AnalyzerService {
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       html = await response.text();
-    } catch (fetchError) {
-      logError('Store fetch error', fetchError);
-      throw new Error('Could not access store URL');
+    } catch (fetchError: any) {
+      const errorDetails = {
+        message: fetchError.message,
+        cause: fetchError.cause,
+        code: fetchError.code,
+        name: fetchError.name,
+        stack: fetchError.stack,
+      };
+
+      logError('Store fetch error', fetchError, { ...errorDetails, url: normalizedUrl });
+
+      // Enhance error message based on specific failure types
+      if (fetchError.name === 'TimeoutError' || fetchError.name === 'AbortError') {
+        throw new Error(
+          `Connection timed out after 15 seconds. The store at ${normalizedUrl} took too long to respond.`
+        );
+      }
+
+      if (fetchError.code === 'ENOTFOUND') {
+        throw new Error(
+          `Could not resolve hostname for ${normalizedUrl}. Please check if the URL is correct.`
+        );
+      }
+
+      if (fetchError.code === 'ECONNREFUSED') {
+        throw new Error(`Connection refused by ${normalizedUrl}. The server might be down.`);
+      }
+
+      throw new Error(`Could not access store URL: ${fetchError.message}`);
     }
 
     const platform = detectPlatform(html, normalizedUrl);

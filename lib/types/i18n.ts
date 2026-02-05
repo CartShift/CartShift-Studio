@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-02-05T23:27:05.142Z
+ * Last updated: 2026-02-05T23:42:05.164Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
