@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import {
@@ -16,7 +15,6 @@ import {
 } from '@/components/ui/ModalBackdrop';
 import { createOrganization } from '@/lib/services/portal-organizations';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser } from '@/lib/types/portal';
 
@@ -54,7 +52,6 @@ export const CreateOrganizationForm = ({ onSuccess, onCancel }: CreateOrganizati
   const { user, userData } = usePortalAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const t = useTranslations('portal');
 
   const {
@@ -108,8 +105,6 @@ export const CreateOrganizationForm = ({ onSuccess, onCancel }: CreateOrganizati
       }
 
       onSuccess(org.id);
-      // Redirect to clean URL - org is stored in context/session
-      router.push(getPortalPath('/dashboard/'));
     } catch (error: unknown) {
       console.error('Create organization error:', error);
       setError(
