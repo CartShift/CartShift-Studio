@@ -46,9 +46,14 @@ type OrgFormData = z.infer<ReturnType<typeof orgSchema>>;
 interface CreateOrganizationFormProps {
   onSuccess: (orgId: string) => void;
   onCancel: () => void;
+  isClientOrganization?: boolean;
 }
 
-export const CreateOrganizationForm = ({ onSuccess, onCancel }: CreateOrganizationFormProps) => {
+export const CreateOrganizationForm = ({
+  onSuccess,
+  onCancel,
+  isClientOrganization = false,
+}: CreateOrganizationFormProps) => {
   const { user, userData } = usePortalAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +96,8 @@ export const CreateOrganizationForm = ({ onSuccess, onCancel }: CreateOrganizati
         data.name,
         user.uid,
         user.email || userData.email,
-        userData.name
+        userData.name,
+        !isClientOrganization // Don't add creator as member for client orgs
       );
 
       // Update the org with additional fields if provided

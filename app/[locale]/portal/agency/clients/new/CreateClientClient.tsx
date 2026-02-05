@@ -10,6 +10,7 @@ export default function CreateClientClient() {
   return (
     <div className="h-full w-full flex items-center justify-center p-6">
       <CreateOrganizationForm
+        isClientOrganization={true}
         onSuccess={orgId => {
           // Redirect to the newly created client's detail page
           router.push(getPortalPath(`/agency/clients/${orgId}/`));

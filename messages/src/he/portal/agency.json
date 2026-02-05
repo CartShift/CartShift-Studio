@@ -171,6 +171,7 @@
             "unassigned": "לא הוקצה"
           },
           "actions": {
+            "sendInvitation": "שלח הזמנה",
             "createRequest": "צור בקשה עבור לקוח",
             "viewAllRequests": "צפה בכל הבקשות",
             "managePlan": "נהל תוכנית",

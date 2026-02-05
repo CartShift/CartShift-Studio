@@ -42,7 +42,8 @@ export async function createOrganization(
   name: string,
   userId: string,
   userEmail: string,
-  userName?: string
+  userName?: string,
+  addCreatorAsMember: boolean = true
 ): Promise<Organization> {
   await waitForAuth();
   const db = getFirestoreDb();
@@ -62,21 +63,23 @@ export async function createOrganization(
   const docRef = await addDoc(collection(db, ORGS_COLLECTION), orgData);
   const orgId = docRef.id;
 
-  // Add creator as owner
-  await addMember(orgId, userId, userEmail, USER_ROLE.OWNER, userName);
+  // Only add creator as owner if requested (not for client orgs created by agency)
+  if (addCreatorAsMember) {
+    await addMember(orgId, userId, userEmail, USER_ROLE.OWNER, userName);
 
-  // Update user's organizations array
-  const userRef = doc(db, USERS_COLLECTION, userId);
-  await setDoc(
-    userRef,
-    {
-      email: userEmail,
-      name: userName || null,
-      organizations: arrayUnion(orgId),
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
+    // Update user's organizations array
+    const userRef = doc(db, USERS_COLLECTION, userId);
+    await setDoc(
+      userRef,
+      {
+        email: userEmail,
+        name: userName || null,
+        organizations: arrayUnion(orgId),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
 
   return {
     id: orgId,

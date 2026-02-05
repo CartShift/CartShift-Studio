@@ -17,6 +17,7 @@ import {
   BarChart3,
   Trash2,
   Settings,
+  Mail,
 } from 'lucide-react';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -24,6 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { EditClientModal } from '@/components/portal/modals/EditClientModal';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { InviteClientForm } from '@/components/portal/forms/InviteClientForm';
 import {
   subscribeToOrganization,
   getOrganizationMembers,
@@ -74,6 +76,7 @@ export default function AgencyClientDetailClient({
   const [memberToRemove, setMemberToRemove] = useState<OrganizationMember | null>(null);
   const [isRemoveMemberOpen, setIsRemoveMemberOpen] = useState(false);
   const [isRemovingMember, setIsRemovingMember] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   useEffect(() => {
     if (!clientId) {
@@ -395,6 +398,14 @@ export default function AgencyClientDetailClient({
 
               {/* Actions */}
               <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="outline"
+                  className="border-emerald-200 dark:border-emerald-900 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                  onClick={() => setIsInviteModalOpen(true)}
+                >
+                  <Mail size={16} />
+                  {t('agency.clients.detail.actions.sendInvitation' as any) || 'Send Invitation'}
+                </Button>
                 <Button
                   variant="outline"
                   className="border-blue-200 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950"
@@ -886,6 +897,14 @@ export default function AgencyClientDetailClient({
           // Luckily, we use real-time listeners for 'organization' in this component.
         }}
       />
+
+      {isInviteModalOpen && (
+        <InviteClientForm
+          clientOrganizationId={clientId}
+          clientOrganizationName={organization.name}
+          onClose={() => setIsInviteModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -171,6 +171,7 @@
             "unassigned": "Unassigned"
           },
           "actions": {
+            "sendInvitation": "Send Invitation",
             "createRequest": "Create Request for Client",
             "viewAllRequests": "View All Requests",
             "managePlan": "Manage Plan",
