@@ -283,15 +283,18 @@ async function getUserEmail(userId) {
 async function createNotification(userId, type, title, body, link) {
   if (!userId) return;
   try {
-    await admin.firestore().collection('portal_notifications').add({
-      userId,
-      type,
-      title,
-      body,
-      link: link || null,
-      read: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    await admin
+      .firestore()
+      .collection('portal_notifications')
+      .add({
+        userId,
+        type,
+        title,
+        body,
+        link: link || null,
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
     console.log(`Notification created for user ${userId}: ${title}`);
   } catch (error) {
     console.error('Error creating notification:', error);
@@ -489,7 +492,9 @@ exports.onPortalRequestCreated = onDocumentCreated(
     if (orgSnap.exists && orgSnap.data().responsibleAgencyUserId) {
       targetUserIds.push(orgSnap.data().responsibleAgencyUserId);
     } else {
-      const adminsSnap = await admin.firestore().collection('portal_users')
+      const adminsSnap = await admin
+        .firestore()
+        .collection('portal_users')
         .where('isAgency', '==', true)
         .where('agencyRole', 'in', ['owner', 'admin'])
         .get();
@@ -668,7 +673,11 @@ exports.onPortalRequestUpdated = onDocumentUpdated(
       await saveInvoicePDF(newData);
 
       // Notify Responsible Agent/Admin about payment
-      const orgSnap = await admin.firestore().collection('portal_organizations').doc(newData.orgId).get();
+      const orgSnap = await admin
+        .firestore()
+        .collection('portal_organizations')
+        .doc(newData.orgId)
+        .get();
       if (orgSnap.exists && orgSnap.data().responsibleAgencyUserId) {
         await createNotification(
           orgSnap.data().responsibleAgencyUserId,
@@ -762,14 +771,20 @@ exports.onPortalCommentCreated = onDocumentCreated(
       );
     } else {
       // Client commented -> Notify responsible agent or agency admins
-      const orgSnap = await admin.firestore().collection('portal_organizations').doc(commentData.orgId).get();
+      const orgSnap = await admin
+        .firestore()
+        .collection('portal_organizations')
+        .doc(commentData.orgId)
+        .get();
       let targetUserIds = [];
       const responsibleAgentId = orgSnap.exists && orgSnap.data().responsibleAgencyUserId;
 
       if (responsibleAgentId) {
         targetUserIds.push(responsibleAgentId);
       } else {
-        const adminsSnap = await admin.firestore().collection('portal_users')
+        const adminsSnap = await admin
+          .firestore()
+          .collection('portal_users')
           .where('isAgency', '==', true)
           .where('agencyRole', 'in', ['owner', 'admin'])
           .get();
@@ -811,13 +826,21 @@ exports.onPortalFileCreated = onDocumentCreated(
     if (!fileData.uploadedBy) return;
 
     // Get author details
-    const authorSnap = await admin.firestore().collection('portal_users').doc(fileData.uploadedBy).get();
+    const authorSnap = await admin
+      .firestore()
+      .collection('portal_users')
+      .doc(fileData.uploadedBy)
+      .get();
     const isAgency = authorSnap.exists ? authorSnap.data().isAgency : false;
 
     if (isAgency) {
       // Agency uploaded -> Notify client
       if (fileData.requestId) {
-        const requestSnap = await admin.firestore().collection('portal_requests').doc(fileData.requestId).get();
+        const requestSnap = await admin
+          .firestore()
+          .collection('portal_requests')
+          .doc(fileData.requestId)
+          .get();
         if (requestSnap.exists) {
           await createNotification(
             requestSnap.data().createdBy,
@@ -830,14 +853,20 @@ exports.onPortalFileCreated = onDocumentCreated(
       }
     } else {
       // Client uploaded -> Notify responsible agent or admins
-      const orgSnap = await admin.firestore().collection('portal_organizations').doc(fileData.orgId).get();
+      const orgSnap = await admin
+        .firestore()
+        .collection('portal_organizations')
+        .doc(fileData.orgId)
+        .get();
       let targetUserIds = [];
       const responsibleAgentId = orgSnap.exists && orgSnap.data().responsibleAgencyUserId;
 
       if (responsibleAgentId) {
         targetUserIds.push(responsibleAgentId);
       } else {
-        const adminsSnap = await admin.firestore().collection('portal_users')
+        const adminsSnap = await admin
+          .firestore()
+          .collection('portal_users')
           .where('isAgency', '==', true)
           .where('agencyRole', 'in', ['owner', 'admin'])
           .get();
@@ -866,7 +895,10 @@ exports.onPortalConsultationCreated = onDocumentCreated(
   async event => {
     const data = event.data.data();
     const participants = data.participants || [];
-    const dateStr = data.scheduledAt && data.scheduledAt.toDate ? data.scheduledAt.toDate().toLocaleString() : 'scheduled time';
+    const dateStr =
+      data.scheduledAt && data.scheduledAt.toDate
+        ? data.scheduledAt.toDate().toLocaleString()
+        : 'scheduled time';
 
     for (const userId of participants) {
       if (userId === data.createdBy) continue; // Don't notify the one who created/scheduled it
@@ -893,9 +925,15 @@ exports.onPortalConsultationUpdated = onDocumentUpdated(
     const newData = event.data.after.data();
 
     // Notify on status change or rescheduling
-    if (oldData.status !== newData.status || oldData.scheduledAt?.seconds !== newData.scheduledAt?.seconds) {
+    if (
+      oldData.status !== newData.status ||
+      oldData.scheduledAt?.seconds !== newData.scheduledAt?.seconds
+    ) {
       const participants = newData.participants || [];
-      const dateStr = newData.scheduledAt && newData.scheduledAt.toDate ? newData.scheduledAt.toDate().toLocaleString() : 'scheduled time';
+      const dateStr =
+        newData.scheduledAt && newData.scheduledAt.toDate
+          ? newData.scheduledAt.toDate().toLocaleString()
+          : 'scheduled time';
 
       let title = 'Consultation Updated';
       let body = `Consultation "${newData.title}" has been updated. Status: ${newData.status}`;
@@ -913,13 +951,7 @@ exports.onPortalConsultationUpdated = onDocumentUpdated(
         const isAgency = userSnap.exists ? userSnap.data().isAgency : false;
         const link = isAgency ? '/portal/agency/consultations/' : '/portal/consultations/';
 
-        await createNotification(
-          userId,
-          'request_updated',
-          title,
-          body,
-          link
-        );
+        await createNotification(userId, 'request_updated', title, body, link);
       }
     }
   }
@@ -932,7 +964,9 @@ exports.onPortalTestimonialCreated = onDocumentCreated(
     const data = event.data.data();
 
     // Notify all agency admins/owners
-    const adminsSnap = await admin.firestore().collection('portal_users')
+    const adminsSnap = await admin
+      .firestore()
+      .collection('portal_users')
       .where('isAgency', '==', true)
       .where('agencyRole', 'in', ['owner', 'admin'])
       .get();
@@ -1394,7 +1428,9 @@ exports.onTeamInviteCreated = onDocumentCreated(
     );
 
     // NEW: Create in-portal notification for existing users
-    const userSnap = await admin.firestore().collection('portal_users')
+    const userSnap = await admin
+      .firestore()
+      .collection('portal_users')
       .where('email', '==', invite.email.toLowerCase())
       .limit(1)
       .get();

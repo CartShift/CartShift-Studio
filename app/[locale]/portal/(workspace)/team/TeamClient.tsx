@@ -80,7 +80,7 @@ export default function TeamClient() {
   };
 
   const copyInviteLink = (invite: Invite) => {
-    const inviteLink = `${window.location.origin}/portal/invite/${invite.code}`;
+    const inviteLink = `${window.location.origin}/${locale}/invite/${invite.code}`;
     navigator.clipboard.writeText(inviteLink);
     setCopiedInviteId(invite.id);
     setTimeout(() => setCopiedInviteId(null), 2000);
