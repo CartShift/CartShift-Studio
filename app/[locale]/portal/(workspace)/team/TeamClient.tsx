@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTeam } from '@/lib/hooks/useTeam';
-import { OrganizationMember, UserRole } from '@/lib/types/portal';
+import { OrganizationMember, UserRole, Invite } from '@/lib/types/portal';
 
 export default function TeamClient() {
   const orgId = useResolvedOrgId();

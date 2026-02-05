@@ -22,6 +22,7 @@ import {
   Request,
   PortalUser,
   RequestStatus,
+  REQUEST_STATUS,
   PricingLineItem,
   Currency,
   Comment,

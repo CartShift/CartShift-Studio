@@ -10,8 +10,7 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  trailingSlash: true,
-  skipTrailingSlashRedirect: true,
+  trailingSlash: false,
   assetPrefix: '',
 
 

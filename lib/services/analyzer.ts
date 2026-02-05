@@ -607,9 +607,10 @@ export class AnalyzerService {
         }
         return {
           score: 50,
-          schemaImplemented: false,
-          hasStructuredData: false,
-          recommendations: ['Run a structured data audit'],
+          structuredDataTypes: [],
+          openGraphTags: false,
+          readabilityScore: 50,
+          aiReadinessStatus: 'needs_improvement' as const,
         };
       }),
     ]);
