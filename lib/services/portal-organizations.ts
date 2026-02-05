@@ -831,3 +831,235 @@ export function subscribeToOrganization(
     }
   );
 }
+
+// ============================================
+// CLIENT INVITATIONS
+// ============================================
+
+/**
+ * Invite a client to the portal. Creates an invitation that links to pre-created requests.
+ * When the client registers, they'll automatically get access to their requests.
+ */
+export async function inviteClient(
+  orgId: string,
+  clientEmail: string,
+  invitedBy: string,
+  invitedByName: string,
+  requestIds: string[] = []
+): Promise<Invite> {
+  await waitForAuth();
+  const db = getFirestoreDb();
+
+  // Validate email
+  const email = clientEmail.toLowerCase().trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Invalid email address');
+  }
+
+  // Check if user already exists with this email
+  const usersQuery = query(collection(db, USERS_COLLECTION), where('email', '==', email), limit(1));
+  const existingUsers = await getDocs(usersQuery);
+
+  if (!existingUsers.empty) {
+    const existingUser = existingUsers.docs[0];
+    const userData = existingUser.data();
+
+    // If user exists, check if they're already a member
+    if (userData.organizations?.includes(orgId)) {
+      throw new Error('This user is already a member of your organization');
+    }
+
+    // If user exists but not a member, create team invite instead
+    throw new Error('This email is already registered. Please use the team invitation instead.');
+  }
+
+  // Check for existing pending client invite
+  const existingInviteQuery = query(
+    collection(db, INVITES_COLLECTION),
+    where('email', '==', email),
+    where('orgId', '==', orgId),
+    where('isClientInvite', '==', true),
+    where('status', '==', 'pending')
+  );
+  const existingInvites = await getDocs(existingInviteQuery);
+
+  if (!existingInvites.empty) {
+    throw new Error('An invitation has already been sent to this email');
+  }
+
+  // Generate unique invite code
+  const inviteCode =
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30); // 30 day expiry for client invites
+
+  const inviteData = {
+    orgId,
+    email,
+    role: USER_ROLE.MEMBER, // Clients get member role by default
+    isClientInvite: true,
+    isAgency: false,
+    invitedBy,
+    invitedByName,
+    code: inviteCode,
+    status: 'pending' as const,
+    linkedRequestIds: requestIds,
+    expiresAt: Timestamp.fromDate(expiresAt),
+    createdAt: serverTimestamp(),
+  };
+
+  const docRef = await addDoc(collection(db, INVITES_COLLECTION), inviteData);
+
+  console.log(
+    `[ClientInvite] Created client invite ${docRef.id} with code ${inviteCode} for ${email}`
+  );
+
+  return {
+    id: docRef.id,
+    ...inviteData,
+    createdAt: Timestamp.now(),
+  } as Invite;
+}
+
+/**
+ * Accept a client invitation and link pre-created requests to the user.
+ * Called during registration/login flow.
+ */
+export async function acceptClientInvite(
+  inviteId: string,
+  userId: string,
+  userEmail: string,
+  userName?: string
+): Promise<{ orgId: string; linkedRequestCount: number }> {
+  const db = getFirestoreDb();
+  const inviteRef = doc(db, INVITES_COLLECTION, inviteId);
+  const inviteSnap = await getDoc(inviteRef);
+
+  if (!inviteSnap.exists()) {
+    throw new Error('Invite not found');
+  }
+
+  const invite = inviteSnap.data() as Invite;
+
+  if (invite.status !== 'pending') {
+    throw new Error('This invite has already been used');
+  }
+
+  if (invite.expiresAt.toDate() < new Date()) {
+    await updateDoc(inviteRef, { status: 'expired' });
+    throw new Error('This invite has expired');
+  }
+
+  if (!invite.isClientInvite) {
+    throw new Error('This is not a client invitation');
+  }
+
+  if (invite.email.toLowerCase() !== userEmail.toLowerCase()) {
+    throw new Error('Email mismatch: This invite was sent to another email address');
+  }
+
+  if (!invite.orgId) {
+    throw new Error('Invalid invite: No organization specified');
+  }
+
+  // Add user as member of organization
+  await addMember(
+    invite.orgId,
+    userId,
+    userEmail,
+    invite.role || USER_ROLE.MEMBER,
+    userName,
+    invite.invitedBy,
+    inviteId
+  );
+
+  // Update user's organizations array
+  const userRef = doc(db, USERS_COLLECTION, userId);
+  await setDoc(
+    userRef,
+    {
+      email: userEmail,
+      name: userName || null,
+      organizations: arrayUnion(invite.orgId),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+
+  // Link pre-created requests to this user
+  let linkedCount = 0;
+  if (invite.linkedRequestIds && invite.linkedRequestIds.length > 0) {
+    const REQUESTS_COLLECTION = 'portal_requests';
+
+    for (const requestId of invite.linkedRequestIds) {
+      try {
+        const requestRef = doc(db, REQUESTS_COLLECTION, requestId);
+        const requestSnap = await getDoc(requestRef);
+
+        if (requestSnap.exists()) {
+          const requestData = requestSnap.data();
+
+          // Only link if the request was created for this client email
+          if (requestData.clientEmail?.toLowerCase() === userEmail.toLowerCase()) {
+            await updateDoc(requestRef, {
+              clientUserId: userId,
+              updatedAt: serverTimestamp(),
+            });
+            linkedCount++;
+          }
+        }
+      } catch (error) {
+        console.error(`Error linking request ${requestId}:`, error);
+      }
+    }
+  }
+
+  // Mark invite as accepted
+  await updateDoc(inviteRef, {
+    status: 'accepted',
+    acceptedAt: serverTimestamp(),
+  });
+
+  console.log(
+    `[ClientInvite] Accepted invite ${inviteId} for ${userEmail}, linked ${linkedCount} requests`
+  );
+
+  return {
+    orgId: invite.orgId,
+    linkedRequestCount: linkedCount,
+  };
+}
+
+/**
+ * Check for pending client invitations by email.
+ * Used during registration/login to automatically process invites.
+ */
+export async function getPendingClientInvites(email: string): Promise<Invite[]> {
+  const db = getFirestoreDb();
+  const normalizedEmail = email.toLowerCase().trim();
+
+  const q = query(
+    collection(db, INVITES_COLLECTION),
+    where('email', '==', normalizedEmail),
+    where('isClientInvite', '==', true),
+    where('status', '==', 'pending')
+  );
+
+  const snapshot = await getDocs(q);
+  const invites: Invite[] = [];
+
+  for (const doc of snapshot.docs) {
+    const invite = { id: doc.id, ...doc.data() } as Invite;
+
+    // Filter out expired invites
+    if (invite.expiresAt.toDate() > new Date()) {
+      invites.push(invite);
+    } else {
+      // Mark as expired
+      await updateDoc(doc.ref, { status: 'expired' });
+    }
+  }
+
+  return invites;
+}

@@ -87,6 +87,90 @@ export async function createRequest(
   });
 }
 
+/**
+ * Create a request for a client who doesn't have an account yet.
+ * The clientEmail will be used to auto-link the request when they register.
+ */
+export async function createRequestForClient(
+  orgId: string,
+  userId: string,
+  userName: string,
+  clientEmail: string,
+  data: CreateRequestData
+): Promise<Request> {
+  return withRetry(async () => {
+    await waitForAuth();
+    const db = getFirestoreDb();
+
+    // Validate email
+    const email = clientEmail.toLowerCase().trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error('Invalid client email address');
+    }
+
+    const requestData = {
+      orgId,
+      title: data.title.trim(),
+      description: data.description.trim(),
+      type: data.type,
+      status: REQUEST_STATUS.NEW as RequestStatus,
+      priority: data.priority,
+      createdBy: userId,
+      createdByName: userName,
+      clientEmail: email, // Store client email for auto-linking
+      tags: data.tags || [],
+      attachmentIds: [],
+      commentCount: 0,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+
+    const docRef = await addDoc(collection(db, REQUESTS_COLLECTION), requestData);
+
+    await logActivity({
+      orgId,
+      requestId: docRef.id,
+      userId,
+      userName,
+      action: 'CREATED_REQUEST',
+      details: { title: data.title, clientEmail: email },
+    });
+
+    return {
+      id: docRef.id,
+      ...requestData,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    } as Request;
+  });
+}
+
+/**
+ * Get all requests for a specific client email (before they register).
+ * Used by admins to see what requests are assigned to a pending client.
+ */
+export async function getRequestsByClientEmail(
+  orgId: string,
+  clientEmail: string
+): Promise<Request[]> {
+  await waitForAuth();
+  const db = getFirestoreDb();
+  const email = clientEmail.toLowerCase().trim();
+
+  const q = query(
+    collection(db, REQUESTS_COLLECTION),
+    where('orgId', '==', orgId),
+    where('clientEmail', '==', email),
+    orderBy('createdAt', 'desc')
+  );
+
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Request[];
+}
+
 // ============================================
 // READ
 // ============================================

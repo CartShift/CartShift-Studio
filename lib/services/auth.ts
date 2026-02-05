@@ -12,6 +12,7 @@ import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb } from '@/lib/firebase';
 import { ACCOUNT_TYPE } from '@/lib/types/portal';
 import { validatePassword, isValidEmail } from '@/lib/utils/validation';
+import { getPendingClientInvites, acceptClientInvite } from '@/lib/services/portal-organizations';
 
 // Google Auth Provider instance
 const googleProvider = new GoogleAuthProvider();
@@ -49,7 +50,21 @@ export async function loginWithEmail(email: string, password: string): Promise<U
     }
 
     const userCredential = await signInWithEmailAndPassword(authInstance, email, password);
-    return userCredential.user;
+    const user = userCredential.user;
+
+    // Check for pending client invites and auto-accept them
+    try {
+      const pendingInvites = await getPendingClientInvites(email);
+      for (const invite of pendingInvites) {
+        await acceptClientInvite(invite.id, user.uid, email, user.displayName || undefined);
+        console.log(`[Login] Auto-accepted client invite ${invite.id} for ${email}`);
+      }
+    } catch (error) {
+      console.warn('[Login] Error processing client invites:', error);
+      // Don't fail login if invite processing fails
+    }
+
+    return user;
   } catch (error: unknown) {
     // Re-throw Firebase auth errors with more context
     const authError = error as { code?: string; message?: string };
@@ -101,6 +116,20 @@ export async function signInWithGoogle(): Promise<User> {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+    }
+
+    // Check for pending client invites and auto-accept them
+    if (user.email) {
+      try {
+        const pendingInvites = await getPendingClientInvites(user.email);
+        for (const invite of pendingInvites) {
+          await acceptClientInvite(invite.id, user.uid, user.email, user.displayName || undefined);
+          console.log(`[GoogleSignIn] Auto-accepted client invite ${invite.id} for ${user.email}`);
+        }
+      } catch (error) {
+        console.warn('[GoogleSignIn] Error processing client invites:', error);
+        // Don't fail login if invite processing fails
+      }
     }
 
     return user;
@@ -172,6 +201,18 @@ export async function signUpWithEmail(
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+
+    // Check for pending client invites and auto-accept them
+    try {
+      const pendingInvites = await getPendingClientInvites(email);
+      for (const invite of pendingInvites) {
+        await acceptClientInvite(invite.id, user.uid, email, name);
+        console.log(`[SignUp] Auto-accepted client invite ${invite.id} for ${email}`);
+      }
+    } catch (error) {
+      console.warn('[SignUp] Error processing client invites:', error);
+      // Don't fail signup if invite processing fails
+    }
 
     return user;
   } catch (error: unknown) {

@@ -19,6 +19,7 @@
       "capacity": "Seat Capacity",
       "activeSeats": "Active Seats",
       "upgrade": "Upgrade",
+      "inviteCanceled": "Invite canceled successfully",
       "roles": {
         "owner": "Primary",
         "member": "Active",

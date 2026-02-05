@@ -125,10 +125,14 @@ service cloud.firestore {
     }
 
     match /portal_requests/{requestId} {
+      // Clients can read requests pre-assigned to their email (before registration)
+      // or requests in orgs they're members of
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
+        resource.data.get('clientEmail', '') == request.auth.token.email ||
+        resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
       );
       allow create: if isAuthenticated() && (
@@ -139,6 +143,8 @@ service cloud.firestore {
       allow update: if isAuthenticated() && (
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
+        resource.data.get('clientEmail', '') == request.auth.token.email ||
+        resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
       );
       allow delete: if isAuthenticated() && isAgencyUser();

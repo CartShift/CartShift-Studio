@@ -332,6 +332,10 @@ export interface Request {
   updatedAt: Timestamp;
   closedAt?: Timestamp;
 
+  // Client invitation - for admins creating requests before client has an account
+  clientEmail?: string; // Pre-assigned client email for auto-linking on registration
+  clientUserId?: string; // Set after client registers and claims the request
+
   // Pinned by users (array of user IDs who pinned this request)
   pinnedBy?: string[];
 
@@ -413,6 +417,7 @@ export interface Invite {
   email: string;
   role: UserRole;
   isAgency?: boolean;
+  isClientInvite?: boolean; // True for client portal invitations (not team member invites)
   invitedBy: string;
   invitedByName: string;
   code: string; // Unique code for the invite URL
@@ -420,6 +425,8 @@ export interface Invite {
   expiresAt: Timestamp;
   createdAt: Timestamp;
   acceptedAt?: Timestamp;
+  // For client invites - track pre-created requests
+  linkedRequestIds?: string[]; // Request IDs that will be linked to client on registration
 }
 
 export interface Notification {

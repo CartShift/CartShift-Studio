@@ -1,0 +1,27 @@
+{
+  "portal": {
+    "clientInvite": {
+      "title": "Invite Client to Portal",
+      "description": "Send an invitation to your client. They'll be able to register an account and immediately see all requests you've created for them.",
+      "emailLabel": "Client Email",
+      "emailPlaceholder": "client@example.com",
+      "sendButton": "Send Invitation",
+      "success": "Client invitation sent successfully!",
+      "linkedRequestsInfo": "All requests created for this email will be automatically linked when they register.",
+      "errors": {
+        "email": "Please enter a valid email address",
+        "generic": "Failed to send invitation. Please try again.",
+        "alreadyMember": "This user is already a member of your organization",
+        "alreadyInvited": "An invitation has already been sent to this email",
+        "alreadyRegistered": "This email is already registered. Please use the team invitation instead."
+      },
+      "inviteLink": {
+        "title": "Invitation Link",
+        "description": "Share this link with your client:",
+        "copy": "Copy Link",
+        "copied": "Link copied!",
+        "expiresIn": "Expires in {days} days"
+      }
+    }
+  }
+}
