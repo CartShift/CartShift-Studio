@@ -327,7 +327,7 @@ export default function AgencyClientsClient() {
                       </Badge>
                       {(org.memberCount ?? 0) === 0 && (
                         <Badge
-                          variant="amber"
+                          variant="yellow"
                           className="text-[9px] font-black uppercase tracking-widest h-5"
                         >
                           {t('agency.clients.badge.pendingInvitation' as any) ||

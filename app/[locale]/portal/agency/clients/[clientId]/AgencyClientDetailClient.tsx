@@ -338,7 +338,7 @@ export default function AgencyClientDetailClient({
                     </Badge>
                     {members.length === 0 && (
                       <Badge
-                        variant="amber"
+                        variant="yellow"
                         className="text-[9px] font-black uppercase tracking-widest"
                       >
                         {t('agency.clients.badge.pendingInvitation' as any) || 'Pending Invitation'}
