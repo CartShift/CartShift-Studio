@@ -177,7 +177,7 @@ async function saveInvoicePDF(request) {
       doc.fillColor('#6b7280').fontSize(10).text('FROM', 50, y1);
       doc.fillColor('#1a1a1a').text('CartShift Studio', 50, y1 + 15);
       doc.text('Tel Aviv, Israel', 50, y1 + 30);
-      doc.text('support@cart-shift.com', 50, y1 + 45);
+      doc.text('hello@cart-shift.com', 50, y1 + 45);
 
       doc.fillColor('#6b7280').text('BILL TO', 350, y1);
       doc.fillColor('#1a1a1a').text(organization.name, 350, y1 + 15);
@@ -1402,13 +1402,18 @@ exports.onTeamInviteCreated = onDocumentCreated(
     const invite = event.data.data();
     if (!invite.email) return;
 
-    const orgSnap = await admin
-      .firestore()
-      .collection('portal_organizations')
-      .doc(invite.orgId)
-      .get();
-
-    const orgName = orgSnap.exists ? orgSnap.data().name : 'an organization';
+    // Handle agency invites (no orgId) vs organization invites
+    let orgName = 'CartShift Studio'; // Default for agency invites
+    if (invite.orgId) {
+      const orgSnap = await admin
+        .firestore()
+        .collection('portal_organizations')
+        .doc(invite.orgId)
+        .get();
+      orgName = orgSnap.exists ? orgSnap.data().name : 'an organization';
+    } else if (invite.isAgency) {
+      orgName = 'CartShift Studio Agency Team';
+    }
     const inviteUrl = `${PORTAL_BASE_URL}/en/invite/${invite.code}`;
 
     await sendPortalEmail(

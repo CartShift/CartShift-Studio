@@ -207,7 +207,7 @@ export const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             <Text style={styles.sectionTitle}>From</Text>
             <Text style={styles.text}>CartShift Studio</Text>
             <Text style={styles.text}>Tel Aviv, Israel</Text>
-            <Text style={styles.text}>support@cart-shift.com</Text>
+            <Text style={styles.text}>hello@cart-shift.com</Text>
           </View>
           <View style={styles.colRight}>
             <Text style={styles.sectionTitle}>Bill To</Text>

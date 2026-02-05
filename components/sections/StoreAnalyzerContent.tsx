@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { Logger } from '@/lib/logger';
+import { toast } from 'sonner';
 
 import type { AnalysisResult } from '@/lib/types/analyzer';
 
@@ -132,16 +133,39 @@ export const StoreAnalyzerContent: React.FC = () => {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : String(error);
 
-      // Classify error type
+      // Classify error type and create user-friendly messages
       let errorType: 'network' | 'timeout' | 'validation' | 'server' | 'unknown' = 'unknown';
-      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+      let userMessage = 'We could not analyze this store.';
+      let suggestion = 'Please verify the URL and try again.';
+
+      if (errorMessage.includes('Could not access store URL')) {
         errorType = 'network';
+        userMessage = 'Unable to connect to the store.';
+        suggestion = 'Check if the URL is correct and the store is online.';
+      } else if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        errorType = 'network';
+        userMessage = 'Network connection failed.';
+        suggestion = 'Check your internet connection and try again.';
       } else if (errorMessage.includes('timeout') || errorMessage.includes('timed out')) {
         errorType = 'timeout';
-      } else if (errorMessage.includes('invalid') || errorMessage.includes('required')) {
+        userMessage = 'Analysis took too long.';
+        suggestion = 'The store may be slow. Please try again in a moment.';
+      } else if (errorMessage.includes('Invalid URL') || errorMessage.includes('required')) {
         errorType = 'validation';
-      } else if (errorMessage.includes('500') || errorMessage.includes('failed')) {
+        userMessage = 'Invalid store URL.';
+        suggestion = 'Please enter a valid store URL (e.g., https://example.com).';
+      } else if (errorMessage.includes('rate limit') || errorMessage.includes('Too many')) {
+        errorType = 'validation';
+        userMessage = 'Too many requests.';
+        suggestion = 'Please wait a minute before trying again.';
+      } else if (errorMessage.includes('Captcha')) {
+        errorType = 'validation';
+        userMessage = 'Captcha verification failed.';
+        suggestion = 'Please refresh the page and try again.';
+      } else if (errorMessage.includes('500') || errorMessage.includes('Analysis failed')) {
         errorType = 'server';
+        userMessage = 'Server error occurred.';
+        suggestion = 'Our team has been notified. Please try again later.';
       }
 
       trackEvent('store_analysis_failed', {
@@ -151,7 +175,19 @@ export const StoreAnalyzerContent: React.FC = () => {
         duration_ms: duration,
       });
 
-      alert('We could not analyze this store. Please verify the URL and try again.');
+      // Show user-friendly error with toast
+      toast.error(userMessage, {
+        description: suggestion,
+        duration: 5000,
+        action:
+          errorType === 'validation'
+            ? undefined
+            : {
+                label: 'Try Again',
+                onClick: () => {},
+              },
+      });
+
       setState('form');
     }
   };
