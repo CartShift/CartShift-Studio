@@ -51,6 +51,17 @@ export default function InviteClient() {
         setInvite(inviteData);
 
         if (inviteData.status !== 'pending') {
+          // If user just authenticated and invite was auto-accepted, redirect to dashboard
+          if (inviteData.status === 'accepted' && isAuthenticated) {
+            setTimeout(() => {
+              if (inviteData.orgId) {
+                switchOrg(inviteData.orgId);
+              }
+              router.push(getPortalPath('/dashboard/'));
+            }, 1000);
+            return;
+          }
+
           setError(
             inviteData.status === 'accepted'
               ? t('auth.errors.alreadyAccepted')
