@@ -127,7 +127,8 @@
         "badge": {
           "active": "ACTIVE",
           "inactive": "INACTIVE",
-          "suspended": "SUSPENDED"
+          "suspended": "SUSPENDED",
+          "pendingInvitation": "PENDING INVITATION"
         },
         "plans": {
           "free": "Free Starter",

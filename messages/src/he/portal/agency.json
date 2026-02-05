@@ -127,7 +127,8 @@
         "badge": {
           "active": "פעיל",
           "inactive": "לא פעיל",
-          "suspended": "מושעה"
+          "suspended": "מושעה",
+          "pendingInvitation": "ממתין להזמנה"
         },
         "plans": {
           "free": "מסלול חופשי",

@@ -336,6 +336,14 @@ export default function AgencyClientDetailClient({
                         ? t(`agency.clients.badge.${organization.status}` as any)
                         : t('agency.clients.badge.active' as any)}
                     </Badge>
+                    {members.length === 0 && (
+                      <Badge
+                        variant="amber"
+                        className="text-[9px] font-black uppercase tracking-widest"
+                      >
+                        {t('agency.clients.badge.pendingInvitation' as any) || 'Pending Invitation'}
+                      </Badge>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 mb-4">
@@ -900,9 +908,14 @@ export default function AgencyClientDetailClient({
 
       {isInviteModalOpen && (
         <InviteClientForm
-          clientOrganizationId={clientId}
-          clientOrganizationName={organization.name}
-          onClose={() => setIsInviteModalOpen(false)}
+          orgId={clientId}
+          onSuccess={() => {
+            setIsInviteModalOpen(false);
+            toast.success(
+              t('portal.clientInvite.success' as any) || 'Invitation sent successfully'
+            );
+          }}
+          onCancel={() => setIsInviteModalOpen(false)}
         />
       )}
     </div>
