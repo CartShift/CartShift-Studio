@@ -7,7 +7,7 @@ Invites created without the `code` field → Email function couldn't build the U
 ## The Solution
 
 ✅ Added `code` field to Invite interface
-✅ Generate unique code on invite creation  
+✅ Generate unique code on invite creation
 ✅ Updated getInvite() to lookup by code
 ✅ Fixed invite link copying to use code
 

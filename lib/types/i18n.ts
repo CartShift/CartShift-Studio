@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-02-05T14:37:19.845Z
+ * Last updated: 2026-02-05T18:49:20.030Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -584,6 +584,7 @@ export interface Portal {
         active: string;
         inactive: string;
         suspended: string;
+        pendingInvitation: string;
       };
       plans: {
         free: string;
@@ -627,6 +628,7 @@ export interface Portal {
           unassigned: string;
         };
         actions: {
+          sendInvitation: string;
           createRequest: string;
           viewAllRequests: string;
           managePlan: string;
@@ -937,6 +939,29 @@ export interface Portal {
     new: string;
     calculator: string;
     sales: string;
+  };
+  clientInvite: {
+    title: string;
+    description: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    sendButton: string;
+    success: string;
+    linkedRequestsInfo: string;
+    errors: {
+      email: string;
+      generic: string;
+      alreadyMember: string;
+      alreadyInvited: string;
+      alreadyRegistered: string;
+    };
+    inviteLink: {
+      title: string;
+      description: string;
+      copy: string;
+      copied: string;
+      expiresIn: string;
+    };
   };
   commandPalette: {
     placeholder: string;
@@ -2376,6 +2401,7 @@ export interface Portal {
     capacity: string;
     activeSeats: string;
     upgrade: string;
+    inviteCanceled: string;
     roles: {
       owner: string;
       member: string;
@@ -4058,6 +4084,7 @@ export type TranslationKey =
   | 'portal.agency.clients.activeAccounts'
   | 'portal.agency.clients.badge.active'
   | 'portal.agency.clients.badge.inactive'
+  | 'portal.agency.clients.badge.pendingInvitation'
   | 'portal.agency.clients.badge.suspended'
   | 'portal.agency.clients.dashboard'
   | 'portal.agency.clients.deleteConfirm'
@@ -4066,6 +4093,7 @@ export type TranslationKey =
   | 'portal.agency.clients.detail.actions.exportData'
   | 'portal.agency.clients.detail.actions.managePlan'
   | 'portal.agency.clients.detail.actions.sendEmail'
+  | 'portal.agency.clients.detail.actions.sendInvitation'
   | 'portal.agency.clients.detail.actions.viewAllRequests'
   | 'portal.agency.clients.detail.activity.emptyDesc'
   | 'portal.agency.clients.detail.activity.emptyTitle'
@@ -4414,6 +4442,23 @@ export type TranslationKey =
   | 'portal.breadcrumbs.settings'
   | 'portal.breadcrumbs.team'
   | 'portal.breadcrumbs.workboard'
+  | 'portal.clientInvite.description'
+  | 'portal.clientInvite.emailLabel'
+  | 'portal.clientInvite.emailPlaceholder'
+  | 'portal.clientInvite.errors.alreadyInvited'
+  | 'portal.clientInvite.errors.alreadyMember'
+  | 'portal.clientInvite.errors.alreadyRegistered'
+  | 'portal.clientInvite.errors.email'
+  | 'portal.clientInvite.errors.generic'
+  | 'portal.clientInvite.inviteLink.copied'
+  | 'portal.clientInvite.inviteLink.copy'
+  | 'portal.clientInvite.inviteLink.description'
+  | 'portal.clientInvite.inviteLink.expiresIn'
+  | 'portal.clientInvite.inviteLink.title'
+  | 'portal.clientInvite.linkedRequestsInfo'
+  | 'portal.clientInvite.sendButton'
+  | 'portal.clientInvite.success'
+  | 'portal.clientInvite.title'
   | 'portal.commandPalette.footer.toClose'
   | 'portal.commandPalette.footer.toNavigate'
   | 'portal.commandPalette.footer.toSelect'
@@ -5520,6 +5565,7 @@ export type TranslationKey =
   | 'portal.team.errors.load'
   | 'portal.team.guideNote'
   | 'portal.team.invite'
+  | 'portal.team.inviteCanceled'
   | 'portal.team.inviteForm.cancel'
   | 'portal.team.inviteForm.emailLabel'
   | 'portal.team.inviteForm.emailPlaceholder'

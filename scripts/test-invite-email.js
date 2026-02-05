@@ -1,11 +1,11 @@
 /**
  * Test script to verify invite email system
- * 
+ *
  * This script helps diagnose invite email issues by:
  * 1. Checking Firebase Functions logs for invite creation
  * 2. Checking Firestore for recent invites
  * 3. Verifying the invite document has all required fields
- * 
+ *
  * Usage: node scripts/test-invite-email.js
  */
 
@@ -13,8 +13,8 @@ const admin = require('firebase-admin');
 const path = require('path');
 
 // Initialize Firebase Admin with service account
-const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 
-  path.join(__dirname, '../serviceAccountKey.json');
+const serviceAccountPath =
+  process.env.GOOGLE_APPLICATION_CREDENTIALS || path.join(__dirname, '../serviceAccountKey.json');
 
 try {
   if (!admin.apps.length) {
@@ -22,7 +22,7 @@ try {
     if (require('fs').existsSync(serviceAccountPath)) {
       const serviceAccount = require(serviceAccountPath);
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
+        credential: admin.credential.cert(serviceAccount),
       });
     } else {
       // Fallback to application default credentials (for local development)
@@ -68,7 +68,7 @@ async function checkRecentInvites() {
       console.log(`Created: ${invite.createdAt?.toDate?.() || 'Unknown'}`);
       console.log(`Invited by: ${invite.invitedByName || 'Unknown'}`);
       console.log(`Org ID: ${invite.orgId || 'Agency invite'}`);
-      
+
       // Check for org name
       if (invite.orgId) {
         db.collection('portal_organizations')
@@ -80,7 +80,7 @@ async function checkRecentInvites() {
             }
           });
       }
-      
+
       console.log('');
     });
 
@@ -104,7 +104,6 @@ async function checkRecentInvites() {
     console.log('   - "[Email] ✅ Sent to <email>"');
     console.log('5. Check Resend dashboard: https://resend.com/emails');
     console.log('\n');
-
   } catch (error) {
     console.error('❌ Error checking invites:', error.message);
   }
