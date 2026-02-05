@@ -10,7 +10,7 @@ const {
   handleWebhookEvent,
   generateIdempotencyKey,
   addToAudience,
-} = require('./emails/email-service');
+} = require('./lib/emails/email-service');
 
 admin.initializeApp();
 
