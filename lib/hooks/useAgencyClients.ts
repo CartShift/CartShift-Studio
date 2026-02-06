@@ -5,6 +5,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { getOrganizationsWithStats } from '@/lib/services/portal-organizations';
 import { getClientRevenueData } from '@/lib/services/portal-sales';
 import { Organization, ClientRevenueData } from '@/lib/types/portal';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 export type EnhancedOrganization = Organization & {
   memberCount: number;
@@ -16,7 +17,6 @@ export type EnhancedOrganization = Organization & {
 
 export function useAgencyClients() {
   const { loading: auth, isAgency, userData } = usePortalAuth();
-
   const shouldFetch = !auth && isAgency;
 
   const {
@@ -24,20 +24,19 @@ export function useAgencyClients() {
     isLoading: isLoadingOrgs,
     error: orgsError,
   } = useQuery({
-    queryKey: ['agency-clients'],
+    queryKey: queryKeys.agencyClients,
     queryFn: getOrganizationsWithStats,
     enabled: Boolean(shouldFetch),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: revenueData = [], isLoading: isLoadingRevenue } = useQuery<ClientRevenueData[]>({
-    queryKey: ['client-revenue-data'],
+    queryKey: queryKeys.sales.clientRevenue,
     queryFn: getClientRevenueData,
     enabled: Boolean(shouldFetch),
     staleTime: 5 * 60 * 1000,
   });
 
-  // Merge revenue data into organizations
   const enhancedOrganizations: EnhancedOrganization[] = organizations.map(org => {
     const revenue = revenueData.find(r => r.orgId === org.id);
     return {
@@ -48,7 +47,6 @@ export function useAgencyClients() {
     };
   });
 
-  // Sort by revenue descending (clients with most revenue first)
   enhancedOrganizations.sort((a, b) => (b.totalRevenue || 0) - (a.totalRevenue || 0));
 
   return {

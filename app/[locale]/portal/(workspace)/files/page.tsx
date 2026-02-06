@@ -8,7 +8,10 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'portal.sidebar.nav' });
+  const t = await getTranslations({
+    locale: locale as 'en' | 'he',
+    namespace: 'portal.sidebar.nav',
+  });
   return { title: `${t('files')} | CartShift Portal` };
 }
 

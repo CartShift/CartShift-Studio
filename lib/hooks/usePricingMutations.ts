@@ -9,10 +9,16 @@ import {
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { CreatePricingRequestData } from '@/lib/types/pricing';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 export function usePricingMutations() {
   const queryClient = useQueryClient();
   const t = useTranslations('portal.pricing');
+
+  const invalidatePricing = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.pricing.byOrg });
+    queryClient.invalidateQueries({ queryKey: queryKeys.pricing.allRequests });
+  };
 
   const createMutation = useMutation({
     mutationFn: ({
@@ -28,14 +34,13 @@ export function usePricingMutations() {
     }) => createPricingRequest(orgId, userId, userName, data),
     onSuccess: pricingOffer => {
       toast.success(t('form.createSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['portal-requests'] });
+      invalidatePricing();
+      queryClient.invalidateQueries({ queryKey: queryKeys.requests.portal });
       return pricingOffer;
     },
     onError: error => {
       console.error('Failed to create pricing request:', error);
-      toast.error(t('form.errors.generic' as any)); // Generic error
+      toast.error(t('form.errors.generic' as any));
     },
   });
 
@@ -43,8 +48,7 @@ export function usePricingMutations() {
     mutationFn: sendPricingRequest,
     onSuccess: () => {
       toast.success(t('form.sendSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
+      invalidatePricing();
     },
     onError: error => {
       console.error('Failed to send pricing request:', error);
@@ -57,9 +61,8 @@ export function usePricingMutations() {
       acceptPricingRequest(requestId, clientNotes),
     onSuccess: () => {
       toast.success(t('form.acceptSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['portal-requests'] });
+      invalidatePricing();
+      queryClient.invalidateQueries({ queryKey: queryKeys.requests.portal });
     },
     onError: error => {
       console.error('Failed to accept pricing request:', error);
@@ -72,8 +75,7 @@ export function usePricingMutations() {
       declinePricingRequest(requestId, reason),
     onSuccess: () => {
       toast.success(t('form.declineSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
+      invalidatePricing();
     },
     onError: error => {
       console.error('Failed to decline pricing request:', error);
@@ -85,9 +87,8 @@ export function usePricingMutations() {
     mutationFn: cancelPricingRequest,
     onSuccess: () => {
       toast.success(t('form.cancelSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['all-pricing-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['portal-requests'] });
+      invalidatePricing();
+      queryClient.invalidateQueries({ queryKey: queryKeys.requests.portal });
     },
     onError: error => {
       console.error('Failed to cancel pricing request:', error);
@@ -99,19 +100,15 @@ export function usePricingMutations() {
     createMutation,
     createPricingRequest: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
-
     sendMutation,
     sendPricingRequest: sendMutation.mutateAsync,
     isSending: sendMutation.isPending,
-
     acceptMutation,
     acceptPricingRequest: acceptMutation.mutateAsync,
     isAccepting: acceptMutation.isPending,
-
     declineMutation,
     declinePricingRequest: declineMutation.mutateAsync,
     isDeclining: declineMutation.isPending,
-
     cancelMutation,
     cancelPricingRequest: cancelMutation.mutateAsync,
     isCanceling: cancelMutation.isPending,

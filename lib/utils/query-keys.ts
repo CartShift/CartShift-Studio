@@ -3,7 +3,10 @@ export const queryKeys = {
     all: ['all-requests'] as const,
     byOrg: (orgId: string) => ['org-requests', orgId] as const,
     detail: (requestId: string) => ['request', requestId] as const,
-    comments: (requestId: string, orgId: string) => ['request-comments', requestId, orgId] as const,
+    comments: (requestId: string, orgId?: string) =>
+      orgId
+        ? (['request-comments', requestId, orgId] as const)
+        : (['request-comments', requestId] as const),
     activities: (requestId: string) => ['request-activities', requestId] as const,
     portal: ['portal-requests'] as const,
   },
@@ -26,8 +29,14 @@ export const queryKeys = {
     byOrg: (orgId: string) => ['org-invites', orgId] as const,
   },
   consultations: {
-    byOrg: ['org-consultations'] as const,
-    all: ['all-consultations'] as const,
+    byOrg: (orgId?: string, status?: string) =>
+      orgId
+        ? status
+          ? (['org-consultations', orgId, status] as const)
+          : (['org-consultations', orgId] as const)
+        : (['org-consultations'] as const),
+    all: (status?: string) =>
+      status ? (['all-consultations', status] as const) : (['all-consultations'] as const),
   },
   team: {
     agency: ['agency-team'] as const,
@@ -40,5 +49,7 @@ export const queryKeys = {
   },
   activities: {
     byOrg: (orgId: string) => ['org-activities', orgId] as const,
+    byRequest: (requestId: string) => ['request-activities', requestId] as const,
   },
+  agencyClients: ['agency-clients'] as const,
 } as const;

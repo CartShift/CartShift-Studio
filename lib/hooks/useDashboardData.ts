@@ -1,16 +1,20 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTranslations } from 'next-intl';
-import { getRequestsByOrg } from '@/lib/services/portal-requests';
-import { getOrgActivities } from '@/lib/services/portal-activities';
+import { getRequestsByOrg, subscribeToOrgRequests } from '@/lib/services/portal-requests';
+import { getOrgActivities, subscribeToOrgActivities } from '@/lib/services/portal-activities';
 import { getMemberByUserId, ensureMembership } from '@/lib/services/portal-organizations';
 import { useToast } from '@/components/portal/ui';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
+import { queryKeys } from '@/lib/utils/query-keys';
+import { Request, ActivityLog } from '@/lib/types/portal';
 
 export function useDashboardData() {
   const orgId = useResolvedOrgId();
@@ -20,129 +24,121 @@ export function useDashboardData() {
   const t = useTranslations('portal.dashboard.toast');
   const mountedRef = useRef(false);
 
-  // State to track if we've verified/ensured membership for clients
   const [membershipChecked, setMembershipChecked] = useState(false);
   const [membershipError, setMembershipError] = useState<string | null>(null);
 
   const isAgency = userData?.isAgency || false;
-  const shouldFetchData = isAuthenticated && orgId && (isAgency || membershipChecked);
+  const safeOrgId = typeof orgId === 'string' ? orgId : '';
+  const shouldFetchData = isAuthenticated && safeOrgId && (isAgency || membershipChecked);
 
-  // Effect to handle membership verification for clients
   useEffect(() => {
     mountedRef.current = true;
-
     return () => {
       mountedRef.current = false;
     };
   }, []);
 
   useEffect(() => {
-    if (
-      !orgId ||
-      typeof orgId !== 'string' ||
-      auth ||
-      !userData ||
-      isAgency ||
-      membershipChecked ||
-      !mountedRef.current
-    ) {
+    if (!safeOrgId || auth || !userData || isAgency || membershipChecked || !mountedRef.current)
       return;
-    }
 
     const verifyMembership = async () => {
       try {
-        let member = await getMemberByUserId(orgId, userData.id);
-
+        let member = await getMemberByUserId(safeOrgId, userData.id);
         if (!member) {
-          // Attempt to fix membership if missing
           try {
-            member = await ensureMembership(orgId, userData.id, userData.email, userData.name);
+            member = await ensureMembership(safeOrgId, userData.id, userData.email, userData.name);
           } catch (err) {
             console.error('Failed to ensure membership:', err);
           }
         }
-
-        // Check mounted state before updating
         if (!mountedRef.current) return;
-
         if (member) {
           setMembershipChecked(true);
           setMembershipError(null);
         } else {
-          console.warn(`Access denied - No membership found for orgId: ${orgId}`);
           setMembershipError('access_denied');
         }
-      } catch (err) {
-        if (mountedRef.current) {
-          console.error('Error checking membership:', err);
-          setMembershipError('membership_check_failed');
-        }
+      } catch {
+        if (mountedRef.current) setMembershipError('membership_check_failed');
       }
     };
-
     verifyMembership();
-  }, [orgId, userData, auth, isAgency, membershipChecked]);
+  }, [safeOrgId, userData, auth, isAgency, membershipChecked]);
 
-  // 1. Requests Query
+  // 1. Requests (initial fetch + real-time)
   const {
     data: requests = [],
     isLoading: isLoadingRequests,
     error: requestsError,
   } = useQuery({
-    queryKey: ['org-requests', orgId],
-    queryFn: () => getRequestsByOrg(orgId as string),
+    queryKey: queryKeys.requests.byOrg(safeOrgId),
+    queryFn: () => getRequestsByOrg(safeOrgId),
     enabled: Boolean(shouldFetchData),
-    staleTime: 60000, // Consider data fresh for 60 seconds
-    refetchInterval: 120000, // Refresh every 2 minutes
+    staleTime: Infinity,
     retry: (failureCount, error) => {
-      // Show user feedback on permission errors and redirect
       if (error instanceof Error && error.message.includes('Permission denied')) {
         toast.error(t('accessDenied'), t('accessDeniedDesc'));
-        // Redirect to dashboard after a short delay
-        setTimeout(() => {
-          router.push(getPortalPath('/dashboard/'));
-        }, 2000);
+        setTimeout(() => router.push(getPortalPath('/dashboard/')), 2000);
         return false;
       }
-      // Limit retries for other errors
       return failureCount < 2;
     },
   });
 
-  // 2. Activities Query
+  const subscribeRequests = useMemo(
+    () =>
+      shouldFetchData
+        ? (cb: (data: Request[]) => void) => subscribeToOrgRequests(safeOrgId, cb)
+        : null,
+    [shouldFetchData, safeOrgId]
+  );
+  useFirestoreSubscription(
+    queryKeys.requests.byOrg(safeOrgId),
+    subscribeRequests,
+    Boolean(shouldFetchData)
+  );
+
+  // 2. Activities (initial fetch + real-time)
   const {
     data: activities = [],
     isLoading: isLoadingActivities,
     error: activitiesError,
   } = useQuery({
-    queryKey: ['org-activities', orgId],
-    queryFn: () => getOrgActivities(orgId as string),
+    queryKey: queryKeys.activities.byOrg(safeOrgId),
+    queryFn: () => getOrgActivities(safeOrgId),
     enabled: Boolean(shouldFetchData),
-    staleTime: 60000, // Consider data fresh for 60 seconds
-    refetchInterval: 120000, // Refresh every 2 minutes
+    staleTime: Infinity,
     retry: (failureCount, error) => {
-      if (error instanceof Error && error.message.includes('Permission denied')) {
-        return false;
-      }
+      if (error instanceof Error && error.message.includes('Permission denied')) return false;
       return failureCount < 2;
     },
   });
 
-  const loading =
-    auth ||
-    (shouldFetchData && (isLoadingRequests || isLoadingActivities)) ||
-    (!isAgency && !membershipChecked && !membershipError);
-
-  const error =
-    membershipError ||
-    (requestsError instanceof Error ? requestsError.message : null) ||
-    (activitiesError instanceof Error ? activitiesError.message : null);
+  const subscribeActivities = useMemo(
+    () =>
+      shouldFetchData
+        ? (cb: (data: ActivityLog[]) => void) => subscribeToOrgActivities(safeOrgId, cb)
+        : null,
+    [shouldFetchData, safeOrgId]
+  );
+  useFirestoreSubscription(
+    queryKeys.activities.byOrg(safeOrgId),
+    subscribeActivities,
+    Boolean(shouldFetchData)
+  );
 
   return {
     requests,
     activities,
-    loading,
-    error,
+    loading:
+      auth ||
+      (shouldFetchData && (isLoadingRequests || isLoadingActivities)) ||
+      (!isAgency && !membershipChecked && !membershipError),
+    error:
+      membershipError ||
+      (requestsError instanceof Error ? requestsError.message : null) ||
+      (activitiesError instanceof Error ? activitiesError.message : null),
     userData,
     orgId,
   };

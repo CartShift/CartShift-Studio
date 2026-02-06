@@ -36,7 +36,7 @@ export function useTeamMutations() {
     },
     onError: error => {
       console.error('Failed to remove member:', error);
-      toast.error(t('errors.load')); // Generic error
+      toast.error(t('errors.load'));
     },
   });
 
@@ -49,7 +49,7 @@ export function useTeamMutations() {
     },
     onError: error => {
       console.error('Failed to update member role:', error);
-      toast.error(t('errors.load')); // Generic error
+      toast.error(t('errors.load'));
     },
   });
 
@@ -57,11 +57,9 @@ export function useTeamMutations() {
     cancelInviteMutation,
     cancelInvite: cancelInviteMutation.mutate,
     isCancellingInvite: cancelInviteMutation.isPending,
-
     removeMemberMutation,
     removeMember: removeMemberMutation.mutate,
     isRemovingMember: removeMemberMutation.isPending,
-
     updateRoleMutation,
     updateMemberRole: updateRoleMutation.mutate,
     isRole: updateRoleMutation.isPending,

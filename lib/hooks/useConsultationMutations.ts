@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { cancelConsultation, completeConsultation } from '@/lib/services/portal-consultations';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 export function useConsultationMutations() {
   const queryClient = useQueryClient();
@@ -18,8 +19,8 @@ export function useConsultationMutations() {
       cancelConsultation(vars.consultationId, vars.orgId, vars.userId, vars.userName, vars.reason),
     onSuccess: () => {
       toast.success(t('consultations.form.cancelSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-consultations'] });
-      queryClient.invalidateQueries({ queryKey: ['all-consultations'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.consultations.byOrg() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.consultations.all() });
     },
     onError: error => {
       console.error('Failed to cancel consultation:', error);
@@ -46,8 +47,8 @@ export function useConsultationMutations() {
       ),
     onSuccess: () => {
       toast.success(t('consultations.form.completeSuccess' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-consultations'] });
-      queryClient.invalidateQueries({ queryKey: ['all-consultations'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.consultations.byOrg() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.consultations.all() });
     },
     onError: error => {
       console.error('Failed to complete consultation:', error);
@@ -60,7 +61,6 @@ export function useConsultationMutations() {
     cancelConsultation: cancelMutation.mutate,
     cancelConsultationAsync: cancelMutation.mutateAsync,
     isCanceling: cancelMutation.isPending,
-
     completeMutation,
     completeConsultation: completeMutation.mutate,
     completeConsultationAsync: completeMutation.mutateAsync,

@@ -1,10 +1,3 @@
-/**
- * Sales Analytics Hook
- *
- * TanStack Query hook for fetching sales performance data
- * with caching and automatic background updates.
- */
-
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
@@ -16,15 +9,12 @@ import {
   getTopClients,
 } from '@/lib/services/portal-sales';
 import { SalesMetrics, ClientRevenueData, MonthlyRevenue, TopClient } from '@/lib/types/portal';
+import { queryKeys } from '@/lib/utils/query-keys';
 
-const STALE_TIME = 5 * 60 * 1000; // 5 minutes
+const STALE_TIME = 5 * 60 * 1000;
 
-/**
- * Hook for fetching comprehensive sales metrics
- */
 export function useSalesMetrics() {
   const { loading: auth, isAgency } = usePortalAuth();
-
   const shouldFetch = !auth && isAgency;
 
   const {
@@ -33,7 +23,7 @@ export function useSalesMetrics() {
     error,
     refetch,
   } = useQuery<SalesMetrics>({
-    queryKey: ['sales-metrics'],
+    queryKey: queryKeys.sales.metrics,
     queryFn: getSalesMetrics,
     enabled: Boolean(shouldFetch),
     staleTime: STALE_TIME,
@@ -47,12 +37,8 @@ export function useSalesMetrics() {
   };
 }
 
-/**
- * Hook for fetching per-client revenue data
- */
 export function useClientRevenueData() {
   const { loading: auth, isAgency } = usePortalAuth();
-
   const shouldFetch = !auth && isAgency;
 
   const {
@@ -61,7 +47,7 @@ export function useClientRevenueData() {
     error,
     refetch,
   } = useQuery<ClientRevenueData[]>({
-    queryKey: ['client-revenue-data'],
+    queryKey: queryKeys.sales.clientRevenue,
     queryFn: getClientRevenueData,
     enabled: Boolean(shouldFetch),
     staleTime: STALE_TIME,
@@ -75,12 +61,8 @@ export function useClientRevenueData() {
   };
 }
 
-/**
- * Hook for fetching monthly revenue trends
- */
 export function useMonthlyRevenue(months: number = 6) {
   const { loading: auth, isAgency } = usePortalAuth();
-
   const shouldFetch = !auth && isAgency;
 
   const {
@@ -89,7 +71,7 @@ export function useMonthlyRevenue(months: number = 6) {
     error,
     refetch,
   } = useQuery<MonthlyRevenue[]>({
-    queryKey: ['monthly-revenue', months],
+    queryKey: queryKeys.sales.monthlyRevenue(months),
     queryFn: () => getMonthlyRevenueData(months),
     enabled: Boolean(shouldFetch),
     staleTime: STALE_TIME,
@@ -103,12 +85,8 @@ export function useMonthlyRevenue(months: number = 6) {
   };
 }
 
-/**
- * Hook for fetching top performing clients
- */
 export function useTopClients(limit: number = 5) {
   const { loading: auth, isAgency } = usePortalAuth();
-
   const shouldFetch = !auth && isAgency;
 
   const {
@@ -117,7 +95,7 @@ export function useTopClients(limit: number = 5) {
     error,
     refetch,
   } = useQuery<TopClient[]>({
-    queryKey: ['top-clients', limit],
+    queryKey: queryKeys.sales.topClients(limit),
     queryFn: () => getTopClients(limit),
     enabled: Boolean(shouldFetch),
     staleTime: STALE_TIME,
@@ -131,10 +109,6 @@ export function useTopClients(limit: number = 5) {
   };
 }
 
-/**
- * Combined hook for fetching all sales analytics data
- * Useful for the main dashboard that needs everything
- */
 export function useSalesAnalytics(months: number = 6) {
   const { loading: auth, isAgency } = usePortalAuth();
 
@@ -143,13 +117,12 @@ export function useSalesAnalytics(months: number = 6) {
   const monthlyQuery = useMonthlyRevenue(months);
   const topClientsQuery = useTopClients(5);
 
-  const is =
+  const loading =
     auth ||
     metricsQuery.loading ||
     revenueQuery.loading ||
     monthlyQuery.loading ||
     topClientsQuery.loading;
-
   const hasError =
     metricsQuery.error || revenueQuery.error || monthlyQuery.error || topClientsQuery.error;
 
@@ -158,7 +131,7 @@ export function useSalesAnalytics(months: number = 6) {
     clientRevenue: revenueQuery.clients,
     monthlyRevenue: monthlyQuery.monthlyData,
     topClients: topClientsQuery.topClients,
-    loading: is,
+    loading,
     error: hasError,
     isAgency,
     refetch: () => {

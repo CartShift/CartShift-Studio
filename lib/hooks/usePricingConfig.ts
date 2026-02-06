@@ -6,6 +6,7 @@ import { getFirestoreDb } from '@/lib/firebase';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { RequestPricingConfig } from '@/components/portal/pricing/RequestPricingCalculator';
 import { toast } from 'sonner';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 /**
  * Custom hook for pricing configuration with TanStack Query
@@ -15,7 +16,7 @@ export function usePricingConfig(orgId: string, requestId: string) {
   const db = getFirestoreDb();
 
   return useQuery({
-    queryKey: ['pricing-config', orgId, requestId],
+    queryKey: queryKeys.pricing.config(orgId, requestId),
     queryFn: async () => {
       const docRef = doc(db, 'organizations', orgId, 'pricing-configs', requestId);
       const snap = await getDoc(docRef);
@@ -56,15 +57,15 @@ export function useUpdatePricingConfig(orgId: string) {
 
     onMutate: async ({ requestId, config }) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['pricing-config', orgId, requestId] });
+      await queryClient.cancelQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
 
       // Snapshot previous value
       const previousConfig =
-        queryClient.getQueryData(['pricing-config', orgId, requestId]) ?? undefined;
+        queryClient.getQueryData(queryKeys.pricing.config(orgId, requestId)) ?? undefined;
 
       // Optimistically update
       queryClient.setQueryData(
-        ['pricing-config', orgId, requestId],
+        queryKeys.pricing.config(orgId, requestId),
         (old: RequestPricingConfig | undefined) => {
           if (!old) return config as RequestPricingConfig;
           return { ...old, ...config };
@@ -78,7 +79,7 @@ export function useUpdatePricingConfig(orgId: string) {
       // Rollback on error
       if (context?.previousConfig) {
         queryClient.setQueryData(
-          ['pricing-config', orgId, variables.requestId],
+          queryKeys.pricing.config(orgId, variables.requestId),
           context.previousConfig
         );
       }
@@ -91,8 +92,10 @@ export function useUpdatePricingConfig(orgId: string) {
 
     onSettled: (_data, _error, variables) => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['pricing-config', orgId, variables.requestId] });
-      queryClient.invalidateQueries({ queryKey: ['pricing-results', orgId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.pricing.config(orgId, variables.requestId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.results(orgId) });
     },
   });
 }
@@ -124,18 +127,18 @@ export function useApplyGlobalModifiers(orgId: string) {
 
     onMutate: async ({ requestIds, modifiers }) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['pricing-config', orgId] });
+      await queryClient.cancelQueries({ queryKey: queryKeys.pricing.config(orgId) });
 
       // Snapshot previous values
       const previousConfigs = requestIds.map(id => ({
         id,
-        data: queryClient.getQueryData(['pricing-config', orgId, id]),
+        data: queryClient.getQueryData(queryKeys.pricing.config(orgId, id)),
       }));
 
       // Optimistically update all
       requestIds.forEach(id => {
         queryClient.setQueryData(
-          ['pricing-config', orgId, id],
+          queryKeys.pricing.config(orgId, id),
           (old: RequestPricingConfig | undefined) => {
             if (!old) return undefined;
             return { ...old, ...modifiers };
@@ -151,7 +154,7 @@ export function useApplyGlobalModifiers(orgId: string) {
       if (context?.previousConfigs) {
         context.previousConfigs.forEach(({ id, data }: { id: string; data: any }) => {
           if (data) {
-            queryClient.setQueryData(['pricing-config', orgId, id], data);
+            queryClient.setQueryData(queryKeys.pricing.config(orgId, id), data);
           }
         });
       }
@@ -163,7 +166,7 @@ export function useApplyGlobalModifiers(orgId: string) {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['pricing-config', orgId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.config(orgId) });
     },
   });
 }
@@ -184,17 +187,20 @@ export function useRemovePricingConfig(orgId: string) {
     },
 
     onMutate: async requestId => {
-      await queryClient.cancelQueries({ queryKey: ['pricing-config', orgId, requestId] });
-      const previousConfig = queryClient.getQueryData(['pricing-config', orgId, requestId]);
+      await queryClient.cancelQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
+      const previousConfig = queryClient.getQueryData(queryKeys.pricing.config(orgId, requestId));
 
-      queryClient.removeQueries({ queryKey: ['pricing-config', orgId, requestId] });
+      queryClient.removeQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
 
       return { previousConfig, requestId };
     },
 
     onError: (_error, requestId, context) => {
       if (context?.previousConfig) {
-        queryClient.setQueryData(['pricing-config', orgId, requestId], context.previousConfig);
+        queryClient.setQueryData(
+          queryKeys.pricing.config(orgId, requestId),
+          context.previousConfig
+        );
       }
       toast.error(t('configRemoveFailed'));
     },
@@ -204,7 +210,7 @@ export function useRemovePricingConfig(orgId: string) {
     },
 
     onSettled: (_data, _error, requestId) => {
-      queryClient.invalidateQueries({ queryKey: ['pricing-config', orgId, requestId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
     },
   });
 }

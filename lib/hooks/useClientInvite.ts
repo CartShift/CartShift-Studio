@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { inviteClient, cancelInvite } from '@/lib/services/portal-organizations';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 interface UseClientInviteOptions {
   orgId: string;
@@ -29,7 +30,7 @@ export function useClientInvite({ orgId, onSuccess }: UseClientInviteOptions) {
       return inviteClient(orgId, email, invitedBy, invitedByName, requestIds);
     },
     onSuccess: invite => {
-      queryClient.invalidateQueries({ queryKey: ['org-invites', orgId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.invites.byOrg(orgId) });
       toast.success(t('portal.clientInvite.success'));
       onSuccess?.(invite.code);
     },
@@ -41,7 +42,7 @@ export function useClientInvite({ orgId, onSuccess }: UseClientInviteOptions) {
   const cancelMutation = useMutation({
     mutationFn: cancelInvite,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['org-invites', orgId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.invites.byOrg(orgId) });
       toast.success(t('portal.team.inviteCanceled'));
     },
     onError: (error: Error) => {

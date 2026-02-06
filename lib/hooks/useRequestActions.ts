@@ -29,6 +29,7 @@ import {
 } from '@/lib/types/portal';
 import { Timestamp } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 interface UseRequestActionsParams {
   request: Request | null;
@@ -200,12 +201,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     // Optimistic update
-    const previousRequest = queryClient.getQueryData(['request', requestId]);
+    const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
     setIsAccepting(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData<Request>(['request', requestId], old => {
+      queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
         if (!old) return old;
         return {
           ...old,
@@ -216,13 +217,13 @@ export function useRequestActions({
       });
 
       await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
       toast.success(t('quoteAccepted'), t('quoteAcceptedDesc'));
     } catch (err) {
       console.error('Error accepting quote:', err);
       // Rollback on error
       if (previousRequest) {
-        queryClient.setQueryData(['request', requestId], previousRequest);
+        queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
       }
       toast.error(t('quoteAcceptFailed'), t('quoteAcceptFailedDesc'));
     } finally {
@@ -235,12 +236,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     // Optimistic update
-    const previousRequest = queryClient.getQueryData(['request', requestId]);
+    const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
     setIsDeclining(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData<Request>(['request', requestId], old => {
+      queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
         if (!old) return old;
         return {
           ...old,
@@ -250,13 +251,13 @@ export function useRequestActions({
       });
 
       await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
       toast.info(t('quoteDeclined'), t('quoteDeclinedDesc'));
     } catch (err) {
       console.error('Error declining quote:', err);
       // Rollback on error
       if (previousRequest) {
-        queryClient.setQueryData(['request', requestId], previousRequest);
+        queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
       }
       toast.error(t('quoteDeclineFailed'), t('quoteDeclineFailedDesc'));
     } finally {
@@ -269,12 +270,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     // Optimistic update
-    const previousRequest = queryClient.getQueryData(['request', requestId]);
+    const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
     setIsWork(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData<Request>(['request', requestId], old => {
+      queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
         if (!old) return old;
         return {
           ...old,
@@ -284,13 +285,13 @@ export function useRequestActions({
       });
 
       await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
       toast.success(t('workStarted'), t('workStartedDesc'));
     } catch (err) {
       console.error('Error starting work:', err);
       // Rollback on error
       if (previousRequest) {
-        queryClient.setQueryData(['request', requestId], previousRequest);
+        queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
       }
       toast.error(t('workStartFailed'), t('workStartFailedDesc'));
     } finally {
@@ -304,11 +305,11 @@ export function useRequestActions({
       if (!canPerformAction() || !result.paymentId) return;
 
       // Optimistic update
-      const previousRequest = queryClient.getQueryData(['request', requestId]);
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
       try {
         // Optimistically update UI
-        queryClient.setQueryData<Request>(['request', requestId], old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
           if (!old) return old;
           return {
             ...old,
@@ -325,13 +326,13 @@ export function useRequestActions({
           userData!.name || userData!.email,
           result.paymentId
         );
-        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
         toast.success(t('paymentSuccess'), t('paymentSuccessDesc'));
       } catch (err) {
         console.error('Error marking as paid:', err);
         // Rollback on error
         if (previousRequest) {
-          queryClient.setQueryData(['request', requestId], previousRequest);
+          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
         }
         toast.error(t('paymentRecorded'), t('paymentRecordedDesc'));
       }
@@ -345,12 +346,12 @@ export function useRequestActions({
       if (!canPerformAction()) return;
 
       // Optimistic update
-      const previousRequest = queryClient.getQueryData(['request', requestId]);
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
       setIsAssigning(true);
       try {
         // Optimistically update UI
-        queryClient.setQueryData<Request>(['request', requestId], old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
           if (!old) return old;
           return {
             ...old,
@@ -368,7 +369,7 @@ export function useRequestActions({
           specialistId,
           specialistName
         );
-        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
         toast.success(
           t('specialistAssigned'),
           t('specialistAssignedDesc', { name: specialistName })
@@ -377,7 +378,7 @@ export function useRequestActions({
         console.error('Error assigning specialist:', err);
         // Rollback on error
         if (previousRequest) {
-          queryClient.setQueryData(['request', requestId], previousRequest);
+          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
         }
         toast.error(t('specialistAssignFailed'), t('specialistAssignFailedDesc'));
       } finally {
@@ -393,12 +394,12 @@ export function useRequestActions({
       if (!canPerformAction() || !notes.trim()) return false;
 
       // Optimistic update
-      const previousRequest = queryClient.getQueryData(['request', requestId]);
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
       setIsSubmittingRevision(true);
       try {
         // Optimistically update UI - move back to IN_PROGRESS
-        queryClient.setQueryData<Request>(['request', requestId], old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
           if (!old) return old;
           return {
             ...old,
@@ -414,14 +415,14 @@ export function useRequestActions({
           userData!.name || userData!.email,
           notes.trim()
         );
-        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
         toast.success(t('revisionRequested'), t('revisionRequestedDesc'));
         return true;
       } catch (err) {
         console.error('Failed to request revision:', err);
         // Rollback on error
         if (previousRequest) {
-          queryClient.setQueryData(['request', requestId], previousRequest);
+          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
         }
         toast.error(t('revisionFailed'), t('revisionFailedDesc'));
         return false;
@@ -474,10 +475,10 @@ export function useRequestActions({
         return;
       }
 
-      const previousRequest = queryClient.getQueryData(['request', requestId]);
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
 
       try {
-        queryClient.setQueryData<Request>(['request', requestId], old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
           if (!old) return old;
           return {
             ...old,
@@ -487,7 +488,7 @@ export function useRequestActions({
         });
 
         await updateRequestStatus(requestId!, newStatus);
-        await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
 
         await logActivity({
           orgId: orgId!,
@@ -505,7 +506,7 @@ export function useRequestActions({
       } catch (error) {
         console.error('Error updating status:', error);
         if (previousRequest) {
-          queryClient.setQueryData(['request', requestId], previousRequest);
+          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
         }
 
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));

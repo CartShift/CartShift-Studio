@@ -1,10 +1,18 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
-import { getConsultationsByOrg, getAllConsultations } from '@/lib/services/portal-consultations';
-import { ConsultationStatus } from '@/lib/types/portal';
+import {
+  getConsultationsByOrg,
+  getAllConsultations,
+  subscribeToOrgConsultations,
+  subscribeToAllConsultations,
+} from '@/lib/services/portal-consultations';
+import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
+import { queryKeys } from '@/lib/utils/query-keys';
+import { Consultation, ConsultationStatus } from '@/lib/types/portal';
 
 interface UseConsultationsOptions {
   status?: ConsultationStatus | 'all';
@@ -13,39 +21,42 @@ interface UseConsultationsOptions {
 export function useConsultations({ status = 'all' }: UseConsultationsOptions = {}) {
   const orgId = useResolvedOrgId();
   const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
+  const safeOrgId = typeof orgId === 'string' ? orgId : '';
 
-  const shouldFetch =
-    isAuthenticated && !auth && (isAgency || (orgId && typeof orgId === 'string'));
+  const shouldFetch = isAuthenticated && !auth && (isAgency || Boolean(safeOrgId));
+  const statusFilter = status !== 'all' ? status : undefined;
 
-  const queryKey = isAgency ? ['all-consultations', status] : ['org-consultations', orgId, status];
+  const qKey = isAgency
+    ? queryKeys.consultations.all(statusFilter)
+    : queryKeys.consultations.byOrg(safeOrgId, statusFilter);
 
   const {
     data: consultations = [],
     isLoading: consultationsLoading,
     error,
   } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const statusFilter = status !== 'all' ? status : undefined;
+    queryKey: qKey,
+    queryFn: () => {
       const options = statusFilter ? { status: statusFilter } : undefined;
-
-      if (isAgency) {
-        return getAllConsultations(options);
-      } else {
-        return getConsultationsByOrg(orgId as string, options);
-      }
+      return isAgency ? getAllConsultations(options) : getConsultationsByOrg(safeOrgId, options);
     },
     enabled: Boolean(shouldFetch),
-    refetchInterval: 30000, // Poll every 30s
-    staleTime: 60 * 1000,
+    staleTime: Infinity,
   });
 
-  const loading = auth || (shouldFetch && consultationsLoading);
-  const errorMsg = error instanceof Error ? error.message : (error as string | null);
+  // Real-time subscription replaces polling
+  const subscribe = useMemo(() => {
+    if (!shouldFetch) return null;
+    return isAgency
+      ? (cb: (data: Consultation[]) => void) => subscribeToAllConsultations(cb)
+      : (cb: (data: Consultation[]) => void) => subscribeToOrgConsultations(safeOrgId, cb);
+  }, [shouldFetch, isAgency, safeOrgId]);
+
+  useFirestoreSubscription(qKey, subscribe, Boolean(shouldFetch));
 
   return {
     consultations,
-    loading,
-    error: errorMsg,
+    loading: auth || (shouldFetch && consultationsLoading),
+    error: error instanceof Error ? error.message : (error as string | null),
   };
 }

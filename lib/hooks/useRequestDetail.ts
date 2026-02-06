@@ -1,48 +1,42 @@
 'use client';
 
+import { useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getRequest } from '@/lib/services/portal-requests';
-import { getCommentsByRequest } from '@/lib/services/portal-comments';
-import { getRequestActivities } from '@/lib/services/portal-activities';
+import { getCommentsByRequest, subscribeToRequestComments } from '@/lib/services/portal-comments';
+import {
+  getRequestActivities,
+  subscribeToRequestActivities,
+} from '@/lib/services/portal-activities';
 import { getOrganization } from '@/lib/services/portal-organizations';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
+import { subscribeToRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedRequestId } from '@/lib/hooks/useResolvedRequestId';
+import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
+import { queryKeys } from '@/lib/utils/query-keys';
 import { Request, Comment, Organization, ActivityLog, PortalUser } from '@/lib/types/portal';
 
 export interface UseRequestDetailResult {
-  // Data
   request: Request | null;
   comments: Comment[];
   activities: ActivityLog[];
   organization: Organization | null;
   clientOrganization: Organization | null;
   agencyTeam: PortalUser[];
-
-  // Auth & IDs
   userData: PortalUser | null;
   isAgency: boolean;
   orgId: string | null;
   requestId: string | null;
-
-  // State
   loading: boolean;
   error: string | null;
-
-  // Derived permissions
   canAct: boolean;
   showAgencyActions: boolean;
   showClientActions: boolean;
-
-  // Comment state update (for optimistic updates)
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
 }
 
-/**
- * Hook for fetching and subscribing to request detail data.
- * Refactored to use @tanstack/react-query due to superior caching and background refetching.
- */
 export function useRequestDetail(): UseRequestDetailResult {
   const orgId = useResolvedOrgId();
   const requestId = useResolvedRequestId();
@@ -50,83 +44,121 @@ export function useRequestDetail(): UseRequestDetailResult {
   const queryClient = useQueryClient();
 
   const enabled = Boolean(isAuthenticated && requestId && typeof requestId === 'string');
+  const safeRequestId = typeof requestId === 'string' ? requestId : '';
+  const safeOrgId = typeof orgId === 'string' ? orgId : '';
 
-  // 1. Request Detail
+  // 1. Request Detail (initial fetch + real-time)
   const {
     data: request,
     isLoading: requestLoading,
     error: requestError,
   } = useQuery({
-    queryKey: ['request', requestId],
-    queryFn: () => getRequest(requestId as string),
+    queryKey: queryKeys.requests.detail(safeRequestId),
+    queryFn: () => getRequest(safeRequestId),
     enabled,
-    staleTime: 1000 * 60, // 1 minute stale time to prevent immediate refetch on navigation
+    staleTime: Infinity,
   });
 
-  // 2. Comments
+  const subscribeRequest = useMemo(
+    () =>
+      enabled
+        ? (cb: (data: Request | null) => void) => subscribeToRequest(safeRequestId, cb)
+        : null,
+    [safeRequestId, enabled]
+  );
+  useFirestoreSubscription(queryKeys.requests.detail(safeRequestId), subscribeRequest, enabled);
+
+  // 2. Comments (real-time via onSnapshot)
   const { data: comments = [] } = useQuery({
-    queryKey: ['request-comments', requestId, orgId],
+    queryKey: queryKeys.requests.comments(safeRequestId, safeOrgId),
     queryFn: () =>
-      getCommentsByRequest(
-        requestId as string,
-        Boolean(userData?.isAgency),
-        typeof orgId === 'string' ? orgId : undefined
-      ),
-    enabled, // orgId is optional - comments are already linked to requestId
-    refetchInterval: 5000, // Poll every 5s for new comments (simulating real-time lite)
+      getCommentsByRequest(safeRequestId, Boolean(userData?.isAgency), safeOrgId || undefined),
+    enabled,
+    staleTime: Infinity,
   });
 
-  // 3. Activities
+  const subscribeComments = useMemo(
+    () =>
+      enabled
+        ? (cb: (data: Comment[]) => void) =>
+            subscribeToRequestComments(
+              safeRequestId,
+              cb,
+              Boolean(userData?.isAgency),
+              safeOrgId || undefined
+            )
+        : null,
+    [safeRequestId, safeOrgId, enabled, userData?.isAgency]
+  );
+  useFirestoreSubscription(
+    queryKeys.requests.comments(safeRequestId, safeOrgId),
+    subscribeComments,
+    enabled
+  );
+
+  // 3. Activities (real-time via onSnapshot)
+  const activitiesEnabled = enabled && Boolean(orgId);
   const { data: activities = [] } = useQuery({
-    queryKey: ['request-activities', requestId],
-    queryFn: () =>
-      getRequestActivities(requestId as string, typeof orgId === 'string' ? orgId : undefined),
-    enabled: enabled && Boolean(orgId),
-    refetchInterval: 10000, // Poll every 10s for activities
+    queryKey: queryKeys.activities.byRequest(safeRequestId),
+    queryFn: () => getRequestActivities(safeRequestId, safeOrgId || undefined),
+    enabled: activitiesEnabled,
+    staleTime: Infinity,
   });
 
-  // 4. Organization (Static-ish)
+  const subscribeActivities = useMemo(
+    () =>
+      activitiesEnabled
+        ? (cb: (data: ActivityLog[]) => void) =>
+            subscribeToRequestActivities(safeRequestId, safeOrgId, cb)
+        : null,
+    [safeRequestId, safeOrgId, activitiesEnabled]
+  );
+  useFirestoreSubscription(
+    queryKeys.activities.byRequest(safeRequestId),
+    subscribeActivities,
+    activitiesEnabled
+  );
+
+  // 4. Organization (static-ish, no subscription needed)
   const { data: organization } = useQuery({
-    queryKey: ['organization', orgId],
-    queryFn: () => getOrganization(orgId as string),
-    enabled: Boolean(orgId && typeof orgId === 'string' && isAuthenticated),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryKey: queryKeys.organizations.detail(safeOrgId),
+    queryFn: () => getOrganization(safeOrgId),
+    enabled: Boolean(safeOrgId && isAuthenticated),
+    staleTime: 1000 * 60 * 5,
   });
 
-  // 5. Agency Team (Static-ish)
+  // 5. Agency Team (static-ish)
   const { data: agencyTeam = [] } = useQuery({
-    queryKey: ['agency-team'],
+    queryKey: queryKeys.team.agency,
     queryFn: getAgencyTeam,
     enabled: Boolean(isAgency && isAuthenticated),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
-  // 6. Client Organization (based on request.orgId)
+  // 6. Client Organization
   const { data: clientOrganization } = useQuery({
-    queryKey: ['organization', request?.orgId],
+    queryKey: queryKeys.organizations.detail(request?.orgId || ''),
     queryFn: () => getOrganization(request!.orgId),
     enabled: Boolean(request?.orgId && isAuthenticated),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
-  // Helper to update comments optimistically or manually
-  // This bridges the gap for components expecting setComments
-  const setComments = (action: React.SetStateAction<Comment[]>) => {
-    // We need to match the key used in useQuery above: ['request-comments', requestId, orgId]
-    queryClient.setQueryData<Comment[]>(['request-comments', requestId, orgId], oldData => {
-      const current = oldData || [];
-      if (typeof action === 'function') {
-        return action(current);
-      }
-      return action;
-    });
-  };
+  const setComments = useCallback(
+    (action: React.SetStateAction<Comment[]>) => {
+      queryClient.setQueryData<Comment[]>(
+        queryKeys.requests.comments(safeRequestId, safeOrgId),
+        oldData => {
+          const current = oldData || [];
+          return typeof action === 'function' ? action(current) : action;
+        }
+      );
+    },
+    [queryClient, safeRequestId, safeOrgId]
+  );
 
-  // Derived permissions
   const canAct = Boolean(userData);
   const showAgencyActions = canAct && isAgency;
   const showClientActions = canAct && !isAgency;
-
   const errorMsg =
     requestError instanceof Error ? requestError.message : (requestError as string | null);
 
@@ -139,8 +171,8 @@ export function useRequestDetail(): UseRequestDetailResult {
     agencyTeam,
     userData: userData as PortalUser | null,
     isAgency,
-    orgId: typeof orgId === 'string' ? orgId : null,
-    requestId: typeof requestId === 'string' ? requestId : null,
+    orgId: safeOrgId || null,
+    requestId: safeRequestId || null,
     loading: auth || requestLoading,
     error: errorMsg,
     canAct,

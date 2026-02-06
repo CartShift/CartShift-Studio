@@ -61,12 +61,11 @@ export async function loginWithEmail(email: string, password: string): Promise<U
       }
     } catch (error) {
       console.warn('[Login] Error processing client invites:', error);
-      // Don't fail login if invite processing fails
     }
 
+    syncSessionCookie(user);
     return user;
   } catch (error: unknown) {
-    // Re-throw Firebase auth errors with more context
     const authError = error as { code?: string; message?: string };
     if (authError.code) {
       // Firebase Auth error codes
@@ -128,10 +127,10 @@ export async function signInWithGoogle(): Promise<User> {
         }
       } catch (error) {
         console.warn('[GoogleSignIn] Error processing client invites:', error);
-        // Don't fail login if invite processing fails
       }
     }
 
+    syncSessionCookie(user);
     return user;
   } catch (error: unknown) {
     const authError = error as { code?: string; message?: string };
@@ -211,9 +210,9 @@ export async function signUpWithEmail(
       }
     } catch (error) {
       console.warn('[SignUp] Error processing client invites:', error);
-      // Don't fail signup if invite processing fails
     }
 
+    syncSessionCookie(user);
     return user;
   } catch (error: unknown) {
     // Re-throw Firebase auth errors with more context
@@ -232,6 +231,23 @@ export async function signUpWithEmail(
 // This helps suppress spurious "permission-denied" errors from Firestore listeners
 // that may trigger after the auth token is invalidated but before the listeners are detached.
 // We use globalThis to ensure the state is shared across all module instances in a Next.js environment.
+export async function syncSessionCookie(user: User | null): Promise<void> {
+  try {
+    if (user) {
+      const idToken = await user.getIdToken();
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
+    } else {
+      await fetch('/api/auth/session', { method: 'DELETE' });
+    }
+  } catch {
+    // Session cookie sync is best-effort; client-side auth remains the authority
+  }
+}
+
 const LOGGING_OUT_KEY = '__cartshift_logging_out';
 
 export function isLoggingOut(): boolean {
@@ -253,8 +269,7 @@ export async function logout(): Promise<void> {
     }
 
     setLoggingOut(true);
-    // Give a small grace period for the flag to propagate and for UI to react
-    // before the auth token is actually invalidated.
+    await syncSessionCookie(null);
     await new Promise(resolve => setTimeout(resolve, 50));
     await signOut(authInstance);
     // Note: We don't set loggingOut back to false here because the page

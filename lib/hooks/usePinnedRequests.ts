@@ -8,6 +8,7 @@ import { useResolvedOrgId } from './useResolvedOrgId';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { Request } from '@/lib/types/portal';
+import { queryKeys } from '@/lib/utils/query-keys';
 
 // Shared loading state across all hook instances
 const globalRequestIds = new Set<string>();
@@ -70,7 +71,8 @@ export function usePinnedRequests(_orgId?: string) {
       await new Promise(resolve => setTimeout(resolve, 50));
 
       // Optimistically update the cache
-      const queryKey = isAgency ? ['all-requests'] : ['org-requests', orgId];
+      const safeOrgId = typeof orgId === 'string' ? orgId : '';
+      const queryKey = isAgency ? queryKeys.requests.all : queryKeys.requests.byOrg(safeOrgId);
       queryClient.setQueryData<Request[]>(queryKey, oldData => {
         if (!oldData) return oldData;
         return oldData.map(req => {
@@ -99,9 +101,9 @@ export function usePinnedRequests(_orgId?: string) {
 
         // Invalidate queries to sync with server
         if (isAgency) {
-          queryClient.invalidateQueries({ queryKey: ['all-requests'] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.requests.all });
         } else {
-          queryClient.invalidateQueries({ queryKey: ['org-requests'] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.requests.byOrg(safeOrgId) });
         }
 
         // Toast feedback disabled - using visual animation instead
