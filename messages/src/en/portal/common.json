@@ -30,6 +30,15 @@
       "offline": "You are currently offline",
       "filter": "Filter",
       "showing": "Showing {count} of {total} results",
+      "filters": {
+        "title": "Filters",
+        "status": "Status",
+        "plan": "Plan",
+        "revenueRange": "Revenue Range",
+        "minRevenue": "Minimum Revenue",
+        "maxRevenue": "Maximum Revenue",
+        "reset": "Reset Filters"
+      },
       "prev": "Prev",
       "next": "Next",
       "recently": "Recently",

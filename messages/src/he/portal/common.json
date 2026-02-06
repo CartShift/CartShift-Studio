@@ -29,6 +29,15 @@
       "offline": "אתה במצב לא מקוון כרגע",
       "filter": "סינון",
       "showing": "מציג {count} מתוך {total} תוצאות",
+      "filters": {
+        "title": "מסננים",
+        "status": "סטטוס",
+        "plan": "תוכנית",
+        "revenueRange": "טווח הכנסות",
+        "minRevenue": "הכנסה מינימלית",
+        "maxRevenue": "הכנסה מקסימלית",
+        "reset": "איפוס מסננים"
+      },
       "prev": "הקודם",
       "next": "הבא",
       "recently": "לאחרונה",

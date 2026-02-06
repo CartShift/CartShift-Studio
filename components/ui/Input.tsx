@@ -127,18 +127,23 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
 
-          <div className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+          <div
+            className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none"
+            aria-hidden="true"
+          >
             {rightIcon}
             {error && (
               <AlertCircle
                 size={18}
                 className="text-red-500 animate-in fade-in zoom-in duration-200"
+                aria-hidden="true"
               />
             )}
             {success && !error && (
               <Check
                 size={18}
                 className="text-emerald-500 animate-in fade-in zoom-in duration-200"
+                aria-hidden="true"
               />
             )}
           </div>

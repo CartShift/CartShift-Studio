@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Avatar } from '@/components/ui/Avatar';
 import { MobileSearchButton } from './MobileSearchButton';
 import { GlobalSearch } from './GlobalSearch';
+import { NotificationPreview } from './NotificationPreview';
 import { useTranslations } from 'next-intl';
 import { ACCOUNT_TYPE, AccountType, Notification } from '@/lib/types/portal';
 import { cva } from 'class-variance-authority';
@@ -68,11 +69,13 @@ export function PortalHeader({
   userData,
   accountType,
   userRole,
+  notifications,
   unreadCount,
   isNotificationOpen,
   setIsNotificationOpen,
   notificationRef,
   notificationButtonRef,
+  handleNotificationClick,
   orgId,
   onSignOut,
   viewTransitionName,
@@ -175,13 +178,28 @@ export function PortalHeader({
               ref={notificationButtonRef}
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               className={cn(notificationButtonVariants({ isOpen: isNotificationOpen }))}
-              aria-label="Notifications"
+              aria-label={t('portal.header.notifications')}
+              aria-expanded={isNotificationOpen}
+              aria-haspopup="true"
             >
-              <Bell size={20} className="transition-transform group-hover:scale-110" />
+              <Bell
+                size={20}
+                className="transition-transform group-hover:scale-110"
+                aria-hidden="true"
+              />
               {unreadCount > 0 && (
-                <span className="absolute top-2.5 end-2.5 w-2.5 h-2.5 bg-blue-600 rounded-full ring-2 ring-white dark:ring-surface-950 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.6)]" />
+                <span
+                  className="absolute top-2.5 end-2.5 w-2.5 h-2.5 bg-blue-600 rounded-full ring-2 ring-white dark:ring-surface-950 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.6)]"
+                  aria-label={t('portal.header.unreadNotifications', { count: unreadCount })}
+                />
               )}
             </button>
+            <NotificationPreview
+              notifications={notifications}
+              unreadCount={unreadCount}
+              onNotificationClick={handleNotificationClick}
+              buttonRef={notificationButtonRef}
+            />
           </div>
         </div>
 

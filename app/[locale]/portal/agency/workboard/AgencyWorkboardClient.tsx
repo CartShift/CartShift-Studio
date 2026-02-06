@@ -377,21 +377,39 @@ export default function AgencyWorkboardClient() {
       />
 
       {/* Mobile Column Tabs */}
-      <div className="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 no-scrollbar snap-x">
-        {columns.map(col => (
-          <button
-            key={col.id}
-            onClick={() => setActiveMobileTab(col.id)}
-            className={cn(
-              'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors snap-center whitespace-nowrap',
-              activeMobileTab === col.id
-                ? 'bg-surface-900 text-white dark:bg-white dark:text-surface-900'
-                : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-400'
-            )}
-          >
-            {col.title}
-          </button>
-        ))}
+      <div className="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide snap-x">
+        {columns.map(col => {
+          const columnRequests = getRequestsForColumn(col);
+          const isActive = activeMobileTab === col.id;
+          return (
+            <button
+              key={col.id}
+              onClick={() => setActiveMobileTab(col.id)}
+              className={cn(
+                'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all snap-center whitespace-nowrap flex items-center gap-2',
+                isActive
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
+              )}
+              aria-label={`${col.title} column, ${columnRequests.length} items`}
+              aria-pressed={isActive}
+            >
+              {col.title}
+              {columnRequests.length > 0 && (
+                <span
+                  className={cn(
+                    'px-1.5 py-0.5 rounded-full text-xs font-black min-w-[20px] text-center',
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : 'bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-400'
+                  )}
+                >
+                  {columnRequests.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start pb-20 mt-4 md:mt-8">

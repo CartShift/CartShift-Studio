@@ -93,28 +93,36 @@ export function ErrorState({
         )}
         <div className="flex flex-wrap items-center justify-center gap-3">
           {onRetry && (
-            <Button onClick={onRetry} className="shadow-lg shadow-blue-500/20">
-              <RefreshCw size={16} className="me-2" />
+            <Button
+              onClick={onRetry}
+              className="shadow-lg shadow-blue-500/20"
+              aria-label={t('portal.errorState.retry')}
+            >
+              <RefreshCw size={16} className="me-2" aria-hidden="true" />
               {t('portal.errorState.retry')}
             </Button>
           )}
           {onGoBack && (
-            <Button variant="outline" onClick={onGoBack}>
-              <ArrowLeft size={16} className="me-2 rtl:rotate-180" />
+            <Button variant="outline" onClick={onGoBack} aria-label={t('portal.errorState.goBack')}>
+              <ArrowLeft size={16} className="me-2 rtl:rotate-180" aria-hidden="true" />
               {t('portal.errorState.goBack')}
             </Button>
           )}
           {showHomeLink && (
             <Link href={getPortalPath('/')}>
-              <Button variant="outline">
-                <Home size={16} className="me-2" />
+              <Button variant="outline" aria-label={t('portal.errorState.home')}>
+                <Home size={16} className="me-2" aria-hidden="true" />
                 {t('portal.errorState.home')}
               </Button>
             </Link>
           )}
           {showSupportLink && (
-            <Button variant="ghost" className="text-surface-500">
-              <Headphones size={16} className="me-2" />
+            <Button
+              variant="ghost"
+              className="text-surface-500"
+              aria-label={t('portal.errorState.contactSupport')}
+            >
+              <Headphones size={16} className="me-2" aria-hidden="true" />
               {t('portal.errorState.contactSupport')}
             </Button>
           )}
@@ -142,14 +150,19 @@ export function ErrorState({
       )}
       <div className="flex items-center gap-3">
         {onRetry && (
-          <Button size="sm" onClick={onRetry}>
-            <RefreshCw size={14} className="me-2" />
+          <Button size="sm" onClick={onRetry} aria-label={t('portal.errorState.retry')}>
+            <RefreshCw size={14} className="me-2" aria-hidden="true" />
             {t('portal.errorState.retry')}
           </Button>
         )}
         {onGoBack && (
-          <Button size="sm" variant="outline" onClick={onGoBack}>
-            <ArrowLeft size={14} className="me-2 rtl:rotate-180" />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onGoBack}
+            aria-label={t('portal.errorState.goBack')}
+          >
+            <ArrowLeft size={14} className="me-2 rtl:rotate-180" aria-hidden="true" />
             {t('portal.errorState.goBack')}
           </Button>
         )}

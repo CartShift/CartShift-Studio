@@ -17,7 +17,6 @@ import {
   DollarSign,
   Clock,
   Eye,
-  Filter,
   Trash2,
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
@@ -27,11 +26,17 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { useImpersonation } from '@/lib/context/ImpersonationContext';
 import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
+import {
+  ClientMultiFilter,
+  type ClientStatus,
+  type ClientPlan,
+} from '@/components/portal/clients/ClientMultiFilter';
 
 // Format currency with abbreviations for large numbers
 function formatRevenue(amountInCents: number, currency: Currency = 'USD'): string {
@@ -57,6 +62,9 @@ export default function AgencyClientsClient() {
   const [loading, set] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyClientsOnly, setShowMyClientsOnly] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<ClientStatus[]>([]);
+  const [planFilter, setPlanFilter] = useState<ClientPlan[]>([]);
+  const [revenueRange, setRevenueRange] = useState({ min: 0, max: 10000000 });
   const [isRepairing, setIsRepairing] = useState(false);
   const [orgToDelete, setOrgToDelete] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -93,11 +101,53 @@ export default function AgencyClientsClient() {
     }
   };
 
-  const filteredOrgs = organizations.filter(org => {
-    const matchesSearch = org.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = showMyClientsOnly ? org.responsibleAgencyUserId === user?.uid : true;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredOrgs = useMemo(() => {
+    return organizations.filter(org => {
+      // Search filter
+      const matchesSearch = org.name.toLowerCase().includes(searchQuery.toLowerCase());
+      if (!matchesSearch) return false;
+
+      // My Clients filter
+      if (showMyClientsOnly && org.responsibleAgencyUserId !== user?.uid) {
+        return false;
+      }
+
+      // Status filter
+      if (statusFilter.length > 0) {
+        const orgStatus = org.status || 'active';
+        if (!statusFilter.includes(orgStatus as ClientStatus)) {
+          return false;
+        }
+      }
+
+      // Plan filter
+      if (planFilter.length > 0) {
+        const orgPlan = org.plan || 'free';
+        if (!planFilter.includes(orgPlan as ClientPlan)) {
+          return false;
+        }
+      }
+
+      // Revenue range filter (revenue is stored in cents, convert to dollars for comparison)
+      const revenueInDollars = (org.totalRevenue || 0) / 100;
+      if (revenueRange.min > 0 && revenueInDollars < revenueRange.min) {
+        return false;
+      }
+      if (revenueRange.max < 10000000 && revenueInDollars > revenueRange.max) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [
+    organizations,
+    searchQuery,
+    showMyClientsOnly,
+    statusFilter,
+    planFilter,
+    revenueRange,
+    user?.uid,
+  ]);
 
   const handleDeleteClient = async () => {
     if (!orgToDelete) return;
@@ -188,9 +238,12 @@ export default function AgencyClientsClient() {
 
       {/* Revenue Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
+        <Link
+          href={getPortalPath('/agency/sales')}
+          className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer group"
+        >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
               <DollarSign className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold uppercase tracking-widest text-white/70">
@@ -198,11 +251,14 @@ export default function AgencyClientsClient() {
             </span>
           </div>
           <p className="text-2xl font-black">{formatRevenue(totals.totalRevenue)}</p>
-        </div>
+        </Link>
 
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25">
+        <Link
+          href={getPortalPath('/agency/sales')}
+          className="p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-all cursor-pointer group"
+        >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Clock className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold uppercase tracking-widest text-white/70">
@@ -210,7 +266,7 @@ export default function AgencyClientsClient() {
             </span>
           </div>
           <p className="text-2xl font-black">{formatRevenue(totals.pendingRevenue)}</p>
-        </div>
+        </Link>
 
         <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25">
           <div className="flex items-center gap-3 mb-2">
@@ -224,9 +280,12 @@ export default function AgencyClientsClient() {
           <p className="text-2xl font-black">{filteredOrgs.length}</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25">
+        <Link
+          href={getPortalPath('/agency/sales')}
+          className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all cursor-pointer group"
+        >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
               <TrendingUp className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold uppercase tracking-widest text-white/70">
@@ -243,7 +302,7 @@ export default function AgencyClientsClient() {
                 )
               : '-'}
           </p>
-        </div>
+        </Link>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center gap-4 bg-white dark:bg-surface-900/50 p-4 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-sm">
@@ -260,22 +319,50 @@ export default function AgencyClientsClient() {
             onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="text-xs font-bold text-surface-400 uppercase tracking-widest px-2">
             {filteredOrgs.length} {t('agency.clients.activeAccounts' as any)}
           </div>
+
+          {/* My Clients Toggle */}
           <Button
             variant={showMyClientsOnly ? 'primary' : 'outline'}
             onClick={() => setShowMyClientsOnly(!showMyClientsOnly)}
+            size="sm"
             className={cn(
               'h-11 transition-all',
               !showMyClientsOnly && 'border-surface-200 dark:border-surface-800 text-surface-500'
             )}
+            aria-label={t('agency.clients.filter.myClients' as any)}
+            aria-pressed={showMyClientsOnly}
           >
-            <Filter size={16} className="me-2" />
-            {t('agency.clients.filter.myClients' as any) || 'My Clients'}
+            <Users size={16} className="me-2" aria-hidden="true" />
+            <span className="hidden sm:inline">
+              {t('agency.clients.filter.myClients' as any) || 'My Clients'}
+            </span>
+            <span className="sm:hidden">{t('common.filter')}</span>
           </Button>
-          <Button variant="outline" className="h-11 border-surface-200 dark:border-surface-800">
+
+          {/* Multi-Filter Dropdown */}
+          <ClientMultiFilter
+            statusFilter={statusFilter}
+            planFilter={planFilter}
+            revenueRange={revenueRange}
+            onStatusChange={setStatusFilter}
+            onPlanChange={setPlanFilter}
+            onRevenueRangeChange={setRevenueRange}
+            onReset={() => {
+              setStatusFilter([]);
+              setPlanFilter([]);
+              setRevenueRange({ min: 0, max: 10000000 });
+            }}
+          />
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-11 border-surface-200 dark:border-surface-800"
+          >
             {t('agency.clients.export' as any)}
           </Button>
         </div>

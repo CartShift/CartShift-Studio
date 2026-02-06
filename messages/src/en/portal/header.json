@@ -12,7 +12,11 @@
       "noNotifications": "No notifications",
       "markAllRead": "Mark all as read",
       "profileMenu": "Profile menu",
-      "visitWebsite": "Visit Website"
+      "visitWebsite": "Visit Website",
+      "recentNotifications": "Recent Notifications",
+      "new": "new",
+      "viewAllNotifications": "View all {count} notifications",
+      "unreadNotifications": "{count} unread notifications"
     }
   }
 }

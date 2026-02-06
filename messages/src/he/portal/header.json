@@ -12,7 +12,11 @@
       "noNotifications": "אין התראות",
       "markAllRead": "סמן הכל כנקרא",
       "profileMenu": "תפריט פרופיל",
-      "visitWebsite": "בקר באתר"
+      "visitWebsite": "בקר באתר",
+      "recentNotifications": "התראות אחרונות",
+      "new": "חדש",
+      "viewAllNotifications": "הצג את כל {count} ההתראות",
+      "unreadNotifications": "{count} התראות שלא נקראו"
     }
   }
 }
