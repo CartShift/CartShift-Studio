@@ -58,7 +58,12 @@ function LoginForm() {
     try {
       await signInWithGoogle();
       toast.success(t('auth.login.success' as any));
-      navigateToPortal(redirectPath || '/');
+      // If logging in via invite link, redirect to dashboard since invite is auto-accepted
+      if (redirectPath?.includes('/invite/')) {
+        navigateToPortal('/dashboard/');
+      } else {
+        navigateToPortal(redirectPath || '/');
+      }
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
@@ -84,7 +89,12 @@ function LoginForm() {
     try {
       await loginWithEmail(data.email, data.password);
       toast.success(t('auth.login.success' as any));
-      navigateToPortal(redirectPath || '/');
+      // If logging in via invite link, redirect to dashboard since invite is auto-accepted
+      if (redirectPath?.includes('/invite/')) {
+        navigateToPortal('/dashboard/');
+      } else {
+        navigateToPortal(redirectPath || '/');
+      }
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =

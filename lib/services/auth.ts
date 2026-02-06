@@ -12,7 +12,12 @@ import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb } from '@/lib/firebase';
 import { ACCOUNT_TYPE } from '@/lib/types/portal';
 import { validatePassword, isValidEmail } from '@/lib/utils/validation';
-import { getPendingClientInvites, acceptClientInvite } from '@/lib/services/portal-organizations';
+import {
+  getPendingClientInvites,
+  acceptClientInvite,
+  getInvitesByEmail,
+  acceptInvite,
+} from '@/lib/services/portal-organizations';
 
 // Google Auth Provider instance
 const googleProvider = new GoogleAuthProvider();
@@ -54,13 +59,30 @@ export async function loginWithEmail(email: string, password: string): Promise<U
 
     // Check for pending client invites and auto-accept them
     try {
-      const pendingInvites = await getPendingClientInvites(email);
-      for (const invite of pendingInvites) {
+      const pendingClientInvites = await getPendingClientInvites(email);
+      for (const invite of pendingClientInvites) {
         await acceptClientInvite(invite.id, user.uid, email, user.displayName || undefined);
         console.log(`[Login] Auto-accepted client invite ${invite.id} for ${email}`);
       }
     } catch (error) {
       console.warn('[Login] Error processing client invites:', error);
+    }
+
+    // Check for pending admin/team invites and auto-accept them
+    try {
+      const allPendingInvites = await getInvitesByEmail(email);
+      const adminTeamInvites = allPendingInvites.filter(
+        invite => !invite.isClientInvite && invite.status === 'pending'
+      );
+      for (const invite of adminTeamInvites) {
+        if (invite.expiresAt?.toDate && invite.expiresAt.toDate() < new Date()) {
+          continue;
+        }
+        await acceptInvite(invite.id, user.uid, user.displayName || undefined);
+        console.log(`[Login] Auto-accepted admin/team invite ${invite.id} for ${email}`);
+      }
+    } catch (error) {
+      console.warn('[Login] Error processing admin/team invites:', error);
     }
 
     await syncSessionCookie(user);
@@ -120,13 +142,32 @@ export async function signInWithGoogle(): Promise<User> {
     // Check for pending client invites and auto-accept them
     if (user.email) {
       try {
-        const pendingInvites = await getPendingClientInvites(user.email);
-        for (const invite of pendingInvites) {
+        const pendingClientInvites = await getPendingClientInvites(user.email);
+        for (const invite of pendingClientInvites) {
           await acceptClientInvite(invite.id, user.uid, user.email, user.displayName || undefined);
           console.log(`[GoogleSignIn] Auto-accepted client invite ${invite.id} for ${user.email}`);
         }
       } catch (error) {
         console.warn('[GoogleSignIn] Error processing client invites:', error);
+      }
+
+      // Check for pending admin/team invites and auto-accept them
+      try {
+        const allPendingInvites = await getInvitesByEmail(user.email);
+        const adminTeamInvites = allPendingInvites.filter(
+          invite => !invite.isClientInvite && invite.status === 'pending'
+        );
+        for (const invite of adminTeamInvites) {
+          if (invite.expiresAt?.toDate && invite.expiresAt.toDate() < new Date()) {
+            continue;
+          }
+          await acceptInvite(invite.id, user.uid, user.displayName || undefined);
+          console.log(
+            `[GoogleSignIn] Auto-accepted admin/team invite ${invite.id} for ${user.email}`
+          );
+        }
+      } catch (error) {
+        console.warn('[GoogleSignIn] Error processing admin/team invites:', error);
       }
     }
 
@@ -203,13 +244,31 @@ export async function signUpWithEmail(
 
     // Check for pending client invites and auto-accept them
     try {
-      const pendingInvites = await getPendingClientInvites(email);
-      for (const invite of pendingInvites) {
+      const pendingClientInvites = await getPendingClientInvites(email);
+      for (const invite of pendingClientInvites) {
         await acceptClientInvite(invite.id, user.uid, email, name);
         console.log(`[SignUp] Auto-accepted client invite ${invite.id} for ${email}`);
       }
     } catch (error) {
       console.warn('[SignUp] Error processing client invites:', error);
+    }
+
+    // Check for pending admin/team invites and auto-accept them
+    try {
+      const allPendingInvites = await getInvitesByEmail(email);
+      const adminTeamInvites = allPendingInvites.filter(
+        invite => !invite.isClientInvite && invite.status === 'pending'
+      );
+      for (const invite of adminTeamInvites) {
+        // Filter out expired invites
+        if (invite.expiresAt?.toDate && invite.expiresAt.toDate() < new Date()) {
+          continue;
+        }
+        await acceptInvite(invite.id, user.uid, name);
+        console.log(`[SignUp] Auto-accepted admin/team invite ${invite.id} for ${email}`);
+      }
+    } catch (error) {
+      console.warn('[SignUp] Error processing admin/team invites:', error);
     }
 
     await syncSessionCookie(user);

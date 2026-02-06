@@ -77,7 +77,12 @@ function SignupForm() {
     setError(null);
     try {
       await signUpWithEmail(data.email, data.password, data.name);
-      navigateToPortal(redirectPath || '/');
+      // If signing up via invite link, redirect to dashboard since invite is auto-accepted
+      if (redirectPath?.includes('/invite/')) {
+        navigateToPortal('/dashboard/');
+      } else {
+        navigateToPortal(redirectPath || '/');
+      }
     } catch (error: unknown) {
       console.error('Signup error:', error);
       const firebaseError = error as { code?: string; message?: string };
