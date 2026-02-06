@@ -52,11 +52,7 @@ async function testAnalyzer() {
     // Check if visual analysis is present
     if (result.visualAnalysis) {
       console.log('📸 Visual Analysis: ✅ Present');
-      console.log(
-        '  Screenshots:',
-        result.visualAnalysis.screenshots?.length || 0,
-        'captured'
-      );
+      console.log('  Screenshots:', result.visualAnalysis.screenshots?.length || 0, 'captured');
       console.log('  Mobile Responsiveness:', result.visualAnalysis.mobileResponsivenessScore);
     } else {
       console.log('📸 Visual Analysis: ⚠️  Skipped (Puppeteer unavailable)');
@@ -93,9 +89,7 @@ async function testAnalyzer() {
     }
     console.log();
 
-    console.log(
-      '✨ Test complete! The analyzer is working correctly with graceful degradation.\n'
-    );
+    console.log('✨ Test complete! The analyzer is working correctly with graceful degradation.\n');
     process.exit(0);
   } catch (error) {
     console.error('\n❌ Test failed:\n');

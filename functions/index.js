@@ -343,15 +343,12 @@ exports.contactForm = onRequest(
         // then the ONLY reason it looks old is deployment.
         // However, I should still clean up this contact form eventually.
         // But for the user's specific complaint ("request update email"), that logic IS in 'onPortalRequestUpdated'.
-
         // Let's look at 'onPortalRequestUpdated' (lines 520+).
         // It calls 'sendPortalEmail'.
         // 'sendPortalEmail' calls 'sendEmailWithLogging' (lines 134+).
         // 'sendEmailWithLogging' is imported from './lib/emails/email-service'.
-
         // So the logic flow is correct for 'request update'.
         // Conclusion: User MUST deploy.
-
         // I will NOT edit contactForm right now to avoid scope creep/breaking things unnecessarily.
         // I will just notify the user.
       }
