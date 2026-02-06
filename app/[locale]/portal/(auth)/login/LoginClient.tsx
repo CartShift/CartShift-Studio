@@ -17,9 +17,10 @@ import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { Mail, Lock } from 'lucide-react';
 import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
-import { getPortalPath } from '@/lib/utils/portal-paths';
+import { getPortalPath, getPortalPathnameForRedirect } from '@/lib/utils/portal-paths';
 import { toast } from 'sonner';
 import { useBranding } from '@/components/providers/BrandingProvider';
+import { useLocale } from 'next-intl';
 
 type LoginData = z.infer<ReturnType<typeof getLoginSchema>>;
 
@@ -39,6 +40,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const t = useTranslations('portal');
   const redirectPath = searchParams.get('redirect');
+  const locale = useLocale();
   const { branding } = useBranding();
 
   const loginSchema = useMemo(() => getLoginSchema((path: string) => t(path as any)), [t]);
@@ -58,12 +60,8 @@ function LoginForm() {
     try {
       await signInWithGoogle();
       toast.success(t('auth.login.success' as any));
-      // If logging in via invite link, redirect to dashboard since invite is auto-accepted
-      if (redirectPath?.includes('/invite/')) {
-        navigateToPortal('/dashboard/');
-      } else {
-        navigateToPortal(redirectPath || '/');
-      }
+      const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
+      window.location.assign(getPortalPathnameForRedirect(targetPath, locale));
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
@@ -89,12 +87,8 @@ function LoginForm() {
     try {
       await loginWithEmail(data.email, data.password);
       toast.success(t('auth.login.success' as any));
-      // If logging in via invite link, redirect to dashboard since invite is auto-accepted
-      if (redirectPath?.includes('/invite/')) {
-        navigateToPortal('/dashboard/');
-      } else {
-        navigateToPortal(redirectPath || '/');
-      }
+      const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
+      window.location.assign(getPortalPathnameForRedirect(targetPath, locale));
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =

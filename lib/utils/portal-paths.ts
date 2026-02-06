@@ -87,6 +87,16 @@ function getLocaleFromPath(): string {
   return match ? match[1] : 'en';
 }
 
+/**
+ * Full pathname for same-origin redirect (e.g. after login).
+ * Use with window.location.assign() so the new page loads with the session cookie.
+ */
+export function getPortalPathnameForRedirect(path: string, locale: string): string {
+  const segment = getPortalPath(path);
+  if (segment.startsWith('http')) return segment;
+  return `/${locale}${segment}`;
+}
+
 export function usePortalPath() {
   return {
     getPath: getPortalPath,
