@@ -74,9 +74,11 @@ export default function middleware(request: NextRequest) {
 
     const rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = rewritePath;
-    const response = NextResponse.rewrite(rewriteUrl);
-    response.headers.set('x-is-portal-subdomain', '1');
-    return response;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-is-portal-subdomain', '1');
+    return NextResponse.rewrite(rewriteUrl, {
+      request: { headers: requestHeaders },
+    });
   }
 
   return intlMiddleware(request);

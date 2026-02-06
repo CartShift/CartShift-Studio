@@ -2,7 +2,6 @@
 
 import { usePathname } from '@/i18n/navigation';
 import { MainLayout } from './MainLayout';
-import { isPortalPath } from '@/lib/utils/portal-paths';
 import { isPortalSubdomain } from '@/lib/utils/subdomain';
 
 interface ConditionalLayoutProps {
@@ -16,28 +15,15 @@ export function ConditionalLayout({
 }: ConditionalLayoutProps) {
   const pathname = usePathname();
 
-  if (!pathname) {
-    return <MainLayout>{children}</MainLayout>;
-  }
-
-  const hasPortalPrefix = pathname.includes('/portal');
-
-  let pathWithoutLocale = pathname.replace(/^\/[a-z]{2}\//, '/') || '/';
-  if (pathWithoutLocale.startsWith('/portal/')) {
-    pathWithoutLocale = pathWithoutLocale.replace('/portal/', '/');
-  } else if (pathWithoutLocale === '/portal' || pathWithoutLocale === '/portal/') {
-    pathWithoutLocale = '/';
-  }
-
-  const isPortalPage = isPortalPath(pathWithoutLocale);
-
-  // Use server-provided prop for SSR, client detection for hydration
+  // On portal subdomain, never render MainLayout — all routes are portal routes
   const isSubdomain =
     isPortalSubdomainProp || (typeof window !== 'undefined' ? isPortalSubdomain() : false);
+  if (isSubdomain) {
+    return <>{children}</>;
+  }
 
-  const isPortalRoute = hasPortalPrefix || (isSubdomain && isPortalPage);
-
-  if (isPortalRoute) {
+  // On main domain, skip MainLayout for /portal/* paths
+  if (pathname?.includes('/portal')) {
     return <>{children}</>;
   }
 
