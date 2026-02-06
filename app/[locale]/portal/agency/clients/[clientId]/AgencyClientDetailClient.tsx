@@ -320,7 +320,7 @@ export default function AgencyClientDetailClient({
         }
         confirmText={t('common.removeLabel' as any) || 'Remove'}
         variant="danger"
-        is={isRemovingMember}
+        isLoading={isRemovingMember}
       />
 
       {/* Header */}

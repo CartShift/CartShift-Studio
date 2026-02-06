@@ -1,5 +1,16 @@
-import { setRequestLocale, getMessages } from 'next-intl/server';
+import { setRequestLocale, getMessages, getTranslations } from 'next-intl/server';
 import DashboardClient from './DashboardClient';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'portal.sidebar.nav' });
+  return { title: `${t('dashboard')} | CartShift Portal` };
+}
 
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

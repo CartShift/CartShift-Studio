@@ -467,7 +467,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 inset-inline-0 z-[9999] bg-white dark:bg-surface-900 rounded-t-3xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col"
+              className="fixed bottom-0 inset-inline-0 z-tooltip bg-white dark:bg-surface-900 rounded-t-3xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col"
             >
               <div className="w-12 h-1.5 bg-surface-200 dark:bg-surface-800 rounded-full mx-auto my-3 flex-shrink-0" />
               <div className="overflow-y-auto py-2 px-4 pb-8">

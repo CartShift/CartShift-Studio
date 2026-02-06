@@ -464,33 +464,19 @@ export function useRequestActions({
   // Status change
   const handleStatusChange = useCallback(
     async (newStatus: RequestStatus) => {
-      console.log('[handleStatusChange] Attempting status change to:', newStatus);
-      console.log('[handleStatusChange] Current state:', {
-        requestId,
-        orgId,
-        isAgency,
-        userData: !!userData,
-      });
-
       if (!canPerformAction()) {
-        console.error('[handleStatusChange] Cannot perform action - missing required data');
         toast.error(t('statusUpdateFailed'), 'Missing required information');
         return;
       }
 
       if (!isAgency) {
-        console.error('[handleStatusChange] User is not an agency user');
         toast.error(t('statusUpdateFailed'), 'Only agency users can change request status');
         return;
       }
 
-      // Optimistic update: Store previous state
       const previousRequest = queryClient.getQueryData(['request', requestId]);
-      console.log('[handleStatusChange] Previous request state:', previousRequest);
 
       try {
-        // Optimistically update the UI immediately
-        console.log('[handleStatusChange] Applying optimistic update...');
         queryClient.setQueryData<Request>(['request', requestId], old => {
           if (!old) return old;
           return {
@@ -500,16 +486,9 @@ export function useRequestActions({
           };
         });
 
-        console.log('[handleStatusChange] Updating request status in Firebase...');
         await updateRequestStatus(requestId!, newStatus);
-        console.log('[handleStatusChange] Status updated successfully');
-
-        // Invalidate to ensure fresh data from server
-        console.log('[handleStatusChange] Invalidating queries for server sync...');
         await queryClient.invalidateQueries({ queryKey: ['request', requestId] });
-        console.log('[handleStatusChange] Queries invalidated');
 
-        console.log('[handleStatusChange] Logging activity...');
         await logActivity({
           orgId: orgId!,
           requestId: requestId!,
@@ -518,20 +497,15 @@ export function useRequestActions({
           action: 'STATUS_CHANGED',
           details: { status: newStatus },
         });
-        console.log('[handleStatusChange] Activity logged');
 
         toast.success(
           t('statusUpdated'),
           t('statusUpdatedDesc', { status: newStatus.toLowerCase() })
         );
       } catch (error) {
-        console.error('[handleStatusChange] Error updating status:', error);
-
-        // Rollback optimistic update on error
-        console.log('[handleStatusChange] Rolling back optimistic update...');
+        console.error('Error updating status:', error);
         if (previousRequest) {
           queryClient.setQueryData(['request', requestId], previousRequest);
-          console.log('[handleStatusChange] Rollback complete');
         }
 
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));
@@ -601,15 +575,7 @@ export function useRequestActions({
     // Updated validation to match Firestore rules
     const isCreator = _request?.createdBy === userData?.id;
 
-    console.log('[handleDeleteRequest] Permission check:', {
-      isAgency,
-      isCreator,
-      userId: userData?.id,
-      requestCreator: _request?.createdBy,
-    });
-
     if (!isAgency && !isCreator) {
-      console.error('Delete attempt denied: User is neither agency nor creator');
       toast.error('Permission denied', 'You do not have permission to delete this request');
       return false;
     }

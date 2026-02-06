@@ -185,7 +185,7 @@ export default function RequestDetailClient() {
     handleSendComment,
     isSubmittingComment,
     handleDeleteRequest,
-    is,
+    isDeleting,
   } = useRequestActions({
     request,
     userData,
@@ -886,7 +886,7 @@ export default function RequestDetailClient() {
             }
             confirmText={t('common.delete' as any) || 'Delete'}
             variant="danger"
-            is={is}
+            isLoading={isDeleting}
           />
 
           {/* Assigned Specialist Card */}

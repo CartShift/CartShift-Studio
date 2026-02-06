@@ -42,7 +42,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const [fullOrganizations, setFullOrganizations] = useState<Organization[]>([]);
   const [loadingOrgs, setOrgs] = useState(false);
-  const [is, setIs] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Get organizations from user data
   const organizations = useMemo(() => {
@@ -84,7 +84,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
       // If agency, we trust the stored ID. If client, we check membership.
       if (userData?.isAgency || organizations.includes(storedOrgId)) {
         setCurrentOrgId(storedOrgId);
-        setIs(true);
+        setIsInitialized(true);
         return;
       }
     }
@@ -100,7 +100,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
       setCurrentOrgId(null);
     }
 
-    setIs(true);
+    setIsInitialized(true);
   }, [auth, userData?.isAgency, organizations]);
 
   // Switch to a different organization
@@ -123,13 +123,13 @@ export function OrgProvider({ children }: OrgProviderProps) {
   const value = useMemo<OrgContextValue>(
     () => ({
       orgId: currentOrgId,
-      loading: auth || !is || loadingOrgs,
+      loading: auth || !isInitialized || loadingOrgs,
       switchOrg,
       organizations,
       fullOrganizations,
       hasMultipleOrgs: organizations.length > 1,
     }),
-    [currentOrgId, auth, is, loadingOrgs, switchOrg, organizations, fullOrganizations]
+    [currentOrgId, auth, isInitialized, loadingOrgs, switchOrg, organizations, fullOrganizations]
   );
 
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;

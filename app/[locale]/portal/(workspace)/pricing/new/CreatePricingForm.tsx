@@ -67,7 +67,7 @@ export default function CreatePricingForm() {
   const { userData } = usePortalAuth();
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [is, setIs] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -294,7 +294,7 @@ export default function CreatePricingForm() {
     }
 
     setIsSubmitting(true);
-    if (shouldSend) setIs(true);
+    if (shouldSend) setIsSending(true);
     setSubmitStatus('idle');
     setErrorMessage(null);
 
@@ -340,7 +340,7 @@ export default function CreatePricingForm() {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
-      setIs(false);
+      setIsSending(false);
     }
   };
 
@@ -362,10 +362,10 @@ export default function CreatePricingForm() {
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-            {is ? 'Offer Sent!' : 'Draft Saved!'}
+            {isSending ? 'Offer Sent!' : 'Draft Saved!'}
           </h2>
           <p className="text-surface-500 dark:text-surface-400 max-w-sm">
-            {is
+            {isSending
               ? 'Your pricing offer has been sent to the client.'
               : 'Your draft has been saved. You can send it when ready.'}
           </p>
@@ -735,8 +735,8 @@ export default function CreatePricingForm() {
               disabled={isSubmitting}
               className="w-full h-12 flex items-center justify-center gap-2"
             >
-              {is ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
-              {is ? t('portal.pricing.form.sending') : t('portal.pricing.form.sendToClient')}
+              {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
+              {isSending ? t('portal.pricing.form.sending') : t('portal.pricing.form.sendToClient')}
             </Button>
 
             <Button
@@ -746,7 +746,7 @@ export default function CreatePricingForm() {
               disabled={isSubmitting}
               className="w-full h-12 flex items-center justify-center gap-2"
             >
-              {isSubmitting && !is ? (
+              {isSubmitting && !isSending ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <Save size={18} />

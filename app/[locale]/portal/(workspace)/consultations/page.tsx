@@ -1,5 +1,16 @@
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import ConsultationsClient from './ConsultationsClient';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'portal.sidebar.nav' });
+  return { title: `${t('consultations')} | CartShift Portal` };
+}
 
 export default async function ConsultationsPage({
   params,

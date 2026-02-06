@@ -376,7 +376,7 @@ export default function RequestsClient() {
         confirmText={t('common.delete')}
         cancelText={t('common.cancel')}
         variant="danger"
-        is={isDeleting}
+        isLoading={isDeleting}
       />
 
       {/* Edit Modal */}

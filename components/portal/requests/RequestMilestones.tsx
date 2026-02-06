@@ -20,7 +20,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
   const t = useTranslations();
   const [isEditing, setIsEditing] = useState(false);
   const [milestones, setMilestones] = useState<Milestone[]>(request.milestones || []);
-  const [is, setIs] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleAddMilestone = () => {
     const newMilestone: Milestone = {
@@ -43,14 +43,14 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
   };
 
   const handleSave = async () => {
-    setIs(true);
+    setIsSaving(true);
     try {
       await updateRequestMilestones(request.id, milestones);
       setIsEditing(false);
     } catch (error) {
       console.error('Error saving milestones:', error);
     } finally {
-      setIs(false);
+      setIsSaving(false);
     }
   };
 
@@ -248,7 +248,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
             <Button
               className="flex-1 shadow-lg shadow-blue-500/20"
               onClick={handleSave}
-              loading={is}
+              loading={isSaving}
             >
               {t('portal.milestones.applyPipelineUpdates')}
             </Button>

@@ -711,7 +711,7 @@ export default function AgencyPricingClient() {
         description={t('pricing.form.sendConfirm')}
         confirmText={t('pricing.form.sendToClient')}
         cancelText={t('common.cancel')}
-        is={!!processingId}
+        isLoading={!!processingId}
       />
     </div>
   );

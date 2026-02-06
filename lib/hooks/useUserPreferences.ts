@@ -16,12 +16,12 @@ export function useUserPreferences() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const [is, setIs] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
   const [appliedFirestorePrefs, setFirestorePrefs] = useState(false);
 
   // Apply Firestore preferences when user data loads
   useEffect(() => {
-    if (!user || !userData || appliedFirestorePrefs || is) {
+    if (!user || !userData || appliedFirestorePrefs || isApplying) {
       return;
     }
 
@@ -32,7 +32,7 @@ export function useUserPreferences() {
     }
 
     const applyPrefs = async () => {
-      setIs(true);
+      setIsApplying(true);
 
       try {
         // Apply theme preference from Firestore
@@ -52,16 +52,16 @@ export function useUserPreferences() {
       } catch (error) {
         console.error('[useUserPreferences] Error applying Firestore preferences:', error);
       } finally {
-        setIs(false);
+        setIsApplying(false);
       }
     };
 
     applyPrefs();
-  }, [user, userData, appliedFirestorePrefs, setNextTheme, locale, pathname, router, is]);
+  }, [user, userData, appliedFirestorePrefs, setNextTheme, locale, pathname, router, isApplying]);
 
   // Update theme in Firestore when it changes locally
   useEffect(() => {
-    if (!user || is) {
+    if (!user || isApplying) {
       return;
     }
 
@@ -82,10 +82,10 @@ export function useUserPreferences() {
     }, 500); // Debounce to avoid too many writes
 
     return () => clearTimeout(timeoutId);
-  }, [user, is]);
+  }, [user, isApplying]);
 
   return {
     preferences: (userData as any)?.preferences || {},
-    is,
+    isApplying,
   };
 }

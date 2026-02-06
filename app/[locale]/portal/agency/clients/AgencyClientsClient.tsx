@@ -57,7 +57,7 @@ export default function AgencyClientsClient() {
   const [showMyClientsOnly, setShowMyClientsOnly] = useState(false);
   const [isRepairing, setIsRepairing] = useState(false);
   const [orgToDelete, setOrgToDelete] = useState<{ id: string; name: string } | null>(null);
-  const [is, setIs] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     // Sync loading state or use derived state
@@ -115,7 +115,7 @@ export default function AgencyClientsClient() {
 
   const handleDeleteClient = async () => {
     if (!orgToDelete) return;
-    setIs(true);
+    setIsDeleting(true);
     try {
       await deleteOrganization(orgToDelete.id);
       setOrgToDelete(null);
@@ -127,7 +127,7 @@ export default function AgencyClientsClient() {
       console.error('Failed to delete client:', err);
       alert('Failed to delete client');
     } finally {
-      setIs(false);
+      setIsDeleting(false);
     }
   };
 
@@ -181,7 +181,7 @@ export default function AgencyClientsClient() {
         }
         confirmText={t('common.delete' as any) || 'Delete'}
         variant="danger"
-        is={is}
+        isLoading={isDeleting}
       />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
