@@ -298,7 +298,7 @@ export default function CVPageContent() {
                 </div>
 
                 {/* Status indicator - subtle */}
-                <div className="absolute -bottom-1 -right-1 flex items-center gap-1.5 px-2.5 py-1 bg-white/90 dark:bg-emerald-500/90 rounded-full border border-slate-200 dark:border-transparent shadow-sm">
+                <div className="absolute -bottom-1 -end-1 flex items-center gap-1.5 px-2.5 py-1 bg-white/90 dark:bg-emerald-500/90 rounded-full border border-slate-200 dark:border-transparent shadow-sm">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 dark:bg-white opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 dark:bg-white"></span>
@@ -451,9 +451,7 @@ export default function CVPageContent() {
 
           <div className="relative">
             {/* Timeline line with gradient - Visible on mobile now */}
-            <div
-              className={`absolute ${isRTL ? 'right-4 lg:right-8' : 'left-4 lg:left-8'} top-0 bottom-0 w-0.5 block`}
-            >
+            <div className="absolute start-4 lg:start-8 top-0 bottom-0 w-0.5 block">
               <div className="absolute inset-0 bg-gradient-to-b from-primary-500 via-accent-500 to-slate-200 dark:to-surface-700" />
               <div className="absolute inset-0 bg-gradient-to-b from-primary-500 via-accent-500 to-transparent blur-sm opacity-50" />
             </div>
@@ -483,13 +481,10 @@ export default function CVPageContent() {
                     className="relative group"
                   >
                     {/* Connector Line - Responsive */}
-                    <div
-                      className={`absolute top-8 ${isRTL ? 'right-4 w-4 lg:right-7 lg:w-8' : 'left-4 w-4 lg:left-7 lg:w-8'} h-[2px] bg-gradient-to-r from-slate-200 to-transparent dark:from-white/10 dark:to-transparent block`}
-                    />
+                    <div className="absolute top-8 start-4 w-4 lg:start-7 lg:w-8 h-[2px] bg-gradient-to-r from-slate-200 to-transparent dark:from-white/10 dark:to-transparent block" />
 
-                    {/* Timeline dot - Responsive positioning */}
                     <div
-                      className={`absolute ${isRTL ? 'right-[calc(1rem+1px)] lg:right-[calc(2rem+1px)] translate-x-1/2' : 'left-[calc(1rem+1px)] lg:left-[calc(2rem+1px)] -translate-x-1/2'} top-[1.7rem] ${isSelfEmployment ? 'w-2.5 h-2.5' : 'w-3 h-3'} block z-20`}
+                      className={`absolute start-[calc(1rem+1px)] lg:start-[calc(2rem+1px)] -translate-x-1/2 top-[1.7rem] ${isSelfEmployment ? 'w-2.5 h-2.5' : 'w-3 h-3'} block z-20`}
                     >
                       <div
                         className={`absolute inset-0 ${isSelfEmployment ? 'bg-slate-300 dark:bg-surface-600' : 'bg-primary-500 dark:bg-primary-400'} rounded-full ${isSelfEmployment ? '' : 'animate-ping opacity-20'}`}

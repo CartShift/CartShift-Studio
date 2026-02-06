@@ -57,14 +57,14 @@ export default function middleware(request: NextRequest) {
     const pathParts = pathname.split('/').filter(Boolean);
     const hasLocale = pathParts[0] && routing.locales.includes(pathParts[0] as 'en' | 'he');
 
+    const defaultLocale = routing.defaultLocale;
     let rewritePath: string;
     if (hasLocale) {
       const locale = pathParts[0];
       const rest = pathParts.slice(1).join('/');
       rewritePath = `/${locale}/portal/${rest}`;
     } else {
-      // No locale - let intl middleware handle adding it, but prepend portal
-      rewritePath = `/portal${pathname === '/' ? '' : pathname}`;
+      rewritePath = `/${defaultLocale}/portal${pathname === '/' ? '' : pathname}`;
     }
 
     // Ensure trailing slash consistency
@@ -74,7 +74,9 @@ export default function middleware(request: NextRequest) {
 
     const rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = rewritePath;
-    return NextResponse.rewrite(rewriteUrl);
+    const response = NextResponse.rewrite(rewriteUrl);
+    response.headers.set('x-is-portal-subdomain', '1');
+    return response;
   }
 
   return intlMiddleware(request);

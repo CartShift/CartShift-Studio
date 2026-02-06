@@ -63,7 +63,7 @@ function userDataEqual(a: UserData | null, b: UserData | null): boolean {
   );
 }
 
-// Create fallback user data from Firebase Auth user
+/** Synthesized from Auth when no Firestore doc exists yet (e.g. before first write/onboarding). Not used to mask errors. */
 function createFallbackUserData(user: User): UserData {
   return {
     id: user.uid,
@@ -78,8 +78,9 @@ function createFallbackUserData(user: User): UserData {
 }
 
 /**
- * Hook for subscribing to Firestore user document.
- * Handles real-time updates and permission errors gracefully.
+ * Subscribes to the Firestore user document. When the user is signed in but no document
+ * exists yet, returns synthesized data from Auth (see createFallbackUserData) until the
+ * first document write—e.g. after onboarding. This is not used to hide errors.
  */
 export function useFirestoreUser(
   user: User | null,

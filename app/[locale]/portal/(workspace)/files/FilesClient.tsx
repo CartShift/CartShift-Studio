@@ -26,6 +26,7 @@ import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { UploadFileForm } from '@/components/portal/forms/UploadFileForm';
 import { useTranslations, useLocale } from 'next-intl';
+import { toast } from 'sonner';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import { FileImage as PortalFileImage } from '@/components/ui/FileImage';
@@ -99,7 +100,7 @@ export default function FilesClient() {
       }
     } catch (error) {
       console.error('Error deleting file:', error);
-      alert(t('files.actions.deleteFailed'));
+      toast.error(t('files.actions.deleteFailed'));
     } finally {
       setFile(null);
     }

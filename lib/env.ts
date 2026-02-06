@@ -26,7 +26,6 @@ const envSchema = z.object({
   CONTACT_EMAIL: z.string().email().default(DEFAULT_CONTACT_EMAIL),
 });
 
-// Parse with safeParse for better error handling during build
 const parseResult = envSchema.safeParse({
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
@@ -42,29 +41,9 @@ const parseResult = envSchema.safeParse({
 });
 
 if (!parseResult.success) {
-  console.error('❌ Environment validation failed:', parseResult.error.format());
-  // In production build, throw; in dev, use defaults
-  if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
-    // During SSR/build, log warning but don't crash for optional fields
-    console.warn('⚠️ Some environment variables are missing. Using defaults where possible.');
-  }
+  const msg = `Environment validation failed: ${JSON.stringify(parseResult.error.flatten())}`;
+  console.error('❌', msg);
+  throw new Error(msg);
 }
 
-export const env = parseResult.success
-  ? parseResult.data
-  : {
-      // Fallback values for build time
-      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com',
-      NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
-      NEXT_PUBLIC_FIREBASE_FUNCTION_URL: DEFAULT_FIREBASE_FUNCTION_URL,
-      NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
-      NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
-      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
-      NEXT_PUBLIC_FIREBASE_PROJECT_ID:
-        process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'cartshiftstudio',
-      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
-        process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      CONTACT_EMAIL: process.env.CONTACT_EMAIL || DEFAULT_CONTACT_EMAIL,
-      NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
-    };
+export const env = parseResult.data;

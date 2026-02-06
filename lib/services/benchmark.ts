@@ -26,7 +26,7 @@ export class BenchmarkService {
   static async getPercentile(score: number, html: string): Promise<number> {
     const category = CompetitorService.detectCategory(html) || 'general';
 
-    // Fallback Simulation (Gaussian distribution approximation: mean=55, stdDev=18)
+    /** Estimated percentile when benchmark DB is unavailable or has insufficient data. */
     const fallbackPercentile = (s: number) => {
       if (s >= 95) return 99;
       if (s >= 85) return 92;

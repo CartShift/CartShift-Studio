@@ -8,8 +8,12 @@ export async function POST(request: NextRequest) {
   try {
     const { idToken } = await request.json();
 
-    if (!adminAuth || !idToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!adminAuth) {
+      return NextResponse.json({ status: 'skipped', reason: 'admin-not-configured' });
+    }
+
+    if (!idToken) {
+      return NextResponse.json({ error: 'Missing idToken' }, { status: 400 });
     }
 
     const sessionCookie = await adminAuth.createSessionCookie(idToken, {

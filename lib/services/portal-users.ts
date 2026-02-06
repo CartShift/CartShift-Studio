@@ -1,7 +1,8 @@
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
 import { PortalUser } from '@/lib/types/portal';
+import { ACCOUNT_TYPE } from '@/lib/types/portal';
 
 const USERS_COLLECTION = 'portal_users';
 
@@ -71,5 +72,30 @@ export async function updateOnboardingStatus(
   userId: string,
   data: { onboardingComplete: boolean; onboardingCompletedAt?: Date; onboardingSkipped?: boolean }
 ): Promise<void> {
-  return updatePortalUser(userId, data as any);
+  return updatePortalUser(userId, data as Partial<PortalUser>);
+}
+
+export async function repairAgencyAccount(params: {
+  userId: string;
+  email: string | null;
+  nameFallback: string;
+}): Promise<void> {
+  const db = getFirestoreDb();
+  const docRef = doc(db, USERS_COLLECTION, params.userId);
+  const snap = await getDoc(docRef);
+  const data = {
+    isAgency: true,
+    accountType: ACCOUNT_TYPE.AGENCY,
+    updatedAt: serverTimestamp(),
+  };
+  if (snap.exists()) {
+    await updateDoc(docRef, data);
+  } else {
+    await setDoc(docRef, {
+      ...data,
+      email: params.email ?? '',
+      name: params.nameFallback,
+      createdAt: serverTimestamp(),
+    });
+  }
 }

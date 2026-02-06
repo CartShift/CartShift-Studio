@@ -74,8 +74,7 @@ export interface CalendarInfo {
 export function initiateGoogleOAuth(): void {
   if (!GOOGLE_CLIENT_ID) {
     Logger.error('Missing GOOGLE_CLIENT_ID environment variable');
-    alert('Google Calendar integration is not configured. Please contact support.');
-    return;
+    throw new Error('Google Calendar integration is not configured. Please contact support.');
   }
 
   const redirectUri = GOOGLE_REDIRECT_URI;

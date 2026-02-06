@@ -22,8 +22,10 @@ import {
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { deleteOrganization } from '@/lib/services/portal-organizations';
+import { repairAgencyAccount } from '@/lib/services/portal-users';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -77,31 +79,15 @@ export default function AgencyClientsClient() {
     if (!user) return;
     setIsRepairing(true);
     try {
-      const { getFirestore, doc, updateDoc, setDoc, getDoc } = await import('firebase/firestore');
-      const db = getFirestore();
-      const userRef = doc(db, 'portal_users', user.uid);
-      const snap = await getDoc(userRef);
-
-      const updateData = {
-        isAgency: true,
-        accountType: 'AGENCY',
-        updatedAt: new Date(),
-      };
-
-      if (snap.exists()) {
-        await updateDoc(userRef, updateData);
-      } else {
-        await setDoc(userRef, {
-          ...updateData,
-          email: user.email,
-          name: user.displayName || t('common.agencyAdmin' as any),
-          createdAt: new Date(),
-        });
-      }
+      await repairAgencyAccount({
+        userId: user.uid,
+        email: user.email ?? null,
+        nameFallback: t('common.agencyAdmin' as any),
+      });
       window.location.reload();
     } catch (err) {
       console.error('Repair failed:', err);
-      alert(t('agency.repairFailed' as any));
+      toast.error(t('agency.repairFailed' as any));
     } finally {
       setIsRepairing(false);
     }
@@ -125,7 +111,7 @@ export default function AgencyClientsClient() {
       window.location.reload();
     } catch (err) {
       console.error('Failed to delete client:', err);
-      alert('Failed to delete client');
+      toast.error(t('agency.clients.deleteFailed' as any) ?? 'Failed to delete client');
     } finally {
       setIsDeleting(false);
     }
@@ -297,176 +283,169 @@ export default function AgencyClientsClient() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredOrgs.length > 0 ? (
-          filteredOrgs.map(org => {
-            console.log('[ClientCard] Org ID:', org.id, 'Name:', org.name);
-            return (
-              <Card
-                key={org.id}
-                noPadding
-                className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="w-14 h-14 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
-                      <Briefcase size={28} className="text-blue-600 opacity-80" />
-                    </div>
-                    <div className="flex items-center gap-2">
+          filteredOrgs.map(org => (
+            <Card
+              key={org.id}
+              noPadding
+              className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group"
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="w-14 h-14 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <Briefcase size={28} className="text-blue-600 opacity-80" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        org.status === 'inactive'
+                          ? 'gray'
+                          : org.status === 'suspended'
+                            ? 'red'
+                            : 'green'
+                      }
+                      className="text-[9px] font-black uppercase tracking-widest h-5"
+                    >
+                      {org.status
+                        ? t(`agency.clients.badge.${org.status}` as any)
+                        : t('agency.clients.badge.active' as any)}
+                    </Badge>
+                    {(org.memberCount ?? 0) === 0 && (
                       <Badge
-                        variant={
-                          org.status === 'inactive'
-                            ? 'gray'
-                            : org.status === 'suspended'
-                              ? 'red'
-                              : 'green'
-                        }
+                        variant="yellow"
                         className="text-[9px] font-black uppercase tracking-widest h-5"
                       >
-                        {org.status
-                          ? t(`agency.clients.badge.${org.status}` as any)
-                          : t('agency.clients.badge.active' as any)}
+                        {t('agency.clients.badge.pendingInvitation' as any) || 'Pending Invitation'}
                       </Badge>
-                      {(org.memberCount ?? 0) === 0 && (
-                        <Badge
-                          variant="yellow"
-                          className="text-[9px] font-black uppercase tracking-widest h-5"
-                        >
-                          {t('agency.clients.badge.pendingInvitation' as any) ||
-                            'Pending Invitation'}
-                        </Badge>
-                      )}
-                      {org.responsibleAgencyUserId === user?.uid && (
-                        <Badge
-                          variant="blue"
-                          className="text-[9px] font-black uppercase tracking-widest h-5"
-                        >
-                          {t('agency.clients.you' as any)}
-                        </Badge>
-                      )}
-                      <div className="text-surface-300 hover:text-surface-900 dark:hover:text-white transition-colors">
-                        <Dropdown
-                          trigger={<MoreVertical size={18} />}
-                          align="right"
-                          items={[
-                            {
-                              label: t('agency.clients.detail.overview' as any),
-                              icon: <ArrowUpRight size={16} />,
-                              onClick: () => router.push(`/portal/agency/clients/${org.id}/`),
-                            },
-                            {
-                              label: t('agency.clients.viewAsClient' as any),
-                              icon: <Eye size={16} />,
-                              onClick: () => viewAsClient(org.id),
-                            },
-                            {
-                              label: t('common.delete' as any) || 'Delete',
-                              icon: <Trash2 size={16} />,
-                              variant: 'danger',
-                              onClick: () => setOrgToDelete({ id: org.id, name: org.name }),
-                            },
-                          ]}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
-                    {org.name}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mb-6">
-                    <ShieldCheck
-                      size={14}
-                      className={cn(
-                        org.plan === 'enterprise' ? 'text-purple-500' : 'text-emerald-500'
-                      )}
-                    />
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-widest">
-                      {org.plan
-                        ? t(`agency.clients.plans.${org.plan}` as any)
-                        : t('agency.clients.enterprise' as any)}
-                    </span>
-                  </div>
-
-                  {/* Revenue Highlight */}
-                  {(org.totalRevenue ?? 0) > 0 && (
-                    <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10 border border-emerald-100 dark:border-emerald-500/20">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <DollarSign
-                            size={16}
-                            className="text-emerald-600 dark:text-emerald-400"
-                          />
-                          <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">
-                            {t('sales.metrics.totalRevenue' as any)}
-                          </span>
-                        </div>
-                        <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
-                          {formatRevenue(org.totalRevenue || 0)}
-                        </span>
-                      </div>
-                      {(org.pendingRevenue ?? 0) > 0 && (
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/50 dark:border-emerald-500/20">
-                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                            {t('sales.metrics.pending' as any)}
-                          </span>
-                          <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
-                            +{formatRevenue(org.pendingRevenue || 0)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4 pt-6 border-t border-surface-50 dark:border-surface-800/50">
-                    <div>
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">
-                        {t('agency.clients.tickets' as any)}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-surface-900 dark:text-white">
-                          {org.requestCount}
-                        </span>
-                        <TrendingUp size={14} className="text-emerald-500" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">
-                        {t('agency.clients.members' as any)}
-                      </p>
-                      <div
-                        className={cn(
-                          'flex items-center gap-2 text-lg font-bold',
-                          (org.memberCount ?? 0) === 0
-                            ? 'text-amber-600 dark:text-amber-400'
-                            : 'text-surface-900 dark:text-white'
-                        )}
+                    )}
+                    {org.responsibleAgencyUserId === user?.uid && (
+                      <Badge
+                        variant="blue"
+                        className="text-[9px] font-black uppercase tracking-widest h-5"
                       >
-                        <Users
-                          size={16}
-                          className={
-                            (org.memberCount ?? 0) === 0 ? 'text-amber-500' : 'text-surface-400'
-                          }
-                        />
-                        <span>{org.memberCount ?? 0}</span>
-                      </div>
+                        {t('agency.clients.you' as any)}
+                      </Badge>
+                    )}
+                    <div className="text-surface-300 hover:text-surface-900 dark:hover:text-white transition-colors">
+                      <Dropdown
+                        trigger={<MoreVertical size={18} />}
+                        align="right"
+                        items={[
+                          {
+                            label: t('agency.clients.detail.overview' as any),
+                            icon: <ArrowUpRight size={16} />,
+                            onClick: () => router.push(`/portal/agency/clients/${org.id}/`),
+                          },
+                          {
+                            label: t('agency.clients.viewAsClient' as any),
+                            icon: <Eye size={16} />,
+                            onClick: () => viewAsClient(org.id),
+                          },
+                          {
+                            label: t('common.delete' as any) || 'Delete',
+                            icon: <Trash2 size={16} />,
+                            variant: 'danger',
+                            onClick: () => setOrgToDelete({ id: org.id, name: org.name }),
+                          },
+                        ]}
+                      />
                     </div>
                   </div>
                 </div>
 
-                <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl group-hover:bg-blue-600 transition-colors">
-                  <Link
-                    href={`/portal/agency/clients/${org.id}/`}
-                    className="flex items-center justify-between group-hover:text-white text-blue-600 dark:text-blue-400 transition-colors"
-                  >
-                    <span className="text-xs font-black uppercase tracking-widest">
-                      {t('agency.clients.detail.overview' as any)}
-                    </span>
-                    <ArrowUpRight size={18} />
-                  </Link>
+                <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
+                  {org.name}
+                </h3>
+
+                <div className="flex items-center gap-2 mb-6">
+                  <ShieldCheck
+                    size={14}
+                    className={cn(
+                      org.plan === 'enterprise' ? 'text-purple-500' : 'text-emerald-500'
+                    )}
+                  />
+                  <span className="text-xs font-bold text-surface-500 uppercase tracking-widest">
+                    {org.plan
+                      ? t(`agency.clients.plans.${org.plan}` as any)
+                      : t('agency.clients.enterprise' as any)}
+                  </span>
                 </div>
-              </Card>
-            );
-          })
+
+                {/* Revenue Highlight */}
+                {(org.totalRevenue ?? 0) > 0 && (
+                  <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10 border border-emerald-100 dark:border-emerald-500/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign size={16} className="text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">
+                          {t('sales.metrics.totalRevenue' as any)}
+                        </span>
+                      </div>
+                      <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                        {formatRevenue(org.totalRevenue || 0)}
+                      </span>
+                    </div>
+                    {(org.pendingRevenue ?? 0) > 0 && (
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/50 dark:border-emerald-500/20">
+                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                          {t('sales.metrics.pending' as any)}
+                        </span>
+                        <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                          +{formatRevenue(org.pendingRevenue || 0)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 pt-6 border-t border-surface-50 dark:border-surface-800/50">
+                  <div>
+                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">
+                      {t('agency.clients.tickets' as any)}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold text-surface-900 dark:text-white">
+                        {org.requestCount}
+                      </span>
+                      <TrendingUp size={14} className="text-emerald-500" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">
+                      {t('agency.clients.members' as any)}
+                    </p>
+                    <div
+                      className={cn(
+                        'flex items-center gap-2 text-lg font-bold',
+                        (org.memberCount ?? 0) === 0
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-surface-900 dark:text-white'
+                      )}
+                    >
+                      <Users
+                        size={16}
+                        className={
+                          (org.memberCount ?? 0) === 0 ? 'text-amber-500' : 'text-surface-400'
+                        }
+                      />
+                      <span>{org.memberCount ?? 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl group-hover:bg-blue-600 transition-colors">
+                <Link
+                  href={`/portal/agency/clients/${org.id}/`}
+                  className="flex items-center justify-between group-hover:text-white text-blue-600 dark:text-blue-400 transition-colors"
+                >
+                  <span className="text-xs font-black uppercase tracking-widest">
+                    {t('agency.clients.detail.overview' as any)}
+                  </span>
+                  <ArrowUpRight size={18} />
+                </Link>
+              </div>
+            </Card>
+          ))
         ) : (
           <div className="col-span-full py-20 text-center bg-white dark:bg-surface-950 rounded-3xl border border-surface-200 dark:border-surface-800">
             <Users className="w-16 h-16 text-surface-100 dark:text-surface-800 mx-auto mb-4" />

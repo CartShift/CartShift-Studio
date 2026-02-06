@@ -316,8 +316,8 @@ export default function RequestsClient() {
       const orgNames = uniqueOrgIds
         .map(id => organizations[id]?.name || t('common.unknown'))
         .join(', ');
-      alert(
-        `${t('agency.errors.sameOrgRequired')}\n\n` + `Selected requests are from: ${orgNames}`
+      toast.warning(
+        `${t('agency.errors.sameOrgRequired')} Selected requests are from: ${orgNames}`
       );
       return;
     }

@@ -16,6 +16,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { BrandingProvider } from '@/components/providers/BrandingProvider';
 import { Logger } from '@/lib/logger';
+import { headers } from 'next/headers';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
@@ -111,6 +112,8 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
   const orgSchema = generateOrganizationSchema();
+  const headersList = await headers();
+  const isPortalSubdomain = headersList.get('x-is-portal-subdomain') === '1';
 
   let schemaJson: string;
   try {
@@ -143,7 +146,9 @@ export default async function LocaleLayout({
                 <GeoLocaleRedirect />
                 <GoogleAnalytics />
                 <AnalyticsProvider>
-                  <ConditionalLayout>{children}</ConditionalLayout>
+                  <ConditionalLayout isPortalSubdomain={isPortalSubdomain}>
+                    {children}
+                  </ConditionalLayout>
                 </AnalyticsProvider>
               </NextIntlClientProvider>
             </MotionConfig>

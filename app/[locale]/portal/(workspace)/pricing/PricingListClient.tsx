@@ -33,6 +33,7 @@ import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
+import { toast } from 'sonner';
 import { Link, useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
@@ -101,7 +102,7 @@ export default function PricingListClient() {
       await sendPricingRequest(requestId);
     } catch (err) {
       console.error('Failed to send pricing request:', err);
-      alert(t('pricing.form.sendFailed'));
+      toast.error(t('pricing.form.sendFailed'));
     }
   };
 
@@ -111,7 +112,7 @@ export default function PricingListClient() {
       await deletePricingRequest(requestId);
     } catch (err) {
       console.error('Failed to delete pricing request:', err);
-      alert(t('pricing.form.deleteFailed'));
+      toast.error(t('pricing.form.deleteFailed'));
     }
   };
 

@@ -28,6 +28,7 @@ import { getDateLocale } from '@/lib/locale-config';
 import { InviteTeamMemberForm } from '@/components/portal/forms/InviteTeamMemberForm';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
+import { toast } from 'sonner';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTeam } from '@/lib/hooks/useTeam';
 import { OrganizationMember, UserRole, Invite } from '@/lib/types/portal';
@@ -53,7 +54,7 @@ export default function TeamClient() {
       await cancelInvite(inviteId);
     } catch (error) {
       console.error('Error cancelling invite:', error);
-      alert(t('team.errors.cancelInvite'));
+      toast.error(t('team.errors.cancelInvite'));
     } finally {
       setCancellingInvite(null);
     }
@@ -66,7 +67,7 @@ export default function TeamClient() {
       await removeMember(member.id, orgId as string, member.userId);
     } catch (error) {
       console.error('Error removing member:', error);
-      alert(t('common.error'));
+      toast.error(t('common.error'));
     }
   };
 
@@ -75,7 +76,7 @@ export default function TeamClient() {
       await updateMemberRole(memberId, newRole);
     } catch (error) {
       console.error('Error changing role:', error);
-      alert(t('common.error'));
+      toast.error(t('common.error'));
     }
   };
 

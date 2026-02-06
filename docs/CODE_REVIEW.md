@@ -1,10 +1,127 @@
 # Comprehensive Code Review - CartShift Studio
 
-**Review Date**: December 2024
-**Codebase Version**: Current State
+---
+
+## Full Code Review (February 2026)
+
+**Scope**: Full codebase review against AGENTS.md directives, project rules (SSOT, no mock/fallback data, RTL, CVA, hooks), and consistency.
+
+**Overall assessment**: Strong structure (Next.js 16, TanStack Query, Firebase, CVA, next-intl). Several violations of project rules and AGENTS.md should be fixed for consistency, security, and maintainability.
+
+---
+
+### 1. Data layer & Firestore usage
+
+| Finding                           | Severity | Location                                                                                                                                                                                                    | Notes                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Direct Firestore in component** | High     | `app/[locale]/portal/agency/clients/AgencyClientsClient.tsx` (lines 80–99)                                                                                                                                  | `handleRepair` uses `await import('firebase/firestore')` then `getFirestore()`, `doc()`, `getDoc()`, `updateDoc()`, `setDoc()` directly. Bypasses ESLint `no-restricted-imports` (dynamic import). **Fix**: Move to `lib/services/portal-users.ts` (or dedicated repair API) and call from component; or add a hook e.g. `useRepairAgencyAccount()` in `lib/hooks/`. |
+| **Firestore in lib**              | OK       | `lib/services/*`, `lib/hooks/usePricingConfig.ts`, `lib/hooks/useFirestoreUser.ts`, `lib/hooks/useSystemSettings.ts`                                                                                        | Services and hooks use Firestore; this matches the “no direct Firestore in components” intent.                                                                                                                                                                                                                                                                       |
+| **Cache invalidation**            | OK       | `lib/hooks/useRequestActions.ts`, `usePricingMutations.ts`, `usePricingConfig.ts`, `useTeamMutations.ts`, `useConsultationMutations.ts`, `useClientInvite.ts`, `usePinnedRequests.ts`, `useTestimonials.ts` | Mutations use `queryClient.invalidateQueries` with `queryKeys` from `lib/utils/query-keys.ts`.                                                                                                                                                                                                                                                                       |
+| **Query keys**                    | OK       | `lib/utils/query-keys.ts`                                                                                                                                                                                   | Single source for request, pricing, org, members, invites, consultations, team, sales, activities, agencyClients.                                                                                                                                                                                                                                                    |
+
+---
+
+### 2. UI feedback: `alert()` vs sonner
+
+**AGENTS.md**: “Always use sonner for feedback on all async operations.”
+
+Multiple portal clients use `alert()` for success/error instead of `toast()`:
+
+- `AgencyClientsClient.tsx`: `alert(t('agency.repairFailed'))`, `alert('Failed to delete client')`
+- `RequestsClient.tsx`: `alert(...)` on error
+- `TeamClient.tsx`: `alert(t('team.errors.cancelInvite'))`, `alert(t('common.error'))` (x2)
+- `PricingListClient.tsx`: `alert(t('pricing.form.sendFailed'))`, `alert(t('pricing.form.deleteFailed'))`
+- `AgencySettingsClient.tsx`: multiple alerts for success/error/upload
+- `FilesClient.tsx`: `alert(t('files.actions.deleteFailed'))`
+- `lib/services/portal-google-calendar.ts`: `alert('Google Calendar integration...')`
+
+**Fix**: Replace each with `toast.error()` or `toast.success()` from `sonner` for consistency and better UX.
+
+---
+
+### 3. RTL & logical CSS
+
+- **ESLint**: `rtl/enforce-logical-properties` is enabled (warn). No `ml-`, `mr-`, `pl-`, `pr-` in `.tsx` files.
+- **Intentional physical coords**: `RequestStatusWorkflow.tsx` uses `ltr:left-0 rtl:right-0` etc. for positioned UI — correct. Decorative blobs in `PrivacyContent.tsx`, `TermsContent.tsx`, `StoreAnalyzerTeaser.tsx` use `-left-1/4`, `-right-1/4`; acceptable for non-text layout.
+- **CVPageContent.tsx**: Uses `isRTL` and conditional `left-*` / `right-*`; could be refactored to logical properties or `start-*`/`end-*` for consistency.
+- **globals.css**: `.px-safe` uses `padding-left`/`padding-right` with safe-area; consider `padding-inline-start`/`padding-inline-end` for RTL. Rest of safe-area utilities use logical or single-axis props where appropriate.
+
+---
+
+### 4. Fallbacks / mock data (vs SSOT / “throw, don’t fake”)
+
+| Location                                                          | Type                                                                 | Recommendation                                                                                                                                                                       |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `lib/hooks/useFirestoreUser.ts`                                   | “Fallback” user when Firebase Auth exists but no Firestore doc yet   | Borderline: needed for new users before first write. Prefer documenting as “synthesized from Auth until doc exists” and ensuring first write happens; avoid using for error masking. |
+| `lib/env.ts`                                                      | On parse failure, exports fallback object (lines 51–67)              | **Violation**: Project rule is “code should throw if not working.” In production build, invalid env should throw; currently only logs and returns fallbacks.                         |
+| `lib/services/benchmark.ts`                                       | `fallbackPercentile` when not enough data                            | Consider throwing or returning a typed “insufficient data” result instead of simulating scores.                                                                                      |
+| `lib/services/analyzer.ts`                                        | Fallback analyzers when primary fails                                | Same: prefer explicit error or “analysis unavailable” over silent fallback.                                                                                                          |
+| `lib/services/cache-service.ts`                                   | In-memory fallback when Redis unavailable                            | Document as dev/degraded mode; ensure production requires Redis or fails explicitly.                                                                                                 |
+| `AgencySettingsClient.tsx`                                        | “Fake Card” / “Fake Elements” in UI, `userFallback` for display name | Use translation key for “Unknown”/placeholder only; remove any fake structural data.                                                                                                 |
+| `components/sections/PortalTeaser.tsx`, `StoreAnalyzerTeaser.tsx` | “Mock” dashboard/mockup in copy                                      | OK as static marketing mockup, not runtime data.                                                                                                                                     |
+| Test files (`tests/**`, `mock-firebase.ts`)                       | Mocks for tests                                                      | OK.                                                                                                                                                                                  |
+
+---
+
+### 5. CVA & design system
+
+- **Button, Badge**: Use CVA and variant discipline (see `components/ui/Button.tsx`, `Badge.tsx`). Good reference for other components.
+- **Portal UI**: Many components in `components/ui/` and `components/portal/`; any with multiple visual states should use CVA per AGENTS.md.
+
+---
+
+### 6. Translations
+
+- **Source vs generated**: `messages/src/{en,he}/` are source; `messages/en.json`, `messages/he.json` are generated. README and merge script workflow are clear.
+- **Portal keys**: ESLint rule `portal-translations/enforce-portal-translations` enforces usage pattern.
+- **Casts**: Several `t('...' as any)` (e.g. `AgencyClientsClient`, login/signup forms). Prefer adding keys to generated types / i18n types so `as any` is unnecessary.
+
+---
+
+### 7. Duplicate route structure
+
+- `app/portal/(auth)/login/page.tsx` and `app/portal/(auth)/signup/page.tsx` exist alongside `app/[locale]/portal/(auth)/login/` and `app/[locale]/portal/(auth)/signup/`.
+- With `next-intl` and `[locale]`, the canonical portal routes should be under `app/[locale]/portal/`. The `app/portal/` segment may be legacy or redirect-only; confirm and remove if unused to avoid confusion and duplicate maintenance.
+
+---
+
+### 8. Security & config
+
+- **Env**: Validate required vars at startup; on failure in production, throw instead of exporting fallbacks (see §4).
+- **Firebase**: If `FIREBASE_AUTH_SETUP.md` (or any doc) still contains real API keys, remove and rotate; use `.env.example` with placeholders only (previous review already flagged this).
+
+---
+
+### 9. Positive highlights
+
+- Centralized query keys and consistent invalidation in hooks.
+- Firestore access isolated to services and hooks except for the one component noted above.
+- Custom ESLint for RTL and portal translations.
+- CVA used for core UI; Button documents accessibility (touch targets).
+- Sonner used in many flows; only remaining gap is replacing `alert()` usages above.
+
+---
+
+### 10. Recommended action order
+
+1. **High**: Move agency “repair” logic out of `AgencyClientsClient` into a service or hook; remove direct Firestore from the component.
+2. **High**: Replace all `alert()` in portal and services with `toast()` (sonner).
+3. **Medium**: Make env validation strict: on parse failure in production, throw; avoid fallback object.
+4. **Medium**: Replace `useFirestoreUser` “fallback” wording with “synthesized from Auth until doc exists” and ensure no error masking; review benchmark/analyzer fallbacks for “throw or explicit unavailable” policy.
+5. **Low**: Unify portal auth routes under `[locale]` and remove duplicate `app/portal/(auth)` if redundant.
+6. **Low**: Reduce `t('...' as any)` by adding proper i18n types; consider logical props for CV and safe-area where applicable.
+
+---
+
+## Previous Review (December 2024)
+
+**Review Date**: December 2024  
+**Codebase Version**: Current State  
 **Reviewer**: AI Code Review System
 
-## Executive Summary
+_The section below is retained for historical context. Apply the February 2026 recommendations above for current priorities._
+
+## Executive Summary (Dec 2024)
 
 This codebase demonstrates a well-structured Next.js application with modern practices, TypeScript, and a clean component architecture. Many previous issues have been addressed, including error handling, input validation, and rate limiting. However, there are still several critical security issues, type safety improvements, and performance optimizations needed.
 

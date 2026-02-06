@@ -169,8 +169,7 @@ function extractLighthouseFindings(
   return { findings, recommendations };
 }
 
-// --- Fallback Analyzers ---
-
+/** Static HTML analysis when full (Puppeteer) analysis is unavailable. */
 function analyzeSEOFallback(html: string): SectionResult {
   const findings: Finding[] = [];
   const recommendations: Recommendation[] = [];

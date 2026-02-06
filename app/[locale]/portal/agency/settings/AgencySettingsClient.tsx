@@ -27,6 +27,7 @@ import { getFirebaseAuth } from '@/lib/firebase';
 import { PortalUser, Invite, Agency } from '@/lib/types/portal';
 import { subscribeToAgencyInvites, cancelInvite } from '@/lib/services/portal-organizations';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { Avatar } from '@/components/ui/Avatar';
 import { InviteTeamMemberForm } from '@/components/portal/forms/InviteTeamMemberForm';
 import { ManageServiceForm } from '@/components/portal/forms/ManageServiceForm';
@@ -271,7 +272,7 @@ export default function AgencysClient() {
         }
       }
 
-      alert(t('agency.settings.profile.success'));
+      toast.success(t('agency.settings.profile.success'));
 
       // Cache branding locally
       if (profile.branding) {
@@ -296,7 +297,7 @@ export default function AgencysClient() {
     } catch (error) {
       console.error('Error saving agency profile:', error);
       const errorMessage = error instanceof Error ? error.message : t('common.unknownError' as any);
-      alert(`Failed to save settings: ${errorMessage}`);
+      toast.error(`Failed to save settings: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
@@ -354,10 +355,10 @@ export default function AgencysClient() {
         name: profileFormData.name,
         photoUrl: profileFormData.photoUrl,
       });
-      alert(t('settings.profile.success'));
+      toast.success(t('settings.profile.success'));
     } catch (error) {
       console.error('Error saving profile:', error);
-      alert(t('settings.profile.error'));
+      toast.error(t('settings.profile.error'));
     } finally {
       setIsProfileSaving(false);
     }
@@ -371,9 +372,11 @@ export default function AgencysClient() {
     try {
       const url = await uploadUserProfilePicture(user.uid, file);
       setProfileFormData(prev => ({ ...prev, photoUrl: url }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error uploading avatar:', error);
-      alert(error.message || t('agency.settings.profile.failedToUpload'));
+      toast.error(
+        error instanceof Error ? error.message : t('agency.settings.profile.failedToUpload')
+      );
     } finally {
       setUploadingAvatar(false);
     }
@@ -692,7 +695,7 @@ export default function AgencysClient() {
                                 });
                               } catch (err) {
                                 console.error('Logo upload failed', err);
-                                alert('Upload failed');
+                                toast.error(t('agency.settings.profile.failedToUpload'));
                               }
                             }}
                           />
@@ -778,7 +781,7 @@ export default function AgencysClient() {
                                 });
                               } catch (err) {
                                 console.error('Icon upload failed', err);
-                                alert('Upload failed');
+                                toast.error(t('agency.settings.profile.failedToUpload'));
                               }
                             }}
                           />
@@ -1558,12 +1561,16 @@ export default function AgencysClient() {
                     connection={calendarConnection}
                     onConnect={async () => {
                       if (!isGoogleCalendarConfigured()) {
-                        alert(
+                        toast.error(
                           'Google Calendar integration requires configuration. Please add NEXT_PUBLIC_GOOGLE_CLIENT_ID to your environment variables.'
                         );
                         return;
                       }
-                      initiateGoogleOAuth();
+                      try {
+                        initiateGoogleOAuth();
+                      } catch (err) {
+                        toast.error(err instanceof Error ? err.message : t('common.error'));
+                      }
                     }}
                     onDisconnect={async () => {
                       await disconnectCalendar();
