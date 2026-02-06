@@ -109,7 +109,7 @@ export function useRequestDetail(): UseRequestDetailResult {
     () =>
       activitiesEnabled
         ? (cb: (data: ActivityLog[]) => void) =>
-            subscribeToRequestActivities(safeRequestId, safeOrgId, cb)
+            subscribeToRequestActivities(safeRequestId, cb, safeOrgId || undefined)
         : null,
     [safeRequestId, safeOrgId, activitiesEnabled]
   );

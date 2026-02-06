@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle } from 'lucide-react';
 
@@ -12,8 +11,6 @@ export default function PortalWorkspaceError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations('portal');
-
   useEffect(() => {
     console.error('[Portal Workspace Error]', error);
   }, [error]);
@@ -24,15 +21,13 @@ export default function PortalWorkspaceError({
         <AlertTriangle className="w-8 h-8 text-red-500" />
       </div>
       <div className="text-center space-y-2">
-        <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-          {t('common.somethingWentWrong')}
-        </h2>
+        <h2 className="text-xl font-bold text-surface-900 dark:text-white">Something went wrong</h2>
         <p className="text-sm text-surface-500 dark:text-surface-400 max-w-md">
-          {error.message || t('common.unexpectedError')}
+          {error.message || 'An unexpected error occurred'}
         </p>
       </div>
       <Button onClick={reset} variant="primary" size="sm">
-        {t('common.tryAgain')}
+        Try again
       </Button>
     </div>
   );
