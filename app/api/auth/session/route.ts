@@ -6,14 +6,15 @@ const COOKIE_NAME = '__session';
 
 export async function POST(request: NextRequest) {
   try {
-    const { idToken } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const idToken = body?.idToken;
 
     if (!adminAuth) {
       return NextResponse.json({ status: 'skipped', reason: 'admin-not-configured' });
     }
 
     if (!idToken) {
-      return NextResponse.json({ error: 'Missing idToken' }, { status: 400 });
+      return NextResponse.json({ status: 'skipped', reason: 'missing-token' });
     }
 
     const sessionCookie = await adminAuth.createSessionCookie(idToken, {
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Session creation failed:', error);
-    return NextResponse.json({ error: 'Session creation failed' }, { status: 401 });
+    return NextResponse.json({ status: 'error', reason: 'session-creation-failed' });
   }
 }
 
