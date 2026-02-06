@@ -12,7 +12,7 @@ import { ArrowLeft, Mail, CheckCircle2 } from 'lucide-react';
 import { resetPassword } from '@/lib/services/auth';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { getPortalHref } from '@/lib/utils/portal-paths';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { toast } from 'sonner';
 import { useBranding } from '@/components/providers/BrandingProvider';
 import Image from 'next/image';
@@ -84,7 +84,7 @@ export default function ForgotPasswordClient() {
               </p>
             </div>
 
-            <Link href={getPortalHref('/login/')} className="block">
+            <Link href={getPortalPath('/login/')} className="block">
               <Button variant="outline" className="w-full">
                 <ArrowLeft size={16} className="me-2" />
                 {t('auth.forgotPassword.backToLogin')}
@@ -151,7 +151,7 @@ export default function ForgotPasswordClient() {
 
             <div className="text-center">
               <Link
-                href={getPortalHref('/login/')}
+                href={getPortalPath('/login/')}
                 className="text-sm font-medium text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-surface-200 transition-colors inline-flex items-center gap-1"
               >
                 <ArrowLeft size={14} />

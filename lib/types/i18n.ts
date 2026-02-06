@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-02-05T23:42:05.164Z
+ * Last updated: 2026-02-06T00:37:32.105Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -920,6 +920,16 @@ export interface Portal {
       fair: string;
       strong: string;
       veryStrong: string;
+    };
+    forgotPassword: {
+      title: string;
+      subtitle: string;
+      email: string;
+      submit: string;
+      backToLogin: string;
+      emailSentTitle: string;
+      emailSentBody: string;
+      success: string;
     };
   };
   breadcrumbs: {
@@ -4396,6 +4406,14 @@ export type TranslationKey =
   | 'portal.auth.errors.userNotFound'
   | 'portal.auth.errors.weakPassword'
   | 'portal.auth.errors.wrongPassword'
+  | 'portal.auth.forgotPassword.backToLogin'
+  | 'portal.auth.forgotPassword.email'
+  | 'portal.auth.forgotPassword.emailSentBody'
+  | 'portal.auth.forgotPassword.emailSentTitle'
+  | 'portal.auth.forgotPassword.submit'
+  | 'portal.auth.forgotPassword.subtitle'
+  | 'portal.auth.forgotPassword.success'
+  | 'portal.auth.forgotPassword.title'
   | 'portal.auth.hidePassword'
   | 'portal.auth.login.createOne'
   | 'portal.auth.login.email'
