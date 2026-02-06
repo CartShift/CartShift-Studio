@@ -85,12 +85,8 @@ export default function middleware(request: NextRequest) {
     const portalPath = getPortalPathFromRequest(pathname, true) || '/';
     const hasSession = request.cookies.has(SESSION_COOKIE);
 
-    // Auth guard: protected pages require session cookie
-    if (!isPortalAuthPage(portalPath) && portalPath !== '/' && !hasSession) {
-      const loginUrl = new URL(`/${locale}/login/`, request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+    // Portal auth is enforced client-side (Firebase Auth). No server-side redirect to login
+    // so that Google/login redirect works even when session cookie isn't set (e.g. dev without Firebase Admin).
 
     // Reverse guard: authenticated users skip login/signup
     if (isPortalAuthPage(portalPath) && hasSession) {
@@ -128,12 +124,6 @@ export default function middleware(request: NextRequest) {
     if (portalPath !== null) {
       const locale = getLocaleFromPath(pathname);
       const hasSession = request.cookies.has(SESSION_COOKIE);
-
-      if (!isPortalAuthPage(portalPath) && portalPath !== '/' && !hasSession) {
-        const loginUrl = new URL(`/${locale}/portal/login/`, request.url);
-        loginUrl.searchParams.set('redirect', pathname);
-        return NextResponse.redirect(loginUrl);
-      }
 
       if (isPortalAuthPage(portalPath) && hasSession) {
         return NextResponse.redirect(new URL(`/${locale}/portal/`, request.url));
