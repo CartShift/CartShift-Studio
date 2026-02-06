@@ -38,7 +38,7 @@ const CommandItem = ({ icon: Icon, label, onSelect, active, shortcut }: CommandI
     <button
       onClick={onSelect}
       className={cn(
-        'w-full flex items-center justify-between px-4 py-3 text-left text-sm transition-colors',
+        'w-full flex items-center justify-between px-4 py-3 text-start text-sm transition-colors',
         active
           ? 'bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-white'
           : 'text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800/50'
@@ -280,7 +280,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[5vh] md:pt-[15vh] px-4">
+        <div className="fixed inset-0 z-modal flex items-start justify-center pt-[5vh] md:pt-[15vh] px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

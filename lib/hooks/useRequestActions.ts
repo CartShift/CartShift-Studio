@@ -76,7 +76,7 @@ interface UseRequestActionsResult {
   handleSendComment: (content: string, parentId?: string) => Promise<void>;
   isSubmittingComment: boolean;
   handleDeleteRequest: () => Promise<boolean>;
-  is: boolean;
+  isDeleting: boolean;
 }
 
 /**
@@ -120,7 +120,7 @@ export function useRequestActions({
   const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const [is, setIs] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Refs for cleanup
   const commentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -205,7 +205,7 @@ export function useRequestActions({
     setIsAccepting(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData(['request', requestId], (old: any) => {
+      queryClient.setQueryData<Request>(['request', requestId], old => {
         if (!old) return old;
         return {
           ...old,
@@ -240,7 +240,7 @@ export function useRequestActions({
     setIsDeclining(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData(['request', requestId], (old: any) => {
+      queryClient.setQueryData<Request>(['request', requestId], old => {
         if (!old) return old;
         return {
           ...old,
@@ -274,7 +274,7 @@ export function useRequestActions({
     setIsWork(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData(['request', requestId], (old: any) => {
+      queryClient.setQueryData<Request>(['request', requestId], old => {
         if (!old) return old;
         return {
           ...old,
@@ -308,7 +308,7 @@ export function useRequestActions({
 
       try {
         // Optimistically update UI
-        queryClient.setQueryData(['request', requestId], (old: any) => {
+        queryClient.setQueryData<Request>(['request', requestId], old => {
           if (!old) return old;
           return {
             ...old,
@@ -350,7 +350,7 @@ export function useRequestActions({
       setIsAssigning(true);
       try {
         // Optimistically update UI
-        queryClient.setQueryData(['request', requestId], (old: any) => {
+        queryClient.setQueryData<Request>(['request', requestId], old => {
           if (!old) return old;
           return {
             ...old,
@@ -398,7 +398,7 @@ export function useRequestActions({
       setIsSubmittingRevision(true);
       try {
         // Optimistically update UI - move back to IN_PROGRESS
-        queryClient.setQueryData(['request', requestId], (old: any) => {
+        queryClient.setQueryData<Request>(['request', requestId], old => {
           if (!old) return old;
           return {
             ...old,
@@ -491,7 +491,7 @@ export function useRequestActions({
       try {
         // Optimistically update the UI immediately
         console.log('[handleStatusChange] Applying optimistic update...');
-        queryClient.setQueryData(['request', requestId], (old: any) => {
+        queryClient.setQueryData<Request>(['request', requestId], old => {
           if (!old) return old;
           return {
             ...old,
@@ -614,7 +614,7 @@ export function useRequestActions({
       return false;
     }
 
-    setIs(true);
+    setIsDeleting(true);
     try {
       await deleteRequest(requestId!);
       toast.success(t('requestDeleted'), t('requestDeletedDesc'));
@@ -624,7 +624,7 @@ export function useRequestActions({
       toast.error(t('deleteFailed'), t('deleteFailedDesc'));
       return false;
     } finally {
-      setIs(false);
+      setIsDeleting(false);
     }
   }, [canPerformAction, requestId, isAgency, toast]);
 
@@ -650,6 +650,6 @@ export function useRequestActions({
     handleSendComment,
     isSubmittingComment,
     handleDeleteRequest,
-    is,
+    isDeleting,
   };
 }

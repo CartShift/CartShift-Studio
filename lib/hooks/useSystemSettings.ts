@@ -43,9 +43,14 @@ export function useSystemSettings() {
   }, []);
 
   const updateSettings = async (newSettings: Partial<SystemSettings>) => {
-    const db = getFirestoreDb();
-    const docRef = doc(db, 'system_settings', 'general');
-    await setDoc(docRef, newSettings, { merge: true });
+    try {
+      const db = getFirestoreDb();
+      const docRef = doc(db, 'system_settings', 'general');
+      await setDoc(docRef, newSettings, { merge: true });
+    } catch (error) {
+      console.error('Error updating system settings:', error);
+      throw error;
+    }
   };
 
   return { settings, loading, updateSettings };

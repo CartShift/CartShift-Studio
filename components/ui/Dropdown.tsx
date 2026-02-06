@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from '@/lib/motion';
 
 const dropdownMenuVariants = cva(
-  'fixed z-[9999] min-w-[200px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden',
+  'fixed z-dropdown min-w-[200px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden',
   {
     variants: {
       align: {
@@ -459,7 +459,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-[9998] backdrop-blur-[2px]"
+              className="fixed inset-0 bg-black/40 z-modal backdrop-blur-[2px]"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
@@ -513,7 +513,7 @@ export function Dropdown({ trigger, items, align = 'right', className = '' }: Dr
               left: `${position.left}px`,
               transform: position.transform,
               transformOrigin: position.transformOrigin,
-              zIndex: 9999,
+              zIndex: 'var(--z-dropdown, 10)',
               width: 'auto',
               maxWidth: `${position.maxWidth}px`,
               maxHeight: `${position.maxHeight}px`,

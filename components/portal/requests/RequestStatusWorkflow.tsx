@@ -337,7 +337,7 @@ export function RequestStatusWorkflow({
                     top: dropdownPosition.top,
                     left: dropdownPosition.left,
                     minWidth: '220px', // Ensure it's not too narrow
-                    zIndex: 9999,
+                    zIndex: 50,
                   }}
                   className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 shadow-xl overflow-hidden p-1"
                 >
@@ -352,7 +352,7 @@ export function RequestStatusWorkflow({
                         <button
                           key={status}
                           onClick={() => handleStatusChange(status)}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-start"
                         >
                           <div className={cn('p-1.5 rounded-lg shrink-0', stage.bgColor)}>
                             <StageIcon size={14} className={stage.color} />

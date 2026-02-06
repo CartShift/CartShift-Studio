@@ -294,7 +294,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <div className="text-xs font-medium text-surface-500">Similarity</div>
                     <div className="text-sm font-bold text-indigo-500">{comp.similarityScore}%</div>
                   </div>

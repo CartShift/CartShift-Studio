@@ -18,8 +18,8 @@ export interface UserData {
   notificationPreferences?: PortalUser['notificationPreferences'];
   onboardingComplete?: boolean;
   agencyRole?: import('@/lib/types/portal').UserRole;
-  createdAt?: unknown;
-  updatedAt?: unknown;
+  createdAt?: import('firebase/firestore').Timestamp;
+  updatedAt?: import('firebase/firestore').Timestamp;
 }
 
 interface UseFirestoreUserOptions {
@@ -105,6 +105,14 @@ export function useFirestoreUser(
     }
   }, []);
 
+  const onUserDataRef = useRef(options.onUserData);
+  const onNoUserDocumentRef = useRef(options.onNoUserDocument);
+
+  useEffect(() => {
+    onUserDataRef.current = options.onUserData;
+    onNoUserDocumentRef.current = options.onNoUserDocument;
+  }, [options.onUserData, options.onNoUserDocument]);
+
   useEffect(() => {
     isMountedRef.current = true;
     cleanupSubscription();
@@ -121,15 +129,6 @@ export function useFirestoreUser(
       set(false);
       return;
     }
-
-    // Use refs for callbacks to avoid re-subscription when callbacks change
-    const onUserDataRef = useRef(options.onUserData);
-    const onNoUserDocumentRef = useRef(options.onNoUserDocument);
-
-    useEffect(() => {
-      onUserDataRef.current = options.onUserData;
-      onNoUserDocumentRef.current = options.onNoUserDocument;
-    }, [options.onUserData, options.onNoUserDocument]);
 
     // Ensure auth token is ready before accessing Firestore
     const initSubscription = async () => {

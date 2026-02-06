@@ -8,7 +8,7 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'cartshiftstudio',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
@@ -124,7 +124,8 @@ export function suppressFirestorePermissionError<T>(
     try {
       const auth = getFirebaseAuth();
       const currentUser = auth.currentUser;
-      const isLoggingOutActive = (globalThis as any).__cartshift_logging_out === true;
+      const isLoggingOutActive =
+        (globalThis as Record<string, unknown>).__cartshift_logging_out === true;
 
       if (!currentUser || isLoggingOutActive) {
         // Expected during auth transitions - suppress
@@ -151,6 +152,8 @@ export function suppressFirestorePermissionError<T>(
   }
 }
 
+const WAIT_FOR_AUTH_TIMEOUT = 10000;
+
 export async function waitForAuth(): Promise<void> {
   const auth = getFirebaseAuth();
   if (auth.currentUser) {
@@ -163,7 +166,13 @@ export async function waitForAuth(): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      unsubscribe();
+      reject(new Error('waitForAuth timed out after ' + WAIT_FOR_AUTH_TIMEOUT + 'ms'));
+    }, WAIT_FOR_AUTH_TIMEOUT);
+
     const unsubscribe = onAuthStateChanged(auth, async user => {
+      clearTimeout(timeout);
       unsubscribe();
       if (user) {
         try {

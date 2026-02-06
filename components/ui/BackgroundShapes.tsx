@@ -124,9 +124,9 @@ const typeClasses = {
   rect: 'rounded-3xl border border-accent-400/10',
 };
 
-export const BackgroundShapes: React.FC = () => {
+export const BackgroundShapes: React.FC = React.memo(() => {
   return (
-    <>
+    <div aria-hidden="true">
       {shapes.map((shape, i) => {
         const bgColor =
           shape.type === 'dot' ? (i % 2 === 0 ? 'bg-primary-500/20' : 'bg-accent-400/15') : '';
@@ -150,6 +150,8 @@ export const BackgroundShapes: React.FC = () => {
           />
         );
       })}
-    </>
+    </div>
   );
-};
+});
+
+BackgroundShapes.displayName = 'BackgroundShapes';

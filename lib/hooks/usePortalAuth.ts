@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import { useImpersonation } from '@/lib/context/ImpersonationContext';
 import { ACCOUNT_TYPE } from '@/lib/types/portal';
 import { PortalErrorCode } from '@/lib/constants/error-codes';
@@ -60,7 +60,7 @@ export function usePortalAuth(): UsePortalAuthResult {
   });
 
   // 7. Clear cache when user logs out
-  useMemo(() => {
+  useEffect(() => {
     if (!user) {
       clearCache();
     }

@@ -5,6 +5,7 @@ import { Camera, Trash2, Loader2, User, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 interface ImageUploadProps {
   /** Current image URL */
@@ -82,8 +83,11 @@ export const ImageUpload = ({
 
       try {
         await onUpload(file);
+        toast.success(t('portal.common.uploadSuccess' as any));
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('portal.common.uploadFailed'));
+        const msg = err instanceof Error ? err.message : t('portal.common.uploadFailed');
+        setError(msg);
+        toast.error(msg);
       }
     },
     [onUpload]
@@ -127,8 +131,11 @@ export const ImageUpload = ({
       setError(null);
       try {
         await onDelete();
+        toast.success(t('portal.common.removeSuccess' as any));
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('portal.common.failedToRemove'));
+        const msg = err instanceof Error ? err.message : t('portal.common.failedToRemove');
+        setError(msg);
+        toast.error(msg);
       }
     }
   };
@@ -207,6 +214,7 @@ export const ImageUpload = ({
         onChange={handleInputChange}
         className="hidden"
         disabled={disabled || isUploading}
+        aria-label={placeholder || t('portal.files.imageLabels.upload' as any)}
       />
 
       {/* Action buttons */}

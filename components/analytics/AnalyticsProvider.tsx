@@ -23,9 +23,9 @@ export function AnalyticsProvider({
   enableEngagementTracking = true,
   enableErrorTracking = true,
 }: AnalyticsProviderProps) {
-  if (enableScrollTracking) useScrollDepthTracking();
-  if (enableOutboundTracking) useOutboundLinkTracking();
-  if (enableEngagementTracking) useEngagementTracking();
+  useScrollDepthTracking(enableScrollTracking);
+  useOutboundLinkTracking(enableOutboundTracking);
+  useEngagementTracking(enableEngagementTracking);
 
   useEffect(() => {
     if (!enableErrorTracking) return;

@@ -9,6 +9,7 @@ import { Link } from '@/i18n/navigation';
 import { trackNewsletterSignup } from '@/lib/analytics';
 import { subscribeNewsletter } from '@/lib/services/newsletter-client';
 import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
+import { toast } from 'sonner';
 
 export const Footer: React.FC = () => {
   const t = useTranslations();
@@ -67,8 +68,11 @@ export const Footer: React.FC = () => {
       setSubscribed(true);
       setEmail('');
       trackNewsletterSignup('footer');
+      toast.success(t('footer.newsletter.success'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('portal.common.failedToSubscribe'));
+      const msg = err instanceof Error ? err.message : t('portal.common.failedToSubscribe');
+      setError(msg);
+      toast.error(msg);
     } finally {
       set(false);
     }

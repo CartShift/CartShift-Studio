@@ -4,11 +4,12 @@ import { useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { trackEvent, trackOutboundLink } from '@/lib/analytics';
 
-export function useScrollDepthTracking(thresholds = [25, 50, 75, 100]) {
+export function useScrollDepthTracking(enabled = true, thresholds = [25, 50, 75, 100]) {
   const trackedRef = useRef<Set<number>>(new Set());
   const pathname = usePathname();
 
   useEffect(() => {
+    if (!enabled) return;
     trackedRef.current.clear();
 
     const handleScroll = () => {
@@ -27,11 +28,13 @@ export function useScrollDepthTracking(thresholds = [25, 50, 75, 100]) {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [pathname, thresholds]);
+  }, [enabled, pathname, thresholds]);
 }
 
-export function useOutboundLinkTracking() {
+export function useOutboundLinkTracking(enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
+
     const handleClick = (e: MouseEvent) => {
       const link = (e.target as HTMLElement).closest('a');
       if (!link) return;
@@ -51,14 +54,15 @@ export function useOutboundLinkTracking() {
 
     document.addEventListener('click', handleClick, { capture: true });
     return () => document.removeEventListener('click', handleClick, { capture: true });
-  }, []);
+  }, [enabled]);
 }
 
-export function useEngagementTracking() {
+export function useEngagementTracking(enabled = true) {
   const startTimeRef = useRef<number>(Date.now());
   const pathname = usePathname();
 
   useEffect(() => {
+    if (!enabled) return;
     startTimeRef.current = Date.now();
 
     return () => {
@@ -67,7 +71,7 @@ export function useEngagementTracking() {
         trackEvent('page_engagement', { page_path: pathname, time_seconds: timeSpent });
       }
     };
-  }, [pathname]);
+  }, [enabled, pathname]);
 }
 
 export function useTrackClick(eventName: string, params?: Record<string, string>) {

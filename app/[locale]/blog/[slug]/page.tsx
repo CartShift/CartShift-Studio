@@ -31,7 +31,7 @@ export async function generateMetadata({
   const post = await getPostBySlug(slug);
 
   if (!post) {
-    return { title: 'Post Not ' };
+    return { title: 'Post Not Found' };
   }
 
   const keywords = [
