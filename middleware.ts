@@ -4,14 +4,44 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-// Toggle subdomain functionality - set to false to disable portal subdomain routing
 const ENABLE_PORTAL_SUBDOMAIN = true;
+const SESSION_COOKIE = '__session';
+
+const PORTAL_AUTH_PAGES = ['/login', '/signup', '/forgot-password', '/oauth-callback', '/invite'];
+
+function isPortalAuthPage(path: string): boolean {
+  return PORTAL_AUTH_PAGES.some(p => path === p || path.startsWith(p + '/'));
+}
+
+function getPortalPathFromRequest(pathname: string, isSubdomain: boolean): string | null {
+  const parts = pathname.split('/').filter(Boolean);
+  const hasLocale = parts[0] && routing.locales.includes(parts[0] as 'en' | 'he');
+
+  if (isSubdomain) {
+    return '/' + (hasLocale ? parts.slice(1).join('/') : parts.join('/'));
+  }
+
+  // Main domain: check for /portal/ prefix
+  if (hasLocale && parts[1] === 'portal') {
+    return '/' + parts.slice(2).join('/');
+  }
+  if (parts[0] === 'portal') {
+    return '/' + parts.slice(1).join('/');
+  }
+
+  return null;
+}
+
+function getLocaleFromPath(pathname: string): string {
+  const first = pathname.split('/').filter(Boolean)[0];
+  return first && routing.locales.includes(first as 'en' | 'he') ? first : routing.defaultLocale;
+}
 
 export default function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
 
-  // 1. Skip internal paths completely
+  // 1. Skip internal paths
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
@@ -26,7 +56,6 @@ export default function middleware(request: NextRequest) {
     ENABLE_PORTAL_SUBDOMAIN &&
     (hostname.startsWith('portal.cart-shift.com') || hostname.startsWith('portal.localhost'));
 
-  // 2.5. Check if we're on localhost (skip subdomain redirects in development)
   const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
 
   // 3. Main domain: redirect /portal/ paths to subdomain (skip on localhost)
@@ -41,11 +70,10 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // 4. Portal subdomain: rewrite all paths to /portal/
+  // 4. Portal subdomain handling
   if (isPortalSubdomain) {
-    // Check if path already contains /portal/ to avoid double-rewriting
+    // Clean up paths that already contain /portal
     if (pathname.includes('/portal/') || pathname.includes('/portal')) {
-      // Already has /portal, redirect to clean URL
       const cleanPath = pathname.replace(/\/portal\/?/, '/') || '/';
       if (cleanPath !== pathname) {
         return NextResponse.redirect(new URL(cleanPath, request.url));
@@ -53,21 +81,34 @@ export default function middleware(request: NextRequest) {
       return intlMiddleware(request);
     }
 
+    const locale = getLocaleFromPath(pathname);
+    const portalPath = getPortalPathFromRequest(pathname, true) || '/';
+    const hasSession = request.cookies.has(SESSION_COOKIE);
+
+    // Auth guard: protected pages require session cookie
+    if (!isPortalAuthPage(portalPath) && portalPath !== '/' && !hasSession) {
+      const loginUrl = new URL(`/${locale}/login/`, request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Reverse guard: authenticated users skip login/signup
+    if (isPortalAuthPage(portalPath) && hasSession) {
+      return NextResponse.redirect(new URL(`/${locale}/`, request.url));
+    }
+
     // Rewrite: /en/dashboard -> /en/portal/dashboard
     const pathParts = pathname.split('/').filter(Boolean);
     const hasLocale = pathParts[0] && routing.locales.includes(pathParts[0] as 'en' | 'he');
 
-    const defaultLocale = routing.defaultLocale;
     let rewritePath: string;
     if (hasLocale) {
-      const locale = pathParts[0];
       const rest = pathParts.slice(1).join('/');
-      rewritePath = `/${locale}/portal/${rest}`;
+      rewritePath = `/${pathParts[0]}/portal/${rest}`;
     } else {
-      rewritePath = `/${defaultLocale}/portal${pathname === '/' ? '' : pathname}`;
+      rewritePath = `/${routing.defaultLocale}/portal${pathname === '/' ? '' : pathname}`;
     }
 
-    // Ensure trailing slash consistency
     if (pathname.endsWith('/') && !rewritePath.endsWith('/')) {
       rewritePath += '/';
     }
@@ -81,13 +122,28 @@ export default function middleware(request: NextRequest) {
     });
   }
 
+  // 5. Main domain portal auth checks (localhost dev)
+  if (isLocalhost) {
+    const portalPath = getPortalPathFromRequest(pathname, false);
+    if (portalPath !== null) {
+      const locale = getLocaleFromPath(pathname);
+      const hasSession = request.cookies.has(SESSION_COOKIE);
+
+      if (!isPortalAuthPage(portalPath) && portalPath !== '/' && !hasSession) {
+        const loginUrl = new URL(`/${locale}/portal/login/`, request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      if (isPortalAuthPage(portalPath) && hasSession) {
+        return NextResponse.redirect(new URL(`/${locale}/portal/`, request.url));
+      }
+    }
+  }
+
   return intlMiddleware(request);
 }
 
 export const config = {
-  // Skip internal paths completely: api, _next, _vercel, __ (Firebase auth), and files with extensions
-  matcher: [
-    // Match all paths except excluded ones
-    '/((?!api|_next|_vercel|__|.*\\..*).*)',
-  ],
+  matcher: ['/((?!api|_next|_vercel|__|.*\\..*).*)'],
 };

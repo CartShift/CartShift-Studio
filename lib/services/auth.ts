@@ -63,6 +63,7 @@ export async function loginWithEmail(email: string, password: string): Promise<U
       console.warn('[Login] Error processing client invites:', error);
     }
 
+    await syncSessionCookie(user);
     return user;
   } catch (error: unknown) {
     const authError = error as { code?: string; message?: string };
@@ -129,6 +130,7 @@ export async function signInWithGoogle(): Promise<User> {
       }
     }
 
+    await syncSessionCookie(user);
     return user;
   } catch (error: unknown) {
     const authError = error as { code?: string; message?: string };
@@ -210,6 +212,7 @@ export async function signUpWithEmail(
       console.warn('[SignUp] Error processing client invites:', error);
     }
 
+    await syncSessionCookie(user);
     return user;
   } catch (error: unknown) {
     // Re-throw Firebase auth errors with more context
@@ -266,7 +269,7 @@ export async function logout(): Promise<void> {
     }
 
     setLoggingOut(true);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await syncSessionCookie(null);
     await signOut(authInstance);
     // Note: We don't set loggingOut back to false here because the page
     // usually redirects/reloads, and we want to keep suppressing errors
