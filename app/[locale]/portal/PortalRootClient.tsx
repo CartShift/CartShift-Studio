@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { usePortalNavigation } from '@/lib/hooks/usePortalNavigation';
-import { isLoggingOut } from '@/lib/services/auth';
 import { OnboardingWizard } from '@/components/portal/onboarding/OnboardingWizard';
 import { PortalState } from '@/components/portal/shell/PortalLoadingState';
 
@@ -31,10 +30,8 @@ export default function PortalRootClient() {
     }
 
     if (!isAuthenticated) {
-      if (!isLoggingOut()) {
-        hasRedirectedRef.current = true;
-        navigateToLogin();
-      }
+      hasRedirectedRef.current = true;
+      navigateToLogin();
       return;
     }
 

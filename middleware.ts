@@ -67,7 +67,7 @@ export default function middleware(request: NextRequest) {
   ) {
     const newPathname = pathname.replace('/portal/', '/') || '/';
     const redirectUrl = new URL(newPathname, `https://portal.cart-shift.com`);
-    return NextResponse.redirect(redirectUrl);
+    return NextResponse.redirect(redirectUrl, 308);
   }
 
   // 4. Portal subdomain handling

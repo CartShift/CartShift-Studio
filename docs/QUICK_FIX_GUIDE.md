@@ -82,3 +82,23 @@ This will tell you exactly what's wrong.
 ## 🎯 Still Stuck?
 
 Share the output from `diagnoseFirebasePermissions()` and we can help identify the specific issue.
+
+---
+
+## Starlinker API errors (app.starlinker.io)
+
+These errors come from **Starlinker’s backend**, not from CartShift Studio. CartShift Studio does not call Starlinker APIs in this repo.
+
+| Error                                             | Meaning                                      | Where to fix                                 |
+| ------------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
+| **PUT** `/api/worlds/:id` → **500**               | Server error updating a world                | Starlinker backend (logs, bug fix)           |
+| **GET** `/api/worlds/:id/collaborators` → **404** | Collaborators endpoint missing or wrong path | Starlinker backend (route or client URL)     |
+| **POST** `/api/worlds` → **403**                  | Not allowed to create worlds                 | Auth: token, session, or backend permissions |
+| **POST/PUT** `/api/entities` → **403**            | Not allowed to create/update entities        | Same auth/permissions on Starlinker          |
+
+**What to do:**
+
+1. **403 (Forbidden):** Check Starlinker auth (login, token, cookie). Ensure the user has permission to create/update worlds and entities.
+2. **500 (Internal Server Error):** Check Starlinker server logs for the PUT worlds request; fix or report the bug on their side.
+3. **404 (collaborators):** Confirm the collaborators route exists and the client uses the correct path (e.g. `/api/worlds/:id/collaborators`).
+4. If Starlinker is embedded in your app, ensure the embed sends the same auth (e.g. token in headers or cookie) that Starlinker’s backend expects.

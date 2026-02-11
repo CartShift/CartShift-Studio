@@ -6,9 +6,9 @@ import { Section, SectionHeader } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { PageHero } from '@/components/sections/PageHero';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { getPortalPath } from '@/lib/utils/portal-paths';
+import { getPortalSubdomainUrl } from '@/lib/utils/portal-paths';
 import {
   LayoutDashboard,
   MessageSquareText,
@@ -137,6 +137,7 @@ const ProcessStep: React.FC<ProcessStepExtendedProps> = ({
 
 export const ClientPortalPageContent: React.FC = () => {
   const t = useTranslations();
+  const locale = useLocale();
 
   const portalInfo = t.raw('clientPortalPage' as any) as {
     hero: {
@@ -466,7 +467,7 @@ export const ClientPortalPageContent: React.FC = () => {
               {portalInfo.cta.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href={getPortalPath('/')}>
+              <Link href={getPortalSubdomainUrl('/', locale)}>
                 <Button
                   size="lg"
                   className="w-full sm:w-auto group bg-white text-surface-900 hover:bg-white/90"

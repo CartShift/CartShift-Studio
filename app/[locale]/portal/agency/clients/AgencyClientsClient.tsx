@@ -228,7 +228,7 @@ export default function AgencyClientsClient() {
             {t('agency.clients.subtitle' as any)}
           </p>
         </div>
-        <Link href="/portal/agency/clients/new/">
+        <Link href={getPortalPath('/agency/clients/new/')}>
           <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20">
             <Plus size={18} />
             {t('agency.clients.onboard' as any)}
@@ -420,7 +420,7 @@ export default function AgencyClientsClient() {
                           {
                             label: t('agency.clients.detail.overview' as any),
                             icon: <ArrowUpRight size={16} />,
-                            onClick: () => router.push(`/portal/agency/clients/${org.id}/`),
+                            onClick: () => router.push(getPortalPath(`/agency/clients/${org.id}/`)),
                           },
                           {
                             label: t('agency.clients.viewAsClient' as any),
@@ -522,7 +522,7 @@ export default function AgencyClientsClient() {
 
               <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl group-hover:bg-blue-600 transition-colors">
                 <Link
-                  href={`/portal/agency/clients/${org.id}/`}
+                  href={getPortalPath(`/agency/clients/${org.id}/`)}
                   className="flex items-center justify-between group-hover:text-white text-blue-600 dark:text-blue-400 transition-colors"
                 >
                   <span className="text-xs font-black uppercase tracking-widest">

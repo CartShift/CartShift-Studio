@@ -328,11 +328,8 @@ export async function logout(): Promise<void> {
     }
 
     setLoggingOut(true);
-    await syncSessionCookie(null);
+    syncSessionCookie(null).catch(() => {});
     await signOut(authInstance);
-    // Note: We don't set loggingOut back to false here because the page
-    // usually redirects/reloads, and we want to keep suppressing errors
-    // until the app state is completely reset.
   } catch (error: unknown) {
     setLoggingOut(false);
     console.error('Logout error:', error);

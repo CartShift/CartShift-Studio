@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, startTransition } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
+import { toast } from 'sonner';
 import { logout } from '@/lib/services/auth';
 import { isRTLLocale } from '@/lib/locale-config';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -57,6 +58,7 @@ export function usePortalUIState({
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('portal.sidebar');
 
   // Sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -141,15 +143,17 @@ export function usePortalUIState({
     [isMobileMenuOpen, locale]
   );
 
-  // Sign out handler
   const handleSignOut = useCallback(async () => {
     try {
       await logout();
-      router.push('/');
+      router.push(getPortalPath('/login/'));
     } catch (error) {
       Logger.error('Logout failed', error);
+      toast.error(t('signOutFailed'), {
+        description: error instanceof Error ? error.message : t('signOutFailedDesc'),
+      });
     }
-  }, [router]);
+  }, [router, t]);
 
   // Organization switch handler
   const handleOrgSwitch = useCallback(

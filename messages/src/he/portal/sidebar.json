@@ -6,6 +6,8 @@
       "collapse": "כווץ",
       "close": "סגור",
       "signOut": "התנתק",
+      "signOutFailed": "ההתנתקות נכשלה",
+      "signOutFailedDesc": "אנא נסה שוב",
       "nav": {
         "workboard": "לוח עבודה",
         "sales": "לוח מכירות",

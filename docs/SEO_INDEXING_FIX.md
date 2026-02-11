@@ -168,6 +168,20 @@ Or in Search Console:
   site:cart-shift.com/en/blog/shopify-seo-complete-guide
   ```
 
+## Related: "Redirects to Another Website" (Feb 2026)
+
+When Google Search Console shows "הדף מפנה לכתובת אתר אחרת" (The page redirects to another website) for main-domain `/portal/` URLs:
+
+**Cause:** Main domain `cart-shift.com/en/portal/*` redirects to `portal.cart-shift.com`. Google treats subdomains as different sites.
+
+**Fixes applied:**
+
+1. **308 permanent redirect** in middleware (was 307 temporary) — signals consolidation to subdomain
+2. **Main-site portal links** use `getPortalSubdomainUrl()` for absolute URLs — avoids crawlable links to redirecting URLs
+3. **Agency portal links** use `getPortalPath()` instead of hardcoded `/portal/`
+
+**Expected:** Existing redirecting URLs will drop from "not indexed" over 1–2 weeks as Google re-crawls.
+
 ## Prevention
 
 ### ✅ Best Practices Going Forward:

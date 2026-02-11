@@ -6,6 +6,8 @@
       "collapse": "Collapse",
       "close": "Close",
       "signOut": "Sign Out",
+      "signOutFailed": "Sign out failed",
+      "signOutFailedDesc": "Please try again",
       "nav": {
         "workboard": "Workboard",
         "sales": "Sales Dashboard",
