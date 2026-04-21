@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
+import React from 'react';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -20,6 +21,21 @@ vi.mock('next/navigation', () => ({
   redirect: vi.fn(),
   permanentRedirect: vi.fn(),
   notFound: vi.fn(),
+}));
+
+vi.mock('next/image', () => ({
+  default: ({
+    src,
+    alt,
+    fill: _fill,
+    priority: _priority,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; priority?: boolean }) =>
+    React.createElement('img', {
+      src: typeof src === 'string' ? src : '',
+      alt,
+      ...props,
+    }),
 }));
 
 afterEach(() => {
@@ -43,4 +59,17 @@ Object.defineProperty(window, 'matchMedia', {
 Object.defineProperty(window, 'scrollTo', {
   writable: true,
   value: vi.fn(),
+});
+
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  value: class MockIntersectionObserver {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+    takeRecords = vi.fn(() => []);
+    root = null;
+    rootMargin = '0px';
+    thresholds: number[] = [];
+  },
 });

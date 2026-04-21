@@ -1,7 +1,7 @@
 /**
  * Subdomain Utilities (Client-side only)
  * Minimal utilities for UI adjustments based on subdomain context.
- * All routing/redirects are handled by middleware.
+ * All routing/redirects are handled by the root proxy.
  */
 
 const MAIN_DOMAIN = 'cart-shift.com';

@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-02-06T00:37:32.105Z
+ * Last updated: 2026-04-21T23:55:53.902Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -114,10 +114,40 @@ export interface Cv {
   saveAsPdf: string;
   sections: {
     summary: string;
+    portfolio: string;
     experience: string;
     skills: string;
     education: string;
     languages: string;
+  };
+  portfolio: {
+    intro: string;
+    liveLabel: string;
+    featuredLabel: string;
+    visitProject: string;
+    projects: {
+      cartshift: {
+        eyebrow: string;
+        description: string;
+        signals: string;
+      };
+      starlinker: {
+        eyebrow: string;
+        description: string;
+        signals: string;
+      };
+      rightflow: {
+        eyebrow: string;
+        description: string;
+        signals: string;
+      };
+    };
+    clients: {
+      kicker: string;
+      title: string;
+      description: string;
+      cta: string;
+    };
   };
   summary: {
     text: string;
@@ -562,6 +592,7 @@ export interface Portal {
       searchPlaceholder: string;
       deleteTitle: string;
       deleteConfirm: string;
+      deleteFailed: string;
       activeAccounts: string;
       export: string;
       loading: string;
@@ -1025,6 +1056,15 @@ export interface Portal {
     offline: string;
     filter: string;
     showing: string;
+    filters: {
+      title: string;
+      status: string;
+      plan: string;
+      revenueRange: string;
+      minRevenue: string;
+      maxRevenue: string;
+      reset: string;
+    };
     prev: string;
     next: string;
     recently: string;
@@ -1376,6 +1416,10 @@ export interface Portal {
     markAllRead: string;
     profileMenu: string;
     visitWebsite: string;
+    recentNotifications: string;
+    new: string;
+    viewAllNotifications: string;
+    unreadNotifications: string;
   };
   impersonation: {
     viewingAs: string;
@@ -2377,6 +2421,8 @@ export interface Portal {
     collapse: string;
     close: string;
     signOut: string;
+    signOutFailed: string;
+    signOutFailedDesc: string;
     nav: {
       workboard: string;
       sales: string;
@@ -3090,6 +3136,7 @@ export interface Work {
     subtitle: string;
     description: string;
     badge: string;
+    featuredLabel: string;
   };
   filters: {
     all: string;
@@ -3122,12 +3169,19 @@ export interface Work {
     ctaButton: string;
   };
   detail: {
-    projectDetails: string;
     client: string;
     industry: string;
     platform: string;
     duration: string;
     services: string;
+    projectOverview: string;
+    whatWeShipped: string;
+    selectedScreens: string;
+    evidenceTitle: string;
+    clientQuote: string;
+    projectNotes: string;
+    visitSite: string;
+    galleryHint: string;
     startProject: string;
     wantResults: string;
     wantResultsDesc: string;
@@ -3838,10 +3892,28 @@ export type TranslationKey =
   | 'cv.location'
   | 'cv.name'
   | 'cv.phone'
+  | 'cv.portfolio.clients.cta'
+  | 'cv.portfolio.clients.description'
+  | 'cv.portfolio.clients.kicker'
+  | 'cv.portfolio.clients.title'
+  | 'cv.portfolio.featuredLabel'
+  | 'cv.portfolio.intro'
+  | 'cv.portfolio.liveLabel'
+  | 'cv.portfolio.projects.cartshift.description'
+  | 'cv.portfolio.projects.cartshift.eyebrow'
+  | 'cv.portfolio.projects.cartshift.signals'
+  | 'cv.portfolio.projects.rightflow.description'
+  | 'cv.portfolio.projects.rightflow.eyebrow'
+  | 'cv.portfolio.projects.rightflow.signals'
+  | 'cv.portfolio.projects.starlinker.description'
+  | 'cv.portfolio.projects.starlinker.eyebrow'
+  | 'cv.portfolio.projects.starlinker.signals'
+  | 'cv.portfolio.visitProject'
   | 'cv.saveAsPdf'
   | 'cv.sections.education'
   | 'cv.sections.experience'
   | 'cv.sections.languages'
+  | 'cv.sections.portfolio'
   | 'cv.sections.skills'
   | 'cv.sections.summary'
   | 'cv.skills.apis.category'
@@ -4098,6 +4170,7 @@ export type TranslationKey =
   | 'portal.agency.clients.badge.suspended'
   | 'portal.agency.clients.dashboard'
   | 'portal.agency.clients.deleteConfirm'
+  | 'portal.agency.clients.deleteFailed'
   | 'portal.agency.clients.deleteTitle'
   | 'portal.agency.clients.detail.actions.createRequest'
   | 'portal.agency.clients.detail.actions.exportData'
@@ -4529,6 +4602,13 @@ export type TranslationKey =
   | 'portal.common.featureComingSoon'
   | 'portal.common.file'
   | 'portal.common.filter'
+  | 'portal.common.filters.maxRevenue'
+  | 'portal.common.filters.minRevenue'
+  | 'portal.common.filters.plan'
+  | 'portal.common.filters.reset'
+  | 'portal.common.filters.revenueRange'
+  | 'portal.common.filters.status'
+  | 'portal.common.filters.title'
   | 'portal.common.free'
   | 'portal.common.general'
   | 'portal.common.getStarted'
@@ -4777,11 +4857,15 @@ export type TranslationKey =
   | 'portal.header.enterprise'
   | 'portal.header.level'
   | 'portal.header.markAllRead'
+  | 'portal.header.new'
   | 'portal.header.noNotifications'
   | 'portal.header.notifications'
   | 'portal.header.profileMenu'
+  | 'portal.header.recentNotifications'
   | 'portal.header.search'
   | 'portal.header.searchPlaceholder'
+  | 'portal.header.unreadNotifications'
+  | 'portal.header.viewAllNotifications'
   | 'portal.header.visitWebsite'
   | 'portal.impersonation.client'
   | 'portal.impersonation.exitView'
@@ -5568,6 +5652,8 @@ export type TranslationKey =
   | 'portal.sidebar.nav.testimonials'
   | 'portal.sidebar.nav.workboard'
   | 'portal.sidebar.signOut'
+  | 'portal.sidebar.signOutFailed'
+  | 'portal.sidebar.signOutFailedDesc'
   | 'portal.sidebar.subtitle'
   | 'portal.sidebar.title'
   | 'portal.team.activeMembers'
@@ -5933,18 +6019,25 @@ export type TranslationKey =
   | 'work.cta.title'
   | 'work.cta.titleSpan'
   | 'work.detail.client'
+  | 'work.detail.clientQuote'
   | 'work.detail.duration'
+  | 'work.detail.evidenceTitle'
+  | 'work.detail.galleryHint'
   | 'work.detail.getConsultation'
   | 'work.detail.industry'
   | 'work.detail.noProjects'
   | 'work.detail.noProjectsDesc'
   | 'work.detail.platform'
-  | 'work.detail.projectDetails'
+  | 'work.detail.projectNotes'
+  | 'work.detail.projectOverview'
+  | 'work.detail.selectedScreens'
   | 'work.detail.services'
   | 'work.detail.startProject'
   | 'work.detail.viewMore'
+  | 'work.detail.visitSite'
   | 'work.detail.wantResults'
   | 'work.detail.wantResultsDesc'
+  | 'work.detail.whatWeShipped'
   | 'work.empty.description'
   | 'work.empty.title'
   | 'work.filters.all'
@@ -5952,6 +6045,7 @@ export type TranslationKey =
   | 'work.filters.wordpress'
   | 'work.hero.badge'
   | 'work.hero.description'
+  | 'work.hero.featuredLabel'
   | 'work.hero.subtitle'
   | 'work.hero.title'
   | 'work.viewProject';

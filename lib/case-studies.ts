@@ -4,11 +4,48 @@ import matter from 'gray-matter';
 
 const caseStudiesDirectory = path.join(process.cwd(), 'content/case-studies');
 
+export interface CaseStudyBrand {
+  primary: string;
+  accent?: string;
+  logo?: string;
+}
+
+export interface CaseStudyHero {
+  image: string;
+  alt: string;
+  supportingCopy?: string;
+}
+
+export interface CaseStudyOverview {
+  title: string;
+  summary: string;
+}
+
+export interface CaseStudyDeliverable {
+  title: string;
+  description: string;
+}
+
+export interface CaseStudyGalleryItem {
+  image: string;
+  alt: string;
+  caption: string;
+}
+
 export interface CaseStudyResult {
   metric: string;
   before: string;
   after: string;
   improvement: string;
+}
+
+export interface CaseStudyEvidence {
+  title: string;
+  value?: string;
+  description: string;
+  before?: string;
+  after?: string;
+  tone?: 'qualitative' | 'quantitative';
 }
 
 export interface CaseStudyTestimonial {
@@ -23,13 +60,20 @@ export interface CaseStudyMeta {
   client: string;
   industry: string;
   platform: string;
-  duration: string;
+  duration?: string;
   featured: boolean;
+  siteUrl?: string;
+  brand: CaseStudyBrand;
+  hero: CaseStudyHero;
+  overview: CaseStudyOverview;
   thumbnail: string;
   heroImage: string;
   summary: string;
   results: CaseStudyResult[];
   services: string[];
+  deliverables: CaseStudyDeliverable[];
+  gallery: CaseStudyGalleryItem[];
+  evidence: CaseStudyEvidence[];
   testimonial?: CaseStudyTestimonial;
 }
 
@@ -43,10 +87,155 @@ interface HebrewTranslation {
   summary?: string;
   industry?: string;
   duration?: string;
+  hero?: Partial<CaseStudyHero>;
+  overview?: Partial<CaseStudyOverview>;
   results?: CaseStudyResult[];
   services?: string[];
+  deliverables?: CaseStudyDeliverable[];
+  gallery?: CaseStudyGalleryItem[];
+  evidence?: CaseStudyEvidence[];
   testimonial?: CaseStudyTestimonial;
   content?: string;
+}
+
+interface CaseStudyFrontmatter {
+  slug?: string;
+  title?: string;
+  client?: string;
+  industry?: string;
+  platform?: string;
+  duration?: string;
+  featured?: boolean;
+  siteUrl?: string;
+  brand?: Partial<CaseStudyBrand>;
+  hero?: Partial<CaseStudyHero>;
+  overview?: Partial<CaseStudyOverview>;
+  thumbnail?: string;
+  heroImage?: string;
+  summary?: string;
+  results?: CaseStudyResult[];
+  services?: string[];
+  deliverables?: CaseStudyDeliverable[];
+  gallery?: CaseStudyGalleryItem[];
+  evidence?: CaseStudyEvidence[];
+  testimonial?: CaseStudyTestimonial;
+  he?: HebrewTranslation;
+}
+
+function mergeLocalizedObject<T extends object>(
+  base: T | undefined,
+  localized: Partial<T> | undefined
+): T | undefined {
+  if (!base && !localized) {
+    return undefined;
+  }
+
+  return {
+    ...(base || {}),
+    ...(localized || {}),
+  } as T;
+}
+
+function getFallbackBrand(platform: string): CaseStudyBrand {
+  return platform.toLowerCase().includes('shopify')
+    ? {
+        primary: '#94a23d',
+        accent: '#e7f08f',
+      }
+    : {
+        primary: '#2b5d99',
+        accent: '#84b7ff',
+      };
+}
+
+function normalizeLegacyEvidence(results: CaseStudyResult[]): CaseStudyEvidence[] {
+  return results.map(result => {
+    const stateSummary =
+      result.before && result.after
+        ? `Before: ${result.before}. After: ${result.after}.`
+        : result.after
+          ? `Current state: ${result.after}.`
+          : result.improvement;
+
+    return {
+      title: result.metric,
+      value: result.improvement,
+      description: stateSummary,
+      before: result.before,
+      after: result.after,
+      tone: 'qualitative',
+    };
+  });
+}
+
+export function normalizeCaseStudyRecord(
+  data: CaseStudyFrontmatter,
+  content: string,
+  locale: string,
+  slug: string
+): CaseStudy {
+  const isHebrew = locale === 'he';
+  const heTranslations: HebrewTranslation = data.he || {};
+
+  const title = (isHebrew && heTranslations.title) || data.title || '';
+  const summary = (isHebrew && heTranslations.summary) || data.summary || '';
+  const industry = (isHebrew && heTranslations.industry) || data.industry || '';
+  const duration = (isHebrew && heTranslations.duration) || data.duration || '';
+  const services = (isHebrew && heTranslations.services) || data.services || [];
+  const results = (isHebrew && heTranslations.results) || data.results || [];
+  const testimonial = (isHebrew && heTranslations.testimonial) || data.testimonial;
+  const hero = mergeLocalizedObject<CaseStudyHero>(
+    data.hero as CaseStudyHero | undefined,
+    isHebrew ? heTranslations.hero : undefined
+  );
+  const overview = mergeLocalizedObject<CaseStudyOverview>(
+    data.overview as CaseStudyOverview | undefined,
+    isHebrew ? heTranslations.overview : undefined
+  );
+  const deliverables = (isHebrew && heTranslations.deliverables) || data.deliverables || [];
+  const gallery = (isHebrew && heTranslations.gallery) || data.gallery || [];
+  const evidence = (isHebrew && heTranslations.evidence) || data.evidence || [];
+  const brand = {
+    ...getFallbackBrand(data.platform || ''),
+    ...(data.brand || {}),
+  };
+
+  const resolvedHeroImage = hero?.image || data.heroImage || data.thumbnail || '';
+  const resolvedThumbnail = data.thumbnail || resolvedHeroImage;
+  const resolvedOverview = overview || {
+    title: isHebrew ? 'תקציר הפרויקט' : 'Project Overview',
+    summary,
+  };
+  const resolvedHero = hero || {
+    image: resolvedHeroImage,
+    alt: title,
+    supportingCopy: summary,
+  };
+  const resolvedEvidence = evidence.length > 0 ? evidence : normalizeLegacyEvidence(results);
+
+  return {
+    slug,
+    title,
+    client: data.client || '',
+    industry,
+    platform: data.platform || '',
+    duration,
+    featured: data.featured || false,
+    siteUrl: data.siteUrl || '',
+    brand,
+    hero: resolvedHero,
+    overview: resolvedOverview,
+    thumbnail: resolvedThumbnail,
+    heroImage: resolvedHeroImage,
+    summary,
+    results,
+    services,
+    deliverables,
+    gallery,
+    evidence: resolvedEvidence,
+    testimonial,
+    content: (isHebrew && heTranslations.content) || content,
+  };
 }
 
 function getCaseStudyFiles(): string[] {
@@ -75,26 +264,7 @@ export function getCaseStudyBySlug(slug: string, locale: string = 'en'): CaseStu
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { data, content } = matter(fileContents);
 
-    // Get Hebrew translations if locale is 'he' and translations exist
-    const heTranslations: HebrewTranslation = data.he || {};
-    const isHebrew = locale === 'he';
-
-    return {
-      slug,
-      title: (isHebrew && heTranslations.title) || data.title || '',
-      client: data.client || '',
-      industry: (isHebrew && heTranslations.industry) || data.industry || '',
-      platform: data.platform || '',
-      duration: (isHebrew && heTranslations.duration) || data.duration || '',
-      featured: data.featured || false,
-      thumbnail: data.thumbnail || '',
-      heroImage: data.heroImage || '',
-      summary: (isHebrew && heTranslations.summary) || data.summary || '',
-      results: (isHebrew && heTranslations.results) || data.results || [],
-      services: (isHebrew && heTranslations.services) || data.services || [],
-      testimonial: (isHebrew && heTranslations.testimonial) || data.testimonial,
-      content: (isHebrew && heTranslations.content) || content,
-    };
+    return normalizeCaseStudyRecord(data as CaseStudyFrontmatter, content, locale, slug);
   } catch (error) {
     console.error(`Error reading case study ${slug}:`, error);
     return null;
@@ -114,7 +284,9 @@ export function getAllCaseStudies(locale: string = 'en'): CaseStudyMeta[] {
     })
     .filter((study): study is CaseStudyMeta => study !== null);
 
-  return caseStudies;
+  return caseStudies.sort(
+    (a, b) => Number(b.featured) - Number(a.featured) || a.title.localeCompare(b.title, locale)
+  );
 }
 
 export function getFeaturedCaseStudies(locale: string = 'en'): CaseStudyMeta[] {

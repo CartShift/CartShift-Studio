@@ -15,12 +15,14 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const featured = getAllCaseStudies(locale)[0];
   return genMeta(
     {
       title: 'Our Work | Shopify & WordPress Projects',
       description:
         'See our recent e-commerce projects. Shopify stores, WordPress sites, migrations, and optimizations. Real results for real businesses.',
       url: '/work',
+      image: featured?.hero.image,
       keywords: [
         'portfolio',
         'case studies',

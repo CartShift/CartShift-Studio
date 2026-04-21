@@ -28,7 +28,7 @@ export async function generateMetadata({
   if (!caseStudy) {
     return genMeta(
       {
-        title: 'Case Study Not ',
+        title: 'Case Study Not Found',
         description: 'The requested case study could not be found.',
         url: `/work/${slug}`,
         noindex: true,
@@ -51,6 +51,7 @@ export async function generateMetadata({
       description: caseStudy.summary,
       url: `/work/${slug}`,
       type: 'article',
+      image: caseStudy.hero.image,
       keywords,
     },
     locale as 'en' | 'he'
@@ -84,6 +85,7 @@ export default async function CaseStudyPage({
     date: new Date().toISOString(),
     url: `${siteUrl}/work/${slug}`,
     category: caseStudy.industry,
+    image: caseStudy.hero.image ? `${siteUrl}${caseStudy.hero.image}` : undefined,
   });
 
   return (

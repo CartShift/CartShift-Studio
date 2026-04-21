@@ -3,6 +3,61 @@ import { render, RenderOptions } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 const messages = {
+  nav: {
+    home: 'Home',
+    work: 'Work',
+  },
+  navigation: {
+    home: 'Home',
+  },
+  work: {
+    hero: {
+      title: 'Our Work',
+      subtitle: 'Editorial case studies shaped around the brands behind the build.',
+      description:
+        'A curated look at the stores and websites we have designed, rebuilt, localized, and organized.',
+      badge: 'Selected Work',
+      featuredLabel: 'Featured Project',
+    },
+    filters: {
+      all: 'All Projects',
+      shopify: 'Shopify',
+      wordpress: 'WordPress',
+    },
+    cta: {
+      title: 'Ready to join our',
+      titleSpan: 'success stories?',
+      description: "Let's talk about your project and see how we can help.",
+      button: 'Start Your Project',
+    },
+    viewProject: 'View Project',
+    empty: {
+      title: 'No Projects Found',
+      description: 'Try changing the filter to see more projects.',
+    },
+    detail: {
+      client: 'Client',
+      industry: 'Industry',
+      platform: 'Platform',
+      duration: 'Duration',
+      services: 'Services',
+      projectOverview: 'Project Overview',
+      whatWeShipped: 'What We Shipped',
+      selectedScreens: 'Selected Screens',
+      evidenceTitle: 'Evidence & Outcomes',
+      clientQuote: 'Client Quote',
+      projectNotes: 'Project Notes',
+      visitSite: 'Visit Live Site',
+      galleryHint: 'Real homepage and supporting screens captured from the live site.',
+      startProject: 'Start Your Project',
+      wantResults: 'Want Similar Results?',
+      wantResultsDesc: "Let's discuss your project and see how we can help you grow.",
+      getConsultation: 'Get a Free Consultation',
+      viewMore: 'View More Projects',
+      noProjects: 'No Projects Found',
+      noProjectsDesc: 'Try changing the filter to see more projects.',
+    },
+  },
   portal: {
     loading: {
       workspace: 'Accessing Secure Workspace',

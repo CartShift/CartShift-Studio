@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from '@/lib/motion';
+import { Link } from '@/i18n/navigation';
+import { trackCTAClick, trackOutboundLink } from '@/lib/analytics';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -18,6 +20,7 @@ import {
   Zap,
   Target,
   TrendingUp,
+  ArrowUpRight,
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
@@ -80,6 +83,47 @@ const languagePercentages: Record<string, number> = {
   english: 95,
   german: 30,
 };
+
+interface PortfolioProject {
+  key: 'cartshift' | 'starlinker' | 'rightflow';
+  href: string;
+  domain: string;
+  imageSrc: string;
+  gradient: string;
+  surface: string;
+  featured?: boolean;
+}
+
+const portfolioProjects: PortfolioProject[] = [
+  {
+    key: 'cartshift',
+    href: 'https://cart-shift.com/en',
+    domain: 'cart-shift.com',
+    imageSrc: '/images/cv/portfolio/cartshift-shot.png',
+    gradient: 'from-primary-500 via-cyan-500 to-accent-500',
+    surface:
+      'from-primary-500/[0.16] via-cyan-500/[0.08] to-accent-500/[0.14] dark:from-primary-500/[0.14] dark:via-cyan-500/[0.05] dark:to-accent-500/[0.12]',
+    featured: true,
+  },
+  {
+    key: 'starlinker',
+    href: 'https://starlinker.io',
+    domain: 'starlinker.io',
+    imageSrc: '/images/cv/portfolio/starlinker-shot.png',
+    gradient: 'from-indigo-500 via-sky-500 to-cyan-400',
+    surface:
+      'from-indigo-500/[0.14] via-sky-500/[0.08] to-cyan-400/[0.14] dark:from-indigo-500/[0.14] dark:via-sky-500/[0.05] dark:to-cyan-400/[0.12]',
+  },
+  {
+    key: 'rightflow',
+    href: 'https://right-flow.com',
+    domain: 'right-flow.com',
+    imageSrc: '/images/cv/portfolio/rightflow-shot.png',
+    gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+    surface:
+      'from-emerald-500/[0.14] via-teal-500/[0.08] to-cyan-500/[0.14] dark:from-emerald-500/[0.14] dark:via-teal-500/[0.05] dark:to-cyan-500/[0.12]',
+  },
+];
 
 // Simple Icons CDN mapping for technology logos
 const skillIconMap: Record<string, string> = {
@@ -200,13 +244,89 @@ function GradientOrb({ className, delay = 0 }: { className: string; delay?: numb
   );
 }
 
+function PortfolioPreview({
+  project,
+  title,
+  label,
+  onOpen,
+}: {
+  project: PortfolioProject;
+  title: string;
+  label: string;
+  onOpen: () => void;
+}) {
+  return (
+    <a
+      href={project.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onOpen}
+      className="group/mockup relative block overflow-hidden rounded-[1.6rem] border border-white/10 bg-slate-950 shadow-[0_32px_90px_-48px_rgba(15,23,42,0.7)]"
+      aria-label={title}
+    >
+      <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.06] px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-rose-400/90" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-300/90" />
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
+        </div>
+        <div className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-white/70">
+          {label}
+        </div>
+      </div>
+
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <Image
+          src={project.imageSrc}
+          alt={title}
+          fill
+          className="object-cover object-top transition-transform duration-700 group-hover/mockup:scale-[1.03]"
+          sizes="(min-width: 1024px) 44vw, 100vw"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08)_0%,rgba(2,6,23,0.16)_42%,rgba(2,6,23,0.62)_100%)]" />
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${project.surface} mix-blend-screen opacity-90`}
+          aria-hidden="true"
+        />
+      </div>
+    </a>
+  );
+}
+
 export default function CVPageContent() {
   const t = useTranslations('cv');
   const locale = useLocale();
   const isRTL = locale === 'he';
+  const portfolio = t.raw('portfolio' as any) as {
+    intro: string;
+    visitProject: string;
+    projects: Record<
+      PortfolioProject['key'],
+      {
+        eyebrow: string;
+        description: string;
+        signals: string[];
+      }
+    >;
+    clients: {
+      kicker: string;
+      title: string;
+      description: string;
+      cta: string;
+    };
+  };
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handlePortfolioProjectClick = (project: PortfolioProject) => {
+    trackOutboundLink(project.href, project.domain);
+    trackCTAClick(project.domain, 'cv_portfolio_project');
+  };
+
+  const handlePortfolioWorkClick = () => {
+    trackCTAClick('client_case_studies', 'cv_portfolio_work');
   };
 
   return (
@@ -417,8 +537,7 @@ export default function CVPageContent() {
             </div>
           </div>
 
-          <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500/20 via-accent-500/20 to-primary-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative">
             <div className="relative backdrop-blur-xl bg-white/60 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg shadow-slate-200/50 dark:shadow-none">
               <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-surface-300 leading-relaxed">
                 {t('summary.text')}
@@ -478,7 +597,7 @@ export default function CVPageContent() {
                       delay: index * 0.08,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    className="relative group"
+                    className="relative"
                   >
                     {/* Connector Line - Responsive */}
                     <div className="absolute top-8 start-4 w-4 lg:start-7 lg:w-8 h-[2px] bg-gradient-to-r from-slate-200 to-transparent dark:from-white/10 dark:to-transparent block" />
@@ -495,15 +614,11 @@ export default function CVPageContent() {
                     </div>
 
                     <div className="ms-10 lg:ms-16 relative">
-                      {!isSelfEmployment && (
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500/10 via-accent-500/10 to-primary-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                      )}
-
                       <div
                         className={`relative backdrop-blur-xl border rounded-xl transition-all duration-300 ${
                           isSelfEmployment
                             ? 'bg-slate-50/50 dark:bg-white/[0.01] border-slate-200/60 dark:border-white/[0.04] p-3 sm:p-4'
-                            : 'bg-white/60 dark:bg-transparent dark:bg-gradient-to-br dark:from-white/[0.03] dark:to-white/[0.01] border-slate-200 dark:border-white/[0.06] hover:border-primary-500/20 p-3 sm:p-5 lg:p-6 hover:bg-white/80 dark:hover:bg-white/[0.04] shadow-sm dark:shadow-none'
+                            : 'bg-white/60 dark:bg-transparent dark:bg-gradient-to-br dark:from-white/[0.03] dark:to-white/[0.01] border-slate-200 dark:border-white/[0.06] p-3 sm:p-5 lg:p-6 shadow-sm dark:shadow-none'
                         }`}
                       >
                         {/* Company header with Open for Work badge */}
@@ -635,13 +750,9 @@ export default function CVPageContent() {
                     delay: index * 0.08,
                     ease: [0.25, 0.46, 0.45, 0.94],
                   }}
-                  className="group relative"
+                  className="relative"
                 >
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${skill.gradient} rounded-xl blur opacity-0 group-hover:opacity-30 transition-all duration-500`}
-                  />
-
-                  <div className="relative h-full backdrop-blur-xl bg-white/60 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] group-hover:border-primary-500/20 dark:group-hover:border-white/[0.12] rounded-xl p-3 sm:p-5 transition-all duration-300 shadow-sm dark:shadow-none">
+                  <div className="relative h-full backdrop-blur-xl bg-white/60 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-xl p-3 sm:p-5 transition-all duration-300 shadow-sm dark:shadow-none">
                     <div className="flex items-center gap-3 mb-3">
                       <motion.div
                         className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br ${skill.gradient} flex items-center justify-center shadow-lg`}
@@ -665,7 +776,7 @@ export default function CVPageContent() {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 + iIndex * 0.03, duration: 0.3 }}
-                            className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] rounded-md text-xs text-slate-600 dark:text-surface-300 cursor-default hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors"
+                            className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] rounded-md text-xs text-slate-600 dark:text-surface-300 cursor-default"
                           >
                             {iconSlug && (
                               <img
@@ -708,8 +819,7 @@ export default function CVPageContent() {
               </h2>
             </div>
 
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative">
               <div className="relative backdrop-blur-xl bg-white/60 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-xl p-3 sm:p-5 shadow-sm dark:shadow-none">
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
@@ -753,8 +863,7 @@ export default function CVPageContent() {
               </h2>
             </div>
 
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-violet-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative">
               <div className="relative backdrop-blur-xl bg-white/60 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-xl p-3 sm:p-5 shadow-sm dark:shadow-none">
                 <div className="space-y-3 sm:space-y-4">
                   {languageKeys.map((langKey, index) => (
@@ -794,6 +903,160 @@ export default function CVPageContent() {
             </div>
           </motion.section>
         </div>
+
+        {/* Portfolio Section - Founder-led products */}
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mt-16 sm:mt-20"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-violet-500 rounded-xl blur-lg opacity-50" />
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
+                {t('sections.portfolio' as any)}
+              </h2>
+            </div>
+          </div>
+
+          <div className="mb-8 max-w-3xl">
+            <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-surface-300 leading-relaxed">
+              {portfolio.intro}
+            </p>
+          </div>
+
+          <div className="space-y-5">
+            {portfolioProjects.map((project, index) => {
+              const copy = portfolio.projects[project.key];
+              const mediaAtEnd = index % 2 === 1;
+
+              return (
+                <motion.article
+                  key={project.key}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-30px' }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.06 * index,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                  className="relative overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white/70 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-white/[0.06] dark:bg-white/[0.02]"
+                >
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${project.surface} opacity-90`}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className={`absolute inset-x-8 top-0 h-px bg-gradient-to-r ${project.gradient} opacity-60`}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className={`pointer-events-none absolute ${mediaAtEnd ? '-start-12' : '-end-12'} top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-gradient-to-br ${project.gradient} blur-3xl opacity-20`}
+                    aria-hidden="true"
+                  />
+
+                  <div className="relative grid grid-cols-1 gap-6 p-4 sm:p-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-8 lg:p-6">
+                    <div className={mediaAtEnd ? 'lg:order-2' : ''}>
+                      <PortfolioPreview
+                        project={project}
+                        title={`${project.domain} preview`}
+                        label={project.domain}
+                        onOpen={() => handlePortfolioProjectClick(project)}
+                      />
+                    </div>
+
+                    <div className={mediaAtEnd ? 'lg:order-1' : ''}>
+                      <div className="mb-5 flex items-start justify-between gap-4">
+                        <div>
+                          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-surface-400">
+                            {copy.eyebrow}
+                          </p>
+                          <h3 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold tracking-[-0.03em] text-slate-900 dark:text-white">
+                            {project.domain}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <p className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-surface-300/90">
+                        {copy.description}
+                      </p>
+
+                      <div className="mt-6 flex flex-wrap gap-2">
+                        {copy.signals.map(signal => (
+                          <span
+                            key={signal}
+                            className="rounded-full border border-slate-200/80 bg-white/80 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-700 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.05] dark:text-surface-200"
+                          >
+                            {signal}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-slate-200/80 pt-6 dark:border-white/[0.08]">
+                        <a
+                          href={project.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => handlePortfolioProjectClick(project)}
+                          className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-slate-900 dark:bg-white dark:text-slate-950 dark:hover:bg-white/90"
+                        >
+                          <span>{portfolio.visitProject}</span>
+                          <ArrowUpRight className="h-4 w-4" />
+                        </a>
+                        <span className="font-mono text-xs sm:text-sm text-slate-500 dark:text-surface-400">
+                          {project.domain}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-30px' }}
+            transition={{ duration: 0.5, delay: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 px-5 py-6 text-white shadow-2xl shadow-slate-900/20 dark:border-white/[0.08] sm:px-6 lg:px-8"
+          >
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.18),_transparent_36%)]"
+              aria-hidden="true"
+            />
+            <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.26em] text-white/50">
+                  {portfolio.clients.kicker}
+                </p>
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-[-0.03em] text-white">
+                  {portfolio.clients.title}
+                </h3>
+                <p className="mt-3 text-sm sm:text-base leading-relaxed text-white/72">
+                  {portfolio.clients.description}
+                </p>
+              </div>
+
+              <Link
+                href="/work"
+                onClick={handlePortfolioWorkClick}
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-white/12 bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-300 hover:bg-white/90"
+              >
+                <span>{portfolio.clients.cta}</span>
+                <ChevronRight className={`h-4 w-4 ${isRTL ? 'rotate-180' : ''}`} />
+              </Link>
+            </div>
+          </motion.div>
+        </motion.section>
       </div>
 
       {/* Print styles */}

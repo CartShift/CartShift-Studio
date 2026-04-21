@@ -21,7 +21,6 @@ function getPortalPathFromRequest(pathname: string, isSubdomain: boolean): strin
     return '/' + (hasLocale ? parts.slice(1).join('/') : parts.join('/'));
   }
 
-  // Main domain: check for /portal/ prefix
   if (hasLocale && parts[1] === 'portal') {
     return '/' + parts.slice(2).join('/');
   }
@@ -37,11 +36,10 @@ function getLocaleFromPath(pathname: string): string {
   return first && routing.locales.includes(first as 'en' | 'he') ? first : routing.defaultLocale;
 }
 
-export default function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
 
-  // 1. Skip internal paths
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
@@ -51,14 +49,12 @@ export default function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Check if we're on the portal subdomain
   const isPortalSubdomain =
     ENABLE_PORTAL_SUBDOMAIN &&
     (hostname.startsWith('portal.cart-shift.com') || hostname.startsWith('portal.localhost'));
 
   const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
 
-  // 3. Main domain: redirect /portal/ paths to subdomain (skip on localhost)
   if (
     ENABLE_PORTAL_SUBDOMAIN &&
     !isPortalSubdomain &&
@@ -66,13 +62,11 @@ export default function middleware(request: NextRequest) {
     pathname.includes('/portal/')
   ) {
     const newPathname = pathname.replace('/portal/', '/') || '/';
-    const redirectUrl = new URL(newPathname, `https://portal.cart-shift.com`);
+    const redirectUrl = new URL(newPathname, 'https://portal.cart-shift.com');
     return NextResponse.redirect(redirectUrl, 308);
   }
 
-  // 4. Portal subdomain handling
   if (isPortalSubdomain) {
-    // Clean up paths that already contain /portal
     if (pathname.includes('/portal/') || pathname.includes('/portal')) {
       const cleanPath = pathname.replace(/\/portal\/?/, '/') || '/';
       if (cleanPath !== pathname) {
@@ -85,15 +79,10 @@ export default function middleware(request: NextRequest) {
     const portalPath = getPortalPathFromRequest(pathname, true) || '/';
     const hasSession = request.cookies.has(SESSION_COOKIE);
 
-    // Portal auth is enforced client-side (Firebase Auth). No server-side redirect to login
-    // so that Google/login redirect works even when session cookie isn't set (e.g. dev without Firebase Admin).
-
-    // Reverse guard: authenticated users skip login/signup
     if (isPortalAuthPage(portalPath) && hasSession) {
       return NextResponse.redirect(new URL(`/${locale}/`, request.url));
     }
 
-    // Rewrite: /en/dashboard -> /en/portal/dashboard
     const pathParts = pathname.split('/').filter(Boolean);
     const hasLocale = pathParts[0] && routing.locales.includes(pathParts[0] as 'en' | 'he');
 
@@ -118,7 +107,6 @@ export default function middleware(request: NextRequest) {
     });
   }
 
-  // 5. Main domain portal auth checks (localhost dev)
   if (isLocalhost) {
     const portalPath = getPortalPathFromRequest(pathname, false);
     if (portalPath !== null) {

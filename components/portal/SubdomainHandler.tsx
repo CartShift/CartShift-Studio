@@ -8,7 +8,7 @@ interface SubdomainHandlerProps {
 }
 
 /**
- * Wrapper for portal pages. All routing logic is handled by middleware.
+ * Wrapper for portal pages. All routing logic is handled by the root proxy.
  * This component now only provides subdomain context.
  */
 export function SubdomainHandler({ children }: SubdomainHandlerProps) {

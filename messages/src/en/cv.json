@@ -11,10 +11,49 @@
     "saveAsPdf": "Save as PDF",
     "sections": {
       "summary": "Professional Summary",
+      "portfolio": "Selected Portfolio",
       "experience": "Professional Experience",
       "skills": "Technical Skills",
       "education": "Education",
       "languages": "Languages"
+    },
+    "portfolio": {
+      "intro": "Three live products I conceived, designed, built, and continue to operate across agency services, visual productivity, and AI-powered compliance workflows.",
+      "liveLabel": "Live project",
+      "featuredLabel": "Founder-led",
+      "visitProject": "Visit live project",
+      "projects": {
+        "cartshift": {
+          "eyebrow": "CartShift Studio",
+          "description": "A premium e-commerce studio presence that blends agency positioning, conversion-focused service pages, a free store analyzer, and a client portal into one cohesive operating system.",
+          "signals": [
+            "Agency brand, lead-gen, and portal UX",
+            "Conversion-minded Shopify & WordPress positioning"
+          ]
+        },
+        "starlinker": {
+          "eyebrow": "StarLinker",
+          "description": "A visual planning OS for nonlinear thinkers that maps goals, tasks, habits, and notes on a connected canvas, then uses AI to surface the next best move.",
+          "signals": [
+            "Spatial product thinking with AI guidance",
+            "High-polish interaction design for everyday productivity"
+          ]
+        },
+        "rightflow": {
+          "eyebrow": "RightFlow",
+          "description": "An AI-powered verification platform for Israeli employees and HR teams that checks pension and payroll contributions, flags discrepancies, and exports legal-ready reports.",
+          "signals": [
+            "Document intelligence and compliance workflows",
+            "Trust-first UX for sensitive financial data"
+          ]
+        }
+      },
+      "clients": {
+        "kicker": "Client Case Studies",
+        "title": "See the freelance client work behind the studio",
+        "description": "The dedicated work page expands the picture with client projects, redesigns, and e-commerce builds delivered for freelance partners.",
+        "cta": "Explore client case studies"
+      }
     },
     "summary": {
       "text": "R&D Lead and Full Stack Developer with 10+ years of experience building and scaling e-commerce platforms and enterprise systems end-to-end. Led digital transformation initiatives and built HIPAA-compliant healthcare solutions serving thousands of users. Proven expertise in architecting resilient multi-layer systems and creating seamless integrations between Shopify, HubSpot, and cloud platforms. Specialized in developing customer-centric solutions with meticulous UX focus that drive conversion and retention. Pioneer in integrating production-ready AI agents and automation to reduce manual workflows and accelerate decision-making. Strong ability to align technical solutions with business objectives and deliver measurable outcomes."

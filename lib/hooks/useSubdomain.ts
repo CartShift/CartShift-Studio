@@ -12,7 +12,7 @@ interface SubdomainState {
 
 /**
  * Hook to detect subdomain context.
- * All routing/redirects are handled by middleware - this is for UI state only.
+ * All routing/redirects are handled by the root proxy - this is for UI state only.
  */
 export function useSubdomain(): SubdomainState {
   const [state, setState] = useState<SubdomainState>({

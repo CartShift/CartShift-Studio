@@ -896,9 +896,10 @@
   "work": {
     "hero": {
       "title": "Our Work",
-      "subtitle": "Real projects. Real results.",
-      "description": "See how we've helped businesses launch, grow, and optimize their online presence.",
-      "badge": "Portfolio"
+      "subtitle": "Editorial case studies shaped around the brands behind the build.",
+      "description": "A curated look at the stores and websites we've designed, rebuilt, localized, and organized, using real visuals and verified project outcomes only.",
+      "badge": "Selected Work",
+      "featuredLabel": "Featured Project"
     },
     "filters": {
       "all": "All Projects",
@@ -931,12 +932,19 @@
       "ctaButton": "Book a Call"
     },
     "detail": {
-      "projectDetails": "Project Details",
       "client": "Client",
       "industry": "Industry",
       "platform": "Platform",
       "duration": "Duration",
       "services": "Services",
+      "projectOverview": "Project Overview",
+      "whatWeShipped": "What We Shipped",
+      "selectedScreens": "Selected Screens",
+      "evidenceTitle": "Evidence & Outcomes",
+      "clientQuote": "Client Quote",
+      "projectNotes": "Project Notes",
+      "visitSite": "Visit Live Site",
+      "galleryHint": "Real homepage and product/content screens captured from the live site and used here as the visual source of truth.",
       "startProject": "Start Your Project",
       "wantResults": "Want Similar Results?",
       "wantResultsDesc": "Let's discuss your project and see how we can help you grow.",
