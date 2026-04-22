@@ -10,6 +10,7 @@ export {
   useScroll,
   useTransform,
   useSpring,
+  useMotionValue,
   useAnimationControls,
   useInView,
   useMotionValueEvent,

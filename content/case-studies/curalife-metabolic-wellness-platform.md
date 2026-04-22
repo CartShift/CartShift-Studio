@@ -8,8 +8,8 @@ duration: '4 years 5 months'
 featured: true
 siteUrl: 'https://curalife.com/'
 brand:
-  primary: '#3b7e60'
-  accent: '#f2c44d'
+  primary: '#2f7a57'
+  accent: '#f0c27a'
 thumbnail: '/images/case-studies/curalife-metabolic-wellness-platform/gallery-01.jpg'
 heroImage: '/images/case-studies/curalife-metabolic-wellness-platform/hero.jpg'
 hero:

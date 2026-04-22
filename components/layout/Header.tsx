@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Icon } from '@/components/ui/Icon';
 import { useTranslations } from 'next-intl';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
@@ -24,6 +24,7 @@ export const Header: React.FC = () => {
   const isRtl = direction === 'rtl';
   const { user } = usePortalAuth();
   const isLoggedIn = !!user;
+  const pathname = usePathname();
   const { settings: systemSettings } = useSystemSettings();
   const isPricingVisible = systemSettings.isPricingPageVisible;
   const isMaintenanceVisible = systemSettings.isMaintenancePageVisible;
@@ -31,6 +32,8 @@ export const Header: React.FC = () => {
   // Unified navigation state - Issue #1 fix
   const { state, actions, refs } = useNavigationState();
   const router = useRouter();
+  const isWorkItemPage = /^\/work\/[^/]+\/?$/.test(pathname);
+  const useSolidHeader = !state.isAtTop || isWorkItemPage;
 
   const navigation = useMemo(
     () => [
@@ -100,13 +103,13 @@ export const Header: React.FC = () => {
         }}
         className={cn(
           'fixed top-0 start-0 end-0 z-modal transition-all duration-500',
-          state.isAtTop
-            ? 'bg-transparent border-transparent'
-            : 'bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl border-b border-surface-200/50 dark:border-white/5 shadow-premium'
+          useSolidHeader
+            ? 'bg-white/88 dark:bg-surface-950/80 backdrop-blur-xl border-b border-surface-200/70 dark:border-white/5 shadow-premium'
+            : 'bg-transparent border-transparent'
         )}
       >
         {/* Top highlight line when scrolled */}
-        {!state.isAtTop && (
+        {useSolidHeader && (
           <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent pointer-events-none" />
         )}
 
@@ -135,7 +138,7 @@ export const Header: React.FC = () => {
                             'flex items-center gap-1.5 py-2 text-sm font-semibold tracking-tight transition-colors duration-200 focus:outline-none',
                             isOpen
                               ? 'text-primary-600 dark:text-primary-400'
-                              : 'text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white'
+                              : 'text-surface-600 dark:text-white hover:text-surface-900 dark:hover:text-white'
                           )}
                           aria-expanded={isOpen}
                           aria-haspopup="true"
@@ -166,7 +169,7 @@ export const Header: React.FC = () => {
                                   <Link
                                     key={subItem.name}
                                     href={subItem.href}
-                                    className="flex items-center px-3.5 py-2.5 rounded-xl text-sm font-semibold text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-white transition-colors duration-150"
+                                    className="flex items-center px-3.5 py-2.5 rounded-xl text-sm font-semibold text-surface-700 dark:text-white hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-white transition-colors duration-150"
                                     role="menuitem"
                                   >
                                     {subItem.name}
@@ -183,7 +186,7 @@ export const Header: React.FC = () => {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="relative py-2 text-sm font-semibold tracking-tight text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors duration-200 group/link"
+                      className="relative py-2 text-sm font-semibold tracking-tight text-surface-600 dark:text-white hover:text-surface-900 dark:hover:text-white transition-colors duration-200 group/link"
                     >
                       {item.name}
                       <span className="absolute bottom-0 inset-x-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 scale-x-0 group-hover/link:scale-x-100 transition-transform duration-300 origin-start" />
@@ -206,7 +209,7 @@ export const Header: React.FC = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="hidden sm:inline-flex text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 font-medium me-2"
+                  className="hidden sm:inline-flex text-surface-600 dark:text-white hover:text-primary-600 dark:hover:text-white font-medium me-2"
                   onClick={() => router.push(getPortalPath('/login/'))}
                 >
                   {t('nav.login')}
@@ -236,7 +239,7 @@ export const Header: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 type="button"
-                className="lg:hidden w-11 h-11 flex items-center justify-center text-surface-600 dark:text-surface-400 bg-surface-100/80 dark:bg-surface-800/60 hover:bg-surface-200/80 dark:hover:bg-surface-700/60 hover:text-surface-900 dark:hover:text-white focus:outline-none rounded-xl border border-surface-200/60 dark:border-surface-700/40 transition-all active:scale-95"
+                className="lg:hidden w-11 h-11 flex items-center justify-center text-surface-600 dark:text-white bg-surface-100/80 dark:bg-surface-800/60 hover:bg-surface-200/80 dark:hover:bg-surface-700/60 hover:text-surface-900 dark:hover:text-white focus:outline-none rounded-xl border border-surface-200/60 dark:border-surface-700/40 transition-all active:scale-95"
                 onClick={actions.toggleMobileMenu}
                 aria-label="Toggle menu"
                 aria-expanded={state.isMobileMenuOpen}

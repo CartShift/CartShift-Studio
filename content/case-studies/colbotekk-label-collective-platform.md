@@ -7,8 +7,8 @@ platform: 'WordPress + WooCommerce'
 featured: true
 siteUrl: 'https://colbotekk.com/'
 brand:
-  primary: '#18d1d1'
-  accent: '#7c5cff'
+  primary: '#1ecfd0'
+  accent: '#2a2058'
 thumbnail: '/images/case-studies/colbotekk-label-collective-platform/gallery-01.jpg'
 heroImage: '/images/case-studies/colbotekk-label-collective-platform/hero.jpg'
 hero:

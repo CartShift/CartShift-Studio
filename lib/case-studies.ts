@@ -122,6 +122,27 @@ interface CaseStudyFrontmatter {
   he?: HebrewTranslation;
 }
 
+function normalizeGalleryWithHero(
+  gallery: CaseStudyGalleryItem[],
+  hero: CaseStudyHero,
+  fallbackCaption: string
+): CaseStudyGalleryItem[] {
+  const dedupedGallery = gallery.filter(item => item.image && item.image !== hero.image);
+
+  if (!hero.image) {
+    return dedupedGallery;
+  }
+
+  return [
+    {
+      image: hero.image,
+      alt: hero.alt,
+      caption: hero.supportingCopy || fallbackCaption || hero.alt,
+    },
+    ...dedupedGallery,
+  ];
+}
+
 function mergeLocalizedObject<T extends object>(
   base: T | undefined,
   localized: Partial<T> | undefined
@@ -201,7 +222,7 @@ export function normalizeCaseStudyRecord(
   };
 
   const resolvedHeroImage = hero?.image || data.heroImage || data.thumbnail || '';
-  const resolvedThumbnail = data.thumbnail || resolvedHeroImage;
+  const resolvedThumbnail = resolvedHeroImage || data.thumbnail || '';
   const resolvedOverview = overview || {
     title: isHebrew ? 'תקציר הפרויקט' : 'Project Overview',
     summary,
@@ -211,6 +232,7 @@ export function normalizeCaseStudyRecord(
     alt: title,
     supportingCopy: summary,
   };
+  const resolvedGallery = normalizeGalleryWithHero(gallery, resolvedHero, summary);
   const resolvedEvidence = evidence.length > 0 ? evidence : normalizeLegacyEvidence(results);
 
   return {
@@ -231,7 +253,7 @@ export function normalizeCaseStudyRecord(
     results,
     services,
     deliverables,
-    gallery,
+    gallery: resolvedGallery,
     evidence: resolvedEvidence,
     testimonial,
     content: (isHebrew && heTranslations.content) || content,

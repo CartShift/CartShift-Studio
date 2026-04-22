@@ -5,9 +5,11 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { useLocale, useTranslations } from 'next-intl';
 import {
+  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   BriefcaseBusiness,
+  Expand,
   CheckCircle2,
   ExternalLink,
   Globe,
@@ -16,9 +18,10 @@ import {
   Sparkles,
   TimerReset,
 } from 'lucide-react';
-import { motion, useScroll, useTransform } from '@/lib/motion';
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
+import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import { Link } from '@/i18n/navigation';
 import { isRTLLocale } from '@/lib/locale-config';
 import { getCaseStudyThemeStyle } from '@/lib/case-study-theme';
@@ -60,6 +63,15 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
   const heroStoryRotate = useTransform(heroProgress, [0, 1], [-6, -2]);
   const galleryLeadY = useTransform(galleryProgress, [0, 1], [56, -18]);
   const galleryAccentY = useTransform(galleryProgress, [0, 1], [18, -30]);
+  const galleryDragX = useMotionValue(0);
+  const galleryDragXSmooth = useSpring(galleryDragX, {
+    stiffness: 260,
+    damping: 28,
+    mass: 0.4,
+  });
+  const galleryStageRotate = useTransform(galleryDragXSmooth, [-140, 0, 140], [1.4, 0, -1.4]);
+  const galleryStageScale = useTransform(galleryDragXSmooth, [-180, 0, 180], [0.988, 1, 0.988]);
+  const galleryStageGlow = useTransform(galleryDragXSmooth, [-180, 0, 180], [0.22, 0.1, 0.22]);
 
   const workT = t.raw('work' as never) as {
     hero: {
@@ -67,7 +79,6 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       subtitle: string;
       description: string;
       badge: string;
-      featuredLabel: string;
     };
     cta: { title: string; titleSpan: string; description: string; button: string };
     viewProject: string;
@@ -90,6 +101,9 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       projectNotes: string;
       visitSite: string;
       galleryHint: string;
+      openImage: string;
+      previousScreen: string;
+      nextScreen: string;
     };
   };
 
@@ -111,6 +125,10 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
         ];
   const heroStoryFrame =
     galleryItems.find(item => item.image && item.image !== caseStudy.hero.image) || null;
+  const [activeGalleryIndex, setActiveGalleryIndex] = React.useState(0);
+  const [isGalleryPreviewOpen, setIsGalleryPreviewOpen] = React.useState(false);
+  const galleryRailRef = React.useRef<HTMLDivElement | null>(null);
+  const galleryStageRef = React.useRef<HTMLButtonElement | null>(null);
   const projectMeta = [
     { label: workT.detail.client, value: caseStudy.client },
     { label: workT.detail.industry, value: caseStudy.industry },
@@ -120,16 +138,98 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       value: caseStudy.duration,
     },
   ].filter(item => item.value);
+  const activeGalleryItem = galleryItems[Math.min(activeGalleryIndex, galleryItems.length - 1)];
+  const galleryCompletion = ((activeGalleryIndex + 1) / Math.max(galleryItems.length, 1)) * 100;
+
+  const focusGalleryThumbnail = React.useCallback((index: number) => {
+    const rail = galleryRailRef.current;
+    if (!rail) return;
+
+    const thumbnail = rail.querySelector<HTMLElement>(`[data-gallery-index="${index}"]`);
+    thumbnail?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, []);
+
+  const changeActiveGallery = React.useCallback(
+    (nextIndex: number) => {
+      if (galleryItems.length === 0) return;
+
+      const normalizedIndex = (nextIndex + galleryItems.length) % galleryItems.length;
+      setActiveGalleryIndex(normalizedIndex);
+      focusGalleryThumbnail(normalizedIndex);
+    },
+    [focusGalleryThumbnail, galleryItems.length]
+  );
+
+  React.useEffect(() => {
+    setActiveGalleryIndex(0);
+    setIsGalleryPreviewOpen(false);
+    galleryDragX.set(0);
+  }, [caseStudy.slug]);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (galleryItems.length <= 1) return;
+      if (isGalleryPreviewOpen) return;
+
+      const activeElement = document.activeElement as HTMLElement | null;
+      const isInsideGallery =
+        !!activeElement &&
+        (galleryStageRef.current?.contains(activeElement) ||
+          galleryRailRef.current?.contains(activeElement) ||
+          activeElement === galleryStageRef.current);
+
+      if (!isInsideGallery) return;
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        changeActiveGallery(isHe ? activeGalleryIndex + 1 : activeGalleryIndex - 1);
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        changeActiveGallery(isHe ? activeGalleryIndex - 1 : activeGalleryIndex + 1);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeGalleryIndex, changeActiveGallery, galleryItems.length, isGalleryPreviewOpen, isHe]);
+
+  const handleGalleryDragEnd = React.useCallback(
+    (
+      _event: MouseEvent | TouchEvent | PointerEvent,
+      info: { offset: { x: number }; velocity: { x: number } }
+    ) => {
+      const swipeThreshold = 64;
+      const velocityThreshold = 460;
+      const { x: offsetX } = info.offset;
+      const { x: velocityX } = info.velocity;
+
+      if (Math.abs(offsetX) >= swipeThreshold || Math.abs(velocityX) >= velocityThreshold) {
+        const movedLeft = offsetX < 0 || velocityX < 0;
+        const directionStep = movedLeft ? (isHe ? -1 : 1) : isHe ? 1 : -1;
+
+        changeActiveGallery(activeGalleryIndex + directionStep);
+      }
+
+      galleryDragX.stop();
+      galleryDragX.set(0);
+    },
+    [activeGalleryIndex, changeActiveGallery, galleryDragX, isHe]
+  );
 
   return (
     <div
       dir={isHe ? 'rtl' : 'ltr'}
       style={themeStyle}
-      className="bg-white text-surface-900 dark:bg-surface-950 dark:text-white"
+      className="bg-surface-50 text-surface-900 transition-colors dark:bg-[#050816] dark:text-white"
     >
       <section
         ref={heroRef}
-        className="relative isolate overflow-hidden min-h-[100svh] bg-surface-950 text-white"
+        className="relative isolate overflow-hidden min-h-[100svh] bg-[#eef4fb] text-surface-950 dark:bg-surface-950 dark:text-white"
       >
         {caseStudy.hero.image && (
           <motion.div className="absolute inset-0" style={{ y: heroImageY, scale: heroImageScale }}>
@@ -144,18 +244,18 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
           </motion.div>
         )}
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.58)_0%,rgba(2,6,23,0.8)_48%,rgba(2,6,23,0.96)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(248,250,252,0.38)_0%,rgba(241,245,249,0.62)_42%,rgba(226,232,240,0.92)_100%)] dark:bg-[linear-gradient(180deg,rgba(2,6,23,0.58)_0%,rgba(2,6,23,0.8)_48%,rgba(2,6,23,0.96)_100%)]" />
         <motion.div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(circle at 16% 18%, rgba(var(--case-primary-rgb), 0.35), transparent 34%), radial-gradient(circle at 82% 12%, rgba(var(--case-accent-rgb), 0.18), transparent 28%)',
+              'radial-gradient(circle at 16% 18%, rgba(var(--case-primary-rgb), 0.22), transparent 34%), radial-gradient(circle at 82% 12%, rgba(var(--case-accent-rgb), 0.14), transparent 28%)',
             opacity: heroGlowOpacity,
           }}
         />
         {heroStoryFrame && (
           <motion.div
-            className="pointer-events-none absolute bottom-10 end-6 hidden w-[min(28rem,34vw)] overflow-hidden rounded-[2rem] border border-white/12 bg-white/10 shadow-[0_28px_100px_rgba(2,6,23,0.45)] backdrop-blur-md xl:block"
+            className="pointer-events-none absolute bottom-10 end-6 hidden w-[min(28rem,34vw)] overflow-hidden rounded-[2rem] border border-surface-200/80 bg-white/72 shadow-[0_28px_100px_rgba(148,163,184,0.28)] backdrop-blur-md xl:block dark:border-white/12 dark:bg-white/10 dark:shadow-[0_28px_100px_rgba(2,6,23,0.45)]"
             style={{
               opacity: heroStoryOpacity,
               y: heroStoryY,
@@ -170,13 +270,13 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                 className="object-cover object-top"
                 sizes="(min-width: 1280px) 28vw, 0px"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0)_22%,rgba(2,6,23,0.78)_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0)_22%,rgba(255,255,255,0.82)_100%)] dark:bg-[linear-gradient(180deg,rgba(2,6,23,0)_22%,rgba(2,6,23,0.78)_100%)]" />
             </div>
             <div className="absolute inset-x-0 bottom-0 p-5">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/58">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-white/58">
                 {workT.detail.selectedScreens}
               </p>
-              <p className="mt-3 text-base font-semibold leading-snug text-white">
+              <p className="mt-3 text-base font-semibold leading-snug text-surface-950 dark:text-white">
                 {heroStoryFrame.caption}
               </p>
             </div>
@@ -185,7 +285,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pb-14 pt-24 sm:px-6 lg:px-8 lg:pb-20 lg:pt-28">
           <div className="mb-10">
-            <div className="inline-flex rounded-full border border-white/15 bg-black/20 px-4 py-2 backdrop-blur-xl">
+            <div className="inline-flex rounded-full border border-surface-200/80 bg-white/78 px-4 py-2 backdrop-blur-xl dark:border-white/15 dark:bg-black/20">
               <Breadcrumb items={breadcrumbItems} />
             </div>
           </div>
@@ -200,7 +300,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
             >
               <div className="mb-6 flex flex-wrap items-center gap-3 text-sm">
                 <span
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 font-semibold backdrop-blur-xl"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-200/80 bg-white/78 px-4 py-2 font-semibold text-surface-950 backdrop-blur-xl dark:border-white/15 dark:bg-white/[0.08] dark:text-white"
                   style={{
                     boxShadow: '0 0 0 1px rgba(var(--case-border-rgb), 0.18) inset',
                   }}
@@ -213,7 +313,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                     href={caseStudy.siteUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/12 bg-black/[0.15] px-4 py-2 font-medium text-white/[0.84] transition-colors hover:bg-white/10"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-surface-200/80 bg-white/78 px-4 py-2 font-medium text-surface-900 transition-colors hover:bg-white dark:border-white/12 dark:bg-black/[0.15] dark:text-white/[0.84] dark:hover:bg-white/10"
                   >
                     <ExternalLink className="h-4 w-4" />
                     {workT.detail.visitSite}
@@ -221,13 +321,13 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                 )}
               </div>
 
-              <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-white/60">
+              <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-surface-500 dark:text-white/60">
                 {caseStudy.client}
               </p>
-              <h1 className="max-w-4xl text-4xl font-bold leading-[0.92] tracking-[-0.04em] text-white sm:text-5xl lg:text-7xl">
+              <h1 className="max-w-4xl text-4xl font-bold leading-[0.92] tracking-[-0.04em] text-surface-950 sm:text-5xl lg:text-7xl dark:text-white">
                 {caseStudy.title}
               </h1>
-              <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/[0.76] sm:text-lg lg:text-xl">
+              <p className="mt-6 max-w-2xl text-base leading-relaxed text-surface-700 sm:text-lg lg:text-xl dark:text-white/[0.76]">
                 {caseStudy.hero.supportingCopy || caseStudy.summary}
               </p>
 
@@ -253,39 +353,42 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
               initial={{ opacity: 0, x: isHe ? -24 : 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-              className="rounded-[2rem] border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl lg:p-8"
+              className="rounded-[2rem] border border-surface-200/80 bg-white/72 p-6 shadow-[0_24px_90px_rgba(148,163,184,0.22)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/10 dark:shadow-2xl lg:p-8"
               style={{
                 y: heroPanelY,
-                boxShadow: '0 24px 90px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
+                boxShadow:
+                  '0 24px 90px rgba(148, 163, 184, 0.22), inset 0 1px 0 rgba(255,255,255,0.56)',
               }}
             >
-              <p className="mb-6 text-xs font-semibold uppercase tracking-[0.26em] text-white/[0.55]">
-                {workT.hero.featuredLabel}
+              <p className="mb-6 text-xs font-semibold uppercase tracking-[0.26em] text-surface-500 dark:text-white/[0.55]">
+                {workT.detail.projectOverview}
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
                 {projectMeta.map(item => (
                   <div
                     key={item.label}
-                    className="rounded-2xl border border-white/8 bg-black/[0.16] p-4"
+                    className="rounded-2xl border border-surface-200/80 bg-white/84 p-4 dark:border-white/8 dark:bg-black/[0.16]"
                   >
-                    <p className="mb-2 text-xs uppercase tracking-[0.24em] text-white/45">
+                    <p className="mb-2 text-xs uppercase tracking-[0.24em] text-surface-500 dark:text-white/45">
                       {item.label}
                     </p>
-                    <p className="text-base font-semibold text-white">{item.value}</p>
+                    <p className="text-base font-semibold text-surface-950 dark:text-white">
+                      {item.value}
+                    </p>
                   </div>
                 ))}
               </div>
 
               {caseStudy.services.length > 0 && (
-                <div className="mt-6 border-t border-white/10 pt-6">
-                  <p className="mb-4 text-xs uppercase tracking-[0.24em] text-white/45">
+                <div className="mt-6 border-t border-surface-200/80 pt-6 dark:border-white/10">
+                  <p className="mb-4 text-xs uppercase tracking-[0.24em] text-surface-500 dark:text-white/45">
                     {workT.detail.services}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {caseStudy.services.map(service => (
                       <span
                         key={service}
-                        className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-sm text-white/[0.84]"
+                        className="rounded-full border border-surface-200/80 bg-white/84 px-3 py-1.5 text-sm text-surface-900 dark:border-white/10 dark:bg-white/[0.07] dark:text-white/[0.84]"
                       >
                         {service}
                       </span>
@@ -298,7 +401,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-white py-16 dark:bg-surface-950 md:py-24">
+      <section className="relative overflow-hidden bg-white py-16 dark:bg-[#07101d] md:py-24">
         <div
           className="absolute inset-x-0 top-0 h-px"
           style={{ backgroundColor: 'rgba(var(--case-border-rgb), 0.42)' }}
@@ -321,9 +424,8 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
             </div>
 
             <div
-              className="rounded-[2rem] border p-6 dark:bg-surface-900/70"
+              className="rounded-[2rem] border bg-[rgba(var(--case-surface-rgb),0.42)] p-6 dark:border-[rgba(var(--case-dark-border-rgb),0.64)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.78)]"
               style={{
-                backgroundColor: 'rgba(var(--case-surface-rgb), 0.35)',
                 borderColor: 'rgba(var(--case-border-rgb), 0.4)',
               }}
             >
@@ -385,7 +487,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       </section>
 
       {caseStudy.deliverables.length > 0 && (
-        <section className="relative overflow-hidden py-16 md:py-24">
+        <section className="relative overflow-hidden py-16 dark:bg-[#050816] md:py-24">
           <div
             className="absolute inset-0"
             style={{
@@ -410,7 +512,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                 {caseStudy.deliverables.map(deliverable => (
                   <article
                     key={deliverable.title}
-                    className="rounded-[1.75rem] border bg-white/[0.85] p-6 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.24)] backdrop-blur-sm dark:bg-surface-900/[0.82]"
+                    className="rounded-[1.75rem] border bg-white/[0.92] p-6 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.24)] backdrop-blur-sm dark:border-[rgba(var(--case-dark-border-rgb),0.64)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.84)]"
                     style={{
                       borderColor: 'rgba(var(--case-border-rgb), 0.34)',
                     }}
@@ -440,14 +542,11 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       )}
 
       {galleryItems.length > 0 && (
-        <section ref={galleryRef} className="py-16 md:py-24">
+        <section ref={galleryRef} className="bg-white py-16 dark:bg-[#07101d] md:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.div
-              {...sectionReveal}
-              className="grid gap-10 lg:grid-cols-[minmax(17rem,0.42fr)_minmax(0,1fr)] lg:items-start"
-            >
-              <div className="lg:sticky lg:top-28">
-                <div className="max-w-md">
+            <motion.div {...sectionReveal} className="grid min-w-0 gap-5 sm:gap-6">
+              <div className="min-w-0">
+                <div className="max-w-3xl">
                   <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-surface-400">
                     {workT.detail.selectedScreens}
                   </p>
@@ -459,74 +558,217 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                   </p>
                 </div>
 
-                <div className="mt-8 space-y-3">
-                  {galleryItems.map((item, index) => (
-                    <div
-                      key={`${item.image}-label-${index}`}
-                      className="rounded-[1.4rem] border px-4 py-3"
-                      style={{
-                        backgroundColor:
-                          index === 0
-                            ? 'rgba(var(--case-primary-rgb), 0.12)'
-                            : 'rgba(var(--case-surface-rgb), 0.18)',
-                        borderColor: 'rgba(var(--case-border-rgb), 0.28)',
-                      }}
-                    >
-                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-surface-400">
-                        {String(index + 1).padStart(2, '0')}
-                      </p>
-                      <p className="mt-2 text-sm font-semibold text-surface-900 dark:text-white">
-                        {item.caption}
-                      </p>
+                <div className="mt-6 rounded-[1.8rem] border bg-[rgba(var(--case-surface-rgb),0.22)] p-5 dark:border-[rgba(var(--case-dark-border-rgb),0.58)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.8)]">
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                    {activeGalleryItem && (
+                      <div className="max-w-2xl">
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-surface-500 dark:text-surface-400">
+                          {String(activeGalleryIndex + 1).padStart(2, '0')} /{' '}
+                          {String(galleryItems.length).padStart(2, '0')}
+                        </p>
+                        <p className="mt-3 text-lg font-semibold leading-snug text-surface-900 dark:text-white">
+                          {activeGalleryItem.caption}
+                        </p>
+                        <p className="mt-3 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                          {activeGalleryItem.alt}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="grid gap-3 sm:flex sm:flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => changeActiveGallery(activeGalleryIndex - 1)}
+                        className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-surface-900 transition-colors hover:bg-surface-100 sm:w-auto dark:border-[rgba(var(--case-dark-border-rgb),0.58)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.88)] dark:text-white dark:hover:bg-[rgba(var(--case-dark-surface-strong-rgb),0.92)]"
+                        aria-label={workT.detail.previousScreen}
+                      >
+                        <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+                        <span>{workT.detail.previousScreen}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => changeActiveGallery(activeGalleryIndex + 1)}
+                        className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-surface-900 transition-colors hover:bg-surface-100 sm:w-auto dark:border-[rgba(var(--case-dark-border-rgb),0.58)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.88)] dark:text-white dark:hover:bg-[rgba(var(--case-dark-surface-strong-rgb),0.92)]"
+                        aria-label={workT.detail.nextScreen}
+                      >
+                        <span>{workT.detail.nextScreen}</span>
+                        <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsGalleryPreviewOpen(true)}
+                        className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border bg-[rgba(var(--case-primary-rgb),0.12)] px-4 py-2 text-sm font-semibold text-surface-900 transition-colors hover:bg-[rgba(var(--case-primary-rgb),0.18)] sm:w-auto dark:border-[rgba(var(--case-dark-border-rgb),0.62)] dark:bg-[rgba(var(--case-primary-rgb),0.22)] dark:text-white dark:hover:bg-[rgba(var(--case-primary-rgb),0.28)]"
+                        style={{
+                          borderColor: 'rgba(var(--case-border-rgb), 0.32)',
+                        }}
+                        aria-label={workT.detail.openImage}
+                      >
+                        <Expand className="h-4 w-4" />
+                        <span>{workT.detail.openImage}</span>
+                      </button>
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-surface-200/90 dark:bg-white/10">
+                      <motion.div
+                        className="h-full rounded-full bg-[rgba(var(--case-primary-rgb),0.9)]"
+                        initial={false}
+                        animate={{ width: `${galleryCompletion}%` }}
+                        transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid gap-6">
-                {galleryItems.map((item, index) => (
-                  <motion.figure
-                    key={`${item.image}-${index}`}
-                    className={index === 0 ? '' : 'lg:ms-12'}
-                    style={{ y: index === 0 ? galleryLeadY : galleryAccentY }}
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-120px' }}
-                    transition={{ duration: 0.6, ease: 'easeOut', delay: index * 0.05 }}
-                  >
+              <div className="grid min-w-0 gap-5 sm:gap-6">
+                {activeGalleryItem && (
+                  <motion.div className="min-w-0" style={{ y: galleryLeadY }}>
                     <div
-                      className="group relative overflow-hidden rounded-[2rem] border bg-surface-950"
+                      className="relative overflow-hidden rounded-[1.8rem] border bg-surface-950 sm:rounded-[2.4rem] dark:border-[rgba(var(--case-dark-border-rgb),0.62)]"
                       style={{ borderColor: 'rgba(var(--case-border-rgb), 0.34)' }}
                     >
-                      <div className={index === 0 ? 'aspect-[16/10]' : 'aspect-[16/11]'}>
-                        <Image
-                          src={item.image}
-                          alt={item.alt}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                          sizes="(min-width: 1024px) 62vw, 100vw"
-                        />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.02)_0%,rgba(2,6,23,0.18)_48%,rgba(2,6,23,0.72)_100%)]" />
-                        <div className="absolute start-4 top-4 rounded-full border border-white/12 bg-black/30 px-3 py-1 text-xs font-semibold tracking-[0.24em] text-white/82 backdrop-blur-md">
-                          {String(index + 1).padStart(2, '0')}
+                      <motion.button
+                        key={`${activeGalleryItem.image}-${activeGalleryIndex}`}
+                        ref={galleryStageRef}
+                        type="button"
+                        onClick={() => setIsGalleryPreviewOpen(true)}
+                        className="group relative block w-full touch-pan-y text-start"
+                        aria-label={workT.detail.openImage}
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={0.14}
+                        dragMomentum={false}
+                        onDragStart={() => galleryDragX.set(0)}
+                        onDrag={(_event, info) => galleryDragX.set(info.offset.x)}
+                        onDragEnd={handleGalleryDragEnd}
+                        style={{
+                          x: galleryDragXSmooth,
+                          rotate: galleryStageRotate,
+                          scale: galleryStageScale,
+                        }}
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.45, ease: 'easeOut' }}
+                      >
+                        <div className="relative aspect-[16/10] sm:aspect-[16/9]">
+                          <Image
+                            src={activeGalleryItem.image}
+                            alt={activeGalleryItem.alt}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                            sizes="(min-width: 1024px) 62vw, 100vw"
+                          />
+                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.04)_0%,rgba(2,6,23,0.14)_40%,rgba(2,6,23,0.82)_100%)]" />
+                          <motion.div
+                            className="pointer-events-none absolute inset-0"
+                            style={{
+                              opacity: galleryStageGlow,
+                              background:
+                                'radial-gradient(circle at 50% 45%, rgba(var(--case-primary-rgb), 0.2), transparent 62%)',
+                            }}
+                          />
+                          <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3 sm:items-center sm:p-5">
+                            <div className="rounded-full border border-white/12 bg-black/30 px-3 py-1 text-xs font-semibold tracking-[0.24em] text-white/82 backdrop-blur-md">
+                              {String(activeGalleryIndex + 1).padStart(2, '0')}
+                            </div>
+                            <div className="inline-flex max-w-[70%] items-center gap-2 rounded-full border border-white/12 bg-black/30 px-3 py-1 text-[0.7rem] font-semibold text-white/82 backdrop-blur-md sm:max-w-none sm:text-xs">
+                              <Expand className="h-3.5 w-3.5" />
+                              <span className="truncate">{workT.detail.openImage}</span>
+                            </div>
+                          </div>
+                          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6">
+                            <div className="max-w-2xl rounded-[1.3rem] border border-white/10 bg-black/28 p-3 backdrop-blur-md sm:rounded-[1.6rem] sm:p-4">
+                              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/56">
+                                {workT.detail.selectedScreens}
+                              </p>
+                              <p className="mt-2 text-base font-semibold leading-snug text-white sm:mt-3 sm:text-xl">
+                                {activeGalleryItem.caption}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      </motion.button>
                     </div>
-                    <figcaption className="px-1 pt-4">
-                      <p className="text-lg font-semibold text-surface-900 dark:text-white">
-                        {item.caption}
-                      </p>
-                    </figcaption>
-                  </motion.figure>
-                ))}
+                  </motion.div>
+                )}
+
+                <motion.div className="relative min-w-0" style={{ y: galleryAccentY }}>
+                  <div className="pointer-events-none absolute inset-y-0 start-0 z-10 w-7 bg-gradient-to-r from-white via-white/88 to-transparent sm:w-12 dark:from-[#07101d] dark:via-[#07101d]/88" />
+                  <div className="pointer-events-none absolute inset-y-0 end-0 z-10 w-7 bg-gradient-to-l from-white via-white/88 to-transparent sm:w-12 dark:from-[#07101d] dark:via-[#07101d]/88" />
+                  <div
+                    ref={galleryRailRef}
+                    className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-3 pt-1 sm:mx-0 sm:gap-4 sm:px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                  >
+                    {galleryItems.map((item, index) => {
+                      const isActive = index === activeGalleryIndex;
+
+                      return (
+                        <motion.button
+                          key={`${item.image}-thumb-${index}`}
+                          type="button"
+                          data-gallery-index={index}
+                          onClick={() => changeActiveGallery(index)}
+                          className={`group relative shrink-0 overflow-hidden rounded-[1.7rem] border text-start transition-all duration-300 ${
+                            isActive
+                              ? 'translate-y-0 border-[rgba(var(--case-primary-rgb),0.36)] bg-white shadow-[0_28px_70px_-42px_rgba(15,23,42,0.32)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.92)]'
+                              : 'translate-y-2 border-[rgba(var(--case-border-rgb),0.22)] bg-white/86 opacity-82 hover:translate-y-0 hover:opacity-100 dark:border-[rgba(var(--case-dark-border-rgb),0.42)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.78)]'
+                          }`}
+                          style={{ width: 'min(18rem, 82vw)' }}
+                          animate={{
+                            y: isActive ? 0 : 8,
+                            opacity: isActive ? 1 : 0.84,
+                            scale: isActive ? 1 : 0.975,
+                          }}
+                          transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+                        >
+                          {isActive && (
+                            <motion.div
+                              layoutId={`case-study-gallery-active-${caseStudy.slug}`}
+                              className="absolute inset-0 z-[1] rounded-[1.7rem] border border-[rgba(var(--case-primary-rgb),0.38)] shadow-[0_24px_70px_-44px_rgba(var(--case-primary-rgb),0.9)]"
+                            />
+                          )}
+                          <div className="relative aspect-[16/10] overflow-hidden">
+                            <Image
+                              src={item.image}
+                              alt={item.alt}
+                              fill
+                              className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                              sizes="(min-width: 1024px) 24rem, 82vw"
+                            />
+                            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.02)_0%,rgba(2,6,23,0.14)_52%,rgba(2,6,23,0.82)_100%)]" />
+                            <div className="absolute start-4 top-4 rounded-full border border-white/12 bg-black/28 px-3 py-1 text-xs font-semibold tracking-[0.24em] text-white/82 backdrop-blur-md">
+                              {String(index + 1).padStart(2, '0')}
+                            </div>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
+
+          {activeGalleryItem && (
+            <ImagePreviewModal
+              imageUrl={activeGalleryItem.image}
+              imageName={activeGalleryItem.caption}
+              isOpen={isGalleryPreviewOpen}
+              onClose={() => setIsGalleryPreviewOpen(false)}
+              onPrevious={() => changeActiveGallery(activeGalleryIndex - 1)}
+              onNext={() => changeActiveGallery(activeGalleryIndex + 1)}
+              previousLabel={workT.detail.previousScreen}
+              nextLabel={workT.detail.nextScreen}
+              counterLabel={`${String(activeGalleryIndex + 1).padStart(2, '0')} / ${String(galleryItems.length).padStart(2, '0')}`}
+            />
+          )}
         </section>
       )}
 
       {caseStudy.evidence.length > 0 && (
-        <section className="py-16 md:py-24">
+        <section className="py-16 dark:bg-[#050816] md:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div {...sectionReveal}>
               <div className="mb-10 max-w-3xl">
@@ -542,9 +784,8 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                 {caseStudy.evidence.map(item => (
                   <article
                     key={`${item.title}-${item.value || item.description}`}
-                    className="rounded-[1.75rem] border p-6 dark:bg-surface-900/76"
+                    className="rounded-[1.75rem] border bg-[rgba(var(--case-surface-rgb),0.26)] p-6 dark:border-[rgba(var(--case-dark-border-rgb),0.64)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.82)]"
                     style={{
-                      backgroundColor: 'rgba(var(--case-surface-rgb), 0.26)',
                       borderColor: 'rgba(var(--case-border-rgb), 0.42)',
                     }}
                   >
@@ -594,11 +835,11 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       )}
 
       {caseStudy.testimonial && (
-        <section className="py-16 md:py-24">
+        <section className="bg-white py-16 dark:bg-[#07101d] md:py-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <motion.div
               {...sectionReveal}
-              className="relative overflow-hidden rounded-[2.5rem] border px-6 py-10 sm:px-10 lg:px-14 lg:py-16"
+              className="relative overflow-hidden rounded-[2.5rem] border px-6 py-10 dark:border-[rgba(var(--case-dark-border-rgb),0.62)] sm:px-10 lg:px-14 lg:py-16"
               style={{
                 background:
                   'linear-gradient(135deg, rgba(var(--case-primary-rgb), 0.16), rgba(var(--case-accent-rgb), 0.1))',
@@ -628,7 +869,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
       )}
 
       {caseStudy.content.trim() && (
-        <section className="pb-16 md:pb-24">
+        <section className="pb-16 dark:bg-[#050816] md:pb-24">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <motion.div {...sectionReveal}>
               <div className="mb-8 flex items-center gap-3">
@@ -659,7 +900,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             {...sectionReveal}
-            className="overflow-hidden rounded-[2.5rem] border px-6 py-10 text-white sm:px-10 lg:px-14 lg:py-14"
+            className="overflow-hidden rounded-[2.5rem] border px-6 py-10 text-white dark:border-[rgba(var(--case-dark-border-rgb),0.7)] sm:px-10 lg:px-14 lg:py-14"
             style={{
               background:
                 'linear-gradient(135deg, rgba(var(--case-primary-rgb), 0.96), rgba(var(--case-accent-rgb), 0.76))',

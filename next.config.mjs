@@ -13,20 +13,29 @@ const nextConfig = {
   trailingSlash: false,
   assetPrefix: '',
 
-
-
   // Explicitly set the workspace root to avoid lockfile detection issues
   outputFileTracingRoot: __dirname,
 
   transpilePackages: ['next-intl', '@react-pdf/renderer'],
   experimental: {
-    optimizePackageImports: ['lucide-react', 'date-fns', 'framer-motion', '@nivo/core', '@nivo/line'],
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'framer-motion',
+      '@nivo/core',
+      '@nivo/line',
+    ],
   },
   images: {
     unoptimized: false,
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    localPatterns: [
+      {
+        pathname: '/images/**',
+      },
+    ],
   },
   compress: true,
   poweredByHeader: false,

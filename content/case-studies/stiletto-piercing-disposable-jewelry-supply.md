@@ -8,8 +8,8 @@ duration: ''
 featured: false
 siteUrl: 'https://stilettopiercing.co.il/'
 brand:
-  primary: '#c31f67'
-  accent: '#d6a52a'
+  primary: '#8728af'
+  accent: '#75bcfb'
 thumbnail: '/images/case-studies/stiletto-piercing-disposable-jewelry-supply/gallery-01.jpg'
 heroImage: '/images/case-studies/stiletto-piercing-disposable-jewelry-supply/hero.jpg'
 hero:

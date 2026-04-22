@@ -8,7 +8,8 @@ describe('case studies normalization', () => {
     expect(study).not.toBeNull();
     expect(study?.overview.title).toContain('לרענן פורטל');
     expect(study?.hero.alt).toContain('עלונדון');
-    expect(study?.gallery[0]?.caption).toContain('עמוד הבית');
+    expect(study?.gallery[0]?.image).toBe(study?.hero.image);
+    expect(study?.gallery[1]?.caption).toContain('עמודי כתבה');
     expect(study?.siteUrl).toBe('https://alondon.net/');
   });
 
@@ -35,6 +36,47 @@ describe('case studies normalization', () => {
     expect(study).not.toBeNull();
     expect(study?.duration).toBe('');
     expect(study?.platform).toContain('WooCommerce');
+  });
+
+  it('keeps the homepage hero image as the first gallery item and default thumbnail', () => {
+    const normalized = normalizeCaseStudyRecord(
+      {
+        title: 'Homepage First',
+        client: 'Client',
+        industry: 'Retail',
+        platform: 'Shopify',
+        summary: 'Case study summary',
+        thumbnail: '/images/homepage-first/thumb.jpg',
+        hero: {
+          image: '/images/homepage-first/hero.jpg',
+          alt: 'Homepage screenshot',
+          supportingCopy: 'Homepage first copy',
+        },
+        gallery: [
+          {
+            image: '/images/homepage-first/gallery-02.jpg',
+            alt: 'Secondary screen',
+            caption: 'Secondary screen caption',
+          },
+          {
+            image: '/images/homepage-first/hero.jpg',
+            alt: 'Duplicate homepage shot',
+            caption: 'Duplicate homepage shot',
+          },
+        ],
+      },
+      '',
+      'en',
+      'homepage-first'
+    );
+
+    expect(normalized.thumbnail).toBe('/images/homepage-first/hero.jpg');
+    expect(normalized.gallery[0]).toMatchObject({
+      image: '/images/homepage-first/hero.jpg',
+      alt: 'Homepage screenshot',
+      caption: 'Homepage first copy',
+    });
+    expect(normalized.gallery).toHaveLength(2);
   });
 
   it('normalizes legacy result rows into evidence entries when evidence is missing', () => {

@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-04-21T23:55:53.902Z
+ * Last updated: 2026-04-22T13:49:19.271Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -3182,6 +3182,9 @@ export interface Work {
     projectNotes: string;
     visitSite: string;
     galleryHint: string;
+    openImage: string;
+    previousScreen: string;
+    nextScreen: string;
     startProject: string;
     wantResults: string;
     wantResultsDesc: string;
@@ -6025,9 +6028,12 @@ export type TranslationKey =
   | 'work.detail.galleryHint'
   | 'work.detail.getConsultation'
   | 'work.detail.industry'
+  | 'work.detail.nextScreen'
   | 'work.detail.noProjects'
   | 'work.detail.noProjectsDesc'
+  | 'work.detail.openImage'
   | 'work.detail.platform'
+  | 'work.detail.previousScreen'
   | 'work.detail.projectNotes'
   | 'work.detail.projectOverview'
   | 'work.detail.selectedScreens'

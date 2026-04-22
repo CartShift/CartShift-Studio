@@ -48,15 +48,25 @@ export function getCaseStudyThemeStyle(brand: CaseStudyBrand): CSSProperties {
   const white = { r: 255, g: 255, b: 255 };
   const black = { r: 2, g: 6, b: 23 };
 
-  const surface = mix(primary, white, 0.88);
+  const surface = mix(primary, white, 0.9);
+  const surfaceStrong = mix(primary, white, 0.82);
   const border = mix(primary, white, 0.56);
   const muted = mix(primary, black, 0.18);
+  const darkSurface = mix(primary, black, 0.72);
+  const darkSurfaceStrong = mix(primary, black, 0.58);
+  const darkBorder = mix(primary, white, 0.22);
+  const shadow = mix(primary, black, 0.38);
 
   return {
     '--case-primary-rgb': toCssRgb(primary),
     '--case-accent-rgb': toCssRgb(accent),
     '--case-surface-rgb': toCssRgb(surface),
+    '--case-surface-strong-rgb': toCssRgb(surfaceStrong),
     '--case-border-rgb': toCssRgb(border),
     '--case-muted-rgb': toCssRgb(muted),
+    '--case-dark-surface-rgb': toCssRgb(darkSurface),
+    '--case-dark-surface-strong-rgb': toCssRgb(darkSurfaceStrong),
+    '--case-dark-border-rgb': toCssRgb(darkBorder),
+    '--case-shadow-rgb': toCssRgb(shadow),
   } as CSSProperties;
 }

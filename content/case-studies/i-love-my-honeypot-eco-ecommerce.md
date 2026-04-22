@@ -8,13 +8,13 @@ duration: '10 weeks'
 featured: true
 siteUrl: 'https://ilovemyhoneypot.com/'
 brand:
-  primary: '#8db43f'
-  accent: '#f6df87'
-thumbnail: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg'
-heroImage: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg'
+  primary: '#d338a4'
+  accent: '#108474'
+thumbnail: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg?v=20260422b'
+heroImage: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg?v=20260422b'
 hero:
-  image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg'
-  alt: 'I Love My Honeypot homepage with product-led hero and warm botanical palette'
+  image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg?v=20260422b'
+  alt: 'I Love My Honeypot homepage hero with quiz entry points, mission-led messaging, and featured products below'
   supportingCopy: 'A guided Shopify experience for a mission-led wellness brand, designed to educate first and reduce friction across a nuanced product catalog.'
 overview:
   title: 'Turning a mission-led wellness catalog into a guided buying experience'
@@ -30,15 +30,15 @@ deliverables:
   - title: 'Trust-forward merchandising'
     description: 'Brought reviews, certifications, impact messaging, and comparison logic forward to help the brand feel credible without overwhelming the page.'
 gallery:
-  - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg'
-    alt: 'I Love My Honeypot homepage hero with category navigation and campaign imagery'
-    caption: 'Homepage messaging balances product discovery with the brand mission instead of dropping visitors into a cold catalog.'
-  - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-02.jpg'
-    alt: 'I Love My Honeypot collection layout showing merchandising and educational framing'
-    caption: 'Collection views were treated as guided product spaces, making the range easier to scan and understand.'
-  - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-03.jpg'
-    alt: 'I Love My Honeypot product content and supporting education deeper in the experience'
-    caption: 'Product storytelling and supporting content work together to answer fit, usage, and trust questions in-context.'
+  - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg?v=20260422b'
+    alt: 'I Love My Honeypot collection page showing product benefits and a merchandise grid'
+    caption: 'The shop view combines trust cues, educational framing, and a clearer product grid so the catalog feels guided instead of overwhelming.'
+  - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-02.jpg?v=20260422b'
+    alt: 'I Love My Honeypot menstrual cup quiz introduction page with a focused product-matching entry point'
+    caption: 'The quiz flow gives first-time shoppers a lower-friction way into the range, turning education into an active decision tool.'
+  - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-03.jpg?v=20260422b'
+    alt: 'I Love My Honeypot product page for the Hello Disc with product media, benefits, and purchase controls'
+    caption: 'Product pages bring the media gallery, benefits, and buy actions into one tighter layout so fit and trust questions are answered closer to checkout.'
 evidence:
   - title: 'Product quiz launched'
     value: 'New Capability'
@@ -100,7 +100,7 @@ he:
   industry: 'בריאות ואיכות חיים'
   duration: '10 שבועות'
   hero:
-    alt: 'דף הבית של I Love My Honeypot עם הירו עשיר וניווט מוצרי'
+    alt: 'דף הבית של I Love My Honeypot עם הירו, כניסות לשאלונים ומוצרים מובילים בהמשך'
     supportingCopy: 'חוויית שופיפיי מונחית למותג וולנס עם הרבה חינוך מוצרי, לוקליזציה לעברית, ופחות חיכוך בבחירת מוצרים מורכבים.'
   overview:
     title: 'להפוך קטלוג רגיש ומורכב לחוויית קנייה מונחית וברורה'
@@ -115,15 +115,15 @@ he:
     - title: "מרצ'נדייזינג מבוסס אמון"
       description: 'קידמנו ביקורות, תעודות, מסרי השפעה והשוואות מוצרים כדי לבנות אמינות בלי להעמיס על הדף.'
   gallery:
-    - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg'
-      alt: 'דף הבית של I Love My Honeypot עם הירו וניווט קטגוריות'
-      caption: 'מסרי הדף הראשי מאזנים בין גילוי מוצרים לבין סיפור המותג, במקום להפיל את הלקוחה ישר לקטלוג.'
-    - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-02.jpg'
-      alt: "תצוגת קולקשן של I Love My Honeypot עם מרצ'נדייזינג ומסגור חינוכי"
-      caption: 'עמודי הקולקשן עוצבו כמרחבי גילוי מונחים, כך שמגוון המוצרים מרגיש קריא וברור יותר.'
-    - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-03.jpg'
-      alt: 'תוכן מוצר והדרכה בהמשך החוויה של I Love My Honeypot'
-      caption: 'סיפור המוצר והתוכן המשלים עובדים יחד כדי לענות על שאלות של התאמה, שימוש ואמון בדיוק בזמן.'
+    - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg?v=20260422b'
+      alt: 'עמוד הקולקציה של I Love My Honeypot עם יתרונות, סימני אמון וגריד מוצרים'
+      caption: 'עמוד החנות משלב סימני אמון, מסגור חינוכי וגריד מוצרים ברור יותר, כך שהקטלוג מרגיש מונחה ולא מציף.'
+    - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-02.jpg?v=20260422b'
+      alt: 'עמוד פתיחה של שאלון הגביעוניות ב-I Love My Honeypot'
+      caption: 'זרימת השאלון נותנת ללקוחות חדשות נקודת כניסה פשוטה יותר לקטלוג, והופכת את ההדרכה לכלי החלטה פעיל.'
+    - image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-03.jpg?v=20260422b'
+      alt: 'עמוד המוצר של Hello Disc עם גלריית מדיה, יתרונות ואזור רכישה'
+      caption: 'עמודי המוצר מרכזים גלריה, יתרונות ופעולות רכישה לפריסה אחת מהודקת יותר, שעונה על שאלות התאמה ואמון קרוב יותר לרגע הקנייה.'
   evidence:
     - title: 'השאלון עלה לאוויר'
       value: 'יכולת חדשה'

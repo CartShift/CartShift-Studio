@@ -6,8 +6,8 @@ industry: 'Music & Digital Commerce'
 platform: 'WordPress + WooCommerce'
 siteUrl: 'https://pedro-music.com/'
 brand:
-  primary: '#2e4f79'
-  accent: '#d22942'
+  primary: '#223b57'
+  accent: '#d54457'
 thumbnail: '/images/case-studies/pedro-music-digital-release-store/gallery-01.jpg'
 heroImage: '/images/case-studies/pedro-music-digital-release-store/hero.jpg'
 hero:
