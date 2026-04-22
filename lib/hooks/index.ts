@@ -31,3 +31,4 @@ export * from './usePricingMutations';
 export * from './usePricingForm';
 export * from './useConsultations';
 export * from './useConsultationMutations';
+export * from './useWorkboardState';

@@ -8,7 +8,7 @@ siteUrl: 'https://pedro-music.com/'
 brand:
   primary: '#223b57'
   accent: '#d54457'
-thumbnail: '/images/case-studies/pedro-music-digital-release-store/gallery-01.jpg'
+thumbnail: '/images/case-studies/pedro-music-digital-release-store/hero.jpg'
 heroImage: '/images/case-studies/pedro-music-digital-release-store/hero.jpg'
 hero:
   image: '/images/case-studies/pedro-music-digital-release-store/hero.jpg'

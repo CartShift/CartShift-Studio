@@ -24,7 +24,7 @@ Your CartShift Studio project has a solid SEO foundation with excellent Next.js 
 
 - Code references `/images/og-default.png` and `/images/CarShift-Icon-Colored.png`
 - Actual OG images DO NOT exist in the `/public/images/` directory
-- Current images: `CartShift-Logo-Full.svg`, `the-team.png`, `website-builders-illustration.svg`, `yotam-programmer.png`
+- Current images: `CartShift-Logo-Full.svg`, `yotam-and-adi.png`, `website-builders-illustration.svg`, `yotam-programmer.png`
 
 **Problem:**
 

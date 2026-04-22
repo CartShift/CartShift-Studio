@@ -134,7 +134,7 @@ export default function GoogleCalendarIntegration({
         'relative p-6 rounded-2xl border-2 transition-all',
         isConnected
           ? 'bg-gradient-to-br from-green-50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/10 border-green-200 dark:border-green-800/50'
-          : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800 hover:border-blue-300 dark:hover:border-blue-700'
+          : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800'
       )}
     >
       {/* Header */}

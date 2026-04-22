@@ -4,12 +4,12 @@ slug: 'colbotekk-label-collective-platform'
 client: 'Colbo-Tekk TLV'
 industry: 'Music, Events & Community'
 platform: 'WordPress + WooCommerce'
-featured: true
+featured: false
 siteUrl: 'https://colbotekk.com/'
 brand:
   primary: '#1ecfd0'
   accent: '#2a2058'
-thumbnail: '/images/case-studies/colbotekk-label-collective-platform/gallery-01.jpg'
+thumbnail: '/images/case-studies/colbotekk-label-collective-platform/hero.jpg'
 heroImage: '/images/case-studies/colbotekk-label-collective-platform/hero.jpg'
 hero:
   image: '/images/case-studies/colbotekk-label-collective-platform/hero.jpg'

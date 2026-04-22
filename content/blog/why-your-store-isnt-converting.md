@@ -296,6 +296,9 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 
 - [20 Proven E-commerce CRO Strategies](/blog/ecommerce-conversion-rate-optimization) – Deep dive into conversion rate optimization tactics
 - [Speed Up Your Shopify Store](/blog/speed-up-shopify-store) – Detailed guide to fixing performance issues
+- [Conversion Audit Checklist](/blog/conversion-audit-checklist) – Practical checks for trust, UX, mobile friction, and checkout leaks
+- [Store Speed vs Conversion](/blog/store-speed-vs-conversion) – Why faster pages improve both rankings and revenue
+- [Shopify Services](/solutions/shopify) – If you want implementation help, not just diagnosis
 
 ---he---
 
@@ -479,3 +482,6 @@ If you'd prefer a hands-on partner to audit your store and implement proven conv
 
 - [20 אסטרטגיות CRO מוכחות](/blog/ecommerce-conversion-rate-optimization) – צלילה עמוקה לטקטיקות אופטימיזציית המרות
 - [האיצו את חנות השופיפיי שלכם](/blog/speed-up-shopify-store) – מדריך מפורט לתיקון בעיות ביצועים
+- [צ׳קליסט לאודיט המרות](/blog/conversion-audit-checklist) – רשימת בדיקה פרקטית לחיכוך, אמון ו-checkout
+- [מהירות חנות מול המרות](/blog/store-speed-vs-conversion) – למה שיפור ביצועים תומך גם ב-SEO וגם במכירות
+- [שירותי Shopify שלנו](/solutions/shopify) – אם אתם רוצים עזרה ביישום השיפורים בפועל

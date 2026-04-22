@@ -16,6 +16,10 @@
       },
       "emptyColumn": "אין בקשות בעמודה זו",
       "moveError": "ההעברה נכשלה",
+      "addItem": "הוסף פריט",
+      "bulkActions": {
+        "moveTo": "העבר אל:"
+      },
       "common": {
         "noRequests": "לא נמצאו בקשות",
         "dragToMove": "גרור כרטיסים כדי להעביר אותם"

@@ -48,7 +48,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
     {popular && (
       <div className="absolute -top-3 start-1/2 -translate-x-1/2 z-dropdown">
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-400 text-yellow-900 text-xs font-bold uppercase tracking-wide">
-          <Icon name="star" size={12} />
+          <Icon name="star" size={12} fill="currentColor" />
           {popularBadge || 'Most Popular'}
         </span>
       </div>
@@ -57,7 +57,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
       className={`h-full rounded-2xl p-6 lg:p-8 flex flex-col ${
         popular
           ? 'bg-accent-600 text-white ring-2 ring-accent-500 ring-offset-2 ring-offset-white dark:ring-offset-surface-950'
-          : 'bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700'
+          : 'bg-white dark:bg-surface-950 border border-surface-200 dark:border-white/10'
       }`}
     >
       <div className="mb-6">
@@ -210,13 +210,13 @@ export const PricingPageContent: React.FC = () => {
         description={pricing.hero.description}
         badge={pricing.hero.badge}
       />
-      <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
+      <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumb items={breadcrumbItems} />
         </div>
       </div>
 
-      <Section background="light" className="relative overflow-hidden">
+      <Section background="default" className="relative overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {packages.map(pkg => (
             <PackageCard key={pkg.name} {...pkg} />
@@ -296,7 +296,10 @@ export const PricingPageContent: React.FC = () => {
         </div>
       </Section>
 
-      <Section background="light" className="relative overflow-hidden">
+      <Section
+        background="default"
+        className="relative overflow-hidden border-t border-surface-200 dark:border-white/5"
+      >
         <div className="max-w-4xl mx-auto">
           <SectionHeader title={pricing.faq.title} subtitle={pricing.faq.subtitle} />
           <FAQ items={faqItems} />

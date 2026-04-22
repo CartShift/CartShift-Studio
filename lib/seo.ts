@@ -265,6 +265,7 @@ export function generateProfessionalServiceSchema() {
 export interface SoftwareApplicationSchemaConfig {
   name: string;
   description: string;
+  url?: string;
   operatingSystem?: string;
   applicationCategory?: string;
   offers?: {
@@ -274,6 +275,12 @@ export interface SoftwareApplicationSchemaConfig {
 }
 
 export function generateSoftwareApplicationSchema(config: SoftwareApplicationSchemaConfig) {
+  const appUrl = config.url
+    ? config.url.startsWith('http')
+      ? config.url
+      : `${siteUrl}${config.url}`
+    : `${siteUrl}/tools/store-analyzer`;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -281,7 +288,7 @@ export function generateSoftwareApplicationSchema(config: SoftwareApplicationSch
     description: config.description,
     applicationCategory: config.applicationCategory || 'BusinessApplication',
     operatingSystem: config.operatingSystem || 'Any',
-    url: siteUrl + '/tools/store-analyzer',
+    url: appUrl,
     provider: {
       '@type': 'Organization',
       '@id': `${siteUrl}/#organization`,
@@ -310,6 +317,7 @@ export function generateArticleSchema(post: {
   description: string;
   date: string;
   url: string;
+  locale?: 'en' | 'he';
   author?: string;
   category?: string;
   image?: string;
@@ -317,6 +325,8 @@ export function generateArticleSchema(post: {
   wordCount?: number;
   readingTime?: number;
 }) {
+  const language = post.locale === 'he' ? 'he-IL' : 'en-US';
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -347,7 +357,7 @@ export function generateArticleSchema(post: {
       '@type': 'WebPage',
       '@id': post.url,
     },
-    inLanguage: 'en-US',
+    inLanguage: language,
     copyrightHolder: {
       '@type': 'Organization',
       name: 'CartShift Studio',
@@ -430,13 +440,15 @@ export function generateLocalBusinessSchema() {
   };
 }
 
-export function generateWebSiteSchema() {
+export function generateWebSiteSchema(locale?: 'en' | 'he') {
+  const localizedSiteUrl = `${siteUrl}/${locale || 'en'}`;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': `${siteUrl}/#website`,
+    '@id': `${localizedSiteUrl}/#website`,
     name: 'CartShift Studio',
-    url: siteUrl,
+    url: localizedSiteUrl,
     description:
       'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization.',
     publisher: {
@@ -449,13 +461,13 @@ export function generateWebSiteSchema() {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: `${siteUrl}/blog?search={search_term_string}`,
+          urlTemplate: `${localizedSiteUrl}/blog?search={search_term_string}`,
         },
         'query-input': 'required name=search_term_string',
       },
       {
         '@type': 'ReadAction',
-        target: `${siteUrl}/blog`,
+        target: `${localizedSiteUrl}/blog`,
       },
     ],
   };

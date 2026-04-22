@@ -5,12 +5,12 @@ client: 'CuraLife'
 industry: 'Health & Wellness'
 platform: 'Shopify + Next.js'
 duration: '4 years 5 months'
-featured: true
+featured: false
 siteUrl: 'https://curalife.com/'
 brand:
   primary: '#2f7a57'
   accent: '#f0c27a'
-thumbnail: '/images/case-studies/curalife-metabolic-wellness-platform/gallery-01.jpg'
+thumbnail: '/images/case-studies/curalife-metabolic-wellness-platform/hero.jpg'
 heroImage: '/images/case-studies/curalife-metabolic-wellness-platform/hero.jpg'
 hero:
   image: '/images/case-studies/curalife-metabolic-wellness-platform/hero.jpg'

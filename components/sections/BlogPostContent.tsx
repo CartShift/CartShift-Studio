@@ -23,6 +23,7 @@ interface RelatedPost {
 }
 
 interface BlogPostContentProps {
+  slug: string;
   content: string;
   relatedPosts: RelatedPost[];
   title: string;
@@ -32,6 +33,7 @@ interface BlogPostContentProps {
 }
 
 export const BlogPostContent: React.FC<BlogPostContentProps> = ({
+  slug,
   content,
   relatedPosts,
   title,
@@ -47,6 +49,83 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   const [mobileTocOpen, setMobileTocOpen] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const processedContentRef = useRef<string>('');
+  const articleDateLabel = new Date(date).toLocaleDateString(getDateLocaleString(locale), {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const helpCta = isHe
+    ? {
+        badge: 'צריכים עזרה ביישום?',
+        title: 'רוצים שנבצע את העבודה בפועל על החנות?',
+        description:
+          'אם אתם מעדיפים לקצר את הדרך, נוכל להפוך את ההמלצות לאודיט מסודר, תיקונים טכניים, שיפורי מהירות ועבודה שמביאה יותר לידים ומכירות.',
+        primary: 'דברו איתנו על Shopify SEO',
+        secondary: 'הריצו אודיט חינם לחנות',
+      }
+    : {
+        badge: 'Need help implementing this?',
+        title: 'Want us to turn this into actual Shopify growth work?',
+        description:
+          'We can translate the recommendations into a practical SEO audit, technical fixes, speed work, and conversion improvements built around your store.',
+        primary: 'Talk to us about Shopify SEO',
+        secondary: 'Run a free store audit',
+      };
+
+  const expertCard = isHe
+    ? {
+        title: 'נכתב על ידי CartShift Studio',
+        description:
+          'אנחנו בונים ומשפרים חנויות Shopify ואתרי ecommerce עם דגש על מהירות, SEO, חוויית משתמש והמרות. המדריכים שלנו מבוססים על עבודה אמיתית עם חנויות שנמצאות בצמיחה.',
+      }
+    : {
+        title: 'Written by CartShift Studio',
+        description:
+          'We build and optimize Shopify stores and ecommerce experiences with a focus on technical SEO, speed, UX clarity, and conversion performance.',
+      };
+
+  const articleResources = (() => {
+    if (slug === 'shopify-seo-complete-guide') {
+      return isHe
+        ? [
+            { href: '/solutions/shopify', label: 'שירותי Shopify SEO ופיתוח' },
+            { href: '/tools/store-analyzer', label: 'אודיט חנות חינם' },
+            { href: '/blog/shopify-seo-audit-checklist', label: 'צ׳קליסט Shopify SEO' },
+          ]
+        : [
+            { href: '/solutions/shopify', label: 'Shopify SEO and development services' },
+            { href: '/tools/store-analyzer', label: 'Run a free Shopify audit' },
+            { href: '/blog/shopify-seo-audit-checklist', label: 'Use the Shopify SEO checklist' },
+          ];
+    }
+
+    if (slug === 'why-your-store-isnt-converting') {
+      return isHe
+        ? [
+            { href: '/tools/store-analyzer', label: 'בדקו מה חוסם המרות בחנות' },
+            { href: '/solutions/shopify', label: 'שפרו חוויית משתמש ו-SEO בשופיפיי' },
+            { href: '/contact', label: 'קבלו שיחת ייעוץ על צווארי הבקבוק בחנות' },
+          ]
+        : [
+            { href: '/tools/store-analyzer', label: 'Diagnose conversion blockers in your store' },
+            { href: '/solutions/shopify', label: 'Improve Shopify UX, SEO, and speed' },
+            { href: '/contact', label: 'Book a consultation about your conversion leaks' },
+          ];
+    }
+
+    return isHe
+      ? [
+          { href: '/solutions/shopify', label: 'שירותי Shopify ו-SEO' },
+          { href: '/tools/store-analyzer', label: 'כלי אודיט לחנות' },
+          { href: '/contact', label: 'שיחת ייעוץ ללא עלות' },
+        ]
+      : [
+          { href: '/solutions/shopify', label: 'Shopify and SEO services' },
+          { href: '/tools/store-analyzer', label: 'Free store analyzer' },
+          { href: '/contact', label: 'Book a free consultation' },
+        ];
+  })();
 
   // Determine if this post is e-commerce related (show Store Analyzer CTA)
   const ecommerceCategories = [
@@ -287,7 +366,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   return (
     <>
       <div className="reading-progress" style={{ width: `${readingProgress}%` }} />
-      <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-surface-900">
+      <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-black">
         <div className="max-w-7xl mx-auto relative z-dropdown">
           <div className="grid lg:grid-cols-12 gap-8">
             <aside className="lg:col-span-3 hidden lg:block relative">
@@ -316,7 +395,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                           key={heading.id}
                           type="button"
                           onClick={() => scrollToHeading(heading.id)}
-                          className="w-full text-start block text-sm text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 transition-all py-2 ps-3 border-s-2 border-surface-200 dark:border-surface-700 hover:border-primary-500 dark:hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-e-lg group"
+                          className="w-full text-start block text-sm text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 transition-all py-2 ps-3 border-s-2 border-surface-200 dark:border-white/5 hover:border-primary-500 dark:hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-e-lg group"
                         >
                           <span className="flex items-center gap-2">
                             <span className="text-xs text-surface-400 dark:text-surface-500 font-mono group-hover:text-primary-500 transition-colors">
@@ -338,7 +417,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                   <div className="flex gap-2">
                     <button
                       onClick={shareToTwitter}
-                      className="flex-1 p-2.5 rounded-lg bg-white dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors border border-surface-200 dark:border-surface-700 group"
+                      className="flex-1 p-2.5 rounded-lg bg-white dark:bg-surface-950 hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors border border-surface-200 dark:border-white/5 group"
                       aria-label="Share on Twitter"
                     >
                       <svg
@@ -351,7 +430,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </button>
                     <button
                       onClick={shareToLinkedIn}
-                      className="flex-1 p-2.5 rounded-lg bg-white dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors border border-surface-200 dark:border-surface-700 group"
+                      className="flex-1 p-2.5 rounded-lg bg-white dark:bg-surface-950 hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors border border-surface-200 dark:border-white/5 group"
                       aria-label="Share on LinkedIn"
                     >
                       <svg
@@ -364,7 +443,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </button>
                     <button
                       onClick={copyLink}
-                      className="flex-1 p-2.5 rounded-lg bg-white dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors border border-surface-200 dark:border-surface-700 group"
+                      className="flex-1 p-2.5 rounded-lg bg-white dark:bg-surface-950 hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors border border-surface-200 dark:border-white/5 group"
                       aria-label="Copy link"
                     >
                       <svg
@@ -392,7 +471,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                 <div className="lg:hidden mb-8">
                   <button
                     onClick={() => setMobileTocOpen(!mobileTocOpen)}
-                    className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all shadow-sm"
+                    className="w-full flex items-center justify-between p-4 rounded-xl bg-white dark:bg-surface-950 border border-surface-200 dark:border-white/5 hover:border-primary-300 dark:hover:border-primary-600 transition-all shadow-sm"
                   >
                     <span className="flex items-center gap-2 font-semibold text-surface-900 dark:text-white">
                       <svg
@@ -445,7 +524,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                             }}
                             className="w-full text-start flex items-center gap-3 text-sm text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 py-2.5 px-3 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all"
                           >
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400 text-xs font-semibold flex items-center justify-center">
+                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 text-xs font-semibold flex items-center justify-center">
                               {index + 1}
                             </span>
                             <span className="line-clamp-1">{heading.text}</span>
@@ -464,7 +543,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                 transition={{ duration: 0.6 }}
               >
                 {/* Article Meta Card */}
-                <div className="mb-10 p-6 rounded-2xl bg-gradient-to-br from-white via-white to-surface-50 dark:from-surface-800 dark:via-surface-800 dark:to-surface-900 border border-surface-200 dark:border-surface-700 shadow-sm">
+                <div className="mb-10 p-6 rounded-2xl bg-gradient-to-br from-white via-white to-surface-50 dark:from-surface-950 dark:via-surface-950 dark:to-black border border-surface-200 dark:border-white/5 shadow-sm">
                   <div className="flex flex-wrap items-center gap-4 text-sm">
                     <span className="px-4 py-1.5 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-sm">
                       {category}
@@ -473,7 +552,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       dateTime={date}
                       className="flex items-center gap-2 text-surface-600 dark:text-surface-400"
                     >
-                      <span className="p-1.5 rounded-lg bg-surface-100 dark:bg-surface-700">
+                      <span className="p-1.5 rounded-lg bg-surface-100 dark:bg-surface-900">
                         <svg
                           className="w-4 h-4"
                           fill="none"
@@ -488,17 +567,31 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                           />
                         </svg>
                       </span>
-                      <span className="font-medium">
-                        {new Date(date).toLocaleDateString(isHe ? 'he-IL' : 'en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
+                      <span className="font-medium">{articleDateLabel}</span>
                     </time>
+                    <span className="flex items-center gap-2 text-surface-600 dark:text-surface-400">
+                      <span className="p-1.5 rounded-lg bg-surface-100 dark:bg-surface-900">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"
+                          />
+                        </svg>
+                      </span>
+                      <span className="font-medium">
+                        {isHe ? 'עודכן לאחרונה' : 'Last updated'} {articleDateLabel}
+                      </span>
+                    </span>
                     {readingTime && (
                       <span className="flex items-center gap-2 text-surface-600 dark:text-surface-400">
-                        <span className="p-1.5 rounded-lg bg-surface-100 dark:bg-surface-700">
+                        <span className="p-1.5 rounded-lg bg-surface-100 dark:bg-surface-900">
                           <svg
                             className="w-4 h-4"
                             fill="none"
@@ -521,14 +614,14 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                   </div>
 
                   {/* Mobile Share Buttons */}
-                  <div className="lg:hidden flex items-center gap-3 pt-4 mt-4 border-t border-surface-200 dark:border-surface-700">
+                  <div className="lg:hidden flex items-center gap-3 pt-4 mt-4 border-t border-surface-200 dark:border-white/5">
                     <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
                       {t('blogPost.content.share')}
                     </span>
                     <div className="flex gap-2">
                       <button
                         onClick={shareToTwitter}
-                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group"
+                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group"
                         aria-label="Share on Twitter"
                       >
                         <svg
@@ -541,7 +634,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       </button>
                       <button
                         onClick={shareToLinkedIn}
-                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group"
+                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group"
                         aria-label="Share on LinkedIn"
                       >
                         <svg
@@ -554,7 +647,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       </button>
                       <button
                         onClick={shareToFacebook}
-                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group"
+                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group"
                         aria-label="Share on Facebook"
                       >
                         <svg
@@ -567,7 +660,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       </button>
                       <button
                         onClick={copyLink}
-                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group"
+                        className="p-2.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group"
                         aria-label="Copy link"
                       >
                         <svg
@@ -587,6 +680,40 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </div>
                   </div>
                 </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.05 }}
+                  className="mb-8 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 via-white to-accent-50 p-6 dark:border-primary-900/40 dark:from-primary-950/30 dark:via-black dark:to-accent-950/20"
+                >
+                  <span className="inline-flex rounded-full bg-primary-500/10 px-3 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300">
+                    {helpCta.badge}
+                  </span>
+                  <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="max-w-2xl">
+                      <h2 className="text-2xl font-display font-bold text-surface-900 dark:text-white">
+                        {helpCta.title}
+                      </h2>
+                      <p className="mt-2 text-base leading-relaxed text-surface-600 dark:text-surface-300">
+                        {helpCta.description}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Link href="/solutions/shopify">
+                        <Button size="lg" className="w-full sm:w-auto">
+                          {helpCta.primary}
+                        </Button>
+                      </Link>
+                      <Link href="/tools/store-analyzer">
+                        <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                          {helpCta.secondary}
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
 
                 {/* Main Article Card */}
                 <Card className="overflow-hidden">
@@ -609,10 +736,10 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     className="mt-10 relative group"
                   >
                     {/* Animated gradient border */}
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-accent-500 via-primary-500 to-accent-500 rounded-2xl opacity-60 group-hover:opacity-100 blur-sm transition-opacity duration-500 animate-gradient-x" />
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-accent-500 via-primary-500 to-accent-500 rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity duration-500 animate-gradient-x" />
+                    <div className="absolute -inset-[1px] bg-gradient-to-r from-accent-500 via-primary-500 to-accent-500 rounded-2xl opacity-60 blur-sm transition-opacity duration-500 animate-gradient-x" />
+                    <div className="absolute -inset-[1px] bg-gradient-to-r from-accent-500 via-primary-500 to-accent-500 rounded-2xl opacity-80 transition-opacity duration-500 animate-gradient-x" />
 
-                    <div className="relative rounded-2xl p-6 md:p-8 bg-white dark:bg-surface-900 overflow-hidden">
+                    <div className="relative rounded-2xl p-6 md:p-8 bg-white dark:bg-black overflow-hidden">
                       {/* Background decorative elements */}
                       <div className="absolute top-0 end-0 w-40 h-40 bg-gradient-to-br from-accent-500/5 to-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                       <div className="absolute bottom-0 start-0 w-32 h-32 bg-gradient-to-tr from-primary-500/5 to-accent-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
@@ -741,7 +868,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.15 }}
-                    className="mt-12 p-6 md:p-8 rounded-2xl bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-800 dark:via-surface-800/50 dark:to-surface-900 border border-surface-200 dark:border-surface-700 relative overflow-hidden"
+                    className="mt-12 p-6 md:p-8 rounded-2xl bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-950/50 dark:to-black border border-surface-200 dark:border-white/5 relative overflow-hidden"
                   >
                     {/* Decorative element */}
                     <div className="absolute top-0 end-0 w-32 h-32 bg-gradient-to-br from-primary-500/10 to-accent-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -882,7 +1009,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                   <div className="absolute -inset-[1px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 rounded-2xl opacity-90 animate-gradient-x" />
 
                   {/* Inner content */}
-                  <div className="relative rounded-2xl p-8 md:p-10 lg:p-12 bg-white dark:bg-surface-900 text-center overflow-hidden">
+                  <div className="relative rounded-2xl p-8 md:p-10 lg:p-12 bg-white dark:bg-black text-center overflow-hidden">
                     {/* Inner decorative orb */}
                     <div className="absolute top-0 start-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-b from-primary-500/10 to-transparent rounded-full blur-3xl" />
 
@@ -964,6 +1091,63 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </div>
                   </div>
                 </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.25 }}
+                  className="mt-10 grid gap-6 lg:grid-cols-[1.3fr,1fr]"
+                >
+                  <Card className="h-full border-surface-200 dark:border-white/5">
+                    <CardContent>
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-600 dark:text-primary-300">
+                          <svg
+                            className="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5.121 17.804A8.966 8.966 0 0112 15c2.073 0 3.981.703 5.49 1.884M15 11a3 3 0 11-6 0 3 3 0 016 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-display font-bold text-surface-900 dark:text-white">
+                            {expertCard.title}
+                          </h3>
+                          <p className="mt-2 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                            {expertCard.description}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="h-full border-surface-200 dark:border-white/5">
+                    <CardContent>
+                      <h3 className="text-lg font-display font-bold text-surface-900 dark:text-white">
+                        {isHe ? 'השלב הבא המומלץ' : 'Recommended next steps'}
+                      </h3>
+                      <div className="mt-4 flex flex-col gap-3">
+                        {articleResources.map(resource => (
+                          <Link
+                            key={resource.href}
+                            href={resource.href}
+                            className="rounded-xl border border-surface-200 px-4 py-3 text-sm font-medium text-surface-700 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-white/10 dark:text-surface-200 dark:hover:border-primary-500 dark:hover:text-primary-300"
+                          >
+                            {resource.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </motion.div>
             </main>
           </div>
@@ -975,7 +1159,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-20 pt-16 border-t border-surface-200 dark:border-surface-700"
+              className="mt-20 pt-16 border-t border-surface-200 dark:border-white/5"
             >
               <div className="text-center mb-12">
                 <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-4">

@@ -3,6 +3,9 @@
 import React from 'react';
 import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
+import { Counter } from '@/components/ui/Counter';
+import { useInView } from '@/lib/motion';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { PageHero } from '@/components/sections/PageHero';
@@ -80,6 +83,8 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
   const t = useTranslations();
   const locale = useLocale();
   const isHe = isRTLLocale(locale);
+  const statsRef = useRef(null);
+  const isStatsInView = useInView(statsRef, { once: true, margin: '-100px' });
 
   const config = INDUSTRY_CONFIG[industry];
   const IndustryIcon = config.icon;
@@ -110,7 +115,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
         badge={content.badge}
       />
 
-      <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
+      <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumb items={breadcrumbItems} />
         </div>
@@ -131,7 +136,10 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
       </Section>
 
       {/* Benefits Grid */}
-      <Section background="light" className="relative overflow-hidden">
+      <Section
+        background="default"
+        className="relative overflow-hidden border-b border-surface-200 dark:border-white/5"
+      >
         <SectionHeader
           title={t('industries.whyWorkWithUs')}
           subtitle={t('industries.benefitsTailored')}
@@ -148,7 +156,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="p-6 rounded-2xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700 transition-colors"
+                  className="p-6 rounded-2xl bg-white dark:bg-surface-950 border border-surface-200 dark:border-white/5 hover:border-accent-300 dark:hover:border-accent-700 transition-colors"
                 >
                   <div
                     className={`w-12 h-12 rounded-xl bg-gradient-to-br ${config.bgGradient} flex items-center justify-center mb-4`}
@@ -184,7 +192,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="flex items-center gap-3 p-4 rounded-xl bg-surface-50 dark:bg-surface-800/50"
+                className="flex items-center gap-3 p-4 rounded-xl bg-surface-50 dark:bg-surface-950/40"
               >
                 <CheckCircle2 size={20} className={config.color} />
                 <span className="text-surface-700 dark:text-surface-300">{service}</span>
@@ -195,28 +203,30 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
       </Section>
 
       {/* Stats */}
-      <Section background="light" className="relative overflow-hidden">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <Section
+        background="default"
+        className="relative overflow-hidden border-y border-surface-200 dark:border-white/5 shadow-2xl"
+      >
+        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
-            { value: '150+', label: t('industries.projects') },
-            { value: '98%', label: t('industries.satisfaction') },
-            { value: '2.5x', label: t('industries.avgGrowth') },
-            { value: '24/7', label: t('industries.support') },
+            { value: 150, suffix: '+', label: t('industries.projects') },
+            { value: 98, suffix: '%', label: t('industries.satisfaction') },
+            { value: 2.5, suffix: 'x', label: t('industries.avgGrowth') },
+            { value: 24, suffix: '/7', label: t('industries.support') },
           ].map((stat, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+              animate={isStatsInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="p-6"
             >
               <div
                 className={`text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r ${config.bgGradient} bg-clip-text text-transparent`}
               >
-                {stat.value}
+                <Counter value={stat.value} suffix={stat.suffix} inView={isStatsInView} />
               </div>
-              <div className="text-sm text-surface-500">{stat.label}</div>
+              <div className="text-sm text-surface-500 dark:text-surface-400">{stat.label}</div>
             </motion.div>
           ))}
         </div>

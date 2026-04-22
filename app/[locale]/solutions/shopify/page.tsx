@@ -15,23 +15,37 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Shopify Development Services | Custom Stores & Migration | CartShift Studio',
-      description:
-        'Expert Shopify development services: store setup, custom features, performance optimization, and migration. Trusted by 100+ e-commerce businesses. Free consultation today!',
+      title: isHe
+        ? 'שירותי Shopify SEO ופיתוח | אודיט, מהירות, מיגרציה וצמיחה'
+        : 'Shopify SEO and Development Services | Audits, Speed, Migration, Growth',
+      description: isHe
+        ? 'קבלו אודיט Shopify SEO, תיקונים טכניים, שיפור מהירות, תמיכה במיגרציה ופיתוח ממוקד המרות מצוות CartShift Studio. נבנה לצוותי ecommerce שרוצים צמיחה איכותית.'
+        : 'Get Shopify SEO audits, technical fixes, speed optimization, migration support, and conversion-focused development from CartShift Studio. Built for ecommerce teams that want qualified growth.',
       url: '/solutions/shopify',
       keywords: [
-        'Shopify development',
-        'Shopify store setup',
-        'custom Shopify theme',
-        'Shopify migration',
-        'Shopify developer',
-        'Shopify SEO',
-        'Shopify performance optimization',
-        'Shopify app development',
-        'hire Shopify developer',
-        'Shopify agency',
+        ...(isHe
+          ? [
+              'קידום אתרי שופיפיי',
+              'אודיט שופיפיי',
+              'SEO טכני לשופיפיי',
+              'פיתוח שופיפיי',
+              'שיפור מהירות שופיפיי',
+            ]
+          : [
+              'shopify seo services',
+              'shopify seo audit',
+              'technical seo for shopify',
+              'shopify development',
+              'shopify migration seo',
+              'shopify speed optimization',
+              'shopify structured data',
+              'shopify conversion optimization',
+              'shopify agency',
+              'shopify experts',
+            ]),
       ],
     },
     locale as 'en' | 'he'

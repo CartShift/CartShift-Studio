@@ -11,10 +11,11 @@ const sectionVariants = cva(
   {
     variants: {
       background: {
-        default: 'bg-background dark:bg-surface-900',
-        light: 'bg-white/80 dark:bg-surface-800',
+        default: 'bg-background dark:bg-black',
+        light: 'bg-white/80 dark:bg-surface-950',
         white: 'bg-surface-200 dark:bg-surface-850',
-        glass: 'bg-gradient-to-br from-surface-50 to-surface-100 dark:bg-surface-800',
+        glass:
+          'bg-gradient-to-br from-surface-50 to-surface-100 dark:from-black dark:to-surface-950',
       },
     },
     defaultVariants: {

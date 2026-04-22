@@ -62,12 +62,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, ind
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="group relative"
     >
-      <div className="h-full p-6 md:p-8 rounded-2xl bg-white dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/60 hover:border-primary-500/40 dark:hover:border-primary-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/5">
+      <div className="h-full p-6 md:p-8 rounded-2xl bg-white dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/60 transition-all duration-300">
         {/* Gradient overlay on hover */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500/0 to-accent-500/0 group-hover:from-primary-500/[0.03] group-hover:to-accent-500/[0.03] transition-all duration-300" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500/0 to-accent-500/0 transition-all duration-300" />
 
         <div className="relative">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/10 to-accent-500/10 dark:from-primary-500/20 dark:to-accent-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/10 to-accent-500/10 dark:from-primary-500/20 dark:to-accent-500/20 flex items-center justify-center mb-4 transition-transform duration-300">
             <IconComponent
               className="w-6 h-6 text-primary-600 dark:text-primary-400"
               strokeWidth={1.5}
@@ -267,7 +267,7 @@ export const ClientPortalPageContent: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:border-white/30 dark:hover:border-white/20 hover:bg-white/15 dark:hover:bg-white/[0.07] transition-all"
+                className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 transition-all"
               >
                 <div className="flex-shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-500 flex items-center justify-center mt-0.5">
                   <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-white" strokeWidth={2.5} />
@@ -372,7 +372,7 @@ export const ClientPortalPageContent: React.FC = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.5 + i * 0.1 }}
-                      className="flex items-center gap-2 sm:gap-4 p-2.5 sm:p-3 md:p-4 rounded-lg md:rounded-xl bg-surface-700/20 border border-surface-600/20 hover:border-surface-500/40 transition-colors"
+                      className="flex items-center gap-2 sm:gap-4 p-2.5 sm:p-3 md:p-4 rounded-lg md:rounded-xl bg-surface-700/20 border border-surface-600/20 transition-colors"
                     >
                       <div
                         className={`w-2 h-2 sm:w-2.5 sm:h-2.5 flex-shrink-0 rounded-full ${

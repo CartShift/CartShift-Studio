@@ -55,8 +55,8 @@ export const EmptyState = ({
         <EmptyStateIllustration variant={illustration} className="mb-4" />
       ) : (
         <div className="relative group mb-6">
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl group-hover:scale-110 transition-transform duration-500" />
-          <div className="relative w-16 h-16 bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-sm flex items-center justify-center group-hover:-translate-y-1 transition-transform duration-300">
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl transition-transform duration-500" />
+          <div className="relative w-16 h-16 bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-sm flex items-center justify-center transition-transform duration-300">
             <Icon className="w-8 h-8 text-surface-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
           </div>
         </div>
@@ -123,7 +123,7 @@ export function EmptyColumnState({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'py-12 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl flex flex-col items-center justify-center text-center opacity-50 hover:opacity-70 transition-opacity',
+        'py-12 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl flex flex-col items-center justify-center text-center opacity-50 transition-opacity',
         className
       )}
     >

@@ -10,7 +10,7 @@ siteUrl: 'https://ilovemyhoneypot.com/'
 brand:
   primary: '#d338a4'
   accent: '#108474'
-thumbnail: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg?v=20260422b'
+thumbnail: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg?v=20260422b'
 heroImage: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg?v=20260422b'
 hero:
   image: '/images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg?v=20260422b'
@@ -90,7 +90,7 @@ services:
   - 'Educational Content Strategy'
 testimonial:
   quote: 'CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our quiz feature alone has transformed how customers find their perfect products.'
-  author: 'Noa Levi'
+  author: 'Danielle Shamir'
   role: 'Founder, I Love My Honeypot'
 
 # Hebrew Translations
@@ -175,7 +175,7 @@ he:
     - 'אסטרטגיית תוכן חינוכי'
   testimonial:
     quote: 'CartShift Studio הבינו את המשימה שלנו מהיום הראשון. הם בנו לנו חנות שמלמדת לקוחות ובו זמנית הופכת את חוויית הקנייה לחלקה. השאלון לבחירת מוצרים לבד שינה לחלוטין את הדרך שבה לקוחות מוצאים את המוצר המושלם.'
-    author: 'נועה לוי'
+    author: 'דניאל שמיר'
     role: 'מייסדת, I Love My Honeypot'
   content: |
     ## האתגר

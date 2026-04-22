@@ -5,12 +5,12 @@ client: 'Stiletto Piercing'
 industry: 'Professional Beauty & Piercing'
 platform: 'Shopify'
 duration: ''
-featured: false
+featured: true
 siteUrl: 'https://stilettopiercing.co.il/'
 brand:
   primary: '#8728af'
   accent: '#75bcfb'
-thumbnail: '/images/case-studies/stiletto-piercing-disposable-jewelry-supply/gallery-01.jpg'
+thumbnail: '/images/case-studies/stiletto-piercing-disposable-jewelry-supply/hero.jpg'
 heroImage: '/images/case-studies/stiletto-piercing-disposable-jewelry-supply/hero.jpg'
 hero:
   image: '/images/case-studies/stiletto-piercing-disposable-jewelry-supply/hero.jpg'

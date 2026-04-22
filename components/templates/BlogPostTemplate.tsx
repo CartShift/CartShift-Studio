@@ -70,12 +70,13 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
         highlightLastWord={false}
         compact
       />
-      <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
+      <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumb items={breadcrumbItems} />
         </div>
       </div>
       <BlogPostContent
+        slug={post.slug}
         content={content}
         relatedPosts={processedRelatedPosts}
         title={title}

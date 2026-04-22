@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-04-22T13:49:19.271Z
+ * Last updated: 2026-04-22T22:22:35.257Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -2599,6 +2599,10 @@ export interface Portal {
     };
     emptyColumn: string;
     moveError: string;
+    addItem: string;
+    bulkActions: {
+      moveTo: string;
+    };
     common: {
       noRequests: string;
       dragToMove: string;
@@ -3223,6 +3227,7 @@ export interface ServicesOverview {
 }
 
 export interface CtaBanner {
+  badge: string;
   titlePart1: string;
   titlePart2: string;
   description: string;
@@ -3820,6 +3825,7 @@ export type TranslationKey =
   | 'contact.title'
   | 'contact.whatsappDescription'
   | 'contact.whatsappMessageText'
+  | 'ctaBanner.badge'
   | 'ctaBanner.button'
   | 'ctaBanner.description'
   | 'ctaBanner.titlePart1'
@@ -5756,6 +5762,8 @@ export type TranslationKey =
   | 'portal.testimonial.updateSuccess'
   | 'portal.toast.dismiss'
   | 'portal.toast.undo'
+  | 'portal.workboard.addItem'
+  | 'portal.workboard.bulkActions.moveTo'
   | 'portal.workboard.columns.backlog'
   | 'portal.workboard.columns.delivered'
   | 'portal.workboard.columns.inProgress'

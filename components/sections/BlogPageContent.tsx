@@ -102,7 +102,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
   }, [selectedCategory, searchQuery, sortBy]);
 
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-surface-900">
+    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-black">
       <div className="max-w-7xl mx-auto relative z-dropdown">
         {/* Featured Posts Section */}
         {!searchQuery && !selectedCategory && currentPage === 1 && (
@@ -191,7 +191,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                   placeholder={t('blog.content.searchPlaceholder')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full ps-12 pe-4 py-3 rounded-xl glass-effect border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-primary-500 text-surface-900 dark:text-white placeholder:text-surface-400"
+                  className="w-full ps-12 pe-4 py-3 rounded-xl glass-effect border border-surface-200 dark:border-white/5 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-primary-500 text-surface-900 dark:text-white placeholder:text-surface-400"
                 />
               </div>
 
@@ -203,7 +203,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     className={`px-4 py-2.5 min-h-[40px] rounded-full text-sm font-medium transition-all touch-manipulation active:scale-95 ${
                       selectedCategory === null
                         ? 'bg-accent-600 dark:bg-accent-500 text-white shadow-md'
-                        : 'glass-effect text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800'
+                        : 'glass-effect text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-950'
                     }`}
                   >
                     {t('blog.content.allCategories')}
@@ -215,7 +215,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                       className={`px-4 py-2.5 min-h-[40px] rounded-full text-sm font-medium transition-all touch-manipulation active:scale-95 ${
                         selectedCategory === category
                           ? 'bg-accent-600 dark:bg-accent-500 text-white shadow-md'
-                          : 'glass-effect text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800'
+                          : 'glass-effect text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-950'
                       }`}
                     >
                       {getCategoryDisplayName(category)}
@@ -235,7 +235,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as SortOption)}
-                  className="px-4 py-2 rounded-lg glass-effect border border-surface-200 dark:border-surface-700 text-sm font-medium text-surface-700 dark:text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                  className="px-4 py-2 rounded-lg glass-effect border border-surface-200 dark:border-white/5 text-sm font-medium text-surface-700 dark:text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent-500"
                 >
                   <option value="newest">{t('blog.content.sort.newest')}</option>
                   <option value="oldest">{t('blog.content.sort.oldest')}</option>
@@ -294,7 +294,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                                 {excerpt}
                               </p>
                               {/* Meta info */}
-                              <div className="flex items-center justify-between pt-4 border-t border-surface-200 dark:border-surface-700">
+                              <div className="flex items-center justify-between pt-4 border-t border-surface-200 dark:border-white/5">
                                 <div className="flex items-center gap-4 text-sm text-surface-500 dark:text-surface-400">
                                   <span className="flex items-center gap-1">
                                     <Calendar className="w-4 h-4" />
@@ -325,7 +325,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     <button
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
-                      className="px-4 py-2.5 min-h-[44px] rounded-lg glass-effect text-sm font-medium text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation active:scale-95"
+                      className="px-4 py-2.5 min-h-[44px] rounded-lg glass-effect text-sm font-medium text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-950 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation active:scale-95"
                     >
                       {t('blog.content.pagination.previous')}
                     </button>
@@ -337,7 +337,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                         className={`w-10 h-10 min-w-[44px] min-h-[44px] rounded-lg text-sm font-medium transition-all touch-manipulation active:scale-95 ${
                           currentPage === page
                             ? 'bg-accent-600 dark:bg-accent-500 text-white shadow-md'
-                            : 'glass-effect text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800'
+                            : 'glass-effect text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-950'
                         }`}
                       >
                         {page}
@@ -347,7 +347,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     <button
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2.5 min-h-[44px] rounded-lg glass-effect text-sm font-medium text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation active:scale-95"
+                      className="px-4 py-2.5 min-h-[44px] rounded-lg glass-effect text-sm font-medium text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-950 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation active:scale-95"
                     >
                       {t('blog.content.pagination.next')}
                     </button>
@@ -382,7 +382,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                       <input
                         type="email"
                         placeholder={t('blog.content.newsletter.placeholder')}
-                        className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-white placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-white/5 bg-white dark:bg-surface-950 text-surface-900 dark:text-white placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                       <button
                         type="submit"
@@ -418,7 +418,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                               className={`w-full text-start px-4 py-2 rounded-lg transition-all ${
                                 selectedCategory === category
                                   ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300'
-                                  : 'hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-700 dark:text-surface-200'
+                                  : 'hover:bg-surface-100 dark:hover:bg-surface-950 text-surface-700 dark:text-surface-200'
                               }`}
                             >
                               <span className="font-medium">

@@ -344,7 +344,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                       <img
                         src={shot.url}
                         alt={shot.label}
-                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover object-top transition-transform duration-500"
                       />
                       <div className="absolute inset-x-0 bottom-0 p-2 bg-black/60 backdrop-blur-sm text-center">
                         <div className="flex items-center justify-center gap-1 text-[10px] text-white font-medium">
@@ -378,7 +378,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                         className="w-12 h-12 rounded-full border-2 border-white dark:border-surface-900 shadow-md transition-transform hover:scale-110 hover:z-10 cursor-help"
                         style={{ backgroundColor: color }}
                       />
-                      <span className="absolute -bottom-8 start-1/2 -translate-x-1/2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20">
+                      <span className="absolute -bottom-8 start-1/2 -translate-x-1/2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 transition-opacity whitespace-nowrap pointer-events-none z-20">
                         {color}
                       </span>
                     </div>

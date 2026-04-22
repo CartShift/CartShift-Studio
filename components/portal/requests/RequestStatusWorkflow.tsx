@@ -420,7 +420,7 @@ export function RequestStatusWorkflow({
                     'mt-2 text-[9px] font-bold uppercase tracking-wider transition-all text-center absolute top-8 w-24',
                     state === 'current'
                       ? 'opacity-100 text-surface-900 dark:text-surface-100 translate-y-0'
-                      : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 -translate-y-1 text-surface-400'
+                      : 'opacity-0 -translate-y-1 text-surface-400'
                   )}
                 >
                   {t(`requests.status.${stage.status.toLowerCase()}` as any)}

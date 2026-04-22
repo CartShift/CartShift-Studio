@@ -3,6 +3,21 @@ import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { setRequestLocale } from 'next-intl/server';
 import { PortalProviders } from '@/components/portal/providers/PortalProviders';
 import { SubdomainHandler } from '@/components/portal/SubdomainHandler';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      'max-snippet': 0,
+      'max-image-preview': 'none',
+      'max-video-preview': 0,
+    },
+  },
+};
 
 export default async function PortalLayout({
   children,

@@ -454,7 +454,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                         backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))`,
                       }}
                     />
-                    <div className="relative h-full bg-white dark:bg-white/5 hover:bg-surface-50 dark:hover:bg-white/[0.08] border border-surface-200 dark:border-white/10 hover:border-primary-500/30 dark:hover:border-white/20 rounded-xl p-5 transition-all duration-300 shadow-sm hover:shadow-md">
+                    <div className="relative h-full bg-white dark:bg-white/5 border border-surface-200 dark:border-white/10 rounded-xl p-5 transition-all duration-300 shadow-sm">
                       <div
                         className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg`}
                       >

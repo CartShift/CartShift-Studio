@@ -111,7 +111,9 @@ export function DroppableColumn({
           className="w-full py-2.5 rounded-xl border border-dashed border-surface-200 dark:border-surface-800 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 text-surface-400 hover:text-blue-600 transition-all flex items-center justify-center gap-2 group"
         >
           <PlusCircle size={14} className="group-hover:scale-110 transition-transform" />
-          <span className="text-[10px] font-black uppercase tracking-widest">Add Item</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">
+            {t('portal.workboard.addItem')}
+          </span>
         </button>
       )}
     </div>

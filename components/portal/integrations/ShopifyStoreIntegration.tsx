@@ -376,7 +376,7 @@ export default function ShopifyStoreIntegration({
         'relative p-6 rounded-2xl border-2 transition-all',
         hasConnection
           ? 'bg-gradient-to-br from-accent-600/10 to-emerald-50/50 dark:from-accent-600/5 dark:to-emerald-900/10 border-accent-600/30 dark:border-accent-600/20'
-          : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800 hover:border-accent-600/50 dark:hover:border-accent-600/30'
+          : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800'
       )}
     >
       {/* Header */}

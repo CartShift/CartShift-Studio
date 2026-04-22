@@ -18,7 +18,7 @@ export async function generateMetadata({
     {
       title: 'Free E-Commerce Store Analyzer | Instant Audit Tool',
       description:
-        'Get a free, comprehensive audit of your Shopify, WooCommerce, or Magento store. Analyze performance, SEO, UX, and get actionable recommendations in minutes.',
+        'Run a free ecommerce audit for your Shopify, WooCommerce, or Magento store. Spot SEO gaps, UX friction, trust issues, and conversion blockers in minutes.',
       url: '/tools/store-analyzer',
       keywords: [
         'shopify audit',
@@ -55,6 +55,7 @@ export default async function StoreAnalyzerPage({
     name: 'E-Commerce Store Analyzer',
     description:
       'Free tool that analyzes your online store for performance, SEO, UX, and conversion optimization opportunities.',
+    url: '/tools/store-analyzer',
     operatingSystem: 'Any',
     applicationCategory: 'BusinessApplication',
     offers: {

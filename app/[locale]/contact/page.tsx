@@ -14,18 +14,26 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Contact CartShift Studio | Free E-commerce Consultation',
-      description:
-        'Get in touch with CartShift Studio for a free consultation on your Shopify or WordPress project. Expert advice on e-commerce development.',
+      title: isHe
+        ? 'שיחת ייעוץ ל-Shopify ול-ecommerce | CartShift Studio'
+        : 'Book a Shopify or Ecommerce Consultation | CartShift Studio',
+      description: isHe
+        ? 'דברו עם CartShift Studio על Shopify SEO, שדרוג חנות, מיגרציה או בעיות המרה. אנחנו עובדים בעברית ובאנגלית וחוזרים תוך 24 שעות.'
+        : 'Talk with CartShift Studio about Shopify SEO, store rebuilds, migrations, or conversion issues. We work with English and Hebrew-speaking teams and reply within 24 hours.',
       url: '/contact',
       keywords: [
-        'contact',
-        'free consultation',
-        'e-commerce quote',
-        'Shopify consultation',
-        'WordPress consultation',
+        ...(isHe
+          ? ['ייעוץ שופיפיי', 'ייעוץ Shopify SEO', 'ייעוץ איקומרס', 'יצירת קשר שופיפיי']
+          : [
+              'shopify consultation',
+              'shopify seo consultation',
+              'ecommerce development consultation',
+              'shopify agency contact',
+              'hebrew ecommerce consultant',
+            ]),
       ],
     },
     locale as 'en' | 'he'

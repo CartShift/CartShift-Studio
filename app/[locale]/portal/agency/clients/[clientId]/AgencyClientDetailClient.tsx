@@ -341,7 +341,7 @@ export default function AgencyClientDetailClient({
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
               <div className="flex items-start gap-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-500/30 transform hover:scale-105 transition-transform duration-300">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-500/30 transform transition-transform duration-300">
                   <Briefcase size={40} className="text-white" />
                 </div>
                 <div className="flex-1">
@@ -470,7 +470,7 @@ export default function AgencyClientDetailClient({
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
@@ -483,13 +483,13 @@ export default function AgencyClientDetailClient({
                 {t('agency.clients.detail.stats.totalRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
               <FileText size={24} className="text-blue-600" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-amber-200 dark:hover:border-amber-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
@@ -502,13 +502,13 @@ export default function AgencyClientDetailClient({
                 {t('agency.clients.detail.stats.activeRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
               <TrendingUp size={24} className="text-amber-600" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-emerald-200 dark:hover:border-emerald-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
@@ -521,13 +521,13 @@ export default function AgencyClientDetailClient({
                 {t('agency.clients.detail.stats.completedRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
               <BarChart3 size={24} className="text-emerald-600" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900 transition-all group">
+        <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
@@ -540,7 +540,7 @@ export default function AgencyClientDetailClient({
                 {avgResolution > 0 ? t('agency.clients.detail.stats.days' as any) : '—'}
               </p>
             </div>
-            <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
               <Clock size={24} className="text-purple-600" />
             </div>
           </div>
@@ -661,11 +661,8 @@ export default function AgencyClientDetailClient({
             {recentActivities.length > 0 ? (
               <div className="divide-y divide-surface-50 dark:divide-surface-800">
                 {recentActivities.map((activity, index) => (
-                  <div
-                    key={index}
-                    className="p-5 flex items-start gap-4 group hover:bg-surface-50/30 dark:hover:bg-surface-900/30 transition-colors"
-                  >
-                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <div key={index} className="p-5 flex items-start gap-4 transition-colors">
+                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/30 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform">
                       <Activity size={18} className="text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">

@@ -33,6 +33,15 @@ function getProjectProof(caseStudy: CaseStudyMeta) {
   return caseStudy.platform;
 }
 
+type WorkTranslations = {
+  hero: { title: string; subtitle: string; description: string; badge: string };
+  filters: { all: string; shopify: string; wordpress: string };
+  cta: { title: string; titleSpan: string; description: string; button: string };
+  detail: { selectedScreens: string; evidenceTitle: string };
+  viewProject: string;
+  empty: { title: string; description: string };
+};
+
 export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = [] }) => {
   const t = useTranslations();
   const [activeFilter, setActiveFilter] = useState<'all' | 'shopify' | 'wordpress'>('all');
@@ -44,22 +53,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
   const filterRailOpacity = useTransform(scrollY, [40, 280], [0.82, 1]);
   const gridY = useTransform(scrollY, [240, 760], [26, 0]);
 
-  const work = t.raw('work' as never) as {
-    hero: {
-      title: string;
-      subtitle: string;
-      description: string;
-      badge: string;
-    };
-    filters: { all: string; shopify: string; wordpress: string };
-    cta: { title: string; titleSpan: string; description: string; button: string };
-    detail: {
-      selectedScreens: string;
-      evidenceTitle: string;
-    };
-    viewProject: string;
-    empty: { title: string; description: string };
-  };
+  const work = t.raw('work' as any) as WorkTranslations;
 
   const filteredCaseStudies = useMemo(() => {
     if (activeFilter === 'all') {
@@ -98,7 +92,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
   ];
 
   return (
-    <div className="bg-surface-50 text-surface-950 transition-colors dark:bg-[#050816] dark:text-white">
+    <div className="bg-surface-50 text-surface-950 transition-colors dark:bg-black dark:text-white">
       <section className="relative isolate overflow-hidden bg-[#eef4fb] text-surface-950 dark:bg-surface-950 dark:text-white">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#f8fafc_0%,#eef4fb_40%,#e2e8f0_100%)] dark:bg-[linear-gradient(180deg,#020617_0%,#071224_40%,#020617_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.55),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(148,163,184,0.18),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_28%)]" />
@@ -219,6 +213,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
               <button
                 key={filter.key}
                 onClick={() => setActiveFilter(filter.key)}
+                aria-pressed={activeFilter === filter.key}
                 className={`min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   activeFilter === filter.key
                     ? 'border-surface-300 bg-surface-950 text-white dark:border-white/40 dark:bg-white dark:text-surface-950'
@@ -321,7 +316,7 @@ function PortfolioWorkTile({
         ...themeStyle,
         boxShadow: '0 30px 84px -52px rgba(var(--case-shadow-rgb), 0.48)',
       }}
-      className="group isolate flex h-full flex-col overflow-hidden rounded-[2rem] border border-[rgba(var(--case-border-rgb),0.42)] bg-white transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[rgba(var(--case-primary-rgb),0.34)] hover:shadow-[0_42px_96px_-46px_rgba(2,6,23,0.5)] dark:border-[rgba(var(--case-dark-border-rgb),0.7)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.88)]"
+      className="group isolate flex h-full flex-col overflow-hidden rounded-[2rem] border border-[rgba(var(--case-border-rgb),0.42)] bg-white transition-[transform,box-shadow,border-color] duration-300 dark:border-[rgba(var(--case-dark-border-rgb),0.7)] dark:bg-[rgba(var(--case-dark-surface-rgb),0.88)]"
     >
       <div className="relative min-h-[18.5rem] overflow-hidden bg-surface-950 sm:min-h-[19.5rem]">
         <Image
@@ -383,7 +378,7 @@ function PortfolioWorkTile({
           </span>
         </div>
         <div className="mt-auto pt-6">
-          <div className="inline-flex items-center gap-2 text-sm font-semibold text-surface-950 transition-transform duration-300 group-hover:translate-x-1 dark:text-white rtl:group-hover:-translate-x-1">
+          <div className="inline-flex items-center gap-2 text-sm font-semibold text-surface-950 transition-transform duration-300 dark:text-white">
             <span>{ctaLabel}</span>
             <ArrowRight className="h-4 w-4 rtl:rotate-180" />
           </div>

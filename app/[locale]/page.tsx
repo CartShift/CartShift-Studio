@@ -25,23 +25,35 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'E-commerce Development Agency | Shopify & WordPress Experts | CartShift Studio',
-      description:
-        '🚀 Transform your e-commerce vision into reality. Expert Shopify & WordPress development with 50+ successful launches. Custom stores, migrations, and optimization. Get your free consultation today!',
+      title: isHe
+        ? 'שותף ל-Shopify ול-SEO טכני | CartShift Studio'
+        : 'Shopify Development and SEO Partner | CartShift Studio',
+      description: isHe
+        ? 'CartShift Studio עוזרת לצוותי ecommerce לצמוח דרך פיתוח Shopify, SEO טכני, מיגרציות, שיפור מהירות ואופטימיזציה ממוקדת המרות בעברית ובאנגלית.'
+        : 'CartShift Studio helps ecommerce teams grow through Shopify development, technical SEO, migration support, speed optimization, and conversion-focused implementation in English and Hebrew.',
       url: '/',
       keywords: [
-        'Shopify development agency',
-        'WordPress e-commerce',
-        'custom Shopify store',
-        'e-commerce development',
-        'Shopify migration',
-        'WooCommerce development',
-        'online store design',
-        'Shopify experts',
-        'e-commerce consultants',
-        'Shopify developers',
+        ...(isHe
+          ? [
+              'קידום אתרי שופיפיי',
+              'פיתוח שופיפיי',
+              'SEO טכני לשופיפיי',
+              'ייעוץ איקומרס',
+              'סוכנות שופיפיי',
+            ]
+          : [
+              'shopify development agency',
+              'shopify seo partner',
+              'technical seo for shopify',
+              'shopify migration support',
+              'ecommerce development',
+              'conversion optimization agency',
+              'hebrew shopify agency',
+              'shopify consultants',
+            ]),
       ],
     },
     locale as 'en' | 'he'
@@ -51,23 +63,23 @@ export async function generateMetadata({
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const websiteSchema = generateWebSiteSchema();
+  const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he');
   const professionalServiceSchema = generateProfessionalServiceSchema();
 
   const reviewSchema = generateReviewSchema([
     {
-      author: 'Sarah Johnson',
-      text: 'CartShift Studio rebuilt our store experience end-to-end. Conversions improved quickly, and the site finally feels premium.',
+      author: 'Danielle Shamir',
+      text: 'CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless.',
       rating: 5,
     },
     {
       author: 'Carmel Faraggi',
-      text: "The new design perfectly captures the essence of our community. It's not just a website; it's a home for Israelis in London.",
+      text: 'CartShift Studio transformed Alondon into a sophisticated, high-performance community hub. The new architecture seamlessly handles our complex content.',
       rating: 5,
     },
     {
-      author: 'Emily Rodriguez',
-      text: "They don't just ship a site. They stick around, iterate, and help us grow month after month.",
+      author: 'Tom Robinson',
+      text: 'Working with CartShift Studio was a game-changer for our studio. They created a sleek, high-end digital catalog that perfectly showcases our jewelry collection.',
       rating: 5,
     },
   ]);

@@ -24,7 +24,7 @@ export const WordPressTemplate: React.FC = () => {
         badge={t('wordpress.hero.badge')}
         seoH1="WordPress E-commerce Development Services | Custom Websites & Content Sites"
       />
-      <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
+      <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumb items={breadcrumbItems} />
         </div>

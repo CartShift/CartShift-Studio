@@ -16,6 +16,10 @@
       },
       "emptyColumn": "No requests in this column",
       "moveError": "Failed to move item",
+      "addItem": "Add Item",
+      "bulkActions": {
+        "moveTo": "Move to:"
+      },
       "common": {
         "noRequests": "No requests found",
         "dragToMove": "Drag cards to move them"

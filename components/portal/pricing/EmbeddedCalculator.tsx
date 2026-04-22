@@ -137,7 +137,7 @@ export function EmbeddedCalculator({
         'border-2 border-dashed rounded-2xl transition-all duration-300',
         isExpanded
           ? 'border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-950/20'
-          : 'border-surface-200 dark:border-surface-700 hover:border-blue-200 dark:hover:border-blue-800',
+          : 'border-surface-200 dark:border-surface-700',
         className
       )}
     >

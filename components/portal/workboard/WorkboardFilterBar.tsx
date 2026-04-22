@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Search, Filter, SortAsc, CheckSquare, List, LayoutGrid, X } from 'lucide-react';
+import { Search, Filter, SortAsc, CheckSquare, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { cn } from '@/lib/utils';
@@ -144,16 +144,6 @@ export function WorkboardFilterBar({
             },
           ]}
         />
-
-        {/* View Toggle (Visual Only for now) */}
-        <div className="flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg p-0.5 ms-1">
-          <button className="p-1.5 rounded-md bg-white dark:bg-surface-700 shadow-sm text-surface-900 dark:text-white">
-            <LayoutGrid size={14} />
-          </button>
-          <button className="p-1.5 rounded-md text-surface-400 hover:text-surface-600">
-            <List size={14} />
-          </button>
-        </div>
       </div>
     </div>
   );

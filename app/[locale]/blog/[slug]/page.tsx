@@ -34,9 +34,16 @@ export async function generateMetadata({
     return { title: 'Post Not Found' };
   }
 
+  const localizedTitle =
+    locale === 'he' && post.translation?.title ? post.translation.title : post.title;
+  const localizedExcerpt =
+    locale === 'he' && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
+  const localizedCategory =
+    locale === 'he' && post.translation?.category ? post.translation.category : post.category;
+
   const keywords = [
-    post.category.toLowerCase(),
-    ...post.title
+    localizedCategory.toLowerCase(),
+    ...localizedTitle
       .toLowerCase()
       .split(' ')
       .filter(w => w.length > 4)
@@ -47,8 +54,8 @@ export async function generateMetadata({
 
   return genMeta(
     {
-      title: `${post.title} | CartShift Studio Blog`,
-      description: post.excerpt,
+      title: `${localizedTitle} | CartShift Studio Blog`,
+      description: localizedExcerpt,
       url: `/blog/${post.slug}`,
       type: 'article',
       publishedTime: post.date,
@@ -80,6 +87,7 @@ export default async function BlogPostPage({
     description: post.excerpt,
     date: post.date,
     url: articleUrl,
+    locale: locale as 'en' | 'he',
     author: 'CartShift Studio',
     category: post.category,
     wordCount: post.wordCount,

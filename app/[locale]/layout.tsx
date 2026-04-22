@@ -27,7 +27,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const canonicalUrl = `${siteUrl}/${locale}`;
-
   return {
     title: {
       default: 'CartShift Studio | Shopify & WordPress E-commerce Development Agency',
@@ -47,6 +46,14 @@ export async function generateMetadata({
       'online store development',
     ],
     metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        en: `${siteUrl}/en`,
+        he: `${siteUrl}/he`,
+        'x-default': `${siteUrl}/en`,
+      },
+    },
     openGraph: {
       type: 'website',
       siteName: 'CartShift Studio',
@@ -85,6 +92,9 @@ export async function generateMetadata({
     },
     verification: {
       google: process.env.GOOGLE_SITE_VERIFICATION,
+    },
+    other: {
+      'og:locale:alternate': locale === 'he' ? 'en_US' : 'he_IL',
     },
     category: 'technology',
   };

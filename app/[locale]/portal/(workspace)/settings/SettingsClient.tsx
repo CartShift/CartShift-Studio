@@ -888,7 +888,7 @@ export default function sClient() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-surface-50 dark:bg-surface-900/50 border border-surface-100 dark:border-surface-800 group hover:border-blue-200 dark:hover:border-blue-900/30 transition-colors">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-surface-50 dark:bg-surface-900/50 border border-surface-100 dark:border-surface-800 transition-colors">
                     <div className="space-y-1">
                       <h4 className="font-bold text-surface-900 dark:text-white text-base font-outfit">
                         {t('settings.security.changePassword.title')}

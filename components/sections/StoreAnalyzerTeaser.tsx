@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { BarChart3, Search, Zap, Shield, ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const features = [
   { icon: Zap, key: 'performance' },
@@ -17,201 +18,198 @@ export const StoreAnalyzerTeaser: React.FC = () => {
   const t = useTranslations();
 
   return (
-    <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-surface-100 via-surface-50 to-surface-100 dark:from-surface-950 dark:via-surface-950 dark:to-surface-900">
-      {/* Background elements */}
+    <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-background dark:bg-black transition-colors duration-500">
+      {/* Immersive Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Gradient orbs */}
-        <div className="absolute bottom-1/4 start-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-500/10 dark:from-indigo-500/10 to-transparent rounded-full blur-3xl -translate-x-1/2" />
-        <div className="absolute top-0 end-0 w-[500px] h-[500px] bg-gradient-to-bl from-purple-500/10 dark:from-purple-500/10 to-transparent rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
-
-        {/* Grid pattern overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-0 dark:opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
+        <div className="absolute bottom-1/4 start-0 w-[600px] h-[600px] bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-[120px] -translate-x-1/2" />
+        <div className="absolute top-0 end-0 w-[500px] h-[500px] bg-accent-500/10 dark:bg-accent-500/5 rounded-full blur-[120px] translate-x-1/3 translate-y-1/3" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] dark:opacity-[0.05]" />
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-dropdown">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Visual Side */}
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          {/* Mockup Side */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             className="relative order-2 lg:order-1"
           >
-            {/* Mock Analyzer Dashboard */}
-            <div className="relative rounded-2xl bg-white/80 dark:bg-surface-800/80 border border-surface-200/80 dark:border-surface-700/50 shadow-2xl overflow-hidden backdrop-blur-sm group">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* High-Fidelity Analyzer Mockup */}
+            <div className="relative rounded-[2.5rem] bg-white dark:bg-surface-950 border border-surface-200 dark:border-white/10 shadow-premium overflow-hidden backdrop-blur-xl group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-accent-500/5 opacity-0 transition-opacity duration-700" />
+
               {/* Window Header */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-surface-200/80 dark:border-surface-700/50 bg-surface-100/50 dark:bg-surface-800/50 relative z-dropdown">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
+              <div className="flex items-center gap-4 px-6 py-4 border-b border-surface-200 dark:border-white/10 bg-surface-50/50 dark:bg-surface-900/30">
+                <div className="flex gap-2">
+                  <div className="w-3.5 h-3.5 rounded-full bg-red-400/80" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-yellow-400/80" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-green-400/80" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <div className="flex items-center gap-2 px-4 py-1 rounded-md bg-surface-200/50 dark:bg-surface-700/50 text-xs text-surface-600 dark:text-surface-400 min-w-[200px]">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    yourstore.com
+                  <div className="flex items-center gap-2 px-6 py-1.5 rounded-full bg-surface-200/50 dark:bg-surface-700/50 text-xs font-medium text-surface-500 dark:text-surface-400">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    analyzer.cartshift.studio
                   </div>
                 </div>
               </div>
 
-              {/* Analyzer Content mockup */}
-              <div className="p-6 space-y-6 relative z-dropdown">
-                {/* Score Circle */}
-                <div className="flex justify-center py-4">
-                  <div className="relative w-40 h-40 flex items-center justify-center">
-                    <svg className="w-full h-full transform -rotate-90">
+              {/* Analyzer Dashboard mockup */}
+              <div className="p-8 md:p-10 space-y-8">
+                {/* Score Visualization */}
+                <div className="flex justify-center flex-col items-center gap-4">
+                  <div className="relative w-48 h-48 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90 drop-shadow-lg">
                       <circle
-                        cx="80"
-                        cy="80"
-                        r="70"
+                        cx="96"
+                        cy="96"
+                        r="84"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="12"
-                        className="text-surface-200 dark:text-surface-700"
+                        strokeWidth="14"
+                        className="text-surface-100 dark:text-surface-800"
                       />
-                      <circle
-                        cx="80"
-                        cy="80"
-                        r="70"
+                      <motion.circle
+                        cx="96"
+                        cy="96"
+                        r="84"
                         fill="none"
-                        stroke="currentColor"
-                        strokeWidth="12"
-                        strokeDasharray="440"
-                        strokeDashoffset="57"
-                        className="text-green-500"
+                        stroke="url(#score-gradient)"
+                        strokeWidth="14"
+                        strokeDasharray="527"
+                        initial={{ strokeDashoffset: 527 }}
+                        whileInView={{ strokeDashoffset: 68 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }}
                         strokeLinecap="round"
                       />
+                      <defs>
+                        <linearGradient id="score-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="var(--primary-500)" />
+                          <stop offset="100%" stopColor="var(--accent-500)" />
+                        </linearGradient>
+                      </defs>
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-5xl font-bold text-surface-900 dark:text-white">
+                      <span className="text-6xl font-black text-surface-900 dark:text-white tracking-tighter">
                         87
                       </span>
-                      <span className="text-sm font-medium text-green-600 dark:text-green-400 mt-1">
-                        GOOD
+                      <span className="text-xs font-black text-green-500 uppercase tracking-widest mt-1">
+                        OPTIMIZED
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Metrics */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-surface-100/50 dark:bg-surface-700/30 rounded-xl border border-surface-200/50 dark:border-surface-600/30 hover:border-surface-300 dark:hover:border-surface-500/50 transition-colors">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="text-xs font-medium text-surface-700 dark:text-surface-300">
-                        Performance
+                {/* Detailed Metrics */}
+                <div className="grid grid-cols-2 gap-5">
+                  {[
+                    { label: 'Performance', score: 92, color: 'bg-primary-500' },
+                    { label: 'SEO Authority', score: 76, color: 'bg-accent-500' },
+                    { label: 'Core Vitals', score: 88, color: 'bg-green-500' },
+                    { label: 'UX Design', score: 91, color: 'bg-indigo-500' },
+                  ].map((metric, i) => (
+                    <div
+                      key={i}
+                      className="p-5 bg-surface-50/50 dark:bg-white/5 rounded-2xl border border-surface-200/50 dark:border-white/5 group/metric transition-all duration-300"
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-bold text-surface-500 dark:text-surface-300 uppercase tracking-wider">
+                          {metric.label}
+                        </span>
+                        <span className="text-sm font-black text-surface-900 dark:text-white">
+                          {metric.score}%
+                        </span>
                       </div>
-                      <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                        92
-                      </span>
-                    </div>
-                    <div className="h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                      <div className="h-full w-[92%] bg-green-500 rounded-full"></div>
-                    </div>
-                  </div>
-                  <div className="p-3 bg-surface-100/50 dark:bg-surface-700/30 rounded-xl border border-surface-200/50 dark:border-surface-600/30 hover:border-surface-300 dark:hover:border-surface-500/50 transition-colors">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="text-xs font-medium text-surface-700 dark:text-surface-300">
-                        SEO
+                      <div className="h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${metric.score}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1, delay: 0.8 + i * 0.1 }}
+                          className={cn('h-full rounded-full shadow-sm', metric.color)}
+                        />
                       </div>
-                      <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">
-                        76
-                      </span>
                     </div>
-                    <div className="h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                      <div className="h-full w-[76%] bg-yellow-500 rounded-full"></div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-            {/* Floating Badge */}
+
+            {/* Instant Report Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.6, type: 'spring' }}
-              className="absolute -bottom-6 -right-6 p-4 rounded-xl bg-white/90 dark:bg-surface-800/90 border border-indigo-200 dark:border-indigo-500/30 backdrop-blur-md shadow-lg shadow-indigo-500/10"
+              transition={{ delay: 0.8, type: 'spring' }}
+              className="absolute -bottom-8 -end-8 p-5 rounded-[2rem] bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 shadow-premium backdrop-blur-xl"
             >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-500/20">
-                  <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-primary-500/10 text-primary-600 dark:text-primary-400">
+                  <Sparkles size={24} />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-surface-900 dark:text-white">
-                    Free Report
+                  <div className="text-lg font-black text-surface-900 dark:text-white leading-tight">
+                    Free AI Audit
                   </div>
-                  <div className="text-xs text-indigo-600 dark:text-indigo-300">
-                    Instant PDF Download
+                  <div className="text-sm font-medium text-surface-500 dark:text-surface-400">
+                    Instant performance report
                   </div>
                 </div>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Content Side */}
+          {/* Content side */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             className="order-1 lg:order-2"
           >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 mb-6">
-              <BarChart3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-              <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-8"
+            >
+              <BarChart3 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-widest">
                 {t('storeAnalyzerTeaser.badge')}
               </span>
-            </div>
+            </motion.div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-surface-900 dark:text-white leading-tight mb-6">
-              {t('storeAnalyzerTeaser.title')}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400">
-                {t('storeAnalyzerTeaser.titleSpan')}
-              </span>
+            <h2 className="text-4xl md:text-6xl font-display font-black text-surface-900 dark:text-white leading-[1.1] mb-8 tracking-tight">
+              {t('storeAnalyzerTeaser.title')}
+              <br />
+              <span className="gradient-text">{t('storeAnalyzerTeaser.titleSpan')}</span>
             </h2>
 
-            <p className="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-8 max-w-xl">
+            <p className="text-xl text-surface-600 dark:text-surface-300 leading-relaxed mb-10 max-w-xl font-light">
               {t('storeAnalyzerTeaser.description')}
             </p>
 
             {/* Feature Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.key}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-surface-100/50 dark:bg-white/5 border border-surface-200/50 dark:border-white/5 hover:border-surface-300 dark:hover:border-white/10 transition-colors"
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex items-center gap-5 p-5 rounded-2xl bg-white/60 dark:bg-white/5 border border-surface-200/50 dark:border-white/5 transition-all duration-500"
                 >
-                  <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-500/20 dark:to-purple-500/20 flex items-center justify-center">
-                    <feature.icon
-                      className="w-4 h-4 text-indigo-600 dark:text-indigo-400"
-                      strokeWidth={2}
-                    />
+                  <div className="w-12 h-12 rounded-[1rem] bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform">
+                    <feature.icon size={24} strokeWidth={2} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-surface-900 dark:text-white mb-0.5">
+                    <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-1">
                       {t(`storeAnalyzerTeaser.features.${feature.key}.title`)}
                     </h3>
-                    <p className="text-xs text-surface-500 dark:text-surface-400 leading-snug">
+                    <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed font-light">
                       {t(`storeAnalyzerTeaser.features.${feature.key}.description`)}
                     </p>
                   </div>
@@ -220,17 +218,15 @@ export const StoreAnalyzerTeaser: React.FC = () => {
             </div>
 
             {/* CTA */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-5">
               <Link href="/tools/store-analyzer">
                 <Button
-                  as="div"
-                  variant="primary"
                   size="lg"
-                  className="w-full sm:w-auto group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 border-none shadow-lg shadow-indigo-500/25"
+                  className="w-full sm:w-auto h-16 px-10 font-black group shadow-premium bg-primary-600 hover:bg-primary-700"
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-3 text-xl">
                     {t('storeAnalyzerTeaser.cta')}
-                    <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                    <ArrowRight className="w-6 h-6 rtl:rotate-180 group-hover:translate-x-2 transition-transform" />
                   </span>
                 </Button>
               </Link>

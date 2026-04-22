@@ -149,7 +149,7 @@ File size: < 300KB
 ```
 public/images/
 ├── CartShift-Logo-Full.svg (Logo - good)
-├── the-team.png (Team photo - good)
+├── yotam-and-adi.png (Team photo - good)
 ├── website-builders-illustration.svg (Illustration - good)
 └── yotam-programmer.png (Team member - good)
 ```

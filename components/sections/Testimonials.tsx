@@ -129,7 +129,12 @@ export const Testimonials: React.FC = () => {
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.1, type: 'spring', stiffness: 200 }}
                 >
-                  <Icon name="star" className="w-6 h-6 md:w-7 md:h-7 text-amber-400" size={28} />
+                  <Icon
+                    name="star"
+                    className="w-6 h-6 md:w-7 md:h-7 text-amber-400"
+                    size={28}
+                    fill="currentColor"
+                  />
                 </motion.div>
               ))}
             </div>
@@ -171,7 +176,7 @@ export const Testimonials: React.FC = () => {
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.5, delay: index * 0.1, type: 'spring' }}
             >
-              <div className="h-full liquid-glass liquid-glass-highlight rounded-2xl p-7 md:p-8 group hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+              <div className="h-full liquid-glass liquid-glass-highlight rounded-2xl p-7 md:p-8 transition-all duration-300 relative overflow-hidden">
                 {/* Subtle quote icon */}
                 <div className="absolute top-4 end-4 text-4xl font-serif text-accent-500/10 select-none">
                   "
@@ -180,7 +185,13 @@ export const Testimonials: React.FC = () => {
                 {/* Star Rating */}
                 <div className="flex gap-1 mb-5">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Icon key={i} name="star" className="w-4 h-4 text-amber-400" size={16} />
+                    <Icon
+                      key={i}
+                      name="star"
+                      className="w-4 h-4 text-amber-400"
+                      size={16}
+                      fill="currentColor"
+                    />
                   ))}
                 </div>
 

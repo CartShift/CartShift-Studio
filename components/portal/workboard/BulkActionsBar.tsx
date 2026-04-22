@@ -43,7 +43,7 @@ export function BulkActionsBar({
               {/* Move Actions */}
               <div className="flex items-center gap-1">
                 <span className="text-xs text-surface-400 me-2 uppercase font-bold tracking-wider hidden md:inline">
-                  Move to:
+                  {t('workboard.bulkActions.moveTo')}
                 </span>
                 <Button
                   size="xs"
@@ -51,7 +51,7 @@ export function BulkActionsBar({
                   className="text-white hover:bg-surface-800"
                   onClick={() => onMoveTo('IN_PROGRESS')}
                 >
-                  In Progress
+                  {t('workboard.columns.inProgress')}
                 </Button>
                 <Button
                   size="xs"
@@ -59,7 +59,7 @@ export function BulkActionsBar({
                   className="text-white hover:bg-surface-800"
                   onClick={() => onMoveTo('IN_REVIEW')}
                 >
-                  Review
+                  {t('workboard.columns.review')}
                 </Button>
                 <Button
                   size="xs"
@@ -67,7 +67,7 @@ export function BulkActionsBar({
                   className="text-white hover:bg-surface-800"
                   onClick={() => onMoveTo('DELIVERED')}
                 >
-                  Delivered
+                  {t('workboard.columns.delivered')}
                 </Button>
               </div>
 

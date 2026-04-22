@@ -34,7 +34,7 @@ interface InfoCardProps {
 }
 
 const InfoCard = ({ icon, title, description }: InfoCardProps) => (
-  <div className="group p-4 rounded-xl bg-surface-100/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/50 hover:border-accent-500/30 dark:hover:border-accent-500/30 transition-all">
+  <div className="group p-4 rounded-xl bg-surface-100/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/50 transition-all">
     <div className="flex items-start gap-3">
       <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent-500/10 dark:bg-accent-500/20 flex items-center justify-center text-accent-600 dark:text-accent-400">
         <Icon name={icon} size={16} />

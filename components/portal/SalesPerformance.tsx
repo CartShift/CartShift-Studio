@@ -305,7 +305,7 @@ const TopClientRow: React.FC<TopClientRowProps> = ({ rank, name, revenue, deals,
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, delay: rank * 0.1 }}
-      className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors group"
+      className="flex items-center gap-4 p-3 rounded-xl transition-colors group"
     >
       <div
         className={cn(

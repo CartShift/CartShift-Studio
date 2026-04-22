@@ -16,6 +16,9 @@ interface RequestCardProps {
   locale: string;
   isMounted: boolean;
   onDelete?: () => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: () => void;
 }
 
 export function RequestCard({
@@ -26,11 +29,7 @@ export function RequestCard({
   selectable,
   selected,
   onSelect,
-}: RequestCardProps & {
-  selectable?: boolean;
-  selected?: boolean;
-  onSelect?: () => void;
-}) {
+}: RequestCardProps) {
   const t = useTranslations('portal');
 
   return (

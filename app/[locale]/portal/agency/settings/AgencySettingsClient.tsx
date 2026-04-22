@@ -1242,7 +1242,7 @@ export default function AgencysClient() {
                     <div
                       key={service.id}
                       className={cn(
-                        'p-5 rounded-2xl border transition-all hover:shadow-md group',
+                        'p-5 rounded-2xl border transition-all group',
                         service.isActive
                           ? 'bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-800'
                           : 'bg-surface-50/50 dark:bg-surface-900/30 border-surface-100 dark:border-surface-800/50 opacity-60'

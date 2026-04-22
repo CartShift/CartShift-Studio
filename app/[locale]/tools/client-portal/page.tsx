@@ -16,21 +16,21 @@ export async function generateMetadata({
   const { locale } = await params;
   return genMeta(
     {
-      title: 'Client Portal | Project Management Made Simple',
+      title: 'Client Portal for CartShift Clients | Track Projects, Files, and Requests',
       description:
-        'Manage your projects with ease. Track requests, review progress, share files, and communicate with our team — all in one place. No more email chains or lost messages.',
+        'A dedicated client workspace for CartShift projects. Approved clients can track requests, review deliverables, share files, and keep communication in one organized place.',
       url: '/tools/client-portal',
       keywords: [
         'client portal',
-        'project management',
+        'cartshift client portal',
+        'project dashboard',
         'request tracking',
         'file sharing',
-        'team collaboration',
-        'project dashboard',
         'real-time updates',
         'client communication',
         'project transparency',
       ],
+      noindex: true,
     },
     locale as 'en' | 'he'
   );
@@ -54,6 +54,7 @@ export default async function ClientPortalPage({
     name: 'CartShift Client Portal',
     description:
       'A dedicated client portal for managing projects, tracking requests, sharing files, and staying connected with your development team.',
+    url: '/tools/client-portal',
     operatingSystem: 'Any',
     applicationCategory: 'BusinessApplication',
     offers: {

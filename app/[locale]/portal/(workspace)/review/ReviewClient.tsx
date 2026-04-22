@@ -47,10 +47,10 @@ function WhyShareCard() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 + 0.2 }}
-              className="flex items-start gap-3 group"
+              className="flex items-start gap-3"
             >
               <div
-                className={`p-2 rounded-lg bg-gradient-to-br ${gradients[index]} shadow-md shrink-0 group-hover:scale-110 transition-transform duration-200`}
+                className={`p-2 rounded-lg bg-gradient-to-br ${gradients[index]} shadow-md shrink-0 transition-transform duration-200`}
               >
                 {(() => {
                   const Icon = icons[index];

@@ -17,6 +17,7 @@ export async function generateMetadata({
         'CartShift Studio terms of service. Read our terms and conditions for using our website and services.',
       url: '/terms',
       keywords: ['terms of service', 'terms and conditions', 'legal', 'user agreement'],
+      noindex: true,
     },
     locale as 'en' | 'he'
   );

@@ -333,12 +333,12 @@ export default function FilesClient() {
                               />
                             </button>
                           ) : (
-                            <div className="w-12 h-12 rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex items-center justify-center text-surface-400 group-hover:text-blue-500 transition-all shadow-sm">
+                            <div className="w-12 h-12 rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex items-center justify-center text-surface-400 transition-all shadow-sm">
                               {getIcon(file.mimeType)}
                             </div>
                           )}
                           <div className="flex flex-col min-w-0">
-                            <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-[200px] md:max-w-xs font-outfit leading-tight">
+                            <span className="font-bold text-surface-900 dark:text-white transition-colors truncate max-w-[200px] md:max-w-xs font-outfit leading-tight">
                               {file.originalName}
                             </span>
                             <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter mt-1">

@@ -78,7 +78,7 @@ export const FAQ: React.FC<FAQProps> = ({
             variants={faqItem}
             custom={index * 0.1}
             layout
-            className="border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden bg-white dark:bg-surface-800 shadow-sm hover:shadow-md transition-shadow"
+            className="border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden bg-white dark:bg-surface-800 shadow-sm transition-shadow"
           >
             <button
               onClick={() => toggleItem(index)}

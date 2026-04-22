@@ -374,11 +374,11 @@ export default function AgencyClientsClient() {
             <Card
               key={org.id}
               noPadding
-              className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group"
+              className="border-surface-200 dark:border-surface-800 shadow-sm transition-all group"
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-6">
-                  <div className="w-14 h-14 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-14 h-14 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl flex items-center justify-center shadow-inner transition-transform duration-300">
                     <Briefcase size={28} className="text-blue-600 opacity-80" />
                   </div>
                   <div className="flex items-center gap-2">
@@ -412,7 +412,7 @@ export default function AgencyClientsClient() {
                         {t('agency.clients.you' as any)}
                       </Badge>
                     )}
-                    <div className="text-surface-300 hover:text-surface-900 dark:hover:text-white transition-colors">
+                    <div className="text-surface-300 transition-colors">
                       <Dropdown
                         trigger={<MoreVertical size={18} />}
                         align="right"
@@ -520,10 +520,10 @@ export default function AgencyClientsClient() {
                 </div>
               </div>
 
-              <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl group-hover:bg-blue-600 transition-colors">
+              <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl transition-colors">
                 <Link
                   href={getPortalPath(`/agency/clients/${org.id}/`)}
-                  className="flex items-center justify-between group-hover:text-white text-blue-600 dark:text-blue-400 transition-colors"
+                  className="flex items-center justify-between text-blue-600 dark:text-blue-400 transition-colors"
                 >
                   <span className="text-xs font-black uppercase tracking-widest">
                     {t('agency.clients.detail.overview' as any)}

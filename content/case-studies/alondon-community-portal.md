@@ -10,7 +10,7 @@ siteUrl: 'https://alondon.net/'
 brand:
   primary: '#b82e2c'
   accent: '#f0d8bf'
-thumbnail: '/images/case-studies/alondon-community-portal/gallery-01.jpg?v=20260422b'
+thumbnail: '/images/case-studies/alondon-community-portal/hero.jpg?v=20260422b'
 heroImage: '/images/case-studies/alondon-community-portal/hero.jpg?v=20260422b'
 hero:
   image: '/images/case-studies/alondon-community-portal/hero.jpg?v=20260422b'

@@ -58,10 +58,7 @@ export function ClientList({ clients, currentUserId, onViewAsClient, onDelete }:
             {clients.map(client => {
               const isMyClient = currentUserId === client.responsibleAgencyUserId;
               return (
-                <tr
-                  key={client.id}
-                  className="group hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
-                >
+                <tr key={client.id} className="group transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
                       <Avatar

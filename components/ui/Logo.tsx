@@ -45,12 +45,7 @@ export const Logo: React.FC<LogoProps> = ({ className, size = 'md', disableLink 
 
   if (disableLink) {
     return (
-      <div
-        className={cn(
-          'group flex items-center transition-all duration-300 hover:scale-[1.02]',
-          className
-        )}
-      >
+      <div className={cn('group flex items-center transition-all duration-300', className)}>
         {content}
       </div>
     );

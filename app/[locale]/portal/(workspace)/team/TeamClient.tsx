@@ -171,7 +171,7 @@ export default function TeamClient() {
               {members.map(member => (
                 <div
                   key={member.id}
-                  className="p-5 flex items-center justify-between hover:bg-surface-50/50 dark:hover:bg-surface-900/30 transition-colors group !overflow-visible relative"
+                  className="p-5 flex items-center justify-between transition-colors !overflow-visible relative"
                   style={{ overflow: 'visible' }}
                 >
                   <div className="flex items-center gap-4">
@@ -179,7 +179,7 @@ export default function TeamClient() {
                       src={member.photoUrl}
                       name={member.name}
                       size="md"
-                      className="rounded-2xl shadow-sm group-hover:scale-105 transition-transform"
+                      className="rounded-2xl shadow-sm transition-transform"
                     />
                     <div>
                       <h4 className="font-bold text-surface-900 dark:text-white leading-none mb-1.5 font-outfit">
@@ -320,8 +320,8 @@ export default function TeamClient() {
             </div>
           </Card>
 
-          <Card className="bg-surface-900 border-none shadow-2xl relative overflow-hidden group">
-            <div className="absolute -end-8 -bottom-8 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+          <Card className="bg-surface-900 border-none shadow-2xl relative overflow-hidden">
+            <div className="absolute -end-8 -bottom-8 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl transition-transform duration-1000" />
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-bold text-sm text-white font-outfit">{t('team.capacity')}</h4>
