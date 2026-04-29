@@ -23,6 +23,12 @@ const messages = {
       all: 'All Projects',
       shopify: 'Shopify',
       wordpress: 'WordPress',
+      webApps: 'Web Apps',
+    },
+    platformLabels: {
+      shopify: 'Shopify',
+      wordpress: 'WordPress',
+      webApp: 'Web App',
     },
     cta: {
       title: 'Ready to join our',

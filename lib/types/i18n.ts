@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-04-22T22:22:35.257Z
+ * Last updated: 2026-04-28T11:34:56.214Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -127,6 +127,11 @@ export interface Cv {
     visitProject: string;
     projects: {
       cartshift: {
+        eyebrow: string;
+        description: string;
+        signals: string;
+      };
+      atlasIrwin: {
         eyebrow: string;
         description: string;
         signals: string;
@@ -3146,6 +3151,12 @@ export interface Work {
     all: string;
     shopify: string;
     wordpress: string;
+    webApps: string;
+  };
+  platformLabels: {
+    shopify: string;
+    wordpress: string;
+    webApp: string;
   };
   cta: {
     title: string;
@@ -3908,6 +3919,9 @@ export type TranslationKey =
   | 'cv.portfolio.featuredLabel'
   | 'cv.portfolio.intro'
   | 'cv.portfolio.liveLabel'
+  | 'cv.portfolio.projects.atlasIrwin.description'
+  | 'cv.portfolio.projects.atlasIrwin.eyebrow'
+  | 'cv.portfolio.projects.atlasIrwin.signals'
   | 'cv.portfolio.projects.cartshift.description'
   | 'cv.portfolio.projects.cartshift.eyebrow'
   | 'cv.portfolio.projects.cartshift.signals'
@@ -6056,12 +6070,16 @@ export type TranslationKey =
   | 'work.empty.title'
   | 'work.filters.all'
   | 'work.filters.shopify'
+  | 'work.filters.webApps'
   | 'work.filters.wordpress'
   | 'work.hero.badge'
   | 'work.hero.description'
   | 'work.hero.featuredLabel'
   | 'work.hero.subtitle'
   | 'work.hero.title'
+  | 'work.platformLabels.shopify'
+  | 'work.platformLabels.webApp'
+  | 'work.platformLabels.wordpress'
   | 'work.viewProject';
 
 export type TranslationNamespace =

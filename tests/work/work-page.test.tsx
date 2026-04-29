@@ -75,6 +75,41 @@ const caseStudies: CaseStudyMeta[] = [
       },
     ],
   },
+  {
+    slug: 'web-app-project',
+    title: 'Atlas Web App Project',
+    client: 'Atlas Irwin',
+    industry: 'Music & Artist Branding',
+    platform: 'Next.js + Vercel',
+    duration: '',
+    featured: false,
+    siteUrl: 'https://atlas-irwin.vercel.app/',
+    brand: { primary: '#4b2178', accent: '#d7ff4f' },
+    hero: {
+      image: '/images/case-studies/atlas/hero.jpg',
+      alt: 'Atlas hero',
+      supportingCopy: 'Atlas support copy',
+    },
+    overview: {
+      title: 'Atlas overview',
+      summary: 'Atlas summary',
+    },
+    thumbnail: '/images/case-studies/atlas/hero.jpg',
+    heroImage: '/images/case-studies/atlas/hero.jpg',
+    summary: 'Next.js web app case study summary.',
+    results: [],
+    services: ['Next.js Development', 'Responsive Frontend'],
+    deliverables: [],
+    gallery: [],
+    evidence: [
+      {
+        title: 'Artist identity launched',
+        value: 'Brand-first Hero',
+        description: 'The artist website is live.',
+        tone: 'qualitative',
+      },
+    ],
+  },
 ];
 
 describe('WorkPageContent', () => {
@@ -84,6 +119,7 @@ describe('WorkPageContent', () => {
     expect(screen.getByRole('heading', { name: 'Our Work' })).toBeInTheDocument();
     expect(screen.getAllByText('Featured Shopify Project').length).toBeGreaterThan(0);
     expect(screen.getAllByText('WordPress Publishing Project').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Atlas Web App Project').length).toBeGreaterThan(0);
     expect(screen.getAllByText('View Project').length).toBeGreaterThan(1);
   });
 
@@ -96,5 +132,19 @@ describe('WorkPageContent', () => {
 
     expect(screen.queryByText('Featured Shopify Project')).not.toBeInTheDocument();
     expect(screen.getAllByText('WordPress Publishing Project').length).toBeGreaterThan(0);
+  });
+
+  it('filters the grid by web app category', async () => {
+    const user = userEvent.setup();
+
+    render(<WorkPageContent caseStudies={caseStudies} />);
+
+    await user.click(screen.getByRole('button', { name: 'Web Apps' }));
+
+    expect(screen.queryByText('Featured Shopify Project')).not.toBeInTheDocument();
+    expect(screen.queryByText('WordPress Publishing Project')).not.toBeInTheDocument();
+    expect(screen.getAllByText('Atlas Web App Project').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Web App').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Next.js + Vercel')).not.toBeInTheDocument();
   });
 });

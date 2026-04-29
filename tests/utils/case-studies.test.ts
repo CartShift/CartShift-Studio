@@ -38,6 +38,24 @@ describe('case studies normalization', () => {
     expect(study?.platform).toContain('WooCommerce');
   });
 
+  it('loads Atlas Irwin with homepage-led assets and qualitative evidence', () => {
+    const study = getCaseStudyBySlug('atlas-irwin-music-identity', 'en');
+
+    expect(study).not.toBeNull();
+    expect(study?.siteUrl).toBe('https://atlas-irwin.vercel.app/');
+    expect(study?.platform).toBe('Next.js + Vercel');
+    expect(study?.thumbnail).toBe('/images/case-studies/atlas-irwin-music-identity/hero.jpg');
+    expect(study?.gallery[0]?.image).toBe(study?.hero.image);
+    expect(study?.evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          value: 'Brand-first Hero',
+          tone: 'qualitative',
+        }),
+      ])
+    );
+  });
+
   it('keeps the homepage hero image as the first gallery item and default thumbnail', () => {
     const normalized = normalizeCaseStudyRecord(
       {

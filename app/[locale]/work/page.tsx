@@ -18,14 +18,16 @@ export async function generateMetadata({
   const featured = getAllCaseStudies(locale)[0];
   return genMeta(
     {
-      title: 'Shopify and WordPress Case Studies | Stores, Migrations, and Growth Projects',
+      title: 'Shopify, WordPress, and Web App Case Studies | CartShift Studio Work',
       description:
-        'Explore recent CartShift projects across Shopify, WordPress, migrations, and performance optimization. See how we turn technical work into faster stores and clearer growth paths.',
+        'Explore recent CartShift projects across Shopify, WordPress, custom web apps, migrations, and performance optimization. See how we turn technical work into sharper digital products and clearer growth paths.',
       url: '/work',
       image: featured?.hero.image,
       keywords: [
         'shopify case studies',
         'wordpress case studies',
+        'web app case studies',
+        'next.js case studies',
         'ecommerce migration case study',
         'shopify performance optimization',
         'client work',
@@ -47,9 +49,9 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   ]);
 
   const collectionSchema = generateCollectionPageSchema({
-    name: 'Our Work | Shopify & WordPress Projects',
+    name: 'Our Work | Shopify, WordPress & Web App Projects',
     description:
-      'Recent Shopify, WordPress, migration, and optimization projects from CartShift Studio.',
+      'Recent Shopify, WordPress, web app, migration, and optimization projects from CartShift Studio.',
     url: '/work',
     items: caseStudies.map(cs => ({
       name: cs.title,

@@ -18,7 +18,7 @@
       "languages": "Languages"
     },
     "portfolio": {
-      "intro": "Three live products I conceived, designed, built, and continue to operate across agency services, visual productivity, and AI-powered compliance workflows.",
+      "intro": "Four live products and projects I conceived, designed, built, and continue to operate across agency services, artist branding, visual productivity, and AI-powered compliance workflows.",
       "liveLabel": "Live project",
       "featuredLabel": "Founder-led",
       "visitProject": "Visit live project",
@@ -29,6 +29,14 @@
           "signals": [
             "Agency brand, lead-gen, and portal UX",
             "Conversion-minded Shopify & WordPress positioning"
+          ]
+        },
+        "atlasIrwin": {
+          "eyebrow": "Atlas Irwin",
+          "description": "A music artist website that turns a release campaign into an immersive digital home, combining bold identity, platform links, contact paths, and newsletter capture in a fast Vercel-hosted experience.",
+          "signals": [
+            "Artist identity, release UX, and fan conversion",
+            "Next.js frontend with polished responsive visuals"
           ]
         },
         "starlinker": {

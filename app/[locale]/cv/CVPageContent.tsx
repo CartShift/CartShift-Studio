@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from '@/lib/motion';
 import { Link } from '@/i18n/navigation';
 import { trackCTAClick, trackOutboundLink } from '@/lib/analytics';
@@ -21,6 +22,8 @@ import {
   Target,
   TrendingUp,
   ArrowUpRight,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
@@ -85,43 +88,98 @@ const languagePercentages: Record<string, number> = {
 };
 
 interface PortfolioProject {
-  key: 'cartshift' | 'starlinker' | 'rightflow';
+  key: 'cartshift' | 'atlasIrwin' | 'starlinker' | 'rightflow';
   href: string;
   domain: string;
-  imageSrc: string;
+  imageVariants: {
+    en: {
+      light: string;
+      dark?: string;
+    };
+    he?: {
+      light?: string;
+      dark?: string;
+    };
+  };
   gradient: string;
   surface: string;
   featured?: boolean;
 }
 
+function getPortfolioImageVariants(project: PortfolioProject, locale: string) {
+  const fallback = project.imageVariants.en;
+  const preferred = locale === 'he' ? project.imageVariants.he : fallback;
+  const light = preferred?.light ?? preferred?.dark ?? fallback.light;
+  const dark = preferred?.dark ?? preferred?.light ?? fallback.dark ?? fallback.light;
+
+  return { light, dark };
+}
+
 const portfolioProjects: PortfolioProject[] = [
   {
-    key: 'cartshift',
-    href: 'https://cart-shift.com/en',
-    domain: 'cart-shift.com',
-    imageSrc: '/images/cv/portfolio/cartshift-shot.png',
-    gradient: 'from-primary-500 via-cyan-500 to-accent-500',
+    key: 'rightflow',
+    href: 'https://right-flow.com',
+    domain: 'right-flow.com',
+    imageVariants: {
+      en: {
+        light: '/images/cv/portfolio/rightflow-en-light.png',
+        dark: '/images/cv/portfolio/rightflow-en-dark.png',
+      },
+      he: {
+        light: '/images/cv/portfolio/rightflow-he-light.png',
+        dark: '/images/cv/portfolio/rightflow-he-dark.png',
+      },
+    },
+    gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
     surface:
-      'from-primary-500/[0.16] via-cyan-500/[0.08] to-accent-500/[0.14] dark:from-primary-500/[0.14] dark:via-cyan-500/[0.05] dark:to-accent-500/[0.12]',
-    featured: true,
+      'from-emerald-500/[0.14] via-teal-500/[0.08] to-cyan-500/[0.14] dark:from-emerald-500/[0.14] dark:via-teal-500/[0.05] dark:to-cyan-500/[0.12]',
   },
   {
     key: 'starlinker',
     href: 'https://starlinker.io',
     domain: 'starlinker.io',
-    imageSrc: '/images/cv/portfolio/starlinker-shot.png',
+    imageVariants: {
+      en: {
+        light: '/images/cv/portfolio/starlinker-en-light.png',
+        dark: '/images/cv/portfolio/starlinker-en-dark.png',
+      },
+    },
     gradient: 'from-indigo-500 via-sky-500 to-cyan-400',
     surface:
       'from-indigo-500/[0.14] via-sky-500/[0.08] to-cyan-400/[0.14] dark:from-indigo-500/[0.14] dark:via-sky-500/[0.05] dark:to-cyan-400/[0.12]',
   },
   {
-    key: 'rightflow',
-    href: 'https://right-flow.com',
-    domain: 'right-flow.com',
-    imageSrc: '/images/cv/portfolio/rightflow-shot.png',
-    gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+    key: 'atlasIrwin',
+    href: 'https://atlas-irwin.vercel.app/',
+    domain: 'atlas-irwin.vercel.app',
+    imageVariants: {
+      en: {
+        light: '/images/cv/portfolio/atlas-irwin-en-light.png',
+        dark: '/images/cv/portfolio/atlas-irwin-en-dark.png',
+      },
+    },
+    gradient: 'from-fuchsia-600 via-cyan-400 to-lime-300',
     surface:
-      'from-emerald-500/[0.14] via-teal-500/[0.08] to-cyan-500/[0.14] dark:from-emerald-500/[0.14] dark:via-teal-500/[0.05] dark:to-cyan-500/[0.12]',
+      'from-fuchsia-600/[0.14] via-cyan-400/[0.08] to-lime-300/[0.14] dark:from-fuchsia-600/[0.14] dark:via-cyan-400/[0.05] dark:to-lime-300/[0.12]',
+  },
+  {
+    key: 'cartshift',
+    href: 'https://cart-shift.com/en',
+    domain: 'cart-shift.com',
+    imageVariants: {
+      en: {
+        light: '/images/cv/portfolio/cartshift-en-light.png',
+        dark: '/images/cv/portfolio/cartshift-en-dark.png',
+      },
+      he: {
+        light: '/images/cv/portfolio/cartshift-he-light.png',
+        dark: '/images/cv/portfolio/cartshift-he-dark.png',
+      },
+    },
+    gradient: 'from-primary-500 via-cyan-500 to-accent-500',
+    surface:
+      'from-primary-500/[0.16] via-cyan-500/[0.08] to-accent-500/[0.14] dark:from-primary-500/[0.14] dark:via-cyan-500/[0.05] dark:to-accent-500/[0.12]',
+    featured: true,
   },
 ];
 
@@ -248,13 +306,20 @@ function PortfolioPreview({
   project,
   title,
   label,
+  locale,
   onOpen,
 }: {
   project: PortfolioProject;
   title: string;
   label: string;
+  locale: string;
   onOpen: () => void;
 }) {
+  const screenshots = getPortfolioImageVariants(project, locale);
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light');
+  const isLightPreview = previewTheme === 'light';
+  const isDarkPreview = previewTheme === 'dark';
+
   return (
     <a
       href={project.href}
@@ -270,17 +335,68 @@ function PortfolioPreview({
           <span className="h-2.5 w-2.5 rounded-full bg-amber-300/90" />
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
         </div>
-        <div className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-white/70">
-          {label}
+        <div className="flex min-w-0 items-center gap-2">
+          <div
+            className="hidden items-center rounded-full border border-white/10 bg-white/[0.06] p-0.5 text-white/70 sm:flex"
+            role="group"
+            aria-label="Preview theme"
+          >
+            <button
+              type="button"
+              aria-label="Preview light screenshot"
+              aria-pressed={isLightPreview}
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setPreviewTheme('light');
+              }}
+              className={`inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
+                isLightPreview ? 'bg-white text-slate-950' : 'text-white/42 hover:text-white/78'
+              }`}
+            >
+              <Sun className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              aria-label="Preview dark screenshot"
+              aria-pressed={isDarkPreview}
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setPreviewTheme('dark');
+              }}
+              className={`inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
+                isDarkPreview ? 'bg-white text-slate-950' : 'text-white/42 hover:text-white/78'
+              }`}
+            >
+              <Moon className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="max-w-[9rem] truncate rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-white/70 sm:max-w-[11rem]">
+            {label}
+          </div>
         </div>
       </div>
 
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
-          src={project.imageSrc}
-          alt={title}
+          src={screenshots.light}
+          alt=""
           fill
-          className="object-cover object-top transition-transform duration-700 group-hover/mockup:scale-[1.03]"
+          aria-hidden="true"
+          className={`object-cover object-top transition-[opacity,transform] duration-700 group-hover/mockup:scale-[1.03] ${
+            isLightPreview ? 'opacity-100' : 'opacity-0'
+          }`}
+          sizes="(min-width: 1024px) 44vw, 100vw"
+        />
+        <Image
+          src={screenshots.dark}
+          alt=""
+          fill
+          aria-hidden="true"
+          className={`object-cover object-top transition-[opacity,transform] duration-700 group-hover/mockup:scale-[1.03] ${
+            isDarkPreview ? 'opacity-100' : 'opacity-0'
+          }`}
           sizes="(min-width: 1024px) 44vw, 100vw"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08)_0%,rgba(2,6,23,0.16)_42%,rgba(2,6,23,0.62)_100%)]" />
@@ -418,12 +534,12 @@ export default function CVPageContent() {
                 </div>
 
                 {/* Status indicator - subtle */}
-                <div className="absolute -bottom-1 -end-1 flex items-center gap-1.5 px-2.5 py-1 bg-white/90 dark:bg-emerald-500/90 rounded-full border border-slate-200 dark:border-transparent shadow-sm">
+                <div className="absolute -bottom-1 -end-1 flex items-center gap-1.5 rounded-full border border-slate-900/10 bg-slate-950/95 px-3 py-1.5 shadow-lg shadow-slate-900/22 ring-1 ring-white/70 dark:border-transparent dark:bg-emerald-500/90 dark:shadow-none dark:ring-0">
                   <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 dark:bg-white opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 dark:bg-white"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75 dark:bg-white"></span>
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300 dark:bg-white"></span>
                   </span>
-                  <span className="text-[10px] font-medium text-white uppercase tracking-wide">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white">
                     Open to work
                   </span>
                 </div>
@@ -969,6 +1085,7 @@ export default function CVPageContent() {
                         project={project}
                         title={`${project.domain} preview`}
                         label={project.domain}
+                        locale={locale}
                         onOpen={() => handlePortfolioProjectClick(project)}
                       />
                     </div>
@@ -1027,21 +1144,21 @@ export default function CVPageContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-30px' }}
             transition={{ duration: 0.5, delay: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 px-5 py-6 text-white shadow-2xl shadow-slate-900/20 dark:border-white/[0.08] sm:px-6 lg:px-8"
+            className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/78 px-5 py-6 text-slate-950 shadow-2xl shadow-slate-200/70 backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-950 dark:text-white dark:shadow-slate-900/20 sm:px-6 lg:px-8"
           >
             <div
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.18),_transparent_36%)]"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.14),_transparent_36%),linear-gradient(135deg,rgba(248,250,252,0.92),rgba(226,232,240,0.5))] dark:bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.18),_transparent_36%)]"
               aria-hidden="true"
             />
             <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.26em] text-white/50">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.26em] text-slate-500 dark:text-white/50">
                   {portfolio.clients.kicker}
                 </p>
-                <h3 className="text-2xl sm:text-3xl font-bold tracking-[-0.03em] text-white">
+                <h3 className="text-2xl font-bold tracking-[-0.03em] text-slate-950 dark:text-white sm:text-3xl">
                   {portfolio.clients.title}
                 </h3>
-                <p className="mt-3 text-sm sm:text-base leading-relaxed text-white/72">
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-white/72 sm:text-base">
                   {portfolio.clients.description}
                 </p>
               </div>
@@ -1049,7 +1166,7 @@ export default function CVPageContent() {
               <Link
                 href="/work"
                 onClick={handlePortfolioWorkClick}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-white/12 bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-300 hover:bg-white/90"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-slate-900/10 bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition-all duration-300 hover:bg-slate-800 dark:border-white/12 dark:bg-white dark:text-slate-950 dark:shadow-none dark:hover:bg-white/90"
               >
                 <span>{portfolio.clients.cta}</span>
                 <ChevronRight className={`h-4 w-4 ${isRTL ? 'rotate-180' : ''}`} />

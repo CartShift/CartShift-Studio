@@ -34,6 +34,7 @@
     "i18n:watch": "node scripts/merge-translations-watch.js",
     "i18n:types": "node scripts/generate-i18n-types.js",
     "diagnose:puppeteer": "node scripts/diagnose-puppeteer.js",
+    "capture:cv-portfolio": "node scripts/capture-cv-portfolio-screenshots.js",
     "test:analyzer": "node scripts/test-analyzer.js",
     "prepare": "husky"
   },

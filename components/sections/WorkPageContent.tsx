@@ -33,9 +33,60 @@ function getProjectProof(caseStudy: CaseStudyMeta) {
   return caseStudy.platform;
 }
 
+type WorkFilterKey = 'all' | 'shopify' | 'wordpress' | 'webApps';
+
+function isWebAppCaseStudy(caseStudy: CaseStudyMeta) {
+  const platform = caseStudy.platform.toLowerCase();
+  const services = caseStudy.services.join(' ').toLowerCase();
+  const combined = `${platform} ${services}`;
+
+  return (
+    combined.includes('next.js') ||
+    combined.includes('nextjs') ||
+    combined.includes('vercel') ||
+    combined.includes('web app') ||
+    combined.includes('webapp') ||
+    combined.includes('frontend')
+  );
+}
+
+function matchesWorkFilter(caseStudy: CaseStudyMeta, filter: WorkFilterKey) {
+  if (filter === 'all') {
+    return true;
+  }
+
+  if (filter === 'webApps') {
+    return isWebAppCaseStudy(caseStudy);
+  }
+
+  return caseStudy.platform.toLowerCase().includes(filter);
+}
+
+function getClientFacingPlatformLabel(
+  caseStudy: CaseStudyMeta,
+  labels: WorkTranslations['platformLabels']
+) {
+  const platform = caseStudy.platform.toLowerCase();
+
+  if (platform.includes('shopify')) {
+    return labels.shopify;
+  }
+
+  if (platform.includes('wordpress') || platform.includes('woocommerce')) {
+    return labels.wordpress;
+  }
+
+  if (isWebAppCaseStudy(caseStudy)) {
+    return labels.webApp;
+  }
+
+  return caseStudy.platform;
+}
+
 type WorkTranslations = {
   hero: { title: string; subtitle: string; description: string; badge: string };
-  filters: { all: string; shopify: string; wordpress: string };
+  filters: { all: string; shopify: string; wordpress: string; webApps: string };
+  platformLabels: { shopify: string; wordpress: string; webApp: string };
   cta: { title: string; titleSpan: string; description: string; button: string };
   detail: { selectedScreens: string; evidenceTitle: string };
   viewProject: string;
@@ -44,7 +95,7 @@ type WorkTranslations = {
 
 export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = [] }) => {
   const t = useTranslations();
-  const [activeFilter, setActiveFilter] = useState<'all' | 'shopify' | 'wordpress'>('all');
+  const [activeFilter, setActiveFilter] = useState<WorkFilterKey>('all');
   const { scrollY } = useScroll();
   const heroImageY = useTransform(scrollY, [0, 520], [0, 120]);
   const heroImageScale = useTransform(scrollY, [0, 520], [1, 1.04]);
@@ -60,7 +111,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
       return caseStudies;
     }
 
-    return caseStudies.filter(study => study.platform.toLowerCase().includes(activeFilter));
+    return caseStudies.filter(study => matchesWorkFilter(study, activeFilter));
   }, [activeFilter, caseStudies]);
 
   const collageStudies = filteredCaseStudies.slice(0, 5);
@@ -76,14 +127,25 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
           .length,
         label: work.filters.wordpress,
       },
+      {
+        value: caseStudies.filter(isWebAppCaseStudy).length,
+        label: work.filters.webApps,
+      },
     ],
-    [caseStudies, work.filters.all, work.filters.shopify, work.filters.wordpress]
+    [
+      caseStudies,
+      work.filters.all,
+      work.filters.shopify,
+      work.filters.webApps,
+      work.filters.wordpress,
+    ]
   );
 
-  const filters: Array<{ key: 'all' | 'shopify' | 'wordpress'; label: string }> = [
+  const filters: Array<{ key: WorkFilterKey; label: string }> = [
     { key: 'all', label: work.filters.all },
     { key: 'shopify', label: work.filters.shopify },
     { key: 'wordpress', label: work.filters.wordpress },
+    { key: 'webApps', label: work.filters.webApps },
   ];
 
   const breadcrumbItems = [
@@ -189,7 +251,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
             )}
           </div>
 
-          <div className="mt-12 grid gap-3 md:grid-cols-3">
+          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {portfolioStats.map(stat => (
               <div
                 key={stat.label}
@@ -248,7 +310,11 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
                     href={`/work/${caseStudy.slug}`}
                     className="block h-full"
                   >
-                    <PortfolioWorkTile caseStudy={caseStudy} ctaLabel={work.viewProject} />
+                    <PortfolioWorkTile
+                      caseStudy={caseStudy}
+                      ctaLabel={work.viewProject}
+                      platformLabel={getClientFacingPlatformLabel(caseStudy, work.platformLabels)}
+                    />
                   </Link>
                 ))}
               </div>
@@ -297,9 +363,11 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
 function PortfolioWorkTile({
   caseStudy,
   ctaLabel,
+  platformLabel,
 }: {
   caseStudy: CaseStudyMeta;
   ctaLabel: string;
+  platformLabel: string;
 }) {
   const themeStyle = getCaseStudyThemeStyle(caseStudy.brand);
   const metaLine = caseStudy.duration
@@ -341,7 +409,7 @@ function PortfolioWorkTile({
               backgroundColor: 'rgba(var(--case-primary-rgb), 0.18)',
             }}
           >
-            {caseStudy.platform}
+            {platformLabel}
           </span>
           <span className="rounded-full border border-surface-200/80 bg-white/82 px-3 py-1 text-xs font-semibold text-surface-900 shadow-[0_12px_24px_-18px_rgba(148,163,184,0.5)] backdrop-blur-md dark:border-white/16 dark:bg-surface-950/84 dark:text-white dark:shadow-[0_18px_28px_-20px_rgba(2,6,23,0.6)]">
             {getProjectProof(caseStudy)}
@@ -374,7 +442,7 @@ function PortfolioWorkTile({
             {caseStudy.industry}
           </span>
           <span className="rounded-full border border-surface-200/80 bg-surface-100 px-3 py-1 text-sm font-medium text-surface-700 dark:border-white/14 dark:bg-surface-950 dark:!text-white dark:shadow-[0_18px_28px_-20px_rgba(2,6,23,0.6)]">
-            {caseStudy.platform}
+            {platformLabel}
           </span>
         </div>
         <div className="mt-auto pt-6">

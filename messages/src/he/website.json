@@ -899,7 +899,13 @@
     "filters": {
       "all": "כל הפרויקטים",
       "shopify": "שופיפיי",
-      "wordpress": "וורדפרס"
+      "wordpress": "וורדפרס",
+      "webApps": "אפליקציות Web"
+    },
+    "platformLabels": {
+      "shopify": "שופיפיי",
+      "wordpress": "וורדפרס",
+      "webApp": "Web App"
     },
     "cta": {
       "title": "מוכנים להצטרף",
