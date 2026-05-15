@@ -4,7 +4,7 @@ slug: 'atlas-irwin-music-identity'
 client: 'Atlas Irwin'
 industry: 'Music & Artist Branding'
 platform: 'Next.js + Vercel'
-siteUrl: 'https://atlas-irwin.vercel.app/'
+siteUrl: 'https://atlasirwin.com/'
 brand:
   primary: '#4b2178'
   accent: '#d7ff4f'

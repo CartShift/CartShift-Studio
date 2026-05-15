@@ -150,8 +150,8 @@ const portfolioProjects: PortfolioProject[] = [
   },
   {
     key: 'atlasIrwin',
-    href: 'https://atlas-irwin.vercel.app/',
-    domain: 'atlas-irwin.vercel.app',
+    href: 'https://atlasirwin.com/',
+    domain: 'atlasirwin.com',
     imageVariants: {
       en: {
         light: '/images/cv/portfolio/atlas-irwin-en-light.png',

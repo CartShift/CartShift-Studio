@@ -83,7 +83,7 @@ const caseStudies: CaseStudyMeta[] = [
     platform: 'Next.js + Vercel',
     duration: '',
     featured: false,
-    siteUrl: 'https://atlas-irwin.vercel.app/',
+    siteUrl: 'https://atlasirwin.com/',
     brand: { primary: '#4b2178', accent: '#d7ff4f' },
     hero: {
       image: '/images/case-studies/atlas/hero.jpg',

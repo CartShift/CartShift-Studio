@@ -42,7 +42,7 @@ describe('case studies normalization', () => {
     const study = getCaseStudyBySlug('atlas-irwin-music-identity', 'en');
 
     expect(study).not.toBeNull();
-    expect(study?.siteUrl).toBe('https://atlas-irwin.vercel.app/');
+    expect(study?.siteUrl).toBe('https://atlasirwin.com/');
     expect(study?.platform).toBe('Next.js + Vercel');
     expect(study?.thumbnail).toBe('/images/case-studies/atlas-irwin-music-identity/hero.jpg');
     expect(study?.gallery[0]?.image).toBe(study?.hero.image);

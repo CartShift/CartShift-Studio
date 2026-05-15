@@ -35,8 +35,8 @@ const projects = [
   {
     slug: 'atlas-irwin',
     variants: [
-      { locale: 'en', theme: 'light', url: 'https://atlas-irwin.vercel.app/' },
-      { locale: 'en', theme: 'dark', url: 'https://atlas-irwin.vercel.app/' },
+      { locale: 'en', theme: 'light', url: 'https://atlasirwin.com/' },
+      { locale: 'en', theme: 'dark', url: 'https://atlasirwin.com/' },
     ],
     async prepare(page, variant) {
       await page.goto(variant.url, { waitUntil: 'domcontentloaded' });
