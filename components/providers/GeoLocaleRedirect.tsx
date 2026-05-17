@@ -11,6 +11,10 @@ const USER_LOCALE_PREFERENCE_KEY = 'user_locale_preference';
 // Re-detect location after 7 days (in milliseconds)
 const GEO_CACHE_DURATION = 7 * 24 * 60 * 60 * 1000;
 
+export function isExplicitCvPath(pathname: string) {
+  return pathname === '/cv' || /^\/(en|he)\/cv(?:\/|$)/.test(pathname);
+}
+
 /**
  * GeoLocaleRedirect component
  *
@@ -28,6 +32,11 @@ export function GeoLocaleRedirect() {
   const router = useRouter();
 
   useEffect(() => {
+    // Explicit CV locale URLs are recruiter-facing and must never be geo-swapped.
+    if (isExplicitCvPath(pathname)) {
+      return;
+    }
+
     // Skip geo redirect for portal routes - user has already chosen their locale
     if (pathname.includes('/portal')) {
       return;

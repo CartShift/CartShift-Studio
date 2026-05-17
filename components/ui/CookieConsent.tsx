@@ -5,21 +5,32 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { Button } from './Button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/lib/utils';
 
 const COOKIE_CONSENT_KEY = 'cookie_consent';
 
-export const CookieConsent: React.FC = () => {
+interface CookieConsentProps {
+  variant?: 'default' | 'compact';
+  className?: string;
+  delayMs?: number;
+}
+
+export const CookieConsent: React.FC<CookieConsentProps> = ({
+  variant = 'default',
+  className,
+  delayMs = 1500,
+}) => {
   const [isVisible, setIsVisible] = useState(false);
   const t = useTranslations();
 
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!consent) {
-      const timer = setTimeout(() => setIsVisible(true), 1500);
+      const timer = setTimeout(() => setIsVisible(true), delayMs);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, []);
+  }, [delayMs]);
 
   const handleAccept = () => {
     localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
@@ -38,6 +49,8 @@ export const CookieConsent: React.FC = () => {
     learnMore: t('privacy.sections.cookies.consent.learnMore'),
   };
 
+  const isCompact = variant === 'compact';
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -46,30 +59,62 @@ export const CookieConsent: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-0 inset-x-0 z-[150] p-4 md:p-6"
+          className={cn(
+            'fixed inset-x-0 z-[150] p-3 print:hidden',
+            isCompact ? 'bottom-3 sm:bottom-4' : 'bottom-0 md:p-6',
+            className
+          )}
+          data-cookie-consent-variant={variant}
         >
-          <div className="max-w-4xl mx-auto bg-white dark:bg-surface-800 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div
+            className={cn(
+              'mx-auto border shadow-2xl',
+              isCompact
+                ? 'max-w-xl rounded-xl border-white/10 bg-slate-950/92 p-3 text-white backdrop-blur-xl shadow-slate-950/30'
+                : 'max-w-4xl rounded-2xl border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-800 md:p-6'
+            )}
+          >
+            <div
+              className={cn(
+                'flex gap-3',
+                isCompact ? 'items-center' : 'flex-col md:flex-row md:items-center md:gap-4'
+              )}
+            >
               <div className="flex-1">
-                <p className="text-surface-600 dark:text-surface-400 text-sm md:text-base">
+                <p
+                  className={cn(
+                    'leading-relaxed',
+                    isCompact
+                      ? 'text-xs text-white/78'
+                      : 'text-sm text-surface-600 dark:text-surface-400 md:text-base'
+                  )}
+                >
                   {content.message}{' '}
                   <Link
                     href="/privacy"
-                    className="text-accent-600 dark:text-accent-400 hover:underline"
-                    aria-label={`${content.learnMore} - Privacy Policy`}
+                    className={cn(
+                      'font-semibold hover:underline',
+                      isCompact ? 'text-primary-300' : 'text-accent-600 dark:text-accent-400'
+                    )}
+                    aria-label={content.learnMore}
                   >
-                    {content.learnMore} about our Privacy Policy
+                    {content.learnMore}
                   </Link>
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className={cn('flex items-center', isCompact ? 'shrink-0 gap-2' : 'gap-3')}>
                 <button
                   onClick={handleDecline}
-                  className="px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors"
+                  className={cn(
+                    'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isCompact
+                      ? 'text-white/60 hover:text-white'
+                      : 'text-surface-600 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white'
+                  )}
                 >
                   {content.decline}
                 </button>
-                <Button size="sm" onClick={handleAccept}>
+                <Button size={isCompact ? 'sm' : 'sm'} onClick={handleAccept}>
                   {content.accept}
                 </Button>
               </div>

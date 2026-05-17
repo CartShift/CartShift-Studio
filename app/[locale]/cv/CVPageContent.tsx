@@ -6,12 +6,15 @@ import { Link } from '@/i18n/navigation';
 import { trackCTAClick, trackOutboundLink } from '@/lib/analytics';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
+import { CookieConsent } from '@/components/ui/CookieConsent';
+import { CVDownloadButton } from './CVDownloadButton';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { Logo } from '@/components/ui/Logo';
 import {
   MapPin,
   Mail,
   Linkedin,
   Github,
-  Download,
   Briefcase,
   Code,
   Award,
@@ -19,7 +22,6 @@ import {
   ChevronRight,
   Sparkles,
   Zap,
-  Target,
   TrendingUp,
   ArrowUpRight,
   Moon,
@@ -35,12 +37,23 @@ interface SkillCategory {
 }
 
 const skillCategories: SkillCategory[] = [
-  { key: 'core', icon: Code, gradient: 'from-cyan-400 via-blue-500 to-indigo-600', bgGlow: 'cyan' },
   {
-    key: 'backend',
+    key: 'primary',
+    icon: Code,
+    gradient: 'from-cyan-400 via-blue-500 to-indigo-600',
+    bgGlow: 'cyan',
+  },
+  {
+    key: 'ecommerce',
     icon: Zap,
-    gradient: 'from-violet-400 via-purple-500 to-fuchsia-600',
-    bgGlow: 'violet',
+    gradient: 'from-amber-400 via-orange-500 to-red-600',
+    bgGlow: 'amber',
+  },
+  {
+    key: 'ai',
+    icon: Sparkles,
+    gradient: 'from-indigo-400 via-blue-500 to-cyan-600',
+    bgGlow: 'indigo',
   },
   {
     key: 'cloud',
@@ -49,22 +62,10 @@ const skillCategories: SkillCategory[] = [
     bgGlow: 'emerald',
   },
   {
-    key: 'ecommerce',
+    key: 'legacy',
     icon: TrendingUp,
-    gradient: 'from-amber-400 via-orange-500 to-red-600',
-    bgGlow: 'amber',
-  },
-  {
-    key: 'database',
-    icon: Target,
-    gradient: 'from-pink-400 via-rose-500 to-red-600',
-    bgGlow: 'pink',
-  },
-  {
-    key: 'apis',
-    icon: Sparkles,
-    gradient: 'from-indigo-400 via-blue-500 to-cyan-600',
-    bgGlow: 'indigo',
+    gradient: 'from-slate-400 via-slate-500 to-slate-700',
+    bgGlow: 'slate',
   },
 ];
 
@@ -187,6 +188,7 @@ const portfolioProjects: PortfolioProject[] = [
 const skillIconMap: Record<string, string> = {
   // Frontend & Core
   'Next.js 15': 'nextdotjs',
+  'Next.js 16': 'nextdotjs',
   React: 'react',
   TypeScript: 'typescript',
   JavaScript: 'javascript',
@@ -384,6 +386,7 @@ function PortfolioPreview({
           alt=""
           fill
           aria-hidden="true"
+          loading="eager"
           className={`object-cover object-top transition-[opacity,transform] duration-700 group-hover/mockup:scale-[1.03] ${
             isLightPreview ? 'opacity-100' : 'opacity-0'
           }`}
@@ -394,6 +397,7 @@ function PortfolioPreview({
           alt=""
           fill
           aria-hidden="true"
+          loading="eager"
           className={`object-cover object-top transition-[opacity,transform] duration-700 group-hover/mockup:scale-[1.03] ${
             isDarkPreview ? 'opacity-100' : 'opacity-0'
           }`}
@@ -432,10 +436,6 @@ export default function CVPageContent() {
     };
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const handlePortfolioProjectClick = (project: PortfolioProject) => {
     trackOutboundLink(project.href, project.domain);
     trackCTAClick(project.domain, 'cv_portfolio_project');
@@ -447,8 +447,15 @@ export default function CVPageContent() {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-950" dir={isRTL ? 'rtl' : 'ltr'}>
+      <a
+        href="#cv-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-50 focus:rounded-lg focus:bg-primary-600 focus:px-4 focus:py-2 focus:text-white"
+      >
+        Skip to CV content
+      </a>
+
       {/* Premium animated background */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="fixed inset-0 pointer-events-none print:hidden">
         {/* Main gradient mesh */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary-200/40 via-transparent to-transparent dark:from-primary-900/20" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-accent-200/40 via-transparent to-transparent dark:from-accent-900/20" />
@@ -499,7 +506,45 @@ export default function CVPageContent() {
         />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-24 lg:pb-48">
+      <header className="relative z-20 px-4 pt-4 sm:px-6 lg:px-8 print:hidden">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/70 px-3 py-3 shadow-lg shadow-slate-200/50 backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-950/60 dark:shadow-none sm:px-4">
+          <Logo size="sm" />
+          <nav
+            aria-label="CV actions"
+            className="flex flex-wrap items-center justify-end gap-2 text-sm"
+          >
+            <a
+              href="mailto:yotamon@gmail.com"
+              className="hidden min-h-[40px] items-center gap-2 rounded-xl border border-slate-200 bg-white/60 px-3 font-semibold text-slate-700 transition-colors hover:text-primary-600 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-200 dark:hover:text-primary-300 sm:inline-flex"
+            >
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              {t('email')}
+            </a>
+            <a
+              href="https://linkedin.com/in/yotam-faraggi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden min-h-[40px] items-center gap-2 rounded-xl border border-slate-200 bg-white/60 px-3 font-semibold text-slate-700 transition-colors hover:text-primary-600 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-200 dark:hover:text-primary-300 md:inline-flex"
+            >
+              <Linkedin className="h-4 w-4" aria-hidden="true" />
+              {t('linkedin')}
+            </a>
+            <LanguageSwitcher />
+            <CVDownloadButton label={t('saveAsPdf')} />
+          </nav>
+        </div>
+      </header>
+
+      <CookieConsent
+        variant="compact"
+        delayMs={800}
+        className="static inset-auto bottom-auto z-20 mx-auto max-w-6xl px-4 pt-3 sm:px-6 lg:px-8"
+      />
+
+      <main
+        id="cv-main"
+        className="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28"
+      >
         {/* Hero Header Section */}
         <motion.header
           initial={{ opacity: 0, y: -30 }}
@@ -540,7 +585,7 @@ export default function CVPageContent() {
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300 dark:bg-white"></span>
                   </span>
                   <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white">
-                    Open to work
+                    {t('status.openToWork')}
                   </span>
                 </div>
               </motion.div>
@@ -611,29 +656,13 @@ export default function CVPageContent() {
                   </a>
                 </motion.div>
               </div>
-
-              {/* Download Button - Elegant */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="print:hidden"
-              >
-                <button
-                  onClick={handlePrint}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 rounded-xl text-white text-sm font-medium transition-all duration-300"
-                >
-                  <Download className="w-4 h-4" />
-                  {t('saveAsPdf')}
-                </button>
-              </motion.div>
             </div>
           </div>
         </motion.header>
 
         {/* Professional Summary - Premium Card */}
         <motion.section
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -664,7 +693,7 @@ export default function CVPageContent() {
 
         {/* Experience Section - Timeline */}
         <motion.section
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -705,7 +734,7 @@ export default function CVPageContent() {
                 return (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={false}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-30px' }}
                     transition={{
@@ -762,7 +791,7 @@ export default function CVPageContent() {
                                       <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                                     </span>
                                     <span className="text-[10px] sm:text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">
-                                      {isRTL ? 'פתוח להזדמנויות' : 'Open for Work'}
+                                      {t('status.openToWork')}
                                     </span>
                                   </div>
                                 </motion.div>
@@ -830,7 +859,7 @@ export default function CVPageContent() {
 
         {/* Skills Section - Bento Grid */}
         <motion.section
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -858,7 +887,7 @@ export default function CVPageContent() {
               return (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  initial={false}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, margin: '-20px' }}
                   transition={{
@@ -888,7 +917,7 @@ export default function CVPageContent() {
                         return (
                           <motion.span
                             key={iIndex}
-                            initial={{ opacity: 0, scale: 0.8 }}
+                            initial={false}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 + iIndex * 0.03, duration: 0.3 }}
@@ -918,7 +947,7 @@ export default function CVPageContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {/* Education */}
           <motion.section
-            initial={{ opacity: 0, y: 40 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -962,7 +991,7 @@ export default function CVPageContent() {
 
           {/* Languages */}
           <motion.section
-            initial={{ opacity: 0, y: 40 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -985,7 +1014,7 @@ export default function CVPageContent() {
                   {languageKeys.map((langKey, index) => (
                     <motion.div
                       key={index}
-                      initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                      initial={false}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1, duration: 0.4 }}
@@ -1000,7 +1029,7 @@ export default function CVPageContent() {
                       </div>
                       <div className="h-2 bg-slate-200 dark:bg-surface-800/50 rounded-full overflow-hidden">
                         <motion.div
-                          initial={{ width: 0 }}
+                          initial={false}
                           whileInView={{ width: `${languagePercentages[langKey]}%` }}
                           viewport={{ once: true }}
                           transition={{ delay: 0.3 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
@@ -1022,7 +1051,7 @@ export default function CVPageContent() {
 
         {/* Portfolio Section - Founder-led products */}
         <motion.section
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -1056,7 +1085,7 @@ export default function CVPageContent() {
               return (
                 <motion.article
                   key={project.key}
-                  initial={{ opacity: 0, y: 28 }}
+                  initial={false}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-30px' }}
                   transition={{
@@ -1140,7 +1169,7 @@ export default function CVPageContent() {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-30px' }}
             transition={{ duration: 0.5, delay: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -1174,7 +1203,26 @@ export default function CVPageContent() {
             </div>
           </motion.div>
         </motion.section>
-      </div>
+      </main>
+
+      <footer className="relative z-10 border-t border-slate-200/70 px-4 py-8 text-center text-xs text-slate-500 dark:border-white/[0.06] dark:text-surface-500 print:hidden">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
+          <span>CartShift Studio CV</span>
+          <div className="flex items-center gap-4">
+            <a href="mailto:yotamon@gmail.com" className="hover:text-primary-500">
+              {t('email')}
+            </a>
+            <a
+              href="https://github.com/yotamon"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary-500"
+            >
+              {t('github')}
+            </a>
+          </div>
+        </div>
+      </footer>
 
       {/* Print styles */}
       <style jsx global>{`
@@ -1199,6 +1247,22 @@ export default function CVPageContent() {
 
           .print\\:hidden {
             display: none !important;
+          }
+
+          [data-cookie-consent-variant],
+          [role='group'][aria-label='Preview theme'] {
+            display: none !important;
+          }
+
+          main {
+            padding: 0 !important;
+            max-width: none !important;
+          }
+
+          section,
+          article {
+            break-inside: avoid;
+            page-break-inside: avoid;
           }
 
           * {

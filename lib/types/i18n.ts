@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-04-29T07:32:37.617Z
+ * Last updated: 2026-05-17T01:40:21.995Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -112,6 +112,9 @@ export interface Cv {
   linkedin: string;
   github: string;
   saveAsPdf: string;
+  status: {
+    openToWork: string;
+  };
   sections: {
     summary: string;
     portfolio: string;
@@ -156,6 +159,7 @@ export interface Cv {
   };
   summary: {
     text: string;
+    metaDescription: string;
   };
   experience: {
     cartshift: {
@@ -231,15 +235,7 @@ export interface Cv {
     };
   };
   skills: {
-    core: {
-      category: string;
-      items: string;
-    };
-    backend: {
-      category: string;
-      items: string;
-    };
-    cloud: {
+    primary: {
       category: string;
       items: string;
     };
@@ -247,11 +243,15 @@ export interface Cv {
       category: string;
       items: string;
     };
-    database: {
+    ai: {
       category: string;
       items: string;
     };
-    apis: {
+    cloud: {
+      category: string;
+      items: string;
+    };
+    legacy: {
       category: string;
       items: string;
     };
@@ -3939,19 +3939,19 @@ export type TranslationKey =
   | 'cv.sections.portfolio'
   | 'cv.sections.skills'
   | 'cv.sections.summary'
-  | 'cv.skills.apis.category'
-  | 'cv.skills.apis.items'
-  | 'cv.skills.backend.category'
-  | 'cv.skills.backend.items'
+  | 'cv.skills.ai.category'
+  | 'cv.skills.ai.items'
   | 'cv.skills.cloud.category'
   | 'cv.skills.cloud.items'
-  | 'cv.skills.core.category'
-  | 'cv.skills.core.items'
-  | 'cv.skills.database.category'
-  | 'cv.skills.database.items'
   | 'cv.skills.ecommerce.category'
   | 'cv.skills.ecommerce.items'
+  | 'cv.skills.legacy.category'
+  | 'cv.skills.legacy.items'
+  | 'cv.skills.primary.category'
+  | 'cv.skills.primary.items'
+  | 'cv.status.openToWork'
   | 'cv.subtitle'
+  | 'cv.summary.metaDescription'
   | 'cv.summary.text'
   | 'cv.title'
   | 'errorBoundary.description'

@@ -14,6 +14,7 @@ export function ConditionalLayout({
   isPortalSubdomain: isPortalSubdomainProp,
 }: ConditionalLayoutProps) {
   const pathname = usePathname();
+  const isCvRoute = pathname === '/cv' || pathname?.endsWith('/cv');
 
   // On portal subdomain, never render MainLayout — all routes are portal routes
   const isSubdomain =
@@ -24,6 +25,11 @@ export function ConditionalLayout({
 
   // On main domain, skip MainLayout for /portal/* paths
   if (pathname?.includes('/portal')) {
+    return <>{children}</>;
+  }
+
+  // CV routes use their own recruiter-focused shell instead of the marketing site chrome.
+  if (isCvRoute) {
     return <>{children}</>;
   }
 

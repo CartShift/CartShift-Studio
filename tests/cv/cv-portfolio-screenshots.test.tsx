@@ -3,8 +3,12 @@ import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import CVPageContent from '@/app/[locale]/cv/CVPageContent';
+
+vi.mock('@/lib/hooks/useLanguageSync', () => ({
+  useLanguageSync: vi.fn(),
+}));
 
 const enMessages = JSON.parse(readFileSync(join(process.cwd(), 'messages/en.json'), 'utf8'));
 const heMessages = JSON.parse(readFileSync(join(process.cwd(), 'messages/he.json'), 'utf8'));

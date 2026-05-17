@@ -9,6 +9,9 @@
     "linkedin": "לינקדאין",
     "github": "GitHub",
     "saveAsPdf": "שמור כ-PDF",
+    "status": {
+      "openToWork": "פתוח להזדמנויות"
+    },
     "sections": {
       "summary": "תקציר מקצועי",
       "portfolio": "פורטפוליו נבחר",
@@ -61,7 +64,8 @@
       }
     },
     "summary": {
-      "text": "מוביל מו\"פ ומפתח Full Stack עם ניסיון של למעלה מ-10 שנים בבנייה והרחבת פלטפורמות מסחר אלקטרוני ומערכות ארגוניות מקצה לקצה. הובלתי יוזמות טרנספורמציה דיגיטלית ובניתי פתרונות בריאות תואמי HIPAA המשרתים אלפי משתמשים. מומחיות מוכחת בתכנון מערכות רב-שכבתיות עמידות ויצירת אינטגרציות חלקות בין Shopify, HubSpot ופלטפורמות ענן. התמחות בפיתוח פתרונות ממוקדי לקוח עם דגש קפדני על UX שמניעים המרות ושימור. חלוץ בשילוב סוכני AI ואוטומציה בסביבת ייצור להפחתת תהליכים ידניים והאצת קבלת החלטות. יכולת חזקה להתאים פתרונות טכניים ליעדים עסקיים ולספק תוצאות מדידות."
+      "text": "מוביל מו\"פ ומפתח Full Stack בכיר עם יותר מ-10 שנות ניסיון בבניית פלטפורמות מסחר אלקטרוני, בריאות ואינטגרציה ארגונית. מתמחה ב-Next.js, TypeScript, אינטגרציות Shopify ו-HubSpot, תשתיות GCP/Firebase ואוטומציות עבודה מבוססות AI. לאחרונה הובלתי מערכות טלרפואה ואיקומרס תואמות HIPAA עם 99.9% זמינות, 85% פחות כשלי אינטגרציה ושיפורי ביצועים משמעותיים בפאנלים במובייל.",
+      "metaDescription": "מפתח Full Stack בכיר ומוביל מו\"פ המתמחה ב-Next.js, TypeScript, Shopify, HubSpot, GCP/Firebase ואוטומציות AI."
     },
     "experience": {
       "cartshift": {
@@ -109,7 +113,10 @@
         "title": "מייסד ומפתח מסחר אלקטרוני",
         "duration": "אפריל 2018 - יולי 2019",
         "durationYears": "שנה ו-4 חודשים",
-        "highlights": []
+        "highlights": [
+          "בניתי והפעלתי ניסויי e-commerce ישירים לצרכן, כולל הקמת חנות, תפעול מוצרים, אנליטיקה ושיפורי המרה",
+          "צברתי ניסיון מעשי ב-Shopify, WordPress, תשלומים, Fulfillment וגיוס לקוחות שהפך לבסיס לעבודת Full Stack במסחר"
+        ]
       },
       "hot": {
         "company": "HOT",
@@ -151,7 +158,10 @@
         "title": "יזם ומפתח עצמאי",
         "duration": "אוקטובר 2014 - פברואר 2016",
         "durationYears": "שנה ו-5 חודשים",
-        "highlights": []
+        "highlights": [
+          "סיפקתי פרויקטי Web ואינטגרציה כפרילנסר לצד פיתוח רעיונות מוצר עצמאיים משלב גילוי הצורך ועד השקה",
+          "ניהלתי תקשורת לקוחות, אפיון, פיתוח ופריסה עבור אתרי עסקים קטנים וכלים פנימיים מותאמים"
+        ]
       },
       "airforce": {
         "company": "חיל האוויר הישראלי - \"ממר\"ם\"",
@@ -166,46 +176,49 @@
       }
     },
     "skills": {
-      "core": {
-        "category": "Frontend וליבה",
+      "primary": {
+        "category": "סטאק מרכזי",
         "items": [
-          "Next.js 15",
+          "Next.js 16",
           "React",
           "TypeScript",
           "JavaScript",
-          "Vue.js",
-          "HTML5/CSS3",
+          "Node.js",
           "Tailwind CSS",
           "Framer Motion"
         ]
       },
-      "backend": {
-        "category": "Backend וסביבת ריצה",
-        "items": ["Node.js", "PHP", "Python", "Java", "C#", "C++", "GraphQL", "REST APIs"]
+      "ecommerce": {
+        "category": "איקומרס ואינטגרציות",
+        "items": [
+          "Shopify",
+          "Shopify APIs",
+          "HubSpot",
+          "WordPress",
+          "Stripe",
+          "GraphQL",
+          "REST APIs"
+        ]
+      },
+      "ai": {
+        "category": "AI ואוטומציה",
+        "items": ["OpenAI API", "Claude API", "LangChain", "Webhooks", "Puppeteer", "Playwright"]
       },
       "cloud": {
-        "category": "ענן ו-DevOps",
+        "category": "ענן ונתונים",
         "items": [
           "Google Cloud Platform",
           "Firebase",
+          "Firestore",
           "Vercel",
           "Docker",
-          "CI/CD",
-          "Git",
+          "PostgreSQL",
           "GitHub Actions"
         ]
       },
-      "ecommerce": {
-        "category": "מסחר אלקטרוני ו-CMS",
-        "items": ["Shopify", "Shopify APIs", "WordPress", "HubSpot", "Laravel", "Stripe"]
-      },
-      "database": {
-        "category": "נתונים ואחסון",
-        "items": ["PostgreSQL", "Firestore", "MongoDB", "SQL", "Redis", "PL/SQL"]
-      },
-      "apis": {
-        "category": "AI ואוטומציה",
-        "items": ["OpenAI API", "Claude API", "LangChain", "Webhooks", "Puppeteer", "Playwright"]
+      "legacy": {
+        "category": "Enterprise Legacy",
+        "items": ["Java", "C#", "C++", "PHP", "Laravel", "SQL", "PL/SQL", "IBM DataPower"]
       }
     },
     "education": {

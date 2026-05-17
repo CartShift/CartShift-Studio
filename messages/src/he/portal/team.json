@@ -19,6 +19,7 @@
       "capacity": "קיבולת מושבים",
       "activeSeats": "מושבים פעילים",
       "upgrade": "שדרג",
+      "inviteCanceled": "ההזמנה בוטלה בהצלחה",
       "roles": {
         "owner": "ראשי",
         "member": "פעיל",

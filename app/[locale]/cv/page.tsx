@@ -15,17 +15,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: t('title'),
-    description: t('summary.text'),
+    description: t('summary.metaDescription'),
     alternates: {
       canonical: `${siteUrl}/${locale}/cv`,
       languages: {
         en: `${siteUrl}/en/cv`,
         he: `${siteUrl}/he/cv`,
+        'x-default': `${siteUrl}/en/cv`,
       },
     },
     openGraph: {
       title: t('title'),
-      description: t('summary.text'),
+      description: t('summary.metaDescription'),
       type: 'profile',
       url: `${siteUrl}/${locale}/cv`,
       images: [
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: t('title'),
-      description: t('summary.text'),
+      description: t('summary.metaDescription'),
       images: ['/images/yotam-programmer.png'],
     },
   };
@@ -59,27 +60,38 @@ export default async function CVPage({ params }: Props) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
+    inLanguage: validLocale === 'he' ? 'he-IL' : 'en-US',
     mainEntity: {
       '@type': 'Person',
       name: t('name'),
       jobTitle: t('subtitle'),
-      description: t('summary.text'),
+      description: t('summary.metaDescription'),
       email: t('email'),
       url: `${siteUrl}/${locale}/cv`,
       image: `${siteUrl}/images/yotam-programmer.png`,
       sameAs: ['https://linkedin.com/in/yotam-faraggi', 'https://github.com/yotamon'],
+      worksFor: {
+        '@type': 'Organization',
+        name: 'CartShift Studio',
+        url: siteUrl,
+      },
       address: {
         '@type': 'PostalAddress',
         addressLocality: t('location'),
       },
+      knowsLanguage: ['Hebrew', 'English', 'German'],
       knowsAbout: [
-        'Full Stack Development',
-        'E-Commerce',
-        'Shopify',
+        'Senior Full Stack Development',
+        'R&D Leadership',
         'Next.js',
         'React',
-        'Node.js',
-        'Cloud Architecture',
+        'TypeScript',
+        'Shopify',
+        'HubSpot',
+        'Firebase',
+        'Google Cloud Platform',
+        'AI Workflow Automation',
+        'Healthcare Compliance',
       ],
     },
   };
