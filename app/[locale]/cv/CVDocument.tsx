@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Document, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
 interface ExperienceItem {
   company: string;
@@ -44,41 +44,50 @@ interface CVDocumentProps {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 34,
+    paddingHorizontal: 34,
+    paddingTop: 30,
+    paddingBottom: 42,
     fontFamily: 'Helvetica',
-    fontSize: 9.5,
+    fontSize: 9.25,
     color: '#0f172a',
-    lineHeight: 1.35,
+    lineHeight: 1.3,
   },
   header: {
     borderBottomWidth: 1.5,
     borderBottomColor: '#0f766e',
-    paddingBottom: 14,
-    marginBottom: 16,
+    paddingBottom: 12,
+    marginBottom: 14,
   },
   name: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#020617',
-    marginBottom: 5,
+    lineHeight: 1.15,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 10.5,
     color: '#334155',
-    marginBottom: 8,
+    lineHeight: 1.25,
+    marginBottom: 7,
   },
   contactRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 9,
     color: '#475569',
-    fontSize: 8.5,
+    fontSize: 8.2,
+    lineHeight: 1.25,
+  },
+  contactLink: {
+    color: '#0f766e',
+    textDecoration: 'none',
   },
   section: {
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: 'bold',
     color: '#0f766e',
     textTransform: 'uppercase',
@@ -86,12 +95,12 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   summary: {
-    fontSize: 9.8,
+    fontSize: 9.4,
     color: '#1e293b',
   },
   role: {
-    marginBottom: 9,
-    paddingBottom: 8,
+    marginBottom: 7,
+    paddingBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
@@ -102,17 +111,17 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   roleTitle: {
-    fontSize: 10.5,
+    fontSize: 9.9,
     fontWeight: 'bold',
     color: '#020617',
   },
   roleMeta: {
-    fontSize: 8.5,
+    fontSize: 8,
     color: '#475569',
     textAlign: 'right',
   },
   company: {
-    fontSize: 9.2,
+    fontSize: 8.8,
     fontWeight: 'bold',
     color: '#0f766e',
     marginBottom: 3,
@@ -124,7 +133,7 @@ const styles = StyleSheet.create({
   bulletRow: {
     flexDirection: 'row',
     gap: 5,
-    marginBottom: 2.5,
+    marginBottom: 2,
   },
   bullet: {
     width: 7,
@@ -143,17 +152,17 @@ const styles = StyleSheet.create({
     width: '31.5%',
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    borderRadius: 8,
-    padding: 8,
+    borderRadius: 6,
+    padding: 7,
   },
   skillTitle: {
-    fontSize: 9.5,
+    fontSize: 9,
     fontWeight: 'bold',
     color: '#020617',
     marginBottom: 4,
   },
   skillItems: {
-    fontSize: 8.5,
+    fontSize: 8.1,
     color: '#475569',
   },
   twoCol: {
@@ -164,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   smallTitle: {
-    fontSize: 10,
+    fontSize: 9.4,
     fontWeight: 'bold',
     color: '#020617',
     marginBottom: 2,
@@ -174,7 +183,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 22,
+    bottom: 20,
     left: 34,
     right: 34,
     borderTopWidth: 1,
@@ -186,6 +195,92 @@ const styles = StyleSheet.create({
     fontSize: 8,
   },
 });
+
+const recentExperienceCount = 4;
+const olderRoleHighlightCount = 2;
+
+const formatExperienceKey = (exp: ExperienceItem) => `${exp.company}-${exp.title}-${exp.duration}`;
+
+function Footer({ email, pageNumber }: { email: string; pageNumber: number }) {
+  return (
+    <View style={styles.footer} fixed>
+      <Text>CartShift Studio CV</Text>
+      <Text>
+        Page {pageNumber} of 2 | {email}
+      </Text>
+    </View>
+  );
+}
+
+function Header({
+  name,
+  subtitle,
+  location,
+  email,
+  linkedin,
+  github,
+}: Pick<CVDocumentProps, 'name' | 'subtitle' | 'location' | 'email' | 'linkedin' | 'github'>) {
+  return (
+    <View style={styles.header} wrap={false}>
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.subtitle}>{subtitle}</Text>
+      <View style={styles.contactRow}>
+        <Text>{location}</Text>
+        <Link src={`mailto:${email}`} style={styles.contactLink}>
+          {email}
+        </Link>
+        <Link src={linkedin} style={styles.contactLink}>
+          {linkedin}
+        </Link>
+        <Link src={github} style={styles.contactLink}>
+          {github}
+        </Link>
+      </View>
+    </View>
+  );
+}
+
+function ExperienceSection({
+  title,
+  experiences,
+  compact,
+}: {
+  title?: string;
+  experiences: ExperienceItem[];
+  compact?: boolean;
+}) {
+  return (
+    <View style={styles.section}>
+      {title ? <Text style={styles.sectionTitle}>{title}</Text> : null}
+      {experiences.map(exp => (
+        <View key={formatExperienceKey(exp)} style={styles.role} wrap={false}>
+          <View style={styles.roleHeader}>
+            <View>
+              <Text style={styles.roleTitle}>{exp.title}</Text>
+              <Text style={styles.company}>
+                {exp.company}
+                {exp.location ? ` | ${exp.location}` : ''}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.roleMeta}>{exp.duration}</Text>
+              <Text style={styles.roleMeta}>{exp.durationYears}</Text>
+            </View>
+          </View>
+          {!compact && exp.description ? (
+            <Text style={styles.description}>{exp.description}</Text>
+          ) : null}
+          {exp.highlights.slice(0, compact ? olderRoleHighlightCount : undefined).map(highlight => (
+            <View key={highlight} style={styles.bulletRow}>
+              <Text style={styles.bullet}>-</Text>
+              <Text style={styles.bulletText}>{highlight}</Text>
+            </View>
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+}
 
 export const CVDocument: React.FC<CVDocumentProps> = ({
   name,
@@ -202,49 +297,30 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
 }) => (
   <Document title={`${name} - CV`} author={name} subject={subtitle}>
     <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
-        <View style={styles.contactRow}>
-          <Text>{location}</Text>
-          <Text>{email}</Text>
-          <Text>{linkedin}</Text>
-          <Text>{github}</Text>
-        </View>
-      </View>
+      <Header
+        name={name}
+        subtitle={subtitle}
+        location={location}
+        email={email}
+        linkedin={linkedin}
+        github={github}
+      />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Professional Summary</Text>
         <Text style={styles.summary}>{summary}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Professional Experience</Text>
-        {experiences.map(exp => (
-          <View key={`${exp.company}-${exp.duration}`} style={styles.role} wrap={false}>
-            <View style={styles.roleHeader}>
-              <View>
-                <Text style={styles.roleTitle}>{exp.title}</Text>
-                <Text style={styles.company}>
-                  {exp.company}
-                  {exp.location ? ` | ${exp.location}` : ''}
-                </Text>
-              </View>
-              <View>
-                <Text style={styles.roleMeta}>{exp.duration}</Text>
-                <Text style={styles.roleMeta}>{exp.durationYears}</Text>
-              </View>
-            </View>
-            {exp.description ? <Text style={styles.description}>{exp.description}</Text> : null}
-            {exp.highlights.map(highlight => (
-              <View key={highlight} style={styles.bulletRow}>
-                <Text style={styles.bullet}>-</Text>
-                <Text style={styles.bulletText}>{highlight}</Text>
-              </View>
-            ))}
-          </View>
-        ))}
-      </View>
+      <ExperienceSection
+        title="Professional Experience"
+        experiences={experiences.slice(0, recentExperienceCount)}
+      />
+
+      <Footer email={email} pageNumber={1} />
+    </Page>
+
+    <Page size="A4" style={styles.page}>
+      <ExperienceSection experiences={experiences.slice(recentExperienceCount)} compact />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Technical Skills</Text>
@@ -264,7 +340,6 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
           <Text style={styles.smallTitle}>{education.university}</Text>
           <Text>{education.program}</Text>
           <Text style={styles.muted}>{education.years}</Text>
-          <Text style={styles.muted}>{education.description}</Text>
         </View>
         <View style={styles.col}>
           <Text style={styles.sectionTitle}>Languages</Text>
@@ -276,10 +351,7 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
         </View>
       </View>
 
-      <View style={styles.footer} fixed>
-        <Text>CartShift Studio CV</Text>
-        <Text>{email}</Text>
-      </View>
+      <Footer email={email} pageNumber={2} />
     </Page>
   </Document>
 );
