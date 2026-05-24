@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from '@/lib/motion';
+import { motion } from '@/lib/motion';
 import { faqItem } from '@/lib/animation-variants';
 import { ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -99,22 +99,21 @@ export const FAQ: React.FC<FAQProps> = ({
                 />
               </motion.div>
             </button>
-            <AnimatePresence initial={false}>
-              {isOpen(index) && (
-                <motion.div
-                  id={`faq-answer-${index}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-6 py-5 pt-0 text-surface-600 dark:text-surface-300 leading-relaxed">
-                    {item.answer}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <motion.div
+              id={`faq-answer-${index}`}
+              initial={false}
+              animate={{
+                height: isOpen(index) ? 'auto' : 0,
+                opacity: isOpen(index) ? 1 : 0,
+              }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="overflow-hidden"
+              aria-hidden={!isOpen(index)}
+            >
+              <div className="px-6 py-5 pt-0 text-surface-600 dark:text-surface-300 leading-relaxed">
+                {item.answer}
+              </div>
+            </motion.div>
           </motion.div>
         ))}
       </div>

@@ -366,7 +366,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   return (
     <>
       <div className="reading-progress" style={{ width: `${readingProgress}%` }} />
-      <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-black">
+      <section className="pt-12 pb-28 md:py-20 px-4 sm:px-6 lg:px-8 relative bg-surface-50 dark:bg-black">
         <div className="max-w-7xl mx-auto relative z-dropdown">
           <div className="grid lg:grid-cols-12 gap-8">
             <aside className="lg:col-span-3 hidden lg:block relative">

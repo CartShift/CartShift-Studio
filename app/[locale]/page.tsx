@@ -9,6 +9,7 @@ import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { PortalTeaser } from '@/components/sections/PortalTeaser';
 import { StoreAnalyzerTeaser } from '@/components/sections/StoreAnalyzerTeaser';
 import { CTABanner } from '@/components/sections/CTABanner';
+import { getAllPosts } from '@/lib/markdown';
 import {
   generateMetadata as genMeta,
   generateWebSiteSchema,
@@ -65,6 +66,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   setRequestLocale(locale as 'en' | 'he');
   const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he');
   const professionalServiceSchema = generateProfessionalServiceSchema();
+  const posts = await getAllPosts();
+  const latestPosts = posts.slice(0, 4);
 
   const reviewSchema = generateReviewSchema([
     {
@@ -110,7 +113,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <Testimonials />
       <StoreAnalyzerTeaser />
       <PortalTeaser />
-      <BlogTeaser />
+      <BlogTeaser posts={latestPosts} />
       <CTABanner />
     </>
   );

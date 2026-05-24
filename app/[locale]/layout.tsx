@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Outfit, Rubik } from 'next/font/google';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
@@ -17,6 +18,9 @@ import { routing } from '@/i18n/routing';
 import { BrandingProvider } from '@/components/providers/BrandingProvider';
 import { Logger } from '@/lib/logger';
 import { headers } from 'next/headers';
+
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
+const rubik = Rubik({ subsets: ['hebrew', 'latin'], variable: '--font-rubik', display: 'swap' });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
@@ -133,38 +137,54 @@ export default async function LocaleLayout({
     schemaJson = '{}';
   }
 
+  const direction = locale === 'he' ? 'rtl' : 'ltr';
+  const isRtl = locale === 'he';
+
   return (
-    <>
-      <Script
-        id="organization-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: schemaJson }}
-      />
-      <ThemeProvider>
-        <BrandingProvider>
-          <MotionProvider>
-            <MotionConfig
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 30,
-                mass: 0.8,
-              }}
-            >
-              <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
-                <LocaleAttributes />
-                <GeoLocaleRedirect />
-                <GoogleAnalytics />
-                <AnalyticsProvider>
-                  <ConditionalLayout isPortalSubdomain={isPortalSubdomain}>
-                    {children}
-                  </ConditionalLayout>
-                </AnalyticsProvider>
-              </NextIntlClientProvider>
-            </MotionConfig>
-          </MotionProvider>
-        </BrandingProvider>
-      </ThemeProvider>
-    </>
+    <html
+      lang={locale}
+      dir={direction}
+      suppressHydrationWarning
+      className={`${outfit.variable} ${rubik.variable} ${isRtl ? 'rtl-ready' : ''}`}
+    >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        {process.env.GOOGLE_SITE_VERIFICATION && (
+          <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION} />
+        )}
+        <Script
+          id="organization-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schemaJson }}
+        />
+      </head>
+      <body className={`font-sans ${isRtl ? 'lang-he' : ''}`} suppressHydrationWarning>
+        <ThemeProvider>
+          <BrandingProvider>
+            <MotionProvider>
+              <MotionConfig
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 30,
+                  mass: 0.8,
+                }}
+              >
+                <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
+                  <LocaleAttributes />
+                  <GeoLocaleRedirect />
+                  <GoogleAnalytics />
+                  <AnalyticsProvider>
+                    <ConditionalLayout isPortalSubdomain={isPortalSubdomain}>
+                      {children}
+                    </ConditionalLayout>
+                  </AnalyticsProvider>
+                </NextIntlClientProvider>
+              </MotionConfig>
+            </MotionProvider>
+          </BrandingProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

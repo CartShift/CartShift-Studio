@@ -9,15 +9,45 @@ import { getDateLocaleString } from '@/lib/locale-config';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Clock, Calendar } from 'lucide-react';
 
-export const BlogTeaser: React.FC = () => {
+interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  category: string;
+  readingTime?: number;
+  translation?: {
+    title: string;
+    excerpt: string;
+    category: string;
+  };
+}
+
+interface BlogTeaserProps {
+  posts?: BlogPost[];
+}
+
+export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
   const t = useTranslations();
   const locale = useLocale();
+  const isHe = locale === 'he';
   const latestPosts = t.raw('blogTeaser.posts') as any[];
 
-  if (!latestPosts || latestPosts.length === 0) return null;
+  const displayPosts = posts
+    ? posts.map(post => ({
+        title: isHe && post.translation?.title ? post.translation.title : post.title,
+        excerpt: isHe && post.translation?.excerpt ? post.translation.excerpt : post.excerpt,
+        category: isHe && post.translation?.category ? post.translation.category : post.category,
+        date: post.date,
+        href: `/blog/${post.slug}`,
+        readingTime: post.readingTime,
+      }))
+    : latestPosts;
 
-  const featuredPost = latestPosts[0];
-  const secondaryPosts = latestPosts.slice(1);
+  if (!displayPosts || displayPosts.length === 0) return null;
+
+  const featuredPost = displayPosts[0];
+  const secondaryPosts = displayPosts.slice(1);
 
   return (
     <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 relative bg-background dark:bg-black transition-colors duration-500 overflow-hidden">
@@ -54,7 +84,9 @@ export const BlogTeaser: React.FC = () => {
                   </span>
                   <div className="flex items-center gap-2 text-surface-500 dark:text-surface-400 text-sm font-medium">
                     <Clock size={16} />
-                    {t('blogTeaser.readTime')}
+                    {featuredPost.readingTime
+                      ? `${featuredPost.readingTime} ${t('blogPost.content.minRead')}`
+                      : t('blogTeaser.readTime')}
                   </div>
                 </div>
 
@@ -103,7 +135,11 @@ export const BlogTeaser: React.FC = () => {
                       {new Date(post.date).toLocaleDateString(getDateLocaleString(locale))}
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
-                    <span>{t('blogTeaser.readTime')}</span>
+                    <span>
+                      {post.readingTime
+                        ? `${post.readingTime} ${t('blogPost.content.minRead')}`
+                        : t('blogTeaser.readTime')}
+                    </span>
                   </div>
 
                   <h4 className="text-2xl font-bold font-display text-surface-900 dark:text-white leading-tight mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
