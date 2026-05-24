@@ -1863,7 +1863,9 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
 
   const recsHtml = topRecs
     .map((rec, index) => {
-      const actionStep = texts.actionSteps[rec.title] || '';
+      const actionStep = rec.action || texts.actionSteps[rec.title] || '';
+      const detailText = rec.description || '';
+      const evidenceText = rec.evidence || '';
       const isLast = index === topRecs.length - 1;
 
       return `
@@ -1887,6 +1889,16 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
                   </tr>
                 </table>
                 <p style="margin: 0 0 8px; font-size: 13px; color: #1f2937; line-height: 1.5; font-weight: 600; word-wrap: break-word;">${rec.title}</p>
+                ${
+                  detailText
+                    ? `<p style="margin: 0 0 8px; font-size: 12px; color: #4b5563; line-height: 1.5; word-wrap: break-word;">${detailText}</p>`
+                    : ''
+                }
+                ${
+                  evidenceText
+                    ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5; word-wrap: break-word;"><strong>${texts.whatWeFound}:</strong> ${evidenceText}</p>`
+                    : ''
+                }
                 ${
                   actionStep
                     ? `
@@ -2070,7 +2082,9 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
           const impactBg = isHigh ? '#fef2f2' : isMedium ? '#fffbeb' : '#f9fafb';
           const impactBorder = isHigh ? '#fecaca' : isMedium ? '#fde68a' : '#e5e7eb';
           const impactLabel = texts.impact[rec.impact] || rec.impact;
-          const actionStep = texts.actionSteps[rec.title] || '';
+          const actionStep = rec.action || texts.actionSteps[rec.title] || '';
+          const detailText = rec.description || '';
+          const evidenceText = rec.evidence || '';
           const isLast = idx === section.recommendations.length - 1;
 
           return `
@@ -2089,6 +2103,16 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
                 </td>
                 <td style="vertical-align: top;">
                   <p style="margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #1f2937; line-height: 1.4;">${rec.title}</p>
+                  ${
+                    detailText
+                      ? `<p style="margin: 0 0 8px; font-size: 12px; color: #4b5563; line-height: 1.5;">${detailText}</p>`
+                      : ''
+                  }
+                  ${
+                    evidenceText
+                      ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5;"><strong>${texts.whatWeFound}:</strong> ${evidenceText}</p>`
+                      : ''
+                  }
                   ${
                     actionStep
                       ? `

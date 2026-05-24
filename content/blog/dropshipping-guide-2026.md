@@ -504,7 +504,7 @@ Dropshipping isn't dead—it's just evolved. The lazy, spammy approach is dead. 
 
 **Need help building a profitable dropshipping business?** We develop dropshipping strategies, supplier vetting processes, and retention systems that maximize customer lifetime value.
 
-[Book a consultation](/contact) or explore our [Shopify growth services](/services/shopify).
+[Book a consultation](/contact) or explore our [Shopify growth services](/solutions/shopify).
 
 Related: [Customer Lifetime Value guide](/blog/customer-lifetime-value-guide) and [Product Photography guide](/blog/product-photography-ecommerce-guide).
 
@@ -1006,6 +1006,6 @@ CLV (ממוצע 12 חודשים) = (AOV × ממוצע רכישות × 12) - CAC
 
 **צריכים עזרה בבניית עסק דרופשיפינג רווחי?** אנחנו מפתחים אסטרטגיות דרופשיפינג, תהליכי בדיקת ספקים ומערכות שימור שממקסמות ערך חיי לקוח.
 
-[קבעו ייעוץ](/contact) או חקרו את [שירותי הצמיחה שלנו לשופיפיי](/services/shopify).
+[קבעו ייעוץ](/contact) או חקרו את [שירותי הצמיחה שלנו לשופיפיי](/solutions/shopify).
 
 קשור: [מדריך ערך חיי לקוח](/blog/customer-lifetime-value-guide) ו[מדריך צילום מוצרים](/blog/product-photography-ecommerce-guide).

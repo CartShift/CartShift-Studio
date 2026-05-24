@@ -1,65 +1,112 @@
 import { AIAnalysis } from '@/lib/types/analyzer';
 
+function stripHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function collectSchemaTypes(value: unknown, types: Set<string>) {
+  if (!value) return;
+
+  if (Array.isArray(value)) {
+    value.forEach(item => collectSchemaTypes(item, types));
+    return;
+  }
+
+  if (typeof value !== 'object') return;
+
+  const record = value as Record<string, unknown>;
+  const type = record['@type'];
+
+  if (typeof type === 'string') types.add(type);
+  if (Array.isArray(type)) {
+    type.forEach(item => {
+      if (typeof item === 'string') types.add(item);
+    });
+  }
+
+  if (record['@graph']) collectSchemaTypes(record['@graph'], types);
+}
+
 export class AIReadinessService {
   static analyze(html: string): AIAnalysis {
-    let score = 50;
-    const structuredDataTypes: string[] = [];
+    let score = 35;
+    const structuredDataTypes = new Set<string>();
 
-    // 1. Structured Data Check (JSON-LD)
-    const jsonLdMatches = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi);
+    const jsonLdMatches = html.match(
+      /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+    );
+
     if (jsonLdMatches) {
-      score += 20;
+      score += 18;
+
       jsonLdMatches.forEach(match => {
-        if (match.includes('"@type": "Product"')) structuredDataTypes.push('Product');
-        if (match.includes('"@type": "Organization"')) structuredDataTypes.push('Organization');
-        if (match.includes('"@type": "BreadcrumbList"')) structuredDataTypes.push('Breadcrumb');
-        if (match.includes('"@type": "Article"')) structuredDataTypes.push('Article');
-        if (match.includes('"@type": "FAQPage"')) structuredDataTypes.push('FAQ');
+        const jsonText = match
+          .replace(/^[\s\S]*?>/, '')
+          .replace(/<\/script>$/i, '')
+          .trim();
+
+        try {
+          collectSchemaTypes(JSON.parse(jsonText), structuredDataTypes);
+        } catch {
+          ['Product', 'Organization', 'BreadcrumbList', 'Article', 'FAQPage', 'WebSite'].forEach(
+            type => {
+              if (new RegExp(`"@type"\\s*:\\s*"${type}"`, 'i').test(jsonText)) {
+                structuredDataTypes.add(type);
+              }
+            }
+          );
+        }
       });
-      // Bonus points for rich snippets
-      score += structuredDataTypes.length * 5;
+
+      const richTypes = ['Product', 'Organization', 'BreadcrumbList', 'FAQPage', 'WebSite'];
+      score += richTypes.filter(type => structuredDataTypes.has(type)).length * 6;
     }
 
-    // 2. Open Graph / Social Tags (AI models use these for context)
-    const hasOG = /<meta property="og:/i.test(html);
-    const hasTwitter = /<meta name="twitter:/i.test(html);
-    let openGraphTagScore = 0;
+    const hasOG = /<meta[^>]+property=["']og:/i.test(html);
+    const hasTwitter = /<meta[^>]+name=["']twitter:/i.test(html);
+    const hasDescription = /<meta[^>]+name=["']description["'][^>]+content=["'][^"']{40,}/i.test(
+      html
+    );
 
-    if (hasOG) {
-      score += 10;
-      openGraphTagScore++;
-    }
-    if (hasTwitter) {
-      score += 5;
-      openGraphTagScore++;
-    }
+    if (hasOG) score += 8;
+    if (hasTwitter) score += 4;
+    if (hasDescription) score += 8;
 
-    // 3. Content Readability (Simple Heuristic for NLP friendliness)
-    // AI prefers clear H1-H2-H3 hierarchy and paragraph text
-    // We check if H2s and H3s exist
-    const hasH2 = /<h2/i.test(html);
-    const hasH3 = /<h3/i.test(html);
-    const hasParagraphs = (html.match(/<p/gi) || []).length > 5;
+    const plainText = stripHtml(html);
+    const wordCount = plainText.split(/\s+/).filter(Boolean).length;
+    const h1Count = (html.match(/<h1\b/gi) || []).length;
+    const h2Count = (html.match(/<h2\b/gi) || []).length;
+    const paragraphCount = (html.match(/<p\b/gi) || []).length;
+    const listCount = (html.match(/<(ul|ol)\b/gi) || []).length;
+    const hasFaqLanguage = /faq|שאלות נפוצות|shipping|returns|delivery|משלוח|החזרות/i.test(
+      plainText
+    );
 
-    let readabilityScore = 50;
-    if (hasH2) readabilityScore += 10;
-    if (hasH3) readabilityScore += 10;
-    if (hasParagraphs) readabilityScore += 20;
-    // Penalize excessive DOM size or clutter (simulated by script tag density handled elsewhere,
-    // here we focus on text structure)
+    let readabilityScore = 35;
+    if (h1Count === 1) readabilityScore += 15;
+    if (h2Count >= 2) readabilityScore += 15;
+    if (paragraphCount >= 4) readabilityScore += 15;
+    if (listCount >= 1) readabilityScore += 8;
+    if (wordCount >= 250) readabilityScore += 7;
+    if (hasFaqLanguage) readabilityScore += 5;
 
-    score += (readabilityScore - 50) / 2; // Add weighted readability to local AI score
+    readabilityScore = Math.min(100, readabilityScore);
+    score += Math.round((readabilityScore - 35) * 0.25);
 
-    // Cap score
     score = Math.min(100, Math.max(0, score));
 
     return {
       score: Math.round(score),
-      structuredDataTypes: [...new Set(structuredDataTypes)], // dedup
-      openGraphTags: openGraphTagScore > 0,
+      structuredDataTypes: [...structuredDataTypes],
+      openGraphTags: hasOG || hasTwitter,
       readabilityScore,
       aiReadinessStatus:
-        score >= 80 ? 'ready' : score >= 50 ? 'needs_improvement' : 'not_optimized',
+        score >= 80 ? 'ready' : score >= 55 ? 'needs_improvement' : 'not_optimized',
     };
   }
 }

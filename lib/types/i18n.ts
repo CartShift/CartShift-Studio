@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-17T01:40:21.995Z
+ * Last updated: 2026-05-24T22:55:32.317Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -3493,20 +3493,113 @@ export interface Analyzer {
       criticalDesc: string;
     };
     greatJob: string;
+    strongScoreWithIssues: string;
+    strongScoreWithIssuesDesc: string;
     issuesFound: string;
     issuesFound_singular: string;
     readyToScale: string;
     losingSales: string;
     needsImprovement: string;
     analyzedOn: string;
+    verifiedBenchmark: string;
     resultId: string;
     impactLabel: string;
+    topIssues: string;
     dontLetIssuesHurtSales: string;
     expertsCanFix: string;
     expertsCanFix_singular: string;
     trustedBy: string;
     fullReportSent: string;
     analyzeDifferentUrl: string;
+  };
+  market: {
+    title: string;
+    subtitle: string;
+    position: string;
+    positions: {
+      leader: string;
+      challenger: string;
+      niche: string;
+    };
+    confidence: {
+      high: string;
+      medium: string;
+      low: string;
+    };
+    summaryWithCandidates: string;
+    summaryNoCandidates: string;
+    evidence: string;
+    detectedCategory: string;
+    noCategory: string;
+    candidatesFound: string;
+    noDirectCompetitors: string;
+    competitorCandidates: string;
+    similarity: string;
+    noCompetitors: string;
+  };
+  ai: {
+    title: string;
+    subtitle: string;
+    status: {
+      ready: string;
+      needs_improvement: string;
+      not_optimized: string;
+    };
+    scoreHelp: string;
+    structuredData: string;
+    noSchema: string;
+    readability: string;
+    socialContext: string;
+  };
+  product: {
+    title: string;
+    subtitle: string;
+    conversionScore: string;
+    analyzed: string;
+    buyButton: string;
+    aboveFold: string;
+    belowFold: string;
+    gallery: string;
+    images: string;
+    socialProof: string;
+    reviewsFound: string;
+    noReviews: string;
+    content: string;
+    detailed: string;
+    brief: string;
+    checkoutFlow: string;
+    cartStatus: {
+      detected: string;
+      clickable: string;
+      redirected_to_cart: string;
+      unknown: string;
+    };
+  };
+  common: {
+    detected: string;
+    missing: string;
+  };
+  roadmap: {
+    title: string;
+    subtitle: string;
+    weeks: {
+      week1: {
+        title: string;
+        focus: string;
+      };
+      week2: {
+        title: string;
+        focus: string;
+      };
+      week3: {
+        title: string;
+        focus: string;
+      };
+      week4: {
+        title: string;
+        focus: string;
+      };
+    };
   };
   impact: {
     high: string;
@@ -3515,6 +3608,125 @@ export interface Analyzer {
   };
   recommendations: {
     getHelp: string;
+    evidence: string;
+    nextAction: string;
+    effort: {
+      quick: string;
+      medium: string;
+      advanced: string;
+    };
+    items: {
+      meta_description: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      robots_txt: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      color_contrast: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      image_alt: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      button_name: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      link_name: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      label: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      server_response_time: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      largest_contentful_paint: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      total_blocking_time: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      cumulative_layout_shift: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      document_title: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      h1: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      script_count: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      lazy_loading: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      html_lang: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      viewport: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      cart_visible: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      checkout_trust: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      reviews: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      privacy_policy: {
+        title: string;
+        description: string;
+        action: string;
+      };
+      accessibility_audit: {
+        title: string;
+        description: string;
+        action: string;
+      };
+    };
   };
   cta: {
     title: string;
@@ -3592,9 +3804,21 @@ export type TranslationKey =
   | 'about.values.items'
   | 'about.values.subtitle'
   | 'about.values.title'
+  | 'analyzer.ai.noSchema'
+  | 'analyzer.ai.readability'
+  | 'analyzer.ai.scoreHelp'
+  | 'analyzer.ai.socialContext'
+  | 'analyzer.ai.status.needs_improvement'
+  | 'analyzer.ai.status.not_optimized'
+  | 'analyzer.ai.status.ready'
+  | 'analyzer.ai.structuredData'
+  | 'analyzer.ai.subtitle'
+  | 'analyzer.ai.title'
   | 'analyzer.analyzing.pleaseWait'
   | 'analyzer.analyzing.tip'
   | 'analyzer.analyzing.title'
+  | 'analyzer.common.detected'
+  | 'analyzer.common.missing'
   | 'analyzer.cta.analyzeAnother'
   | 'analyzer.cta.analyzeNow'
   | 'analyzer.cta.bookCall'
@@ -3643,9 +3867,119 @@ export type TranslationKey =
   | 'analyzer.impact.high'
   | 'analyzer.impact.low'
   | 'analyzer.impact.medium'
+  | 'analyzer.market.candidatesFound'
+  | 'analyzer.market.competitorCandidates'
+  | 'analyzer.market.confidence.high'
+  | 'analyzer.market.confidence.low'
+  | 'analyzer.market.confidence.medium'
+  | 'analyzer.market.detectedCategory'
+  | 'analyzer.market.evidence'
+  | 'analyzer.market.noCategory'
+  | 'analyzer.market.noCompetitors'
+  | 'analyzer.market.noDirectCompetitors'
+  | 'analyzer.market.position'
+  | 'analyzer.market.positions.challenger'
+  | 'analyzer.market.positions.leader'
+  | 'analyzer.market.positions.niche'
+  | 'analyzer.market.similarity'
+  | 'analyzer.market.subtitle'
+  | 'analyzer.market.summaryNoCandidates'
+  | 'analyzer.market.summaryWithCandidates'
+  | 'analyzer.market.title'
   | 'analyzer.nav.storeAnalyzer'
   | 'analyzer.nav.tools'
+  | 'analyzer.product.aboveFold'
+  | 'analyzer.product.analyzed'
+  | 'analyzer.product.belowFold'
+  | 'analyzer.product.brief'
+  | 'analyzer.product.buyButton'
+  | 'analyzer.product.cartStatus.clickable'
+  | 'analyzer.product.cartStatus.detected'
+  | 'analyzer.product.cartStatus.redirected_to_cart'
+  | 'analyzer.product.cartStatus.unknown'
+  | 'analyzer.product.checkoutFlow'
+  | 'analyzer.product.content'
+  | 'analyzer.product.conversionScore'
+  | 'analyzer.product.detailed'
+  | 'analyzer.product.gallery'
+  | 'analyzer.product.images'
+  | 'analyzer.product.noReviews'
+  | 'analyzer.product.reviewsFound'
+  | 'analyzer.product.socialProof'
+  | 'analyzer.product.subtitle'
+  | 'analyzer.product.title'
+  | 'analyzer.recommendations.effort.advanced'
+  | 'analyzer.recommendations.effort.medium'
+  | 'analyzer.recommendations.effort.quick'
+  | 'analyzer.recommendations.evidence'
   | 'analyzer.recommendations.getHelp'
+  | 'analyzer.recommendations.items.accessibility_audit.action'
+  | 'analyzer.recommendations.items.accessibility_audit.description'
+  | 'analyzer.recommendations.items.accessibility_audit.title'
+  | 'analyzer.recommendations.items.button_name.action'
+  | 'analyzer.recommendations.items.button_name.description'
+  | 'analyzer.recommendations.items.button_name.title'
+  | 'analyzer.recommendations.items.cart_visible.action'
+  | 'analyzer.recommendations.items.cart_visible.description'
+  | 'analyzer.recommendations.items.cart_visible.title'
+  | 'analyzer.recommendations.items.checkout_trust.action'
+  | 'analyzer.recommendations.items.checkout_trust.description'
+  | 'analyzer.recommendations.items.checkout_trust.title'
+  | 'analyzer.recommendations.items.color_contrast.action'
+  | 'analyzer.recommendations.items.color_contrast.description'
+  | 'analyzer.recommendations.items.color_contrast.title'
+  | 'analyzer.recommendations.items.cumulative_layout_shift.action'
+  | 'analyzer.recommendations.items.cumulative_layout_shift.description'
+  | 'analyzer.recommendations.items.cumulative_layout_shift.title'
+  | 'analyzer.recommendations.items.document_title.action'
+  | 'analyzer.recommendations.items.document_title.description'
+  | 'analyzer.recommendations.items.document_title.title'
+  | 'analyzer.recommendations.items.h1.action'
+  | 'analyzer.recommendations.items.h1.description'
+  | 'analyzer.recommendations.items.h1.title'
+  | 'analyzer.recommendations.items.html_lang.action'
+  | 'analyzer.recommendations.items.html_lang.description'
+  | 'analyzer.recommendations.items.html_lang.title'
+  | 'analyzer.recommendations.items.image_alt.action'
+  | 'analyzer.recommendations.items.image_alt.description'
+  | 'analyzer.recommendations.items.image_alt.title'
+  | 'analyzer.recommendations.items.label.action'
+  | 'analyzer.recommendations.items.label.description'
+  | 'analyzer.recommendations.items.label.title'
+  | 'analyzer.recommendations.items.largest_contentful_paint.action'
+  | 'analyzer.recommendations.items.largest_contentful_paint.description'
+  | 'analyzer.recommendations.items.largest_contentful_paint.title'
+  | 'analyzer.recommendations.items.lazy_loading.action'
+  | 'analyzer.recommendations.items.lazy_loading.description'
+  | 'analyzer.recommendations.items.lazy_loading.title'
+  | 'analyzer.recommendations.items.link_name.action'
+  | 'analyzer.recommendations.items.link_name.description'
+  | 'analyzer.recommendations.items.link_name.title'
+  | 'analyzer.recommendations.items.meta_description.action'
+  | 'analyzer.recommendations.items.meta_description.description'
+  | 'analyzer.recommendations.items.meta_description.title'
+  | 'analyzer.recommendations.items.privacy_policy.action'
+  | 'analyzer.recommendations.items.privacy_policy.description'
+  | 'analyzer.recommendations.items.privacy_policy.title'
+  | 'analyzer.recommendations.items.reviews.action'
+  | 'analyzer.recommendations.items.reviews.description'
+  | 'analyzer.recommendations.items.reviews.title'
+  | 'analyzer.recommendations.items.robots_txt.action'
+  | 'analyzer.recommendations.items.robots_txt.description'
+  | 'analyzer.recommendations.items.robots_txt.title'
+  | 'analyzer.recommendations.items.script_count.action'
+  | 'analyzer.recommendations.items.script_count.description'
+  | 'analyzer.recommendations.items.script_count.title'
+  | 'analyzer.recommendations.items.server_response_time.action'
+  | 'analyzer.recommendations.items.server_response_time.description'
+  | 'analyzer.recommendations.items.server_response_time.title'
+  | 'analyzer.recommendations.items.total_blocking_time.action'
+  | 'analyzer.recommendations.items.total_blocking_time.description'
+  | 'analyzer.recommendations.items.total_blocking_time.title'
+  | 'analyzer.recommendations.items.viewport.action'
+  | 'analyzer.recommendations.items.viewport.description'
+  | 'analyzer.recommendations.items.viewport.title'
+  | 'analyzer.recommendations.nextAction'
   | 'analyzer.results.analyzeDifferentUrl'
   | 'analyzer.results.analyzedOn'
   | 'analyzer.results.breakdown'
@@ -3676,8 +4010,22 @@ export type TranslationKey =
   | 'analyzer.results.status.goodDesc'
   | 'analyzer.results.status.warning'
   | 'analyzer.results.status.warningDesc'
+  | 'analyzer.results.strongScoreWithIssues'
+  | 'analyzer.results.strongScoreWithIssuesDesc'
   | 'analyzer.results.title'
+  | 'analyzer.results.topIssues'
   | 'analyzer.results.trustedBy'
+  | 'analyzer.results.verifiedBenchmark'
+  | 'analyzer.roadmap.subtitle'
+  | 'analyzer.roadmap.title'
+  | 'analyzer.roadmap.weeks.week1.focus'
+  | 'analyzer.roadmap.weeks.week1.title'
+  | 'analyzer.roadmap.weeks.week2.focus'
+  | 'analyzer.roadmap.weeks.week2.title'
+  | 'analyzer.roadmap.weeks.week3.focus'
+  | 'analyzer.roadmap.weeks.week3.title'
+  | 'analyzer.roadmap.weeks.week4.focus'
+  | 'analyzer.roadmap.weeks.week4.title'
   | 'analyzer.sections.accessibility'
   | 'analyzer.sections.bestPractices'
   | 'analyzer.sections.cart'

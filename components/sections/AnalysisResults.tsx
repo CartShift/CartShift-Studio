@@ -114,8 +114,31 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
   type ExtendedRecommendation = Recommendation & { sectionKey: string; sectionName: string };
 
+  const translateOptional = (key: string, fallback: string) =>
+    t.has(key as any) ? t(key as any) : fallback;
+
+  const getRecommendationCopy = (rec: Recommendation) => {
+    if (!rec.code) return rec;
+    const translationKey = rec.code.replace(/-/g, '_');
+
+    return {
+      ...rec,
+      title: translateOptional(`recommendations.items.${translationKey}.title`, rec.title),
+      description: rec.description
+        ? translateOptional(`recommendations.items.${translationKey}.description`, rec.description)
+        : undefined,
+      action: rec.action
+        ? translateOptional(`recommendations.items.${translationKey}.action`, rec.action)
+        : undefined,
+    };
+  };
+
   const allRecommendations = Object.entries(results.sections).flatMap(([key, section]) =>
-    section.recommendations.map(rec => ({ ...rec, sectionKey: key, sectionName: section.name }))
+    section.recommendations.map(rec => ({
+      ...getRecommendationCopy(rec),
+      sectionKey: key,
+      sectionName: t(`sections.${key}` as any),
+    }))
   );
 
   const priorityRecs = allRecommendations
@@ -130,6 +153,82 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
   }
 
   const overallStatus = getStatusColor(results.overallScore);
+  const highImpactCount = allRecommendations.filter(rec => rec.impact === 'high').length;
+  const impactRank: Record<Recommendation['impact'], number> = { high: 0, medium: 1, low: 2 };
+  const effortRank: Record<NonNullable<Recommendation['effort']>, number> = {
+    quick: 0,
+    medium: 1,
+    advanced: 2,
+  };
+  const sortedRoadmapRecommendations = [...allRecommendations].sort((a, b) => {
+    const impactDelta = impactRank[a.impact] - impactRank[b.impact];
+    if (impactDelta !== 0) return impactDelta;
+
+    return (effortRank[a.effort || 'medium'] || 1) - (effortRank[b.effort || 'medium'] || 1);
+  });
+  const usedRoadmapKeys = new Set<string>();
+  const takeRoadmapItems = (
+    predicate: (rec: ExtendedRecommendation) => boolean,
+    limit = 2
+  ): ExtendedRecommendation[] => {
+    const items: ExtendedRecommendation[] = [];
+
+    for (const rec of sortedRoadmapRecommendations as ExtendedRecommendation[]) {
+      const key = `${rec.sectionKey}:${rec.code || rec.title}`;
+      if (usedRoadmapKeys.has(key) || !predicate(rec)) continue;
+
+      usedRoadmapKeys.add(key);
+      items.push(rec);
+      if (items.length >= limit) break;
+    }
+
+    return items;
+  };
+  const roadmapWeeks = [
+    {
+      key: 'week1',
+      items: takeRoadmapItems(rec => rec.impact === 'high' || rec.effort === 'quick'),
+    },
+    {
+      key: 'week2',
+      items: takeRoadmapItems(rec => rec.sectionKey === 'performance'),
+    },
+    {
+      key: 'week3',
+      items: takeRoadmapItems(
+        rec =>
+          rec.sectionKey === 'seo' ||
+          rec.sectionKey === 'accessibility' ||
+          rec.sectionKey === 'bestPractices'
+      ),
+    },
+    {
+      key: 'week4',
+      items: takeRoadmapItems(rec => rec.sectionKey === 'cart' || rec.sectionKey === 'trust'),
+    },
+  ]
+    .map(week => ({
+      ...week,
+      items:
+        week.items.length > 0
+          ? week.items
+          : takeRoadmapItems(() => true, week.key === 'week4' ? 3 : 2),
+    }))
+    .filter(week => week.items.length > 0);
+  const headerTitle =
+    results.overallScore >= 80 && highImpactCount > 0
+      ? t('results.strongScoreWithIssues', { count: highImpactCount })
+      : results.overallScore >= 80
+        ? t('results.greatJob')
+        : priorityRecs.length === 1
+          ? t('results.issuesFound_singular', { count: priorityRecs.length })
+          : t('results.issuesFound', { count: priorityRecs.length });
+  const headerDescription =
+    results.overallScore >= 80 && highImpactCount > 0
+      ? t('results.strongScoreWithIssuesDesc')
+      : results.overallScore >= 80
+        ? t('results.readyToScale')
+        : t('results.losingSales');
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
@@ -155,18 +254,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 <h3
                   className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-surface-900'} mb-2`}
                 >
-                  {results.overallScore >= 80
-                    ? t('results.greatJob')
-                    : priorityRecs.length === 1
-                      ? t('results.issuesFound_singular', { count: priorityRecs.length })
-                      : t('results.issuesFound', { count: priorityRecs.length })}
+                  {headerTitle}
                 </h3>
                 <p
                   className={`text-sm md:text-base ${isDark ? 'text-white/70' : 'text-surface-600'}`}
                 >
-                  {results.overallScore >= 80
-                    ? t('results.readyToScale')
-                    : t('results.losingSales')}
+                  {headerDescription}
                 </p>
               </div>
             </div>
@@ -215,7 +308,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   {t('results.analyzedOn', { platform: results.platform })}
                 </p>
               )}
-              {results.percentile !== undefined && (
+              {results.benchmark && (
                 <motion.div
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -223,7 +316,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   className="mt-3 flex items-center justify-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20"
                 >
                   <TrendingUp className="w-3.5 h-3.5" />
-                  Better than {results.percentile}% of similar stores
+                  {t('results.verifiedBenchmark', {
+                    percentile: results.benchmark.percentile,
+                    count: results.benchmark.sampleSize,
+                  })}
                 </motion.div>
               )}
             </div>
@@ -232,7 +328,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       </motion.div>
 
       {/* Competitor / Market Intelligence Section */}
-      {results.competitorAnalysis && results.competitorAnalysis.competitors.length > 0 && (
+      {results.competitorAnalysis && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -245,10 +341,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             </div>
             <div>
               <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
-                Market Intelligence
+                {t('market.title')}
               </h3>
               <p className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
-                AI-detected market position and competitors
+                {t('market.subtitle')}
               </p>
             </div>
           </div>
@@ -258,48 +354,100 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             <div
               className={`p-4 rounded-xl border ${isDark ? 'bg-indigo-500/5 border-indigo-500/10' : 'bg-indigo-50 border-indigo-100'}`}
             >
-              <div className="text-sm font-medium text-indigo-500 mb-2">Market Position</div>
+              <div className="text-sm font-medium text-indigo-500 mb-2">{t('market.position')}</div>
               <div
                 className={`text-2xl font-bold capitalize ${isDark ? 'text-white' : 'text-surface-900'}`}
               >
-                {results.competitorAnalysis.marketPosition}
+                {t(`market.positions.${results.competitorAnalysis.marketPosition}` as any)}
               </div>
-              <p className={`text-xs mt-1 ${isDark ? 'text-white/40' : 'text-surface-500'}`}>
-                Based on keyword analysis and content structure.
+              <p className={`text-xs mt-2 ${isDark ? 'text-white/50' : 'text-surface-600'}`}>
+                {results.competitorAnalysis.competitors.length > 0
+                  ? t('market.summaryWithCandidates')
+                  : t('market.summaryNoCandidates')}
               </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-500">
+                  {t(`market.confidence.${results.competitorAnalysis.confidence}` as any)}
+                </span>
+                {results.competitorAnalysis.category && (
+                  <span className="rounded-full border border-surface-500/20 bg-surface-500/10 px-2 py-1 text-xs text-surface-500 dark:text-white/60">
+                    {results.competitorAnalysis.category}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Competitors List */}
             <div className="space-y-3">
               <div className="text-sm font-medium text-surface-500 dark:text-white/50">
-                Top Competitors Found
+                {t('market.evidence')}
               </div>
-              {results.competitorAnalysis.competitors.map((comp, i) => (
+              <div className="space-y-2">
+                {[
+                  results.competitorAnalysis.category
+                    ? t('market.detectedCategory', {
+                        category: results.competitorAnalysis.category,
+                      })
+                    : t('market.noCategory'),
+                  results.competitorAnalysis.competitors.length > 0
+                    ? t('market.candidatesFound', {
+                        count: results.competitorAnalysis.competitors.length,
+                      })
+                    : t('market.noDirectCompetitors'),
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className={`rounded-lg border px-3 py-2 text-xs ${isDark ? 'bg-surface-900/50 border-white/5 text-white/60' : 'bg-surface-50 border-surface-200 text-surface-600'}`}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-2 text-sm font-medium text-surface-500 dark:text-white/50">
+                {t('market.competitorCandidates')}
+              </div>
+              {results.competitorAnalysis.competitors.length > 0 ? (
+                results.competitorAnalysis.competitors.map((comp, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-center justify-between gap-3 p-3 rounded-lg border ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs font-bold text-white">
+                        {comp.name.substring(0, 1).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div
+                          className={`truncate font-medium text-sm ${isDark ? 'text-white' : 'text-surface-900'}`}
+                        >
+                          {comp.name}
+                        </div>
+                        <div className="truncate text-xs text-indigo-400">
+                          {comp.url.replace('https://', '')}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-end">
+                      <div className="text-xs font-medium text-surface-500">
+                        {t('market.similarity')}
+                      </div>
+                      <div className="text-sm font-bold text-indigo-500">
+                        {comp.similarityScore}%
+                      </div>
+                      <div className="text-[10px] text-surface-400">
+                        {t(`market.confidence.${comp.confidence}` as any)}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
                 <div
-                  key={i}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
+                  className={`rounded-lg border px-3 py-3 text-sm ${isDark ? 'bg-surface-900/50 border-white/5 text-white/60' : 'bg-surface-50 border-surface-200 text-surface-600'}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
-                      {comp.name.substring(0, 1).toUpperCase()}
-                    </div>
-                    <div>
-                      <div
-                        className={`font-medium text-sm ${isDark ? 'text-white' : 'text-surface-900'}`}
-                      >
-                        {comp.name}
-                      </div>
-                      <div className="text-xs text-indigo-400 truncate max-w-[150px]">
-                        {comp.url.replace('https://', '')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-end">
-                    <div className="text-xs font-medium text-surface-500">Similarity</div>
-                    <div className="text-sm font-bold text-indigo-500">{comp.similarityScore}%</div>
-                  </div>
+                  {t('market.noCompetitors')}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </motion.div>
@@ -430,10 +578,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             </div>
             <div>
               <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
-                AI Search Readiness
+                {t('ai.title')}
               </h3>
               <p className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
-                Optimization for Generative Search (SGE, ChatGPT, Gemini)
+                {t('ai.subtitle')}
               </p>
             </div>
           </div>
@@ -447,10 +595,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 {results.aiAnalysis.score}/100
               </div>
               <div className="text-sm font-medium uppercase tracking-wide text-teal-600/70 mb-4">
-                {results.aiAnalysis.aiReadinessStatus.replace('_', ' ')}
+                {t(`ai.status.${results.aiAnalysis.aiReadinessStatus}` as any)}
               </div>
               <p className={`text-xs ${isDark ? 'text-white/60' : 'text-surface-600'}`}>
-                Higher scores increase likelihood of being cited by AI answers.
+                {t('ai.scoreHelp')}
               </p>
             </div>
 
@@ -460,7 +608,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 <div
                   className={`text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-white/40' : 'text-surface-500'}`}
                 >
-                  Structured Data (JSON-LD)
+                  {t('ai.structuredData')}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {results.aiAnalysis.structuredDataTypes.length > 0 ? (
@@ -473,9 +621,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                       </span>
                     ))
                   ) : (
-                    <span className="text-sm text-surface-500 italic">
-                      No structured data found
-                    </span>
+                    <span className="text-sm text-surface-500 italic">{t('ai.noSchema')}</span>
                   )}
                 </div>
               </div>
@@ -485,7 +631,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   <div
                     className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? 'text-white/40' : 'text-surface-500'}`}
                   >
-                    Readability
+                    {t('ai.readability')}
                   </div>
                   <div
                     className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
@@ -497,12 +643,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   <div
                     className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? 'text-white/40' : 'text-surface-500'}`}
                   >
-                    Social Context
+                    {t('ai.socialContext')}
                   </div>
                   <div
                     className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
                   >
-                    {results.aiAnalysis.openGraphTags ? 'Detected' : 'Missing'}
+                    {results.aiAnalysis.openGraphTags ? t('common.detected') : t('common.missing')}
                   </div>
                 </div>
               </div>
@@ -525,10 +671,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             </div>
             <div>
               <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
-                Product Page Quality
+                {t('product.title')}
               </h3>
               <p className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
-                Conversion audit of a sample product page
+                {t('product.subtitle')}
               </p>
             </div>
           </div>
@@ -540,7 +686,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               >
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                    Conversion Score
+                    {t('product.conversionScore')}
                   </span>
                   <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                     {results.productAnalysis.score}/100
@@ -555,7 +701,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               </div>
 
               <div className="text-xs text-surface-500">
-                Analyzed:{' '}
+                {t('product.analyzed')}:{' '}
                 <a
                   href={results.productAnalysis.productUrl}
                   target="_blank"
@@ -571,39 +717,59 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               <div
                 className={`p-3 rounded-lg border ${results.productAnalysis.hasBuyButtonAboveFold ? 'bg-green-500/10 border-green-500/20 text-green-600' : 'bg-red-500/10 border-red-500/20 text-red-600'}`}
               >
-                <span className="block text-xs uppercase opacity-70 mb-1">Buy Button</span>
+                <span className="block text-xs uppercase opacity-70 mb-1">
+                  {t('product.buyButton')}
+                </span>
                 <span className="font-semibold">
-                  {results.productAnalysis.hasBuyButtonAboveFold ? 'Above Fold' : 'Below Fold'}
+                  {results.productAnalysis.hasBuyButtonAboveFold
+                    ? t('product.aboveFold')
+                    : t('product.belowFold')}
                 </span>
               </div>
               <div
                 className={`p-3 rounded-lg border ${results.productAnalysis.imageCount > 3 ? 'bg-green-500/10 border-green-500/20 text-green-600' : 'bg-amber-500/10 border-amber-500/20 text-amber-600'}`}
               >
-                <span className="block text-xs uppercase opacity-70 mb-1">Gallery</span>
-                <span className="font-semibold">{results.productAnalysis.imageCount} Images</span>
+                <span className="block text-xs uppercase opacity-70 mb-1">
+                  {t('product.gallery')}
+                </span>
+                <span className="font-semibold">
+                  {t('product.images', { count: results.productAnalysis.imageCount })}
+                </span>
               </div>
               <div
                 className={`p-3 rounded-lg border ${results.productAnalysis.hasReviews ? 'bg-green-500/10 border-green-500/20 text-green-600' : 'bg-amber-500/10 border-amber-500/20 text-amber-600'}`}
               >
-                <span className="block text-xs uppercase opacity-70 mb-1">Social Proof</span>
+                <span className="block text-xs uppercase opacity-70 mb-1">
+                  {t('product.socialProof')}
+                </span>
                 <span className="font-semibold">
-                  {results.productAnalysis.hasReviews ? 'Reviews Found' : 'No Reviews'}
+                  {results.productAnalysis.hasReviews
+                    ? t('product.reviewsFound')
+                    : t('product.noReviews')}
                 </span>
               </div>
               <div
                 className={`p-3 rounded-lg border ${results.productAnalysis.descriptionLength > 200 ? 'bg-green-500/10 border-green-500/20 text-green-600' : 'bg-gray-500/10 border-gray-500/20 text-gray-600'}`}
               >
-                <span className="block text-xs uppercase opacity-70 mb-1">Content</span>
+                <span className="block text-xs uppercase opacity-70 mb-1">
+                  {t('product.content')}
+                </span>
                 <span className="font-semibold">
-                  {results.productAnalysis.descriptionLength > 200 ? 'Detailed' : 'Brief'}
+                  {results.productAnalysis.descriptionLength > 200
+                    ? t('product.detailed')
+                    : t('product.brief')}
                 </span>
               </div>
               <div
                 className={`p-3 rounded-lg border ${results.productAnalysis.cartActionabilityStatus === 'clickable' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600' : 'bg-surface-500/10 border-surface-500/20 text-surface-600'}`}
               >
-                <span className="block text-xs uppercase opacity-70 mb-1">Checkout Flow</span>
+                <span className="block text-xs uppercase opacity-70 mb-1">
+                  {t('product.checkoutFlow')}
+                </span>
                 <span className="font-semibold capitalize">
-                  {results.productAnalysis.cartActionabilityStatus.replace(/_/g, ' ')}
+                  {t(
+                    `product.cartStatus.${results.productAnalysis.cartActionabilityStatus}` as any
+                  )}
                 </span>
               </div>
             </div>
@@ -676,6 +842,90 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         </div>
       </div>
 
+      {/* 30 Day Roadmap */}
+      {roadmapWeeks.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: PRIORITY_RECOMMENDATIONS_COUNT * ANIMATION_DELAY_STEP * 0.4 }}
+          className={`border rounded-2xl p-6 md:p-8 ${isDark ? 'bg-surface-950/30 border-white/5' : 'bg-white border-surface-200 shadow-sm'}`}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <Calendar className="w-5 h-5 text-emerald-500" />
+            </div>
+            <div>
+              <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
+                {t('roadmap.title')}
+              </h3>
+              <p className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                {t('roadmap.subtitle')}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {roadmapWeeks.map((week, index) => (
+              <div
+                key={week.key}
+                className={`rounded-xl border p-4 ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <div
+                      className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
+                    >
+                      {t(`roadmap.weeks.${week.key}.title` as any)}
+                    </div>
+                    <div className={isDark ? 'text-xs text-white/40' : 'text-xs text-surface-500'}>
+                      {t(`roadmap.weeks.${week.key}.focus` as any)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {week.items.map(item => (
+                    <div
+                      key={`${item.sectionKey}:${item.code || item.title}`}
+                      className="space-y-1"
+                    >
+                      <div
+                        className={`text-sm font-medium leading-snug ${isDark ? 'text-white/85' : 'text-surface-800'}`}
+                      >
+                        {item.title}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                            item.impact === 'high'
+                              ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                              : item.impact === 'medium'
+                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                : 'bg-surface-500/10 text-surface-500 dark:text-white/50'
+                          }`}
+                        >
+                          {t(`impact.${item.impact}` as any)}
+                        </span>
+                        <span
+                          className={
+                            isDark ? 'text-[11px] text-white/40' : 'text-[11px] text-surface-500'
+                          }
+                        >
+                          {item.sectionName}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* Priority Fixes */}
       {priorityRecs.length > 0 && (
         <motion.div
@@ -689,7 +939,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               {t('results.priorityFixes')}
             </h3>
             <span className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
-              ({priorityRecs.length} top issue{priorityRecs.length !== 1 ? 's' : ''})
+              {t('results.topIssues', { count: priorityRecs.length })}
             </span>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -697,6 +947,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               <RecommendationCard
                 key={index}
                 title={rec.title}
+                description={rec.description}
+                action={rec.action}
+                evidence={rec.evidence}
+                effort={rec.effort}
                 sectionName={rec.sectionName}
                 impact={rec.impact}
                 delay={

@@ -1,9 +1,9 @@
 ---
-title: 'Email Marketing for Ecommerce: Flows That Sell (2025)'
+title: 'Email Marketing for Ecommerce: Flows That Sell (2026)'
 date: '2025-12-18'
 excerpt: 'Build an email marketing system that drives revenue: core automations, segmentation, deliverability, and practical copy frameworks for ecommerce stores.'
 category: 'E-commerce Strategy'
-title_he: 'אימייל מרקטינג לאיקומרס: פלואו׳ים שמוכרים (2025)'
+title_he: 'אימייל מרקטינג לאיקומרס: פלואו׳ים שמוכרים (2026)'
 excerpt_he: 'בונים מערכת אימייל שמייצרת הכנסות: אוטומציות חובה, סגמנטציה, דליברביליטי ותבניות קופי פרקטיות לחנויות איקומרס.'
 category_he: 'אסטרטגיית איקומרס'
 ---
@@ -159,6 +159,39 @@ Deliverability is mostly common sense: send useful emails to people who asked fo
 
 - open rate (privacy changes make it noisy, still useful directionally)
 
+## Step 6: Improve one flow at a time
+
+Do not rewrite every automation at once. Start with the flow closest to revenue.
+
+### Monthly optimization rhythm
+
+1. Pick the highest-revenue flow.
+2. Review subject lines, click rate, conversion rate, unsubscribe rate, and revenue per recipient.
+3. Find the weakest email in the sequence.
+4. Test one meaningful change: timing, offer, product block, proof, FAQ, or CTA.
+5. Let the test run long enough to avoid reacting to noise.
+
+Good email marketing gets better through small, consistent improvements. It does not need a new campaign idea every week.
+
+## Compliance and consent basics
+
+Revenue is not worth damaging deliverability or trust.
+
+- use clear opt-in language
+- make unsubscribe easy
+- do not buy lists
+- respect regional consent rules
+- avoid misleading subject lines
+- keep SMS opt-in separate from email when required
+
+Healthy permission is part of performance. People who asked to hear from you are more likely to buy and less likely to mark messages as spam.
+
+## Where email connects with the rest of the store
+
+Email works best when the store supports the promise. If the abandoned cart email mentions easy returns, the product page and checkout should say the same thing. If a welcome email pushes best sellers, those product pages need strong photos, reviews, delivery details, and clear CTAs.
+
+Use email data to improve the site too. High clicks with low purchases may point to product page friction. High unsubscribe after a flow may mean the offer or timing is too aggressive.
+
 ## Tools we like (pick one and execute well)
 
 | Tool              | Best For                                 |      Starting Price      |
@@ -187,7 +220,7 @@ Whatever you pick, use consistent UTM tagging so platform and analytics tell the
 Email becomes powerful when it stops being “campaigns” and becomes a system. Build the flows, keep the list healthy, measure what matters, and improve one piece each month.
 
 **Want us to set this up end-to-end?** We can build your flows, copy, segmentation, and reporting, then optimize monthly.
-Start here: [Shopify growth & retention](/services/shopify) or [contact us](/contact).
+Start here: [Shopify growth & retention](/solutions/shopify) or [contact us](/contact).
 Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rate-optimization) and [Fashion ecommerce guide](/blog/fashion-ecommerce-guide).
 
 [^1]: Automated email flows typically generate 3-5x more revenue than one-off campaigns. The key is timing: reaching customers when they're most likely to convert, not when it's convenient for your schedule.
@@ -343,5 +376,5 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 אימייל עובד הכי טוב כשזה נהיה מערכת. בנו את הפלואו׳ים, שמרו על הרשימה נקייה, ומדדו דברים שמזיזים הכנסות.
 
 **רוצים שנרים את זה קומפלט?** פלואו׳ים, קופי, סגמנטים ודיווח, ואז אופטימיזציה חודשית.
-[שירותי Shopify](/services/shopify) או [צור קשר](/contact).
-קשור: [אופטימיזציית המרות](/blog/ecommerce-conversion-rate-optimization) ו-[מדריך איקומרס אופנה](/blog/fashion-ecommerce-guide-2025).
+[שירותי Shopify](/solutions/shopify) או [צור קשר](/contact).
+קשור: [אופטימיזציית המרות](/blog/ecommerce-conversion-rate-optimization) ו-[מדריך איקומרס אופנה](/blog/fashion-ecommerce-guide).

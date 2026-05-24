@@ -363,7 +363,7 @@ High-CLV stores:
 
 **Need help analyzing and improving your CLV?** We build retention systems, customer segmentation, and CLV-optimized strategies that turn one-time buyers into lifetime customers.
 
-[Book a consultation](/contact) or explore our [Shopify growth services](/services/shopify).
+[Book a consultation](/contact) or explore our [Shopify growth services](/solutions/shopify).
 
 Related: [Email marketing for ecommerce](/blog/email-marketing-for-e-commerce) and [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rate-optimization).
 
@@ -724,6 +724,6 @@ ROI: (190 - 55) ÷ 55 = 245%
 
 **צריכים עזרה בניתוח ושיפור ה-CLV שלכם?** אנחנו בונים מערכות שימור, סגמנטציית לקוחות ואסטרטגיות מיועלות ל-CLV שהופכות קונים חד-פעמיים ללקוחות לכל החיים.
 
-[קבעו ייעוץ](/contact) או חקרו את [שירותי הצמיחה שלנו לשופיפיי](/services/shopify).
+[קבעו ייעוץ](/contact) או חקרו את [שירותי הצמיחה שלנו לשופיפיי](/solutions/shopify).
 
 קשור: [שיווק במייל לאיקומרס](/blog/email-marketing-for-e-commerce) ו[אופטימיזציית שיעור המרה באיקומרס](/blog/ecommerce-conversion-rate-optimization).

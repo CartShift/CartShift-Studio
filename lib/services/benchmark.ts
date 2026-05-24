@@ -1,5 +1,5 @@
 import { adminDb } from '@/lib/firebase-admin';
-import { AnalysisResult } from '@/lib/types/analyzer';
+import { AnalysisResult, BenchmarkComparison } from '@/lib/types/analyzer';
 import { CompetitorService } from '@/lib/services/competitor-service';
 
 export class BenchmarkService {
@@ -23,21 +23,14 @@ export class BenchmarkService {
     }
   }
 
-  static async getPercentile(score: number, html: string): Promise<number> {
+  static async getBenchmarkComparison(
+    score: number,
+    html: string
+  ): Promise<BenchmarkComparison | undefined> {
     const category = CompetitorService.detectCategory(html) || 'general';
 
-    /** Estimated percentile when benchmark DB is unavailable or has insufficient data. */
-    const fallbackPercentile = (s: number) => {
-      if (s >= 95) return 99;
-      if (s >= 85) return 92;
-      if (s >= 70) return 75;
-      if (s >= 55) return 50;
-      if (s >= 40) return 25;
-      return 10;
-    };
-
     if (!adminDb) {
-      return fallbackPercentile(score);
+      return undefined;
     }
 
     try {
@@ -47,7 +40,7 @@ export class BenchmarkService {
       const totalQuery = await coll.where('category', '==', category).count().get();
       const total = totalQuery.data().count;
 
-      if (total < 10) return fallbackPercentile(score); // Not enough data
+      if (total < 10) return undefined;
 
       const belowQuery = await coll
         .where('category', '==', category)
@@ -57,10 +50,19 @@ export class BenchmarkService {
 
       const countBelow = belowQuery.data().count;
 
-      return Math.round((countBelow / total) * 100);
+      return {
+        percentile: Math.round((countBelow / total) * 100),
+        sampleSize: total,
+        category,
+      };
     } catch (e) {
       console.warn('Failed to calc percentile', e);
-      return fallbackPercentile(score);
+      return undefined;
     }
+  }
+
+  static async getPercentile(score: number, html: string): Promise<number | undefined> {
+    const comparison = await this.getBenchmarkComparison(score, html);
+    return comparison?.percentile;
   }
 }

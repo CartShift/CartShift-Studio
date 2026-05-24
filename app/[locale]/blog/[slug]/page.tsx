@@ -79,17 +79,24 @@ export default async function BlogPostPage({
     notFound();
   }
 
+  const localizedTitle =
+    locale === 'he' && post.translation?.title ? post.translation.title : post.title;
+  const localizedExcerpt =
+    locale === 'he' && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
+  const localizedCategory =
+    locale === 'he' && post.translation?.category ? post.translation.category : post.category;
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const articleUrl = `${baseUrl}/${locale}/blog/${post.slug}`;
 
   const articleSchema = generateArticleSchema({
-    title: post.title,
-    description: post.excerpt,
+    title: localizedTitle,
+    description: localizedExcerpt,
     date: post.date,
     url: articleUrl,
     locale: locale as 'en' | 'he',
     author: 'CartShift Studio',
-    category: post.category,
+    category: localizedCategory,
     wordCount: post.wordCount,
     readingTime: post.readingTime,
   });
@@ -97,7 +104,7 @@ export default async function BlogPostPage({
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: `${baseUrl}/${locale}` },
     { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
-    { name: post.title, url: articleUrl },
+    { name: localizedTitle, url: articleUrl },
   ]);
 
   const allPosts = await getAllPosts();

@@ -6,7 +6,12 @@ export interface Finding {
 }
 
 export interface Recommendation {
+  code?: string;
   title: string;
+  description?: string;
+  action?: string;
+  evidence?: string;
+  effort?: 'quick' | 'medium' | 'advanced';
   impact: 'high' | 'medium' | 'low';
   serviceLink?: string;
 }
@@ -29,12 +34,19 @@ export interface Competitor {
   url: string;
   name: string;
   similarityScore: number;
+  confidence: 'high' | 'medium' | 'low';
+  source: 'detected-link' | 'category-reference';
   overlapReasons: string[];
 }
 
 export interface CompetitorAnalysis {
   competitors: Competitor[];
   marketPosition: 'leader' | 'challenger' | 'niche';
+  category?: string;
+  confidence: 'high' | 'medium' | 'low';
+  summary: string;
+  evidence: string[];
+  note?: string;
 }
 
 export interface Screenshot {
@@ -68,6 +80,12 @@ export interface ProductAnalysis {
   cartActionabilityStatus: 'detected' | 'clickable' | 'redirected_to_cart' | 'unknown';
 }
 
+export interface BenchmarkComparison {
+  percentile: number;
+  sampleSize: number;
+  category: string;
+}
+
 export interface AnalysisResult {
   storeUrl: string;
   overallScore: number;
@@ -86,5 +104,6 @@ export interface AnalysisResult {
   aiAnalysis?: AIAnalysis;
   productAnalysis?: ProductAnalysis;
   percentile?: number;
+  benchmark?: BenchmarkComparison;
   generatedAt: string;
 }

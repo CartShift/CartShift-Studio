@@ -1,9 +1,9 @@
 ---
-title: 'WordPress Performance Optimization: Speed Guide (2025)'
+title: 'WordPress Performance Optimization: Speed Guide (2026)'
 date: '2025-12-18'
 excerpt: 'A practical WordPress performance optimization guide for faster load times, better Core Web Vitals, and higher conversions. Includes a step-by-step checklist.'
 category: 'WordPress'
-title_he: 'אופטימיזציית ביצועים לוורדפרס: מדריך מהירות (2025)'
+title_he: 'אופטימיזציית ביצועים לוורדפרס: מדריך מהירות (2026)'
 excerpt_he: 'מדריך פרקטי לאופטימיזציית ביצועים בוורדפרס: שיפור מהירות, Core Web Vitals והמרות, עם צ׳ק ליסט מסודר לביצוע.'
 category_he: 'וורדפרס'
 ---
@@ -212,13 +212,28 @@ A slow server can make a perfectly optimized front-end feel sluggish.
 - [ ] Redis/object cache added (if needed)
 - [ ] WooCommerce exclusions set (cart/checkout/account)
 
+## Maintenance rhythm
+
+Performance drops when nobody owns it after launch. Set a simple monthly routine:
+
+- review new plugins and scripts
+- test the homepage and one conversion page
+- check image sizes on new content
+- update plugins in a controlled window
+- review Search Console Core Web Vitals
+- document any change that affects templates or tracking
+
+This keeps speed from becoming an emergency project every six months.
+
+For WooCommerce, include cart and checkout in that routine. Those pages can be excluded from some caching layers, so they need direct testing instead of assumptions.
+
 ## Conclusion
 
 A fast WordPress site is not a one-time project. It’s a system. Measure, fix the biggest bottlenecks, and keep a simple routine so things don’t regress.
 
 **Want a quick performance audit?** We'll review your Core Web Vitals, pinpoint the biggest bottlenecks, and give you a prioritized fix plan (not a vague "optimize everything" list).
 Start here: [WordPress development & optimization](/solutions/wordpress) or contact us at hello@cart-shift.com.
-Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rate-optimization) and [Shopify speed optimization](/blog/shopify-speed-optimization).
+Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rate-optimization) and [Shopify speed optimization](/blog/speed-up-shopify-store).
 
 [^1]: According to Google's research, 53% of mobile site visits are abandoned if pages take longer than 3 seconds to load. The probability of bounce increases 32% as page load time goes from 1 second to 3 seconds.
 
@@ -407,4 +422,4 @@ WooCommerce נוטה להיות איטי בגלל:
 
 **רוצים Audit מהיר?** נבדוק Core Web Vitals, נאתר צווארי בקבוק ונחזיר לכם תוכנית עבודה לפי סדר עדיפויות.
 [שירותי WordPress](/solutions/wordpress) או [צור קשר](/contact).
-וגם שווה לקרוא: [אופטימיזציית המרות באיקומרס](/blog/ecommerce-conversion-rate-optimization) ו-[אופטימיזציית מהירות לשופיפיי](/blog/shopify-speed-optimization).
+וגם שווה לקרוא: [אופטימיזציית המרות באיקומרס](/blog/ecommerce-conversion-rate-optimization) ו-[אופטימיזציית מהירות לשופיפיי](/blog/speed-up-shopify-store).

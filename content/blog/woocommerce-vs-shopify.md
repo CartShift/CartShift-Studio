@@ -77,7 +77,7 @@ If your growth plan includes:
 
 If you want to start with SEO on Shopify, this pairs nicely with:
 
-- [Shopify SEO guide](/blog/shopify-seo-complete-guide-2024)
+- [Shopify SEO guide](/blog/shopify-seo-complete-guide)
 - [Conversion rate optimization](/blog/ecommerce-conversion-rate-optimization)
 
 ### 5) Customization and dev workflow: how “custom” do you mean?
@@ -124,10 +124,39 @@ If you’re switching platforms, plan for:
 - analytics consistency (GA4, Meta, server-side tracking),
 - checkout edge cases.
 
+## When not to switch platforms
+
+Do not migrate just because a competitor uses another platform or a new theme looks better. Migration is expensive and risky when the core problem is actually positioning, product-market fit, weak merchandising, or poor conversion strategy.
+
+Stay on the current platform and optimize first if:
+
+- the store is technically stable
+- the team knows the admin well
+- the biggest issues are copy, UX, speed, or product pages
+- the migration would not unlock a clear business constraint
+- organic traffic depends on many existing URLs
+
+Platform changes should solve a real operating problem, not become a rebrand in disguise.
+
+## Questions to answer before choosing
+
+Bring the decision back to operations:
+
+- Who updates products and content every week?
+- Who fixes bugs when checkout breaks?
+- How important is long-form SEO content?
+- How much custom logic is truly required?
+- What budget exists for maintenance after launch?
+- How quickly does the store need to move?
+
+The honest answers usually make the platform choice much clearer.
+
+If two platforms both look viable, choose the one your team can improve consistently. Momentum matters more than theoretical flexibility.
+
 If you’re considering a move, we can help you map the migration safely:
 
 - [Contact us](/contact)
-- or check [WordPress & WooCommerce solutions](/solutions/wordpress) and [Shopify services](/services/shopify)
+- or check [WordPress & WooCommerce solutions](/solutions/wordpress) and [Shopify services](/solutions/shopify)
 
 ## Conclusion
 
@@ -214,7 +243,7 @@ If you want control, content-driven growth, and the ability to build anything wi
 
 אם אתם בקטע של שופיפיי-SEO, זה מתחבר טוב ל:
 
-- [המדריך ל-SEO בשופיפיי](/blog/shopify-seo-complete-guide-2024)
+- [המדריך ל-SEO בשופיפיי](/blog/shopify-seo-complete-guide)
 - [שיפור יחס המרה](/blog/ecommerce-conversion-rate-optimization)
 
 ### 5) התאמות ופיתוח: כמה “קסטום” אתם באמת צריכים?
@@ -261,4 +290,4 @@ If you want control, content-driven growth, and the ability to build anything wi
 
 רוצים שנעזור לבחור ולעשות את זה נכון?
 [דברו איתנו](/contact)
-או תסתכלו על [וורדפרס & ווקומרס](/solutions/wordpress) ו-[שירותי שופיפיי](/services/shopify)
+או תסתכלו על [וורדפרס & ווקומרס](/solutions/wordpress) ו-[שירותי שופיפיי](/solutions/shopify)

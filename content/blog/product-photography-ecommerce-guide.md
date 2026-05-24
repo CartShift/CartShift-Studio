@@ -373,7 +373,7 @@ Start where you are. Use your smartphone if that's what you have. Build consiste
 
 **Need product photography guidance?** We help brands create photography systems that convert—equipment recommendations, workflow design, style guides, and optimization strategies.
 
-[Book a consultation](/contact) or [explore our Shopify services](/services/shopify) to see how we can transform your product visuals.
+[Book a consultation](/contact) or [explore our Shopify services](/solutions/shopify) to see how we can transform your product visuals.
 
 Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rate-optimization) and [Mobile commerce optimization](/blog/mobile-commerce-optimization).
 
@@ -744,6 +744,6 @@ Alt: "שם מוצר בווריאנט צבע, מראה פיצ'ר מרכזי"
 
 **צריכים הדרכה בצילום מוצרים?** אנחנו עוזרים למותגים ליצור מערכות צילום שממירות — המלצות ציוד, עיצוב תהליך עבודה, מדריכי סגנון ואסטרטגיות אופטימיזציה.
 
-[קבעו ייעוץ](/contact) או [חקרו את שירותי השופיפיי שלנו](/services/shopify) לראות איך נוכל לשנות את הויזואליות של המוצרים שלכם.
+[קבעו ייעוץ](/contact) או [חקרו את שירותי השופיפיי שלנו](/solutions/shopify) לראות איך נוכל לשנות את הויזואליות של המוצרים שלכם.
 
 קשור: [אופטימיזציית שיעור המרה באיקומרס](/blog/ecommerce-conversion-rate-optimization) ו[אופטימיזציה למובייל קומרס](/blog/mobile-commerce-optimization).

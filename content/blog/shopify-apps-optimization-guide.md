@@ -340,7 +340,7 @@ Every $50/month you save is $600/year in pure profit. Every 0.5 second you shave
 
 **Need help optimizing your Shopify app stack?** We conduct comprehensive app audits, performance testing, and consolidation strategies that reduce costs while boosting conversions.
 
-[Contact us](/contact) for a professional audit or explore our [Shopify optimization services](/services/shopify).
+[Contact us](/contact) for a professional audit or explore our [Shopify optimization services](/solutions/shopify).
 
 Related: [Shopify speed optimization](/blog/speed-up-shopify-store) and [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rate-optimization).
 
@@ -678,6 +678,6 @@ Related: [Shopify speed optimization](/blog/speed-up-shopify-store) and [Ecommer
 
 **צריכים עזרה באופטימיזציה של מערך האפליקציות שלכם בשופיפיי?** אנחנו מבצעים ביקורות אפליקציות מקיפות, בדיקות ביצועים ואסטרטגיות איחוד שמפחיתות עלויות תוך הגברת המרות.
 
-[צרו קשר](/contact) לביקורת מקצועית או חקרו את [שירותי האופטימיזציה שלנו לשופיפיי](/services/shopify).
+[צרו קשר](/contact) לביקורת מקצועית או חקרו את [שירותי האופטימיזציה שלנו לשופיפיי](/solutions/shopify).
 
 קשור: [אופטימיזציית מהירות שופיפיי](/blog/speed-up-shopify-store) ו[אופטימיזציית שיעור המרה באיקומרס](/blog/ecommerce-conversion-rate-optimization).

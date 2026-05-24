@@ -22,7 +22,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 1. Slow Page Speed (The Silent Revenue Killer)
 
-**The Problem:** Every second of load time costs you conversions. Studies show that a 1-second delay in page load time can reduce conversions by 7%. If your store takes 5 seconds to load instead of 2, you could be losing 20%+ of potential customers before they even see your products.
+**The Problem:** Every second of load time adds friction. Slow pages increase bounce risk, reduce trust, and make mobile shoppers less likely to reach the product or checkout experience.
 
 **The Symptoms:**
 
@@ -286,7 +286,7 @@ Use our [Store Analyzer](/tools/store-analyzer) to get an immediate diagnosis. I
 
 **Option 2: Work With Experts**
 
-If you'd prefer a hands-on partner to audit your store and implement proven conversion improvements, we're here to help. At CartShift Studio, we've helped dozens of stores increase their conversion rates through systematic optimization.
+If you'd prefer a hands-on partner to audit your store and implement conversion improvements, we're here to help. At CartShift Studio, we focus on systematic diagnosis, prioritized fixes, and measurable follow-up instead of random tweaks.
 
 [Contact us](/contact) for a free consultation to discuss your store's specific challenges.
 

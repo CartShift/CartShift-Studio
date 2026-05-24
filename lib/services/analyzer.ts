@@ -12,14 +12,23 @@ const PAGESPEED_API_KEY = process.env.PAGESPEED_API_KEY;
 const platformPatterns = [
   {
     name: 'Shopify',
-    patterns: [/myshopify\.com/i, /shopify/i, /cdn\.shopify\.com/i, /window\.Shopify/i],
+    patterns: [
+      /cdn\.shopify\.com/i,
+      /myshopify\.com/i,
+      /shopify-features/i,
+      /shopify-payment-button/i,
+      /shopify\.theme/i,
+    ],
   },
-  { name: 'WooCommerce', patterns: [/woocommerce/i, /wp-content/i, /wordpress/i, /wp-json/i] },
-  { name: 'Magento', patterns: [/magento/i, /mage/i, /varien/i] },
-  { name: 'BigCommerce', patterns: [/bigcommerce/i, /mybigcommerce\.com/i, /cdn\.bigcommerce/i] },
-  { name: 'Wix', patterns: [/wix\.com/i, /wixsite\.com/i, /wix-image/i] },
-  { name: 'Squarespace', patterns: [/squarespace\.com/i, /sqsp\.net/i, /squarespace-cdn/i] },
-  { name: 'PrestaShop', patterns: [/prestashop/i, /presta/i] },
+  {
+    name: 'WooCommerce',
+    patterns: [/wp-content\/plugins\/woocommerce/i, /wc-ajax/i, /wp-json\/wc/i],
+  },
+  { name: 'Magento', patterns: [/static\/_requirejs/i, /magento/i] },
+  { name: 'BigCommerce', patterns: [/cdn\.bigcommerce\.com/i, /mybigcommerce\.com/i] },
+  { name: 'Wix', patterns: [/wix-image/i, /wix-code/i, /wix\.com\/_partials/i] },
+  { name: 'Squarespace', patterns: [/squarespace-cdn/i, /sqsp\.net/i] },
+  { name: 'PrestaShop', patterns: [/prestashop/i] },
 ];
 
 function detectPlatform(html: string, url: string): string | null {
@@ -40,6 +49,124 @@ function getScoreStatus(score: number): 'critical' | 'warning' | 'good' | 'excel
   if (score >= 50) return 'warning';
   return 'critical';
 }
+
+function createRecommendation(
+  code: string,
+  title: string,
+  impact: Recommendation['impact'],
+  description: string,
+  action: string,
+  evidence?: string,
+  effort: Recommendation['effort'] = impact === 'high' ? 'medium' : 'quick'
+): Recommendation {
+  return {
+    code,
+    title,
+    impact,
+    description,
+    action,
+    evidence,
+    effort,
+    serviceLink: '/contact',
+  };
+}
+
+const lighthouseRecommendationMap: Record<
+  string,
+  {
+    title: string;
+    description: string;
+    action: string;
+    effort?: Recommendation['effort'];
+  }
+> = {
+  'meta-description': {
+    title: 'Add a search-ready meta description',
+    description:
+      'Search engines and AI answer engines use the description to understand the page and influence click-through rate.',
+    action:
+      'Write a unique 140-160 character description for the homepage that names the offer, audience, and primary reason to buy.',
+    effort: 'quick',
+  },
+  'robots-txt': {
+    title: 'Fix robots.txt crawl rules',
+    description:
+      'Invalid robots.txt directives can stop crawlers from discovering important product, category, or asset URLs.',
+    action:
+      'Validate /robots.txt, remove unsupported directives, and confirm important pages and assets are not blocked.',
+    effort: 'quick',
+  },
+  'color-contrast': {
+    title: 'Improve low-contrast text',
+    description:
+      'Low contrast makes important copy and buttons harder to read, especially on mobile and for users with impaired vision.',
+    action:
+      'Adjust foreground/background color pairs to meet WCAG AA contrast: 4.5:1 for normal text and 3:1 for large text.',
+    effort: 'medium',
+  },
+  'image-alt': {
+    title: 'Add descriptive alt text to images',
+    description:
+      'Product and content images without alt text lose accessibility context and reduce image-search clarity.',
+    action:
+      'Add concise alt text to meaningful images and leave purely decorative images empty with alt="".',
+    effort: 'medium',
+  },
+  'button-name': {
+    title: 'Name icon-only buttons',
+    description:
+      'Buttons without accessible names are confusing for screen reader users and automated assistants.',
+    action:
+      'Add visible text or aria-label values to every button, especially cart, menu, search, and carousel controls.',
+    effort: 'quick',
+  },
+  'link-name': {
+    title: 'Make links understandable',
+    description:
+      'Generic or empty links make navigation unclear and weaken semantic understanding of the page.',
+    action:
+      'Replace vague link labels with destination-specific text and add aria-labels when an icon is the only visible content.',
+    effort: 'quick',
+  },
+  label: {
+    title: 'Connect labels to form fields',
+    description:
+      'Unlabeled inputs hurt accessibility and can reduce checkout and newsletter form completion.',
+    action:
+      'Use visible labels or aria-label/aria-labelledby for each form input, select, and textarea.',
+    effort: 'quick',
+  },
+  'server-response-time': {
+    title: 'Reduce server response time',
+    description:
+      'Slow server response delays every later loading milestone and makes paid traffic less efficient.',
+    action:
+      'Enable page caching, review hosting resources, move heavy plugins/apps off the critical path, and add CDN caching.',
+    effort: 'advanced',
+  },
+  'largest-contentful-paint': {
+    title: 'Speed up the largest visible element',
+    description:
+      'A slow hero image or main content block delays the moment shoppers feel the page is usable.',
+    action:
+      'Preload the hero image, compress it, serve responsive sizes, and defer non-critical scripts competing for bandwidth.',
+    effort: 'medium',
+  },
+  'total-blocking-time': {
+    title: 'Reduce JavaScript blocking time',
+    description:
+      'Heavy JavaScript blocks interaction and makes filters, menus, and add-to-cart actions feel laggy.',
+    action:
+      'Remove unused scripts, defer third-party tags, split large bundles, and audit apps/plugins loaded on every page.',
+    effort: 'advanced',
+  },
+  'cumulative-layout-shift': {
+    title: 'Prevent layout shifts',
+    description: 'Unexpected movement can cause misclicks and makes product pages feel unstable.',
+    action: 'Reserve width/height for images, embeds, banners, and sticky bars before they load.',
+    effort: 'medium',
+  },
+};
 
 interface PageSpeedResult {
   lighthouseResult?: {
@@ -150,19 +277,41 @@ function extractLighthouseFindings(
         description: 'Passed',
       });
     } else if (audit.score !== null && audit.score < 0.9) {
+      const recommendation = lighthouseRecommendationMap[auditId];
+      const impact = audit.score < 0.5 ? 'high' : 'medium';
+      const evidence =
+        audit.displayValue ||
+        audit.description?.split('.')[0] ||
+        'The Lighthouse audit did not pass.';
+
       findings.push({
         type: 'issue',
         title: audit.title,
-        description: audit.displayValue || audit.description?.split('.')[0] || 'Needs improvement',
+        description: evidence,
       });
-      recommendations.push({
-        title: audit.title
-          .replace('Ensure', 'Fix')
-          .replace('Avoid', 'Remove')
-          .replace('Eliminate', 'Fix'),
-        impact: audit.score < 0.5 ? 'high' : 'medium',
-        serviceLink: '/contact',
-      });
+      recommendations.push(
+        recommendation
+          ? createRecommendation(
+              auditId,
+              recommendation.title,
+              impact,
+              recommendation.description,
+              recommendation.action,
+              evidence,
+              recommendation.effort
+            )
+          : createRecommendation(
+              auditId,
+              audit.title
+                .replace('Ensure', 'Fix')
+                .replace('Avoid', 'Remove')
+                .replace('Eliminate', 'Fix'),
+              impact,
+              audit.description?.split('.')[0] || 'This audit did not meet Lighthouse standards.',
+              'Review the failing Lighthouse audit details and fix the affected templates or theme code.',
+              evidence
+            )
+      );
     }
   }
 
@@ -189,7 +338,17 @@ function analyzeSEOFallback(html: string): SectionResult {
       title: 'Missing page title',
       description: 'Title tag is empty or missing.',
     });
-    recommendations.push({ title: 'Add a descriptive page title', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'document-title',
+        'Add a descriptive page title',
+        'high',
+        'The page title is one of the strongest signals for search listings and browser tabs.',
+        'Add a unique title under 60 characters that includes the store name and main product/category promise.',
+        'No non-empty <title> tag was found.',
+        'quick'
+      )
+    );
   }
 
   const metaDescMatch =
@@ -208,11 +367,21 @@ function analyzeSEOFallback(html: string): SectionResult {
       title: 'Missing meta description',
       description: 'Add a meta description.',
     });
-    recommendations.push({ title: 'Add meta description', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'meta-description',
+        'Add a search-ready meta description',
+        'high',
+        'Search engines and AI answer engines use the description to understand the page and influence click-through rate.',
+        'Write a unique 140-160 character description for the homepage that names the offer, audience, and primary reason to buy.',
+        'No meta description was found.',
+        'quick'
+      )
+    );
   }
 
-  const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  if (h1Match) {
+  const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  if (h1Match && h1Match[1].replace(/<[^>]*>/g, '').trim().length > 0) {
     score += 10;
     findings.push({
       type: 'positive',
@@ -220,7 +389,17 @@ function analyzeSEOFallback(html: string): SectionResult {
       description: 'Main heading structure exists.',
     });
   } else {
-    recommendations.push({ title: 'Add a main H1 heading', impact: 'medium' });
+    recommendations.push(
+      createRecommendation(
+        'h1',
+        'Add one clear H1 heading',
+        'medium',
+        'A clear H1 helps shoppers, search engines, and assistive technologies understand the page topic.',
+        'Add one visible H1 near the top of the homepage that describes the store or primary collection.',
+        'No H1 heading was detected.',
+        'quick'
+      )
+    );
   }
 
   return {
@@ -245,7 +424,17 @@ function analyzePerformanceFallback(html: string): SectionResult {
       title: 'High script count',
       description: 'Detected many script tags.',
     });
-    recommendations.push({ title: 'Minimize and bundle JavaScript', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'script-count',
+        'Reduce storefront JavaScript',
+        'high',
+        'Too many scripts slow down rendering and can delay menus, filters, and add-to-cart interactions.',
+        'Audit theme/app scripts, remove unused tags, and defer anything not needed for first render.',
+        `${scriptCount} script tags were detected.`,
+        'advanced'
+      )
+    );
   } else {
     findings.push({
       type: 'positive',
@@ -262,7 +451,17 @@ function analyzePerformanceFallback(html: string): SectionResult {
       description: 'Images use lazy loading.',
     });
   } else {
-    recommendations.push({ title: 'Implement lazy loading for images', impact: 'medium' });
+    recommendations.push(
+      createRecommendation(
+        'lazy-loading',
+        'Lazy load below-fold images',
+        'medium',
+        'Images below the first viewport should not compete with critical content for initial bandwidth.',
+        'Add loading="lazy" to below-fold images while keeping the hero image eager/preloaded.',
+        'No lazy-loaded images were detected in the static HTML.',
+        'quick'
+      )
+    );
   }
 
   return {
@@ -287,7 +486,17 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
       description: 'HTML tag specifies a language.',
     });
   } else {
-    recommendations.push({ title: 'Add lang attribute to HTML tag', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'html-lang',
+        'Set the page language',
+        'high',
+        'Language metadata helps screen readers pronounce content correctly and helps search engines classify the page.',
+        'Add the correct lang attribute to the <html> element, such as lang="he" or lang="en".',
+        'No html lang attribute was detected.',
+        'quick'
+      )
+    );
   }
 
   if (/<meta[^>]+name=["']viewport["']/i.test(html)) {
@@ -298,7 +507,17 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
       description: 'Viewport meta tag is present.',
     });
   } else {
-    recommendations.push({ title: 'Add viewport meta tag', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'viewport',
+        'Add a mobile viewport tag',
+        'high',
+        'Without a viewport tag, mobile browsers may render the store at desktop width and create a poor shopping experience.',
+        'Add <meta name="viewport" content="width=device-width, initial-scale=1"> to the document head.',
+        'No viewport meta tag was detected.',
+        'quick'
+      )
+    );
   }
 
   const imgCount = (html.match(/<img/gi) || []).length;
@@ -312,7 +531,17 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
       description: 'Most images have description tags.',
     });
   } else if (imgCount > 0) {
-    recommendations.push({ title: 'Add alt text to images', impact: 'medium' });
+    recommendations.push(
+      createRecommendation(
+        'image-alt',
+        'Add descriptive alt text to images',
+        'medium',
+        'Product and content images without alt text lose accessibility context and reduce image-search clarity.',
+        'Add concise alt text to meaningful images and leave purely decorative images empty with alt="".',
+        `${altCount} of ${imgCount} images include alt text.`,
+        'medium'
+      )
+    );
   } else {
     score += 20;
   }
@@ -349,7 +578,17 @@ function analyzeCart(html: string): SectionResult {
       title: 'Cart visibility low',
       description: 'Could not clearly identify a cart link.',
     });
-    recommendations.push({ title: 'Ensure cart is always visible', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'cart-visible',
+        'Make the cart easy to find',
+        'high',
+        'A hidden cart creates friction for returning shoppers and makes checkout feel less predictable.',
+        'Add a persistent cart entry point in the header with a clear icon, accessible label, and item count.',
+        'No clear cart link, basket link, or cart aria-label was detected.',
+        'medium'
+      )
+    );
   }
 
   const hasAddToCart =
@@ -374,7 +613,17 @@ function analyzeCart(html: string): SectionResult {
       description: 'Page mentions security.',
     });
   } else {
-    recommendations.push({ title: 'Add security assurances near checkout/cart', impact: 'medium' });
+    recommendations.push(
+      createRecommendation(
+        'checkout-trust',
+        'Add checkout trust cues',
+        'medium',
+        'Trust cues near purchase actions reduce hesitation when shoppers are about to enter payment details.',
+        'Place secure payment, returns, warranty, or guarantee messaging near cart and checkout entry points.',
+        'No security, guarantee, or safe-payment language was detected.',
+        'quick'
+      )
+    );
   }
 
   return {
@@ -400,7 +649,17 @@ function analyzeTrust(html: string): SectionResult {
     });
     score += 20;
   } else {
-    recommendations.push({ title: 'Add customer reviews', impact: 'high' });
+    recommendations.push(
+      createRecommendation(
+        'reviews',
+        'Show customer reviews or ratings',
+        'high',
+        'Social proof helps new shoppers validate quality, sizing, service, and delivery confidence.',
+        'Add review snippets, star ratings, testimonials, or UGC near product and collection decision points.',
+        'No review, rating, testimonial, or feedback language was detected.',
+        'medium'
+      )
+    );
   }
 
   if (/privacy/i.test(html) && /policy/i.test(html)) {
@@ -411,7 +670,17 @@ function analyzeTrust(html: string): SectionResult {
     });
     score += 15;
   } else {
-    recommendations.push({ title: 'Ensure Privacy Policy is visible', impact: 'medium' });
+    recommendations.push(
+      createRecommendation(
+        'privacy-policy',
+        'Make privacy policy visible',
+        'medium',
+        'Visible policies build trust and help shoppers understand how their information is handled.',
+        'Link privacy, returns, shipping, and terms pages from the footer and checkout-adjacent areas.',
+        'A clear privacy policy link was not detected.',
+        'quick'
+      )
+    );
   }
 
   if (/trust|secure|badge|guarantee|payment|visa|mastercard|paypal/i.test(html)) {
@@ -581,7 +850,17 @@ export class AnalyzerService {
           score: 50,
           status: 'warning',
           findings: [],
-          recommendations: [{ title: 'Run a full accessibility audit', impact: 'high' }],
+          recommendations: [
+            createRecommendation(
+              'accessibility-audit',
+              'Run a full accessibility audit',
+              'high',
+              'The fallback analyzer could not gather enough accessibility detail to verify WCAG risks.',
+              'Run a browser-based accessibility audit and fix keyboard, label, alt text, and contrast failures.',
+              'Full Lighthouse accessibility data was unavailable.',
+              'medium'
+            ),
+          ],
         };
       }
     }
@@ -608,7 +887,13 @@ export class AnalyzerService {
             });
           });
         }
-        return { competitors: [], marketPosition: 'niche' as const };
+        return {
+          competitors: [],
+          marketPosition: 'niche' as const,
+          confidence: 'low' as const,
+          summary: 'Competitor analysis could not be completed for this URL.',
+          evidence: ['Competitor service failed gracefully.'],
+        };
       }),
       ScraperService.scrape(normalizedUrl).catch(err => {
         console.error('Scraper service failed', err);
@@ -668,8 +953,8 @@ export class AnalyzerService {
       )
     );
 
-    // 9. Benchmark & Percentiles
-    const percentile = await BenchmarkService.getPercentile(overallScore, html);
+    // 9. Benchmark comparison. Only returned when there is enough stored data.
+    const benchmark = await BenchmarkService.getBenchmarkComparison(overallScore, html);
 
     const result: AnalysisResult = {
       storeUrl: normalizedUrl,
@@ -681,7 +966,8 @@ export class AnalyzerService {
       visualAnalysis: visualData || undefined,
       aiAnalysis: aiData,
       productAnalysis: productData,
-      percentile,
+      percentile: benchmark?.percentile,
+      benchmark,
       generatedAt: new Date().toISOString(),
     };
 

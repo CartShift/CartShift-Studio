@@ -1,9 +1,9 @@
 ---
-title: 'Mobile Commerce Optimization: Turn Mobile Browsers Into Buyers (2025)'
+title: 'Mobile Commerce Optimization: Turn Mobile Browsers Into Buyers (2026)'
 date: '2025-12-22'
 excerpt: 'Mobile traffic is high, but mobile conversion lags. Learn how to optimize your ecommerce store for mobile: UX, checkout, speed, touch interactions, and mobile-first design patterns that actually convert.'
 category: 'E-commerce Strategy'
-title_he: 'אופטימיזציה למובייל קומרס: להפוך גולשי מובייל לקונים (2025)'
+title_he: 'אופטימיזציה למובייל קומרס: להפוך גולשי מובייל לקונים (2026)'
 excerpt_he: 'התנועה מהמובייל גבוהה אבל ההמרות נמוכות. למדו איך לייעל את החנות למובייל: UX, צ׳קאאוט, מהירות, אינטראקציות מגע ודפוסי עיצוב mobile-first שממירים.'
 category_he: 'אסטרטגיית איקומרס'
 ---
@@ -14,7 +14,7 @@ That's not because mobile shoppers are less motivated — it's because most stor
 
 This guide shows you how to close the mobile conversion gap. Not with hacks, but by building an experience that works the way mobile shoppers actually behave.
 
-## The Mobile Commerce Reality (2025)
+## The Mobile Commerce Reality (2026)
 
 Before diving into tactics, let's understand the landscape:
 
@@ -447,7 +447,7 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 
 המדריך הזה מראה איך לסגור את פער ההמרה במובייל. לא עם טריקים, אלא בבניית חוויה שעובדת כמו שקונים במובייל באמת מתנהגים.
 
-## המציאות של מובייל קומרס (2025)
+## המציאות של מובייל קומרס (2026)
 
 לפני שנכנסים לטקטיקות, בואו נבין את התמונה:
 
