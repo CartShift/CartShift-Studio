@@ -17,7 +17,15 @@
       "feature3": "View your availability in the portal",
       "connected": "Connected",
       "targetCalendar": "Target Calendar",
-      "targetCalendarDescription": "Events will be created in this calendar, and availability checks will check against it."
+      "targetCalendarDescription": "Events will be created in this calendar, and availability checks will check against it.",
+      "oauthCallback": {
+        "processingDescription": "Please wait while we complete the connection...",
+        "connectedTitle": "Connected!",
+        "redirectingDescription": "Redirecting you back to settings...",
+        "failedTitle": "Connection failed",
+        "accessDenied": "You denied access to Google Calendar",
+        "oauthError": "OAuth error: {error}"
+      }
     }
   }
 }

@@ -110,6 +110,10 @@ Coverage map:
 
 → Fixed! Individual service failures no longer crash the entire analysis.
 
+### Hebrew PDF report shows gibberish
+
+→ Fixed in `functions/lib/store-analysis-pdf.js`. Hebrew locale PDFs embed **Noto Sans Hebrew** from `functions/assets/fonts/` instead of Helvetica (which cannot render Hebrew or emoji). Redeploy Cloud Functions after pulling this fix.
+
 ## Environment Variables (Optional)
 
 ```env
@@ -141,5 +145,5 @@ For detailed information:
 ---
 
 **Status**: ✅ Working with graceful degradation
-**Last Updated**: February 5, 2026
-**Version**: 1.0.0
+**Last Updated**: May 25, 2026
+**Version**: 1.0.1

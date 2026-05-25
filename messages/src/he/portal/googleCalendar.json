@@ -17,7 +17,15 @@
       "feature3": "צפה בזמינות שלך בפורטל",
       "connected": "מחובר",
       "targetCalendar": "לוח שנה יעד",
-      "targetCalendarDescription": "אירועים ייווצרו בלוח שנה זה, ובדיקות זמינות יבדקו מולו."
+      "targetCalendarDescription": "אירועים ייווצרו בלוח שנה זה, ובדיקות זמינות יבדקו מולו.",
+      "oauthCallback": {
+        "processingDescription": "אנא המתינו בזמן שאנחנו משלימים את החיבור...",
+        "connectedTitle": "מחובר!",
+        "redirectingDescription": "מעבירים אתכם חזרה להגדרות...",
+        "failedTitle": "החיבור נכשל",
+        "accessDenied": "דחיתם את הגישה ללוח השנה של Google",
+        "oauthError": "שגיאת OAuth: {error}"
+      }
     }
   }
 }

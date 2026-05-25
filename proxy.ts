@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
-const intlMiddleware = createMiddleware(routing);
+const handleI18nRouting = createMiddleware(routing);
 
 const ENABLE_PORTAL_SUBDOMAIN = true;
 const SESSION_COOKIE = '__session';
 
-const PORTAL_AUTH_PAGES = ['/login', '/signup', '/forgot-password', '/oauth-callback', '/invite'];
+const PORTAL_REDIRECT_WHEN_AUTHENTICATED_PAGES = ['/login', '/signup', '/forgot-password'];
 
-function isPortalAuthPage(path: string): boolean {
-  return PORTAL_AUTH_PAGES.some(p => path === p || path.startsWith(p + '/'));
+function shouldRedirectAuthenticatedPortalUser(path: string): boolean {
+  return PORTAL_REDIRECT_WHEN_AUTHENTICATED_PAGES.some(p => path === p || path.startsWith(p + '/'));
 }
 
 function getPortalPathFromRequest(pathname: string, isSubdomain: boolean): string | null {
@@ -63,6 +63,7 @@ export function proxy(request: NextRequest) {
   ) {
     const newPathname = pathname.replace('/portal/', '/') || '/';
     const redirectUrl = new URL(newPathname, 'https://portal.cart-shift.com');
+    redirectUrl.search = request.nextUrl.search;
     return NextResponse.redirect(redirectUrl, 308);
   }
 
@@ -70,16 +71,18 @@ export function proxy(request: NextRequest) {
     if (pathname.includes('/portal/') || pathname.includes('/portal')) {
       const cleanPath = pathname.replace(/\/portal\/?/, '/') || '/';
       if (cleanPath !== pathname) {
-        return NextResponse.redirect(new URL(cleanPath, request.url));
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = cleanPath;
+        return NextResponse.redirect(redirectUrl, 308);
       }
-      return intlMiddleware(request);
+      return handleI18nRouting(request);
     }
 
     const locale = getLocaleFromPath(pathname);
     const portalPath = getPortalPathFromRequest(pathname, true) || '/';
     const hasSession = request.cookies.has(SESSION_COOKIE);
 
-    if (isPortalAuthPage(portalPath) && hasSession) {
+    if (shouldRedirectAuthenticatedPortalUser(portalPath) && hasSession) {
       return NextResponse.redirect(new URL(`/${locale}/`, request.url));
     }
 
@@ -113,15 +116,15 @@ export function proxy(request: NextRequest) {
       const locale = getLocaleFromPath(pathname);
       const hasSession = request.cookies.has(SESSION_COOKIE);
 
-      if (isPortalAuthPage(portalPath) && hasSession) {
+      if (shouldRedirectAuthenticatedPortalUser(portalPath) && hasSession) {
         return NextResponse.redirect(new URL(`/${locale}/portal/`, request.url));
       }
     }
   }
 
-  return intlMiddleware(request);
+  return handleI18nRouting(request);
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|__|.*\\..*).*)'],
+  matcher: ['/((?!api|trpc|_next|_vercel|__|.*\\..*).*)'],
 };

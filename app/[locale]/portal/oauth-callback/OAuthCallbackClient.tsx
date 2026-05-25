@@ -2,57 +2,122 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { handleOAuthCallback } from '@/lib/services/portal-google-calendar';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { Button } from '@/components/ui/Button';
+
+const CALLBACK_RESULT_KEY = 'google_oauth_callback_result';
+
+type CachedCallbackResult = {
+  state: string;
+  success: boolean;
+  error?: string;
+};
+
+function readCachedResult(state: string): CachedCallbackResult | null {
+  if (typeof window === 'undefined') return null;
+
+  const raw = sessionStorage.getItem(CALLBACK_RESULT_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as CachedCallbackResult;
+    return parsed.state === state ? parsed : null;
+  } catch {
+    sessionStorage.removeItem(CALLBACK_RESULT_KEY);
+    return null;
+  }
+}
+
+function cacheResult(result: CachedCallbackResult) {
+  sessionStorage.setItem(CALLBACK_RESULT_KEY, JSON.stringify(result));
+}
 
 export default function OAuthCallbackClient() {
-  const t = useTranslations('portal');
+  const t = useTranslations('portal.googleCalendar');
+  const tCallback = useTranslations('portal.googleCalendar.oauthCallback');
+  const tCommon = useTranslations('portal.common');
   const searchParams = useSearchParams();
   const router = useRouter();
-  const locale = useLocale();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const code = searchParams.get('code');
+  const state = searchParams.get('state');
+  const oauthError = searchParams.get('error');
 
   useEffect(() => {
-    async function processCallback() {
-      const code = searchParams.get('code');
-      const state = searchParams.get('state');
-      const error = searchParams.get('error');
+    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
+    let cancelled = false;
 
-      if (error) {
-        setStatus('error');
-        setErrorMessage(
-          error === 'access_denied'
-            ? 'You denied access to Google Calendar'
-            : `OAuth error: ${error}`
-        );
+    const scheduleRedirect = () => {
+      redirectTimer = setTimeout(() => {
+        router.push(getPortalPath('/agency/settings?tab=integrations'));
+      }, 2000);
+    };
+
+    async function processCallback() {
+      if (oauthError) {
+        if (!cancelled) {
+          setStatus('error');
+          setErrorMessage(
+            oauthError === 'access_denied'
+              ? tCallback('accessDenied')
+              : tCallback('oauthError', { error: oauthError })
+          );
+        }
         return;
       }
 
       if (!code || !state) {
-        setStatus('error');
-        setErrorMessage(t('common.missingOAuthParams'));
+        if (!cancelled) {
+          setStatus('error');
+          setErrorMessage(tCommon('missingOAuthParams'));
+        }
+        return;
+      }
+
+      const cached = readCachedResult(state);
+      if (cached) {
+        if (cancelled) return;
+
+        if (cached.success) {
+          setStatus('success');
+          scheduleRedirect();
+        } else {
+          setStatus('error');
+          setErrorMessage(cached.error || tCommon('unknownError'));
+        }
         return;
       }
 
       const result = await handleOAuthCallback(code, state);
+      cacheResult({
+        state,
+        success: result.success,
+        error: result.error,
+      });
+
+      if (cancelled) return;
 
       if (result.success) {
         setStatus('success');
-        // Redirect back to settings integrations tab after a short delay
-        setTimeout(() => {
-          router.push(getPortalPath('/agency/settings?tab=integrations'));
-        }, 2000);
+        scheduleRedirect();
       } else {
         setStatus('error');
-        setErrorMessage(result.error || t('common.unknownError'));
+        setErrorMessage(result.error || tCommon('unknownError'));
       }
     }
 
-    processCallback();
-  }, [searchParams, router, locale]);
+    void processCallback();
+
+    return () => {
+      cancelled = true;
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
+  }, [code, state, oauthError, router, tCallback, tCommon]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950 p-4">
@@ -62,12 +127,8 @@ export default function OAuthCallbackClient() {
             <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
             </div>
-            <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
-              Google Calendar
-            </h1>
-            <p className="text-surface-500 dark:text-surface-400">
-              Please wait while we complete the connection...
-            </p>
+            <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">{t('title')}</h1>
+            <p className="text-surface-500 dark:text-surface-400">{tCallback('processingDescription')}</p>
           </>
         )}
 
@@ -76,10 +137,10 @@ export default function OAuthCallbackClient() {
             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">Connected !</h1>
-            <p className="text-surface-500 dark:text-surface-400">
-              Redirecting you back to settings...
-            </p>
+            <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
+              {tCallback('connectedTitle')}
+            </h1>
+            <p className="text-surface-500 dark:text-surface-400">{tCallback('redirectingDescription')}</p>
           </>
         )}
 
@@ -89,15 +150,12 @@ export default function OAuthCallbackClient() {
               <XCircle className="w-8 h-8 text-red-600" />
             </div>
             <h1 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
-              Connection Failed
+              {tCallback('failedTitle')}
             </h1>
             <p className="text-surface-500 dark:text-surface-400 mb-4">{errorMessage}</p>
-            <button
-              onClick={() => router.push(getPortalPath('/agency/settings'))}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Back to s
-            </button>
+            <Button onClick={() => router.push(getPortalPath('/agency/settings'))}>
+              {tCommon('backToSettings')}
+            </Button>
           </>
         )}
       </div>

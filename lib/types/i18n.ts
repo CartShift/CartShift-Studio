@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-25T01:09:23.721Z
+ * Last updated: 2026-05-25T01:51:18.384Z
  * 
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -1052,6 +1052,7 @@ common: {
   edit: string;
   create: string;
   back: string;
+  backToSettings: string;
   submit: string;
   actions: string;
   date: string;
@@ -1407,6 +1408,14 @@ googleCalendar: {
   connected: string;
   targetCalendar: string;
   targetCalendarDescription: string;
+  oauthCallback: {
+    processingDescription: string;
+    connectedTitle: string;
+    redirectingDescription: string;
+    failedTitle: string;
+    accessDenied: string;
+    oauthError: string;
+  };
 };
 header: {
   search: string;
@@ -5062,6 +5071,7 @@ export type TranslationKey =
   | 'portal.common.archive'
   | 'portal.common.authRequired'
   | 'portal.common.back'
+  | 'portal.common.backToSettings'
   | 'portal.common.cancel'
   | 'portal.common.clearFilters'
   | 'portal.common.client'
@@ -5334,6 +5344,12 @@ export type TranslationKey =
   | 'portal.googleCalendar.feature2'
   | 'portal.googleCalendar.feature3'
   | 'portal.googleCalendar.lastSync'
+  | 'portal.googleCalendar.oauthCallback.accessDenied'
+  | 'portal.googleCalendar.oauthCallback.connectedTitle'
+  | 'portal.googleCalendar.oauthCallback.failedTitle'
+  | 'portal.googleCalendar.oauthCallback.oauthError'
+  | 'portal.googleCalendar.oauthCallback.processingDescription'
+  | 'portal.googleCalendar.oauthCallback.redirectingDescription'
   | 'portal.googleCalendar.syncNow'
   | 'portal.googleCalendar.syncing'
   | 'portal.googleCalendar.targetCalendar'
