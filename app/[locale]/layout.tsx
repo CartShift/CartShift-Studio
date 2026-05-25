@@ -16,6 +16,8 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { BrandingProvider } from '@/components/providers/BrandingProvider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ToastProvider } from '@/components/ui/Toast';
 import { Logger } from '@/lib/logger';
 import { headers } from 'next/headers';
 
@@ -171,14 +173,21 @@ export default async function LocaleLayout({
                 }}
               >
                 <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
-                  <LocaleAttributes />
-                  <GeoLocaleRedirect />
-                  <GoogleAnalytics />
-                  <AnalyticsProvider>
-                    <ConditionalLayout isPortalSubdomain={isPortalSubdomain}>
-                      {children}
-                    </ConditionalLayout>
-                  </AnalyticsProvider>
+                  <QueryProvider>
+                    <ToastProvider
+                      position={isRtl ? 'bottom-left' : 'bottom-right'}
+                      maxToasts={5}
+                    >
+                      <LocaleAttributes />
+                      <GeoLocaleRedirect />
+                      <GoogleAnalytics />
+                      <AnalyticsProvider>
+                        <ConditionalLayout isPortalSubdomain={isPortalSubdomain}>
+                          {children}
+                        </ConditionalLayout>
+                      </AnalyticsProvider>
+                    </ToastProvider>
+                  </QueryProvider>
                 </NextIntlClientProvider>
               </MotionConfig>
             </MotionProvider>
