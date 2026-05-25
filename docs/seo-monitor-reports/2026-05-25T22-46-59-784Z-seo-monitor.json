@@ -1,0 +1,406 @@
+{
+  "timestamp": "2026-05-25T22:46:59.784Z",
+  "ranges": {
+    "current": {
+      "startDate": "2026-02-24",
+      "endDate": "2026-05-24"
+    },
+    "previous": {
+      "startDate": "2025-11-26",
+      "endDate": "2026-02-23"
+    }
+  },
+  "siteInfo": {
+    "configuredSite": "sc-domain:cart-shift.com",
+    "usedSite": "sc-domain:cart-shift.com",
+    "sites": [
+      {
+        "siteUrl": "sc-domain:cart-shift.com",
+        "permissionLevel": "siteFullUser"
+      }
+    ]
+  },
+  "gsc": {
+    "queryPage": {
+      "ok": true,
+      "rowCount": 29
+    },
+    "pages": {
+      "ok": true,
+      "rowCount": 14
+    }
+  },
+  "ga4": {
+    "ok": true,
+    "rowCount": 36
+  },
+  "analysis": {
+    "thresholds": {
+      "minImpressions": 5
+    },
+    "lowCtrOpportunities": [],
+    "strikingDistance": [
+      {
+        "query": "shopify seo evaluation review 2025 2026",
+        "page": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 13
+      },
+      {
+        "query": "shopify seo performance evaluation 2025 or 2026",
+        "page": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 15
+      },
+      {
+        "query": "shopify seo agency audit",
+        "page": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 29
+      }
+    ],
+    "decliningPages": [
+      {
+        "page": "https://cart-shift.com/en/work/",
+        "previousImpressions": 7,
+        "currentImpressions": 0,
+        "drop": 7,
+        "dropPct": 1
+      },
+      {
+        "page": "https://cart-shift.com/en/terms",
+        "previousImpressions": 20,
+        "currentImpressions": 1,
+        "drop": 19,
+        "dropPct": 0.95
+      },
+      {
+        "page": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+        "previousImpressions": 16,
+        "currentImpressions": 2,
+        "drop": 14,
+        "dropPct": 0.875
+      }
+    ],
+    "cannibalizationRisks": [
+      {
+        "query": "shopify site seo report generator",
+        "pages": [
+          "https://cart-shift.com/blog/shopify-seo-complete-guide",
+          "https://cart-shift.com/en/blog/shopify-seo-complete-guide"
+        ],
+        "impressions": 36,
+        "clicks": 0
+      }
+    ],
+    "gaDeclines": [
+      {
+        "path": "/he/",
+        "previousSessions": 103,
+        "currentSessions": 0,
+        "drop": 103,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/workboard/",
+        "previousSessions": 33,
+        "currentSessions": 0,
+        "drop": 33,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/requests/",
+        "previousSessions": 28,
+        "currentSessions": 0,
+        "drop": 28,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/clients/",
+        "previousSessions": 25,
+        "currentSessions": 0,
+        "drop": 25,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/settings/",
+        "previousSessions": 23,
+        "currentSessions": 0,
+        "drop": 23,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/login/",
+        "previousSessions": 22,
+        "currentSessions": 0,
+        "drop": 22,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/login/",
+        "previousSessions": 19,
+        "currentSessions": 0,
+        "drop": 19,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/consultations/",
+        "previousSessions": 16,
+        "currentSessions": 0,
+        "drop": 16,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/org/R9rA7iA7gGgrS9T0cOP4/dashboard",
+        "previousSessions": 15,
+        "currentSessions": 0,
+        "drop": 15,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/requests/",
+        "previousSessions": 15,
+        "currentSessions": 0,
+        "drop": 15,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/agency/workboard/",
+        "previousSessions": 14,
+        "currentSessions": 0,
+        "drop": 14,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/dashboard/",
+        "previousSessions": 13,
+        "currentSessions": 0,
+        "drop": 13,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/login/",
+        "previousSessions": 12,
+        "currentSessions": 0,
+        "drop": 12,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/sales/",
+        "previousSessions": 12,
+        "currentSessions": 0,
+        "drop": 12,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/dashboard/",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/org/R9rA7iA7gGgrS9T0cOP4/dashboard/",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/org/h0Ik3ryXs5wrMAt7TQHK/dashboard",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/dashboard/",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/agency/settings/",
+        "previousSessions": 10,
+        "currentSessions": 0,
+        "drop": 10,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/pricing/",
+        "previousSessions": 10,
+        "currentSessions": 0,
+        "drop": 10,
+        "dropPct": 1
+      }
+    ],
+    "blogContentIssues": [
+      {
+        "slug": "abandoned-cart-recovery-strategies-2026",
+        "file": "abandoned-cart-recovery-strategies-2026.md",
+        "title": "Abandoned Cart Recovery: 17 Proven Strategies to Recover Lost Sales in 2026",
+        "issues": [
+          "few internal links"
+        ]
+      },
+      {
+        "slug": "ai-tools-ecommerce-complete-guide-2026",
+        "file": "ai-tools-ecommerce-complete-guide-2026.md",
+        "title": "Best AI Tools for E-commerce in 2026: Complete Guide to AI-Powered Stores",
+        "issues": [
+          "few internal links"
+        ]
+      },
+      {
+        "slug": "amazon-fba-vs-shopify-2026",
+        "file": "amazon-fba-vs-shopify-2026.md",
+        "title": "Amazon FBA vs Shopify in 2026: Which Platform is Right for Your Business?",
+        "issues": [
+          "few internal links"
+        ]
+      },
+      {
+        "slug": "tiktok-shop-complete-guide-2026",
+        "file": "tiktok-shop-complete-guide-2026.md",
+        "title": "TikTok Shop Complete Guide 2026: How to Sell Products on TikTok",
+        "issues": [
+          "few internal links"
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "priority": "High",
+        "type": "Decline",
+        "action": "Investigate pages with material Search Console or GA4 declines before publishing new content.",
+        "evidence": {
+          "gsc": [
+            {
+              "page": "https://cart-shift.com/en/work/",
+              "previousImpressions": 7,
+              "currentImpressions": 0,
+              "drop": 7,
+              "dropPct": 1
+            },
+            {
+              "page": "https://cart-shift.com/en/terms",
+              "previousImpressions": 20,
+              "currentImpressions": 1,
+              "drop": 19,
+              "dropPct": 0.95
+            },
+            {
+              "page": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+              "previousImpressions": 16,
+              "currentImpressions": 2,
+              "drop": 14,
+              "dropPct": 0.875
+            }
+          ],
+          "ga4": [
+            {
+              "path": "/he/",
+              "previousSessions": 103,
+              "currentSessions": 0,
+              "drop": 103,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/agency/workboard/",
+              "previousSessions": 33,
+              "currentSessions": 0,
+              "drop": 33,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/requests/",
+              "previousSessions": 28,
+              "currentSessions": 0,
+              "drop": 28,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/agency/clients/",
+              "previousSessions": 25,
+              "currentSessions": 0,
+              "drop": 25,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/agency/settings/",
+              "previousSessions": 23,
+              "currentSessions": 0,
+              "drop": 23,
+              "dropPct": 1
+            }
+          ]
+        },
+        "safeAutomation": "Report only unless a clear local metadata/internal-link fix is available."
+      },
+      {
+        "priority": "Medium",
+        "type": "Cannibalization",
+        "action": "Choose a canonical intent owner for duplicate query/page clusters and adjust internal links.",
+        "evidence": [
+          {
+            "query": "shopify site seo report generator",
+            "pages": [
+              "https://cart-shift.com/blog/shopify-seo-complete-guide",
+              "https://cart-shift.com/en/blog/shopify-seo-complete-guide"
+            ],
+            "impressions": 36,
+            "clicks": 0
+          }
+        ],
+        "safeAutomation": "Report only by default; internal-link edits require clean files."
+      },
+      {
+        "priority": "Medium",
+        "type": "Content quality",
+        "action": "Fix blog posts with missing localized content, thin body copy, or weak internal linking.",
+        "evidence": [
+          {
+            "slug": "abandoned-cart-recovery-strategies-2026",
+            "file": "abandoned-cart-recovery-strategies-2026.md",
+            "title": "Abandoned Cart Recovery: 17 Proven Strategies to Recover Lost Sales in 2026",
+            "issues": [
+              "few internal links"
+            ]
+          },
+          {
+            "slug": "ai-tools-ecommerce-complete-guide-2026",
+            "file": "ai-tools-ecommerce-complete-guide-2026.md",
+            "title": "Best AI Tools for E-commerce in 2026: Complete Guide to AI-Powered Stores",
+            "issues": [
+              "few internal links"
+            ]
+          },
+          {
+            "slug": "amazon-fba-vs-shopify-2026",
+            "file": "amazon-fba-vs-shopify-2026.md",
+            "title": "Amazon FBA vs Shopify in 2026: Which Platform is Right for Your Business?",
+            "issues": [
+              "few internal links"
+            ]
+          },
+          {
+            "slug": "tiktok-shop-complete-guide-2026",
+            "file": "tiktok-shop-complete-guide-2026.md",
+            "title": "TikTok Shop Complete Guide 2026: How to Sell Products on TikTok",
+            "issues": [
+              "few internal links"
+            ]
+          }
+        ],
+        "safeAutomation": "Can create a prioritized task report; content edits require validation."
+      }
+    ]
+  }
+}

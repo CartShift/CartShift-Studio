@@ -61,7 +61,7 @@ function preprocessMarkdown(content: string): string {
  * - Adds semantic classes for styling
  * - Enhances accessibility
  */
-function postprocessHtml(htmlContent: string, slug?: string): string {
+function postprocessHtml(htmlContent: string, slug?: string, locale: 'en' | 'he' = 'en'): string {
   let processed = htmlContent;
 
   // Add classes to tables for GFM styling
@@ -127,6 +127,12 @@ function postprocessHtml(htmlContent: string, slug?: string): string {
   // Add horizontal rule class
   processed = processed.replace(/<hr\s*\/?>/g, '<hr class="section-divider" />');
 
+  // Markdown links render as raw anchors, so localize blog links before they create
+  // crawlable /blog/* redirect paths alongside the canonical /{locale}/blog/* URLs.
+  processed = processed.replace(/\bhref=(["'])\/blog(?=\/|[#?]|["'])/g, (_match, quote) => {
+    return `href=${quote}/${locale}/blog`;
+  });
+
   return processed;
 }
 
@@ -164,7 +170,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       })
       .process(contentEn);
 
-    let contentHtmlEn = postprocessHtml(processedContentEn.toString(), slug);
+    let contentHtmlEn = postprocessHtml(processedContentEn.toString(), slug, 'en');
     contentHtmlEn = sanitizeHtml(contentHtmlEn);
     // Remove disabled attribute from checkboxes after sanitization (in case it was added back)
     contentHtmlEn = contentHtmlEn.replace(
@@ -192,7 +198,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
         })
         .process(contentHe);
 
-      contentHtmlHe = postprocessHtml(processedContentHe.toString(), slug);
+      contentHtmlHe = postprocessHtml(processedContentHe.toString(), slug, 'he');
       contentHtmlHe = sanitizeHtml(contentHtmlHe);
       // Remove disabled attribute from checkboxes after sanitization
       contentHtmlHe = contentHtmlHe.replace(
