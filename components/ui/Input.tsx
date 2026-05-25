@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Check, AlertCircle } from 'lucide-react';
@@ -85,9 +85,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const state = error ? 'error' : success ? 'success' : 'default';
     const hasRightContent = Boolean(rightIcon || error || success);
+    const generatedId = useId();
 
-    // Generate unique IDs for aria-describedby
-    const inputId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
+    const inputId = id || `input-${generatedId}`;
     const errorId = `${inputId}-error`;
     const hintId = `${inputId}-hint`;
     const describedBy = error ? errorId : hint ? hintId : undefined;
