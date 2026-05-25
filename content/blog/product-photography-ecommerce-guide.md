@@ -1,18 +1,16 @@
 ---
 title: 'Product Photography That Sells: The Complete Guide (2026)'
 date: '2026-01-15'
-excerpt: 'Transform your product photography from mediocre to conversion-driving. Learn equipment, lighting, composition, styling, and optimization techniques that turn browsers into buyers.'
+excerpt: 'Use product photography to answer the questions shoppers cannot ask in person: scale, texture, color, fit, packaging, use, and trust.'
 category: 'E-commerce Strategy'
 title_he: 'צילום מוצר שמוכר: המדריך השלם (2026)'
-excerpt_he: 'שנו את צילום המוצרים שלכם מממוצע לכזה שמכיר. למדו על ציוד, תאורה, קומפוזיציה, עיצוב ואופטימיזציה שהופכים גולשים לקונים.'
+excerpt_he: 'איך להשתמש בצילום מוצר כדי לענות על שאלות שהלקוח לא יכול לשאול פיזית: גודל, טקסטורה, צבע, התאמה, אריזה, שימוש ואמון.'
 category_he: 'אסטרטגיית איקומרס'
 ---
 
-Your product photos are your 24/7 sales team. They're the first thing customers see, the main reason they click, and often the deciding factor in whether they buy or keep scrolling.
+Product photos do more than make the store look nice. They answer questions the customer cannot ask in person: scale, texture, color, finish, fit, packaging, and use.
 
-Yet many stores treat photography as an afterthought. They upload blurry iPhone photos, inconsistent styling, or images that don't match their brand aesthetic.
-
-This guide covers everything you need to create product photography that doesn't just look good—it sells.
+Good photography reduces doubt. It also reduces support questions, returns, and the weird feeling that the product might not be as real as the page says it is.
 
 ## Why Product Photography Matters More Than You Think
 
@@ -250,7 +248,7 @@ Shoot multiple products in one session:
 - Clean servingware and backgrounds
 - Realistic portion sizes (don't fake large portions)
 
-## Product Photography Checklist
+## Product photography working checklist
 
 **Before Shooting**
 
@@ -379,11 +377,9 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 
 ---he---
 
-תמונות המוצרים שלכם הן צוות המכירות 24/7. הן הדבר הראשון שלקוחות רואים, הסיבה העיקרית שהם לוחצים, ולעתים קרובות הגורם המכריע האם הם קונים או ממשיכים לגלול.
+צילום מוצר לא רק עושה את החנות יפה יותר. הוא עונה על שאלות שהלקוח לא יכול לשאול בחנות פיזית: גודל, טקסטורה, צבע, גימור, התאמה, אריזה ושימוש.
 
-בכל זאת, הרבה חנויות מתייחסות לצילום כמחשבה שנייה. הן מעלות תמונות מטושטשות מאייפון, עיצוב לא עקבי, או תמונות שלא מתאימות לאסתטיקה של המותג.
-
-המדריך הזה מכסה את כל מה שאתם צריכים כדי ליצור צילום מוצרים שלא רק נראה טוב — הוא מוכר.
+צילום טוב מוריד ספק. הוא גם מוריד שאלות תמיכה, החזרות ואת התחושה המוזרה שאולי המוצר לא באמת כמו שהעמוד מציג אותו.
 
 ## למה צילום מוצרים חשוב יותר ממה שאתם חושבים
 

@@ -1,16 +1,16 @@
 ---
 title: 'Complete Guide to E-commerce Migration: How to Move Your Store Without Losing Sales'
 date: '2024-12-10'
-excerpt: 'Learn how to migrate your e-commerce store safely and efficiently. Step-by-step guide to moving between platforms without losing data, SEO rankings, or sales.'
+excerpt: 'How to plan an ecommerce migration without losing the pieces that matter: products, orders, URLs, analytics, checkout behavior, and customer trust.'
 category: 'E-commerce Strategy'
 title_he: 'המדריך השלם למיגרציית איקומרס: איך להעביר את החנות מבלי לאבד מכירות'
-excerpt_he: 'למדו איך להעביר את חנות האיקומרס שלכם בצורה בטוחה ויעילה. מדריך צעד-אחר-צעד למעבר בין פלטפורמות מבלי לאבד נתונים, דירוגי SEO או מכירות.'
+excerpt_he: 'איך לתכנן מיגרציית איקומרס בלי לאבד את מה שחשוב: מוצרים, הזמנות, URLs, אנליטיקס, checkout ואמון לקוחות.'
 category_he: 'אסטרטגיית איקומרס'
 ---
 
-Migrating your e-commerce store to a new platform is one of the most critical decisions you'll make. Done right, it can unlock new features, improve performance, and scale your business. Done wrong, it can result in lost sales, broken SEO rankings, and frustrated customers.
+A platform migration is not a redesign with a bigger checklist. It is a business continuity project. Products, orders, customers, URLs, analytics, apps, redirects, emails, and checkout behavior all have to land safely.
 
-This comprehensive guide covers everything you need to know about e-commerce migration, whether you're moving from Magento, BigCommerce, or other platforms to Shopify.
+The best migrations feel almost boring on launch day. That happens when the messy details are mapped before anyone gets excited about the new theme.
 
 ## Why Businesses Migrate Their E-commerce Stores
 
@@ -350,7 +350,7 @@ Define what success looks like:
 - Optimize based on data
 - Plan future enhancements
 
-## Migration Checklist
+## Migration working checklist
 
 Use this checklist to ensure nothing is missed:
 
@@ -427,9 +427,9 @@ Remember: migration is not just about moving data—it's about improving your bu
 
 ---he---
 
-העברת חנות האיקומרס שלכם לפלטפורמה חדשה היא אחת ההחלטות הקריטיות ביותר שתקבלו. אם נעשית נכון, היא יכולה לפתוח פיצ'רים חדשים, לשפר ביצועים ולהגדיל את העסק. אם נעשית לא נכון, היא עלולה להוביל לאובדן מכירות, פגיעה בדירוגי SEO ולקוחות מתוסכלים.
+מיגרציה של פלטפורמת איקומרס היא לא רידיזיין עם צ׳קליסט ארוך יותר. זה פרויקט של המשכיות עסקית. מוצרים, הזמנות, לקוחות, URLs, אנליטיקס, אפליקציות, הפניות, אימיילים והתנהגות checkout צריכים לעבור בשלום.
 
-מדריך מקיף זה מכסה את כל מה שצריך לדעת על מיגרציית איקומרס, בין אם אתם עוברים מ-Magento, BigCommerce או פלטפורמות אחרות לשופיפיי.
+המיגרציות הטובות מרגישות כמעט משעממות ביום העלייה. זה קורה כשממפים את הפרטים המבולגנים לפני שמתלהבים מהתבנית החדשה.
 
 ## למה עסקים מעבירים את החנויות שלהם
 

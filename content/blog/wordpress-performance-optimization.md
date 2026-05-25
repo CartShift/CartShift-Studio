@@ -1,18 +1,16 @@
 ---
 title: 'WordPress Performance Optimization: Speed Guide (2026)'
 date: '2025-12-18'
-excerpt: 'A practical WordPress performance optimization guide for faster load times, better Core Web Vitals, and higher conversions. Includes a step-by-step checklist.'
+excerpt: 'A practical WordPress performance guide for reducing theme, plugin, image, font, cache, hosting, and script weight before it hurts visitors.'
 category: 'WordPress'
 title_he: 'אופטימיזציית ביצועים לוורדפרס: מדריך מהירות (2026)'
-excerpt_he: 'מדריך פרקטי לאופטימיזציית ביצועים בוורדפרס: שיפור מהירות, Core Web Vitals והמרות, עם צ׳ק ליסט מסודר לביצוע.'
+excerpt_he: 'מדריך ביצועים מעשי ל-WordPress: איך להפחית משקל של תבנית, פלאגינים, תמונות, פונטים, cache, אחסון וסקריפטים לפני שזה פוגע במבקרים.'
 category_he: 'וורדפרס'
 ---
 
-If your WordPress site feels slow, here's the annoying truth: you're not just losing "patience points". You're losing real visitors, and the window is tiny. Google's own research has shown that people abandon slow mobile pages fast, especially when load time creeps beyond a few seconds[^1].
+A slow WordPress site is usually not slow because WordPress is doomed. It is slow because themes, plugins, hosting, images, fonts, caching, and scripts have been allowed to stack up without a performance owner.
 
-The good news is WordPress performance optimization is usually not one big dramatic fix. It’s a series of boring, high-impact improvements: cleaner pages, lighter assets, smarter caching, better hosting decisions, and less front-end chaos.
-
-This guide is built to be used like a playbook. You’ll measure first, fix what moves the needle, and end with a repeatable checklist so the site stays fast after the “launch high” fades and new plugins start sneaking in.
+The practical fix is to measure the page that matters, remove weight before adding plugins, and keep the first useful screen fast enough that visitors do not feel the machinery underneath.
 
 ## What “fast” means now (and what you should aim for)
 
@@ -239,11 +237,9 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 
 ---he---
 
-אם אתר הוורדפרס שלכם מרגיש איטי, הנה אמת מעצבנת אבל חשובה: אתם לא רק “מאבדים סבלנות של משתמשים”. אתם מאבדים אנשים אמיתיים. וברוב המקרים, זה קורה במובייל, ובשניות הראשונות.
+אתר WordPress איטי בדרך כלל לא איטי כי WordPress אבוד. הוא איטי כי תבניות, פלאגינים, אחסון, תמונות, פונטים, caching וסקריפטים נערמו בלי בעלים ברורים לביצועים.
 
-הבשורה הטובה היא שאופטימיזציית ביצועים לוורדפרס לרוב לא דורשת קסמים. היא דורשת סדר. מודדים, מתקנים את הדברים שמזיזים מחוגים, ומסיימים עם צ׳ק ליסט קבוע כדי שהאתר לא יחזור להיות כבד אחרי עוד כמה תוספים, עוד פיקסל ועוד “רק שינוי קטן”.
-
-המדריך הזה בנוי כמו פלייבוק שאפשר לעבוד איתו: קודם להבין מה איטי ולמה, ואז לטפל בפקקי תנועה הגדולים לפני שנכנסים לדיוקים.
+התיקון המעשי הוא למדוד את העמוד החשוב, להסיר משקל לפני שמוסיפים פלאגינים, ולשמור על המסך הראשון מספיק מהיר כדי שהמבקר לא ירגיש את המכונה שמתחת.
 
 ## מה זה “אתר מהיר” היום
 

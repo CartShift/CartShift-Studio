@@ -1,18 +1,16 @@
 ---
 title: '10 Ways to Speed Up Your Shopify Store'
 date: '2024-12-01'
-excerpt: "Learn proven strategies to improve your store's performance and boost conversions."
+excerpt: 'A practical Shopify speed guide for finding what slows the first useful mobile moment: media, apps, scripts, fonts, layout shift, and theme weight.'
 category: 'Shopify'
 title_he: '10 דרכים להאיץ את חנות השופיפיי שלכם'
-excerpt_he: 'למדו אסטרטגיות מוכחות לשיפור ביצועי החנות ולהגדלת ההמרות.'
+excerpt_he: 'מדריך מעשי למהירות Shopify: איך למצוא מה מאט את הרגע השימושי הראשון במובייל - מדיה, אפליקציות, סקריפטים, פונטים, layout shift ומשקל תבנית.'
 category_he: 'שופיפיי'
 ---
 
-Speed is crucial for ecommerce success, but the old advice of "just compress images" is not enough anymore. A slow Shopify store usually has several layers of drag: oversized media, too many apps, render-blocking scripts, heavy fonts, layout shifts, and templates that were designed without performance review.
+A slow Shopify store rarely has one villain. It is usually a pile-up: heavy hero media, too many apps, duplicate trackers, oversized product images, and theme code that has grown without a cleanup day.
 
-The goal is not a perfect lab score. The goal is a store that becomes usable quickly on a real phone, stays stable while loading, and lets shoppers move from product discovery to checkout without waiting.
-
-Use this guide as a practical optimization sequence.
+Speed work gets easier when you stop asking how do we make everything faster and start asking what is slowing down the first useful moment for a mobile shopper. Test with [PageSpeed Insights](https://pagespeed.web.dev/), but also open the store on a real phone.
 
 ## What to measure before changing anything
 
@@ -236,7 +234,9 @@ Speed also affects conversion and SEO. For the broader strategy, read [Store spe
 
 ---he---
 
-מהירות היא קריטית להצלחה במסחר אלקטרוני. חנות שנטענת לאט יכולה לפגוע משמעותית בשיעורי ההמרה ובדירוג במנועי החיפוש. הנה 10 אסטרטגיות מוכחות להאצת חנות השופיפיי שלכם:
+חנות Shopify איטית כמעט אף פעם לא נופלת בגלל גורם אחד. לרוב זו הצטברות: hero כבד, יותר מדי אפליקציות, trackers כפולים, תמונות מוצר גדולות מדי וקוד תבנית שגדל בלי יום ניקיון.
+
+עבודת מהירות נהיית פשוטה יותר כשמפסיקים לשאול איך מאיצים הכל ומתחילים לשאול מה מאט את הרגע הראשון שבו קונה במובייל יכול להבין ולקנות. בדקו עם [PageSpeed Insights](https://pagespeed.web.dev/), אבל גם פתחו את החנות בטלפון אמיתי.
 
 ## 1. אופטימיזציה לתמונות
 

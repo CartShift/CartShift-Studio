@@ -1,50 +1,44 @@
 ---
 title: "Why Your E-Commerce Store Isn't Converting (And How to Find Out)"
 date: '2025-01-13'
-excerpt: "Traffic but no sales? Discover the 12 hidden conversion killers that could be costing you thousands, and learn how to diagnose exactly what's wrong with your store."
+excerpt: 'Traffic without sales is usually a signal, not a mystery. Learn how to read friction across product pages, trust, mobile UX, checkout, and search.'
 category: 'Conversion Optimization'
 title_he: 'למה החנות שלכם לא ממירה (ואיך לגלות את הסיבה)'
-excerpt_he: 'יש לכם תנועה אבל אין מכירות? גלו 12 בעיות נסתרות שפוגעות בהמרות ועלולות לעלות לכם אלפי שקלים, ולמדו איך לאבחן בדיוק מה לא עובד.'
+excerpt_he: 'טראפיק בלי מכירות הוא בדרך כלל סימן, לא תעלומה. כך קוראים חיכוך בעמודי מוצר, אמון, מובייל, checkout וחיפוש.'
 category_he: 'אופטימיזציית המרות'
 ---
 
-You've done everything right. Built a beautiful store. Invested in ads. The traffic is coming in. But somehow... sales aren't happening.
+Traffic without sales feels personal, but it usually is not mysterious. Shoppers are telling you something through the places they pause, bounce, abandon carts, search again, or ask support the same question.
 
-You refresh your analytics dashboard again. Visitors are browsing. Adding to cart. And then... nothing. They disappear into the digital void, taking your potential revenue with them.
+The average cart abandonment benchmark from [Baymard Institute's cart abandonment benchmark](https://baymard.com/lists/cart-abandonment-rate) is a useful reminder that buying online is fragile. Still, conversion work should start with your own funnel: which page gets attention, where intent drops, and what question the shopper could not answer.
 
-If this sounds painfully familiar, you're not alone. The average e-commerce conversion rate hovers around 2-3%, which means 97% of your visitors leave without buying. But here's the thing: **you don't have to accept average**.
+## The conversion blockers worth checking
 
-The difference between a 2% and a 4% conversion rate? That's literally doubling your revenue with the same traffic. No extra ad spend. No additional marketing. Just fixing what's broken.
+### 1. Slow Page Speed (The quiet revenue leak)
 
-Let's uncover the hidden conversion killers that might be sabotaging your store.
+**What gets in the way:** Every second of load time adds friction. Slow pages increase bounce risk, reduce trust, and make mobile shoppers less likely to reach the product or checkout experience.
 
-## The 12 Hidden Conversion Killers
-
-### 1. Slow Page Speed (The Silent Revenue Killer)
-
-**The Problem:** Every second of load time adds friction. Slow pages increase bounce risk, reduce trust, and make mobile shoppers less likely to reach the product or checkout experience.
-
-**The Symptoms:**
+**What it usually looks like:**
 
 - High bounce rate on landing pages
 - Low pages per session
 - Poor mobile conversion rates
 - Abandoned carts after the first page
 
-**What to Check:**
+**What to check:**
 
 - [ ] Time to First Byte (TTFB)
 - [ ] Largest Contentful Paint (LCP)
 - [ ] Total page weight (aim for under 3MB)
 - [ ] Number of HTTP requests
 
-> **Quick Win:** Your homepage should load in under 3 seconds on mobile. If it doesn't, you're losing money every minute of every day.
+> **Worth doing first:** Your homepage should load in under 3 seconds on mobile. If it doesn't, you're losing money every minute of every day.
 
 ### 2. Mobile Experience Failures
 
-**The Problem:** Mobile commerce now accounts for over 60% of e-commerce traffic, but mobile conversion rates are typically 50% lower than desktop. Why? Because most stores treat mobile as an afterthought.
+**What gets in the way:** Mobile commerce now accounts for over 60% of e-commerce traffic, but mobile conversion rates are typically 50% lower than desktop. Why? Because most stores treat mobile as an afterthought.
 
-**The Symptoms:**
+**What it usually looks like:**
 
 - Significant mobile vs. desktop conversion gap
 - High mobile bounce rates
@@ -61,7 +55,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 3. Trust Deficit
 
-**The Problem:** Online shoppers are skeptical by default. They've heard the horror stories. If your store doesn't scream "legitimate and trustworthy," they'll click back to Google faster than you can say "free shipping."
+**What gets in the way:** Online shoppers are skeptical by default. They've heard the horror stories. If your store doesn't scream "legitimate and trustworthy," they'll click back to Google faster than you can say "free shipping."
 
 **Missing Trust Signals:**
 
@@ -83,7 +77,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 4. Checkout Friction
 
-**The Problem:** Your customer has made the decision to buy. They've added to cart. They're ready to pay. And then... you throw obstacles in their way.
+**What gets in the way:** Your customer has made the decision to buy. They've added to cart. They're ready to pay. And then... you throw obstacles in their way.
 
 **Checkout Killers:**
 
@@ -104,7 +98,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 5. Poor Product Pages
 
-**The Problem:** Your product page is your sales pitch. If it doesn't answer every question, address every objection, and create desire, visitors will leave empty-handed.
+**What gets in the way:** Your product page is your sales pitch. If it doesn't answer every question, address every objection, and create desire, visitors will leave empty-handed.
 
 **What's Missing:**
 
@@ -120,7 +114,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 6. Confusing Navigation
 
-**The Problem:** If visitors can't find what they're looking for within seconds, they won't search harder. They'll leave.
+**What gets in the way:** If visitors can't find what they're looking for within seconds, they won't search harder. They'll leave.
 
 **Navigation Failures:**
 
@@ -133,7 +127,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 7. Pricing Issues
 
-**The Problem:** It's not always about being the cheapest. It's about being clear, fair, and providing obvious value.
+**What gets in the way:** It's not always about being the cheapest. It's about being clear, fair, and providing obvious value.
 
 **Pricing Problems:**
 
@@ -145,7 +139,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 8. Weak or Confusing CTAs
 
-**The Problem:** Your call-to-action button is the most important element on your page. If it's boring, hidden, or confusing, conversions suffer.
+**What gets in the way:** Your call-to-action button is the most important element on your page. If it's boring, hidden, or confusing, conversions suffer.
 
 **CTA Failures:**
 
@@ -157,7 +151,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 9. Missing Social Proof
 
-**The Problem:** People look to others for guidance. Without social proof, you're asking customers to be the first to take the risk.
+**What gets in the way:** People look to others for guidance. Without social proof, you're asking customers to be the first to take the risk.
 
 **Social Proof Elements to Add:**
 
@@ -170,7 +164,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 10. Cart Abandonment Traps
 
-**The Problem:** The average cart abandonment rate is around 70%. Most stores do nothing to recover these almost-customers.
+**What gets in the way:** The average cart abandonment rate is around 70%. Most stores do nothing to recover these almost-customers.
 
 **Why Carts Get Abandoned:**
 
@@ -190,7 +184,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 11. Poor Search Experience
 
-**The Problem:** Visitors who use search are often your highest-intent customers. If search fails them, you fail them.
+**What gets in the way:** Visitors who use search are often your highest-intent customers. If search fails them, you fail them.
 
 **Search Issues:**
 
@@ -203,7 +197,7 @@ Let's uncover the hidden conversion killers that might be sabotaging your store.
 
 ### 12. SEO and Technical Issues
 
-**The Problem:** Technical issues don't just hurt your rankings—they hurt user experience and conversions.
+**What gets in the way:** Technical issues don't just hurt your rankings—they hurt user experience and conversions.
 
 **Hidden Technical Problems:**
 
@@ -302,15 +296,9 @@ If you'd prefer a hands-on partner to audit your store and implement conversion 
 
 ---he---
 
-עשיתם הכל נכון. בניתם חנות יפהפייה. השקעתם בפרסום. התנועה מגיעה. אבל איכשהו... המכירות לא קורות.
+טראפיק בלי מכירות מרגיש אישי, אבל בדרך כלל הוא לא מסתורי. הקונים מספרים לכם משהו דרך המקומות שבהם הם עוצרים, נוטשים, יוצאים מהעגלה, מחפשים שוב או שואלים את התמיכה אותה שאלה.
 
-אתם מרעננים שוב את לוח הבקרה של האנליטיקס. מבקרים גולשים. מוסיפים לעגלה. ואז... כלום. הם נעלמים לתוך החלל הדיגיטלי, ולוקחים איתם את ההכנסות הפוטנציאליות שלכם.
-
-אם זה נשמע כואב ומוכר, אתם לא לבד. שיעור ההמרה הממוצע באיקומרס נע סביב 2-3%, מה שאומר ש-97% מהמבקרים עוזבים בלי לקנות. אבל הנה העניין: **לא חייבים להסתפק בממוצע**.
-
-ההבדל בין שיעור המרה של 2% ל-4%? זה פשוט הכפלת ההכנסות עם אותה כמות תנועה. בלי הוצאה נוספת על פרסום. בלי שיווק נוסף. רק תיקון של מה שלא עובד.
-
-בואו נחשוף את הרוצחים הנסתרים של ההמרות שלכם.
+[מדד נטישת העגלות של Baymard Institute](https://baymard.com/lists/cart-abandonment-rate) הוא תזכורת טובה לכך שקנייה אונליין היא דבר עדין. ועדיין, עבודת המרות צריכה להתחיל במשפך שלכם: איזה עמוד מקבל תשומת לב, איפה הכוונה יורדת, ואיזו שאלה הלקוח לא הצליח לפתור.
 
 ## 12 גורמים נסתרים שהורסים לכם את ההמרות
 

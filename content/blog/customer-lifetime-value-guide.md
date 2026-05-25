@@ -1,18 +1,16 @@
 ---
 title: 'Customer Lifetime Value (CLV): The Growth Metric That Changes Everything'
 date: '2026-01-15'
-excerpt: 'Learn how to calculate, improve, and leverage Customer Lifetime Value to build profitable e-commerce businesses. Complete guide with strategies to boost CLV by 50%+.'
+excerpt: 'Learn how CLV changes acquisition, retention, support, subscriptions, repeat purchase strategy, and the way ecommerce growth decisions are made.'
 category: 'E-commerce Strategy'
 title_he: 'ערך החיים של הלקוח (CLV): המדד שמשנה הכל'
-excerpt_he: 'למדו איך לחשב, לשפר ולנצל את ערך החיים של הלקוח כדי לבנות עסקים רווחים ורווחים. מדריך מלא עם אסטרטגיות להגדיל CLV ב-50%+.'
+excerpt_he: 'איך CLV משנה החלטות על רכישת לקוחות, retention, תמיכה, מנויים, רכישות חוזרות וצמיחה בריאה באיקומרס.'
 category_he: 'אסטרטגיית איקומרס'
 ---
 
-Most e-commerce businesses obsess over customer acquisition cost (CAC) but ignore Customer Lifetime Value (CLV) — a costly mistake.
+Customer lifetime value is the number that tells you whether growth is getting healthier or just louder. A store can have strong first orders and still be fragile if customers never come back.
 
-Here's the brutal truth: **You can be profitable with high CAC if your CLV is high. But you can never be profitable with low CLV, no matter how low your CAC.**
-
-This guide shows you how to calculate, improve, and leverage CLV to transform your business from short-term focused to long-term sustainable.
+CLV becomes useful when it changes decisions: how much you can spend to acquire a customer, how hard you should push subscriptions, which products deserve retention campaigns, and where support quality actually pays back.
 
 ## What is Customer Lifetime Value (CLV)?
 
@@ -316,7 +314,7 @@ Update monthly. Share with marketing and product teams.
 
 **Fix:** Value-based pricing. Loyalty rewards instead of public discounts. Focus on long-term customer value, not next-week revenue.
 
-## CLV Optimization Checklist
+## CLV optimization working checklist
 
 **Data & Measurement**
 
@@ -369,11 +367,9 @@ Related: [Email marketing for ecommerce](/blog/email-marketing-for-e-commerce) a
 
 ---he---
 
-רוב עסקי האיקומרס אובססיביים לגבי עלות רכישת לקוח (CAC) אבל מתעלמים מערך החיים של הלקוח (CLV) — טעות יקרה.
+Customer Lifetime Value הוא המספר שמראה אם הצמיחה נהיית בריאה יותר או רק רועשת יותר. חנות יכולה למכור יפה בהזמנה הראשונה ועדיין להיות שבירה אם לקוחות לא חוזרים.
 
-הנה האמת הקשה: **אפשר להיות רווחיים עם CAC גבוה אם ה-CLV שלכם גבוה. אבל אי אפשר להיות רווחיים עם CLV נמוך, לא משנה כמה נמוך ה-CAC שלכם.**
-
-המדריך הזה מראה לכם איך לחשב, לשפר ולנצל CLV כדי להפוך את העסק שלכם ממתמקד בטווח קצר לבר-קיימא בטווח ארוך.
+CLV נהיה שימושי כשהוא משנה החלטות: כמה אפשר לשלם על רכישת לקוח, כמה לדחוף מנויים, אילו מוצרים ראויים לקמפיינים של retention ואיפה שירות טוב באמת מחזיר את עצמו.
 
 ## מהו ערך החיים של הלקוח (CLV)?
 

@@ -1,18 +1,16 @@
 ---
 title: 'WordPress Technical SEO Checklist: Ecommerce Edition'
 date: '2025-12-18'
-excerpt: 'A practical WordPress technical SEO checklist for ecommerce: indexing, canonicals, sitemaps, structured data, Core Web Vitals, and multilingual setup.'
+excerpt: 'A practical WordPress technical SEO guide for reducing ambiguity around indexability, canonicals, sitemaps, structured data, performance, and multilingual setup.'
 category: 'WordPress'
 title_he: 'צ׳ק ליסט SEO טכני לוורדפרס: גרסת איקומרס'
-excerpt_he: 'צ׳ק ליסט פרקטי ל-SEO טכני בוורדפרס לאיקומרס: אינדוקס, קנוניקל, סייטמאפ, סכמות, Core Web Vitals, וריבוי שפות.'
+excerpt_he: 'מדריך Technical SEO מעשי ל-WordPress שמפחית אי-בהירות סביב אינדוקס, canonicals, sitemaps, structured data, ביצועים וריבוי שפות.'
 category_he: 'וורדפרס'
 ---
 
-Technical SEO for ecommerce is basically: “Make sure Google can crawl the right pages, ignore the garbage pages, and understand your products clearly.”
+Technical SEO on WordPress is mostly about removing ambiguity. Which pages should be indexed? Which versions are canonical? Which products, categories, and content hubs deserve crawl attention? Which plugins are creating noise?
 
-Sounds simple… until your store generates 40 versions of the same category page because of filters, URL parameters, pagination, UTM tags, and sort options. (Ask any SEO person. They’ve seen things.)
-
-This checklist is written for **WordPress ecommerce sites** — typically WooCommerce — but most of it applies to any WP store setup.
+The goal is not to please a checklist. It is to make the site easier for Google to crawl and easier for customers to trust. Start with [Google Search Central](https://developers.google.com/search), then inspect the actual templates your visitors use.
 
 ## What “technical SEO” actually means for ecommerce
 
@@ -26,7 +24,7 @@ For ecommerce, technical SEO is mostly about:
 
 Let’s get into the checklist.
 
-## WordPress Technical SEO Checklist for Ecommerce
+## WordPress technical SEO working checklist for ecommerce
 
 ### 1) Indexing controls: robots.txt vs noindex (don’t mix them up)
 
@@ -224,11 +222,9 @@ If you want, we can run a technical SEO audit on your WordPress/WooCommerce stor
 
 ---he---
 
-SEO טכני לאיקומרס זה בעצם: “לוודא שגוגל מגיע לעמודים הנכונים, מתעלם מהעמודים הלא-חשובים, ומבין בדיוק מה אתם מוכרים.”
+Technical SEO ב-WordPress הוא בעיקר הסרת אי-בהירות. אילו עמודים צריכים להיכנס לאינדקס? איזו גרסה היא canonical? אילו מוצרים, קטגוריות ו-content hubs ראויים לתשומת לב סריקה? אילו פלאגינים מייצרים רעש?
 
-זה נשמע פשוט… עד שווקומרס מייצר לכם 40 גרסאות של אותה קטגוריה בגלל פילטרים, פרמטרים ב-URL, עימוד, מיון, UTM ועוד הפתעות.
-
-הצ׳ק ליסט הזה מיועד ל**אתרי וורדפרס לאיקומרס** (בדרך כלל WooCommerce), אבל הוא רלוונטי כמעט לכל חנות וורדפרס.
+המטרה היא לא לרצות צ׳קליסט. המטרה היא להפוך את האתר לקל יותר לסריקה על ידי גוגל וקל יותר לאמון מצד לקוחות. התחילו עם [Google Search Central](https://developers.google.com/search), ואז בדקו את התבניות האמיתיות שהמבקרים משתמשים בהן.
 
 ## מה זה “SEO טכני” באיקומרס (במילים של בני אדם)
 

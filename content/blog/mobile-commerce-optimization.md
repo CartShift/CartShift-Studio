@@ -1,18 +1,16 @@
 ---
 title: 'Mobile Commerce Optimization: Turn Mobile Browsers Into Buyers (2026)'
 date: '2025-12-22'
-excerpt: 'Mobile traffic is high, but mobile conversion lags. Learn how to optimize your ecommerce store for mobile: UX, checkout, speed, touch interactions, and mobile-first design patterns that actually convert.'
+excerpt: 'Make mobile shopping easier with better speed, tap targets, product detail hierarchy, checkout clarity, search, navigation, and real-phone testing.'
 category: 'E-commerce Strategy'
 title_he: 'אופטימיזציה למובייל קומרס: להפוך גולשי מובייל לקונים (2026)'
-excerpt_he: 'התנועה מהמובייל גבוהה אבל ההמרות נמוכות. למדו איך לייעל את החנות למובייל: UX, צ׳קאאוט, מהירות, אינטראקציות מגע ודפוסי עיצוב mobile-first שממירים.'
+excerpt_he: 'איך להפוך קנייה במובייל לקלה יותר בעזרת מהירות, אזורי לחיצה, היררכיית מוצר, checkout ברור, חיפוש, ניווט ובדיקות בטלפון אמיתי.'
 category_he: 'אסטרטגיית איקומרס'
 ---
 
-Mobile commerce has a conversion problem. The majority of ecommerce traffic now comes from mobile devices, yet mobile conversion rates are typically half of desktop rates.
+Mobile shoppers are often interested but impatient. They are comparing, walking, waiting, switching tabs, checking messages, and deciding with one thumb. A desktop experience squeezed into a phone will feel heavier than it looks.
 
-That's not because mobile shoppers are less motivated — it's because most stores are still optimized for desktop and "adapted" for mobile as an afterthought. The experience feels cramped, slow, and frustrating.
-
-This guide shows you how to close the mobile conversion gap. Not with hacks, but by building an experience that works the way mobile shoppers actually behave.
+Mobile optimization is not only responsive design. It is speed, tap targets, visual hierarchy, checkout clarity, readable product details, and the confidence to remove things that get in the way.
 
 ## The Mobile Commerce Reality (2026)
 
@@ -250,7 +248,7 @@ Google's recommendations, but also conversion reality:
 
 For ecommerce specifically, research shows each second of load time reduces conversion by 7-10%.
 
-### Quick Wins for Mobile Speed
+### Useful first fixes for Mobile Speed
 
 **Images (usually the biggest culprit):**
 
@@ -346,7 +344,7 @@ Tools like Hotjar, Microsoft Clarity, or FullStory reveal how mobile users actua
 - Where do they rage-tap (frustration indicator)?
 - Where do they abandon?
 
-## Mobile Commerce Optimization Checklist
+## Mobile commerce working checklist
 
 **Design & UX**
 
@@ -441,11 +439,9 @@ Related: [Ecommerce conversion rate optimization](/blog/ecommerce-conversion-rat
 
 ---he---
 
-למובייל קומרס יש בעיית המרה. רוב התנועה לאיקומרס מגיעה היום ממכשירים ניידים, אבל שיעורי ההמרה במובייל בדרך כלל חצי משיעורי הדסקטופ.
+קוני מובייל הרבה פעמים מתעניינים אבל חסרי סבלנות. הם משווים, הולכים, מחכים, עוברים בין טאבים, קוראים הודעות ומחליטים עם אגודל אחד. חוויית דסקטופ שנדחסת לטלפון תרגיש כבדה יותר ממה שהיא נראית.
 
-זה לא בגלל שקונים במובייל פחות רציניים — זה בגלל שרוב החנויות עדיין מותאמות לדסקטופ ו"מותאמות" למובייל כמחשבה שנייה. החוויה מרגישה צפופה, איטית ומתסכלת.
-
-המדריך הזה מראה איך לסגור את פער ההמרה במובייל. לא עם טריקים, אלא בבניית חוויה שעובדת כמו שקונים במובייל באמת מתנהגים.
+אופטימיזציית מובייל היא לא רק responsive design. זו מהירות, אזורי לחיצה, היררכיה ויזואלית, checkout ברור, פרטי מוצר קריאים והאומץ להסיר דברים שמפריעים.
 
 ## המציאות של מובייל קומרס (2026)
 

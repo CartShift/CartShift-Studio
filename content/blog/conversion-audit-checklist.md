@@ -1,18 +1,16 @@
 ---
 title: 'Conversion Audit Checklist for Ecommerce Stores'
 date: '2026-04-22'
-excerpt: 'A practical ecommerce conversion audit checklist covering speed, trust, UX friction, mobile usability, merchandising, and checkout blockers.'
+excerpt: 'A calmer ecommerce conversion audit for finding real friction in speed, trust, mobile UX, merchandising, product pages, and checkout.'
 category: 'Conversion Optimization'
 title_he: 'צ׳קליסט לאודיט המרות בחנות אונליין'
-excerpt_he: 'צ׳קליסט מעשי לאודיט המרות בחנות ecommerce: מהירות, אמון, חיכוך ב-UX, מובייל, מרצ׳נדייזינג וחסמי checkout.'
+excerpt_he: 'אודיט המרות רגוע ומעשי למציאת חיכוך אמיתי במהירות, אמון, מובייל, מרצ׳נדייזינג, עמודי מוצר ו-checkout.'
 category_he: 'אופטימיזציית המרות'
 ---
 
-When a store is getting traffic but not sales, the answer is rarely "try harder." The answer is usually "audit the path between attention and action."
+A good conversion audit does not start with button colors. It starts with friction. Where does the shopper slow down, hesitate, lose trust, or run out of information?
 
-A useful conversion audit does not start with button colors. It starts with the buying journey: what the shopper expected, what they saw, what made them trust the store, what slowed them down, and where the decision broke.
-
-Use this checklist as a practical review system. Work through it on mobile first, then desktop. Keep notes in three columns: issue, evidence, and likely impact. That keeps the audit grounded in behavior instead of opinions.
+Use this guide like a walk through the store with a skeptical but fair customer. The goal is not to collect faults. The goal is to find the few fixes that make buying feel easier.
 
 ## What to collect before the audit
 
@@ -247,9 +245,9 @@ If you want to combine conversion diagnostics with SEO and technical checks, sta
 
 ---he---
 
-כשחנות מקבלת טראפיק אבל לא מכירות, הפתרון הוא בדרך כלל לא "להתאמץ יותר". הפתרון הוא לבדוק את הדרך בין תשומת לב לפעולה: מה הלקוח ציפה לראות, מה הוא באמת ראה, איפה נוצר אמון, איפה נוצר חיכוך, ואיפה ההחלטה נשברה.
+אודיט המרות טוב לא מתחיל מצבע הכפתור. הוא מתחיל מחיכוך. איפה הלקוח מאט, מהסס, מאבד אמון או נשאר בלי מספיק מידע?
 
-אודיט המרות טוב לא מתחיל מצבע של כפתור. הוא מתחיל במסע הקנייה. השתמשו בצ'קליסט הזה כמערכת עבודה: עברו קודם על מובייל, אחר כך על דסקטופ, ותעדו כל בעיה בשלושה שדות: הבעיה, הראיה, וההשפעה הסבירה על הכנסות.
+כדאי לקרוא את המדריך כמו סיור בחנות עם לקוח סקפטי אבל הוגן. המטרה היא לא לאסוף תקלות. המטרה היא למצוא את התיקונים המעטים שיגרמו לקנייה להרגיש קלה יותר.
 
 ## מה לאסוף לפני האודיט
 

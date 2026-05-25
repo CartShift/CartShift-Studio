@@ -92,10 +92,7 @@ function buildAnalysisResult(): AnalysisResult {
   };
 }
 
-function createAnalyzeRequest(
-  body: unknown,
-  headers: Record<string, string> = {}
-): NextRequest {
+function createAnalyzeRequest(body: unknown, headers: Record<string, string> = {}): NextRequest {
   return new NextRequest('http://localhost/api/analyze-store', {
     method: 'POST',
     headers: {
@@ -126,6 +123,7 @@ describe('POST /api/analyze-store', () => {
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     if (originalRecaptchaSecret) {
       process.env.RECAPTCHA_SECRET_KEY = originalRecaptchaSecret;
     } else {
@@ -267,8 +265,7 @@ describe('POST /api/analyze-store', () => {
   });
 
   it('returns 400 when client IP cannot be determined in production', async () => {
-    const previousEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    vi.stubEnv('NODE_ENV', 'production');
 
     const request = new NextRequest('http://localhost/api/analyze-store', {
       method: 'POST',
@@ -281,7 +278,5 @@ describe('POST /api/analyze-store', () => {
 
     const response = await POST(request);
     expect(response.status).toBe(400);
-
-    process.env.NODE_ENV = previousEnv;
   });
 });

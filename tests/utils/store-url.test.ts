@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { dnsLookupMock } from '../mocks/node-dns-promises';
 import { normalizeStoreUrlInput, validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
+import type { lookup } from 'node:dns/promises';
 
 describe('normalizeStoreUrlInput', () => {
   it('adds https when protocol is missing', () => {
