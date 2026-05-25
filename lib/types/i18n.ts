@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-25T01:51:18.384Z
+ * Last updated: 2026-05-25T01:56:11.941Z
  * 
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -3441,6 +3441,40 @@ form: {
   submitFailed: string;
   privacy: string;
 };
+errors: {
+  unknown: {
+    title: string;
+    suggestion: string;
+  };
+  network: {
+    title: string;
+    suggestion: string;
+  };
+  networkConnection: {
+    title: string;
+    suggestion: string;
+  };
+  timeout: {
+    title: string;
+    suggestion: string;
+  };
+  validation: {
+    title: string;
+    suggestion: string;
+  };
+  rateLimit: {
+    title: string;
+    suggestion: string;
+  };
+  captcha: {
+    title: string;
+    suggestion: string;
+  };
+  server: {
+    title: string;
+    suggestion: string;
+  };
+};
 features: {
   performance: {
     title: string;
@@ -3929,6 +3963,22 @@ export type TranslationKey =
   | 'analyzer.cta.description'
   | 'analyzer.cta.fixIssues'
   | 'analyzer.cta.title'
+  | 'analyzer.errors.captcha.suggestion'
+  | 'analyzer.errors.captcha.title'
+  | 'analyzer.errors.network.suggestion'
+  | 'analyzer.errors.network.title'
+  | 'analyzer.errors.networkConnection.suggestion'
+  | 'analyzer.errors.networkConnection.title'
+  | 'analyzer.errors.rateLimit.suggestion'
+  | 'analyzer.errors.rateLimit.title'
+  | 'analyzer.errors.server.suggestion'
+  | 'analyzer.errors.server.title'
+  | 'analyzer.errors.timeout.suggestion'
+  | 'analyzer.errors.timeout.title'
+  | 'analyzer.errors.unknown.suggestion'
+  | 'analyzer.errors.unknown.title'
+  | 'analyzer.errors.validation.suggestion'
+  | 'analyzer.errors.validation.title'
   | 'analyzer.features.accessibility.description'
   | 'analyzer.features.accessibility.title'
   | 'analyzer.features.bestPractices.description'

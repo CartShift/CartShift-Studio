@@ -110,9 +110,9 @@ Coverage map:
 
 → Fixed! Individual service failures no longer crash the entire analysis.
 
-### Hebrew PDF report shows gibberish
+### Hebrew PDF report renders incorrectly
 
-→ Fixed in `functions/lib/store-analysis-pdf.js`. Hebrew locale PDFs embed **Noto Sans Hebrew** from `functions/assets/fonts/` instead of Helvetica (which cannot render Hebrew or emoji). Redeploy Cloud Functions after pulling this fix.
+→ PDFs are rendered from the RTL HTML template (`functions/emails/store_analysis_report.html`) via **Chromium** (`functions/lib/store-analysis-pdf.js` + `lib/store-analysis-report-html.js`), not PDFKit. This preserves correct Hebrew word order and layout. Requires `@sparticuz/chromium` + `puppeteer-core`; `sendStoreAnalysisReport` uses **1GiB** memory and **120s** timeout. Redeploy Cloud Functions after pulling this fix.
 
 ## Environment Variables (Optional)
 

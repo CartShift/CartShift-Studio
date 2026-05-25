@@ -1221,6 +1221,40 @@
       "submitFailed": "Could not start the analysis. Please try again.",
       "privacy": "Your data is secure. We never share your information with third parties."
     },
+    "errors": {
+      "unknown": {
+        "title": "We could not analyze this store.",
+        "suggestion": "Please verify the URL and try again."
+      },
+      "network": {
+        "title": "Unable to connect to the store.",
+        "suggestion": "Check if the URL is correct and the store is online."
+      },
+      "networkConnection": {
+        "title": "Network connection failed.",
+        "suggestion": "Check your internet connection and try again."
+      },
+      "timeout": {
+        "title": "Analysis took too long.",
+        "suggestion": "The store may be slow. Please try again in a moment."
+      },
+      "validation": {
+        "title": "Invalid store URL.",
+        "suggestion": "Please enter a valid store URL (e.g., https://example.com)."
+      },
+      "rateLimit": {
+        "title": "Too many requests.",
+        "suggestion": "Please wait a minute before trying again."
+      },
+      "captcha": {
+        "title": "Captcha verification failed.",
+        "suggestion": "Please refresh the page and try again."
+      },
+      "server": {
+        "title": "Server error occurred.",
+        "suggestion": "Our team has been notified. Please try again later."
+      }
+    },
     "features": {
       "performance": {
         "title": "Performance Analysis",

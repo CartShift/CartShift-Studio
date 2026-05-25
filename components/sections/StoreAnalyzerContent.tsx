@@ -26,6 +26,8 @@ import {
 import { trackEvent } from '@/lib/analytics';
 import { Logger } from '@/lib/logger';
 import { toast } from 'sonner';
+import { useStoreAnalysisMutation } from '@/lib/hooks/useStoreAnalysisMutation';
+import { classifyStoreAnalysisError } from '@/lib/utils/store-analysis-errors';
 
 import type { AnalysisResult } from '@/lib/types/analyzer';
 
@@ -40,6 +42,7 @@ export const StoreAnalyzerContent: React.FC = () => {
   const [state, setState] = useState<AnalyzerState>('form');
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const analyzing = useAnalyzerProgress(state === 'analyzing');
+  const { analyzeStoreAsync } = useStoreAnalysisMutation();
   const lastSubmitRef = useRef<{
     storeUrl: string;
     email: string;
@@ -61,18 +64,7 @@ export const StoreAnalyzerContent: React.FC = () => {
     trackEvent('store_analysis_started', { store_url: data.storeUrl });
 
     try {
-      const response = await fetch('/api/analyze-store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, locale }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Analysis failed');
-      }
-
-      const result = await response.json();
+      const result = await analyzeStoreAsync({ ...data, locale });
       setResults(result);
 
       const duration = Date.now() - startTime;
@@ -88,7 +80,6 @@ export const StoreAnalyzerContent: React.FC = () => {
         has_ai_analysis: !!result.aiAnalysis,
       });
 
-      // Track feature unavailability
       if (!result.visualAnalysis) {
         trackEvent('analyzer_feature_unavailable', {
           feature_name: 'visual_analysis',
@@ -120,65 +111,28 @@ export const StoreAnalyzerContent: React.FC = () => {
       Logger.error('Analysis error', error, { storeUrl: data.storeUrl });
 
       const duration = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error.message : String(error);
-
-      // Classify error type and create user-friendly messages
-      let errorType: 'network' | 'timeout' | 'validation' | 'server' | 'unknown' = 'unknown';
-      let userMessage = 'We could not analyze this store.';
-      let suggestion = 'Please verify the URL and try again.';
-
-      if (errorMessage.includes('Could not access store URL')) {
-        errorType = 'network';
-        userMessage = 'Unable to connect to the store.';
-        suggestion = 'Check if the URL is correct and the store is online.';
-      } else if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
-        errorType = 'network';
-        userMessage = 'Network connection failed.';
-        suggestion = 'Check your internet connection and try again.';
-      } else if (errorMessage.includes('timeout') || errorMessage.includes('timed out')) {
-        errorType = 'timeout';
-        userMessage = 'Analysis took too long.';
-        suggestion = 'The store may be slow. Please try again in a moment.';
-      } else if (errorMessage.includes('Invalid URL') || errorMessage.includes('required')) {
-        errorType = 'validation';
-        userMessage = 'Invalid store URL.';
-        suggestion = 'Please enter a valid store URL (e.g., https://example.com).';
-      } else if (errorMessage.includes('rate limit') || errorMessage.includes('Too many')) {
-        errorType = 'validation';
-        userMessage = 'Too many requests.';
-        suggestion = 'Please wait a minute before trying again.';
-      } else if (errorMessage.includes('Captcha')) {
-        errorType = 'validation';
-        userMessage = 'Captcha verification failed.';
-        suggestion = 'Please refresh the page and try again.';
-      } else if (errorMessage.includes('500') || errorMessage.includes('Analysis failed')) {
-        errorType = 'server';
-        userMessage = 'Server error occurred.';
-        suggestion = 'Our team has been notified. Please try again later.';
-      }
+      const classified = classifyStoreAnalysisError(error);
 
       trackEvent('store_analysis_failed', {
         store_url: data.storeUrl,
-        error_message: errorMessage,
-        error_type: errorType,
+        error_message: error instanceof Error ? error.message : String(error),
+        error_type: classified.type,
         duration_ms: duration,
       });
 
-      // Show user-friendly error with toast
-      toast.error(userMessage, {
-        description: suggestion,
+      toast.error(t(classified.titleKey), {
+        description: t(classified.suggestionKey),
         duration: 5000,
-        action:
-          errorType === 'validation'
-            ? undefined
-            : {
-                label: t('analyzer.form.tryAgain'),
-                onClick: () => {
-                  if (lastSubmitRef.current) {
-                    void handleAnalyze(lastSubmitRef.current);
-                  }
-                },
+        action: classified.retryable
+          ? {
+              label: t('analyzer.form.tryAgain'),
+              onClick: () => {
+                if (lastSubmitRef.current) {
+                  void handleAnalyze(lastSubmitRef.current);
+                }
               },
+            }
+          : undefined,
       });
 
       setState('form');
