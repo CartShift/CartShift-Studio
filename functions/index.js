@@ -1,8 +1,10 @@
 const { onRequest } = require('firebase-functions/v2/https');
 const { onDocumentCreated, onDocumentUpdated } = require('firebase-functions/v2/firestore');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const PDFDocument = require('pdfkit');
+const crypto = require('crypto');
 const {
   sendEmailWithLogging,
   sendBatchEmails,
@@ -121,6 +123,7 @@ const contactEmail = defineSecret('CONTACT_EMAIL', { required: false });
 const pagespeedApiKey = defineSecret('PAGESPEED_API_KEY', { required: false });
 const recaptchaSecretKey = defineSecret('RECAPTCHA_SECRET_KEY', { required: false });
 const PORTAL_BASE_URL = process.env.PORTAL_BASE_URL || 'https://portal.cart-shift.com';
+const MARKETING_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
 async function sendPortalEmail(to, subject, templateName, data, options = {}) {
   const { tags = [], uniqueId, scheduledAt } = options;
@@ -143,6 +146,835 @@ async function sendPortalEmail(to, subject, templateName, data, options = {}) {
     scheduledAt,
   });
 }
+
+// ============================================
+// MARKETING FUNNEL HELPERS
+// ============================================
+
+const MARKETING_SEQUENCE_ID = 'cartshift_project_inquiry_v1';
+const MARKETING_JOB_BATCH_SIZE = 25;
+
+const MARKETING_SEQUENCE_STEPS = [
+  {
+    stepId: 'welcome',
+    delayDays: 0,
+    kind: 'welcome',
+    en: {
+      subject: 'Welcome to CartShift Studio',
+      eyebrow: 'CartShift Studio',
+      title: 'You are on the list. Now let us make this useful.',
+      intro:
+        'Most ecommerce growth problems are not mysterious. They are usually hiding in speed, trust, product pages, checkout flow, or unclear positioning.',
+      bullets: [
+        'We will send practical fixes you can evaluate without jargon.',
+        'When the timing is right, you can send us the project details and we will map the right next move.',
+      ],
+      cta: 'Start a project inquiry',
+      preheader: 'A practical ecommerce growth sequence from CartShift Studio.',
+    },
+    he: {
+      subject: 'ברוכים הבאים ל-CartShift Studio',
+      eyebrow: 'CartShift Studio',
+      title: 'אתם ברשימה. עכשיו נהפוך את זה לשימושי.',
+      intro:
+        'רוב בעיות הצמיחה באיקומרס לא מסתוריות. הן בדרך כלל מסתתרות במהירות, אמון, עמודי מוצר, צ׳קאאוט או מיצוב לא מספיק חד.',
+      bullets: [
+        'נשלח תיקונים פרקטיים שאפשר לבחון בלי רעש מקצועי מיותר.',
+        'כשהתזמון נכון, תוכלו לשלוח לנו פרטי פרויקט ונמפה את הצעד הנכון.',
+      ],
+      cta: 'שליחת פרטי פרויקט',
+      preheader: 'רצף פרקטי לצמיחת איקומרס מ-CartShift Studio.',
+    },
+  },
+  {
+    stepId: 'leaking-revenue',
+    delayDays: 1,
+    kind: 'score',
+    en: {
+      subject: 'Your store is leaking revenue in places you can fix',
+      eyebrow: 'Day 1',
+      title: 'The first job is finding the expensive friction.',
+      intro:
+        'A weak score is not a verdict. It is a map. The fastest wins usually come from issues shoppers feel before they can explain them.',
+      bullets: [
+        'Slow first load makes paid traffic more expensive.',
+        'Weak trust cues make shoppers hesitate near checkout.',
+        'Unclear product pages force motivated buyers to think too hard.',
+      ],
+      cta: 'Send us the project details',
+      preheader: 'Use your store score as a prioritization map, not just a report card.',
+    },
+    he: {
+      subject: 'החנות שלכם מאבדת הכנסות במקומות שאפשר לתקן',
+      eyebrow: 'יום 1',
+      title: 'השלב הראשון הוא לזהות חיכוך יקר.',
+      intro:
+        'ציון נמוך הוא לא פסק דין. הוא מפה. הניצחונות המהירים מגיעים בדרך כלל מבעיות שקונים מרגישים לפני שהם יודעים להסביר.',
+      bullets: [
+        'טעינה איטית מייקרת טראפיק ממומן.',
+        'סימני אמון חלשים יוצרים היסוס ליד הצ׳קאאוט.',
+        'עמודי מוצר לא ברורים גורמים לקונים לחשוב יותר מדי.',
+      ],
+      cta: 'שליחת פרטי פרויקט',
+      preheader: 'השתמשו בציון החנות כמפת תיעדוף, לא רק כתעודה.',
+    },
+  },
+  {
+    stepId: 'three-fixes',
+    delayDays: 3,
+    kind: 'education',
+    en: {
+      subject: 'The 3 fixes we would prioritize first',
+      eyebrow: 'Day 3',
+      title: 'Do not fix everything. Fix the sequence that changes behavior.',
+      intro:
+        'A strong ecommerce optimization plan has order. We start where the buyer journey is most fragile and where implementation risk is lowest.',
+      bullets: [
+        'Clarify the promise above the fold.',
+        'Make product and checkout trust visible at the decision moment.',
+        'Remove speed and mobile friction before scaling traffic.',
+      ],
+      cta: 'Get a project roadmap',
+      preheader: 'A practical order of operations for improving store conversion.',
+    },
+    he: {
+      subject: 'שלושת התיקונים שהיינו מתעדפים קודם',
+      eyebrow: 'יום 3',
+      title: 'לא מתקנים הכל. מתקנים את הרצף שמשנה התנהגות.',
+      intro:
+        'תכנית אופטימיזציה טובה לחנות צריכה סדר. מתחילים במקום שבו מסע הקנייה הכי רגיש והסיכון הטכני הכי נמוך.',
+      bullets: [
+        'לחדד את ההבטחה בחלק העליון של העמוד.',
+        'להציג אמון בעמוד מוצר ובצ׳קאאוט ברגע ההחלטה.',
+        'להסיר חיכוך מהירות ומובייל לפני שמגדילים טראפיק.',
+      ],
+      cta: 'קבלת מפת פרויקט',
+      preheader: 'סדר פעולה פרקטי לשיפור המרה בחנות.',
+    },
+  },
+  {
+    stepId: 'professional-rebuild',
+    delayDays: 5,
+    kind: 'process',
+    en: {
+      subject: 'What a professional rebuild actually changes',
+      eyebrow: 'Day 5',
+      title: 'A rebuild is not a prettier theme. It is a better selling system.',
+      intro:
+        'The visual layer matters, but the real value is in structure: merchandising, UX logic, performance, analytics, and a backend your team can keep using.',
+      bullets: [
+        'Cleaner information architecture makes products easier to buy.',
+        'Reusable sections let you launch campaigns faster.',
+        'Analytics and events make future decisions less emotional.',
+      ],
+      cta: 'Tell us what you want rebuilt',
+      preheader: 'The difference between surface redesign and a store that sells better.',
+    },
+    he: {
+      subject: 'מה ריבילד מקצועי באמת משנה',
+      eyebrow: 'יום 5',
+      title: 'ריבילד הוא לא תבנית יפה יותר. הוא מערכת מכירה טובה יותר.',
+      intro:
+        'השכבה הוויזואלית חשובה, אבל הערך האמיתי נמצא במבנה: מרצ׳נדייזינג, UX, ביצועים, אנליטיקה ובקאנד שהצוות יכול להמשיך לתפעל.',
+      bullets: [
+        'ארכיטקטורת מידע נקייה מקלה על רכישה.',
+        'סקשנים לשימוש חוזר מאפשרים להשיק קמפיינים מהר יותר.',
+        'אנליטיקה ואיוונטים הופכים החלטות עתידיות לפחות רגשיות.',
+      ],
+      cta: 'ספרו לנו מה צריך לבנות מחדש',
+      preheader: 'ההבדל בין עיצוב מחדש שטחי לבין חנות שמוכרת טוב יותר.',
+    },
+  },
+  {
+    stepId: 'case-study-proof',
+    delayDays: 8,
+    kind: 'proof',
+    en: {
+      subject: 'Proof: how better store structure creates confidence',
+      eyebrow: 'Day 8',
+      title: 'Buyers trust what feels deliberate.',
+      intro:
+        'Good ecommerce work makes the brand feel sharper and the next action feel obvious. That is the pattern across the strongest CartShift projects.',
+      bullets: [
+        'Category context reduces uncertainty.',
+        'Stronger product storytelling raises confidence.',
+        'A cleaner buying path makes the store feel more serious.',
+      ],
+      cta: 'Start your project inquiry',
+      preheader: 'A case-study angle on turning store structure into buyer confidence.',
+    },
+    he: {
+      subject: 'הוכחה: איך מבנה חנות טוב יותר יוצר ביטחון',
+      eyebrow: 'יום 8',
+      title: 'קונים סומכים על חוויה שמרגישה מכוונת.',
+      intro:
+        'עבודת איקומרס טובה מחדדת את המותג והופכת את הפעולה הבאה לברורה. זה הדפוס בפרויקטים החזקים של CartShift.',
+      bullets: [
+        'הקשר קטגוריאלי מוריד אי-ודאות.',
+        'סטוריטלינג מוצרי חזק מעלה ביטחון.',
+        'מסלול קנייה נקי גורם לחנות להרגיש רצינית יותר.',
+      ],
+      cta: 'התחלת פנייה לפרויקט',
+      preheader: 'זווית קייס סטאדי על הפיכת מבנה חנות לביטחון קנייה.',
+    },
+  },
+  {
+    stepId: 'objections',
+    delayDays: 12,
+    kind: 'objection',
+    en: {
+      subject: 'Cost, timing, risk: the honest version',
+      eyebrow: 'Day 12',
+      title: 'A good project should reduce uncertainty before it adds scope.',
+      intro:
+        'You do not need to commit to a giant rebuild to get clarity. The right first conversation should expose priority, timeline, risk, and the business case.',
+      bullets: [
+        'We separate must-fix issues from nice-to-have polish.',
+        'We protect live stores from avoidable migration and launch risk.',
+        'We recommend scope based on ROI, not feature excitement.',
+      ],
+      cta: 'Share your constraints',
+      preheader: 'How to think about ecommerce project scope without overcommitting.',
+    },
+    he: {
+      subject: 'עלות, תזמון וסיכון: הגרסה הכנה',
+      eyebrow: 'יום 12',
+      title: 'פרויקט טוב צריך להוריד אי-ודאות לפני שהוא מוסיף סקופ.',
+      intro:
+        'לא צריך להתחייב לריבילד ענק כדי לקבל בהירות. שיחה ראשונה נכונה צריכה לחשוף תיעדוף, לו״ז, סיכון והיגיון עסקי.',
+      bullets: [
+        'נפריד בין בעיות שחייבים לתקן לבין פוליש נחמד.',
+        'נגן על חנויות פעילות מסיכוני מיגרציה והשקה מיותרים.',
+        'נמליץ על סקופ לפי ROI, לא לפי התלהבות מפיצ׳רים.',
+      ],
+      cta: 'שתפו את האילוצים שלכם',
+      preheader: 'איך לחשוב על סקופ איקומרס בלי להתחייב יותר מדי.',
+    },
+  },
+  {
+    stepId: 'project-inquiry',
+    delayDays: 18,
+    kind: 'conversion',
+    en: {
+      subject: 'Ready to turn this into a project?',
+      eyebrow: 'Day 18',
+      title: 'Send us the store, the goal, and what feels stuck.',
+      intro:
+        'If the store matters to revenue this quarter, the useful next step is not more generic tips. It is a clear project brief and a sharp recommendation.',
+      bullets: [
+        'Tell us what platform you are on.',
+        'Share what you want improved first.',
+        'We will respond with the right project direction.',
+      ],
+      cta: 'Submit a project inquiry',
+      preheader: 'Turn the audit into a concrete project brief.',
+    },
+    he: {
+      subject: 'מוכנים להפוך את זה לפרויקט?',
+      eyebrow: 'יום 18',
+      title: 'שלחו לנו את החנות, המטרה ומה מרגיש תקוע.',
+      intro:
+        'אם החנות חשובה להכנסות ברבעון הקרוב, הצעד הבא הוא לא עוד טיפים כלליים. הוא בריף ברור והמלצה חדה.',
+      bullets: [
+        'ספרו לנו על איזו פלטפורמה אתם עובדים.',
+        'שתפו מה תרצו לשפר קודם.',
+        'נחזור עם כיוון הפרויקט הנכון.',
+      ],
+      cta: 'שליחת פנייה לפרויקט',
+      preheader: 'להפוך את האודיט לבריף פרויקט קונקרטי.',
+    },
+  },
+  {
+    stepId: 'breakup',
+    delayDays: 28,
+    kind: 'breakup',
+    en: {
+      subject: 'Should we close the loop?',
+      eyebrow: 'Day 28',
+      title: 'One last practical nudge.',
+      intro:
+        'If improving the store is still on the table, send us the URL and the one thing you most want fixed. We will help you decide whether it is worth a project.',
+      bullets: [
+        'No pressure to start big.',
+        'No vague pitch deck.',
+        'Just a practical read on the next best move.',
+      ],
+      cta: 'Send the store URL',
+      preheader: 'A final check-in from CartShift Studio.',
+    },
+    he: {
+      subject: 'נסגור מעגל?',
+      eyebrow: 'יום 28',
+      title: 'דחיפה פרקטית אחרונה.',
+      intro:
+        'אם שיפור החנות עדיין על השולחן, שלחו לנו את ה-URL ואת הדבר האחד שהכי חשוב לכם לתקן. נעזור להבין אם זה שווה פרויקט.',
+      bullets: [
+        'אין צורך להתחיל גדול.',
+        'אין מצגת מכירה מעורפלת.',
+        'רק קריאה פרקטית של הצעד הנכון הבא.',
+      ],
+      cta: 'שליחת URL של החנות',
+      preheader: 'צ׳ק-אין אחרון מ-CartShift Studio.',
+    },
+  },
+];
+
+function normalizeMarketingEmail(email) {
+  return String(email || '')
+    .trim()
+    .toLowerCase();
+}
+
+function getMarketingLeadId(email) {
+  return crypto
+    .createHash('sha256')
+    .update(normalizeMarketingEmail(email))
+    .digest('hex')
+    .slice(0, 32);
+}
+
+function getScoreBand(score) {
+  if (typeof score !== 'number') return 'unknown';
+  if (score < 40) return 'critical';
+  if (score < 70) return 'warning';
+  if (score < 85) return 'good';
+  return 'excellent';
+}
+
+function getLeadScoreDelta(data = {}) {
+  let score = 0;
+  if (data.source === 'contact_form') score += 60;
+  if (data.source === 'store_analyzer') score += 20;
+  if (data.source === 'newsletter' || data.source === 'newsletter_footer') score += 5;
+  if (data.source === 'blog_cta' || data.source === 'service_page_cta') score += 10;
+
+  if (typeof data.overallScore === 'number') {
+    if (data.overallScore < 50) score += 15;
+    else if (data.overallScore < 70) score += 8;
+  }
+
+  return score;
+}
+
+function getMarketingLocale(locale) {
+  return locale === 'he' ? 'he' : 'en';
+}
+
+function getMarketingContactUrl(locale, leadId) {
+  const lang = getMarketingLocale(locale);
+  const url = new URL(`/${lang}/contact`, MARKETING_SITE_URL);
+  url.searchParams.set('utm_source', 'email');
+  url.searchParams.set('utm_medium', 'nurture');
+  url.searchParams.set('utm_campaign', MARKETING_SEQUENCE_ID);
+  url.searchParams.set('lead', leadId);
+  return url.toString();
+}
+
+function getUnsubscribeUrl(lead, locale) {
+  const url = new URL('/api/marketing/unsubscribe', MARKETING_SITE_URL);
+  url.searchParams.set('leadId', lead.leadId);
+  url.searchParams.set('token', lead.unsubscribeToken);
+  url.searchParams.set('locale', getMarketingLocale(locale));
+  return url.toString();
+}
+
+function getClickUrl(lead, job, targetUrl) {
+  const url = new URL('/api/marketing/click', MARKETING_SITE_URL);
+  url.searchParams.set('leadId', lead.leadId);
+  url.searchParams.set('token', lead.unsubscribeToken);
+  url.searchParams.set('target', targetUrl);
+  if (job?.id) url.searchParams.set('jobId', job.id);
+  return url.toString();
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function renderMarketingEmail({ lead, job, step }) {
+  const locale = getMarketingLocale(lead.locale);
+  const copy = step[locale] || step.en;
+  const isRtl = locale === 'he';
+  const dir = isRtl ? 'rtl' : 'ltr';
+  const textAlign = isRtl ? 'right' : 'left';
+  const scoreBand = lead.scoreBand && lead.scoreBand !== 'unknown' ? lead.scoreBand : null;
+  const platform = lead.platform || (locale === 'he' ? 'החנות' : 'your store');
+  const contactUrl = getMarketingContactUrl(locale, lead.leadId);
+  const ctaUrl = getClickUrl(lead, job, contactUrl);
+  const unsubscribeUrl = getUnsubscribeUrl(lead, locale);
+  const scoreLine =
+    scoreBand && typeof lead.overallScore === 'number'
+      ? locale === 'he'
+        ? `בהתבסס על ציון ${lead.overallScore}/100, החנות מסומנת כ-${scoreBand}.`
+        : `Based on a ${lead.overallScore}/100 score, ${platform} is currently in the ${scoreBand} band.`
+      : locale === 'he'
+        ? 'המסר הבא מבוסס על דפוסי איקומרס שאנחנו רואים שוב ושוב.'
+        : 'This note is based on ecommerce patterns we see repeatedly.';
+  const footerText =
+    locale === 'he'
+      ? 'קיבלתם את האימייל כי ביקשתם תובנות מ-CartShift Studio.'
+      : 'You received this because you asked CartShift Studio for ecommerce insights.';
+
+  return `<!doctype html>
+<html lang="${locale}" dir="${dir}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(copy.subject)}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#070a12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#f8fafc;">
+    <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(copy.preheader)}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#070a12;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#0f172a;border:1px solid rgba(148,163,184,.22);border-radius:18px;overflow:hidden;direction:${dir};">
+            <tr>
+              <td style="padding:34px 30px 18px;text-align:${textAlign};background:#0b1120;">
+                <div style="display:inline-block;padding:7px 12px;border-radius:999px;background:#1d4ed8;color:#dbeafe;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(copy.eyebrow)}</div>
+                <h1 style="margin:18px 0 12px;color:#ffffff;font-size:30px;line-height:1.12;font-weight:900;">${escapeHtml(copy.title)}</h1>
+                <p style="margin:0;color:#94a3b8;font-size:15px;line-height:1.7;">${escapeHtml(copy.intro)}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 30px 28px;text-align:${textAlign};background:#0b1120;">
+                <div style="border:1px solid rgba(59,130,246,.35);background:rgba(59,130,246,.12);border-radius:14px;padding:16px;color:#bfdbfe;font-size:14px;line-height:1.65;">${escapeHtml(scoreLine)}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:30px;text-align:${textAlign};background:#ffffff;color:#0f172a;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  ${copy.bullets
+                    .map(
+                      item =>
+                        `<tr><td style="padding:0 0 14px;color:#334155;font-size:15px;line-height:1.65;"><span style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#2563eb;margin-inline-end:10px;"></span>${escapeHtml(item)}</td></tr>`
+                    )
+                    .join('')}
+                </table>
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:22px;">
+                  <tr>
+                    <td style="border-radius:10px;background:#2563eb;">
+                      <a href="${ctaUrl}" style="display:inline-block;padding:15px 24px;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;">${escapeHtml(copy.cta)}</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 30px;text-align:center;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.6;">
+                ${escapeHtml(footerText)}<br>
+                <a href="${unsubscribeUrl}" style="color:#475569;text-decoration:underline;">${locale === 'he' ? 'הסרה מרשימת התפוצה' : 'Unsubscribe'}</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
+async function recordMarketingEvent(leadId, type, data = {}) {
+  await admin
+    .firestore()
+    .collection('marketing_events')
+    .add({
+      leadId,
+      type,
+      ...data,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+}
+
+async function isMarketingLeadUnsubscribed(leadId) {
+  const unsubDoc = await admin.firestore().collection('marketing_unsubscribes').doc(leadId).get();
+  return unsubDoc.exists;
+}
+
+async function upsertMarketingLead(data) {
+  const email = normalizeMarketingEmail(data.email);
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Valid email is required');
+  }
+
+  const leadId = getMarketingLeadId(email);
+  const ref = admin.firestore().collection('marketing_leads').doc(leadId);
+  const source = data.source || 'website';
+  const locale = getMarketingLocale(data.locale);
+  const scoreDelta = getLeadScoreDelta({ ...data, source });
+  const now = admin.firestore.FieldValue.serverTimestamp();
+
+  await admin.firestore().runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    const existing = snap.exists ? snap.data() : {};
+    const unsubscribeToken = existing.unsubscribeToken || crypto.randomBytes(24).toString('hex');
+    const marketingConsent =
+      typeof data.consent === 'boolean'
+        ? data.consent
+        : source === 'contact_form'
+          ? false
+          : data.subscribeNewsletter !== false;
+    const isConverted = source === 'contact_form';
+
+    tx.set(
+      ref,
+      {
+        leadId,
+        email,
+        normalizedEmail: email,
+        locale,
+        name: data.name || existing.name || null,
+        company: data.company || existing.company || null,
+        interest: data.interest || existing.interest || null,
+        projectType: data.projectType || existing.projectType || null,
+        storeUrl: data.storeUrl || existing.storeUrl || null,
+        platform: data.platform || existing.platform || null,
+        overallScore:
+          typeof data.overallScore === 'number' ? data.overallScore : existing.overallScore || null,
+        scoreBand:
+          typeof data.overallScore === 'number'
+            ? getScoreBand(data.overallScore)
+            : existing.scoreBand || 'unknown',
+        primarySource: existing.primarySource || source,
+        latestSource: source,
+        sources: admin.firestore.FieldValue.arrayUnion(source),
+        marketingConsent,
+        subscribeNewsletter:
+          data.subscribeNewsletter === true || existing.subscribeNewsletter || false,
+        funnelStage: isConverted ? 'converted' : existing.funnelStage || 'nurture',
+        conversionStatus: isConverted ? 'project_inquiry' : existing.conversionStatus || 'lead',
+        leadScore: admin.firestore.FieldValue.increment(scoreDelta),
+        unsubscribeToken,
+        lastEngagedAt: now,
+        updatedAt: now,
+        createdAt: existing.createdAt || now,
+      },
+      { merge: true }
+    );
+  });
+
+  await recordMarketingEvent(
+    leadId,
+    source === 'contact_form' ? 'project_inquiry_started' : 'marketing_lead_created',
+    {
+      source,
+      locale,
+      metadata: data.metadata || null,
+    }
+  );
+
+  const leadSnap = await ref.get();
+  return { leadId, lead: leadSnap.data() };
+}
+
+async function enrollMarketingSequence(leadId, lead, options = {}) {
+  if (!lead?.marketingConsent || lead.conversionStatus === 'project_inquiry') return false;
+  if (await isMarketingLeadUnsubscribed(leadId)) return false;
+
+  const batch = admin.firestore().batch();
+  const now = Date.now();
+  const steps = options.skipWelcome
+    ? MARKETING_SEQUENCE_STEPS.filter(step => step.stepId !== 'welcome')
+    : MARKETING_SEQUENCE_STEPS;
+
+  steps.forEach(step => {
+    const jobId = `${leadId}_${MARKETING_SEQUENCE_ID}_${step.stepId}`;
+    const jobRef = admin.firestore().collection('marketing_email_jobs').doc(jobId);
+    batch.set(
+      jobRef,
+      {
+        id: jobId,
+        leadId,
+        email: lead.email,
+        locale: getMarketingLocale(lead.locale),
+        sequenceId: MARKETING_SEQUENCE_ID,
+        stepId: step.stepId,
+        status: 'pending',
+        dueAt: admin.firestore.Timestamp.fromDate(
+          new Date(now + step.delayDays * 24 * 60 * 60 * 1000)
+        ),
+        attempts: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  });
+
+  await batch.commit();
+  await admin.firestore().collection('marketing_leads').doc(leadId).set(
+    {
+      sequenceId: MARKETING_SEQUENCE_ID,
+      sequenceEnrolledAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+  await recordMarketingEvent(leadId, 'marketing_sequence_enrolled', {
+    sequenceId: MARKETING_SEQUENCE_ID,
+    skipWelcome: !!options.skipWelcome,
+  });
+  return true;
+}
+
+async function captureAndEnrollMarketingLead(data, options = {}) {
+  const { leadId, lead } = await upsertMarketingLead(data);
+  await enrollMarketingSequence(leadId, lead, options);
+  return { leadId, lead };
+}
+
+async function sendMarketingJob(jobDoc) {
+  const job = { id: jobDoc.id, ...jobDoc.data() };
+  const jobRef = jobDoc.ref;
+  const leadRef = admin.firestore().collection('marketing_leads').doc(job.leadId);
+  const leadSnap = await leadRef.get();
+
+  if (!leadSnap.exists) {
+    await jobRef.update({ status: 'canceled', cancelReason: 'missing_lead' });
+    return;
+  }
+
+  const lead = leadSnap.data();
+  if (!lead.marketingConsent || lead.conversionStatus === 'project_inquiry') {
+    await jobRef.update({ status: 'canceled', cancelReason: 'not_eligible' });
+    return;
+  }
+
+  if (await isMarketingLeadUnsubscribed(job.leadId)) {
+    await jobRef.update({ status: 'canceled', cancelReason: 'unsubscribed' });
+    return;
+  }
+
+  const step = MARKETING_SEQUENCE_STEPS.find(item => item.stepId === job.stepId);
+  if (!step) {
+    await jobRef.update({ status: 'canceled', cancelReason: 'unknown_step' });
+    return;
+  }
+
+  const copy = step[getMarketingLocale(lead.locale)] || step.en;
+  const { Resend } = require('resend');
+  const resend = new Resend(resendApiKey.value());
+  const html = renderMarketingEmail({ lead, job, step });
+
+  await jobRef.update({
+    status: 'sending',
+    attempts: admin.firestore.FieldValue.increment(1),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  try {
+    const result = await resend.emails.send({
+      from: 'CartShift Studio <nurture@cart-shift.com>',
+      to: lead.email,
+      subject: copy.subject,
+      html,
+      reply_to: DEFAULT_CONTACT_EMAIL,
+      tags: [
+        { name: 'type', value: 'marketing_nurture' },
+        { name: 'sequence', value: MARKETING_SEQUENCE_ID },
+        { name: 'step', value: step.stepId },
+      ],
+    });
+
+    await jobRef.update({
+      status: 'sent',
+      resendEmailId: result?.data?.id || null,
+      sentAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    await leadRef.set(
+      {
+        lastEmailSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        lastEmailStepId: step.stepId,
+        funnelStage: step.kind === 'conversion' ? 'conversion_push' : 'nurture',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    await recordMarketingEvent(job.leadId, 'marketing_email_sent', {
+      jobId: job.id,
+      stepId: step.stepId,
+      sequenceId: MARKETING_SEQUENCE_ID,
+    });
+  } catch (error) {
+    console.error('[Marketing] Failed to send job', job.id, error);
+    await jobRef.update({
+      status: 'failed',
+      error: error.message || 'Unknown send failure',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+}
+
+exports.marketingCapture = onRequest(
+  {
+    cors: true,
+    maxInstances: 10,
+    secrets: [resendApiKey],
+  },
+  async (req, res) => {
+    if (!applyCors(req, res)) return;
+    if (req.method === 'OPTIONS') return res.status(204).send('');
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+    try {
+      const { leadId } = await captureAndEnrollMarketingLead(req.body, {
+        skipWelcome: !!req.body.skipWelcome,
+      });
+      return res.status(200).json({ success: true, leadId });
+    } catch (error) {
+      console.error('[Marketing] Capture error:', error);
+      return res.status(400).json({ error: error.message || 'Failed to capture lead' });
+    }
+  }
+);
+
+exports.marketingUnsubscribe = onRequest(
+  {
+    cors: true,
+    maxInstances: 10,
+  },
+  async (req, res) => {
+    if (!applyCors(req, res)) return;
+    if (req.method === 'OPTIONS') return res.status(204).send('');
+    if (!['GET', 'POST'].includes(req.method)) {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    try {
+      const leadId = req.body?.leadId || req.query.leadId;
+      const token = req.body?.token || req.query.token;
+      if (!leadId || !token) return res.status(400).json({ error: 'Missing unsubscribe token' });
+
+      const leadRef = admin.firestore().collection('marketing_leads').doc(leadId);
+      const leadSnap = await leadRef.get();
+      if (!leadSnap.exists || leadSnap.data().unsubscribeToken !== token) {
+        return res.status(403).json({ error: 'Invalid unsubscribe token' });
+      }
+
+      const batch = admin.firestore().batch();
+      batch.set(admin.firestore().collection('marketing_unsubscribes').doc(leadId), {
+        leadId,
+        email: leadSnap.data().email,
+        unsubscribedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      batch.set(
+        leadRef,
+        {
+          marketingConsent: false,
+          funnelStage: 'unsubscribed',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      const pendingJobs = await admin
+        .firestore()
+        .collection('marketing_email_jobs')
+        .where('leadId', '==', leadId)
+        .where('status', '==', 'pending')
+        .get();
+      pendingJobs.forEach(doc => {
+        batch.update(doc.ref, {
+          status: 'canceled',
+          cancelReason: 'unsubscribed',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      });
+
+      await batch.commit();
+      await recordMarketingEvent(leadId, 'marketing_unsubscribed');
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('[Marketing] Unsubscribe error:', error);
+      return res.status(500).json({ error: 'Failed to unsubscribe' });
+    }
+  }
+);
+
+exports.marketingTrackClick = onRequest(
+  {
+    cors: true,
+    maxInstances: 10,
+  },
+  async (req, res) => {
+    if (!applyCors(req, res)) return;
+    if (req.method === 'OPTIONS') return res.status(204).send('');
+
+    try {
+      const leadId = req.body?.leadId || req.query.leadId;
+      const token = req.body?.token || req.query.token;
+      const jobId = req.body?.jobId || req.query.jobId || null;
+      const targetUrl = req.body?.targetUrl || req.query.target || null;
+      if (!leadId || !token) return res.status(400).json({ error: 'Missing click token' });
+
+      const leadRef = admin.firestore().collection('marketing_leads').doc(leadId);
+      const leadSnap = await leadRef.get();
+      if (!leadSnap.exists || leadSnap.data().unsubscribeToken !== token) {
+        return res.status(403).json({ error: 'Invalid click token' });
+      }
+
+      await leadRef.set(
+        {
+          leadScore: admin.firestore.FieldValue.increment(15),
+          lastClickedAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastEngagedAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      if (jobId) {
+        await admin.firestore().collection('marketing_email_jobs').doc(jobId).set(
+          {
+            clickedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
+      }
+
+      await recordMarketingEvent(leadId, 'marketing_email_clicked', { jobId, targetUrl });
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('[Marketing] Click tracking error:', error);
+      return res.status(500).json({ error: 'Failed to track click' });
+    }
+  }
+);
+
+exports.processMarketingEmailJobs = onSchedule(
+  {
+    schedule: 'every 15 minutes',
+    timeZone: 'Asia/Jerusalem',
+    secrets: [resendApiKey],
+    maxInstances: 1,
+  },
+  async () => {
+    const now = admin.firestore.Timestamp.now();
+    const snapshot = await admin
+      .firestore()
+      .collection('marketing_email_jobs')
+      .where('status', '==', 'pending')
+      .where('dueAt', '<=', now)
+      .orderBy('dueAt', 'asc')
+      .limit(MARKETING_JOB_BATCH_SIZE)
+      .get();
+
+    if (snapshot.empty) {
+      console.log('[Marketing] No due email jobs.');
+      return;
+    }
+
+    for (const doc of snapshot.docs) {
+      await sendMarketingJob(doc);
+    }
+  }
+);
 
 // Helper to generate and upload invoice PDF
 async function saveInvoicePDF(request) {
@@ -366,6 +1198,18 @@ exports.contactForm = onRequest(
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
 
+      await captureAndEnrollMarketingLead({
+        email,
+        name,
+        company,
+        interest,
+        projectType,
+        message,
+        source: 'contact_form',
+        locale: req.body.locale || 'en',
+        consent: false,
+      });
+
       return res.status(200).json({ success: true });
     } catch (error) {
       console.error('Contact form error:', error);
@@ -425,6 +1269,15 @@ exports.newsletterSubscription = onRequest(
         properties: {
           subscription_type: 'newsletter',
         },
+      });
+
+      await captureAndEnrollMarketingLead({
+        email,
+        name: [firstName, lastName].filter(Boolean).join(' ') || undefined,
+        source: req.body.source || 'newsletter',
+        locale: req.body.locale || 'en',
+        subscribeNewsletter: true,
+        consent: true,
       });
 
       return res.status(200).json({ success: true });
@@ -2974,6 +3827,14 @@ exports.sendStoreAnalysisReport = onRequest(
           locale: lang,
           overallScore: results.overallScore,
           platform: results.platform,
+          source: 'store_analyzer',
+          scoreBand: getScoreBand(results.overallScore),
+          funnelStage: subscribeNewsletter ? 'nurture' : 'lead_only',
+          leadScore: getLeadScoreDelta({
+            source: 'store_analyzer',
+            overallScore: results.overallScore,
+          }),
+          conversionStatus: 'lead',
           subscribeNewsletter: subscribeNewsletter || false,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
@@ -3000,6 +3861,20 @@ exports.sendStoreAnalysisReport = onRequest(
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
       }
+
+      await captureAndEnrollMarketingLead(
+        {
+          email,
+          storeUrl,
+          locale: lang,
+          source: 'store_analyzer',
+          platform: results.platform || undefined,
+          overallScore: results.overallScore,
+          subscribeNewsletter: !!subscribeNewsletter,
+          consent: !!subscribeNewsletter,
+        },
+        { skipWelcome: true }
+      );
 
       // Generate PDF Report
       console.log('[Store Analysis] Generating PDF report...');
@@ -3259,633 +4134,14 @@ exports.sendBatchEmails = onRequest(
 );
 
 // ============================================
-// STORE ANALYZER - ANALYZE STORE
+// STORE ANALYZER - DEPRECATED (use Next.js /api/analyze-store)
 // ============================================
 
-const analyzeStoreRateLimitMap = new Map();
-const ANALYZE_STORE_RATE_LIMIT_MAX_REQUESTS = 5;
-
-const platformPatterns = [
-  {
-    name: 'Shopify',
-    patterns: [/myshopify\.com/i, /shopify/i, /cdn\.shopify\.com/i, /window\.Shopify/i],
-  },
-  { name: 'WooCommerce', patterns: [/woocommerce/i, /wp-content/i, /wordpress/i, /wp-json/i] },
-  { name: 'Magento', patterns: [/magento/i, /mage/i, /varien/i] },
-  { name: 'BigCommerce', patterns: [/bigcommerce/i, /mybigcommerce\.com/i, /cdn\.bigcommerce/i] },
-  { name: 'Wix', patterns: [/wix\.com/i, /wixsite\.com/i, /wix-image/i] },
-  { name: 'Squarespace', patterns: [/squarespace\.com/i, /sqsp\.net/i, /squarespace-cdn/i] },
-  { name: 'PrestaShop', patterns: [/prestashop/i, /presta/i] },
-];
-
-function detectPlatform(html, url) {
-  const combined = html + ' ' + url;
-  for (const platform of platformPatterns) {
-    for (const pattern of platform.patterns) {
-      if (pattern.test(combined)) {
-        return platform.name;
-      }
-    }
-  }
-  return null;
-}
-
-function getScoreStatus(score) {
-  if (score >= 90) return 'excellent';
-  if (score >= 80) return 'good';
-  if (score >= 50) return 'warning';
-  return 'critical';
-}
-
-async function fetchPageSpeedData(url, apiKey) {
-  try {
-    const apiUrl = new URL('https://www.googleapis.com/pagespeedonline/v5/runPagespeed');
-    apiUrl.searchParams.set('url', url);
-    if (apiKey) {
-      apiUrl.searchParams.set('key', apiKey);
-    }
-    apiUrl.searchParams.set('strategy', 'mobile');
-    apiUrl.searchParams.set('category', 'performance');
-    apiUrl.searchParams.append('category', 'seo');
-    apiUrl.searchParams.append('category', 'accessibility');
-    apiUrl.searchParams.append('category', 'best-practices');
-
-    const response = await fetch(apiUrl.toString(), {
-      signal: AbortSignal.timeout(45000),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('PageSpeed API error:', errorText);
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('PageSpeed API fetch error:', error);
-    return null;
-  }
-}
-
-function extractLighthouseFindings(audits, category) {
-  const findings = [];
-  const recommendations = [];
-
-  const categoryAudits = {
-    performance: [
-      'first-contentful-paint',
-      'largest-contentful-paint',
-      'speed-index',
-      'total-blocking-time',
-      'cumulative-layout-shift',
-      'server-response-time',
-      'interactive',
-      'mainthread-work-breakdown',
-    ],
-    seo: [
-      'document-title',
-      'meta-description',
-      'http-status-code',
-      'crawlable-anchors',
-      'is-crawlable',
-      'robots-txt',
-      'link-text',
-      'image-alt',
-    ],
-    accessibility: [
-      'button-name',
-      'color-contrast',
-      'image-alt',
-      'link-name',
-      'label',
-      'form-field-multiple-labels',
-    ],
-    'best-practices': [
-      'is-on-https',
-      'uses-http2',
-      'no-vulnerable-libraries',
-      'doctype',
-      'charset',
-    ],
-  };
-
-  const auditsToCheck = categoryAudits[category] || [];
-
-  for (const auditId of auditsToCheck) {
-    const audit = audits[auditId];
-    if (
-      !audit ||
-      audit.scoreDisplayMode === 'notApplicable' ||
-      audit.scoreDisplayMode === 'informative'
-    )
-      continue;
-
-    if (audit.score === 1) {
-      findings.push({
-        type: 'positive',
-        title: audit.title,
-        description: 'Passed',
-      });
-    } else if (audit.score !== null && audit.score < 0.9) {
-      findings.push({
-        type: 'issue',
-        title: audit.title,
-        description: audit.displayValue || audit.description?.split('.')[0] || 'Needs improvement',
-      });
-      recommendations.push({
-        title: audit.title
-          .replace('Ensure', 'Fix')
-          .replace('Avoid', 'Remove')
-          .replace('Eliminate', 'Fix'),
-        impact: audit.score < 0.5 ? 'high' : 'medium',
-        serviceLink: '/contact',
-      });
-    }
-  }
-
-  return { findings, recommendations };
-}
-
-function analyzeSEOFallback(html) {
-  const findings = [];
-  const recommendations = [];
-  let score = 50;
-
-  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-  if (titleMatch && titleMatch[1].trim().length > 0) {
-    score += 20;
-    findings.push({
-      type: 'positive',
-      title: 'Page title found',
-      description: 'HTML title tag is present.',
-    });
-  } else {
-    findings.push({
-      type: 'issue',
-      title: 'Missing page title',
-      description: 'Title tag is empty or missing.',
-    });
-    recommendations.push({ title: 'Add a descriptive page title', impact: 'high' });
-  }
-
-  const metaDescMatch =
-    html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
-    html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
-  if (metaDescMatch && metaDescMatch[1].trim().length > 0) {
-    score += 20;
-    findings.push({
-      type: 'positive',
-      title: 'Meta description found',
-      description: 'Meta description is present.',
-    });
-  } else {
-    findings.push({
-      type: 'issue',
-      title: 'Missing meta description',
-      description: 'Add a meta description for better SEO click-through rates.',
-    });
-    recommendations.push({ title: 'Add meta description', impact: 'high' });
-  }
-
-  const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  if (h1Match) {
-    score += 10;
-    findings.push({
-      type: 'positive',
-      title: 'H1 heading found',
-      description: 'Main heading structure exists.',
-    });
-  } else {
-    recommendations.push({ title: 'Add a main H1 heading', impact: 'medium' });
-  }
-
-  return {
-    name: 'SEO',
-    score: Math.min(100, score),
-    status: getScoreStatus(score),
-    findings,
-    recommendations,
-  };
-}
-
-function analyzePerformanceFallback(html) {
-  const findings = [];
-  const recommendations = [];
-  let score = 60;
-
-  const scriptCount = (html.match(/<script/gi) || []).length;
-  if (scriptCount > 20) {
-    score -= 10;
-    findings.push({
-      type: 'issue',
-      title: 'High script count',
-      description: 'Detected many script tags which may slow down loading.',
-    });
-    recommendations.push({ title: 'Minimize and bundle JavaScript', impact: 'high' });
-  } else {
-    findings.push({
-      type: 'positive',
-      title: 'Reasonable script usage',
-      description: 'Script tag count is within limits.',
-    });
-  }
-
-  if (/loading=["']lazy["']/i.test(html)) {
-    score += 10;
-    findings.push({
-      type: 'positive',
-      title: 'Lazy loading detected',
-      description: 'Images are using lazy loading.',
-    });
-  } else {
-    recommendations.push({ title: 'Implement lazy loading for images', impact: 'medium' });
-  }
-
-  return {
-    name: 'Performance',
-    score: Math.min(100, score),
-    status: getScoreStatus(score),
-    findings,
-    recommendations,
-  };
-}
-
-function analyzeAccessibilityFallback(html) {
-  const findings = [];
-  const recommendations = [];
-  let score = 50;
-
-  if (/html[^>]+lang=/i.test(html)) {
-    score += 25;
-    findings.push({
-      type: 'positive',
-      title: 'Language attribute',
-      description: 'HTML tag specifies a language.',
-    });
-  } else {
-    recommendations.push({ title: 'Add lang attribute to HTML tag', impact: 'high' });
-  }
-
-  if (/<meta[^>]+name=["']viewport["']/i.test(html)) {
-    score += 25;
-    findings.push({
-      type: 'positive',
-      title: 'Mobile optimization',
-      description: 'Viewport meta tag is present.',
-    });
-  } else {
-    recommendations.push({ title: 'Add viewport meta tag', impact: 'high' });
-  }
-
-  const imgCount = (html.match(/<img/gi) || []).length;
-  const altCount = (html.match(/alt=["'][^"']*["']/gi) || []).length;
-
-  if (imgCount > 0 && altCount >= imgCount * 0.8) {
-    score += 20;
-    findings.push({
-      type: 'positive',
-      title: 'Image alt text',
-      description: 'Most images have description tags.',
-    });
-  } else if (imgCount > 0) {
-    recommendations.push({ title: 'Add alt text to images', impact: 'medium' });
-  } else {
-    score += 20;
-  }
-
-  return {
-    name: 'Accessibility',
-    score: Math.min(100, score),
-    status: getScoreStatus(score),
-    findings,
-    recommendations,
-  };
-}
-
-function analyzeCart(html) {
-  const findings = [];
-  const recommendations = [];
-  let score = 50;
-
-  const hasCart =
-    /href=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
-    /class=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
-    /aria-label=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html);
-
-  if (hasCart) {
-    findings.push({
-      type: 'positive',
-      title: 'Cart accessible',
-      description: 'Cart link or icon detected.',
-    });
-    score += 25;
-  } else {
-    findings.push({
-      type: 'issue',
-      title: 'Cart visibility low',
-      description: 'Could not clearly identify a cart link.',
-    });
-    recommendations.push({ title: 'Ensure cart is always visible', impact: 'high' });
-  }
-
-  const hasAddToCart =
-    /add\s*to\s*(cart|bag)|buy\s*now|checkout/i.test(html) ||
-    /name=["']add["']|type=["']submit["']/i.test(html);
-
-  if (hasAddToCart) {
-    findings.push({
-      type: 'positive',
-      title: 'Purchase actions found',
-      description: 'Add to cart or Buy buttons detected.',
-    });
-    score += 25;
-  }
-
-  const hasSecureTerms = /secure|ssl|encrypt|lock|guarantee|safe/i.test(html);
-  if (hasSecureTerms) {
-    score += 10;
-    findings.push({
-      type: 'positive',
-      title: 'Security terms found',
-      description: 'Page mentions security or guarantees.',
-    });
-  } else {
-    recommendations.push({ title: 'Add security assurances near checkout/cart', impact: 'medium' });
-  }
-
-  return {
-    name: 'Cart & Checkout',
-    score: Math.min(100, score),
-    status: getScoreStatus(score),
-    findings,
-    recommendations,
-  };
-}
-
-function analyzeTrust(html) {
-  const findings = [];
-  const recommendations = [];
-  let score = 50;
-
-  const reviewTerms = /review|rating|star|testimonial|feedback/i;
-  if (reviewTerms.test(html)) {
-    findings.push({
-      type: 'positive',
-      title: 'Social proof detected',
-      description: 'Reviews or ratings found on page.',
-    });
-    score += 20;
-  } else {
-    recommendations.push({ title: 'Add customer reviews', impact: 'high' });
-  }
-
-  if (/privacy/i.test(html) && /policy/i.test(html)) {
-    findings.push({
-      type: 'positive',
-      title: 'Privacy policy found',
-      description: 'Legal pages appear to be linked.',
-    });
-    score += 15;
-  } else {
-    recommendations.push({ title: 'Ensure Privacy Policy is visible', impact: 'medium' });
-  }
-
-  if (/trust|secure|badge|guarantee|payment|visa|mastercard|paypal/i.test(html)) {
-    findings.push({
-      type: 'positive',
-      title: 'Trust signals/Payment icons',
-      description: 'Trust icons or payment methods displayed.',
-    });
-    score += 15;
-  }
-
-  return {
-    name: 'Trust & Credibility',
-    score: Math.min(100, score),
-    status: getScoreStatus(score),
-    findings,
-    recommendations,
-  };
-}
-
-// 5 requests per hour per IP (stricter than memory limit)
-exports.analyzeStore = onRequest(
-  {
-    cors: true,
-    maxInstances: 10,
-    secrets: [pagespeedApiKey, recaptchaSecretKey],
-  },
-  async (req, res) => {
-    if (!applyCors(req, res)) return;
-    if (req.method === 'OPTIONS') return res.status(204).send('');
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-    try {
-      const rateLimitKey = getRateLimitKey(req);
-
-      // Distributed Rate Limiting (Firestore)
-      // Limit: 5 requests per hour per IP
-      const isAllowed = await checkFirestoreRateLimit(
-        rateLimitKey,
-        ANALYZE_STORE_RATE_LIMIT_MAX_REQUESTS,
-        60 * 60 * 1000
-      );
-
-      if (!isAllowed) {
-        res.set('Retry-After', '3600');
-        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
-      }
-
-      const { storeUrl, email, subscribeNewsletter, locale, captchaToken } = req.body;
-
-      // Verify Captcha
-      const recaptchaSecret = recaptchaSecretKey.value();
-      if (recaptchaSecret) {
-        if (!captchaToken) {
-          return res.status(400).json({ error: 'Captcha token is missing' });
-        }
-
-        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${captchaToken}`;
-        const captchaRes = await fetch(verifyUrl, { method: 'POST' });
-        const captchaData = await captchaRes.json();
-
-        if (!captchaData.success) {
-          return res.status(400).json({ error: 'Captcha verification failed' });
-        }
-      } else {
-        console.warn('RECAPTCHA_SECRET_KEY not set in functions secrets, skipping verification.');
-      }
-
-      if (!storeUrl || !email) {
-        return res.status(400).json({ error: 'URL and Email are required' });
-      }
-
-      let normalizedUrl = storeUrl.trim();
-      if (!normalizedUrl.startsWith('http')) {
-        normalizedUrl = 'https://' + normalizedUrl;
-      }
-
-      let html = '';
-      try {
-        const response = await fetch(normalizedUrl, {
-          headers: { 'User-Agent': 'CartShift Analyzer/1.0', Accept: 'text/html' },
-          signal: AbortSignal.timeout(15000),
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        html = await response.text();
-      } catch (fetchError) {
-        console.error('Store fetch error:', fetchError);
-        return res.status(400).json({ error: 'Could not access store URL' });
-      }
-
-      const platform = detectPlatform(html, normalizedUrl);
-      const apiKey = pagespeedApiKey.value();
-      const pageSpeedData = await fetchPageSpeedData(normalizedUrl, apiKey);
-
-      let sections;
-      let coreWebVitals;
-
-      if (pageSpeedData?.lighthouseResult?.categories) {
-        const cats = pageSpeedData.lighthouseResult.categories;
-        const audits = pageSpeedData.lighthouseResult.audits || {};
-
-        const perfScore = Math.round((cats.performance?.score || 0) * 100);
-        const seoScore = Math.round((cats.seo?.score || 0) * 100);
-        const a11yScore = Math.round((cats.accessibility?.score || 0) * 100);
-        const bpScore = Math.round((cats['best-practices']?.score || 0) * 100);
-
-        sections = {
-          performance: {
-            name: 'Performance',
-            score: perfScore,
-            status: getScoreStatus(perfScore),
-            ...extractLighthouseFindings(audits, 'performance'),
-          },
-          seo: {
-            name: 'SEO',
-            score: seoScore,
-            status: getScoreStatus(seoScore),
-            ...extractLighthouseFindings(audits, 'seo'),
-          },
-          accessibility: {
-            name: 'Accessibility',
-            score: a11yScore,
-            status: getScoreStatus(a11yScore),
-            ...extractLighthouseFindings(audits, 'accessibility'),
-          },
-          bestPractices: {
-            name: 'Best Practices',
-            score: bpScore,
-            status: getScoreStatus(bpScore),
-            ...extractLighthouseFindings(audits, 'best-practices'),
-          },
-          cart: analyzeCart(html),
-          trust: analyzeTrust(html),
-        };
-
-        const m = pageSpeedData.loadingExperience?.metrics;
-        if (m) {
-          coreWebVitals = {};
-          if (m.LARGEST_CONTENTFUL_PAINT_MS)
-            coreWebVitals.lcp = {
-              value: m.LARGEST_CONTENTFUL_PAINT_MS.percentile,
-              rating: m.LARGEST_CONTENTFUL_PAINT_MS.category,
-            };
-          if (m.CUMULATIVE_LAYOUT_SHIFT_SCORE)
-            coreWebVitals.cls = {
-              value: m.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100,
-              rating: m.CUMULATIVE_LAYOUT_SHIFT_SCORE.category,
-            };
-          if (m.FIRST_INPUT_DELAY_MS)
-            coreWebVitals.fid = {
-              value: m.FIRST_INPUT_DELAY_MS.percentile,
-              rating: m.FIRST_INPUT_DELAY_MS.category,
-            };
-        }
-      } else {
-        console.warn('Using fallback HTML analysis for', normalizedUrl);
-        sections = {
-          performance: analyzePerformanceFallback(html),
-          seo: analyzeSEOFallback(html),
-          accessibility: analyzeAccessibilityFallback(html),
-          bestPractices: {
-            name: 'Best Practices',
-            score: 70,
-            status: 'good',
-            findings: [
-              {
-                type: 'positive',
-                title: 'HTTPS Check',
-                description: 'Basic security check passed.',
-              },
-            ],
-            recommendations: [],
-          },
-          cart: analyzeCart(html),
-          trust: analyzeTrust(html),
-        };
-
-        if (!sections.accessibility) {
-          sections.accessibility = {
-            name: 'Accessibility',
-            score: 50,
-            status: 'warning',
-            findings: [],
-            recommendations: [{ title: 'Run a full accessibility audit', impact: 'high' }],
-          };
-        }
-      }
-
-      const weights = {
-        performance: 0.3,
-        seo: 0.25,
-        accessibility: 0.15,
-        bestPractices: 0.1,
-        cart: 0.1,
-        trust: 0.1,
-      };
-      const overallScore = Math.round(
-        Object.entries(sections).reduce(
-          (sum, [key, section]) => sum + section.score * (weights[key] || 0.1),
-          0
-        )
-      );
-
-      const result = {
-        storeUrl: normalizedUrl,
-        overallScore,
-        platform,
-        sections,
-        coreWebVitals,
-        generatedAt: new Date().toISOString(),
-      };
-
-      try {
-        const firebaseFunctionUrl =
-          process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL?.replace(
-            'contactForm',
-            'sendStoreAnalysisReport'
-          ) || 'https://us-central1-cartshiftstudio.cloudfunctions.net/sendStoreAnalysisReport';
-
-        await fetch(firebaseFunctionUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            storeUrl: normalizedUrl,
-            locale: locale || 'en',
-            results: result,
-            subscribeNewsletter: subscribeNewsletter || false,
-          }),
-        }).catch(e => console.error('Email fetch error:', e));
-      } catch (e) {
-        console.error('Email logic error:', e);
-      }
-
-      return res.status(200).json(result);
-    } catch (error) {
-      console.error('Analysis API Fatal Error:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  }
-);
+exports.analyzeStore = onRequest({ cors: true, maxInstances: 2 }, async (req, res) => {
+  if (!applyCors(req, res)) return;
+  if (req.method === 'OPTIONS') return res.status(204).send('');
+  return res.status(410).json({
+    error: 'This endpoint is deprecated. Use the site /api/analyze-store route instead.',
+    code: 'analyzer_endpoint_deprecated',
+  });
+});

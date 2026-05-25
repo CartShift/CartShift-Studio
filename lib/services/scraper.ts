@@ -10,6 +10,13 @@ export interface ScraperResult {
 // Check if Puppeteer/Chrome is available
 let puppeteerAvailable: boolean | null = null;
 
+function isPuppeteerRuntimeEnabled(): boolean {
+  if (process.env.ANALYZER_ENABLE_PUPPETEER === 'true') return true;
+  if (process.env.ANALYZER_DISABLE_PUPPETEER === 'true') return false;
+  if (process.env.VERCEL === '1') return false;
+  return true;
+}
+
 async function checkPuppeteerAvailability(): Promise<boolean> {
   if (puppeteerAvailable !== null) return puppeteerAvailable;
 
@@ -31,8 +38,16 @@ async function checkPuppeteerAvailability(): Promise<boolean> {
 }
 
 export class ScraperService {
+  static isEnabled(): boolean {
+    return isPuppeteerRuntimeEnabled();
+  }
+
   static async scrape(url: string): Promise<ScraperResult> {
-    // Quick check if Puppeteer is available before attempting
+    if (!isPuppeteerRuntimeEnabled()) {
+      Logger.debug('Skipping visual/product analysis — Puppeteer disabled for this runtime');
+      return { visualAnalysis: null, productAnalysis: undefined };
+    }
+
     const isAvailable = await checkPuppeteerAvailability();
     if (!isAvailable) {
       Logger.warn('Skipping visual/product analysis - Puppeteer unavailable');

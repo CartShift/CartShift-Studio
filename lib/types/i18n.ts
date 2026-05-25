@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-24T22:55:32.317Z
+ * Last updated: 2026-05-25T00:18:58.509Z
  *
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -3393,6 +3393,8 @@ export interface Analyzer {
     newsletterLabel: string;
     submitButton: string;
     analyzing: string;
+    tryAgain: string;
+    submitFailed: string;
     privacy: string;
   };
   features: {
@@ -3432,8 +3434,9 @@ export interface Analyzer {
     description: string;
   };
   stats: {
-    analyzed: string;
-    avgScore: string;
+    categories: string;
+    freeValue: string;
+    reportFormat: string;
   };
   howItWorks: {
     title: string;
@@ -3477,6 +3480,11 @@ export interface Analyzer {
     overallScore: string;
     breakdown: string;
     emailSent: string;
+    emailDelayedTitle: string;
+    emailDelayedDescription: string;
+    partialDataNotice: string;
+    screenshotsInEmail: string;
+    screenshotsUnavailable: string;
     checkInbox: string;
     share: string;
     copied: string;
@@ -3847,8 +3855,10 @@ export type TranslationKey =
   | 'analyzer.form.newsletterLabel'
   | 'analyzer.form.privacy'
   | 'analyzer.form.submitButton'
+  | 'analyzer.form.submitFailed'
   | 'analyzer.form.subtitle'
   | 'analyzer.form.title'
+  | 'analyzer.form.tryAgain'
   | 'analyzer.form.urlInvalid'
   | 'analyzer.form.urlLabel'
   | 'analyzer.form.urlPlaceholder'
@@ -3986,6 +3996,8 @@ export type TranslationKey =
   | 'analyzer.results.checkInbox'
   | 'analyzer.results.copied'
   | 'analyzer.results.dontLetIssuesHurtSales'
+  | 'analyzer.results.emailDelayedDescription'
+  | 'analyzer.results.emailDelayedTitle'
   | 'analyzer.results.emailSent'
   | 'analyzer.results.expertsCanFix'
   | 'analyzer.results.expertsCanFix_singular'
@@ -3997,10 +4009,13 @@ export type TranslationKey =
   | 'analyzer.results.losingSales'
   | 'analyzer.results.needsImprovement'
   | 'analyzer.results.overallScore'
+  | 'analyzer.results.partialDataNotice'
   | 'analyzer.results.priorityFixes'
   | 'analyzer.results.prioritySubtitle'
   | 'analyzer.results.readyToScale'
   | 'analyzer.results.resultId'
+  | 'analyzer.results.screenshotsInEmail'
+  | 'analyzer.results.screenshotsUnavailable'
   | 'analyzer.results.share'
   | 'analyzer.results.status.critical'
   | 'analyzer.results.status.criticalDesc'
@@ -4032,8 +4047,9 @@ export type TranslationKey =
   | 'analyzer.sections.performance'
   | 'analyzer.sections.seo'
   | 'analyzer.sections.trust'
-  | 'analyzer.stats.analyzed'
-  | 'analyzer.stats.avgScore'
+  | 'analyzer.stats.categories'
+  | 'analyzer.stats.freeValue'
+  | 'analyzer.stats.reportFormat'
   | 'analyzer.steps.complete'
   | 'analyzer.steps.connecting'
   | 'analyzer.steps.generating'

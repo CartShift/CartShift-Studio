@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logError, createErrorResponse } from '@/lib/error-handler';
 import { checkRateLimit as checkFirestoreRateLimit } from '@/lib/services/rate-limiter';
 import { AnalyzerService } from '@/lib/services/analyzer';
+import { deliverStoreAnalysisReport } from '@/lib/services/analyzer-report-delivery';
+import { serializeAnalysisForClient } from '@/lib/services/analyzer-response';
+import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
+import { validateAnalyzeStoreRequest } from '@/lib/validation';
+import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
 
 const RATE_LIMIT_MAX_REQUESTS = 5;
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_WINDOW = 60 * 1000;
 
 function getRateLimitKey(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
@@ -17,11 +22,14 @@ function getRateLimitKey(request: NextRequest): string {
   return `analyze-store:ua:${userAgent}`;
 }
 
+function formatZodErrors(error: { issues: { message: string }[] }): string {
+  return error.issues.map(issue => issue.message).join(' ');
+}
+
 export async function POST(request: NextRequest) {
   try {
     const rateLimitKey = getRateLimitKey(request);
 
-    // Rate Limiting
     const rateLimitResult = await checkFirestoreRateLimit(
       rateLimitKey,
       RATE_LIMIT_MAX_REQUESTS,
@@ -50,18 +58,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Body Parsing
-    let body;
+    let body: unknown;
     try {
       body = await request.json();
     } catch {
       return NextResponse.json(createErrorResponse('Invalid JSON', 400), { status: 400 });
     }
 
-    const { storeUrl, email, subscribeNewsletter, locale, captchaToken } = body;
+    const validation = validateAnalyzeStoreRequest(body);
+    if (!validation.success) {
+      return NextResponse.json(createErrorResponse(formatZodErrors(validation.errors), 400), {
+        status: 400,
+      });
+    }
 
-    // Verify Captcha
-    if (process.env.RECAPTCHA_SECRET_KEY) {
+    const { storeUrl, email, subscribeNewsletter, locale, captchaToken } = validation.data;
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+
+    if (recaptchaSecret) {
       if (!captchaToken) {
         return NextResponse.json(
           createErrorResponse('Security verification required. Please refresh the page.', 400),
@@ -69,11 +83,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
-      const captchaRes = await fetch(verifyUrl, { method: 'POST' });
-      const captchaData = await captchaRes.json();
-
-      if (!captchaData.success) {
+      const captchaValid = await verifyRecaptchaToken(captchaToken, recaptchaSecret);
+      if (!captchaValid) {
         return NextResponse.json(
           createErrorResponse(
             'Security verification failed. Please refresh the page and try again.',
@@ -84,66 +95,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!storeUrl || !email) {
-      return NextResponse.json(
-        createErrorResponse('Store URL and email address are required.', 400),
-        { status: 400 }
-      );
+    const urlValidation = await validateStoreUrlForAnalysis(storeUrl);
+    if (!urlValidation.ok) {
+      return NextResponse.json(createErrorResponse(urlValidation.error, 400), { status: 400 });
     }
 
-    // URL Normalization & Validation
-    let normalizedUrl = storeUrl.trim();
-    if (!normalizedUrl.startsWith('http')) {
-      normalizedUrl = 'https://' + normalizedUrl;
-    }
+    const normalizedUrl = urlValidation.normalizedUrl;
 
-    // SSRF Checks
-    try {
-      const urlObj = new URL(normalizedUrl);
-      const hostname = urlObj.hostname.toLowerCase();
-
-      if (
-        ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname) ||
-        hostname.endsWith('.local') ||
-        hostname.endsWith('.internal')
-      ) {
-        return NextResponse.json(
-          createErrorResponse(
-            'Invalid store URL. Localhost and internal URLs are not allowed.',
-            400
-          ),
-          { status: 400 }
-        );
-      }
-
-      if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') {
-        return NextResponse.json(
-          createErrorResponse('Invalid URL protocol. Only HTTP and HTTPS are supported.', 400),
-          { status: 400 }
-        );
-      }
-    } catch (_e) {
-      return NextResponse.json(
-        createErrorResponse(
-          'Invalid URL format. Please enter a valid store URL (e.g., https://example.com).',
-          400
-        ),
-        { status: 400 }
-      );
-    }
-
-    // Call Service
     let result;
     try {
       result = await AnalyzerService.analyzeStore(normalizedUrl);
-    } catch (analysisError: any) {
-      // Provide more specific error messages
-      const errorMsg = analysisError.message || 'Analysis failed';
+    } catch (analysisError: unknown) {
+      const errorMsg = analysisError instanceof Error ? analysisError.message : 'Analysis failed';
       let userFriendlyMsg = errorMsg;
 
       if (errorMsg.includes('Could not access')) {
         userFriendlyMsg = 'Could not access store URL. Please check if the store is online.';
-      } else if (errorMsg.includes('timeout')) {
+      } else if (errorMsg.includes('timeout') || errorMsg.includes('timed out')) {
         userFriendlyMsg = 'Analysis timed out. The store may be slow or unresponsive.';
       } else if (errorMsg.includes('HTTP')) {
         userFriendlyMsg = `Store returned an error (${errorMsg}). Please verify the URL.`;
@@ -153,36 +121,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(createErrorResponse(userFriendlyMsg, 500), { status: 500 });
     }
 
-    // Trigger Email (Background)
-    const firebaseFunctionUrl =
-      process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL?.replace(
-        'contactForm',
-        'sendStoreAnalysisReport'
-      ) || 'https://us-central1-cartshiftstudio.cloudfunctions.net/sendStoreAnalysisReport';
+    const emailReportStatus = await deliverStoreAnalysisReport({
+      email,
+      storeUrl: normalizedUrl,
+      locale: locale || 'en',
+      results: result,
+      subscribeNewsletter: subscribeNewsletter ?? false,
+    });
 
-    // We don't await this to keep response fast, but catch errors
-    fetch(firebaseFunctionUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        storeUrl: normalizedUrl,
-        locale: locale || 'en',
-        results: result,
-        subscribeNewsletter,
-      }),
-    }).catch(err => console.error('Email trigger failed', err));
+    const clientResult = serializeAnalysisForClient({
+      ...result,
+      meta: {
+        ...result.meta,
+        emailReportStatus,
+      },
+    });
 
-    return NextResponse.json(result, {
+    return NextResponse.json(clientResult, {
       headers: {
         'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
         'X-RateLimit-Remaining': rateLimitResult.remaining?.toString() || '0',
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logError('Analysis route error', error);
-    return NextResponse.json(createErrorResponse(error.message || 'Analysis failed', 500), {
-      status: 500,
-    });
+    const message = error instanceof Error ? error.message : 'Analysis failed';
+    return NextResponse.json(createErrorResponse(message, 500), { status: 500 });
   }
 }

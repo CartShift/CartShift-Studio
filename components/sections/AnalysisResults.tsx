@@ -230,8 +230,26 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         ? t('results.readyToScale')
         : t('results.losingSales');
 
+  const showPartialDataNotice = results.meta?.usedHtmlFallback;
+  const screenshotsInEmail = Boolean(results.meta?.screenshotsInEmailReport);
+
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
+      {showPartialDataNotice && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`flex items-start gap-3 rounded-xl border p-4 ${
+            isDark ? 'border-amber-500/30 bg-amber-500/10' : 'border-amber-200 bg-amber-50'
+          }`}
+        >
+          <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+          <p className={`text-sm ${isDark ? 'text-white/80' : 'text-surface-700'}`}>
+            {t('results.partialDataNotice')}
+          </p>
+        </motion.div>
+      )}
+
       {/* Clean Status Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -484,29 +502,43 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 Captured Previews
               </h4>
               <div className="grid grid-cols-2 gap-4">
-                {results.visualAnalysis.screenshots.map((shot, i) => (
-                  <div key={i} className="space-y-2">
-                    <div
-                      className={`aspect-video rounded-lg overflow-hidden border ${isDark ? 'border-white/10' : 'border-surface-200'} bg-surface-100 dark:bg-surface-800 relative group`}
-                    >
-                      <img
-                        src={shot.url}
-                        alt={shot.label}
-                        className="w-full h-full object-cover object-top transition-transform duration-500"
-                      />
-                      <div className="absolute inset-x-0 bottom-0 p-2 bg-black/60 backdrop-blur-sm text-center">
-                        <div className="flex items-center justify-center gap-1 text-[10px] text-white font-medium">
-                          {shot.device === 'mobile' ? (
-                            <Smartphone className="w-3 h-3" />
-                          ) : (
-                            <Monitor className="w-3 h-3" />
-                          )}
-                          {shot.label}
+                {results.visualAnalysis.screenshots.length > 0 ? (
+                  results.visualAnalysis.screenshots.map((shot, i) => (
+                    <div key={i} className="space-y-2">
+                      <div
+                        className={`aspect-video rounded-lg overflow-hidden border ${isDark ? 'border-white/10' : 'border-surface-200'} bg-surface-100 dark:bg-surface-800 relative group`}
+                      >
+                        <img
+                          src={shot.url}
+                          alt={shot.label}
+                          className="w-full h-full object-cover object-top transition-transform duration-500"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 p-2 bg-black/60 backdrop-blur-sm text-center">
+                          <div className="flex items-center justify-center gap-1 text-[10px] text-white font-medium">
+                            {shot.device === 'mobile' ? (
+                              <Smartphone className="w-3 h-3" />
+                            ) : (
+                              <Monitor className="w-3 h-3" />
+                            )}
+                            {shot.label}
+                          </div>
                         </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div
+                    className={`col-span-2 rounded-lg border p-4 text-sm ${
+                      isDark
+                        ? 'border-white/10 bg-white/5 text-white/70'
+                        : 'border-surface-200 bg-surface-50 text-surface-600'
+                    }`}
+                  >
+                    {screenshotsInEmail
+                      ? t('results.screenshotsInEmail')
+                      : t('results.screenshotsUnavailable')}
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

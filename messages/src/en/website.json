@@ -1217,6 +1217,8 @@
       "newsletterLabel": "Send me tips and insights to grow my store (recommended)",
       "submitButton": "Analyze My Store — Free",
       "analyzing": "Analyzing...",
+      "tryAgain": "Try again",
+      "submitFailed": "Could not start the analysis. Please try again.",
       "privacy": "Your data is secure. We never share your information with third parties."
     },
     "features": {
@@ -1256,8 +1258,9 @@
       "description": "A comprehensive analysis covering every aspect of your store's success."
     },
     "stats": {
-      "analyzed": "Stores Analyzed",
-      "avgScore": "Avg. Score Improvement"
+      "categories": "Audit categories",
+      "freeValue": "Free",
+      "reportFormat": "PDF email report"
     },
     "howItWorks": {
       "title": "How It Works",
@@ -1286,7 +1289,7 @@
     "analyzing": {
       "title": "Analyzing Your Store",
       "pleaseWait": "Please wait...",
-      "tip": "Did you know? Stores that optimize based on audit reports see an average 35% improvement in conversions."
+      "tip": "We run Lighthouse, HTML heuristics, and conversion checks — your full PDF report arrives by email."
     },
     "sections": {
       "performance": "Performance",
@@ -1301,6 +1304,11 @@
       "overallScore": "Overall Score",
       "breakdown": "Score Breakdown",
       "emailSent": "Comprehensive Report Sent!",
+      "emailDelayedTitle": "Report saved — email may be delayed",
+      "emailDelayedDescription": "Your results are on screen. If the PDF does not arrive within a few minutes, check spam or run the analyzer again.",
+      "partialDataNotice": "Some live performance data was unavailable, so parts of this report use HTML-based estimates. The emailed PDF reflects the same analysis run.",
+      "screenshotsInEmail": "Mobile and desktop previews are in your PDF email report (omitted here to keep the page fast).",
+      "screenshotsUnavailable": "Visual previews were not captured for this run. Check your email if Puppeteer ran on our report server.",
       "checkInbox": "Check your inbox for the full in-depth analysis with actionable recommendations and a 30-day roadmap",
       "share": "Share Results",
       "copied": "Copied!",

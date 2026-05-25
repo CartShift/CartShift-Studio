@@ -86,6 +86,18 @@ export interface BenchmarkComparison {
   category: string;
 }
 
+export interface AnalysisMeta {
+  usedLighthouse: boolean;
+  usedHtmlFallback: boolean;
+  visualAnalysisAttempted: boolean;
+  visualAnalysisAvailable: boolean;
+  productAnalysisAvailable: boolean;
+  competitorAnalysisAvailable: boolean;
+  cached: boolean;
+  screenshotsInEmailReport?: boolean;
+  emailReportStatus?: 'sent' | 'failed' | 'unconfigured';
+}
+
 export interface AnalysisResult {
   storeUrl: string;
   overallScore: number;
@@ -106,4 +118,5 @@ export interface AnalysisResult {
   percentile?: number;
   benchmark?: BenchmarkComparison;
   generatedAt: string;
+  meta: AnalysisMeta;
 }

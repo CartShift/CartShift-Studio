@@ -45,11 +45,14 @@ export default async function StoreAnalyzerPage({
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Tools', url: '/tools' },
-    { name: 'Store Analyzer', url: '/tools/store-analyzer' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Tools', url: '/tools' },
+      { name: 'Store Analyzer', url: '/tools/store-analyzer' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const softwareSchema = generateSoftwareApplicationSchema({
     name: 'E-Commerce Store Analyzer',
@@ -62,6 +65,7 @@ export default async function StoreAnalyzerPage({
       price: '0',
       priceCurrency: 'USD',
     },
+    locale: locale as 'en' | 'he',
   });
 
   return (

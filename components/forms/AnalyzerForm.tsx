@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { Globe, Mail, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import { toast } from 'sonner';
 
 interface AnalyzerFormData {
   storeUrl: string;
@@ -65,17 +66,25 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
     }
   }, [storeUrl]);
 
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const recaptchaRequired = Boolean(recaptchaSiteKey);
+
   const handleFormSubmit = async (data: AnalyzerFormData) => {
     set(true);
     try {
-      if (!executeRecaptcha) {
-        console.warn('Execute recaptcha not yet available');
+      if (recaptchaRequired && !executeRecaptcha) {
+        throw new Error('Security verification is still loading. Please try again in a moment.');
       }
 
       const token = executeRecaptcha ? await executeRecaptcha('analyze_store') : '';
+      if (recaptchaRequired && !token) {
+        throw new Error('Security verification failed. Please refresh the page and try again.');
+      }
+
       await onSubmit({ ...data, captchaToken: token });
     } catch (e) {
-      console.error('Submission error', e);
+      const message = e instanceof Error ? e.message : t('analyzer.form.submitFailed');
+      toast.error(message);
     } finally {
       set(false);
     }

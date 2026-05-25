@@ -1,5 +1,12 @@
-import { AnalysisResult, Finding, Recommendation, SectionResult } from '@/lib/types/analyzer';
+import {
+  AnalysisMeta,
+  AnalysisResult,
+  Finding,
+  Recommendation,
+  SectionResult,
+} from '@/lib/types/analyzer';
 import { logError } from '@/lib/error-handler';
+import { recordAnalyzerServiceFailure } from './analyzer-telemetry';
 import { CacheService } from './cache-service';
 import { CompetitorService } from './competitor-service';
 import { AIReadinessService } from './ai-readiness';
@@ -711,7 +718,22 @@ export class AnalyzerService {
     const cached = await CacheService.get<AnalysisResult>(cacheKey);
     if (cached) {
       console.log('Returning cached analysis for', normalizedUrl);
-      return cached;
+      return {
+        ...cached,
+        meta: {
+          usedLighthouse: cached.meta?.usedLighthouse ?? true,
+          usedHtmlFallback: cached.meta?.usedHtmlFallback ?? false,
+          visualAnalysisAttempted: cached.meta?.visualAnalysisAttempted ?? false,
+          visualAnalysisAvailable:
+            cached.meta?.visualAnalysisAvailable ?? Boolean(cached.visualAnalysis),
+          productAnalysisAvailable:
+            cached.meta?.productAnalysisAvailable ?? Boolean(cached.productAnalysis),
+          competitorAnalysisAvailable:
+            cached.meta?.competitorAnalysisAvailable ??
+            Boolean(cached.competitorAnalysis?.competitors?.length),
+          cached: true,
+        },
+      };
     }
 
     // 2. Fetch Content
@@ -763,11 +785,17 @@ export class AnalyzerService {
 
     // 3. Fetch Data (External)
     const pageSpeedData = await fetchPageSpeedData(normalizedUrl);
+    if (!pageSpeedData) {
+      recordAnalyzerServiceFailure('pagespeed', new Error('PageSpeed API unavailable'), true);
+    }
 
     let sections: AnalysisResult['sections'];
     let coreWebVitals: AnalysisResult['coreWebVitals'] = undefined;
+    let usedLighthouse = false;
+    let usedHtmlFallback = false;
 
     if (pageSpeedData?.lighthouseResult?.categories) {
+      usedLighthouse = true;
       const cats = pageSpeedData.lighthouseResult.categories;
       const audits = pageSpeedData.lighthouseResult.audits || {};
 
@@ -825,7 +853,7 @@ export class AnalyzerService {
           };
       }
     } else {
-      // Fallback
+      usedHtmlFallback = true;
       console.warn('Using fallback analysis for', normalizedUrl);
       sections = {
         performance: analyzePerformanceFallback(html),
@@ -874,19 +902,11 @@ export class AnalyzerService {
     // PARALLEL EXECUTION OF HEAVY TASKS
     // Execute all external services in parallel with individual error handling
     const serviceStartTime = Date.now();
+    const visualAnalysisAttempted = ScraperService.isEnabled();
+
     const [competitorData, scraperData, aiData] = await Promise.all([
       CompetitorService.analyzeCompetitors(html, normalizedUrl).catch(err => {
-        console.error('Competitor analysis failed', err);
-        // Track service failure for monitoring
-        if (typeof window !== 'undefined') {
-          import('@/lib/analytics').then(({ trackEvent }) => {
-            trackEvent('analyzer_service_failure', {
-              service_name: 'competitor',
-              error_message: err.message || String(err),
-              graceful_degradation: true,
-            });
-          });
-        }
+        recordAnalyzerServiceFailure('competitor', err, true);
         return {
           competitors: [],
           marketPosition: 'niche' as const,
@@ -896,30 +916,11 @@ export class AnalyzerService {
         };
       }),
       ScraperService.scrape(normalizedUrl).catch(err => {
-        console.error('Scraper service failed', err);
-        // Track Puppeteer failures
-        if (typeof window !== 'undefined') {
-          import('@/lib/analytics').then(({ trackEvent }) => {
-            trackEvent('analyzer_service_failure', {
-              service_name: 'puppeteer',
-              error_message: err.message || String(err),
-              graceful_degradation: true,
-            });
-          });
-        }
+        recordAnalyzerServiceFailure('puppeteer', err, true);
         return { visualAnalysis: null, productAnalysis: undefined };
       }),
       Promise.resolve(AIReadinessService.analyze(html)).catch(err => {
-        console.error('AI analysis failed', err);
-        if (typeof window !== 'undefined') {
-          import('@/lib/analytics').then(({ trackEvent }) => {
-            trackEvent('analyzer_service_failure', {
-              service_name: 'ai',
-              error_message: err.message || String(err),
-              graceful_degradation: true,
-            });
-          });
-        }
+        recordAnalyzerServiceFailure('ai', err, true);
         return {
           score: 50,
           structuredDataTypes: [],
@@ -956,6 +957,16 @@ export class AnalyzerService {
     // 9. Benchmark comparison. Only returned when there is enough stored data.
     const benchmark = await BenchmarkService.getBenchmarkComparison(overallScore, html);
 
+    const meta: AnalysisMeta = {
+      usedLighthouse,
+      usedHtmlFallback,
+      visualAnalysisAttempted,
+      visualAnalysisAvailable: Boolean(visualData),
+      productAnalysisAvailable: Boolean(productData),
+      competitorAnalysisAvailable: (competitorData.competitors?.length ?? 0) > 0,
+      cached: false,
+    };
+
     const result: AnalysisResult = {
       storeUrl: normalizedUrl,
       overallScore,
@@ -969,16 +980,17 @@ export class AnalyzerService {
       percentile: benchmark?.percentile,
       benchmark,
       generatedAt: new Date().toISOString(),
+      meta,
     };
 
     // Cache & Save Benchmark (Fire and forget-ish, using Promise.all to ensure completion before func end)
     // Both operations have individual error handling to prevent failures
     await Promise.all([
       CacheService.set(cacheKey, result, 86400).catch(err =>
-        console.error('Cache set failed', err)
+        recordAnalyzerServiceFailure('cache', err, true)
       ),
       BenchmarkService.saveBenchmark(result, html).catch(err =>
-        console.error('Benchmark save failed', err)
+        recordAnalyzerServiceFailure('benchmark', err, true)
       ),
     ]);
 

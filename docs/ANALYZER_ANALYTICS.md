@@ -4,6 +4,8 @@
 
 Comprehensive analytics tracking has been implemented for the Store Analyzer to monitor usage, performance, and failure rates.
 
+**API:** Production analysis runs through Next.js `POST /api/analyze-store` (`AnalyzerService`). The legacy Firebase `analyzeStore` function returns HTTP 410. Each response includes `meta` (Lighthouse vs fallback, feature availability, cache, email delivery status).
+
 ## Events Tracked
 
 ### 1. Analysis Started

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
@@ -19,7 +19,6 @@ import {
   BarChart3,
   ArrowRight,
   Sparkles,
-  TrendingUp,
   Eye,
   Award,
 } from 'lucide-react';
@@ -41,6 +40,12 @@ export const StoreAnalyzerContent: React.FC = () => {
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [analyzingProgress, setAnalyzingProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState('');
+  const lastSubmitRef = useRef<{
+    storeUrl: string;
+    email: string;
+    subscribeNewsletter: boolean;
+    captchaToken: string;
+  } | null>(null);
 
   const handleAnalyze = async (data: {
     storeUrl: string;
@@ -48,41 +53,40 @@ export const StoreAnalyzerContent: React.FC = () => {
     subscribeNewsletter: boolean;
     captchaToken: string;
   }) => {
+    lastSubmitRef.current = data;
     setState('analyzing');
     setAnalyzingProgress(0);
 
     const startTime = Date.now();
     trackEvent('store_analysis_started', { store_url: data.storeUrl });
 
-    // Start the API call immediately
-    const apiPromise = fetch('/api/analyze-store', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, locale }),
-    });
-
-    // Run progress animation in parallel with API call
     const steps = [
-      { progress: 10, label: t('analyzer.steps.connecting') || ' to store...' },
-      { progress: 25, label: t('analyzer.steps.performance') || 'Analyzing performance...' },
-      { progress: 40, label: t('analyzer.steps.seo') || ' SEO...' },
-      { progress: 55, label: t('analyzer.steps.ux') || 'Evaluating UX...' },
-      { progress: 70, label: t('analyzer.steps.trust') || ' trust signals...' },
-      { progress: 85, label: t('analyzer.steps.generating') || 'Generating report...' },
+      { progress: 12, label: t('analyzer.steps.connecting') },
+      { progress: 28, label: t('analyzer.steps.performance') },
+      { progress: 44, label: t('analyzer.steps.seo') },
+      { progress: 58, label: t('analyzer.steps.ux') },
+      { progress: 72, label: t('analyzer.steps.trust') },
+      { progress: 88, label: t('analyzer.steps.generating') },
     ];
 
-    // Animate through steps more slowly (1.5s each = ~9s total for 6 steps)
-    const animationPromise = (async () => {
-      for (const step of steps) {
-        setCurrentStep(step.label);
-        setAnalyzingProgress(step.progress);
-        await new Promise(resolve => setTimeout(resolve, 1500));
+    let stepIndex = 0;
+    const progressTimer = window.setInterval(() => {
+      const step = steps[Math.min(stepIndex, steps.length - 1)];
+      setCurrentStep(step.label);
+      setAnalyzingProgress(step.progress);
+      if (stepIndex < steps.length - 1) {
+        stepIndex += 1;
       }
-    })();
+    }, 700);
 
     try {
-      // Wait for both animation and API to complete
-      const [response] = await Promise.all([apiPromise, animationPromise]);
+      const response = await fetch('/api/analyze-store', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, locale }),
+      });
+
+      window.clearInterval(progressTimer);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -123,11 +127,19 @@ export const StoreAnalyzerContent: React.FC = () => {
         trackEvent('newsletter_signup', { signup_location: 'store_analyzer' });
       }
 
+      if (result.meta?.emailReportStatus === 'failed') {
+        toast.warning(t('analyzer.results.emailDelayedTitle'), {
+          description: t('analyzer.results.emailDelayedDescription'),
+          duration: 6000,
+        });
+      }
+
       setAnalyzingProgress(100);
-      setCurrentStep(t('analyzer.steps.complete') || 'Analysis complete!');
-      await new Promise(resolve => setTimeout(resolve, 800));
+      setCurrentStep(t('analyzer.steps.complete'));
+      await new Promise(resolve => setTimeout(resolve, 400));
       setState('results');
     } catch (error) {
+      window.clearInterval(progressTimer);
       Logger.error('Analysis error', error, { storeUrl: data.storeUrl });
 
       const duration = Date.now() - startTime;
@@ -183,8 +195,12 @@ export const StoreAnalyzerContent: React.FC = () => {
           errorType === 'validation'
             ? undefined
             : {
-                label: 'Try Again',
-                onClick: () => {},
+                label: t('analyzer.form.tryAgain'),
+                onClick: () => {
+                  if (lastSubmitRef.current) {
+                    void handleAnalyze(lastSubmitRef.current);
+                  }
+                },
               },
       });
 
@@ -238,10 +254,10 @@ export const StoreAnalyzerContent: React.FC = () => {
   ];
 
   const stats = [
-    { value: '2,500+', label: t('analyzer.stats.analyzed') || 'Stores Analyzed', icon: BarChart3 },
-    { value: '+35%', label: t('analyzer.stats.avgScore') || 'Avg. Improvement', icon: TrendingUp },
-    { value: '60s', label: t('analyzer.trust.instant') || 'Instant Results', icon: Clock },
-    { value: '40+', label: 'Data Points', icon: Sparkles },
+    { value: '6', label: t('analyzer.stats.categories'), icon: BarChart3 },
+    { value: '60s', label: t('analyzer.trust.instant'), icon: Clock },
+    { value: t('analyzer.stats.freeValue'), label: t('analyzer.trust.free'), icon: CheckCircle },
+    { value: 'PDF', label: t('analyzer.stats.reportFormat'), icon: Sparkles },
   ];
 
   return (
