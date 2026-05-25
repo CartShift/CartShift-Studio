@@ -55,6 +55,32 @@
         word-wrap: break-word;
         word-break: break-word;
       }
+      .avoid-break {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .section-block {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .bidi-ltr {
+        direction: ltr;
+        unicode-bidi: isolate;
+      }
+      @page {
+        size: A4;
+        margin: 12mm 10mm;
+      }
+      @media print {
+        body {
+          background-color: #ffffff !important;
+        }
+        .section-block,
+        .avoid-break {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+      }
       @media only screen and (max-width: 680px) {
         .main-table {
           width: 100% !important;
@@ -138,6 +164,8 @@
                           margin: 0;
                           font-family: Monaco, 'Courier New', monospace;
                         "
+                        class="bidi-ltr"
+                        dir="ltr"
                       >
                         {{storeUrl}}
                       </p>
@@ -196,25 +224,7 @@
                             >
                               <tr>
                                 <td align="center" valign="middle">
-                                  <span
-                                    style="
-                                      font-size: 48px;
-                                      font-weight: 900;
-                                      color: #0f172a;
-                                      line-height: 1;
-                                    "
-                                    >{{overallScore}}</span
-                                  >
-                                  <span
-                                    style="
-                                      display: block;
-                                      font-size: 14px;
-                                      color: #64748b;
-                                      font-weight: 600;
-                                      margin-top: -4px;
-                                    "
-                                    >/100</span
-                                  >
+                                  {{{overallScoreDisplay}}}
                                 </td>
                               </tr>
                             </table>
@@ -242,6 +252,7 @@
               >
                 <!-- Greeting -->
                 <table
+                  class="section-block"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -273,6 +284,7 @@
 
                 <!-- Score Breakdown Section -->
                 <table
+                  class="section-block"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -284,7 +296,7 @@
                       <h2
                         style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px"
                       >
-                        📊 {{scoreBreakdownTitle}}
+                        {{scoreBreakdownTitle}}
                       </h2>
                       <p style="color: #64748b; font-size: 14px; margin: 0">
                         {{scoreBreakdownSubtitle}}
@@ -298,6 +310,7 @@
 
                 <!-- Priority Fixes -->
                 <table
+                  class="section-block"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -309,10 +322,10 @@
                       <h2
                         style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px"
                       >
-                        🎯 {{priorityFixesTitle}}
+                        {{priorityFixesTitle}}
                       </h2>
                       <p style="color: #64748b; font-size: 14px; margin: 0">
-                        Critical issues to address first
+                        {{priorityFixesSubtitle}}
                       </p>
                     </td>
                   </tr>
@@ -329,6 +342,7 @@
 
                 <!-- Detailed Findings Section -->
                 <table
+                  class="section-block"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -340,10 +354,10 @@
                       <h2
                         style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px"
                       >
-                        🔬 {{detailedFindingsTitle}}
+                        {{detailedFindingsTitle}}
                       </h2>
                       <p style="color: #64748b; font-size: 14px; margin: 0">
-                        What we checked in each category
+                        {{detailedFindingsSubtitle}}
                       </p>
                     </td>
                   </tr>
@@ -354,6 +368,7 @@
 
                 <!-- Complete Recommendations List -->
                 <table
+                  class="section-block"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -365,10 +380,10 @@
                       <h2
                         style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px"
                       >
-                        📋 {{allRecommendationsTitle}}
+                        {{allRecommendationsTitle}}
                       </h2>
                       <p style="color: #64748b; font-size: 14px; margin: 0">
-                        Complete list with action steps
+                        {{allRecommendationsSubtitle}}
                       </p>
                     </td>
                   </tr>
@@ -379,6 +394,7 @@
 
                 <!-- Pro Tip Box -->
                 <table
+                  class="avoid-break"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -400,7 +416,22 @@
                             width="40"
                             style="vertical-align: top; padding-{{paddingSide}}: 12px;"
                           >
-                            <span style="font-size: 24px">💡</span>
+                            <span
+                              aria-hidden="true"
+                              style="
+                                display: inline-block;
+                                width: 28px;
+                                height: 28px;
+                                border-radius: 999px;
+                                background-color: #f59e0b;
+                                color: #ffffff;
+                                font-size: 16px;
+                                font-weight: 900;
+                                line-height: 28px;
+                                text-align: center;
+                              "
+                              >!</span
+                            >
                           </td>
                           <td style="vertical-align: top; text-align: {{textAlign}};">
                             <p
@@ -425,6 +456,7 @@
 
                 <!-- CTA Section -->
                 <table
+                  class="avoid-break"
                   width="100%"
                   cellpadding="0"
                   cellspacing="0"
@@ -463,7 +495,7 @@
                                 font-size: 15px;
                                 font-weight: 700;
                               "
-                              >{{ctaButtonText}} →</a
+                              >{{ctaButtonText}}</a
                             >
                           </td>
                         </tr>
@@ -488,13 +520,15 @@
                   {{analyzedUrl}}:
                   <a
                     href="{{storeUrl}}"
+                    dir="ltr"
+                    class="bidi-ltr"
                     style="color: #3b82f6; text-decoration: none; font-weight: 600"
                     >{{storeUrl}}</a
                   >
                 </p>
                 <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5">
                   {{footerText}}<br />
-                  &copy; 2025 CartShift Studio. All rights reserved.
+                  <span dir="ltr" class="bidi-ltr">&copy; {{footerYear}} CartShift Studio. All rights reserved.</span>
                 </p>
               </td>
             </tr>

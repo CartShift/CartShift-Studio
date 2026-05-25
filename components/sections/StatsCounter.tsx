@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { motion, useInView } from '@/lib/motion';
 import { statCard, staggerContainer } from '@/lib/animation-variants';
 import { useTranslations } from 'next-intl';
-import { Briefcase, ThumbsUp, Award, Clock } from 'lucide-react';
+import { ThumbsUp, Award, Clock } from 'lucide-react';
 
 import { Counter } from '@/components/ui/Counter';
 
@@ -21,12 +21,6 @@ export const StatsCounter: React.FC = () => {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   const stats: Stat[] = [
-    {
-      value: 50,
-      suffix: '+',
-      label: t('stats.projects.label'),
-      icon: <Briefcase size={32} strokeWidth={1.5} />,
-    },
     {
       value: 98,
       suffix: '%',
@@ -91,7 +85,7 @@ export const StatsCounter: React.FC = () => {
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           variants={staggerContainer}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
         >
           {stats.map((stat, index) => (
             <motion.div key={index} variants={statCard} className="group">

@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-25T11:40:25.469Z
+ * Last updated: 2026-05-25T12:37:10.024Z
  * 
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -2687,16 +2687,6 @@ intro: {
   };
   paragraphs: string;
 };
-stats: {
-  clients: {
-    value: string;
-    label: string;
-  };
-  dedication: {
-    value: string;
-    label: string;
-  };
-};
 platforms: {
   label: string;
 };
@@ -4535,10 +4525,6 @@ export type TranslationKey =
   | 'hero.primaryCta'
   | 'hero.scrollIndicator'
   | 'hero.secondaryCta'
-  | 'hero.stats.clients.label'
-  | 'hero.stats.clients.value'
-  | 'hero.stats.dedication.label'
-  | 'hero.stats.dedication.value'
   | 'hero.tag'
   | 'hero.titleLine1'
   | 'hero.titleLine2'

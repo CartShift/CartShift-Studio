@@ -1,5 +1,106 @@
 const { buildEmailHtml } = require('../emails/email-service');
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isolated(value, dir = 'auto') {
+  return `<bdi dir="${dir}" style="unicode-bidi: isolate;">${escapeHtml(value)}</bdi>`;
+}
+
+function scoreText(score) {
+  return `<span dir="ltr" style="unicode-bidi: isolate; white-space: nowrap;">${escapeHtml(score)}/100</span>`;
+}
+
+function percentRangeText(lowEnd, highEnd) {
+  return `<span dir="ltr" style="unicode-bidi: isolate; white-space: nowrap;">${escapeHtml(lowEnd)}-${escapeHtml(highEnd)}%</span>`;
+}
+
+function overallScoreDisplay(score) {
+  return `
+    <span dir="ltr" style="display: block; unicode-bidi: isolate; font-size: 48px; font-weight: 900; color: #0f172a; line-height: 1;">${escapeHtml(score)}</span>
+    <span dir="ltr" style="display: block; unicode-bidi: isolate; font-size: 14px; color: #64748b; font-weight: 600; margin-top: -4px;">/100</span>
+  `;
+}
+
+function textFromMap(map, sourceText, fallback = sourceText) {
+  if (!sourceText) return '';
+  return map?.[sourceText] || fallback || '';
+}
+
+function localizeFinding(finding, texts) {
+  return {
+    ...finding,
+    title: textFromMap(texts.findingTitles, finding.title),
+    description:
+      textFromMap(texts.findingDescriptions, finding.description, '') ||
+      localizeEvidence(finding.description, texts),
+  };
+}
+
+function localizeRecommendation(rec, texts) {
+  return {
+    ...rec,
+    title: textFromMap(texts.recommendationTitles, rec.title),
+    description: textFromMap(texts.recommendationDescriptions, rec.description),
+    action: textFromMap(texts.recommendationActions, rec.action || texts.actionSteps?.[rec.title] || ''),
+    evidence: localizeEvidence(rec.evidence, texts),
+  };
+}
+
+function localizeEvidence(evidence, texts) {
+  if (!evidence) return '';
+  const direct = texts.evidence?.[evidence];
+  if (direct) return direct;
+
+  const scriptCountMatch = String(evidence).match(/^(\d+)\s+script tags were detected\.$/i);
+  if (scriptCountMatch && texts.evidenceTemplates?.scriptTagsDetected) {
+    return texts.evidenceTemplates.scriptTagsDetected.replace('{count}', scriptCountMatch[1]);
+  }
+
+  const msSavingsMatch = String(evidence).match(/^(?:Est savings of|Potential savings of)\s+([\d,]+)\s*ms/i);
+  if (msSavingsMatch && texts.evidenceTemplates?.millisecondsSavings) {
+    return texts.evidenceTemplates.millisecondsSavings.replace('{ms}', msSavingsMatch[1]);
+  }
+
+  const kibSavingsMatch = String(evidence).match(/^(?:Est savings of|Potential savings of)\s+([\d,.]+)\s*KiB/i);
+  if (kibSavingsMatch && texts.evidenceTemplates?.kibSavings) {
+    return texts.evidenceTemplates.kibSavings.replace('{kib}', kibSavingsMatch[1]);
+  }
+
+  const secondsMatch = String(evidence).match(/^([\d.]+)\s*s$/i);
+  if (secondsMatch && texts.evidenceTemplates?.secondsMetric) {
+    return texts.evidenceTemplates.secondsMetric.replace('{seconds}', secondsMatch[1]);
+  }
+
+  return evidence;
+}
+
+function countText(count, singular, plural, isRtl) {
+  const label = count === 1 ? singular : plural;
+  return isRtl
+    ? `${isolated(count, 'ltr')} ${escapeHtml(label)}`
+    : `${isolated(count, 'ltr')} ${escapeHtml(label)}`;
+}
+
+function getCountLabels(texts) {
+  return {
+    issueSingular: texts.issueSingular || 'issue',
+    issuePlural: texts.issuePlural || 'issues',
+    passedSingular: texts.passedSingular || 'passed',
+    passedPlural: texts.passedPlural || 'passed',
+    itemSingular: texts.itemSingular || 'item',
+    itemPlural: texts.itemPlural || 'items',
+    taskSingular: texts.taskSingular || 'task',
+    taskPlural: texts.taskPlural || 'tasks',
+  };
+}
+
 function getScoreColor(score) {
   if (score >= 80) return '#059669'; // green
   if (score >= 60) return '#2563eb'; // blue
@@ -66,7 +167,7 @@ function buildScoresHtml(sections, texts, isRtl) {
                       </table>
                     </td>
                     <td style="vertical-align: middle;">
-                      <p style="margin: 0; font-size: 14px; font-weight: 600; color: #1f2937;">${label}</p>
+                      <p style="margin: 0; font-size: 14px; font-weight: 600; color: #1f2937;">${escapeHtml(label)}</p>
                     </td>
                   </tr>
                 </table>
@@ -75,8 +176,7 @@ function buildScoresHtml(sections, texts, isRtl) {
                 <table cellpadding="0" cellspacing="0" border="0" align="${isRtl ? 'left' : 'right'}">
                   <tr>
                     <td style="background: ${scoreBg}; border: 1px solid ${scoreBorder}; border-radius: 6px; padding: 6px 12px;">
-                      <span style="color: ${scoreColor}; font-weight: 800; font-size: 16px;">${section.score}</span>
-                      <span style="color: ${scoreColor}; font-weight: 500; font-size: 12px; opacity: 0.7;">/100</span>
+                      <span style="color: ${scoreColor}; font-weight: 800; font-size: 16px;">${scoreText(section.score)}</span>
                     </td>
                   </tr>
                 </table>
@@ -125,8 +225,8 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 32px; text-align: center;">
-            <p style="font-size: 32px; margin: 0 0 12px;">🎉</p>
-            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${texts.noCriticalIssuesFound}</p>
+            <p style="font-size: 18px; margin: 0 0 12px; font-weight: 800;">✓</p>
+            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${escapeHtml(texts.noCriticalIssuesFound)}</p>
           </td>
         </tr>
       </table>
@@ -135,9 +235,10 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
 
   const recsHtml = topRecs
     .map((rec, index) => {
-      const actionStep = rec.action || texts.actionSteps[rec.title] || '';
-      const detailText = rec.description || '';
-      const evidenceText = rec.evidence || '';
+      const localizedRec = localizeRecommendation(rec, texts);
+      const actionStep = localizedRec.action || '';
+      const detailText = localizedRec.description || '';
+      const evidenceText = localizedRec.evidence || '';
       const isLast = index === topRecs.length - 1;
 
       return `
@@ -156,19 +257,19 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
                 <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 8px;">
                   <tr>
                     <td style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; padding: 3px 8px;">
-                      <span style="color: #dc2626; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">${texts.impact.high}</span>
+                      <span style="color: #dc2626; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">${escapeHtml(texts.impact.high)}</span>
                     </td>
                   </tr>
                 </table>
-                <p style="margin: 0 0 8px; font-size: 13px; color: #1f2937; line-height: 1.5; font-weight: 600; word-wrap: break-word;">${rec.title}</p>
+                <p style="margin: 0 0 8px; font-size: 13px; color: #1f2937; line-height: 1.5; font-weight: 600; word-wrap: break-word;">${isolated(localizedRec.title)}</p>
                 ${
                   detailText
-                    ? `<p style="margin: 0 0 8px; font-size: 12px; color: #4b5563; line-height: 1.5; word-wrap: break-word;">${detailText}</p>`
+                    ? `<p style="margin: 0 0 8px; font-size: 12px; color: #4b5563; line-height: 1.5; word-wrap: break-word;">${isolated(detailText)}</p>`
                     : ''
                 }
                 ${
                   evidenceText
-                    ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5; word-wrap: break-word;"><strong>${texts.whatWeFound}:</strong> ${evidenceText}</p>`
+                    ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5; word-wrap: break-word;"><strong>${escapeHtml(texts.whatWeFound)}:</strong> ${isolated(evidenceText)}</p>`
                     : ''
                 }
                 ${
@@ -180,11 +281,11 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
                         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed;">
                           <tr>
                             <td width="20" style="vertical-align: top; padding-${isRtl ? 'left' : 'right'}: 6px;">
-                              <span style="font-size: 12px;">💡</span>
+                              <span style="display: inline-block; width: 18px; height: 18px; border-radius: 999px; background: #16a34a; color: #ffffff; font-size: 12px; font-weight: 800; line-height: 18px; text-align: center;">!</span>
                             </td>
                             <td style="word-wrap: break-word; word-break: break-word;">
                               <p style="margin: 0; font-size: 11px; color: #166534; line-height: 1.5; word-wrap: break-word;">
-                                <strong>${texts.howToFix}:</strong> ${actionStep}
+                                <strong>${escapeHtml(texts.howToFix)}:</strong> ${isolated(actionStep)}
                               </p>
                             </td>
                           </tr>
@@ -222,15 +323,6 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
     cart: { gradient: '#22c55e', light: '#dcfce7', dark: '#166534' },
     trust: { gradient: '#ec4899', light: '#fce7f3', dark: '#9d174d' },
   };
-  const emojis = {
-    performance: '⚡',
-    seo: '🔍',
-    accessibility: '♿',
-    bestPractices: '🛡️',
-    cart: '🛒',
-    trust: '✨',
-  };
-
   return sectionOrder
     .map(key => {
       const section = sections[key];
@@ -239,11 +331,13 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
       const label = texts.sections[key] || section.name || key;
       const description = texts.sectionDescriptions?.[key] || '';
       const colors = sectionColors[key];
-      const emoji = emojis[key];
-      const scoreColor = getScoreColor(section.score);
+      const countLabels = getCountLabels(texts);
 
-      const positiveFindings = section.findings?.filter(f => f.type === 'positive') || [];
-      const issueFindings = section.findings?.filter(f => f.type === 'issue') || [];
+      const localizedFindings = (section.findings || []).map(finding =>
+        localizeFinding(finding, texts)
+      );
+      const positiveFindings = localizedFindings.filter(f => f.type === 'positive');
+      const issueFindings = localizedFindings.filter(f => f.type === 'issue');
       const hasFindings = positiveFindings.length > 0 || issueFindings.length > 0;
 
       const findingsHtml = [...issueFindings, ...positiveFindings]
@@ -261,8 +355,8 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
                   </div>
                 </td>
                 <td style="${isRtl ? 'text-align: right;' : ''} word-wrap: break-word; word-break: break-word;">
-                  <p style="margin: 0 0 2px; font-size: 13px; font-weight: 600; color: ${isIssue ? '#b91c1c' : '#15803d'}; word-wrap: break-word;">${finding.title}</p>
-                  <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.4; word-wrap: break-word;">${finding.description}</p>
+                  <p style="margin: 0 0 2px; font-size: 13px; font-weight: 600; color: ${isIssue ? '#b91c1c' : '#15803d'}; word-wrap: break-word;">${isolated(finding.title)}</p>
+                  <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.4; word-wrap: break-word;">${isolated(finding.description)}</p>
                 </td>
               </tr>
             </table>
@@ -273,7 +367,7 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
         .join('');
 
       return `
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px; table-layout: fixed; ${isRtl ? 'direction: rtl;' : ''}">
+      <table class="avoid-break" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
         <tr>
           <td style="background: ${colors.gradient}; border-radius: 12px 12px 0 0; padding: 16px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed;">
@@ -281,11 +375,8 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
                 <td style="${isRtl ? 'text-align: right;' : ''}">
                   <table cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                      <td style="padding-${isRtl ? 'left' : 'right'}: 8px; vertical-align: middle;">
-                        <span style="font-size: 18px;">${emoji}</span>
-                      </td>
                       <td style="vertical-align: middle;">
-                        <span style="color: #ffffff; font-size: 16px; font-weight: 700;">${label}</span>
+                        <span style="color: #ffffff; font-size: 16px; font-weight: 700;">${escapeHtml(label)}</span>
                       </td>
                     </tr>
                   </table>
@@ -294,15 +385,14 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
                   <table cellpadding="0" cellspacing="0" border="0" style="background: rgba(255,255,255,0.2); border-radius: 6px;">
                     <tr>
                       <td style="padding: 6px 10px; text-align: center;">
-                        <span style="color: #ffffff; font-size: 18px; font-weight: 800;">${section.score}</span>
-                        <span style="color: rgba(255,255,255,0.7); font-size: 11px;">/100</span>
+                        <span style="color: #ffffff; font-size: 18px; font-weight: 800;">${scoreText(section.score)}</span>
                       </td>
                     </tr>
                   </table>
                 </td>
               </tr>
             </table>
-            ${description ? `<p style="margin: 10px 0 0; font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.5; word-wrap: break-word; ${isRtl ? 'text-align: right;' : ''}">${description}</p>` : ''}
+            ${description ? `<p style="margin: 10px 0 0; font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.5; word-wrap: break-word; ${isRtl ? 'text-align: right;' : ''}">${isolated(description)}</p>` : ''}
           </td>
         </tr>
         <tr>
@@ -313,18 +403,18 @@ function buildDetailedFindingsHtml(sections, texts, isRtl) {
                   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed;">
                     <tr>
                       <td style="${isRtl ? 'text-align: right;' : ''}">
-                        <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px;">${texts.whatWeFound}</span>
+                        <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px;">${escapeHtml(texts.whatWeFound)}</span>
                       </td>
                       <td align="${isRtl ? 'left' : 'right'}" style="white-space: nowrap;">
-                        <span style="font-size: 11px; color: #dc2626; font-weight: 600;">${issueFindings.length} issues</span>
+                        <span style="font-size: 11px; color: #dc2626; font-weight: 600;">${countText(issueFindings.length, countLabels.issueSingular, countLabels.issuePlural, isRtl)}</span>
                         <span style="font-size: 11px; color: #9ca3af;"> · </span>
-                        <span style="font-size: 11px; color: #16a34a; font-weight: 600;">${positiveFindings.length} passed</span>
+                        <span style="font-size: 11px; color: #16a34a; font-weight: 600;">${countText(positiveFindings.length, countLabels.passedSingular, countLabels.passedPlural, isRtl)}</span>
                       </td>
                     </tr>
                   </table>
                 </td>
               </tr>
-              ${hasFindings ? findingsHtml : `<tr><td style="padding: 20px; text-align: center; color: #9ca3af; font-size: 13px;">No specific findings available.</td></tr>`}
+              ${hasFindings ? findingsHtml : `<tr><td style="padding: 20px; text-align: center; color: #9ca3af; font-size: 13px;">${escapeHtml(texts.noSpecificFindings || 'No specific findings available.')}</td></tr>`}
             </table>
           </td>
         </tr>
@@ -345,6 +435,7 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
 
       const label = texts.sections[key] || section.name || key;
       const recCount = section.recommendations.length;
+      const countLabels = getCountLabels(texts);
 
       const recsHtml = section.recommendations
         .map((rec, idx) => {
@@ -353,10 +444,11 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
           const impactColor = isHigh ? '#dc2626' : isMedium ? '#d97706' : '#6b7280';
           const impactBg = isHigh ? '#fef2f2' : isMedium ? '#fffbeb' : '#f9fafb';
           const impactBorder = isHigh ? '#fecaca' : isMedium ? '#fde68a' : '#e5e7eb';
+          const localizedRec = localizeRecommendation(rec, texts);
           const impactLabel = texts.impact[rec.impact] || rec.impact;
-          const actionStep = rec.action || texts.actionSteps[rec.title] || '';
-          const detailText = rec.description || '';
-          const evidenceText = rec.evidence || '';
+          const actionStep = localizedRec.action || '';
+          const detailText = localizedRec.description || '';
+          const evidenceText = localizedRec.evidence || '';
           const isLast = idx === section.recommendations.length - 1;
 
           return `
@@ -368,21 +460,21 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
                   <table cellpadding="0" cellspacing="0" border="0" style="background: ${impactBg}; border: 1px solid ${impactBorder}; border-radius: 4px;">
                     <tr>
                       <td style="padding: 4px 8px;">
-                        <span style="font-size: 10px; font-weight: 700; color: ${impactColor}; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;">${impactLabel}</span>
+                        <span style="font-size: 10px; font-weight: 700; color: ${impactColor}; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;">${escapeHtml(impactLabel)}</span>
                       </td>
                     </tr>
                   </table>
                 </td>
                 <td style="vertical-align: top;">
-                  <p style="margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #1f2937; line-height: 1.4;">${rec.title}</p>
+                  <p style="margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #1f2937; line-height: 1.4;">${isolated(localizedRec.title)}</p>
                   ${
                     detailText
-                      ? `<p style="margin: 0 0 8px; font-size: 12px; color: #4b5563; line-height: 1.5;">${detailText}</p>`
+                      ? `<p style="margin: 0 0 8px; font-size: 12px; color: #4b5563; line-height: 1.5;">${isolated(detailText)}</p>`
                       : ''
                   }
                   ${
                     evidenceText
-                      ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5;"><strong>${texts.whatWeFound}:</strong> ${evidenceText}</p>`
+                      ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5;"><strong>${escapeHtml(texts.whatWeFound)}:</strong> ${isolated(evidenceText)}</p>`
                       : ''
                   }
                   ${
@@ -394,11 +486,11 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
                           <table cellpadding="0" cellspacing="0" border="0">
                             <tr>
                               <td width="24" style="vertical-align: top; padding-${isRtl ? 'left' : 'right'}: 8px;">
-                                <span style="font-size: 14px;">💡</span>
+                                <span style="display: inline-block; width: 20px; height: 20px; border-radius: 999px; background: #16a34a; color: #ffffff; font-size: 12px; font-weight: 800; line-height: 20px; text-align: center;">!</span>
                               </td>
                               <td>
                                 <p style="margin: 0; font-size: 12px; color: #166534; line-height: 1.5;">
-                                  <strong>${texts.howToFix}:</strong> ${actionStep}
+                                  <strong>${escapeHtml(texts.howToFix)}:</strong> ${isolated(actionStep)}
                                 </p>
                               </td>
                             </tr>
@@ -419,16 +511,16 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
         .join('');
 
       return `
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px; ${isRtl ? 'direction: rtl;' : ''}">
+      <table class="avoid-break" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
         <tr>
           <td style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; padding: 14px 16px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="${isRtl ? 'text-align: right;' : ''}">
-                  <span style="font-size: 15px; font-weight: 700; color: #1f2937;">${label}</span>
+                  <span style="font-size: 15px; font-weight: 700; color: #1f2937;">${escapeHtml(label)}</span>
                 </td>
                 <td align="${isRtl ? 'left' : 'right'}">
-                  <span style="background: #e5e7eb; color: #4b5563; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px;">${recCount} items</span>
+                  <span style="background: #e5e7eb; color: #4b5563; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px;">${countText(recCount, countLabels.itemSingular, countLabels.itemPlural, isRtl)}</span>
                 </td>
               </tr>
             </table>
@@ -451,8 +543,8 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 32px; text-align: center;">
-            <p style="font-size: 32px; margin: 0 0 12px;">🎉</p>
-            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">Amazing! No issues detected in any category.</p>
+            <p style="font-size: 18px; margin: 0 0 12px; font-weight: 800;">✓</p>
+            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${escapeHtml(texts.noIssuesInAnyCategory || 'Amazing! No issues detected in any category.')}</p>
           </td>
         </tr>
       </table>
@@ -476,7 +568,7 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
       goodThreshold: 2500,
       unit: 'ms',
       formatValue: v => `${(v / 1000).toFixed(2)}s`,
-      icon: '⏱️',
+      icon: 'LCP',
     },
     {
       key: 'cls',
@@ -485,7 +577,7 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
       goodThreshold: 0.1,
       unit: '',
       formatValue: v => v.toFixed(3),
-      icon: '📐',
+      icon: 'CLS',
     },
     {
       key: 'fid',
@@ -494,7 +586,7 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
       goodThreshold: 100,
       unit: 'ms',
       formatValue: v => `${v}ms`,
-      icon: '👆',
+      icon: 'FID',
     },
   ];
 
@@ -529,15 +621,15 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
                 </table>
               </td>
               <td style="padding-${isRtl ? 'right' : 'left'}: 14px; vertical-align: top; ${isRtl ? 'text-align: right;' : ''}">
-                <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #1f2937;">${metric.label}</p>
-                <p style="margin: 0; font-size: 12px; color: #64748b; line-height: 1.4;">${metric.desc}</p>
+                <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #1f2937;">${isolated(metric.label)}</p>
+                <p style="margin: 0; font-size: 12px; color: #64748b; line-height: 1.4;">${isolated(metric.desc)}</p>
               </td>
               <td width="100" align="${isRtl ? 'left' : 'right'}" style="vertical-align: middle;">
                 <table cellpadding="0" cellspacing="0" border="0" align="${isRtl ? 'left' : 'right'}">
                   <tr>
                     <td style="background: ${statusBg}; border: 1px solid ${statusBorder}; border-radius: 8px; padding: 10px 14px; text-align: center;">
-                      <p style="margin: 0 0 2px; font-size: 18px; font-weight: 800; color: ${statusColor};">${metric.formatValue(value)}</p>
-                      <p style="margin: 0; font-size: 10px; font-weight: 600; color: ${statusColor}; text-transform: uppercase; letter-spacing: 0.3px;">${statusText}</p>
+                      <p style="margin: 0 0 2px; font-size: 18px; font-weight: 800; color: ${statusColor};">${isolated(metric.formatValue(value), 'ltr')}</p>
+                      <p style="margin: 0; font-size: 10px; font-weight: 600; color: ${statusColor}; text-transform: uppercase; letter-spacing: 0.3px;">${escapeHtml(statusText)}</p>
                     </td>
                   </tr>
                 </table>
@@ -554,13 +646,13 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
   if (!metricsHtml.trim()) return '';
 
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; ${isRtl ? 'direction: rtl;' : ''}">
+    <table class="section-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
       <tr>
         <td style="padding-bottom: 20px; ${isRtl ? 'text-align: right;' : ''}">
           <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px;">
-            📈 ${texts.coreWebVitalsTitle}
+            ${escapeHtml(texts.coreWebVitalsTitle)}
           </h2>
-          <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">${texts.coreWebVitalsSubtitle}</p>
+          <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">${escapeHtml(texts.coreWebVitalsSubtitle)}</p>
         </td>
       </tr>
       <tr>
@@ -603,12 +695,13 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
 
   const buildWeekHtml = (weekLabel, items, weekNum) => {
     if (items.length === 0) return '';
+    const countLabels = getCountLabels(texts);
 
     const weekColors = {
-      1: { bg: '#fef2f2', border: '#fecaca', accent: '#dc2626', icon: '🔥' },
-      2: { bg: '#fff7ed', border: '#fed7aa', accent: '#ea580c', icon: '⚡' },
-      3: { bg: '#f0fdf4', border: '#bbf7d0', accent: '#16a34a', icon: '🎯' },
-      4: { bg: '#f8fafc', border: '#e2e8f0', accent: '#64748b', icon: '✨' },
+      1: { bg: '#fef2f2', border: '#fecaca', accent: '#dc2626' },
+      2: { bg: '#fff7ed', border: '#fed7aa', accent: '#ea580c' },
+      3: { bg: '#f0fdf4', border: '#bbf7d0', accent: '#16a34a' },
+      4: { bg: '#f8fafc', border: '#e2e8f0', accent: '#64748b' },
     };
     const colors = weekColors[weekNum] || weekColors[4];
 
@@ -628,8 +721,8 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
                   </table>
                 </td>
                 <td style="vertical-align: top;">
-                  <p style="margin: 0; font-size: 13px; font-weight: 600; color: #1f2937; line-height: 1.4;">${item.title}</p>
-                  <p style="margin: 3px 0 0; font-size: 11px; color: #64748b;">${item.sectionName}</p>
+                  <p style="margin: 0; font-size: 13px; font-weight: 600; color: #1f2937; line-height: 1.4;">${isolated(localizeRecommendation(item, texts).title)}</p>
+                  <p style="margin: 3px 0 0; font-size: 11px; color: #64748b;">${escapeHtml(item.sectionName)}</p>
                 </td>
               </tr>
             </table>
@@ -640,16 +733,16 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
       .join('');
 
     return `
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 16px; ${isRtl ? 'direction: rtl;' : ''}">
+      <table class="avoid-break" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 16px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
         <tr>
           <td style="background: ${colors.bg}; border: 1px solid ${colors.border}; border-radius: 10px 10px 0 0; padding: 12px 16px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="${isRtl ? 'text-align: right;' : ''}">
-                  <span style="font-size: 14px; font-weight: 700; color: ${colors.accent};">${colors.icon} ${weekLabel}</span>
+                  <span style="font-size: 14px; font-weight: 700; color: ${colors.accent};">${escapeHtml(weekLabel)}</span>
                 </td>
                 <td align="${isRtl ? 'left' : 'right'}">
-                  <span style="background: ${colors.accent}; color: #ffffff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 10px;">${items.length} tasks</span>
+                  <span style="background: ${colors.accent}; color: #ffffff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 10px;">${countText(items.length, countLabels.taskSingular, countLabels.taskPlural, isRtl)}</span>
                 </td>
               </tr>
             </table>
@@ -681,13 +774,13 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
   if (!weeksHtml) return '';
 
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; ${isRtl ? 'direction: rtl;' : ''}">
+    <table class="section-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
       <tr>
         <td style="padding-bottom: 20px; ${isRtl ? 'text-align: right;' : ''}">
           <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px;">
-            🗓️ ${texts.actionRoadmapTitle}
+            ${escapeHtml(texts.actionRoadmapTitle)}
           </h2>
-          <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">${texts.actionRoadmapSubtitle}</p>
+          <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">${escapeHtml(texts.actionRoadmapSubtitle)}</p>
         </td>
       </tr>
       <tr>
@@ -700,29 +793,30 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
 }
 
 // Build revenue impact section - PROFESSIONAL VERSION (no CSS gradients for email)
-function buildRevenueImpactHtml(overallScore, sections, texts, isRtl) {
+function buildRevenueImpactHtml(sections, texts, isRtl) {
   const criticalIssues = Object.values(sections).reduce((count, section) => {
     return count + (section.recommendations?.filter(r => r.impact === 'high').length || 0);
   }, 0);
 
   if (criticalIssues === 0) return '';
 
-  // Calculate estimated impact based on issues
-  const lowEnd = Math.min(15 + criticalIssues * 2, 35);
-  const highEnd = Math.min(25 + criticalIssues * 3, 50);
+  // Conservative directional range. The report should guide prioritization, not promise outcomes.
+  const lowEnd = Math.min(8 + criticalIssues * 4, 25);
+  const highEnd = Math.min(14 + criticalIssues * 6, 35);
+  const countLabels = getCountLabels(texts);
 
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; ${isRtl ? 'direction: rtl;' : ''}">
+    <table class="avoid-break" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
       <tr>
         <td style="background: #0f172a; border-radius: 12px; padding: 28px;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td style="${isRtl ? 'text-align: right;' : ''}">
                 <h3 style="color: #ffffff; font-size: 18px; font-weight: 800; margin: 0 0 10px;">
-                  💰 ${texts.revenueImpactTitle}
+                  ${escapeHtml(texts.revenueImpactTitle)}
                 </h3>
                 <p style="color: #94a3b8; font-size: 14px; margin: 0 0 20px; line-height: 1.6;">
-                  ${texts.revenueImpactText}
+                  ${escapeHtml(texts.revenueImpactText)}
                 </p>
               </td>
             </tr>
@@ -734,12 +828,12 @@ function buildRevenueImpactHtml(overallScore, sections, texts, isRtl) {
                       <table cellpadding="0" cellspacing="0" border="0" align="center">
                         <tr>
                           <td style="text-align: center;">
-                            <span style="font-size: 44px; font-weight: 900; color: #22c55e;">${lowEnd}-${highEnd}%</span>
+                            <span style="font-size: 44px; font-weight: 900; color: #22c55e;">${percentRangeText(lowEnd, highEnd)}</span>
                           </td>
                         </tr>
                         <tr>
                           <td style="padding-top: 8px; text-align: center;">
-                            <span style="color: #64748b; font-size: 13px;">${criticalIssues} ${texts.issuesDetected}</span>
+                            <span style="color: #64748b; font-size: 13px;">${countText(criticalIssues, countLabels.issueSingular, countLabels.issuePlural, isRtl)}</span>
                           </td>
                         </tr>
                       </table>
@@ -769,7 +863,7 @@ function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
   const sections = results.sections || {};
 
   return buildEmailHtml(
-    'store_analysis_report',
+    'store_analysis_report_pdf',
     {
       lang: isRtl ? 'he' : 'en',
       dir: isRtl ? 'rtl' : 'ltr',
@@ -780,14 +874,18 @@ function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
       storeUrl: storeUrl || 'N/A',
       overallScoreLabel: texts.overallScoreLabel,
       overallScore: String(results.overallScore),
+      overallScoreDisplay: overallScoreDisplay(results.overallScore),
       scoreStatusText: texts.scoreStatus[scoreStatus],
       greeting: texts.greeting,
       introText: texts.introText,
       scoreBreakdownTitle: texts.scoreBreakdownTitle,
       scoreBreakdownSubtitle: texts.scoreBreakdownSubtitle,
       priorityFixesTitle: texts.priorityFixesTitle,
+      priorityFixesSubtitle: texts.priorityFixesSubtitle || '',
       detailedFindingsTitle: texts.detailedFindingsTitle,
+      detailedFindingsSubtitle: texts.detailedFindingsSubtitle || '',
       allRecommendationsTitle: texts.allRecommendationsTitle,
+      allRecommendationsSubtitle: texts.allRecommendationsSubtitle || '',
       proTipLabel: texts.proTipLabel,
       proTipText: texts.proTipText,
       ctaTitle: texts.ctaTitle,
@@ -796,7 +894,8 @@ function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
       ctaButtonText: texts.ctaButtonText,
       analyzedUrl: texts.analyzedUrl,
       footerText: texts.footerText,
-      revenueImpactHtml: buildRevenueImpactHtml(results.overallScore, sections, texts, isRtl),
+      footerYear: String(new Date().getFullYear()),
+      revenueImpactHtml: buildRevenueImpactHtml(sections, texts, isRtl),
       scoresHtml: buildScoresHtml(sections, texts, isRtl),
       recommendationsHtml: buildRecommendationsHtml(sections, texts, isRtl),
       coreWebVitalsHtml: buildCoreWebVitalsHtml(results.coreWebVitals, texts, isRtl),

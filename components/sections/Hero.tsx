@@ -4,7 +4,7 @@ import { motion } from '@/lib/motion';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { BackgroundShapes } from '@/components/ui/BackgroundShapes';
-import { heroTag, heroContent, staggerContainer } from '@/lib/animation-variants';
+import { heroTag, heroContent } from '@/lib/animation-variants';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
 import { getScheduleUrl } from '@/lib/schedule';
@@ -123,31 +123,6 @@ export const Hero: React.FC = () => {
                   {t('hero.analyzerCta')}
                 </Button>
               </Link>
-            </motion.div>
-
-            {/* Performance Stats */}
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-              className="pt-12 border-t border-surface-200/60 dark:border-white/5 flex flex-wrap gap-10 md:gap-16"
-            >
-              <div className="flex flex-col">
-                <span className="text-4xl md:text-5xl font-display font-black text-surface-900 dark:text-white mb-2">
-                  {t('hero.stats.clients.value')}
-                </span>
-                <span className="text-sm md:text-base text-surface-500 dark:text-surface-400 font-bold uppercase tracking-widest">
-                  {t('hero.stats.clients.label')}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-4xl md:text-5xl font-display font-black text-surface-900 dark:text-white mb-2">
-                  {t('hero.stats.dedication.value')}
-                </span>
-                <span className="text-sm md:text-base text-surface-500 dark:text-surface-400 font-bold uppercase tracking-widest">
-                  {t('hero.stats.dedication.label')}
-                </span>
-              </div>
             </motion.div>
 
             {/* Platform Trusted Bar */}
