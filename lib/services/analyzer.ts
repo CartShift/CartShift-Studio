@@ -12,6 +12,7 @@ import { CompetitorService } from './competitor-service';
 import { AIReadinessService } from './ai-readiness';
 import { BenchmarkService } from './benchmark';
 import { ScraperService } from './scraper';
+import { safeFetchStoreHtml } from '@/lib/utils/safe-store-fetch';
 
 const PAGESPEED_API_KEY = process.env.PAGESPEED_API_KEY;
 
@@ -736,20 +737,18 @@ export class AnalyzerService {
       };
     }
 
-    // 2. Fetch Content
+    // 2. Fetch HTML + PageSpeed in parallel (SSRF-safe store fetch)
     let html = '';
+    let fetchedUrl = normalizedUrl;
+    let pageSpeedData: PageSpeedResult | null = null;
     try {
-      const response = await fetch(normalizedUrl, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          Accept:
-            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        },
-        signal: AbortSignal.timeout(15000),
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      html = await response.text();
+      const [fetched, pageSpeedResult] = await Promise.all([
+        safeFetchStoreHtml(normalizedUrl, 15000),
+        fetchPageSpeedData(normalizedUrl),
+      ]);
+      html = fetched.html;
+      fetchedUrl = fetched.finalUrl;
+      pageSpeedData = pageSpeedResult;
     } catch (fetchError: any) {
       const errorDetails = {
         message: fetchError.message,
@@ -781,10 +780,8 @@ export class AnalyzerService {
       throw new Error(`Could not access store URL: ${fetchError.message}`);
     }
 
-    const platform = detectPlatform(html, normalizedUrl);
+    const platform = detectPlatform(html, fetchedUrl);
 
-    // 3. Fetch Data (External)
-    const pageSpeedData = await fetchPageSpeedData(normalizedUrl);
     if (!pageSpeedData) {
       recordAnalyzerServiceFailure('pagespeed', new Error('PageSpeed API unavailable'), true);
     }
@@ -915,7 +912,7 @@ export class AnalyzerService {
           evidence: ['Competitor service failed gracefully.'],
         };
       }),
-      ScraperService.scrape(normalizedUrl).catch(err => {
+      ScraperService.scrape(fetchedUrl).catch(err => {
         recordAnalyzerServiceFailure('puppeteer', err, true);
         return { visualAnalysis: null, productAnalysis: undefined };
       }),
@@ -968,7 +965,7 @@ export class AnalyzerService {
     };
 
     const result: AnalysisResult = {
-      storeUrl: normalizedUrl,
+      storeUrl: fetchedUrl,
       overallScore,
       platform,
       sections,

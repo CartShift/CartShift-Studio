@@ -21,6 +21,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './'),
+      'server-only': resolve(__dirname, './tests/mocks/server-only.ts'),
+      'node:dns/promises': resolve(__dirname, './tests/mocks/node-dns-promises.ts'),
     },
   },
   ssr: {

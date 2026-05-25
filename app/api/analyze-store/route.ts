@@ -8,18 +8,23 @@ import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateAnalyzeStoreRequest } from '@/lib/validation';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
 
+export const maxDuration = 120;
+
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const RATE_LIMIT_WINDOW = 60 * 1000;
 
-function getRateLimitKey(request: NextRequest): string {
+function getRateLimitKey(request: NextRequest): string | null {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
   const ip = forwarded ? forwarded.split(',')[0].trim() : realIp;
-  if (ip) {
+  if (ip && ip !== 'unknown') {
     return `analyze-store:${ip}`;
   }
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
   const userAgent = request.headers.get('user-agent') || 'unknown';
-  return `analyze-store:ua:${userAgent}`;
+  return `analyze-store:dev:${userAgent.slice(0, 120)}`;
 }
 
 function formatZodErrors(error: { issues: { message: string }[] }): string {
@@ -29,6 +34,15 @@ function formatZodErrors(error: { issues: { message: string }[] }): string {
 export async function POST(request: NextRequest) {
   try {
     const rateLimitKey = getRateLimitKey(request);
+    if (!rateLimitKey) {
+      return NextResponse.json(
+        createErrorResponse(
+          'Could not verify your request origin. Please try again from a standard network connection.',
+          400
+        ),
+        { status: 400 }
+      );
+    }
 
     const rateLimitResult = await checkFirestoreRateLimit(
       rateLimitKey,

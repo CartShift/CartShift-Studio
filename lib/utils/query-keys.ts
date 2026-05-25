@@ -47,6 +47,10 @@ export const queryKeys = {
     monthlyRevenue: (months: number) => ['monthly-revenue', months] as const,
     topClients: (limit: number) => ['top-clients', limit] as const,
   },
+  marketing: {
+    dashboard: ['marketing-dashboard'] as const,
+    leadJobs: (leadId: string) => ['marketing-lead-jobs', leadId] as const,
+  },
   activities: {
     byOrg: (orgId: string) => ['org-activities', orgId] as const,
     byRequest: (requestId: string) => ['request-activities', requestId] as const,

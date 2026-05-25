@@ -1,0 +1,38 @@
+{
+  "portal": {
+    "marketing": {
+      "title": "Marketing Leads",
+      "subtitle": "Track funnel leads, score, source, stage, and email automation health.",
+      "loading": "Loading marketing funnel",
+      "refresh": "Refresh",
+      "errorTitle": "Could not load marketing leads",
+      "metrics": {
+        "totalLeads": "Total leads",
+        "hotLeads": "Hot leads",
+        "pendingEmails": "Pending emails",
+        "avgScore": "Avg. score"
+      },
+      "leads": {
+        "title": "Lead pipeline",
+        "search": "Search email, store, source...",
+        "lead": "Lead",
+        "source": "Source",
+        "stage": "Stage",
+        "score": "Score",
+        "email": "Last email",
+        "updated": "Updated",
+        "openStore": "Open store",
+        "none": "None",
+        "empty": "No matching leads yet."
+      },
+      "jobs": {
+        "title": "Recent email jobs",
+        "empty": "No email jobs yet."
+      },
+      "events": {
+        "title": "Recent events",
+        "empty": "No funnel events yet."
+      }
+    }
+  }
+}

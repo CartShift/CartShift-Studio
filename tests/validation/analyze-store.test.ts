@@ -35,4 +35,30 @@ describe('validateAnalyzeStoreRequest', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it('defaults optional fields', () => {
+    const result = validateAnalyzeStoreRequest({
+      storeUrl: 'https://shop.example.com',
+      email: 'owner@example.com',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.subscribeNewsletter).toBe(false);
+      expect(result.data.locale).toBe('en');
+    }
+  });
+
+  it('accepts Hebrew locale', () => {
+    const result = validateAnalyzeStoreRequest({
+      storeUrl: 'https://shop.example.com',
+      email: 'owner@example.com',
+      locale: 'he',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.locale).toBe('he');
+    }
+  });
 });

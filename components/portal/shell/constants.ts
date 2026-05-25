@@ -10,6 +10,7 @@ import {
   Star,
   Settings,
   TrendingUp,
+  Mail,
 } from 'lucide-react';
 import { NavGroup } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -26,6 +27,7 @@ type NavTranslationKey =
   | 'sidebar.nav.review'
   | 'sidebar.nav.workboard'
   | 'sidebar.nav.sales'
+  | 'sidebar.nav.marketing'
   | 'sidebar.nav.clients'
   | 'sidebar.nav.pricing'
   | 'sidebar.nav.testimonials'
@@ -72,6 +74,12 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           label: t('sidebar.nav.sales'),
           icon: TrendingUp,
           href: getPortalPath('/agency/sales/'),
+          roles: PERMISSIONS.VIEW_SALES_DASHBOARD,
+        },
+        {
+          label: t('sidebar.nav.marketing'),
+          icon: Mail,
+          href: getPortalPath('/agency/leads/'),
           roles: PERMISSIONS.VIEW_SALES_DASHBOARD,
         },
       ],

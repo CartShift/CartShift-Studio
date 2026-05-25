@@ -12,6 +12,7 @@ import { Link } from '@/i18n/navigation';
 import { getDateLocaleString } from '@/lib/locale-config';
 import { ArrowRight, Globe, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { trackHighIntentCta } from '@/lib/marketing-cta';
 
 const GlowBlob = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
   <motion.div
@@ -232,7 +233,15 @@ export const WordPressPageContent: React.FC = () => {
             <p className="text-xl md:text-2xl text-surface-600 dark:text-surface-300 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
               {t('wordpress.cta.description')}
             </p>
-            <Link href="/contact">
+            <Link
+              href="/contact"
+              onClick={() =>
+                trackHighIntentCta({
+                  ctaText: t('wordpress.cta.button'),
+                  ctaLocation: 'wordpress_final_cta',
+                })
+              }
+            >
               <Button
                 size="lg"
                 className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-accent-500/20 hover:shadow-accent-500/40 transition-shadow bg-accent-500 hover:bg-accent-600"

@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { logError } from '@/lib/logger';
 import { isRTLLocale, getDateLocaleString } from '@/lib/locale-config';
+import { trackHighIntentCta } from '@/lib/marketing-cta';
 
 interface RelatedPost {
   slug: string;
@@ -1061,7 +1062,15 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       </p>
 
                       <div className="pt-2">
-                        <Link href="/contact">
+                        <Link
+                          href="/contact"
+                          onClick={() =>
+                            trackHighIntentCta({
+                              ctaText: t('blogPost.cta.button'),
+                              ctaLocation: 'blog_post_footer',
+                            })
+                          }
+                        >
                           <Button
                             size="lg"
                             variant="secondary"

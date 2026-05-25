@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import { useAnalyzerProgress } from '@/lib/hooks/use-analyzer-progress';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
@@ -38,8 +39,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
   const [state, setState] = useState<AnalyzerState>('form');
   const [results, setResults] = useState<AnalysisResult | null>(null);
-  const [analyzingProgress, setAnalyzingProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState('');
+  const analyzing = useAnalyzerProgress(state === 'analyzing');
   const lastSubmitRef = useRef<{
     storeUrl: string;
     email: string;
@@ -54,30 +54,11 @@ export const StoreAnalyzerContent: React.FC = () => {
     captchaToken: string;
   }) => {
     lastSubmitRef.current = data;
+    analyzing.reset();
     setState('analyzing');
-    setAnalyzingProgress(0);
 
     const startTime = Date.now();
     trackEvent('store_analysis_started', { store_url: data.storeUrl });
-
-    const steps = [
-      { progress: 12, label: t('analyzer.steps.connecting') },
-      { progress: 28, label: t('analyzer.steps.performance') },
-      { progress: 44, label: t('analyzer.steps.seo') },
-      { progress: 58, label: t('analyzer.steps.ux') },
-      { progress: 72, label: t('analyzer.steps.trust') },
-      { progress: 88, label: t('analyzer.steps.generating') },
-    ];
-
-    let stepIndex = 0;
-    const progressTimer = window.setInterval(() => {
-      const step = steps[Math.min(stepIndex, steps.length - 1)];
-      setCurrentStep(step.label);
-      setAnalyzingProgress(step.progress);
-      if (stepIndex < steps.length - 1) {
-        stepIndex += 1;
-      }
-    }, 700);
 
     try {
       const response = await fetch('/api/analyze-store', {
@@ -85,8 +66,6 @@ export const StoreAnalyzerContent: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, locale }),
       });
-
-      window.clearInterval(progressTimer);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -134,12 +113,10 @@ export const StoreAnalyzerContent: React.FC = () => {
         });
       }
 
-      setAnalyzingProgress(100);
-      setCurrentStep(t('analyzer.steps.complete'));
-      await new Promise(resolve => setTimeout(resolve, 400));
+      analyzing.markComplete();
+      await new Promise(resolve => setTimeout(resolve, 350));
       setState('results');
     } catch (error) {
-      window.clearInterval(progressTimer);
       Logger.error('Analysis error', error, { storeUrl: data.storeUrl });
 
       const duration = Date.now() - startTime;
@@ -211,7 +188,7 @@ export const StoreAnalyzerContent: React.FC = () => {
   const handleReset = () => {
     setState('form');
     setResults(null);
-    setAnalyzingProgress(0);
+    analyzing.reset();
   };
 
   const features = [
@@ -255,7 +232,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
   const stats = [
     { value: '6', label: t('analyzer.stats.categories'), icon: BarChart3 },
-    { value: '60s', label: t('analyzer.trust.instant'), icon: Clock },
+    { value: '~1m', label: t('analyzer.trust.instant'), icon: Clock },
     { value: t('analyzer.stats.freeValue'), label: t('analyzer.trust.free'), icon: CheckCircle },
     { value: 'PDF', label: t('analyzer.stats.reportFormat'), icon: Sparkles },
   ];
@@ -601,7 +578,12 @@ export const StoreAnalyzerContent: React.FC = () => {
           exit={{ opacity: 0 }}
           className="min-h-screen flex items-center justify-center bg-background dark:bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32"
         >
-          <AnalyzingState progress={analyzingProgress} currentStep={currentStep} />
+          <AnalyzingState
+            progress={analyzing.progress}
+            currentStep={t(`analyzer.steps.${analyzing.phase}`)}
+            elapsedMs={analyzing.elapsedMs}
+            phase={analyzing.phase}
+          />
         </motion.div>
       )}
 

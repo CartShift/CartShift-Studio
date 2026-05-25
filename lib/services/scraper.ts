@@ -1,6 +1,6 @@
-import puppeteer from 'puppeteer';
 import { VisualAnalysis, ProductAnalysis } from '@/lib/types/analyzer';
 import { Logger } from '@/lib/logger';
+import { launchAnalyzerBrowser, probeAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
 
 export interface ScraperResult {
   visualAnalysis: VisualAnalysis | null;
@@ -13,28 +13,13 @@ let puppeteerAvailable: boolean | null = null;
 function isPuppeteerRuntimeEnabled(): boolean {
   if (process.env.ANALYZER_ENABLE_PUPPETEER === 'true') return true;
   if (process.env.ANALYZER_DISABLE_PUPPETEER === 'true') return false;
-  if (process.env.VERCEL === '1') return false;
   return true;
 }
 
 async function checkPuppeteerAvailability(): Promise<boolean> {
   if (puppeteerAvailable !== null) return puppeteerAvailable;
-
-  try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      timeout: 5000,
-    });
-    await browser.close();
-    puppeteerAvailable = true;
-    Logger.debug('Puppeteer is available');
-    return true;
-  } catch (error) {
-    Logger.warn('Puppeteer is not available', { error });
-    puppeteerAvailable = false;
-    return false;
-  }
+  puppeteerAvailable = await probeAnalyzerBrowser();
+  return puppeteerAvailable;
 }
 
 export class ScraperService {
@@ -61,19 +46,7 @@ export class ScraperService {
 
       // Try to launch browser with extended timeout and better error handling
       try {
-        browser = await puppeteer.launch({
-          headless: true,
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--single-process',
-            '--disable-software-rasterizer',
-            '--disable-extensions',
-          ],
-          timeout: 30000,
-        });
+        browser = await launchAnalyzerBrowser(30_000);
       } catch (launchError) {
         Logger.error('Puppeteer launch failed', launchError);
         // Return graceful fallback instead of crashing

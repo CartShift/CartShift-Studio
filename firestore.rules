@@ -312,6 +312,26 @@ service cloud.firestore {
       allow write: if isAgencyUser();
     }
 
+    match /marketing_leads/{leadId} {
+      allow read: if isAuthenticated() && isAgencyUser();
+      allow write: if false;
+    }
+
+    match /marketing_email_jobs/{jobId} {
+      allow read: if isAuthenticated() && isAgencyUser();
+      allow write: if false;
+    }
+
+    match /marketing_events/{eventId} {
+      allow read: if isAuthenticated() && isAgencyUser();
+      allow write: if false;
+    }
+
+    match /marketing_unsubscribes/{leadId} {
+      allow read: if isAuthenticated() && isAgencyUser();
+      allow write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

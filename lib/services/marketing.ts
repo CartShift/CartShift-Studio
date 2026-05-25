@@ -69,6 +69,10 @@ export function getMarketingLeadScoreDelta(
 }
 
 function getMarketingFunctionUrl(functionName: string) {
+  if (functionName.startsWith('marketing')) {
+    return `https://us-central1-${env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.cloudfunctions.net/${functionName}`;
+  }
+
   return buildFirebaseFunctionUrl(env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL, functionName);
 }
 
@@ -162,6 +166,29 @@ export async function unsubscribeMarketingLead(data: { leadId: string; token: st
     return { success: response.ok };
   } catch (error) {
     logError('Failed to unsubscribe marketing lead', error, { leadId: data.leadId });
+    return { success: false };
+  }
+}
+
+export async function trackMarketingCtaEngagement(data: {
+  leadId: string;
+  ctaText?: string;
+  ctaLocation: string;
+  intent?: string;
+}) {
+  const functionUrl = getMarketingFunctionUrl('marketingTrackEngagement');
+  if (!functionUrl) return { success: false };
+
+  try {
+    const response = await fetch(functionUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    return { success: response.ok };
+  } catch (error) {
+    logError('Failed to track marketing CTA engagement', error, { leadId: data.leadId });
     return { success: false };
   }
 }

@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { lookup } from 'node:dns/promises';
+import { dnsLookupMock } from '../mocks/node-dns-promises';
 import { normalizeStoreUrlInput, validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
-
-vi.mock('node:dns/promises', () => ({
-  lookup: vi.fn(),
-}));
 
 describe('normalizeStoreUrlInput', () => {
   it('adds https when protocol is missing', () => {
@@ -31,7 +27,7 @@ describe('validateStoreUrlForAnalysis', () => {
   });
 
   it('rejects hostnames resolving to private IPs', async () => {
-    vi.mocked(lookup).mockResolvedValueOnce([
+    vi.mocked(dnsLookupMock).mockResolvedValueOnce([
       { address: '10.0.0.15', family: 4 },
     ] as unknown as Awaited<ReturnType<typeof lookup>>);
 
@@ -43,7 +39,7 @@ describe('validateStoreUrlForAnalysis', () => {
   });
 
   it('accepts public store URLs', async () => {
-    vi.mocked(lookup).mockResolvedValueOnce([
+    vi.mocked(dnsLookupMock).mockResolvedValueOnce([
       { address: '93.184.216.34', family: 4 },
     ] as unknown as Awaited<ReturnType<typeof lookup>>);
 

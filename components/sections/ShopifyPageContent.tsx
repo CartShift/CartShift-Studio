@@ -19,6 +19,7 @@ import {
   Workflow,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { trackHighIntentCta } from '@/lib/marketing-cta';
 
 const GlowBlob = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
   <motion.div
@@ -399,7 +400,15 @@ export const ShopifyPageContent: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-                  <Link href="/contact">
+                  <Link
+                    href="/contact"
+                    onClick={() =>
+                      trackHighIntentCta({
+                        ctaText: localTrust.primary,
+                        ctaLocation: 'shopify_local_trust',
+                      })
+                    }
+                  >
                     <Button size="lg" className="w-full sm:w-auto">
                       {localTrust.primary}
                     </Button>
@@ -435,7 +444,15 @@ export const ShopifyPageContent: React.FC = () => {
             <p className="text-xl md:text-2xl text-surface-600 dark:text-surface-300 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
               {t('shopify.cta.description')}
             </p>
-            <Link href="/contact">
+            <Link
+              href="/contact"
+              onClick={() =>
+                trackHighIntentCta({
+                  ctaText: t('shopify.cta.button'),
+                  ctaLocation: 'shopify_final_cta',
+                })
+              }
+            >
               <Button
                 size="lg"
                 className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-shadow"

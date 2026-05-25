@@ -1199,12 +1199,12 @@
     "hero": {
       "title": "Free Store Analyzer",
       "subtitle": "Is Your Store Losing Sales?",
-      "description": "Get a comprehensive audit of your e-commerce store in 60 seconds. Discover performance issues, SEO gaps, and conversion opportunities.",
+      "description": "Get a comprehensive audit of your e-commerce store in about a minute. Discover performance issues, SEO gaps, and conversion opportunities.",
       "badge": "Free Tool"
     },
     "form": {
       "title": "Analyze Your Store",
-      "subtitle": "Get your free report in 60 seconds",
+      "subtitle": "Get your free report in about a minute",
       "urlLabel": "Your Store URL",
       "urlPlaceholder": "https://your-store.com",
       "urlRequired": "Store URL is required",
@@ -1288,8 +1288,19 @@
     },
     "analyzing": {
       "title": "Analyzing Your Store",
-      "pleaseWait": "Please wait...",
-      "tip": "We run Lighthouse, HTML heuristics, and conversion checks — your full PDF report arrives by email."
+      "durationHint": "This usually takes 20–45 seconds depending on store speed.",
+      "inProgress": "In progress",
+      "finishing": "Finishing up",
+      "phaseLabel": "Stage: {phase}",
+      "tip": "We run Lighthouse, HTML heuristics, and conversion checks — your full PDF report arrives by email.",
+      "phases": {
+        "connecting": "Connecting",
+        "performance": "Performance",
+        "seo": "SEO",
+        "ux": "UX",
+        "trust": "Trust",
+        "generating": "Report"
+      }
     },
     "sections": {
       "performance": "Performance",
@@ -1307,6 +1318,37 @@
       "emailDelayedTitle": "Report saved — email may be delayed",
       "emailDelayedDescription": "Your results are on screen. If the PDF does not arrive within a few minutes, check spam or run the analyzer again.",
       "partialDataNotice": "Some live performance data was unavailable, so parts of this report use HTML-based estimates. The emailed PDF reflects the same analysis run.",
+      "coverage": {
+        "title": "What this report includes",
+        "cachedNote": "Results loaded from a recent cached run for this URL.",
+        "status": {
+          "active": "included",
+          "partial": "estimated",
+          "unavailable": "skipped"
+        },
+        "items": {
+          "lighthouse": {
+            "label": "Lighthouse",
+            "hint": "Google PageSpeed mobile lab scores when the API is available."
+          },
+          "visual": {
+            "label": "Visual UX",
+            "hint": "Mobile and desktop captures when browser automation is available."
+          },
+          "product": {
+            "label": "Product page",
+            "hint": "Sample product conversion signals from a live page visit."
+          },
+          "competitors": {
+            "label": "Market signals",
+            "hint": "Category and competitor hints from homepage links."
+          },
+          "email": {
+            "label": "PDF email",
+            "hint": "Full report delivery to your inbox."
+          }
+        }
+      },
       "screenshotsInEmail": "Mobile and desktop previews are in your PDF email report (omitted here to keep the page fast).",
       "screenshotsUnavailable": "Visual previews were not captured for this run. Check your email if Puppeteer ran on our report server.",
       "checkInbox": "Check your inbox for the full in-depth analysis with actionable recommendations and a 30-day roadmap",

@@ -78,6 +78,14 @@ if (!isSilent) console.log('');
 OPTIONAL_ENV_VARS.forEach(name => checkEnvVar(name, false));
 if (!isSilent) console.log('');
 
+const isProductionBuild =
+  process.env.NODE_ENV === 'production' || process.argv.includes('--production');
+if (isProductionBuild && !process.env.PAGESPEED_API_KEY?.trim()) {
+  console.warn(
+    '⚠️  PAGESPEED_API_KEY is not set — Store Analyzer will rely on HTML fallback scores in production.'
+  );
+}
+
 if (hasError) {
   console.error('\n❌ Build failed: Missing required environment variables');
   console.error('Please set the missing variables in your .env.local file');

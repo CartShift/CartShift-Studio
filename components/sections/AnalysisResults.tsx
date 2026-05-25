@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { getScheduleUrl } from '@/lib/schedule';
 import { PRIORITY_RECOMMENDATIONS_COUNT } from '@/lib/constants/pricing';
+import { AnalyzerCoverageStrip } from '@/components/analyzer/AnalyzerCoverageStrip';
 import { ANIMATION_DELAY_STEP, ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/constants/ui';
 
 interface AnalysisResultsProps {
@@ -232,9 +233,20 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
   const showPartialDataNotice = results.meta?.usedHtmlFallback;
   const screenshotsInEmail = Boolean(results.meta?.screenshotsInEmailReport);
+  const analysisMeta = results.meta ?? {
+    usedLighthouse: false,
+    usedHtmlFallback: true,
+    visualAnalysisAttempted: false,
+    visualAnalysisAvailable: false,
+    productAnalysisAvailable: false,
+    competitorAnalysisAvailable: false,
+    cached: false,
+  };
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
+      <AnalyzerCoverageStrip meta={analysisMeta} isDark={isDark} />
+
       {showPartialDataNotice && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}

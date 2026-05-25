@@ -68,6 +68,21 @@ function buildResult(overrides: Partial<AnalysisResult> = {}): AnalysisResult {
 }
 
 describe('serializeAnalysisForClient', () => {
+  it('passes through results without screenshots unchanged', () => {
+    const result = buildResult({
+      visualAnalysis: {
+        contrastIssues: 2,
+        mobileResponsivenessScore: 70,
+        dominantColors: ['#000000'],
+        screenshots: [],
+      },
+    });
+
+    const serialized = serializeAnalysisForClient(result);
+    expect(serialized.visualAnalysis?.screenshots).toEqual([]);
+    expect(serialized.meta?.screenshotsInEmailReport).toBeUndefined();
+  });
+
   it('strips screenshot payloads but keeps visual metrics', () => {
     const result = buildResult({
       visualAnalysis: {

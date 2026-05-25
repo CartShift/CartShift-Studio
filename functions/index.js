@@ -947,6 +947,52 @@ exports.marketingTrackClick = onRequest(
   }
 );
 
+exports.marketingTrackEngagement = onRequest(
+  {
+    cors: true,
+    maxInstances: 10,
+  },
+  async (req, res) => {
+    if (!applyCors(req, res)) return;
+    if (req.method === 'OPTIONS') return res.status(204).send('');
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+    try {
+      const { leadId, ctaText, ctaLocation, intent } = req.body || {};
+      if (!leadId || !ctaLocation) {
+        return res.status(400).json({ error: 'leadId and ctaLocation are required' });
+      }
+
+      const leadRef = admin.firestore().collection('marketing_leads').doc(String(leadId));
+      const leadSnap = await leadRef.get();
+      if (!leadSnap.exists) {
+        return res.status(404).json({ error: 'Lead not found' });
+      }
+
+      await leadRef.set(
+        {
+          leadScore: admin.firestore.FieldValue.increment(10),
+          lastCtaClickedAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastEngagedAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      await recordMarketingEvent(String(leadId), 'marketing_cta_clicked', {
+        ctaText: ctaText || null,
+        ctaLocation,
+        intent: intent || 'project_inquiry',
+      });
+
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('[Marketing] Engagement tracking error:', error);
+      return res.status(500).json({ error: 'Failed to track engagement' });
+    }
+  }
+);
+
 exports.processMarketingEmailJobs = onSchedule(
   {
     schedule: 'every 15 minutes',

@@ -10,6 +10,11 @@ The store analyzer was failing due to Puppeteer/Chrome not being available or ti
 4. ✅ **Faster page loads** - Changed from `networkidle2` to `domcontentloaded`
 5. ✅ **Improved timeouts** - Added timeouts at multiple levels
 6. ✅ **Enhanced browser config** - Added more stability flags
+7. ✅ **SSRF-safe fetch** - Redirect validation + DNS re-check (`lib/utils/safe-store-fetch.ts`)
+8. ✅ **Vercel browser** - `@sparticuz/chromium` + `puppeteer-core` on serverless
+9. ✅ **Honest loading UX** - Time-based progress (no fake 88% stall)
+10. ✅ **Coverage strip** - Per-feature included/estimated/skipped badges in results
+11. ✅ **API `maxDuration: 120`** - Reduces serverless timeouts on long runs
 
 ## Quick Commands
 
@@ -62,19 +67,30 @@ pnpm dev
 
 ### Deployment
 
-- **Vercel**: Use `@sparticuz/chromium` or external service (see setup guide)
+- **Vercel**: `@sparticuz/chromium` is wired automatically when `VERCEL=1` (see `lib/services/puppeteer-launch.ts`)
 - **Docker**: Add Chrome to image (see setup guide)
 - **Firebase**: Use Cloud Run with Chrome (see setup guide)
 
 ### Testing
 
 ```bash
-# 1. Start dev server
-pnpm dev
+# Unit + integration tests (Vitest)
+pnpm test:analyzer:unit
 
-# 2. In another terminal, test analyzer
+# Live API smoke test (requires dev server running)
+pnpm dev
 pnpm test:analyzer
 ```
+
+Coverage map:
+
+- **Validation** — `tests/validation/analyze-store.test.ts`
+- **URL + SSRF fetch** — `tests/utils/store-url.test.ts`, `tests/utils/safe-store-fetch.test.ts`
+- **Core service** — `tests/services/analyzer.test.ts` (cache, Lighthouse, HTML fallback, errors, graceful degradation)
+- **API route** — `tests/api/analyze-store.route.test.ts` (rate limit, captcha, serialization, error mapping)
+- **Client progress UX** — `tests/lib/analyzer-progress.test.ts`, `tests/hooks/use-analyzer-progress.test.tsx`
+- **Response shaping** — `tests/services/analyzer-response.test.ts`
+- **AI readiness slice** — `tests/services/ai-readiness.test.ts`
 
 ## Common Issues
 

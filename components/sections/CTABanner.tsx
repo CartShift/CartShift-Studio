@@ -7,6 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { useDirection } from '@/lib/i18n-utils';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { trackHighIntentCta } from '@/lib/marketing-cta';
 
 export const CTABanner: React.FC = () => {
   const t = useTranslations();
@@ -67,7 +68,15 @@ export const CTABanner: React.FC = () => {
                 transition={{ delay: 0.4 }}
                 className="pt-6"
               >
-                <Link href="/contact">
+                <Link
+                  href="/contact"
+                  onClick={() =>
+                    trackHighIntentCta({
+                      ctaText: t('ctaBanner.button'),
+                      ctaLocation: 'global_cta_banner',
+                    })
+                  }
+                >
                   <Button
                     size="lg"
                     className="h-20 px-12 md:px-16 text-2xl font-black group shadow-glow-primary bg-primary-600 hover:bg-primary-700 transition-all hover:scale-[1.02]"
