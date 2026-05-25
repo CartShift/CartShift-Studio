@@ -38,10 +38,13 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   setRequestLocale(locale as 'en' | 'he');
 
   const orgSchema = generateOrganizationSchema();
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'About', url: '/about' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'About', url: '/about' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const teamMembers = [
     {

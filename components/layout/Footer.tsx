@@ -5,6 +5,7 @@ import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { trackNewsletterSignup } from '@/lib/analytics';
 import { subscribeNewsletter } from '@/lib/services/newsletter-client';
@@ -18,6 +19,7 @@ export const Footer: React.FC = () => {
   const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentYear, setCurrentYear] = useState(2026);
+  const locale = useLocale();
 
   const { settings: systemSettings } = useSystemSettings();
 
@@ -59,7 +61,10 @@ export const Footer: React.FC = () => {
     set(true);
 
     try {
-      const result = await subscribeNewsletter(email);
+      const result = await subscribeNewsletter(email, {
+        locale: locale === 'he' ? 'he' : 'en',
+        source: 'newsletter_footer',
+      });
 
       if (!result.success) {
         throw new Error(result.error || t('portal.common.failedToSubscribe'));

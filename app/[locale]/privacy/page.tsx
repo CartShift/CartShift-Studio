@@ -25,10 +25,13 @@ export async function generateMetadata({
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Privacy Policy', url: '/privacy' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Privacy Policy', url: '/privacy' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   return (
     <>

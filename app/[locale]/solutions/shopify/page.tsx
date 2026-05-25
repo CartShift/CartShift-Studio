@@ -57,14 +57,21 @@ export default async function ShopifyPage({ params }: { params: Promise<{ locale
   setRequestLocale(locale as 'en' | 'he');
   const serviceSchema = generateServiceSchema(
     'Shopify Development',
-    'Expert Shopify development services including store setup, custom features, performance optimization, and ongoing support.'
+    'Expert Shopify development services including store setup, custom features, performance optimization, and ongoing support.',
+    {
+      locale: locale as 'en' | 'he',
+      url: '/solutions/shopify',
+    }
   );
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Solutions', url: '/' },
-    { name: 'Shopify Development', url: '/solutions/shopify' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/' },
+      { name: 'Shopify Development', url: '/solutions/shopify' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const faqSchema = generateFAQPageSchema([
     {

@@ -17,7 +17,6 @@ export async function generateMetadata({
         'CartShift Studio terms of service. Read our terms and conditions for using our website and services.',
       url: '/terms',
       keywords: ['terms of service', 'terms and conditions', 'legal', 'user agreement'],
-      noindex: true,
     },
     locale as 'en' | 'he'
   );
@@ -26,10 +25,13 @@ export async function generateMetadata({
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Terms of Service', url: '/terms' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Terms of Service', url: '/terms' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   return (
     <>

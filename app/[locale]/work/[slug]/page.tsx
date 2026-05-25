@@ -73,17 +73,21 @@ export default async function CaseStudyPage({
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Work', url: '/work' },
-    { name: caseStudy.title, url: `/work/${slug}` },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Work', url: '/work' },
+      { name: caseStudy.title, url: `/work/${slug}` },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const articleSchema = generateArticleSchema({
     title: caseStudy.title,
     description: caseStudy.summary,
     date: new Date().toISOString(),
-    url: `${siteUrl}/work/${slug}`,
+    url: `${siteUrl}/${locale}/work/${slug}`,
+    locale: locale as 'en' | 'he',
     category: caseStudy.industry,
     image: caseStudy.hero.image ? `${siteUrl}${caseStudy.hero.image}` : undefined,
   });

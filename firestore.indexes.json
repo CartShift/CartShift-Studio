@@ -1,6 +1,25 @@
 {
   "indexes": [
     {
+      "collectionGroup": "marketing_email_jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ],
+      "density": "SPARSE_ALL"
+    },
+    {
       "collectionGroup": "portal_testimonials",
       "queryScope": "COLLECTION",
       "fields": [

@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, type ReactNode } from 'react';
+import { useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import {
   useViewTransition,
@@ -14,6 +15,29 @@ export interface ViewTransitionLinkProps extends Omit<React.ComponentPropsWithou
   viewTransition?: boolean;
   transitionOptions?: Omit<ViewTransitionOptions, 'skipTransition'>;
   preset?: TransitionPreset;
+}
+
+function getCrawlableHref(href: string, locale: string): string {
+  if (
+    href.startsWith('#') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:') ||
+    /^https?:\/\//i.test(href)
+  ) {
+    return href;
+  }
+
+  const path = href.startsWith('/') ? href : `/${href}`;
+
+  if (path === '/') {
+    return `/${locale}`;
+  }
+
+  if (/^\/(en|he)(?:\/|$)/.test(path)) {
+    return path;
+  }
+
+  return `/${locale}${path}`;
 }
 
 export const ViewTransitionLink = forwardRef<HTMLAnchorElement, ViewTransitionLinkProps>(
@@ -31,7 +55,9 @@ export const ViewTransitionLink = forwardRef<HTMLAnchorElement, ViewTransitionLi
     ref
   ) => {
     const router = useRouter();
+    const locale = useLocale();
     const { startViewTransition, isSupported } = useViewTransition();
+    const crawlableHref = getCrawlableHref(href, locale);
 
     const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (onClick) {
@@ -70,7 +96,7 @@ export const ViewTransitionLink = forwardRef<HTMLAnchorElement, ViewTransitionLi
     };
 
     return (
-      <a ref={ref} href={href} onClick={handleClick} className={className} {...props}>
+      <a ref={ref} href={crawlableHref} onClick={handleClick} className={className} {...props}>
         {children}
       </a>
     );

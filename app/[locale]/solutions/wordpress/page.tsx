@@ -41,14 +41,21 @@ export default async function WordPressPage({ params }: { params: Promise<{ loca
   setRequestLocale(locale as 'en' | 'he');
   const serviceSchema = generateServiceSchema(
     'WordPress Development',
-    'Expert WordPress development services for content sites, news platforms, and custom websites. Theme customization, performance optimization, and ongoing support.'
+    'Expert WordPress development services for content sites, news platforms, and custom websites. Theme customization, performance optimization, and ongoing support.',
+    {
+      locale: locale as 'en' | 'he',
+      url: '/solutions/wordpress',
+    }
   );
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Solutions', url: '/' },
-    { name: 'WordPress Development', url: '/solutions/wordpress' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/' },
+      { name: 'WordPress Development', url: '/solutions/wordpress' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const faqSchema = generateFAQPageSchema([
     {

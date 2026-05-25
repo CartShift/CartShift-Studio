@@ -44,15 +44,19 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: `${baseUrl}/${locale}` },
-    { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: `${baseUrl}/${locale}` },
+      { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const collectionSchema = generateCollectionPageSchema({
     name: 'E-commerce Blog',
     description: 'Expert e-commerce tips, Shopify guides, and WordPress tutorials',
     url: `${baseUrl}/${locale}/blog`,
+    locale: locale as 'en' | 'he',
     items: posts.slice(0, 10).map(post => ({
       name: post.title,
       url: `${baseUrl}/${locale}/blog/${post.slug}`,

@@ -30,7 +30,6 @@ export async function generateMetadata({
         'client communication',
         'project transparency',
       ],
-      noindex: true,
     },
     locale as 'en' | 'he'
   );
@@ -44,11 +43,14 @@ export default async function ClientPortalPage({
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Tools', url: '/tools' },
-    { name: 'Client Portal', url: '/tools/client-portal' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Tools', url: '/tools' },
+      { name: 'Client Portal', url: '/tools/client-portal' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const softwareSchema = generateSoftwareApplicationSchema({
     name: 'CartShift Client Portal',
@@ -61,6 +63,7 @@ export default async function ClientPortalPage({
       price: '0',
       priceCurrency: 'USD',
     },
+    locale: locale as 'en' | 'he',
   });
 
   return (

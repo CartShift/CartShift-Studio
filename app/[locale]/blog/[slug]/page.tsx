@@ -101,11 +101,14 @@ export default async function BlogPostPage({
     readingTime: post.readingTime,
   });
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: `${baseUrl}/${locale}` },
-    { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
-    { name: localizedTitle, url: articleUrl },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: `${baseUrl}/${locale}` },
+      { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
+      { name: localizedTitle, url: articleUrl },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const allPosts = await getAllPosts();
   const relatedPosts = allPosts

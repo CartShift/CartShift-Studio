@@ -43,10 +43,13 @@ export async function generateMetadata({
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Contact', url: '/contact' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Contact', url: '/contact' },
+    ],
+    locale as 'en' | 'he'
+  );
   const localBusinessSchema = generateLocalBusinessSchema();
 
   return (

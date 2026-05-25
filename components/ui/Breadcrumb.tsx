@@ -35,8 +35,8 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
     url: item.href || '',
   }));
 
-  const breadcrumbSchema = generateBreadcrumbSchema(schemaItems);
   const locale = useLocale();
+  const breadcrumbSchema = generateBreadcrumbSchema(schemaItems, locale as 'en' | 'he');
   const isRTL = isRTLLocale(locale);
 
   return (

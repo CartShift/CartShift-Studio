@@ -166,14 +166,18 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
   const meta =
     INDUSTRY_META[industry as IndustrySlug]?.[locale as 'en' | 'he'] || INDUSTRY_META.fashion.en;
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Industries', url: '/' },
-    { name: meta.title, url: `/industries/${industry}` },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/' },
+      { name: meta.title, url: `/industries/${industry}` },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const serviceSchema = generateServiceSchema(`${meta.title} Development`, meta.description, {
     url: `/industries/${industry}`,
+    locale: locale as 'en' | 'he',
   });
 
   return (

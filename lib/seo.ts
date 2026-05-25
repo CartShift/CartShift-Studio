@@ -2,6 +2,33 @@ import { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 const defaultOgImage = `${siteUrl}/images/og-default.png`;
+type Locale = 'en' | 'he';
+
+const localePathPattern = /^\/(en|he)(?:\/|$)/;
+
+export function toAbsoluteLocalizedUrl(url?: string, locale: Locale = 'en'): string {
+  const rawUrl = url?.trim() || '/';
+
+  if (/^https?:\/\//i.test(rawUrl)) {
+    return rawUrl;
+  }
+
+  if (rawUrl === '#' || rawUrl.startsWith('#')) {
+    return `${siteUrl}/${locale}`;
+  }
+
+  const path = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
+
+  if (path === '/') {
+    return `${siteUrl}/${locale}`;
+  }
+
+  if (localePathPattern.test(path)) {
+    return `${siteUrl}${path}`;
+  }
+
+  return `${siteUrl}/${locale}${path}`;
+}
 
 export interface SEOConfig {
   title: string;
@@ -150,6 +177,7 @@ export interface ServiceSchemaConfig {
   url?: string;
   image?: string;
   priceRange?: string;
+  locale?: Locale;
   offers?: Array<{
     name: string;
     description: string;
@@ -162,6 +190,8 @@ export function generateServiceSchema(
   description: string,
   config?: Partial<ServiceSchemaConfig>
 ) {
+  const serviceUrl = toAbsoluteLocalizedUrl(config?.url || '/', config?.locale || 'en');
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -169,7 +199,7 @@ export function generateServiceSchema(
     serviceType: serviceName,
     name: serviceName,
     description: description,
-    url: config?.url || siteUrl,
+    url: serviceUrl,
     image: config?.image || `${siteUrl}/images/og-default.png`,
     provider: {
       '@type': 'Organization',
@@ -268,6 +298,7 @@ export interface SoftwareApplicationSchemaConfig {
   url?: string;
   operatingSystem?: string;
   applicationCategory?: string;
+  locale?: Locale;
   offers?: {
     price: string;
     priceCurrency: string;
@@ -275,11 +306,7 @@ export interface SoftwareApplicationSchemaConfig {
 }
 
 export function generateSoftwareApplicationSchema(config: SoftwareApplicationSchemaConfig) {
-  const appUrl = config.url
-    ? config.url.startsWith('http')
-      ? config.url
-      : `${siteUrl}${config.url}`
-    : `${siteUrl}/tools/store-analyzer`;
+  const appUrl = toAbsoluteLocalizedUrl(config.url || '/tools/store-analyzer', config.locale);
 
   return {
     '@context': 'https://schema.org',
@@ -326,11 +353,12 @@ export function generateArticleSchema(post: {
   readingTime?: number;
 }) {
   const language = post.locale === 'he' ? 'he-IL' : 'en-US';
+  const articleUrl = toAbsoluteLocalizedUrl(post.url, post.locale || 'en');
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    '@id': `${post.url}/#article`,
+    '@id': `${articleUrl}/#article`,
     headline: post.title,
     description: post.description,
     datePublished: post.date,
@@ -355,7 +383,7 @@ export function generateArticleSchema(post: {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': post.url,
+      '@id': articleUrl,
     },
     inLanguage: language,
     copyrightHolder: {
@@ -473,7 +501,10 @@ export function generateWebSiteSchema(locale?: 'en' | 'he') {
   };
 }
 
-export function generateBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
+export function generateBreadcrumbSchema(
+  items: Array<{ name: string; url: string }>,
+  locale: Locale = 'en'
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -481,7 +512,7 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
+      item: toAbsoluteLocalizedUrl(item.url, locale),
     })),
   };
 }
@@ -573,18 +604,21 @@ export function generateCollectionPageSchema(page: {
   name: string;
   description: string;
   url: string;
+  locale?: Locale;
   items: Array<{
     name: string;
     url: string;
     description?: string;
   }>;
 }) {
+  const locale = page.locale || 'en';
+
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: page.name,
     description: page.description,
-    url: page.url.startsWith('http') ? page.url : `${siteUrl}${page.url}`,
+    url: toAbsoluteLocalizedUrl(page.url, locale),
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: page.items.length,
@@ -592,7 +626,7 @@ export function generateCollectionPageSchema(page: {
         '@type': 'ListItem',
         position: index + 1,
         name: item.name,
-        url: item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
+        url: toAbsoluteLocalizedUrl(item.url, locale),
         ...(item.description && { description: item.description }),
       })),
     },

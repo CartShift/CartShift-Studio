@@ -3,6 +3,7 @@ import { validateNewsletterSubscription, type NewsletterSubscriptionData } from 
 import { sanitizeString } from '@/lib/sanitize';
 import { logError } from '@/lib/error-handler';
 import { buildFirebaseFunctionUrl } from '@/lib/services/firebase';
+import { captureMarketingLead } from '@/lib/services/marketing';
 
 export async function subscribeNewsletter(
   data: unknown
@@ -19,7 +20,21 @@ export async function subscribeNewsletter(
 
   const sanitizedData: NewsletterSubscriptionData = {
     email: sanitizeString(validation.data.email),
+    locale: validation.data.locale,
+    source: validation.data.source ? sanitizeString(validation.data.source) : undefined,
   };
+
+  const marketingResult = await captureMarketingLead({
+    email: sanitizedData.email,
+    locale: sanitizedData.locale || 'en',
+    source: sanitizedData.source === 'newsletter' ? 'newsletter' : 'newsletter_footer',
+    consent: true,
+    subscribeNewsletter: true,
+  });
+
+  if (marketingResult.success) {
+    return { success: true };
+  }
 
   const firebaseUrl = env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
   if (!firebaseUrl) {

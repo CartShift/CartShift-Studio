@@ -43,16 +43,20 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale as 'en' | 'he');
   const caseStudies = getAllCaseStudies(locale);
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Work', url: '/work' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Work', url: '/work' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const collectionSchema = generateCollectionPageSchema({
     name: 'Our Work | Shopify, WordPress & Web App Projects',
     description:
       'Recent Shopify, WordPress, web app, migration, and optimization projects from CartShift Studio.',
     url: '/work',
+    locale: locale as 'en' | 'he',
     items: caseStudies.map(cs => ({
       name: cs.title,
       url: `/work/${cs.slug}`,

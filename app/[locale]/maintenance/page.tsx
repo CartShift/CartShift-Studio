@@ -58,10 +58,13 @@ const maintenanceFaqs = [
 export default async function MaintenancePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Maintenance & Support', url: '/maintenance' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Maintenance & Support', url: '/maintenance' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const faqSchema = generateFAQPageSchema(maintenanceFaqs);
 

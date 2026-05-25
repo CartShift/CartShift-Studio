@@ -61,10 +61,13 @@ const pricingFaqs = [
 export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Pricing', url: '/pricing' },
-  ]);
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Pricing', url: '/pricing' },
+    ],
+    locale as 'en' | 'he'
+  );
 
   const faqSchema = generateFAQPageSchema(pricingFaqs);
 
