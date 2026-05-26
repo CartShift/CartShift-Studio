@@ -6,6 +6,18 @@ type Locale = 'en' | 'he';
 
 const localePathPattern = /^\/(en|he)(?:\/|$)/;
 
+function toAbsoluteAssetUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${siteUrl}${url.startsWith('/') ? url : `/${url}`}`;
+}
+
+function getImageMimeType(url: string): string {
+  if (/\.webp(?:$|\?)/i.test(url)) return 'image/webp';
+  if (/\.jpe?g(?:$|\?)/i.test(url)) return 'image/jpeg';
+  return 'image/png';
+}
+
 export function toAbsoluteLocalizedUrl(url?: string, locale: Locale = 'en'): string {
   const rawUrl = url?.trim() || '/';
 
@@ -44,7 +56,7 @@ export interface SEOConfig {
 }
 
 export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metadata {
-  const imageUrl = config.image || defaultOgImage;
+  const imageUrl = toAbsoluteAssetUrl(config.image) || defaultOgImage;
   const pathOnly = config.url?.replace(siteUrl, '').replace(/^\/(en|he)/, '') || '';
   const currentLocale = locale || 'en';
   const canonicalUrl = `${siteUrl}/${currentLocale}${pathOnly}`;
@@ -73,10 +85,10 @@ export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metad
       images: [
         {
           url: imageUrl,
-          width: 1200,
-          height: 630,
+          width: 1344,
+          height: 704,
           alt: config.title,
-          type: 'image/png',
+          type: getImageMimeType(imageUrl),
         },
       ],
       type: config.type || 'website',
@@ -354,6 +366,7 @@ export function generateArticleSchema(post: {
 }) {
   const language = post.locale === 'he' ? 'he-IL' : 'en-US';
   const articleUrl = toAbsoluteLocalizedUrl(post.url, post.locale || 'en');
+  const imageUrl = toAbsoluteAssetUrl(post.image) || defaultOgImage;
 
   return {
     '@context': 'https://schema.org',
@@ -396,9 +409,9 @@ export function generateArticleSchema(post: {
     ...(post.readingTime && { timeRequired: `PT${post.readingTime}M` }),
     image: {
       '@type': 'ImageObject',
-      url: post.image || defaultOgImage,
-      width: 1200,
-      height: 630,
+      url: imageUrl,
+      width: 1344,
+      height: 704,
     },
   };
 }

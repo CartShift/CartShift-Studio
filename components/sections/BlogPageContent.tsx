@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { motion } from '@/lib/motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Search, Clock, ArrowRight, Sparkles, Calendar } from 'lucide-react';
@@ -15,6 +16,8 @@ interface BlogPost {
   excerpt: string;
   date: string;
   category: string;
+  image?: string;
+  imageAlt?: string;
   readingTime?: number;
   translation?: {
     title: string;
@@ -125,6 +128,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                 const title = isHe && post.translation?.title ? post.translation.title : post.title;
                 const category =
                   isHe && post.translation?.category ? post.translation.category : post.category;
+                const imageAlt = post.imageAlt || title;
                 const formattedDate = new Date(post.date).toLocaleDateString(
                   getDateLocaleString(locale),
                   {
@@ -142,7 +146,23 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     <Link href={`/blog/${post.slug}`}>
-                      <Card hover glow="subtle" className="h-full group overflow-hidden">
+                      <Card
+                        hover
+                        glow="subtle"
+                        noPadding
+                        className="h-full group overflow-hidden"
+                      >
+                        {post.image && (
+                          <div className="relative aspect-[21/11] overflow-hidden border-b border-surface-200/70 bg-surface-100 dark:border-white/10 dark:bg-surface-950">
+                            <Image
+                              src={post.image}
+                              alt={imageAlt}
+                              fill
+                              sizes="(min-width: 768px) 33vw, 100vw"
+                              className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                          </div>
+                        )}
                         <CardContent className="p-4">
                           <div className="mb-3">
                             <span className="text-xs font-semibold text-accent-600 dark:text-primary-400 uppercase tracking-wider">
@@ -264,6 +284,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                         : post.category;
                     const excerpt =
                       isHe && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
+                    const imageAlt = post.imageAlt || title;
                     const formattedDate = new Date(post.date).toLocaleDateString(
                       getDateLocaleString(locale),
                       {
@@ -281,7 +302,18 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                         transition={{ duration: 0.5, delay: index * 0.05 }}
                       >
                         <Link href={`/blog/${post.slug}`}>
-                          <Card hover glow="glow" className="h-full group overflow-hidden">
+                          <Card hover glow="glow" noPadding className="h-full group overflow-hidden">
+                            {post.image && (
+                              <div className="relative aspect-[21/11] overflow-hidden border-b border-surface-200/70 bg-surface-100 dark:border-white/10 dark:bg-surface-950">
+                                <Image
+                                  src={post.image}
+                                  alt={imageAlt}
+                                  fill
+                                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
+                              </div>
+                            )}
                             <CardContent className="p-4">
                               <div className="mb-3">
                                 <span className="px-3 py-1 bg-accent-600/10 dark:bg-primary-600/20 text-accent-700 dark:text-primary-300 text-xs font-bold rounded-full">

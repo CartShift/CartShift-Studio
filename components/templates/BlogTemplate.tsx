@@ -12,6 +12,8 @@ interface BlogPost {
   excerpt: string;
   date: string;
   category: string;
+  image?: string;
+  imageAlt?: string;
   translation?: {
     title: string;
     excerpt: string;

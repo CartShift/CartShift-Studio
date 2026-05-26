@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
 import { motion } from '@/lib/motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -16,6 +17,8 @@ interface RelatedPost {
   excerpt: string;
   category: string;
   date: string;
+  image?: string;
+  imageAlt?: string;
   translation?: {
     title: string;
     excerpt: string;
@@ -31,6 +34,8 @@ interface BlogPostContentProps {
   date: string;
   category: string;
   readingTime?: number;
+  image?: string;
+  imageAlt?: string;
 }
 
 export const BlogPostContent: React.FC<BlogPostContentProps> = ({
@@ -41,6 +46,8 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   date,
   category,
   readingTime,
+  image,
+  imageAlt,
 }) => {
   const t = useTranslations();
   const locale = useLocale();
@@ -682,6 +689,27 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                   </div>
                 </div>
 
+                {image && (
+                  <motion.figure
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-8 overflow-hidden rounded-2xl border border-surface-200 bg-surface-100 shadow-card-default dark:border-white/10 dark:bg-surface-950 dark:shadow-card-dark"
+                  >
+                    <div className="relative aspect-[21/11]">
+                      <Image
+                        src={image}
+                        alt={imageAlt || title}
+                        fill
+                        priority
+                        sizes="(min-width: 1024px) 70vw, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  </motion.figure>
+                )}
+
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -1189,6 +1217,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     isHe && relatedPost.translation?.category
                       ? relatedPost.translation.category
                       : relatedPost.category;
+                  const postImageAlt = relatedPost.imageAlt || postTitle;
                   const postExcerpt =
                     isHe && relatedPost.translation?.excerpt
                       ? relatedPost.translation.excerpt
@@ -1206,7 +1235,19 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                     >
                       <Link href={`/blog/${relatedPost.slug}`} className="block h-full">
-                        <Card className="h-full !p-6">
+                        <Card noPadding className="h-full overflow-hidden">
+                          {relatedPost.image && (
+                            <div className="relative aspect-[21/11] border-b border-surface-200/70 bg-surface-100 dark:border-white/10 dark:bg-surface-950">
+                              <Image
+                                src={relatedPost.image}
+                                alt={postImageAlt}
+                                fill
+                                sizes="(min-width: 1024px) 25vw, 100vw"
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="p-6">
                           <CardHeader>
                             <div className="flex items-center justify-between mb-3">
                               <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
@@ -1241,6 +1282,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                               </svg>
                             </span>
                           </CardContent>
+                          </div>
                         </Card>
                       </Link>
                     </motion.article>

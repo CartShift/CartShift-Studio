@@ -61,6 +61,7 @@ export async function generateMetadata({
       publishedTime: post.date,
       author: 'CartShift Studio',
       keywords,
+      image: post.image,
     },
     locale as 'en' | 'he'
   );
@@ -97,6 +98,7 @@ export default async function BlogPostPage({
     locale: locale as 'en' | 'he',
     author: 'CartShift Studio',
     category: localizedCategory,
+    image: post.image,
     wordCount: post.wordCount,
     readingTime: post.readingTime,
   });
@@ -120,6 +122,8 @@ export default async function BlogPostPage({
       excerpt: p.excerpt,
       category: p.category,
       date: p.date,
+      image: p.image,
+      imageAlt: p.imageAlt,
       translation: p.translation
         ? {
             title: p.translation.title,

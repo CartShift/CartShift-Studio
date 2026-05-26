@@ -16,6 +16,8 @@ interface BlogPostTemplateProps {
     excerpt: string;
     category: string;
     date: string;
+    image?: string;
+    imageAlt?: string;
     translation?: {
       title: string;
       excerpt: string;
@@ -51,6 +53,8 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
     excerpt: isHe && p.translation?.excerpt ? p.translation.excerpt : p.excerpt,
     category: isHe && p.translation?.category ? p.translation.category : p.category,
     date: p.date,
+    image: p.image,
+    imageAlt: p.imageAlt,
     translation: p.translation,
   }));
 
@@ -83,6 +87,8 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
         date={post.date}
         category={subtitle}
         readingTime={post.readingTime}
+        image={post.image}
+        imageAlt={post.imageAlt || title}
       />
     </>
   );

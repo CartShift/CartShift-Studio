@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from '@/lib/motion';
 import { SectionHeader } from '@/components/ui/Section';
 import { useTranslations, useLocale } from 'next-intl';
@@ -15,6 +16,8 @@ interface BlogPost {
   excerpt: string;
   date: string;
   category: string;
+  image?: string;
+  imageAlt?: string;
   readingTime?: number;
   translation?: {
     title: string;
@@ -40,6 +43,8 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
         category: isHe && post.translation?.category ? post.translation.category : post.category,
         date: post.date,
         href: `/blog/${post.slug}`,
+        image: post.image,
+        imageAlt: post.imageAlt,
         readingTime: post.readingTime,
       }))
     : latestPosts;
@@ -77,7 +82,19 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
             <div className="relative rounded-[2.5rem] p-8 md:p-14 bg-white/60 dark:bg-surface-950/40 border border-surface-200/50 dark:border-white/10 backdrop-blur-xl transition-all duration-500 hover:shadow-premium overflow-hidden">
               <div className="absolute top-0 start-0 h-full w-2 bg-gradient-to-b from-primary-500 to-accent-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              <div className="relative z-10">
+              <div className="relative z-10 grid gap-8 lg:grid-cols-[0.95fr,1.35fr] lg:items-center">
+                {featuredPost.image && (
+                  <div className="relative aspect-[21/11] overflow-hidden rounded-2xl border border-surface-200/70 bg-surface-100 dark:border-white/10 dark:bg-surface-950">
+                    <Image
+                      src={featuredPost.image}
+                      alt={featuredPost.imageAlt || featuredPost.title}
+                      fill
+                      sizes="(min-width: 1024px) 38vw, 100vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                <div>
                 <div className="inline-flex items-center gap-4 mb-8">
                   <span className="px-5 py-1.5 bg-accent-500 text-white text-xs font-black uppercase rounded-full shadow-lg">
                     {t('blogTeaser.new')}
@@ -113,6 +130,7 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
             </div>
           </Link>
@@ -129,7 +147,19 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
               <Link href={post.href} className="block h-full group">
-                <div className="h-full p-8 rounded-3xl bg-white/60 dark:bg-surface-950/40 border border-surface-200/50 dark:border-white/5 backdrop-blur-xl transition-all duration-500 hover:bg-white dark:hover:bg-white/10 hover:shadow-premium hover:-translate-y-2">
+                <div className="h-full overflow-hidden rounded-3xl bg-white/60 dark:bg-surface-950/40 border border-surface-200/50 dark:border-white/5 backdrop-blur-xl transition-all duration-500 hover:bg-white dark:hover:bg-white/10 hover:shadow-premium hover:-translate-y-2">
+                  {post.image && (
+                    <div className="relative aspect-[21/11] border-b border-surface-200/70 bg-surface-100 dark:border-white/10 dark:bg-surface-950">
+                      <Image
+                        src={post.image}
+                        alt={post.imageAlt || post.title}
+                        fill
+                        sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+                  <div className="p-8">
                   <div className="flex items-center gap-3 mb-6 text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-widest">
                     <span>
                       {new Date(post.date).toLocaleDateString(getDateLocaleString(locale))}
@@ -151,6 +181,7 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
                   <div className="mt-auto flex items-center gap-3 text-accent-600 dark:text-accent-400 font-black group-hover:gap-5 transition-all">
                     {t('blogTeaser.readMore')}
                     <ArrowRight size={20} className="rtl:rotate-180" />
+                  </div>
                   </div>
                 </div>
               </Link>

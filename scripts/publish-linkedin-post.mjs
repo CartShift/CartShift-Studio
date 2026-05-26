@@ -2,13 +2,14 @@ import fs from 'node:fs';
 import https from 'node:https';
 import path from 'node:path';
 
-const LINKEDIN_VERSION = '202605';
+const LINKEDIN_VERSION = process.env.LINKEDIN_VERSION || '202604';
 
 const USAGE = `Usage:
   node scripts/publish-linkedin-post.mjs --text-file <path> [options]
   node scripts/publish-linkedin-post.mjs --text-stdin [options]
 
 Options:
+  --api <posts|ugc>        LinkedIn API mode (default: posts)
   --text-file <path>       Path to the LinkedIn post text
   --text-stdin             Read post text from stdin
   --ledger-file <path>     JSON ledger for idempotent publish tracking
@@ -18,6 +19,7 @@ Options:
   --cycle <number>         Optional campaign cycle number (default: 1)
   --dry-run                Validate payload without posting
   --force                  Post even if slug already exists in the ledger
+  --probe                  Test outbound access to api.linkedin.com without posting
   --help                   Show this help text
 
 Environment:
@@ -50,11 +52,13 @@ function loadDotEnv(filePath) {
 
 function parseArgs(argv) {
   const args = {
+    api: process.env.LINKEDIN_API || 'posts',
     cycle: '',
     dryRun: false,
     force: false,
     help: false,
     ledgerFile: '',
+    probe: false,
     slug: '',
     textFile: '',
     textStdin: false,
@@ -77,6 +81,17 @@ function parseArgs(argv) {
 
     if (arg === '--force') {
       args.force = true;
+      continue;
+    }
+
+    if (arg === '--probe') {
+      args.probe = true;
+      continue;
+    }
+
+    if (arg === '--api') {
+      args.api = argv[index + 1] || args.api;
+      index += 1;
       continue;
     }
 
@@ -164,6 +179,69 @@ function requestLinkedInPost({ token, payload }) {
 
     request.on('error', reject);
     request.write(body);
+    request.end();
+  });
+}
+
+function requestLinkedInUgcPost({ token, payload }) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify(payload);
+    const request = https.request(
+      {
+        hostname: 'api.linkedin.com',
+        path: '/v2/ugcPosts',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+          'X-Restli-Protocol-Version': '2.0.0',
+        },
+      },
+      response => {
+        let responseBody = '';
+
+        response.setEncoding('utf8');
+        response.on('data', chunk => {
+          responseBody += chunk;
+        });
+        response.on('end', () => {
+          resolve({
+            body: responseBody,
+            linkedinPostId: response.headers['x-restli-id'] || '',
+            statusCode: response.statusCode ?? 0,
+          });
+        });
+      },
+    );
+
+    request.on('error', reject);
+    request.write(body);
+    request.end();
+  });
+}
+
+function probeLinkedInApi() {
+  return new Promise((resolve, reject) => {
+    const request = https.request(
+      {
+        hostname: 'api.linkedin.com',
+        path: '/',
+        method: 'HEAD',
+        timeout: 10000,
+      },
+      response => {
+        response.resume();
+        response.on('end', () => {
+          resolve({ statusCode: response.statusCode ?? 0 });
+        });
+      },
+    );
+
+    request.on('timeout', () => {
+      request.destroy(new Error('LinkedIn API probe timed out.'));
+    });
+    request.on('error', reject);
     request.end();
   });
 }
@@ -270,12 +348,40 @@ if (args.help) {
 const token = process.env.LINKEDIN_ACCESS_TOKEN?.trim();
 const author = process.env.LINKEDIN_AUTHOR_URN?.trim();
 
-if (!token) {
+if (args.probe) {
+  try {
+    const result = await probeLinkedInApi();
+
+    console.log(
+      JSON.stringify(
+        {
+          ok: true,
+          probe: true,
+          host: 'api.linkedin.com',
+          statusCode: result.statusCode,
+        },
+        null,
+        2,
+      ),
+    );
+  } catch (error) {
+    fail('LinkedIn API probe failed before publishing.', {
+      code: error.code,
+      message: error.message,
+    });
+  }
+} else if (!token) {
   fail('Missing LINKEDIN_ACCESS_TOKEN.');
 } else if (!author) {
   fail('Missing LINKEDIN_AUTHOR_URN.');
-} else if (!/^urn:li:(person|organization):[A-Za-z0-9_-]+$/.test(author)) {
-  fail('LINKEDIN_AUTHOR_URN must look like urn:li:person:{id} or urn:li:organization:{id}.');
+} else if (!/^urn:li:(person|organization|member|company):[A-Za-z0-9_-]+$/.test(author)) {
+  fail(
+    'LINKEDIN_AUTHOR_URN must look like urn:li:person:{id}, urn:li:organization:{id}, urn:li:member:{id}, or urn:li:company:{id}.',
+  );
+} else if (args.api === 'ugc' && !/^urn:li:(member|company):/.test(author)) {
+  fail('UGC API mode requires LINKEDIN_AUTHOR_URN to be a legacy member or company URN.');
+} else if (!['posts', 'ugc'].includes(args.api)) {
+  fail('Unsupported --api value. Use posts or ugc.');
 } else if (!args.textFile && !args.textStdin) {
   fail('Missing --text-file path or --text-stdin.');
 } else if (args.textFile && !fs.existsSync(args.textFile)) {
@@ -290,7 +396,7 @@ if (!token) {
   if (!commentary) {
     fail('LinkedIn post text is empty.');
   } else {
-    const payload = {
+    const postsPayload = {
       author,
       commentary,
       visibility: 'PUBLIC',
@@ -303,6 +409,22 @@ if (!token) {
       isReshareDisabledByAuthor: false,
     };
 
+    const ugcPayload = {
+      author,
+      lifecycleState: 'PUBLISHED',
+      specificContent: {
+        'com.linkedin.ugc.ShareContent': {
+          shareCommentary: {
+            text: commentary,
+          },
+          shareMediaCategory: 'NONE',
+        },
+      },
+      visibility: {
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
+      },
+    };
+
     if (args.dryRun) {
       console.log(
         JSON.stringify(
@@ -310,6 +432,7 @@ if (!token) {
             ok: true,
             dryRun: true,
             author,
+            api: args.api,
             linkedinVersion: LINKEDIN_VERSION,
             commentaryCharacters: commentary.length,
             slug: args.slug || undefined,
@@ -321,7 +444,10 @@ if (!token) {
       );
     } else {
       try {
-        const result = await requestLinkedInPost({ token, payload });
+        const result =
+          args.api === 'ugc'
+            ? await requestLinkedInUgcPost({ token, payload: ugcPayload })
+            : await requestLinkedInPost({ token, payload: postsPayload });
 
         if (result.statusCode < 200 || result.statusCode >= 300) {
           fail('LinkedIn post creation failed.', {
