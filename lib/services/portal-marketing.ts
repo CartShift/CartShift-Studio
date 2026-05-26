@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, orderBy, query, Timestamp, where } from 'firebase/firestore';
+import { collection, doc, getDocs, limit, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb, waitForAuth } from '@/lib/firebase';
 import { getPortalUser } from '@/lib/services/portal-users';
 
@@ -27,6 +27,8 @@ export interface MarketingLead {
   updatedAt?: Timestamp;
   lastEngagedAt?: Timestamp;
   lastClickedAt?: Timestamp;
+  contactStatus?: 'pending' | 'contacted';
+  lastContactedAt?: Timestamp;
 }
 
 export interface MarketingEmailJob {
@@ -66,6 +68,11 @@ export interface MarketingDashboardData {
     sentEmails: number;
     failedEmails: number;
     averageLeadScore: number;
+    leadsLast7Days: number;
+    leadsLast30Days: number;
+    needsFollowUp: number;
+    sourceCounts: Record<string, number>;
+    stageCounts: Record<string, number>;
   };
 }
 
@@ -110,6 +117,38 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
   })) as MarketingEvent[];
 
   const totalLeadScore = leads.reduce((sum, lead) => sum + (lead.leadScore || 0), 0);
+  const now = Date.now();
+  const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+  const leadsLast7Days = leads.filter(lead => {
+    const created = lead.createdAt?.toMillis();
+    return typeof created === 'number' && created >= sevenDaysAgo;
+  }).length;
+
+  const leadsLast30Days = leads.filter(lead => {
+    const created = lead.createdAt?.toMillis();
+    return typeof created === 'number' && created >= thirtyDaysAgo;
+  }).length;
+
+  const needsFollowUp = leads.filter(lead => {
+    if ((lead.leadScore || 0) < 50) return false;
+    if (lead.contactStatus === 'contacted') return false;
+    const updated = lead.updatedAt?.toMillis() || lead.createdAt?.toMillis() || 0;
+    return updated <= now - 48 * 60 * 60 * 1000;
+  }).length;
+
+  const sourceCounts = leads.reduce<Record<string, number>>((acc, lead) => {
+    const source = lead.latestSource || lead.primarySource || 'unknown';
+    acc[source] = (acc[source] || 0) + 1;
+    return acc;
+  }, {});
+
+  const stageCounts = leads.reduce<Record<string, number>>((acc, lead) => {
+    const stage = lead.funnelStage || 'unknown';
+    acc[stage] = (acc[stage] || 0) + 1;
+    return acc;
+  }, {});
 
   return {
     leads,
@@ -124,8 +163,29 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
       sentEmails: jobs.filter(job => job.status === 'sent').length,
       failedEmails: jobs.filter(job => job.status === 'failed').length,
       averageLeadScore: leads.length > 0 ? Math.round(totalLeadScore / leads.length) : 0,
+      leadsLast7Days,
+      leadsLast30Days,
+      needsFollowUp,
+      sourceCounts,
+      stageCounts,
     },
   };
+}
+
+export async function updateMarketingLeadContactStatus(
+  leadId: string,
+  contactStatus: 'contacted' | 'pending'
+): Promise<void> {
+  await waitForAuth();
+  await verifyAgencyAccess();
+
+  const db = getFirestoreDb();
+  const ref = doc(db, LEADS_COLLECTION, leadId);
+  await updateDoc(ref, {
+    contactStatus,
+    lastContactedAt: contactStatus === 'contacted' ? Timestamp.now() : null,
+    updatedAt: Timestamp.now(),
+  });
 }
 
 export async function getMarketingLeadJobs(leadId: string): Promise<MarketingEmailJob[]> {

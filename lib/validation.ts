@@ -7,6 +7,7 @@ export const contactFormSchema = z.object({
   message: z.string().max(5000, 'Message must be less than 5000 characters').optional(),
   company: z.string().max(200, 'Company name must be less than 200 characters').optional(),
   projectType: z.string().optional(),
+  locale: z.enum(['en', 'he']).optional(),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;

@@ -59,6 +59,7 @@ const MilestoneCompleted_1 = __importDefault(require("./templates/MilestoneCompl
 const QuoteReceived_1 = __importDefault(require("./templates/QuoteReceived"));
 const PaymentReceipt_1 = __importDefault(require("./templates/PaymentReceipt"));
 const NewComment_1 = __importDefault(require("./templates/NewComment"));
+const ContactFormNotification_1 = __importDefault(require("./templates/ContactFormNotification"));
 const DEFAULT_CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'hello@cart-shift.com';
 exports.EMAIL_CONFIG = {
     from: 'CartShift Studio <noreply@cart-shift.com>',
@@ -91,6 +92,8 @@ const renderEmail = async (templateName, data) => {
             return (0, render_1.render)((0, PaymentReceipt_1.default)(data));
         case 'new_comment':
             return (0, render_1.render)((0, NewComment_1.default)(data));
+        case 'contact_form_notification':
+            return (0, render_1.render)((0, ContactFormNotification_1.default)(data));
         default:
             throw new Error(`Unknown template: ${templateName}`);
     }
@@ -116,7 +119,9 @@ async function sendEmail(apiKey, options, attempt = 1) {
                         ? (0, QuoteReceived_1.default)(options.data)
                         : options.templateName === 'payment_receipt'
                             ? (0, PaymentReceipt_1.default)(options.data)
-                            : (0, NewComment_1.default)(options.data), { plainText: true });
+                            : options.templateName === 'contact_form_notification'
+                                ? (0, ContactFormNotification_1.default)(options.data)
+                                : (0, NewComment_1.default)(options.data), { plainText: true });
         const emailPayload = {
             from: exports.EMAIL_CONFIG.from,
             to: Array.isArray(options.to) ? options.to : [options.to],

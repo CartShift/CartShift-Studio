@@ -16,6 +16,7 @@ const marketingCaptureSchema = z.object({
       'contact_form',
       'blog_cta',
       'service_page_cta',
+      'blog_sidebar',
       'website',
     ])
     .default('website'),
@@ -58,6 +59,7 @@ export function getMarketingLeadScoreDelta(
   if (data.source === 'contact_form') score += 60;
   if (data.source === 'store_analyzer') score += 20;
   if (data.source === 'newsletter' || data.source === 'newsletter_footer') score += 5;
+  if (data.source === 'blog_sidebar') score += 5;
   if (data.source === 'blog_cta' || data.source === 'service_page_cta') score += 10;
 
   if (typeof data.overallScore === 'number') {
@@ -175,6 +177,7 @@ export async function trackMarketingCtaEngagement(data: {
   ctaText?: string;
   ctaLocation: string;
   intent?: string;
+  source?: string;
 }) {
   const functionUrl = getMarketingFunctionUrl('marketingTrackEngagement');
   if (!functionUrl) return { success: false };

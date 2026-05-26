@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       ctaText: body.ctaText,
       ctaLocation: body.ctaLocation,
       intent: body.intent,
+      source: body.source,
     });
 
     if (!result.success) {

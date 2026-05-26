@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
 import { trackFormSubmission } from '@/components/analytics/GoogleAnalytics';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useDirection } from '@/lib/i18n-utils';
 import { logError } from '@/lib/error-handler';
 import { getScheduleUrl } from '@/lib/schedule';
@@ -22,22 +23,66 @@ interface ContactFormData {
 
 export const ContactPageContent: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [loading, set] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const locale = useLocale() as 'en' | 'he';
+
+  const prefill = useMemo(() => {
+    const projectType = searchParams.get('projectType') || '';
+    const storeUrl = searchParams.get('storeUrl') || '';
+    const score = searchParams.get('score');
+    const fixes = searchParams.get('fixes');
+
+    if (!score && !storeUrl) {
+      return { projectType: projectType || '', message: '' };
+    }
+
+    const isHe = locale === 'he';
+    const message = isHe
+      ? `החנות שלי ${storeUrl ? `(${storeUrl}) ` : ''}קיבלה ציון ${score || '—'}/100 בניתוח החנות. אשמח לקבל הצעת מחיר לתיקון ${fixes || 'ה'} בעיות העדיפות הגבוהות מהדוח.`
+      : `My store${storeUrl ? ` (${storeUrl})` : ''} scored ${score || '—'}/100 in the store analyzer. I'd like a quote to fix the top ${fixes || ''} priority issues from my report.`;
+
+    return {
+      projectType: projectType || 'consultation',
+      message,
+      company: storeUrl || undefined,
+    };
+  }, [locale, searchParams]);
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<ContactFormData>();
+  } = useForm<ContactFormData>({
+    defaultValues: {
+      projectType: prefill.projectType,
+      message: prefill.message,
+      company: prefill.company,
+    },
+  });
+
+  useEffect(() => {
+    reset({
+      projectType: prefill.projectType,
+      message: prefill.message,
+      company: prefill.company,
+    });
+  }, [prefill, reset]);
+
   const t = useTranslations();
   const direction = useDirection();
 
   const onSubmit = async (data: ContactFormData) => {
-    set(true);
+    setLoading(true);
     setError(null);
 
     try {
-      const result = await submitContactForm(data);
+      const result = await submitContactForm({
+        ...data,
+        locale,
+      });
 
       if (!result.success) {
         throw new Error(result.error || t('portal.requests.form.failedToSubmit'));
@@ -53,7 +98,7 @@ export const ContactPageContent: React.FC = () => {
           : 'Something went wrong. Please try again or contact us directly.'
       );
     } finally {
-      set(false);
+      setLoading(false);
     }
   };
 

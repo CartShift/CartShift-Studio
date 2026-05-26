@@ -9,6 +9,7 @@ import MilestoneCompleted from './templates/MilestoneCompleted';
 import QuoteReceived from './templates/QuoteReceived';
 import PaymentReceipt from './templates/PaymentReceipt';
 import NewComment from './templates/NewComment';
+import ContactFormNotification from './templates/ContactFormNotification';
 
 // Types
 export interface EmailConfig {
@@ -51,7 +52,8 @@ export type EmailTemplate =
   | 'milestone_completed'
   | 'quote_received'
   | 'payment_receipt'
-  | 'new_comment';
+  | 'new_comment'
+  | 'contact_form_notification';
 
 export const renderEmail = async (templateName: EmailTemplate, data: any): Promise<string> => {
   switch (templateName) {
@@ -67,6 +69,8 @@ export const renderEmail = async (templateName: EmailTemplate, data: any): Promi
       return render(PaymentReceipt(data));
     case 'new_comment':
       return render(NewComment(data));
+    case 'contact_form_notification':
+      return render(ContactFormNotification(data));
     default:
       throw new Error(`Unknown template: ${templateName}`);
   }
@@ -113,7 +117,9 @@ export async function sendEmail(
               ? QuoteReceived(options.data)
               : options.templateName === 'payment_receipt'
                 ? PaymentReceipt(options.data)
-                : NewComment(options.data),
+                : options.templateName === 'contact_form_notification'
+                  ? ContactFormNotification(options.data)
+                  : NewComment(options.data),
       { plainText: true }
     );
 

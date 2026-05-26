@@ -445,6 +445,7 @@ function getLeadScoreDelta(data = {}) {
   if (data.source === 'contact_form') score += 60;
   if (data.source === 'store_analyzer') score += 20;
   if (data.source === 'newsletter' || data.source === 'newsletter_footer') score += 5;
+  if (data.source === 'blog_sidebar') score += 8;
   if (data.source === 'blog_cta' || data.source === 'service_page_cta') score += 10;
 
   if (typeof data.overallScore === 'number') {
@@ -457,6 +458,77 @@ function getLeadScoreDelta(data = {}) {
 
 function getMarketingLocale(locale) {
   return locale === 'he' ? 'he' : 'en';
+}
+
+function isStoreAnalyzerLead(lead) {
+  const sources = [lead?.primarySource, lead?.latestSource].filter(Boolean);
+  return sources.includes('store_analyzer');
+}
+
+function getSequenceStepDelayDays(step, lead) {
+  const score = lead?.overallScore;
+  if (!isStoreAnalyzerLead(lead) || typeof score !== 'number') {
+    return step.delayDays;
+  }
+
+  if (score < 50) {
+    if (step.stepId === 'project-inquiry') return Math.max(1, step.delayDays - 6);
+    if (step.stepId === 'breakup') return Math.max(3, step.delayDays - 10);
+    if (step.stepId === 'objections') return Math.max(2, step.delayDays - 4);
+  }
+
+  return step.delayDays;
+}
+
+function resolveMarketingStepCopy(step, lead) {
+  const score = lead?.overallScore;
+  if (!isStoreAnalyzerLead(lead) || typeof score !== 'number') {
+    return step;
+  }
+
+  const resolved = {
+    ...step,
+    en: { ...step.en },
+    he: { ...step.he },
+  };
+
+  if (score < 50 && step.stepId === 'leaking-revenue') {
+    resolved.en.subject = 'Critical store issues are costing you sales';
+    resolved.en.title = 'Your score signals urgent fixes, not cosmetic polish.';
+    resolved.he.subject = 'בעיות קריטיות בחנות עולות לכם במכירות';
+    resolved.he.title = 'הציון שלכם מסמן תיקונים דחופים, לא שיפורי פני שטח.';
+  }
+
+  if (score >= 80 && step.stepId === 'professional-rebuild') {
+    resolved.en.subject = 'Your store is strong — time to optimize for growth';
+    resolved.en.title = 'High scores usually mean the next wins are strategic, not emergency fixes.';
+    resolved.en.intro =
+      'You already cleared the basics. The next layer is merchandising depth, campaign velocity, and sharper analytics.';
+    resolved.he.subject = 'החנות חזקה — הגיע הזמן לאופטימיזציה לצמיחה';
+    resolved.he.title = 'ציון גבוה בדרך כלל אומר שהניצחונות הבאים אסטרטגיים, לא חירום.';
+    resolved.he.intro =
+      'כבר עברתם את הבסיס. השכבה הבאה היא עומק מרצ׳נדייזינג, מהירות קמפיינים ואנליטיקה חדה יותר.';
+  }
+
+  if (score >= 80 && step.stepId === 'case-study-proof') {
+    resolved.en.subject = 'How strong stores unlock the next revenue tier';
+    resolved.en.title = 'Growth-focused stores compound small UX wins into bigger AOV and repeat rate.';
+    resolved.he.subject = 'איך חנויות חזקות פותחות את מדרגת ההכנסה הבאה';
+    resolved.he.title = 'חנויות ממוקדות צמיחה מכפילות שיפורי UX קטנים ל-AOV וחזרה גבוהים יותר.';
+  }
+
+  if (score >= 80 && step.stepId === 'objections') {
+    resolved.en.subject = 'Scaling a healthy store without unnecessary risk';
+    resolved.en.title = 'The right next project should expand revenue, not rebuild what already works.';
+    resolved.en.intro =
+      'When the fundamentals are solid, scope should focus on campaigns, merchandising systems, and measurable experiments.';
+    resolved.he.subject = 'לסקל חנות בריאה בלי סיכון מיותר';
+    resolved.he.title = 'הפרויקט הנכון הבא צריך להרחיב הכנסות, לא לבנות מחדש מה שכבר עובד.';
+    resolved.he.intro =
+      'כשהיסודות יציבים, הסקופ צריך להתמקד בקמפיינים, מערכות מרצ׳נדייזינג וניסויים מדידים.';
+  }
+
+  return resolved;
 }
 
 function getMarketingContactUrl(locale, leadId) {
@@ -496,8 +568,9 @@ function escapeHtml(value) {
 }
 
 function renderMarketingEmail({ lead, job, step }) {
+  const resolvedStep = resolveMarketingStepCopy(step, lead);
   const locale = getMarketingLocale(lead.locale);
-  const copy = step[locale] || step.en;
+  const copy = resolvedStep[locale] || resolvedStep.en;
   const isRtl = locale === 'he';
   const dir = isRtl ? 'rtl' : 'ltr';
   const textAlign = isRtl ? 'right' : 'left';
@@ -683,6 +756,7 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
   steps.forEach(step => {
     const jobId = `${leadId}_${MARKETING_SEQUENCE_ID}_${step.stepId}`;
     const jobRef = admin.firestore().collection('marketing_email_jobs').doc(jobId);
+    const delayDays = getSequenceStepDelayDays(step, lead);
     batch.set(
       jobRef,
       {
@@ -694,7 +768,7 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
         stepId: step.stepId,
         status: 'pending',
         dueAt: admin.firestore.Timestamp.fromDate(
-          new Date(now + step.delayDays * 24 * 60 * 60 * 1000)
+          new Date(now + delayDays * 24 * 60 * 60 * 1000)
         ),
         attempts: 0,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -754,10 +828,11 @@ async function sendMarketingJob(jobDoc) {
     return;
   }
 
-  const copy = step[getMarketingLocale(lead.locale)] || step.en;
+  const resolvedStep = resolveMarketingStepCopy(step, lead);
+  const copy = resolvedStep[getMarketingLocale(lead.locale)] || resolvedStep.en;
   const { Resend } = require('resend');
   const resend = new Resend(resendApiKey.value());
-  const html = renderMarketingEmail({ lead, job, step });
+  const html = renderMarketingEmail({ lead, job, step: resolvedStep });
 
   await jobRef.update({
     status: 'sending',
@@ -957,7 +1032,7 @@ exports.marketingTrackEngagement = onRequest(
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-      const { leadId, ctaText, ctaLocation, intent } = req.body || {};
+      const { leadId, ctaText, ctaLocation, intent, source } = req.body || {};
       if (!leadId || !ctaLocation) {
         return res.status(400).json({ error: 'leadId and ctaLocation are required' });
       }
@@ -968,20 +1043,25 @@ exports.marketingTrackEngagement = onRequest(
         return res.status(404).json({ error: 'Lead not found' });
       }
 
-      await leadRef.set(
-        {
-          leadScore: admin.firestore.FieldValue.increment(10),
-          lastCtaClickedAt: admin.firestore.FieldValue.serverTimestamp(),
-          lastEngagedAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      const updatePayload = {
+        leadScore: admin.firestore.FieldValue.increment(10),
+        lastCtaClickedAt: admin.firestore.FieldValue.serverTimestamp(),
+        lastEngagedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      if (source) {
+        updatePayload.latestSource = String(source);
+        updatePayload.sources = admin.firestore.FieldValue.arrayUnion(String(source));
+      }
+
+      await leadRef.set(updatePayload, { merge: true });
 
       await recordMarketingEvent(String(leadId), 'marketing_cta_clicked', {
         ctaText: ctaText || null,
         ctaLocation,
         intent: intent || 'project_inquiry',
+        source: source || null,
       });
 
       return res.status(200).json({ success: true });
@@ -1201,35 +1281,31 @@ exports.contactForm = onRequest(
       }
 
       const { name, email, interest, message, company, projectType } = req.body;
+      const locale = getMarketingLocale(req.body.locale);
 
       if (!name || !email) {
         return res.status(400).json({ error: 'Name and email are required' });
       }
 
-      const { Resend } = require('resend');
-      const apiKey = resendApiKey.value();
-      if (apiKey) {
-        // Use generic template or create a specific contact_form template.
-        // For now, we'll use 'new_request' or similar, OR better, create a simple 'Notification' template.
-        // Since we don't have a 'contact_form' template yet, I will use 'new_comment' as a fallback
-        // or just use sendEmailWithLogging with ad-hoc html if I supported that?
-        // Wait, the new system enforces templates. I should probably add a ContactForm template.
-        // For this immediate step, I will map it to 'new_comment' where 'userName' is the sender name
-        // and 'commentText' is the message, purely to get the new look.
-        // Actually, let's just stick to the plan: User said "request update email", so they likely tested 'onPortalRequestUpdated'.
-        // If 'onPortalRequestUpdated' uses 'sendPortalEmail', and 'sendPortalEmail' calls 'sendEmailWithLogging' correctly,
-        // then the ONLY reason it looks old is deployment.
-        // However, I should still clean up this contact form eventually.
-        // But for the user's specific complaint ("request update email"), that logic IS in 'onPortalRequestUpdated'.
-        // Let's look at 'onPortalRequestUpdated' (lines 520+).
-        // It calls 'sendPortalEmail'.
-        // 'sendPortalEmail' calls 'sendEmailWithLogging' (lines 134+).
-        // 'sendEmailWithLogging' is imported from './lib/emails/email-service'.
-        // So the logic flow is correct for 'request update'.
-        // Conclusion: User MUST deploy.
-        // I will NOT edit contactForm right now to avoid scope creep/breaking things unnecessarily.
-        // I will just notify the user.
-      }
+      const teamEmail = contactEmail.value() || DEFAULT_CONTACT_EMAIL;
+      const leadsUrl = `${PORTAL_BASE_URL}/${locale}/portal/agency/leads`;
+      const notificationSubject =
+        locale === 'he'
+          ? `פנייה חדשה: ${name}${projectType ? ` — ${projectType}` : ''}`
+          : `New inquiry: ${name}${projectType ? ` — ${projectType}` : ''}`;
+
+      await sendPortalEmail(teamEmail, notificationSubject, 'contact_form_notification', {
+        name,
+        email,
+        company: company || null,
+        projectType: projectType || interest || null,
+        message: message || null,
+        locale,
+        leadsUrl,
+      }, {
+        tags: [{ name: 'type', value: 'contact_form_notification' }],
+        uniqueId: `contact_${getMarketingLeadId(email)}_${Date.now()}`,
+      });
 
       await admin
         .firestore()
@@ -1252,7 +1328,7 @@ exports.contactForm = onRequest(
         projectType,
         message,
         source: 'contact_form',
-        locale: req.body.locale || 'en',
+        locale,
         consent: false,
       });
 

@@ -126,6 +126,22 @@ export const trackNewsletterSignup = (location: string) => {
   trackEvent('newsletter_signup', { signup_location: location });
 };
 
+export const trackFunnelStage = (stage: string, source?: string) => {
+  trackEvent('funnel_stage', { funnel_stage: stage, funnel_source: source });
+};
+
+export const trackAnalyzerQuoteClick = (params: {
+  storeUrl: string;
+  overallScore: number;
+  fixCount: number;
+}) => {
+  trackEvent('analyzer_results_quote', {
+    store_url: params.storeUrl,
+    overall_score: params.overallScore,
+    fix_count: params.fixCount,
+  });
+};
+
 export const trackExitIntentShown = () => trackEvent('exit_intent_shown');
 
 export const trackExitIntentClosed = (action: 'cta_clicked' | 'dismissed') => {

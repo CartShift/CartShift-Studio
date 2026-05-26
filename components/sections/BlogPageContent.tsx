@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Search, Clock, ArrowRight, Sparkles, Calendar } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { NewsletterSignupForm } from '@/components/forms/NewsletterSignupForm';
 import { isRTLLocale, getDateLocaleString } from '@/lib/locale-config';
 
 interface BlogPost {
@@ -378,19 +379,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     <p className="text-sm text-surface-600 dark:text-surface-300 mb-4">
                       {t('blog.content.newsletter.description')}
                     </p>
-                    <form className="space-y-3">
-                      <input
-                        type="email"
-                        placeholder={t('blog.content.newsletter.placeholder')}
-                        className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-white/5 bg-white dark:bg-surface-950 text-surface-900 dark:text-white placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-500"
-                      />
-                      <button
-                        type="submit"
-                        className="w-full px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-600 text-white font-medium transition-colors"
-                      >
-                        {t('blog.content.newsletter.subscribe')}
-                      </button>
-                    </form>
+                    <NewsletterSignupForm source="blog_sidebar" />
                   </CardContent>
                 </Card>
               </motion.div>

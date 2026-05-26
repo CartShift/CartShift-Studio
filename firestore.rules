@@ -314,7 +314,9 @@ service cloud.firestore {
 
     match /marketing_leads/{leadId} {
       allow read: if isAuthenticated() && isAgencyUser();
-      allow write: if false;
+      allow create: if false;
+      allow delete: if false;
+      allow update: if isAuthenticated() && isAgencyUser();
     }
 
     match /marketing_email_jobs/{jobId} {

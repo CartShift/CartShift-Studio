@@ -37,7 +37,10 @@ import {
   Package,
   TrendingUp,
 } from 'lucide-react';
+import { trackAnalyzerQuoteClick } from '@/lib/analytics';
 import { getScheduleUrl } from '@/lib/schedule';
+import { Link } from '@/i18n/navigation';
+import { trackHighIntentCta } from '@/lib/marketing-cta';
 import { PRIORITY_RECOMMENDATIONS_COUNT } from '@/lib/constants/pricing';
 import { AnalyzerCoverageStrip } from '@/components/analyzer/AnalyzerCoverageStrip';
 import { ANIMATION_DELAY_STEP, ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/constants/ui';
@@ -149,6 +152,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     headerDescription,
     expertFixCount,
     expertFixKey,
+    quoteHref,
   } = useMemo(() => {
     const recommendations = flattenRecommendations(
       results.sections,
@@ -197,8 +201,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       headerDescription: description,
       expertFixCount: fixCount,
       expertFixKey: fixKey,
+      quoteHref: `/contact?${new URLSearchParams({
+        projectType: 'consultation',
+        storeUrl: results.storeUrl,
+        score: String(results.overallScore),
+        fixes: String(fixCount),
+      }).toString()}`,
     };
-  }, [results.overallScore, results.sections, t]);
+  }, [results.overallScore, results.sections, results.storeUrl, t]);
 
   const overallStatus = getStatusColor(results.overallScore);
 
@@ -1019,6 +1029,30 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+            <Link
+              href={quoteHref}
+              onClick={() => {
+                trackAnalyzerQuoteClick({
+                  storeUrl: results.storeUrl,
+                  overallScore: results.overallScore,
+                  fixCount: expertFixCount,
+                });
+                trackHighIntentCta({
+                  ctaText: t('cta.getQuote'),
+                  ctaLocation: 'analyzer_results_quote',
+                });
+              }}
+              className="w-full sm:w-auto"
+            >
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto border-primary-500/30 text-primary-600 dark:text-primary-400"
+              >
+                {t('cta.getQuote')}
+                <ArrowRight className="w-4 h-4 ms-2" />
+              </Button>
+            </Link>
             <a
               href={getScheduleUrl()}
               target="_blank"

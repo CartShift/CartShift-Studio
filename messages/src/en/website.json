@@ -1051,6 +1051,8 @@
       "placeholder": "Your email",
       "subscribe": "Subscribe",
       "success": "Thanks for subscribing!",
+      "submitting": "Subscribing...",
+      "error": "Could not subscribe. Please try again.",
       "sslSecured": "SSL Secured",
       "shopifyPartner": "Shopify Partner"
     },
@@ -1638,6 +1640,7 @@
       "description": "Book a free strategy call with our experts to discuss your results and create an action plan.",
       "bookCall": "Book Free Strategy Call",
       "bookStrategyCall": "Book Strategy Call",
+      "getQuote": "Get a quote for top fixes",
       "fixIssues": "Fix These Issues",
       "analyzeAnother": "Analyze Another Store",
       "analyzeNow": "Analyze My Store Now"

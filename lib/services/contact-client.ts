@@ -1,11 +1,16 @@
 import { logError } from '@/lib/logger';
 
-export async function submitContactForm(data: {
+export interface ContactFormSubmitData {
   name: string;
   email: string;
   subject?: string;
   message: string;
-}) {
+  company?: string;
+  projectType?: string;
+  locale?: 'en' | 'he';
+}
+
+export async function submitContactForm(data: ContactFormSubmitData) {
   try {
     const response = await fetch('/api/contact', {
       method: 'POST',

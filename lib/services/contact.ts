@@ -29,6 +29,7 @@ export async function submitContactForm(
     projectType: validation.data.projectType
       ? sanitizeString(validation.data.projectType)
       : undefined,
+    locale: validation.data.locale,
   };
 
   const firebaseUrl = env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;

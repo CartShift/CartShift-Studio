@@ -10,7 +10,21 @@
         "totalLeads": "Total leads",
         "hotLeads": "Hot leads",
         "pendingEmails": "Pending emails",
-        "avgScore": "Avg. score"
+        "avgScore": "Avg. score",
+        "leads7d": "New leads (7d)",
+        "leads30d": "New leads (30d)",
+        "needsFollowUp": "Needs follow-up",
+        "converted": "Converted"
+      },
+      "funnel": {
+        "title": "Funnel snapshot",
+        "bySource": "By source",
+        "byStage": "By stage"
+      },
+      "filters": {
+        "all": "All leads",
+        "hot": "Hot (score ≥ 50)",
+        "needsFollowUp": "Needs follow-up"
       },
       "leads": {
         "title": "Lead pipeline",
@@ -21,9 +35,23 @@
         "score": "Score",
         "email": "Last email",
         "updated": "Updated",
+        "actions": "Actions",
         "openStore": "Open store",
         "none": "None",
-        "empty": "No matching leads yet."
+        "empty": "No matching leads yet.",
+        "contacted": "Contacted"
+      },
+      "actions": {
+        "copyEmail": "Copy email",
+        "emailLead": "Email lead",
+        "openCalendar": "Open calendar",
+        "markContacted": "Mark contacted",
+        "invite": "Invite to portal",
+        "inviteTitle": "Invite lead to portal",
+        "inviteNoOrg": "Create an organization before inviting clients.",
+        "selectOrg": "Organization",
+        "copied": "Email copied",
+        "contacted": "Lead marked as contacted"
       },
       "jobs": {
         "title": "Recent email jobs",
