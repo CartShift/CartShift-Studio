@@ -2,11 +2,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/analyze-store/route';
 import { AnalyzerService } from '@/lib/services/analyzer';
-import { deliverStoreAnalysisReport } from '@/lib/services/analyzer-report-delivery';
+import { deliverStoreAnalysisReport, resolveInitialEmailReportStatus } from '@/lib/services/analyzer-report-delivery';
 import { checkRateLimit } from '@/lib/services/rate-limiter';
 import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
 import type { AnalysisResult } from '@/lib/types/analyzer';
+
+const afterCallbacks: Array<() => void | Promise<void>> = [];
+
+vi.mock('next/server', async () => {
+  const actual = await vi.importActual<typeof import('next/server')>('next/server');
+  return {
+    ...actual,
+    after: (callback: () => void | Promise<void>) => {
+      afterCallbacks.push(callback);
+    },
+  };
+});
 
 vi.mock('@/lib/services/rate-limiter', () => ({
   checkRateLimit: vi.fn(),
@@ -20,6 +32,7 @@ vi.mock('@/lib/services/analyzer', () => ({
 
 vi.mock('@/lib/services/analyzer-report-delivery', () => ({
   deliverStoreAnalysisReport: vi.fn(),
+  resolveInitialEmailReportStatus: vi.fn(),
 }));
 
 vi.mock('@/lib/services/recaptcha-server', () => ({
@@ -120,17 +133,26 @@ describe('POST /api/analyze-store', () => {
     });
     vi.mocked(AnalyzerService.analyzeStore).mockResolvedValue(buildAnalysisResult());
     vi.mocked(deliverStoreAnalysisReport).mockResolvedValue('sent');
+    vi.mocked(resolveInitialEmailReportStatus).mockReturnValue('pending');
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     vi.unstubAllEnvs();
     if (originalRecaptchaSecret) {
       process.env.RECAPTCHA_SECRET_KEY = originalRecaptchaSecret;
     } else {
       delete process.env.RECAPTCHA_SECRET_KEY;
     }
+    afterCallbacks.length = 0;
     vi.clearAllMocks();
   });
+
+  async function flushAfterCallbacks() {
+    const callbacks = afterCallbacks.splice(0, afterCallbacks.length);
+    for (const callback of callbacks) {
+      await callback();
+    }
+  }
 
   it('returns 429 when rate limited', async () => {
     vi.mocked(checkRateLimit).mockResolvedValueOnce({
@@ -223,7 +245,7 @@ describe('POST /api/analyze-store', () => {
     expect(verifyRecaptchaToken).toHaveBeenCalledWith('bad-token', 'secret');
   });
 
-  it('returns serialized analysis on success', async () => {
+  it('returns serialized analysis on success and queues PDF email delivery', async () => {
     const response = await POST(
       createAnalyzeRequest({
         storeUrl: 'https://shop.example.com',
@@ -236,7 +258,11 @@ describe('POST /api/analyze-store', () => {
     expect(response.status).toBe(200);
     const payload = await response.json();
     expect(payload.overallScore).toBe(74);
-    expect(payload.meta.emailReportStatus).toBe('sent');
+    expect(payload.meta.emailReportStatus).toBe('pending');
+    expect(deliverStoreAnalysisReport).not.toHaveBeenCalled();
+
+    await flushAfterCallbacks();
+
     expect(deliverStoreAnalysisReport).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'owner@example.com',

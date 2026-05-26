@@ -17,11 +17,11 @@ export const ANALYZER_PHASE_ORDER: AnalyzerProgressPhase[] = [
 
 export const ANALYZER_PHASE_START_MS: Record<AnalyzerProgressPhase, number> = {
   connecting: 0,
-  performance: 4_000,
-  seo: 12_000,
-  ux: 22_000,
-  trust: 32_000,
-  generating: 42_000,
+  performance: 3_000,
+  seo: 10_000,
+  ux: 18_000,
+  trust: 28_000,
+  generating: 38_000,
 };
 
 /** Asymptotic progress capped at 85% until the caller sets complete. */

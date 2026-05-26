@@ -1,8 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { logError, createErrorResponse } from '@/lib/error-handler';
 import { checkRateLimit as checkFirestoreRateLimit } from '@/lib/services/rate-limiter';
 import { AnalyzerService } from '@/lib/services/analyzer';
-import { deliverStoreAnalysisReport } from '@/lib/services/analyzer-report-delivery';
+import {
+  deliverStoreAnalysisReport,
+  resolveInitialEmailReportStatus,
+} from '@/lib/services/analyzer-report-delivery';
 import { serializeAnalysisForClient } from '@/lib/services/analyzer-response';
 import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateAnalyzeStoreRequest } from '@/lib/validation';
@@ -135,13 +138,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(createErrorResponse(userFriendlyMsg, 500), { status: 500 });
     }
 
-    const emailReportStatus = await deliverStoreAnalysisReport({
+    const emailReportStatus = resolveInitialEmailReportStatus();
+    const reportPayload = {
       email,
       storeUrl: normalizedUrl,
       locale: locale || 'en',
       results: result,
       subscribeNewsletter: subscribeNewsletter ?? false,
-    });
+    };
+
+    if (emailReportStatus === 'pending') {
+      after(async () => {
+        const deliveryStatus = await deliverStoreAnalysisReport(reportPayload);
+        if (deliveryStatus === 'failed') {
+          logError(
+            'Store analysis report delivery failed after response',
+            new Error('Background PDF delivery failed'),
+            { storeUrl: normalizedUrl, email }
+          );
+        }
+      });
+    }
 
     const clientResult = serializeAnalysisForClient({
       ...result,

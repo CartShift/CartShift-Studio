@@ -65,7 +65,7 @@ export function AnalyzerCoverageStrip({ meta, isDark = false }: AnalyzerCoverage
       key: 'email',
       status: resolveStatus(
         meta.emailReportStatus === 'sent',
-        meta.emailReportStatus === 'failed'
+        meta.emailReportStatus === 'pending' || meta.emailReportStatus === 'failed'
       ),
     },
   ];

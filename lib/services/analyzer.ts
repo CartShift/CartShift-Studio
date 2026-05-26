@@ -709,6 +709,35 @@ function analyzeTrust(html: string): SectionResult {
   };
 }
 
+async function runHeavyAnalysisTasks(html: string, normalizedUrl: string, fetchedUrl: string) {
+  return Promise.all([
+    CompetitorService.analyzeCompetitors(html, normalizedUrl).catch(err => {
+      recordAnalyzerServiceFailure('competitor', err, true);
+      return {
+        competitors: [],
+        marketPosition: 'niche' as const,
+        confidence: 'low' as const,
+        summary: 'Competitor analysis could not be completed for this URL.',
+        evidence: ['Competitor service failed gracefully.'],
+      };
+    }),
+    ScraperService.scrape(fetchedUrl).catch(err => {
+      recordAnalyzerServiceFailure('puppeteer', err, true);
+      return { visualAnalysis: null, productAnalysis: undefined };
+    }),
+    Promise.resolve(AIReadinessService.analyze(html)).catch(err => {
+      recordAnalyzerServiceFailure('ai', err, true);
+      return {
+        score: 50,
+        structuredDataTypes: [],
+        openGraphTags: false,
+        readabilityScore: 50,
+        aiReadinessStatus: 'needs_improvement' as const,
+      };
+    }),
+  ]);
+}
+
 // --- Main Service Class ---
 
 export class AnalyzerService {
@@ -737,18 +766,18 @@ export class AnalyzerService {
       };
     }
 
-    // 2. Fetch HTML + PageSpeed in parallel (SSRF-safe store fetch)
+    // 2. Start PageSpeed early; fetch HTML first so heavy tasks can overlap with Lighthouse
+    const pageSpeedPromise = fetchPageSpeedData(normalizedUrl);
     let html = '';
     let fetchedUrl = normalizedUrl;
-    let pageSpeedData: PageSpeedResult | null = null;
+    let heavyTasksPromise: ReturnType<typeof runHeavyAnalysisTasks> | null = null;
+    const visualAnalysisAttempted = ScraperService.isEnabled();
+
     try {
-      const [fetched, pageSpeedResult] = await Promise.all([
-        safeFetchStoreHtml(normalizedUrl, 15000),
-        fetchPageSpeedData(normalizedUrl),
-      ]);
+      const fetched = await safeFetchStoreHtml(normalizedUrl, 15000);
       html = fetched.html;
       fetchedUrl = fetched.finalUrl;
-      pageSpeedData = pageSpeedResult;
+      heavyTasksPromise = runHeavyAnalysisTasks(html, normalizedUrl, fetchedUrl);
     } catch (fetchError: any) {
       const errorDetails = {
         message: fetchError.message,
@@ -781,6 +810,7 @@ export class AnalyzerService {
     }
 
     const platform = detectPlatform(html, fetchedUrl);
+    const pageSpeedData = await pageSpeedPromise;
 
     if (!pageSpeedData) {
       recordAnalyzerServiceFailure('pagespeed', new Error('PageSpeed API unavailable'), true);
@@ -890,43 +920,9 @@ export class AnalyzerService {
       }
     }
 
-    // PARALLEL EXECUTION OF HEAVY TASKS
-    // 4. Competitor Analysis
-    // 5. Visual Analysis (Optional/Async-ish)
-    // 6. AI Readiness Analysis (Fast, local)
-    // 7. Product Page Audit (Slow, crawls)
-
-    // PARALLEL EXECUTION OF HEAVY TASKS
-    // Execute all external services in parallel with individual error handling
     const serviceStartTime = Date.now();
-    const visualAnalysisAttempted = ScraperService.isEnabled();
-
-    const [competitorData, scraperData, aiData] = await Promise.all([
-      CompetitorService.analyzeCompetitors(html, normalizedUrl).catch(err => {
-        recordAnalyzerServiceFailure('competitor', err, true);
-        return {
-          competitors: [],
-          marketPosition: 'niche' as const,
-          confidence: 'low' as const,
-          summary: 'Competitor analysis could not be completed for this URL.',
-          evidence: ['Competitor service failed gracefully.'],
-        };
-      }),
-      ScraperService.scrape(fetchedUrl).catch(err => {
-        recordAnalyzerServiceFailure('puppeteer', err, true);
-        return { visualAnalysis: null, productAnalysis: undefined };
-      }),
-      Promise.resolve(AIReadinessService.analyze(html)).catch(err => {
-        recordAnalyzerServiceFailure('ai', err, true);
-        return {
-          score: 50,
-          structuredDataTypes: [],
-          openGraphTags: false,
-          readabilityScore: 50,
-          aiReadinessStatus: 'needs_improvement' as const,
-        };
-      }),
-    ]);
+    const [competitorData, scraperData, aiData] = await (heavyTasksPromise ??
+      runHeavyAnalysisTasks(html, normalizedUrl, fetchedUrl));
 
     console.log(`External services completed in ${Date.now() - serviceStartTime}ms`);
 

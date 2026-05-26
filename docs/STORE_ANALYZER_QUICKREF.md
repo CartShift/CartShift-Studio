@@ -15,6 +15,8 @@ The store analyzer was failing due to Puppeteer/Chrome not being available or ti
 9. ✅ **Honest loading UX** - Time-based progress (no fake 88% stall)
 10. ✅ **Coverage strip** - Per-feature included/estimated/skipped badges in results
 11. ✅ **API `maxDuration: 120`** - Reduces serverless timeouts on long runs
+12. ✅ **Overlapped pipeline** - Scraper/competitor/AI run during PageSpeed wait (not after)
+13. ✅ **Async PDF delivery** - Results return immediately; email sends via `after()` in background
 
 ## Quick Commands
 
@@ -30,6 +32,15 @@ pnpm dev
 ```
 
 ## How It Works Now
+
+### Analysis pipeline (order)
+
+1. Cache lookup (24h TTL)
+2. SSRF-safe HTML fetch (~15s max)
+3. **In parallel:** PageSpeed Lighthouse + competitor/scraper/AI tasks (overlap saves ~15–25s)
+4. Section scoring + benchmark + cache write
+5. **Immediate** JSON response to browser
+6. **Background:** PDF email via Firebase Function (`after()` — does not block step 5)
 
 ### If Puppeteer IS available:
 
@@ -130,9 +141,10 @@ RECAPTCHA_SECRET_KEY=your_secret_key
 
 ## Performance
 
-- Typical analysis time: 15-30 seconds
+- Typical analysis time: 15-30 seconds (often faster when PageSpeed and scraper overlap)
 - With cache: Instant (24-hour cache)
 - Without Puppeteer: 5-15 seconds (faster)
+- PDF email: arrives 30-90s after on-screen results (background delivery)
 
 ## Support
 

@@ -95,7 +95,7 @@ export interface AnalysisMeta {
   competitorAnalysisAvailable: boolean;
   cached: boolean;
   screenshotsInEmailReport?: boolean;
-  emailReportStatus?: 'sent' | 'failed' | 'unconfigured';
+  emailReportStatus?: 'pending' | 'sent' | 'failed' | 'unconfigured';
 }
 
 export interface AnalysisResult {

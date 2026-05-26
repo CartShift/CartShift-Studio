@@ -3,9 +3,18 @@ import { env } from '@/lib/env';
 import { buildFirebaseFunctionUrl } from '@/lib/services/firebase';
 import type { AnalysisResult } from '@/lib/types/analyzer';
 
-const REPORT_DELIVERY_TIMEOUT_MS = 12_000;
+/** PDF generation on Cloud Functions can take up to ~90s; runs after the API response is sent. */
+const REPORT_DELIVERY_TIMEOUT_MS = 90_000;
 
 export type ReportDeliveryStatus = 'sent' | 'failed' | 'unconfigured';
+
+export function resolveInitialEmailReportStatus(): ReportDeliveryStatus | 'pending' {
+  const reportUrl = buildFirebaseFunctionUrl(
+    env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL,
+    'sendStoreAnalysisReport'
+  );
+  return reportUrl ? 'pending' : 'unconfigured';
+}
 
 export async function deliverStoreAnalysisReport(params: {
   email: string;
