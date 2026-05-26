@@ -70,3 +70,19 @@ For normal development (when no other instances are running), use:
 ```bash
 pnpm run dev
 ```
+
+## Social Publishing
+
+Publish a LinkedIn post from a text file with optional ledger-backed idempotency:
+
+```bash
+pnpm run social:linkedin:publish -- --text-file path/to/post.txt --ledger-file data/social/linkedin-blog-post-ledger.json --slug my-post --title "Post title" --url https://cartshift.com/blog/my-post
+```
+
+Dry run:
+
+```bash
+pnpm run social:linkedin:publish:dry-run -- --text-file path/to/post.txt
+```
+
+Requires `LINKEDIN_ACCESS_TOKEN` and `LINKEDIN_AUTHOR_URN` in `.env.local`.

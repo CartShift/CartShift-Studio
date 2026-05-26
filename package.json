@@ -28,6 +28,8 @@
     "seo:monitor": "node scripts/seo-monitor.mjs",
     "seo:monitor:json": "node scripts/seo-monitor.mjs --json",
     "seo:monitor:apply": "node scripts/seo-monitor.mjs --apply",
+    "social:linkedin:publish": "node scripts/publish-linkedin-post.mjs",
+    "social:linkedin:publish:dry-run": "node scripts/publish-linkedin-post.mjs --dry-run",
     "normalize-db": "tsx scripts/normalize-db.ts",
     "test": "vitest",
     "test:ui": "vitest --ui",

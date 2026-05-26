@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-25T12:37:10.024Z
+ * Last updated: 2026-05-26T01:19:43.712Z
  * 
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -3693,6 +3693,13 @@ product: {
     unknown: string;
   };
 };
+visualAnalysis: {
+  title: string;
+  subtitle: string;
+  capturedPreviews: string;
+  brandPalette: string;
+  mobileResponsiveness: string;
+};
 common: {
   detected: string;
   missing: string;
@@ -4211,6 +4218,11 @@ export type TranslationKey =
   | 'analyzer.trust.free'
   | 'analyzer.trust.instant'
   | 'analyzer.trust.secure'
+  | 'analyzer.visualAnalysis.brandPalette'
+  | 'analyzer.visualAnalysis.capturedPreviews'
+  | 'analyzer.visualAnalysis.mobileResponsiveness'
+  | 'analyzer.visualAnalysis.subtitle'
+  | 'analyzer.visualAnalysis.title'
   | 'analyzer.whatYouGet.description'
   | 'analyzer.whatYouGet.title'
   | 'blog.categories'

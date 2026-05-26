@@ -666,32 +666,22 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
   `;
 }
 
+const {
+  buildRoadmapWeeks,
+  flattenRecommendations,
+} = require('../../lib/analyzer/roadmap.js');
+
 // Build 30-day action roadmap - PROFESSIONAL VERSION
 function buildActionRoadmapHtml(sections, texts, isRtl) {
-  const allRecs = [];
-  const sectionOrder = ['performance', 'seo', 'accessibility', 'bestPractices', 'cart', 'trust'];
-
-  sectionOrder.forEach(key => {
-    const section = sections[key];
-    if (section?.recommendations) {
-      section.recommendations.forEach(rec => {
-        allRecs.push({ ...rec, sectionKey: key, sectionName: texts.sections[key] || section.name });
-      });
-    }
-  });
-
-  // Sort by impact priority
-  const impactOrder = { high: 0, medium: 1, low: 2 };
-  allRecs.sort((a, b) => (impactOrder[a.impact] || 2) - (impactOrder[b.impact] || 2));
-
-  // Distribute into weeks
-  const week1 = allRecs.filter(r => r.impact === 'high').slice(0, 3);
-  const week2 = allRecs
-    .filter(r => r.impact === 'high')
-    .slice(3, 5)
-    .concat(allRecs.filter(r => r.impact === 'medium').slice(0, 2));
-  const week3 = allRecs.filter(r => r.impact === 'medium').slice(2, 5);
-  const week4 = allRecs.filter(r => r.impact === 'low').slice(0, 3);
+  const allRecs = flattenRecommendations(sections, (key, section) =>
+    texts.sections[key] || section.name
+  );
+  const roadmapWeeks = buildRoadmapWeeks(allRecs);
+  const itemsByWeekKey = Object.fromEntries(roadmapWeeks.map(week => [week.key, week.items]));
+  const week1 = itemsByWeekKey.week1 || [];
+  const week2 = itemsByWeekKey.week2 || [];
+  const week3 = itemsByWeekKey.week3 || [];
+  const week4 = itemsByWeekKey.week4 || [];
 
   const buildWeekHtml = (weekLabel, items, weekNum) => {
     if (items.length === 0) return '';

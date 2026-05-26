@@ -1463,6 +1463,13 @@
         "unknown": "לא ידוע"
       }
     },
+    "visualAnalysis": {
+      "title": "ניתוח חוויית משתמש ויזואלית",
+      "subtitle": "איכות עיצוב ובדיקת התאמה למובייל",
+      "capturedPreviews": "תצוגות מקדימות שנלכדו",
+      "brandPalette": "פלטת צבעי המותג",
+      "mobileResponsiveness": "התאמה למובייל"
+    },
     "common": {
       "detected": "זוהה",
       "missing": "חסר"

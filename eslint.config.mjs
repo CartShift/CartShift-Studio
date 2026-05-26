@@ -163,6 +163,17 @@ export default [
     },
   },
   {
+    files: ['lib/analyzer/**/*.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        module: 'readonly',
+        require: 'readonly',
+        exports: 'writable',
+      },
+    },
+  },
+  {
     files: ['**/*.js', '**/*.jsx'],
     ...tseslint.configs.disableTypeChecked,
   },

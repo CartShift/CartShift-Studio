@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion } from '@/lib/motion';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
@@ -7,6 +8,13 @@ import { Button } from '@/components/ui/Button';
 import { ScoreGauge } from '@/components/ui/ScoreGauge';
 import { RecommendationCard } from '@/components/ui/RecommendationCard';
 import type { AnalysisResult, SectionResult, Recommendation } from '@/lib/types/analyzer';
+import {
+  buildPriorityRecommendations,
+  buildRoadmapWeeks,
+  countHighImpact,
+  flattenRecommendations,
+  getRecommendationKey,
+} from '@/lib/analyzer/roadmap.js';
 import {
   Zap,
   Search,
@@ -118,7 +126,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
   const translateOptional = (key: string, fallback: string) =>
     t.has(key as any) ? t(key as any) : fallback;
 
-  const getRecommendationCopy = (rec: Recommendation) => {
+  const getRecommendationCopy = (rec: Recommendation): Recommendation => {
     if (!rec.code) return rec;
     const translationKey = rec.code.replace(/-/g, '_');
 
@@ -134,102 +142,65 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     };
   };
 
-  const allRecommendations = Object.entries(results.sections).flatMap(([key, section]) =>
-    section.recommendations.map(rec => ({
+  const {
+    priorityRecs,
+    roadmapWeeks,
+    headerTitle,
+    headerDescription,
+    expertFixCount,
+    expertFixKey,
+  } = useMemo(() => {
+    const recommendations = flattenRecommendations(
+      results.sections,
+      key => t(`sections.${key}` as any)
+    ).map(rec => ({
       ...getRecommendationCopy(rec),
-      sectionKey: key,
-      sectionName: t(`sections.${key}` as any),
-    }))
-  );
+      sectionKey: rec.sectionKey,
+      sectionName: rec.sectionName,
+    })) as ExtendedRecommendation[];
 
-  const priorityRecs = allRecommendations
-    .filter(r => r.impact === 'high')
-    .slice(0, 3) as ExtendedRecommendation[];
+    const priority = buildPriorityRecommendations(recommendations) as ExtendedRecommendation[];
+    const highImpact = countHighImpact(recommendations);
+    const roadmap = buildRoadmapWeeks(recommendations);
 
-  if (priorityRecs.length < 3) {
-    const mediumRecs = allRecommendations
-      .filter(r => r.impact === 'medium')
-      .slice(0, 3 - priorityRecs.length) as ExtendedRecommendation[];
-    priorityRecs.push(...mediumRecs);
-  }
+    let title: string;
+    let description: string;
 
-  const overallStatus = getStatusColor(results.overallScore);
-  const highImpactCount = allRecommendations.filter(rec => rec.impact === 'high').length;
-  const impactRank: Record<Recommendation['impact'], number> = { high: 0, medium: 1, low: 2 };
-  const effortRank: Record<NonNullable<Recommendation['effort']>, number> = {
-    quick: 0,
-    medium: 1,
-    advanced: 2,
-  };
-  const sortedRoadmapRecommendations = [...allRecommendations].sort((a, b) => {
-    const impactDelta = impactRank[a.impact] - impactRank[b.impact];
-    if (impactDelta !== 0) return impactDelta;
-
-    return (effortRank[a.effort || 'medium'] || 1) - (effortRank[b.effort || 'medium'] || 1);
-  });
-  const usedRoadmapKeys = new Set<string>();
-  const takeRoadmapItems = (
-    predicate: (rec: ExtendedRecommendation) => boolean,
-    limit = 2
-  ): ExtendedRecommendation[] => {
-    const items: ExtendedRecommendation[] = [];
-
-    for (const rec of sortedRoadmapRecommendations as ExtendedRecommendation[]) {
-      const key = `${rec.sectionKey}:${rec.code || rec.title}`;
-      if (usedRoadmapKeys.has(key) || !predicate(rec)) continue;
-
-      usedRoadmapKeys.add(key);
-      items.push(rec);
-      if (items.length >= limit) break;
+    if (results.overallScore >= 80 && highImpact > 0) {
+      title = t('results.strongScoreWithIssues', { count: highImpact });
+      description = t('results.strongScoreWithIssuesDesc');
+    } else if (results.overallScore >= 80) {
+      title = t('results.greatJob');
+      description = t('results.readyToScale');
+    } else if (highImpact === 1) {
+      title = t('results.issuesFound_singular', { count: highImpact });
+      description = t('results.losingSales');
+    } else if (highImpact > 1) {
+      title = t('results.issuesFound', { count: highImpact });
+      description = t('results.losingSales');
+    } else if (priority.length === 1) {
+      title = t('results.needsImprovement');
+      description = t('results.losingSales');
+    } else {
+      title = t('results.needsImprovement');
+      description = t('results.losingSales');
     }
 
-    return items;
-  };
-  const roadmapWeeks = [
-    {
-      key: 'week1',
-      items: takeRoadmapItems(rec => rec.impact === 'high' || rec.effort === 'quick'),
-    },
-    {
-      key: 'week2',
-      items: takeRoadmapItems(rec => rec.sectionKey === 'performance'),
-    },
-    {
-      key: 'week3',
-      items: takeRoadmapItems(
-        rec =>
-          rec.sectionKey === 'seo' ||
-          rec.sectionKey === 'accessibility' ||
-          rec.sectionKey === 'bestPractices'
-      ),
-    },
-    {
-      key: 'week4',
-      items: takeRoadmapItems(rec => rec.sectionKey === 'cart' || rec.sectionKey === 'trust'),
-    },
-  ]
-    .map(week => ({
-      ...week,
-      items:
-        week.items.length > 0
-          ? week.items
-          : takeRoadmapItems(() => true, week.key === 'week4' ? 3 : 2),
-    }))
-    .filter(week => week.items.length > 0);
-  const headerTitle =
-    results.overallScore >= 80 && highImpactCount > 0
-      ? t('results.strongScoreWithIssues', { count: highImpactCount })
-      : results.overallScore >= 80
-        ? t('results.greatJob')
-        : priorityRecs.length === 1
-          ? t('results.issuesFound_singular', { count: priorityRecs.length })
-          : t('results.issuesFound', { count: priorityRecs.length });
-  const headerDescription =
-    results.overallScore >= 80 && highImpactCount > 0
-      ? t('results.strongScoreWithIssuesDesc')
-      : results.overallScore >= 80
-        ? t('results.readyToScale')
-        : t('results.losingSales');
+    const fixCount = highImpact > 0 ? highImpact : priority.length;
+    const fixKey =
+      fixCount === 1 ? ('results.expertsCanFix_singular' as const) : ('results.expertsCanFix' as const);
+
+    return {
+      priorityRecs: priority,
+      roadmapWeeks: roadmap,
+      headerTitle: title,
+      headerDescription: description,
+      expertFixCount: fixCount,
+      expertFixKey: fixKey,
+    };
+  }, [results.overallScore, results.sections, t]);
+
+  const overallStatus = getStatusColor(results.overallScore);
 
   const showPartialDataNotice = results.meta?.usedHtmlFallback;
   const screenshotsInEmail = Boolean(results.meta?.screenshotsInEmailReport);
@@ -438,9 +409,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 {t('market.competitorCandidates')}
               </div>
               {results.competitorAnalysis.competitors.length > 0 ? (
-                results.competitorAnalysis.competitors.map((comp, i) => (
+                results.competitorAnalysis.competitors.map(comp => (
                   <div
-                    key={i}
+                    key={comp.url}
                     className={`flex items-center justify-between gap-3 p-3 rounded-lg border ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
@@ -497,10 +468,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             </div>
             <div>
               <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
-                Visual UX Analysis
+                {t('visualAnalysis.title')}
               </h3>
               <p className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
-                Design quality and mobile responsiveness check
+                {t('visualAnalysis.subtitle')}
               </p>
             </div>
           </div>
@@ -511,18 +482,20 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               <h4
                 className={`text-sm font-medium ${isDark ? 'text-white/70' : 'text-surface-600'}`}
               >
-                Captured Previews
+                {t('visualAnalysis.capturedPreviews')}
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {results.visualAnalysis.screenshots.length > 0 ? (
-                  results.visualAnalysis.screenshots.map((shot, i) => (
-                    <div key={i} className="space-y-2">
+                  results.visualAnalysis.screenshots.map(shot => (
+                    <div key={`${shot.device}:${shot.label}`} className="space-y-2">
                       <div
                         className={`aspect-video rounded-lg overflow-hidden border ${isDark ? 'border-white/10' : 'border-surface-200'} bg-surface-100 dark:bg-surface-800 relative group`}
                       >
                         <img
                           src={shot.url}
                           alt={shot.label}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover object-top transition-transform duration-500"
                         />
                         <div className="absolute inset-x-0 bottom-0 p-2 bg-black/60 backdrop-blur-sm text-center">
@@ -561,18 +534,16 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 <h4
                   className={`text-sm font-medium mb-3 ${isDark ? 'text-white/70' : 'text-surface-600'}`}
                 >
-                  Brand Color Palette
+                  {t('visualAnalysis.brandPalette')}
                 </h4>
                 <div className="flex items-center gap-2">
-                  {results.visualAnalysis.dominantColors.map((color, i) => (
-                    <div key={i} className="group relative">
+                  {results.visualAnalysis.dominantColors.map(color => (
+                    <div key={color} className="relative">
                       <div
+                        title={color}
                         className="w-12 h-12 rounded-full border-2 border-white dark:border-surface-900 shadow-md transition-transform hover:scale-110 hover:z-10 cursor-help"
                         style={{ backgroundColor: color }}
                       />
-                      <span className="absolute -bottom-8 start-1/2 -translate-x-1/2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 transition-opacity whitespace-nowrap pointer-events-none z-20">
-                        {color}
-                      </span>
                     </div>
                   ))}
                 </div>
@@ -586,7 +557,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   <span
                     className={`text-sm font-medium ${isDark ? 'text-white' : 'text-surface-900'}`}
                   >
-                    Mobile Responsiveness
+                    {t('visualAnalysis.mobileResponsiveness')}
                   </span>
                   <span
                     className={`text-lg font-bold ${results.visualAnalysis.mobileResponsivenessScore >= 80 ? 'text-emerald-500' : 'text-amber-500'}`}
@@ -745,15 +716,20 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               </div>
 
               <div className="text-xs text-surface-500">
-                {t('product.analyzed')}:{' '}
-                <a
-                  href={results.productAnalysis.productUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-primary-500 truncate inline-block max-w-[200px] align-bottom"
-                >
-                  {results.productAnalysis.productUrl}
-                </a>
+                {t('product.analyzed')}
+                {results.productAnalysis.productUrl ? (
+                  <>
+                    {': '}
+                    <a
+                      href={results.productAnalysis.productUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-primary-500 truncate inline-block max-w-[200px] align-bottom"
+                    >
+                      {results.productAnalysis.productUrl}
+                    </a>
+                  </>
+                ) : null}
               </div>
             </div>
 
@@ -933,7 +909,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 <div className="space-y-3">
                   {week.items.map(item => (
                     <div
-                      key={`${item.sectionKey}:${item.code || item.title}`}
+                      key={getRecommendationKey(item)}
                       className="space-y-1"
                     >
                       <div
@@ -989,7 +965,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {priorityRecs.map((rec, index) => (
               <RecommendationCard
-                key={index}
+                key={getRecommendationKey(rec)}
                 title={rec.title}
                 description={rec.description}
                 action={rec.action}
@@ -1022,9 +998,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               {t('results.dontLetIssuesHurtSales')}
             </h3>
             <p className={`text-base ${isDark ? 'text-white/70' : 'text-surface-600'} mb-6`}>
-              {priorityRecs.length === 1
-                ? t('results.expertsCanFix_singular', { count: priorityRecs.length })
-                : t('results.expertsCanFix', { count: priorityRecs.length })}
+              {t(expertFixKey, { count: expertFixCount })}
             </p>
             <div className="flex items-center gap-2 text-sm">
               <div className="flex -space-x-2">
