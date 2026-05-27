@@ -21,7 +21,6 @@ export const WordPressTemplate: React.FC = () => {
         title={t('wordpress.hero.title')}
         subtitle={t('wordpress.hero.subtitle')}
         description={t('wordpress.hero.description')}
-        badge={t('wordpress.hero.badge')}
         seoH1="WordPress E-commerce Development Services | Custom Websites & Content Sites"
       />
       <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">

@@ -70,7 +70,6 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
         title={title}
         subtitle={subtitle}
         description={finalDescription}
-        badge={t('navigation.blogPost')}
         highlightLastWord={false}
         compact
         backgroundImage={post.image}

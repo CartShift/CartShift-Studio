@@ -200,7 +200,6 @@ export const ClientPortalPageContent: React.FC = () => {
         title={`${portalInfo.hero.title} ${portalInfo.hero.titleSpan}`}
         subtitle={portalInfo.hero.subtitle}
         description={portalInfo.hero.description}
-        badge={portalInfo.hero.badge}
       />
 
       <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">

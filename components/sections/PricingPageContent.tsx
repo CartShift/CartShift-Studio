@@ -208,7 +208,6 @@ export const PricingPageContent: React.FC = () => {
         title={pricing.hero.title}
         subtitle={pricing.hero.subtitle}
         description={pricing.hero.description}
-        badge={pricing.hero.badge}
       />
       <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

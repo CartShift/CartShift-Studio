@@ -9,17 +9,22 @@ export const HeroIllustration: React.FC = () => {
       {/* 1. Atmosphere - Adaptive Light/Dark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(var(--color-primary-500),0.1)_100deg,transparent_180deg)] blur-[100px] opacity-40 dark:opacity-100"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          className="absolute w-[800px] h-[800px] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(var(--color-primary-500),0.1)_100deg,transparent_180deg)] blur-[100px] opacity-35 dark:opacity-80 transform-gpu will-change-transform"
+          animate={{
+            scale: [1, 1.03, 1],
+            opacity: [0.3, 0.38, 0.3],
+            x: [0, 8, 0],
+            y: [0, -6, 0],
+          }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-[600px] h-[600px] bg-gradient-to-br from-accent-200/20 to-primary-200/20 dark:from-accent-500/10 dark:to-primary-600/10 blur-[90px] rounded-full"
+          className="absolute w-[600px] h-[600px] bg-gradient-to-br from-accent-200/20 to-primary-200/20 dark:from-accent-500/10 dark:to-primary-600/10 blur-[90px] rounded-full transform-gpu will-change-transform"
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3],
+            scale: [1, 1.08, 1],
+            opacity: [0.25, 0.42, 0.25],
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 

@@ -112,7 +112,6 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
         title={content.title}
         subtitle={content.subtitle}
         description={content.description}
-        badge={content.badge}
       />
 
       <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">

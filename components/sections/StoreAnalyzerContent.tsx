@@ -225,19 +225,6 @@ export const StoreAnalyzerContent: React.FC = () => {
                   transition={{ duration: 0.6 }}
                   className="text-center lg:text-start"
                 >
-                  {/* Badge */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-500/10 to-accent-500/10 dark:from-primary-500/20 dark:to-accent-500/20 border border-primary-500/20 dark:border-primary-500/30 mb-6"
-                  >
-                    <Sparkles className="w-4 h-4 text-primary-500 dark:text-primary-400" />
-                    <span className="text-sm font-medium text-surface-900 dark:text-white/90">
-                      {t('analyzer.hero.badge') || 'Free Tool • No Credit Card Required'}
-                    </span>
-                  </motion.div>
-
                   {/* Title */}
                   <motion.h1
                     initial={{ opacity: 0, y: 20 }}

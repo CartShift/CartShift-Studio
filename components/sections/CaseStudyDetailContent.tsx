@@ -9,11 +9,9 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   CheckCircle2,
-  ExternalLink,
   Globe,
   Layers3,
   Quote,
-  Sparkles,
   TimerReset,
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from '@/lib/motion';
@@ -191,29 +189,6 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
               className="max-w-3xl"
               style={{ y: heroCopyY }}
             >
-              <div className="mb-6 flex flex-wrap items-center gap-3 text-sm">
-                <span
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-200/80 bg-white/78 px-4 py-2 font-semibold text-surface-950 backdrop-blur-xl dark:border-white/15 dark:bg-white/[0.08] dark:text-white"
-                  style={{
-                    boxShadow: '0 0 0 1px rgba(var(--case-border-rgb), 0.18) inset',
-                  }}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  {caseStudy.platform}
-                </span>
-                {caseStudy.siteUrl && (
-                  <a
-                    href={caseStudy.siteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-surface-200/80 bg-white/78 px-4 py-2 font-medium text-surface-900 transition-colors hover:bg-white dark:border-white/12 dark:bg-black/[0.15] dark:text-white/[0.84] dark:hover:bg-white/10"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    {workT.detail.visitSite}
-                  </a>
-                )}
-              </div>
-
               <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-surface-500 dark:text-white/60">
                 {caseStudy.client}
               </p>

@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-26T01:19:43.712Z
+ * Last updated: 2026-05-27T21:15:59.176Z
  * 
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -100,6 +100,7 @@ feature2Description: string;
 description: string;
 learnMore: string;
 cta: string;
+secondaryCta: string;
 }
 
 export interface Cv {
@@ -1497,6 +1498,20 @@ marketing: {
     hotLeads: string;
     pendingEmails: string;
     avgScore: string;
+    leads7d: string;
+    leads30d: string;
+    needsFollowUp: string;
+    converted: string;
+  };
+  funnel: {
+    title: string;
+    bySource: string;
+    byStage: string;
+  };
+  filters: {
+    all: string;
+    hot: string;
+    needsFollowUp: string;
   };
   leads: {
     title: string;
@@ -1507,9 +1522,23 @@ marketing: {
     score: string;
     email: string;
     updated: string;
+    actions: string;
     openStore: string;
     none: string;
     empty: string;
+    contacted: string;
+  };
+  actions: {
+    copyEmail: string;
+    emailLead: string;
+    openCalendar: string;
+    markContacted: string;
+    invite: string;
+    inviteTitle: string;
+    inviteNoOrg: string;
+    selectOrg: string;
+    copied: string;
+    contacted: string;
   };
   jobs: {
     title: string;
@@ -3290,6 +3319,8 @@ newsletter: {
   placeholder: string;
   subscribe: string;
   success: string;
+  submitting: string;
+  error: string;
   sslSecured: string;
   shopifyPartner: string;
 };
@@ -3858,6 +3889,7 @@ cta: {
   description: string;
   bookCall: string;
   bookStrategyCall: string;
+  getQuote: string;
   fixIssues: string;
   analyzeAnother: string;
   analyzeNow: string;
@@ -3959,6 +3991,7 @@ export type TranslationKey =
   | 'analyzer.cta.bookStrategyCall'
   | 'analyzer.cta.description'
   | 'analyzer.cta.fixIssues'
+  | 'analyzer.cta.getQuote'
   | 'analyzer.cta.title'
   | 'analyzer.errors.captcha.suggestion'
   | 'analyzer.errors.captcha.title'
@@ -4493,6 +4526,7 @@ export type TranslationKey =
   | 'exitIntent.feature2Title'
   | 'exitIntent.heading'
   | 'exitIntent.learnMore'
+  | 'exitIntent.secondaryCta'
   | 'exitIntent.subheading'
   | 'faq.collapseAll'
   | 'faq.expandAll'
@@ -4510,9 +4544,11 @@ export type TranslationKey =
   | 'footer.links.terms'
   | 'footer.links.wordpress'
   | 'footer.newsletter.description'
+  | 'footer.newsletter.error'
   | 'footer.newsletter.placeholder'
   | 'footer.newsletter.shopifyPartner'
   | 'footer.newsletter.sslSecured'
+  | 'footer.newsletter.submitting'
   | 'footer.newsletter.subscribe'
   | 'footer.newsletter.success'
   | 'footer.newsletter.title'
@@ -5458,11 +5494,29 @@ export type TranslationKey =
   | 'portal.loading.auth.signup'
   | 'portal.loading.init'
   | 'portal.loading.workspace'
+  | 'portal.marketing.actions.contacted'
+  | 'portal.marketing.actions.copied'
+  | 'portal.marketing.actions.copyEmail'
+  | 'portal.marketing.actions.emailLead'
+  | 'portal.marketing.actions.invite'
+  | 'portal.marketing.actions.inviteNoOrg'
+  | 'portal.marketing.actions.inviteTitle'
+  | 'portal.marketing.actions.markContacted'
+  | 'portal.marketing.actions.openCalendar'
+  | 'portal.marketing.actions.selectOrg'
   | 'portal.marketing.errorTitle'
   | 'portal.marketing.events.empty'
   | 'portal.marketing.events.title'
+  | 'portal.marketing.filters.all'
+  | 'portal.marketing.filters.hot'
+  | 'portal.marketing.filters.needsFollowUp'
+  | 'portal.marketing.funnel.bySource'
+  | 'portal.marketing.funnel.byStage'
+  | 'portal.marketing.funnel.title'
   | 'portal.marketing.jobs.empty'
   | 'portal.marketing.jobs.title'
+  | 'portal.marketing.leads.actions'
+  | 'portal.marketing.leads.contacted'
   | 'portal.marketing.leads.email'
   | 'portal.marketing.leads.empty'
   | 'portal.marketing.leads.lead'
@@ -5476,7 +5530,11 @@ export type TranslationKey =
   | 'portal.marketing.leads.updated'
   | 'portal.marketing.loading'
   | 'portal.marketing.metrics.avgScore'
+  | 'portal.marketing.metrics.converted'
   | 'portal.marketing.metrics.hotLeads'
+  | 'portal.marketing.metrics.leads30d'
+  | 'portal.marketing.metrics.leads7d'
+  | 'portal.marketing.metrics.needsFollowUp'
   | 'portal.marketing.metrics.pendingEmails'
   | 'portal.marketing.metrics.totalLeads'
   | 'portal.marketing.refresh'

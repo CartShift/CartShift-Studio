@@ -53,9 +53,6 @@ export const AboutPageContent: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="relative z-10"
           >
-            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-500 dark:text-primary-400 text-sm font-bold tracking-widest uppercase mb-6 border border-primary-500/20">
-              {t('about.hero.badge')}
-            </span>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-surface-900 dark:text-white font-display mb-8 leading-[1.1] tracking-tight">
               {t('about.hero.title')}
               <br />

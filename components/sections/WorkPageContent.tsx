@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { motion, useScroll, useTransform } from '@/lib/motion';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
@@ -209,10 +209,6 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
               className="max-w-3xl"
               style={{ y: heroCopyY }}
             >
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-200/80 bg-white/78 px-4 py-2 text-sm font-semibold text-surface-950 backdrop-blur-xl dark:border-white/10 dark:bg-white/10 dark:text-white">
-                <Sparkles className="h-4 w-4" />
-                {work.hero.badge}
-              </div>
               <h1 className="max-w-4xl text-4xl font-bold leading-[0.94] tracking-[-0.04em] text-surface-950 sm:text-5xl lg:text-7xl dark:text-white">
                 {work.hero.title}
               </h1>

@@ -20,7 +20,6 @@ export const ContactTemplate: React.FC = () => {
         title={t('contact.hero.title')}
         subtitle={t('contact.hero.subtitle')}
         description={t('contact.hero.description')}
-        badge={t('contact.hero.badge')}
       />
       <div className="bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

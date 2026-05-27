@@ -4,12 +4,12 @@ import { motion } from '@/lib/motion';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { BackgroundShapes } from '@/components/ui/BackgroundShapes';
-import { heroTag, heroContent } from '@/lib/animation-variants';
+import { heroContent } from '@/lib/animation-variants';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
 import { getScheduleUrl } from '@/lib/schedule';
 import { trackBookCallClick } from '@/lib/analytics';
-import { ArrowRight, ArrowDown, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowDown } from 'lucide-react';
 import Image from 'next/image';
 import { HeroIllustration } from './HeroIllustration';
 import { cn } from '@/lib/utils';
@@ -25,14 +25,18 @@ const platformIcons = [
 
 const AmbientLight = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.8 }}
+    initial={{ opacity: 0, scale: 0.95 }}
     animate={{
-      opacity: [0.1, 0.2, 0.1],
-      scale: [1, 1.1, 1],
-      rotate: [0, 90, 0],
+      opacity: [0.14, 0.22, 0.14],
+      scale: [1, 1.04, 1],
+      x: [0, 10, 0],
+      y: [0, -8, 0],
     }}
-    transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay }}
-    className={cn('absolute rounded-full blur-[120px] pointer-events-none', className)}
+    transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut', delay }}
+    className={cn(
+      'absolute rounded-full blur-[110px] pointer-events-none transform-gpu will-change-transform',
+      className
+    )}
   />
 );
 
@@ -60,18 +64,6 @@ export const Hero: React.FC = () => {
       <div className="max-w-[1440px] mx-auto relative z-20 w-full">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div className="space-y-12 md:space-y-16">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={heroTag}
-              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/80 dark:bg-white/5 border border-surface-200/60 dark:border-white/10 backdrop-blur-xl shadow-premium transition-transform duration-300"
-            >
-              <Sparkles className="w-4 h-4 text-accent-500" />
-              <span className="text-surface-700 dark:text-surface-200 text-sm font-bold tracking-tight uppercase">
-                {t('hero.tag')}
-              </span>
-            </motion.div>
-
             <div className="space-y-8">
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black leading-[0.95] tracking-tight text-surface-900 dark:text-white">
                 {t('hero.titleLine1')}
@@ -181,7 +173,7 @@ export const Hero: React.FC = () => {
       </motion.div>
 
       {/* Epic Bottom Fade */}
-      <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-background dark:from-surface-950 via-background/80 dark:via-surface-950/80 to-transparent z- sticky pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-background dark:from-surface-950 via-background/80 dark:via-surface-950/80 to-transparent z-0 pointer-events-none" />
     </section>
   );
 };

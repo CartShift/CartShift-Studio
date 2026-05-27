@@ -3,14 +3,12 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from '@/lib/motion';
-import { Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PageHeroProps {
   title: string;
   subtitle: string;
   description: string;
-  badge?: string;
   highlightLastWord?: boolean;
   seoH1?: string;
   compact?: boolean;
@@ -44,7 +42,6 @@ export const PageHero: React.FC<PageHeroProps> = ({
   title,
   subtitle,
   description,
-  badge,
   highlightLastWord = true,
   seoH1,
   compact = false,
@@ -92,29 +89,6 @@ export const PageHero: React.FC<PageHeroProps> = ({
 
       <div className="max-w-7xl mx-auto relative z-10 w-full group">
         <div className="max-w-4xl mx-auto text-center">
-          {badge && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className={cn(
-                'inline-flex items-center gap-2.5 px-5 py-2 rounded-full border backdrop-blur-xl mb-10 shadow-premium transition-transform duration-300',
-                hasBackgroundImage
-                  ? 'bg-black/35 border-white/15 text-white'
-                  : 'bg-white/80 dark:bg-white/5 border-surface-200/60 dark:border-white/10'
-              )}
-            >
-              <Sparkles className="w-4 h-4 text-accent-500" />
-              <span
-                className={cn(
-                  'text-sm font-bold tracking-tight uppercase',
-                  hasBackgroundImage ? 'text-white' : 'text-surface-700 dark:text-surface-200'
-                )}
-              >
-                {badge}
-              </span>
-            </motion.div>
-          )}
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
