@@ -62,6 +62,7 @@ export async function generateMetadata({
       author: 'CartShift Studio',
       keywords,
       image: post.image,
+      socialImage: post.socialImage,
     },
     locale as 'en' | 'he'
   );
@@ -99,6 +100,7 @@ export default async function BlogPostPage({
     author: 'CartShift Studio',
     category: localizedCategory,
     image: post.image,
+    socialImage: post.socialImage,
     wordCount: post.wordCount,
     readingTime: post.readingTime,
   });

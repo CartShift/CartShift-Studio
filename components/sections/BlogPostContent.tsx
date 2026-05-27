@@ -34,8 +34,6 @@ interface BlogPostContentProps {
   date: string;
   category: string;
   readingTime?: number;
-  image?: string;
-  imageAlt?: string;
 }
 
 export const BlogPostContent: React.FC<BlogPostContentProps> = ({
@@ -46,8 +44,6 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   date,
   category,
   readingTime,
-  image,
-  imageAlt,
 }) => {
   const t = useTranslations();
   const locale = useLocale();
@@ -688,27 +684,6 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </div>
                   </div>
                 </div>
-
-                {image && (
-                  <motion.figure
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="mb-8 overflow-hidden rounded-2xl border border-surface-200 bg-surface-100 shadow-card-default dark:border-white/10 dark:bg-surface-950 dark:shadow-card-dark"
-                  >
-                    <div className="relative aspect-[21/11]">
-                      <Image
-                        src={image}
-                        alt={imageAlt || title}
-                        fill
-                        priority
-                        sizes="(min-width: 1024px) 70vw, 100vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  </motion.figure>
-                )}
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

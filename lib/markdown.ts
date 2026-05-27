@@ -18,6 +18,7 @@ export interface BlogPost {
   category: string;
   image?: string;
   imageAlt?: string;
+  socialImage?: string;
   content: string;
   readingTime?: number;
   wordCount?: number;
@@ -226,6 +227,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       category: data.category || 'General',
       image: data.image || '',
       imageAlt: data.imageAlt || data.title || '',
+      socialImage: data.socialImage || data.image || '',
       content: contentHtmlEn,
       readingTime,
       wordCount,

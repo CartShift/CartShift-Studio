@@ -73,6 +73,9 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
         badge={t('navigation.blogPost')}
         highlightLastWord={false}
         compact
+        backgroundImage={post.image}
+        backgroundImageAlt={post.imageAlt || title}
+        backgroundImagePriority
       />
       <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -87,8 +90,6 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
         date={post.date}
         category={subtitle}
         readingTime={post.readingTime}
-        image={post.image}
-        imageAlt={post.imageAlt || title}
       />
     </>
   );

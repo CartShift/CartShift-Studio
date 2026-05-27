@@ -47,6 +47,7 @@ export interface SEOConfig {
   description: string;
   url?: string;
   image?: string;
+  socialImage?: string;
   type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
@@ -56,7 +57,7 @@ export interface SEOConfig {
 }
 
 export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metadata {
-  const imageUrl = toAbsoluteAssetUrl(config.image) || defaultOgImage;
+  const imageUrl = toAbsoluteAssetUrl(config.socialImage || config.image) || defaultOgImage;
   const pathOnly = config.url?.replace(siteUrl, '').replace(/^\/(en|he)/, '') || '';
   const currentLocale = locale || 'en';
   const canonicalUrl = `${siteUrl}/${currentLocale}${pathOnly}`;
@@ -85,8 +86,8 @@ export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metad
       images: [
         {
           url: imageUrl,
-          width: 1344,
-          height: 704,
+          width: 1200,
+          height: 630,
           alt: config.title,
           type: getImageMimeType(imageUrl),
         },
@@ -360,13 +361,14 @@ export function generateArticleSchema(post: {
   author?: string;
   category?: string;
   image?: string;
+  socialImage?: string;
   modifiedDate?: string;
   wordCount?: number;
   readingTime?: number;
 }) {
   const language = post.locale === 'he' ? 'he-IL' : 'en-US';
   const articleUrl = toAbsoluteLocalizedUrl(post.url, post.locale || 'en');
-  const imageUrl = toAbsoluteAssetUrl(post.image) || defaultOgImage;
+  const imageUrl = toAbsoluteAssetUrl(post.socialImage || post.image) || defaultOgImage;
 
   return {
     '@context': 'https://schema.org',
@@ -410,8 +412,8 @@ export function generateArticleSchema(post: {
     image: {
       '@type': 'ImageObject',
       url: imageUrl,
-      width: 1344,
-      height: 704,
+      width: 1200,
+      height: 630,
     },
   };
 }

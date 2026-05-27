@@ -158,6 +158,8 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                               src={post.image}
                               alt={imageAlt}
                               fill
+                              priority={index === 0}
+                              fetchPriority={index === 0 ? 'high' : 'auto'}
                               sizes="(min-width: 768px) 33vw, 100vw"
                               className="object-cover transition-transform duration-700 group-hover:scale-105"
                             />
@@ -276,6 +278,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
               <>
                 <div className="grid md:grid-cols-2 gap-6 mb-12">
                   {paginatedPosts.map((post, index) => {
+                    const shouldPrioritizeGridImage = index === 0;
                     const title =
                       isHe && post.translation?.title ? post.translation.title : post.title;
                     const category =
@@ -309,6 +312,8 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                                   src={post.image}
                                   alt={imageAlt}
                                   fill
+                                  priority={shouldPrioritizeGridImage}
+                                  fetchPriority={shouldPrioritizeGridImage ? 'high' : 'auto'}
                                   sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
