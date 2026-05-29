@@ -47,7 +47,7 @@ export const HomepageIntro: React.FC = () => {
   }
 
   return (
-    <Section className="relative overflow-visible py-24 md:py-32 bg-background dark:bg-surface-950 transition-colors duration-500">
+    <Section className="relative overflow-visible pt-10 pb-24 md:pt-14 md:pb-32 bg-background dark:bg-surface-950 transition-colors duration-500">
       {/* Immersive Background */}
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-surface-100/50 dark:from-surface-900/10 to-transparent pointer-events-none" />
 

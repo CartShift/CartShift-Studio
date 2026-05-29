@@ -46,7 +46,7 @@ export const Hero: React.FC = () => {
   const isRtl = direction === 'rtl';
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center pt-24 pb-20 px-4 sm:px-6 lg:px-12 overflow-hidden bg-background dark:bg-surface-950 transition-colors duration-500">
+    <section className="relative min-h-[100dvh] flex items-center justify-center pt-28 md:pt-32 pb-8 md:pb-12 px-4 sm:px-6 lg:px-12 overflow-hidden bg-background dark:bg-surface-950 transition-colors duration-500">
       {/* Immersive Background System */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-surface-50 to-surface-100 dark:from-surface-950 dark:via-surface-950 dark:to-surface-900 transition-colors duration-500" />
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.05] dark:opacity-[0.08]" />
@@ -173,7 +173,7 @@ export const Hero: React.FC = () => {
       </motion.div>
 
       {/* Epic Bottom Fade */}
-      <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-background dark:from-surface-950 via-background/80 dark:via-surface-950/80 to-transparent z-0 pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-36 md:h-44 bg-gradient-to-t from-background dark:from-surface-950 via-background/80 dark:via-surface-950/80 to-transparent z-0 pointer-events-none" />
     </section>
   );
 };
