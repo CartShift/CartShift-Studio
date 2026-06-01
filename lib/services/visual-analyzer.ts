@@ -41,6 +41,71 @@ export class VisualAnalyzerService {
         return count;
       });
 
+      const contrastIssues = await page.evaluate(() => {
+        const parseRgb = (value: string) => {
+          const channels = value.match(/\d+(\.\d+)?/g)?.map(Number);
+          if (!channels || channels.length < 3) return null;
+          return channels.slice(0, 3);
+        };
+
+        const parseOpaqueRgb = (value: string) => {
+          const channels = value.match(/\d+(\.\d+)?/g)?.map(Number);
+          if (!channels || channels.length < 3) return null;
+          const alpha = channels.length >= 4 ? channels[3] : 1;
+          return alpha === 0 ? null : channels.slice(0, 3);
+        };
+
+        const findOpaqueBackground = (element: Element) => {
+          let current: Element | null = element;
+          while (current) {
+            const background = parseOpaqueRgb(window.getComputedStyle(current).backgroundColor);
+            if (background) return background;
+            current = current.parentElement;
+          }
+          return parseOpaqueRgb(window.getComputedStyle(document.body).backgroundColor);
+        };
+
+        const luminance = ([r, g, b]: number[]) => {
+          const normalize = (channel: number) => {
+            const value = channel / 255;
+            return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+          };
+          return 0.2126 * normalize(r) + 0.7152 * normalize(g) + 0.0722 * normalize(b);
+        };
+
+        const contrastRatio = (foreground: number[], background: number[]) => {
+          const lighter = Math.max(luminance(foreground), luminance(background));
+          const darker = Math.min(luminance(foreground), luminance(background));
+          return (lighter + 0.05) / (darker + 0.05);
+        };
+
+        const visibleTextElements = Array.from(
+          document.querySelectorAll('p, span, a, button, label, li, h1, h2, h3, h4')
+        ).slice(0, 160);
+
+        let issues = 0;
+        for (const element of visibleTextElements) {
+          const rect = element.getBoundingClientRect();
+          const text = element.textContent?.trim();
+          if (!text || rect.width === 0 || rect.height === 0) continue;
+
+          const style = window.getComputedStyle(element);
+          const foreground = parseRgb(style.color);
+          const background = findOpaqueBackground(element);
+          if (!foreground || !background) continue;
+
+          const fontSize = Number.parseFloat(style.fontSize || '16');
+          const fontWeight = Number.parseInt(style.fontWeight || '400', 10);
+          const minimumRatio = fontSize >= 18 || (fontSize >= 14 && fontWeight >= 700) ? 3 : 4.5;
+
+          if (contrastRatio(foreground, background) < minimumRatio) {
+            issues++;
+          }
+        }
+
+        return issues;
+      });
+
       // Switch to Desktop
       await page.setViewport({ width: 1440, height: 900 });
       // Wait a bit for layout to adjust (some hydration might occur)
@@ -86,7 +151,7 @@ export class VisualAnalyzerService {
             label: 'Desktop View',
           },
         ],
-        contrastIssues: 0, // Placeholder, requires deeper analysis
+        contrastIssues,
         mobileResponsivenessScore: hasHorizontalScroll ? 50 : Math.max(0, 100 - smallTargets * 2),
         dominantColors,
       };

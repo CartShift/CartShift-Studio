@@ -9,12 +9,20 @@ import {
   PaymentResult,
 } from '@/lib/services/payment';
 import { useTranslations } from 'next-intl';
+import {
+  capturePublicProposalPayPalOrder,
+  createPublicProposalPayPalOrder,
+} from '@/lib/services/proposal-api';
 
 interface PayPalCheckoutButtonProps {
   pricingRequest: PricingRequest;
   onSuccess: (result: PaymentResult) => void;
   onError: (error: string) => void;
   disabled?: boolean;
+  proposalPayment?: {
+    proposalToken: string;
+    paymentToken: string;
+  };
 }
 
 export function PayPalCheckoutButton({
@@ -22,6 +30,7 @@ export function PayPalCheckoutButton({
   onSuccess,
   onError,
   disabled = false,
+  proposalPayment,
 }: PayPalCheckoutButtonProps) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
   const t = useTranslations();
@@ -54,8 +63,14 @@ export function PayPalCheckoutButton({
           height: 48,
         }}
         disabled={disabled}
-        forceReRender={[pricingRequest.totalAmount, pricingRequest.currency]}
+        forceReRender={[pricingRequest.totalAmount, pricingRequest.currency, proposalPayment]}
         createOrder={async (_data, actions) => {
+          if (proposalPayment) {
+            return createPublicProposalPayPalOrder(
+              proposalPayment.proposalToken,
+              proposalPayment.paymentToken
+            );
+          }
           const orderData = createPayPalOrderFromPricingRequest(pricingRequest);
           return actions.order.create({
             intent: 'CAPTURE',
@@ -63,6 +78,23 @@ export function PayPalCheckoutButton({
           });
         }}
         onApprove={async (_data, actions) => {
+          if (proposalPayment && _data.orderID) {
+            try {
+              const result = await capturePublicProposalPayPalOrder(
+                proposalPayment.proposalToken,
+                proposalPayment.paymentToken,
+                _data.orderID
+              );
+              if (result.payment.status === 'paid') {
+                onSuccess({ success: true, paymentId: _data.orderID });
+              } else {
+                onError(t('portal.common.paymentFailed'));
+              }
+            } catch (error) {
+              onError(error instanceof Error ? error.message : t('portal.common.paymentFailed'));
+            }
+            return;
+          }
           if (!actions.order) {
             onError('Order capture failed: No order actions available');
             return;

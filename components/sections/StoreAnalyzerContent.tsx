@@ -73,20 +73,30 @@ export const StoreAnalyzerContent: React.FC = () => {
         overall_score: result.overallScore,
         platform: result.platform || 'unknown',
         duration_ms: duration,
-        has_puppeteer: !!(result.visualAnalysis || result.productAnalysis),
-        has_visual_analysis: !!result.visualAnalysis,
-        has_product_analysis: !!result.productAnalysis,
-        has_competitor_analysis: !!result.competitorAnalysis?.competitors?.length,
+        used_lighthouse: result.meta?.usedLighthouse ?? false,
+        used_html_fallback: result.meta?.usedHtmlFallback ?? false,
+        has_visual_analysis: !!result.meta?.visualAnalysisAvailable,
+        has_product_analysis: !!result.meta?.productAnalysisAvailable,
+        has_competitor_analysis: !!result.meta?.competitorAnalysisAvailable,
         has_ai_analysis: !!result.aiAnalysis,
+        lead_capture_status: result.meta?.leadCaptureStatus || 'unknown',
+        email_report_status: result.meta?.emailReportStatus || 'unknown',
+        cached: !!result.meta?.cached,
       });
 
-      if (!result.visualAnalysis) {
+      if (
+        result.meta?.visualAnalysisAttempted &&
+        !result.meta?.visualAnalysisAvailable
+      ) {
         trackEvent('analyzer_feature_unavailable', {
           feature_name: 'visual_analysis',
           reason: 'puppeteer_unavailable',
         });
       }
-      if (!result.productAnalysis) {
+      if (
+        result.meta?.visualAnalysisAttempted &&
+        !result.meta?.productAnalysisAvailable
+      ) {
         trackEvent('analyzer_feature_unavailable', {
           feature_name: 'product_analysis',
           reason: 'no_product_page_or_puppeteer_unavailable',
@@ -97,10 +107,16 @@ export const StoreAnalyzerContent: React.FC = () => {
         trackEvent('newsletter_signup', { signup_location: 'store_analyzer' });
       }
 
-      if (result.meta?.emailReportStatus === 'failed') {
-        toast.warning(t('analyzer.results.emailDelayedTitle'), {
-          description: t('analyzer.results.emailDelayedDescription'),
+      const emailStatus = result.meta?.emailReportStatus;
+      if (emailStatus === 'pending') {
+        toast.info(t('analyzer.results.emailPendingTitle'), {
+          description: t('analyzer.results.emailPendingDescription'),
           duration: 6000,
+        });
+      } else if (emailStatus === 'unconfigured') {
+        toast.info(t('analyzer.results.emailUnavailableTitle'), {
+          description: t('analyzer.results.emailUnavailableDescription'),
+          duration: 5000,
         });
       }
 
@@ -186,7 +202,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
   const stats = [
     { value: '6', label: t('analyzer.stats.categories'), icon: BarChart3 },
-    { value: '~1m', label: t('analyzer.trust.instant'), icon: Clock },
+    { value: t('analyzer.stats.durationValue'), label: t('analyzer.stats.durationLabel'), icon: Clock },
     { value: t('analyzer.stats.freeValue'), label: t('analyzer.trust.free'), icon: CheckCircle },
     { value: 'PDF', label: t('analyzer.stats.reportFormat'), icon: Sparkles },
   ];
@@ -249,8 +265,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                     transition={{ delay: 0.3 }}
                     className="text-lg text-surface-600 dark:text-white/60 mb-8 max-w-xl mx-auto lg:mx-0"
                   >
-                    {t('analyzer.hero.description') ||
-                      "Get actionable insights to boost your store's performance, SEO, and conversions. Instant results in 60 seconds."}
+                    {t('analyzer.hero.description')}
                   </motion.p>
 
                   {/* Stats Row */}
@@ -319,7 +334,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                             {t('analyzer.form.title') || 'Analyze Your Store'}
                           </h2>
                           <p className="text-sm text-surface-500 dark:text-white/50">
-                            {t('analyzer.form.subtitle') || 'Get your free report in 60 seconds'}
+                            {t('analyzer.form.subtitle')}
                           </p>
                         </div>
                       </div>
@@ -449,8 +464,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                       step: '3',
                       title: t('analyzer.howItWorks.step3.title') || 'Get Results',
                       description:
-                        t('analyzer.howItWorks.step3.description') ||
-                        'Receive instant insights + full email report',
+                        t('analyzer.howItWorks.step3.description'),
                       icon: CheckCircle,
                     },
                   ].map((item, index) => (

@@ -23,11 +23,25 @@ import {
   PRICING_STATUS,
   PricingStatus,
   PricingLineItem,
+  AcceptPricingRequestPayload,
+  PublicPricingProposal,
   calculateTotalAmount,
   generateLineItemId,
 } from '@/lib/types/pricing';
 
 const PRICING_REQUESTS_COLLECTION = 'portal_pricing_requests';
+
+function generatePublicToken(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    return Array.from(crypto.getRandomValues(new Uint8Array(24)), byte =>
+      byte.toString(16).padStart(2, '0')
+    ).join('');
+  }
+  throw new Error('Secure public proposal links are unavailable in this browser');
+}
 
 // ============================================
 // CREATE
@@ -45,7 +59,14 @@ export async function createPricingRequest(
     id: generateLineItemId(),
   }));
 
-  const totalAmount = calculateTotalAmount(lineItems, data.taxRate || 0);
+  const taxRate = data.taxRate ?? 0;
+  const totalAmount = calculateTotalAmount(lineItems, taxRate);
+  const paymentRequired = data.paymentRequired ?? false;
+  const depositAmount = paymentRequired ? (data.depositAmount ?? totalAmount) : 0;
+
+  if (paymentRequired && (depositAmount < 1 || depositAmount > totalAmount)) {
+    throw new Error('Deposit amount must be between one cent and the proposal total');
+  }
 
   const requestData = {
     orgId,
@@ -53,14 +74,29 @@ export async function createPricingRequest(
     description: data.description?.trim() || null,
     lineItems,
     totalAmount,
-    taxRate: data.taxRate || 0,
+    taxRate,
     currency: data.currency,
     status: PRICING_STATUS.DRAFT as PricingStatus,
+    proposalType: data.proposalType ?? 'work_proposal',
+    terms: data.terms?.trim() || null,
+    publicToken: generatePublicToken(),
+    publicAccessEnabled: data.publicAccessEnabled ?? true,
     clientName: data.clientName?.trim() || null,
     clientEmail: data.clientEmail?.trim().toLowerCase() || null,
     agencyNotes: data.agencyNotes?.trim() || null,
     validUntil: data.validUntil ? Timestamp.fromDate(data.validUntil) : null,
+    timeframe: data.timeframe?.trim() || null,
+    workDeadline: data.workDeadline ? Timestamp.fromDate(data.workDeadline) : null,
+    assignedTo: data.assignedTo?.trim() || null,
+    assignedToName: data.assignedToName?.trim() || null,
     requestIds: data.requestIds || [], // Store linked request IDs
+    paymentRequired,
+    depositAmount,
+    amountPaid: 0,
+    balanceDue: totalAmount,
+    billingMode: data.billingMode ?? 'manual_installments',
+    paymentStatus: paymentRequired ? 'pending' : 'not_required',
+    paymentProvider: paymentRequired ? 'paypal' : null,
     createdBy: userId,
     createdByName: userName,
     createdAt: serverTimestamp(),
@@ -196,6 +232,16 @@ export async function updatePricingRequest(
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, PRICING_REQUESTS_COLLECTION, requestId);
+  const existingSnapshot = await getDoc(docRef);
+  if (!existingSnapshot.exists()) {
+    throw new Error('Pricing request not found');
+  }
+
+  const existing = existingSnapshot.data() as PricingRequest;
+  if (existing.status === PRICING_STATUS.ACCEPTED || existing.status === PRICING_STATUS.PAID) {
+    throw new Error('Accepted or paid proposals are locked');
+  }
+
   const updateData: Record<string, unknown> = {
     updatedAt: serverTimestamp(),
   };
@@ -204,14 +250,23 @@ export async function updatePricingRequest(
   if (data.description !== undefined) updateData.description = data.description?.trim() || null;
   if (data.lineItems !== undefined) {
     updateData.lineItems = data.lineItems;
-    // Note: If taxRate is not in data, we default to 0 for calculation if we don't read existing.
-    // Ideally, caller should provide both lineItems and taxRate if one changes.
-    updateData.totalAmount = calculateTotalAmount(data.lineItems, data.taxRate || 0);
+    updateData.totalAmount = calculateTotalAmount(data.lineItems, data.taxRate ?? existing.taxRate ?? 0);
   }
-  if (data.taxRate !== undefined) updateData.taxRate = data.taxRate;
+  if (data.taxRate !== undefined) {
+    updateData.taxRate = data.taxRate;
+    updateData.totalAmount = calculateTotalAmount(data.lineItems ?? existing.lineItems, data.taxRate);
+  }
   if (data.currency !== undefined) updateData.currency = data.currency;
   if (data.validUntil !== undefined) {
     updateData.validUntil = data.validUntil ? Timestamp.fromDate(data.validUntil) : null;
+  }
+  if (data.timeframe !== undefined) updateData.timeframe = data.timeframe?.trim() || null;
+  if (data.workDeadline !== undefined) {
+    updateData.workDeadline = data.workDeadline ? Timestamp.fromDate(data.workDeadline) : null;
+  }
+  if (data.assignedTo !== undefined) updateData.assignedTo = data.assignedTo?.trim() || null;
+  if (data.assignedToName !== undefined) {
+    updateData.assignedToName = data.assignedToName?.trim() || null;
   }
   if (data.clientName !== undefined) updateData.clientName = data.clientName?.trim() || null;
   if (data.clientEmail !== undefined) {
@@ -221,6 +276,25 @@ export async function updatePricingRequest(
   if (data.agencyNotes !== undefined) updateData.agencyNotes = data.agencyNotes?.trim() || null;
   if (data.status !== undefined) updateData.status = data.status;
   if (data.requestIds !== undefined) updateData.requestIds = data.requestIds;
+  if (data.proposalType !== undefined) updateData.proposalType = data.proposalType;
+  if (data.terms !== undefined) updateData.terms = data.terms?.trim() || null;
+  if (data.publicAccessEnabled !== undefined) {
+    updateData.publicAccessEnabled = data.publicAccessEnabled;
+  }
+  if (data.paymentRequired !== undefined) updateData.paymentRequired = data.paymentRequired;
+  if (data.depositAmount !== undefined) updateData.depositAmount = data.depositAmount;
+  if (data.billingMode !== undefined) updateData.billingMode = data.billingMode;
+
+  const nextTotal = Number(updateData.totalAmount ?? existing.totalAmount);
+  const nextPaymentRequired = data.paymentRequired ?? existing.paymentRequired ?? false;
+  const nextDepositAmount = data.depositAmount ?? existing.depositAmount ?? nextTotal;
+  if (nextPaymentRequired && (nextDepositAmount < 1 || nextDepositAmount > nextTotal)) {
+    throw new Error('Deposit amount must be between one cent and the proposal total');
+  }
+  updateData.depositAmount = nextPaymentRequired ? nextDepositAmount : 0;
+  updateData.balanceDue = nextTotal - (existing.amountPaid ?? 0);
+  updateData.paymentStatus = nextPaymentRequired ? (existing.paymentStatus ?? 'pending') : 'not_required';
+  updateData.paymentProvider = nextPaymentRequired ? 'paypal' : null;
 
   // Recursively clean the data to remove any undefined values (especially in nested lineItems)
   const cleanedData = deepClean(updateData);
@@ -254,6 +328,31 @@ export async function acceptPricingRequest(requestId: string, clientNotes?: stri
   }
 
   await updateDoc(docRef, updateData);
+}
+
+export async function getPricingRequestByPublicToken(token: string): Promise<PublicPricingProposal> {
+  const response = await fetch(`/api/proposals/${encodeURIComponent(token)}`);
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'Proposal not found');
+  }
+  return response.json();
+}
+
+export async function acceptPricingRequestWithSignature(
+  token: string,
+  payload: AcceptPricingRequestPayload
+): Promise<PublicPricingProposal> {
+  const response = await fetch(`/api/proposals/${encodeURIComponent(token)}/accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'Failed to accept proposal');
+  }
+  return response.json();
 }
 
 export async function declinePricingRequest(requestId: string, reason?: string): Promise<void> {
@@ -302,7 +401,7 @@ export async function submitClientEdits(
 export async function markPricingRequestPaid(
   pricingRequestId: string,
   paymentId: string,
-  paymentMethod: 'paypal' = 'paypal'
+  paymentMethod: 'paypal' | 'manual' = 'paypal'
 ): Promise<void> {
   await waitForAuth();
   const db = getFirestoreDb();

@@ -2976,6 +2976,132 @@ const ANALYSIS_TEXTS = {
 // HTML report builders: lib/store-analysis-report-html.js
 // PDF generation: lib/store-analysis-pdf.js (HTML → Chromium PDF)
 
+function normalizeStoreAnalysisUrl(storeUrl) {
+  return String(storeUrl || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\/+$/, '');
+}
+
+function buildStoreAnalysisLeadDedupeKey(email, storeUrl) {
+  return `${normalizeMarketingEmail(email)}::${normalizeStoreAnalysisUrl(storeUrl)}`;
+}
+
+function buildStoreAnalysisLeadDocId(email, storeUrl) {
+  return crypto
+    .createHash('sha256')
+    .update(buildStoreAnalysisLeadDedupeKey(email, storeUrl))
+    .digest('hex')
+    .slice(0, 32);
+}
+
+async function hasRecentStoreAnalysisLead(email, storeUrl, withinHours = 24) {
+  const ref = admin
+    .firestore()
+    .collection('store_analysis_leads')
+    .doc(buildStoreAnalysisLeadDocId(email, storeUrl));
+  const snapshot = await ref.get();
+
+  if (!snapshot.exists) {
+    return false;
+  }
+
+  const createdAt = snapshot.data()?.createdAt;
+  if (!createdAt || typeof createdAt.toMillis !== 'function') {
+    return false;
+  }
+
+  return createdAt.toMillis() > Date.now() - withinHours * 60 * 60 * 1000;
+}
+
+async function recordStoreAnalysisLead({ email, storeUrl, locale, results, subscribeNewsletter }) {
+  const dedupeKey = buildStoreAnalysisLeadDedupeKey(email, storeUrl);
+  if (await hasRecentStoreAnalysisLead(email, storeUrl)) {
+    return false;
+  }
+
+  await admin
+    .firestore()
+    .collection('store_analysis_leads')
+    .doc(buildStoreAnalysisLeadDocId(email, storeUrl))
+    .set({
+      email,
+      storeUrl,
+      dedupeKey,
+      locale,
+      overallScore: results.overallScore,
+      platform: results.platform,
+      source: 'store_analyzer',
+      scoreBand: getScoreBand(results.overallScore),
+      funnelStage: subscribeNewsletter ? 'nurture' : 'lead_only',
+      leadScore: getLeadScoreDelta({
+        source: 'store_analyzer',
+        overallScore: results.overallScore,
+      }),
+      conversionStatus: 'lead',
+      subscribeNewsletter: subscribeNewsletter || false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+  return true;
+}
+
+async function captureStoreAnalysisLeadSideEffects({
+  email,
+  storeUrl,
+  locale,
+  results,
+  subscribeNewsletter,
+}) {
+  const lang = locale === 'he' ? 'he' : 'en';
+  const recorded = await recordStoreAnalysisLead({
+    email,
+    storeUrl,
+    locale: lang,
+    results,
+    subscribeNewsletter,
+  });
+
+  if (!recorded) {
+    return;
+  }
+
+  await addToAudience(resendApiKey.value(), {
+    email,
+    source: 'store_analyzer',
+    properties: {
+      subscription_type: subscribeNewsletter ? 'newsletter_and_lead' : 'lead_only',
+      store_url: storeUrl || '',
+      store_score: String(results.overallScore),
+      platform: results.platform || 'unknown',
+      locale: lang,
+    },
+  });
+
+  if (subscribeNewsletter) {
+    await admin.firestore().collection('newsletter_subscriptions').add({
+      email,
+      source: 'store_analyzer',
+      locale: lang,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+
+  await captureAndEnrollMarketingLead(
+    {
+      email,
+      storeUrl,
+      locale: lang,
+      source: 'store_analyzer',
+      platform: results.platform || undefined,
+      overallScore: results.overallScore,
+      subscribeNewsletter: !!subscribeNewsletter,
+      consent: !!subscribeNewsletter,
+    },
+    { skipWelcome: true }
+  );
+}
+
 // ==========================================
 // PDF REPORT GENERATION — see lib/store-analysis-pdf.js
 // ==========================================
@@ -2994,7 +3120,7 @@ exports.sendStoreAnalysisReport = onRequest(
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-      const { email, storeUrl, locale, results, subscribeNewsletter } = req.body;
+      const { email, storeUrl, locale, results, subscribeNewsletter, skipLeadCapture } = req.body;
 
       if (!email || !results) {
         return res.status(400).json({ error: 'Email and results are required' });
@@ -3004,64 +3130,15 @@ exports.sendStoreAnalysisReport = onRequest(
       const texts = ANALYSIS_TEXTS[lang];
       const isRtl = lang === 'he';
 
-      // Save lead to Firestore
-      await admin
-        .firestore()
-        .collection('store_analysis_leads')
-        .add({
+      if (!skipLeadCapture) {
+        await captureStoreAnalysisLeadSideEffects({
           email,
           storeUrl,
           locale: lang,
-          overallScore: results.overallScore,
-          platform: results.platform,
-          source: 'store_analyzer',
-          scoreBand: getScoreBand(results.overallScore),
-          funnelStage: subscribeNewsletter ? 'nurture' : 'lead_only',
-          leadScore: getLeadScoreDelta({
-            source: 'store_analyzer',
-            overallScore: results.overallScore,
-          }),
-          conversionStatus: 'lead',
-          subscribeNewsletter: subscribeNewsletter || false,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-
-      // Add to Resend Audience
-      await addToAudience(resendApiKey.value(), {
-        email,
-        source: 'store_analyzer',
-        properties: {
-          subscription_type: subscribeNewsletter ? 'newsletter_and_lead' : 'lead_only',
-          store_url: storeUrl || '',
-          store_score: String(results.overallScore),
-          platform: results.platform || 'unknown',
-          locale: lang,
-        },
-      });
-
-      // If subscribed to newsletter, add to newsletter collection
-      if (subscribeNewsletter) {
-        await admin.firestore().collection('newsletter_subscriptions').add({
-          email,
-          source: 'store_analyzer',
-          locale: lang,
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          results,
+          subscribeNewsletter,
         });
       }
-
-      await captureAndEnrollMarketingLead(
-        {
-          email,
-          storeUrl,
-          locale: lang,
-          source: 'store_analyzer',
-          platform: results.platform || undefined,
-          overallScore: results.overallScore,
-          subscribeNewsletter: !!subscribeNewsletter,
-          consent: !!subscribeNewsletter,
-        },
-        { skipWelcome: true }
-      );
 
       // Generate PDF Report
       console.log('[Store Analysis] Generating PDF report...');

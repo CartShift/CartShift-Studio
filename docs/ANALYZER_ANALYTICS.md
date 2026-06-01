@@ -4,7 +4,9 @@
 
 Comprehensive analytics tracking has been implemented for the Store Analyzer to monitor usage, performance, and failure rates.
 
-**API:** Production analysis runs through Next.js `POST /api/analyze-store` (`AnalyzerService`). The legacy Firebase `analyzeStore` function returns HTTP 410. Each response includes `meta` (Lighthouse vs fallback, feature availability, cache, email delivery status).
+**API:** Production analysis runs through Next.js `POST /api/analyze-store` (`AnalyzerService`). The legacy Firebase `analyzeStore` function returns HTTP 410. Each response includes `meta` (Lighthouse vs fallback, feature availability, cache, email delivery status, lead capture status).
+
+Lead capture runs in the API route via `captureStoreAnalysisLead` (marketing CRM). PDF email delivery runs in the background and skips duplicate lead writes when the API already captured the lead.
 
 ## Events Tracked
 
@@ -30,11 +32,15 @@ Comprehensive analytics tracking has been implemented for the Store Analyzer to 
 - `overall_score` - Final score (0-100)
 - `platform` - Detected platform (Shopify, WooCommerce, etc.)
 - `duration_ms` - Total analysis time in milliseconds
-- `has_puppeteer` - Whether Puppeteer features were available
-- `has_visual_analysis` - Whether screenshots were captured
-- `has_product_analysis` - Whether product page was analyzed
-- `has_competitor_analysis` - Whether competitors were found
+- `used_lighthouse` - Whether PageSpeed/Lighthouse data was used
+- `used_html_fallback` - Whether HTML heuristics replaced Lighthouse
+- `has_visual_analysis` - Whether visual capture succeeded (`meta.visualAnalysisAvailable`)
+- `has_product_analysis` - Whether product page analysis succeeded (`meta.productAnalysisAvailable`)
+- `has_competitor_analysis` - Whether competitor signals were found (`meta.competitorAnalysisAvailable`)
 - `has_ai_analysis` - Whether AI readiness was analyzed
+- `lead_capture_status` - `captured` | `deduped` | `failed` | `unconfigured`
+- `email_report_status` - `pending` | `sent` | `failed` | `unconfigured`
+- `cached` - Whether the result came from cache
 
 **Triggered**: When analysis completes successfully
 
@@ -107,7 +113,7 @@ Comprehensive analytics tracking has been implemented for the Store Analyzer to 
 - `feature_name` - Which feature: `visual_analysis` | `product_analysis`
 - `reason` - Why unavailable: `puppeteer_unavailable` | `no_product_page_or_puppeteer_unavailable`
 
-**Triggered**: When a feature is skipped due to unavailability
+**Triggered**: Only when Puppeteer was attempted (`meta.visualAnalysisAttempted`) but the feature did not succeed. Avoids false positives when browser automation is disabled or a product page was not found.
 
 **Use Cases**:
 

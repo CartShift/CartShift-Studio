@@ -776,7 +776,7 @@ export async function markRequestPaid(
   userId: string,
   userName: string,
   paymentId: string,
-  paymentMethod: 'paypal' = 'paypal'
+  paymentMethod: 'paypal' | 'manual' = 'paypal'
 ): Promise<void> {
   await waitForAuth();
   const db = getFirestoreDb();

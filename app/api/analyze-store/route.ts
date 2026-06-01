@@ -7,6 +7,7 @@ import {
   resolveInitialEmailReportStatus,
 } from '@/lib/services/analyzer-report-delivery';
 import { serializeAnalysisForClient } from '@/lib/services/analyzer-response';
+import { captureStoreAnalysisLead } from '@/lib/services/store-analysis-leads';
 import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateAnalyzeStoreRequest } from '@/lib/validation';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
@@ -138,13 +139,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(createErrorResponse(userFriendlyMsg, 500), { status: 500 });
     }
 
+    const leadCaptureStatus = await captureStoreAnalysisLead({
+      email,
+      storeUrl: normalizedUrl,
+      locale: locale || 'en',
+      platform: result.platform,
+      overallScore: result.overallScore,
+      subscribeNewsletter: subscribeNewsletter ?? false,
+    });
+
     const emailReportStatus = resolveInitialEmailReportStatus();
+    const skipLeadCapture = leadCaptureStatus === 'captured' || leadCaptureStatus === 'deduped';
     const reportPayload = {
       email,
       storeUrl: normalizedUrl,
       locale: locale || 'en',
       results: result,
       subscribeNewsletter: subscribeNewsletter ?? false,
+      skipLeadCapture,
     };
 
     if (emailReportStatus === 'pending') {
@@ -165,6 +177,7 @@ export async function POST(request: NextRequest) {
       meta: {
         ...result.meta,
         emailReportStatus,
+        leadCaptureStatus,
       },
     });
 

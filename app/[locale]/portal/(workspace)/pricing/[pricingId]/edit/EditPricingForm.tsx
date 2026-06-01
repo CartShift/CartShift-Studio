@@ -8,13 +8,11 @@ import { useRouter, Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import {
-  getPricingRequest,
-  updatePricingRequest,
-  sendPricingRequest,
-} from '@/lib/services/pricing-requests';
 import { getRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
+import { usePricingRequest } from '@/lib/hooks/usePricingRequest';
+import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedPricingId } from '@/lib/hooks/useResolvedPricingId';
 import {
@@ -54,6 +52,8 @@ interface LineItemInput {
   quantity: number;
   unitPrice: number;
   notes?: string;
+  requestId?: string;
+  pricingType?: 'fixed' | 'hourly' | 'estimate';
 }
 
 interface PricingFormData {
@@ -62,10 +62,16 @@ interface PricingFormData {
   lineItems: LineItemInput[];
   currency: Currency;
   validUntil?: string;
+  timeframe: string;
+  workDeadline?: string;
+  assignedTo: string;
   clientName?: string;
   clientEmail?: string;
   agencyNotes?: string;
   includeTax: boolean;
+  terms: string;
+  paymentRequired: boolean;
+  depositAmount: number;
 }
 
 export default function EditPricingForm() {
@@ -73,7 +79,10 @@ export default function EditPricingForm() {
   const pricingId = useResolvedPricingId();
   const router = useRouter();
   const { userData, isAgency } = usePortalAuth();
+  const { updatePricingRequest, sendPricingRequest } = usePricingMutations();
   const t = useTranslations('portal');
+  const pricingQuery = usePricingRequest(typeof pricingId === 'string' ? pricingId : null);
+  const agencyTeam = useAgencyTeam();
 
   const [isLoading, setIsLoading] = useState(true);
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
@@ -101,15 +110,23 @@ export default function EditPricingForm() {
               quantity: z.number().min(1, t('pricing.form.errors.quantityMustBeAtLeast1')),
               unitPrice: z.number().min(0, t('pricing.form.errors.priceMustBePositive')),
               notes: z.string().optional(),
+              requestId: z.string().optional(),
+              pricingType: z.enum(['fixed', 'hourly', 'estimate']).optional(),
             })
           )
           .min(1, 'Add at least one line item'),
         currency: z.enum(['USD', 'ILS', 'EUR']),
         validUntil: z.string().optional(),
+        timeframe: z.string().trim().min(1),
+        workDeadline: z.string().optional(),
+        assignedTo: z.string().trim().min(1),
         clientName: z.string().optional(),
         clientEmail: z.string().optional().or(z.literal('')),
         agencyNotes: z.string().optional(),
         includeTax: z.boolean(),
+        terms: z.string().min(1),
+        paymentRequired: z.boolean(),
+        depositAmount: z.number().min(0),
       }),
     []
   );
@@ -120,6 +137,7 @@ export default function EditPricingForm() {
     control,
     watch,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<PricingFormData>({
     resolver: zodResolver(pricingSchema),
@@ -127,11 +145,17 @@ export default function EditPricingForm() {
       title: '',
       description: '',
       lineItems: [{ id: generateLineItemId(), description: '', quantity: 1, unitPrice: 0 }],
-      currency: 'USD',
+      currency: 'ILS',
+      timeframe: '',
+      workDeadline: '',
+      assignedTo: '',
       clientName: '',
       clientEmail: '',
       agencyNotes: '',
       includeTax: true,
+      terms: t('pricing.form.defaultTerms'),
+      paymentRequired: false,
+      depositAmount: 0,
     },
   });
 
@@ -151,15 +175,19 @@ export default function EditPricingForm() {
       setIsLoading(false);
       return;
     }
+    if (pricingQuery.isLoading) return;
 
     const fetchData = async () => {
       try {
-        const request = await getPricingRequest(pricingId);
+        const request = pricingQuery.data;
+        if (pricingQuery.error) throw pricingQuery.error;
         if (!request) {
           setErrorMessage('Pricing offer not found');
           setIsLoading(false);
           return;
         }
+
+        setPricingRequest(request);
 
         // Check if agency can edit this (only DRAFT or SENT status)
         if (request.status !== PRICING_STATUS.DRAFT && request.status !== PRICING_STATUS.SENT) {
@@ -167,8 +195,6 @@ export default function EditPricingForm() {
           setIsLoading(false);
           return;
         }
-
-        setPricingRequest(request);
 
         // Fetch linked requests
         if (request.requestIds && request.requestIds.length > 0) {
@@ -185,6 +211,8 @@ export default function EditPricingForm() {
           quantity: item.quantity,
           unitPrice: item.unitPrice / 100,
           notes: item.notes,
+          requestId: item.requestId,
+          pricingType: item.pricingType || 'fixed',
         }));
 
         // Format validUntil date for input
@@ -192,6 +220,10 @@ export default function EditPricingForm() {
         if (request.validUntil) {
           const date = request.validUntil.toDate();
           validUntilStr = date.toISOString().split('T')[0];
+        }
+        let workDeadlineStr = '';
+        if (request.workDeadline) {
+          workDeadlineStr = request.workDeadline.toDate().toISOString().split('T')[0];
         }
 
         // Reset form with loaded data
@@ -201,10 +233,16 @@ export default function EditPricingForm() {
           lineItems,
           currency: request.currency,
           validUntil: validUntilStr,
+          timeframe: request.timeframe || '',
+          workDeadline: workDeadlineStr,
+          assignedTo: request.assignedTo || '',
           clientName: request.clientName || '',
           clientEmail: request.clientEmail || '',
           agencyNotes: request.agencyNotes || '',
           includeTax: (request.taxRate || 0) > 0,
+          terms: request.terms || t('pricing.form.defaultTerms'),
+          paymentRequired: request.paymentRequired || false,
+          depositAmount: (request.depositAmount || 0) / 100,
         });
       } catch (err) {
         console.error('Failed to fetch pricing request:', err);
@@ -215,7 +253,7 @@ export default function EditPricingForm() {
     };
 
     fetchData();
-  }, [orgId, pricingId, t, reset]);
+  }, [orgId, pricingId, pricingQuery.data, pricingQuery.error, pricingQuery.isLoading, t, reset]);
 
   // Note: Request selection is not available in edit mode
   // Linked requests are displayed read-only from the initial fetch
@@ -234,6 +272,15 @@ export default function EditPricingForm() {
 
     return { totalAmount, subtotal, taxAmount };
   }, [watchedLineItems, watchedIncludeTax]);
+
+  const watchedPaymentRequired = watch('paymentRequired');
+  const watchedDepositAmount = watch('depositAmount');
+
+  useEffect(() => {
+    if (watchedPaymentRequired && !watchedDepositAmount && totalAmount > 0) {
+      setValue('depositAmount', totalAmount / 100);
+    }
+  }, [watchedPaymentRequired, watchedDepositAmount, totalAmount, setValue]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (
@@ -255,26 +302,40 @@ export default function EditPricingForm() {
 
     try {
       // Convert prices from dollars to cents
-      const lineItems: PricingLineItem[] = data.lineItems.map(item => ({
+      const lineItems: PricingLineItem[] = data.lineItems.map((item, index) => ({
         id: item.id,
         description: item.description,
         quantity: item.quantity,
         unitPrice: Math.round(item.unitPrice * 100),
         notes: item.notes,
+        pricingType: item.pricingType || 'fixed',
+        sortOrder: index,
+        requestId: item.requestId,
       }));
+      const assignedDeveloper = agencyTeam.data?.find(member => member.id === data.assignedTo);
 
-      await updatePricingRequest(pricingId, {
+      await updatePricingRequest({ requestId: pricingId, data: {
         title: data.title,
         description: data.description,
         lineItems,
         currency: data.currency,
         validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
+        timeframe: data.timeframe,
+        workDeadline: data.workDeadline ? new Date(data.workDeadline) : undefined,
+        assignedTo: data.assignedTo,
+        assignedToName: assignedDeveloper?.name || assignedDeveloper?.email || '',
         clientName: data.clientName,
         clientEmail: data.clientEmail,
         agencyNotes: data.agencyNotes,
         requestIds: linkedRequests.map(r => r.id),
         taxRate: data.includeTax ? TAX_RATE : 0,
-      });
+        proposalType: 'work_proposal',
+        terms: data.terms,
+        publicAccessEnabled: true,
+        paymentRequired: data.paymentRequired,
+        depositAmount: data.paymentRequired ? Math.round(data.depositAmount * 100) : 0,
+        billingMode: 'manual_installments',
+      } });
 
       // If sending, update status to SENT
       if (shouldSend && pricingRequest?.status === PRICING_STATUS.DRAFT) {
@@ -332,6 +393,25 @@ export default function EditPricingForm() {
           <Button>{t('common.back')}</Button>
         </Link>
       </div>
+    );
+  }
+
+  if (
+    pricingRequest &&
+    (pricingRequest.status === PRICING_STATUS.ACCEPTED || pricingRequest.status === PRICING_STATUS.PAID)
+  ) {
+    return (
+      <Card className="p-8 text-center">
+        <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
+          {t('pricing.form.lockedTitle')}
+        </h2>
+        <p className="mx-auto mt-2 max-w-lg text-surface-500 dark:text-surface-400">
+          {t('pricing.form.lockedDescription')}
+        </p>
+        <Link href={getPortalPath(`/pricing/${pricingId}/`)}>
+          <Button className="mt-6">{t('common.back')}</Button>
+        </Link>
+      </Card>
     );
   }
 
@@ -423,6 +503,17 @@ export default function EditPricingForm() {
                   rows={3}
                   placeholder={t('pricing.form.descriptionPlaceholder')}
                   className="portal-input w-full resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('pricing.form.terms')}
+                </label>
+                <textarea
+                  {...register('terms')}
+                  rows={10}
+                  className="portal-input w-full resize-y text-sm leading-6"
                 />
               </div>
             </div>
@@ -539,6 +630,14 @@ export default function EditPricingForm() {
                           errors.lineItems?.[index]?.description && 'border-red-500'
                         )}
                       />
+                      <select
+                        {...register(`lineItems.${index}.pricingType`)}
+                        className="portal-input mt-2 w-full text-xs"
+                      >
+                        <option value="fixed">{t('pricing.form.pricingType.fixed')}</option>
+                        <option value="hourly">{t('pricing.form.pricingType.hourly')}</option>
+                        <option value="estimate">{t('pricing.form.pricingType.estimate')}</option>
+                      </select>
                     </div>
                     <div className="col-span-2">
                       <input
@@ -664,6 +763,48 @@ export default function EditPricingForm() {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('pricing.form.timeframe')} *
+                </label>
+                <input
+                  {...register('timeframe')}
+                  className="portal-input w-full"
+                  placeholder={t('pricing.form.timeframePlaceholder')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('pricing.form.workDeadline')}
+                </label>
+                <div className="relative">
+                  <CalendarIcon
+                    size={16}
+                    className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
+                  />
+                  <input
+                    {...register('workDeadline')}
+                    type="date"
+                    className="portal-input w-full ps-10"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('pricing.form.assignedDeveloper')} *
+                </label>
+                <select {...register('assignedTo')} className="portal-input w-full">
+                  <option value="">{t('pricing.form.selectDeveloper')}</option>
+                  {(agencyTeam.data || []).map(member => (
+                    <option key={member.id} value={member.id}>
+                      {member.name || member.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </Card>
 
@@ -698,6 +839,31 @@ export default function EditPricingForm() {
                 />
               </div>
             </div>
+          </Card>
+
+          {/* Agency Notes */}
+          <Card className="p-6">
+            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
+              {t('pricing.form.payment')}
+            </h3>
+            <label className="flex items-start gap-3 text-sm text-surface-600 dark:text-surface-300">
+              <input type="checkbox" className="mt-1" {...register('paymentRequired')} />
+              <span>{t('pricing.form.requireDeposit')}</span>
+            </label>
+            {watchedPaymentRequired && (
+              <div className="mt-4">
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('pricing.form.depositAmount')}
+                </label>
+                <input
+                  {...register('depositAmount', { valueAsNumber: true })}
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  className="portal-input w-full"
+                />
+              </div>
+            )}
           </Card>
 
           {/* Agency Notes */}

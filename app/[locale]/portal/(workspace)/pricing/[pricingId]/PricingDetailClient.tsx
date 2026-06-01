@@ -2,25 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/navigation';
-import { AlertCircle, ArrowLeft, Loader2, FileText, ExternalLink, Pencil } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, FileText, ExternalLink, LockKeyhole, Pencil } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { getPricingRequest } from '@/lib/services/pricing-requests';
 import { getRequest } from '@/lib/services/portal-requests';
 import {
-  PricingRequest,
   PRICING_STATUS,
   PRICING_STATUS_CONFIG,
   formatCurrency,
 } from '@/lib/types/pricing';
 import { Request } from '@/lib/types/portal';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedPricingId } from '@/lib/hooks/useResolvedPricingId';
-import { PayPalProvider } from '@/components/providers/PayPalProvider';
-import { PayPalCheckoutButton } from '@/components/portal/PayPalCheckoutButton';
+import { usePricingRequest } from '@/lib/hooks/usePricingRequest';
+import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
 import {
   getPricingStatusBadgeVariant,
   getStatusBadgeVariant,
@@ -35,44 +33,46 @@ export default function PricingDetailClient() {
   const orgId = useResolvedOrgId();
   const pricingId = useResolvedPricingId();
   const t = useTranslations('portal');
+  const locale = useLocale();
   const { isAgency } = usePortalAuth();
+  const pricingQuery = usePricingRequest(typeof pricingId === 'string' ? pricingId : null);
 
-  const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
   const [linkedRequests, setLinkedRequests] = useState<Request[]>([]);
-  const [loading, set] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const pricingRequest = pricingQuery.data ?? null;
 
   useEffect(() => {
     if (!orgId || !pricingId || typeof orgId !== 'string' || typeof pricingId !== 'string') {
       setError(t('common.error' as never));
-      set(false);
       return undefined;
     }
+    if (pricingQuery.error) {
+      setError(t('common.error' as never));
+      return undefined;
+    }
+    if (!pricingRequest) return undefined;
 
-    const fetchPricingRequest = async () => {
+    const fetchLinkedRequests = async () => {
       try {
-        const request = await getPricingRequest(pricingId);
-        setPricingRequest(request);
-
         // Fetch linked requests if any
-        if (request?.requestIds && request.requestIds.length > 0) {
-          const requestPromises = request.requestIds.map(id => getRequest(id));
+        if (pricingRequest.requestIds && pricingRequest.requestIds.length > 0) {
+          const requestPromises = pricingRequest.requestIds.map(id => getRequest(id));
           const requests = await Promise.all(requestPromises);
           setLinkedRequests(requests.filter((r): r is Request => r !== null));
+        } else {
+          setLinkedRequests([]);
         }
       } catch (err) {
         console.error('Failed to fetch pricing request:', err);
         setError(t('common.error' as never));
-      } finally {
-        set(false);
       }
     };
 
-    fetchPricingRequest();
+    fetchLinkedRequests();
     return undefined;
-  }, [orgId, pricingId, t]);
+  }, [orgId, pricingId, pricingQuery.error, pricingRequest, t]);
 
-  if (loading) {
+  if (pricingQuery.isLoading) {
     return (
       <div className="py-20 flex flex-col items-center justify-center space-y-3">
         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
@@ -102,7 +102,6 @@ export default function PricingDetailClient() {
   const statusColor = getPricingStatusBadgeVariant(statusConfig.color);
 
   return (
-    <PayPalProvider>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="flex items-center justify-between">
           <Link href={getPortalPath('/pricing/')}>
@@ -138,6 +137,13 @@ export default function PricingDetailClient() {
             <Badge variant={statusColor}>
               {t(`pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
             </Badge>
+            {(pricingRequest.status === PRICING_STATUS.ACCEPTED ||
+              pricingRequest.status === PRICING_STATUS.PAID) && (
+              <Badge variant="gray" className="ms-2">
+                <LockKeyhole size={13} />
+                {t('pricing.detail.locked')}
+              </Badge>
+            )}
           </div>
 
           <div className="space-y-4 mb-6">
@@ -196,6 +202,60 @@ export default function PricingDetailClient() {
             </div>
           )}
 
+          {pricingRequest.terms && (
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-3">
+                {t('pricing.detail.terms')}
+              </h3>
+              <p className="whitespace-pre-line rounded-xl bg-surface-50 p-4 text-sm leading-6 text-surface-600 dark:bg-surface-900 dark:text-surface-300">
+                {pricingRequest.terms}
+              </p>
+            </div>
+          )}
+
+          {(pricingRequest.timeframe || pricingRequest.workDeadline || pricingRequest.assignedToName) && (
+            <div className="mb-6 rounded-xl bg-surface-50 p-4 dark:bg-surface-900">
+              <h3 className="font-outfit text-lg font-bold text-surface-900 dark:text-white">
+                {t('pricing.detail.deliveryPlan')}
+              </h3>
+              <div className="mt-3 space-y-2 text-sm text-surface-600 dark:text-surface-300">
+                {pricingRequest.assignedToName && (
+                  <p>
+                    <strong>{t('pricing.detail.assignedDeveloper')}:</strong>{' '}
+                    {pricingRequest.assignedToName}
+                  </p>
+                )}
+                {pricingRequest.timeframe && (
+                  <p>
+                    <strong>{t('pricing.detail.timeframe')}:</strong> {pricingRequest.timeframe}
+                  </p>
+                )}
+                {pricingRequest.workDeadline && (
+                  <p>
+                    <strong>{t('pricing.detail.workDeadline')}:</strong>{' '}
+                    {pricingRequest.workDeadline.toDate().toLocaleDateString(locale)}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {pricingRequest.signatureText && (
+            <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+              <p className="text-xs font-black uppercase tracking-widest text-emerald-600">
+                {t('pricing.detail.signatureEvidence')}
+              </p>
+              <p className="mt-2 font-outfit text-xl font-black text-emerald-900 dark:text-emerald-100">
+                {pricingRequest.signatureText}
+              </p>
+              {pricingRequest.acceptedByEmail && (
+                <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-300">
+                  {pricingRequest.acceptedByEmail}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Linked Requests Section */}
           {linkedRequests.length > 0 && (
             <div className="mb-6">
@@ -250,23 +310,18 @@ export default function PricingDetailClient() {
             </div>
           )}
 
-          {!isAgency && pricingRequest.status === 'ACCEPTED' && (
+          {!isAgency &&
+            pricingRequest.paymentRequired &&
+            pricingRequest.paymentStatus !== 'paid' &&
+            pricingRequest.publicToken && (
             <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800">
-              <PayPalCheckoutButton
-                pricingRequest={pricingRequest}
-                onSuccess={_result => {
-                  // Payment successful
-                  window.location.reload();
-                }}
-                onError={error => {
-                  console.error('Payment error:', error);
-                  setError(error);
-                }}
-              />
+              <a href={`/${locale}/proposal/${pricingRequest.publicToken}`}>
+                <Button className="w-full">{t('pricing.detail.continuePayment')}</Button>
+              </a>
             </div>
           )}
         </Card>
+        {isAgency && <ProposalPaymentPanel proposal={pricingRequest} locale={locale} />}
       </div>
-    </PayPalProvider>
   );
 }

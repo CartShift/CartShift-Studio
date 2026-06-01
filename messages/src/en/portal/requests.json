@@ -154,6 +154,15 @@
         "acceptQuote": "Accept Quote",
         "decline": "Decline",
         "pricingTitle": "Pricing",
+        "paymentTracking": "Payment Tracking",
+        "amountPaid": "Paid",
+        "balanceDue": "Balance due",
+        "paymentStatus": "Payment status",
+        "paymentStatuses": {
+          "unpaid": "Unpaid",
+          "partially_paid": "Partially paid",
+          "paid": "Paid"
+        },
         "markAsFree": "Mark as Free",
         "freeDesc": "This request is handled as a standard complimentary service.",
         "history": "History",

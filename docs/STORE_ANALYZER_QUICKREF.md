@@ -17,6 +17,10 @@ The store analyzer was failing due to Puppeteer/Chrome not being available or ti
 11. ✅ **API `maxDuration: 120`** - Reduces serverless timeouts on long runs
 12. ✅ **Overlapped pipeline** - Scraper/competitor/AI run during PageSpeed wait (not after)
 13. ✅ **Async PDF delivery** - Results return immediately; email sends via `after()` in background
+14. ✅ **API lead capture** - CRM lead saved in `/api/analyze-store` before PDF delivery (not only in Firebase)
+15. ✅ **24h lead dedupe** - Same email + URL won't duplicate marketing leads within 24 hours
+16. ✅ **Honest HTTPS fallback** - HTML fallback verifies final URL protocol instead of faking a pass
+17. ✅ **Realistic timing copy** - UI promises 1–2 minutes, not 60 seconds
 
 ## Quick Commands
 
@@ -39,8 +43,9 @@ pnpm dev
 2. SSRF-safe HTML fetch (~15s max)
 3. **In parallel:** PageSpeed Lighthouse + competitor/scraper/AI tasks (overlap saves ~15–25s)
 4. Section scoring + benchmark + cache write
-5. **Immediate** JSON response to browser
-6. **Background:** PDF email via Firebase Function (`after()` — does not block step 5)
+5. **Lead capture** via `marketingCapture` (deduped 24h per email + URL)
+6. **Immediate** JSON response to browser
+7. **Background:** PDF email via Firebase Function (`after()` — skips duplicate lead writes when step 5 succeeded)
 
 ### If Puppeteer IS available:
 

@@ -17,17 +17,17 @@ export const ANALYZER_PHASE_ORDER: AnalyzerProgressPhase[] = [
 
 export const ANALYZER_PHASE_START_MS: Record<AnalyzerProgressPhase, number> = {
   connecting: 0,
-  performance: 3_000,
-  seo: 10_000,
-  ux: 18_000,
-  trust: 28_000,
-  generating: 38_000,
+  performance: 5_000,
+  seo: 18_000,
+  ux: 35_000,
+  trust: 55_000,
+  generating: 75_000,
 };
 
 /** Asymptotic progress capped at 85% until the caller sets complete. */
 export function progressFromElapsedMs(elapsedMs: number): number {
-  const capped = Math.min(elapsedMs, 90_000);
-  const raw = 85 * (1 - Math.exp(-capped / 22_000));
+  const capped = Math.min(elapsedMs, 120_000);
+  const raw = 85 * (1 - Math.exp(-capped / 38_000));
   return Math.min(85, Math.round(raw));
 }
 

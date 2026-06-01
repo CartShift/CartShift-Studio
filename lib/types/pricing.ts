@@ -23,6 +23,25 @@ export const CURRENCY = {
 
 export type PricingStatus = (typeof PRICING_STATUS)[keyof typeof PRICING_STATUS];
 export type Currency = (typeof CURRENCY)[keyof typeof CURRENCY];
+export type PricingType = 'fixed' | 'hourly' | 'estimate';
+export type ProposalType = 'pricing_offer' | 'work_proposal';
+export type ProposalPaymentStatus =
+  | 'not_required'
+  | 'pending'
+  | 'partially_paid'
+  | 'paid'
+  | 'failed';
+export type ProposalPaymentType = 'deposit' | 'installment' | 'final';
+export type ProposalPaymentRecordStatus = 'pending' | 'paid' | 'failed' | 'canceled' | 'refunded';
+export type ProposalPaymentProvider = 'paypal' | 'manual';
+export type ManualPaymentMethod =
+  | 'bank_transfer'
+  | 'cash'
+  | 'bit'
+  | 'paybox'
+  | 'check'
+  | 'credit_card_manual'
+  | 'other';
 
 // ============================================
 // CORE TYPES
@@ -30,10 +49,14 @@ export type Currency = (typeof CURRENCY)[keyof typeof CURRENCY];
 
 export interface PricingLineItem {
   id: string;
+  title?: string;
   description: string;
   quantity: number;
   unitPrice: number; // in cents/smallest currency unit
   notes?: string;
+  pricingType?: PricingType;
+  sortOrder?: number;
+  requestId?: string;
 }
 
 export interface PricingRequest {
@@ -46,6 +69,10 @@ export interface PricingRequest {
   taxRate?: number; // Tax rate as decimal (e.g. 0.17 for 17%)
   currency: Currency;
   status: PricingStatus;
+  proposalType?: ProposalType;
+  terms?: string;
+  publicToken?: string;
+  publicAccessEnabled?: boolean;
 
   // Linked requests - allows bundling multiple requests into one pricing offer
   requestIds?: string[]; // Array of linked Request IDs
@@ -62,11 +89,37 @@ export interface PricingRequest {
 
   // Validity
   validUntil?: Timestamp;
+  timeframe?: string;
+  workDeadline?: Timestamp;
+  assignedTo?: string;
+  assignedToName?: string;
 
   // Payment info
   paymentId?: string; // PayPal transaction ID
   paidAt?: Timestamp;
-  paymentMethod?: 'paypal';
+  firstPaymentAt?: Timestamp;
+  lastPaymentAt?: Timestamp;
+  paymentMethod?: 'paypal' | 'manual';
+  paymentRequired?: boolean;
+  depositAmount?: number;
+  amountPaid?: number;
+  balanceDue?: number;
+  pendingAmount?: number;
+  billingMode?: 'manual_installments';
+  paymentStatus?: ProposalPaymentStatus;
+  paymentProvider?: 'paypal';
+  paymentReference?: string;
+  materializedRequestIds?: string[];
+  requestsMaterializedAt?: Timestamp;
+
+  // Signature audit trail
+  acceptedByName?: string;
+  acceptedByEmail?: string;
+  signatureText?: string;
+  termsAcceptedAt?: Timestamp;
+  acceptedIp?: string;
+  acceptedUserAgent?: string;
+  lockedAt?: Timestamp;
 
   // Timestamps
   createdAt: Timestamp;
@@ -87,10 +140,20 @@ export interface CreatePricingRequestData {
   currency: Currency;
   taxRate?: number;
   validUntil?: Date;
+  timeframe?: string;
+  workDeadline?: Date;
+  assignedTo?: string;
+  assignedToName?: string;
   clientName?: string;
   clientEmail?: string;
   agencyNotes?: string;
   requestIds?: string[]; // Optional: link to existing requests
+  proposalType?: ProposalType;
+  terms?: string;
+  publicAccessEnabled?: boolean;
+  paymentRequired?: boolean;
+  depositAmount?: number;
+  billingMode?: 'manual_installments';
 }
 
 export interface UpdatePricingRequestData {
@@ -100,12 +163,98 @@ export interface UpdatePricingRequestData {
   currency?: Currency;
   taxRate?: number;
   validUntil?: Date;
+  timeframe?: string;
+  workDeadline?: Date;
+  assignedTo?: string;
+  assignedToName?: string;
   clientName?: string;
   clientEmail?: string;
   clientNotes?: string;
   agencyNotes?: string;
   status?: PricingStatus;
   requestIds?: string[];
+  proposalType?: ProposalType;
+  terms?: string;
+  publicAccessEnabled?: boolean;
+  paymentRequired?: boolean;
+  depositAmount?: number;
+  billingMode?: 'manual_installments';
+}
+
+export interface AcceptPricingRequestPayload {
+  termsAccepted: boolean;
+  acceptedByName: string;
+  acceptedByEmail?: string;
+  signatureText: string;
+}
+
+export interface ProposalPaymentRecord {
+  id: string;
+  proposalId: string;
+  paymentToken: string;
+  type: ProposalPaymentType;
+  label: string;
+  amount: number;
+  currency: Currency;
+  dueAt?: Timestamp;
+  status: ProposalPaymentRecordStatus;
+  provider: ProposalPaymentProvider;
+  manualMethod?: ManualPaymentMethod;
+  manualReference?: string;
+  note?: string;
+  paypalOrderId?: string;
+  paypalCaptureId?: string;
+  paidAt?: Timestamp;
+  failedAt?: Timestamp;
+  canceledAt?: Timestamp;
+  refundedAt?: Timestamp;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface PublicProposalPayment {
+  id: string;
+  paymentToken: string;
+  type: ProposalPaymentType;
+  label: string;
+  amount: number;
+  currency: Currency;
+  dueAt?: string;
+  status: ProposalPaymentRecordStatus;
+  provider: ProposalPaymentProvider;
+  manualMethod?: ManualPaymentMethod;
+}
+
+export interface AgencyProposalPayment extends PublicProposalPayment {
+  manualReference?: string;
+  note?: string;
+}
+
+export interface PublicPricingProposal {
+  id: string;
+  title: string;
+  description?: string;
+  lineItems: PricingLineItem[];
+  totalAmount: number;
+  taxRate: number;
+  currency: Currency;
+  status: PricingStatus;
+  proposalType: ProposalType;
+  terms?: string;
+  clientName?: string;
+  validUntil?: string;
+  timeframe?: string;
+  workDeadline?: string;
+  acceptedAt?: string;
+  lockedAt?: string;
+  paymentRequired: boolean;
+  depositAmount?: number;
+  amountPaid: number;
+  balanceDue: number;
+  paymentStatus: ProposalPaymentStatus;
+  payments: PublicProposalPayment[];
+  canAccept: boolean;
+  isPreview: boolean;
 }
 
 // ============================================
@@ -192,6 +341,26 @@ export function calculateSubtotal(lineItems: PricingLineItem[]): number {
 
 export function calculateTaxAmount(subtotal: number, taxRate: number): number {
   return Math.round(subtotal * taxRate);
+}
+
+export function allocateLineItemTotals(
+  lineItems: PricingLineItem[],
+  totalAmount: number
+): Array<{ item: PricingLineItem; itemSubtotal: number; totalAmount: number }> {
+  const subtotal = calculateSubtotal(lineItems);
+  let allocated = 0;
+
+  return lineItems.map((item, index) => {
+    const itemSubtotal = item.quantity * item.unitPrice;
+    const allocatedTotal =
+      index === lineItems.length - 1
+        ? totalAmount - allocated
+        : subtotal > 0
+          ? Math.round((totalAmount * itemSubtotal) / subtotal)
+          : 0;
+    allocated += allocatedTotal;
+    return { item, itemSubtotal, totalAmount: allocatedTotal };
+  });
 }
 
 export function formatCurrency(amountInCents: number, currency: Currency): string {

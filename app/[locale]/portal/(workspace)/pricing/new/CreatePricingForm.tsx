@@ -8,9 +8,10 @@ import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { createPricingRequest, sendPricingRequest } from '@/lib/services/pricing-requests';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
+import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { useOrg } from '@/lib/context/OrgContext';
 import {
   AlertCircle,
@@ -39,6 +40,7 @@ import {
 } from '@/lib/types/pricing';
 import { Request, RequestStatus } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { TAX_RATE } from '@/lib/constants/pricing';
 
 interface LineItemInput {
   description: string;
@@ -46,6 +48,7 @@ interface LineItemInput {
   unitPrice: number;
   notes?: string;
   requestId?: string; // Link to a request if generated from calculator
+  pricingType?: 'fixed' | 'hourly' | 'estimate';
 }
 
 interface PricingFormData {
@@ -54,10 +57,16 @@ interface PricingFormData {
   lineItems: LineItemInput[];
   currency: Currency;
   validUntil?: string;
+  timeframe: string;
+  workDeadline?: string;
+  assignedTo: string;
   clientName?: string;
   clientEmail?: string;
   agencyNotes?: string;
   includeTax: boolean;
+  terms: string;
+  paymentRequired: boolean;
+  depositAmount: number;
 }
 
 export default function CreatePricingForm() {
@@ -65,6 +74,8 @@ export default function CreatePricingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userData } = usePortalAuth();
+  const { createPricingRequest, sendPricingRequest } = usePricingMutations();
+  const agencyTeam = useAgencyTeam();
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -149,15 +160,23 @@ export default function CreatePricingForm() {
               quantity: z.number().min(1, t('portal.pricing.form.errors.quantityMustBeAtLeast1')),
               unitPrice: z.number().min(0, 'Price must be positive'),
               notes: z.string().optional(),
+              requestId: z.string().optional(),
+              pricingType: z.enum(['fixed', 'hourly', 'estimate']).optional(),
             })
           )
           .min(1, 'Add at least one line item'),
         currency: z.enum(['USD', 'ILS', 'EUR']),
         validUntil: z.string().optional(),
+        timeframe: z.string().trim().min(1),
+        workDeadline: z.string().optional(),
+        assignedTo: z.string().trim().min(1),
         clientName: z.string().optional(),
         clientEmail: z.string().email().optional().or(z.literal('')),
         agencyNotes: z.string().optional(),
         includeTax: z.boolean(),
+        terms: z.string().min(1),
+        paymentRequired: z.boolean(),
+        depositAmount: z.number().min(0),
       }),
     []
   );
@@ -168,6 +187,7 @@ export default function CreatePricingForm() {
     control,
     watch,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<PricingFormData>({
     resolver: zodResolver(pricingSchema),
@@ -175,11 +195,17 @@ export default function CreatePricingForm() {
       title: '',
       description: '',
       lineItems: [{ description: '', quantity: 1, unitPrice: 0 }],
-      currency: 'USD',
+      currency: 'ILS',
+      timeframe: '',
+      workDeadline: '',
+      assignedTo: '',
       clientName: '',
       clientEmail: '',
       agencyNotes: '',
       includeTax: true, // Default to true for VAT in Israel typically
+      terms: t('portal.pricing.form.defaultTerms'),
+      paymentRequired: false,
+      depositAmount: 0,
     },
   });
 
@@ -196,6 +222,7 @@ export default function CreatePricingForm() {
             quantity: item.quantity,
             unitPrice: item.unitPrice / 100,
             notes: '',
+            pricingType: 'fixed' as const,
           }));
 
           const firstItem = formItems[0];
@@ -240,7 +267,8 @@ export default function CreatePricingForm() {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           notes: item.notes,
-          requestId: item.requestId,
+        requestId: item.requestId,
+          pricingType: 'fixed' as const,
         }));
 
         // Get current form values and update
@@ -261,7 +289,7 @@ export default function CreatePricingForm() {
         const currentValues = watch();
         reset({
           ...currentValues,
-          lineItems: [{ description: '', quantity: 1, unitPrice: 0 }],
+          lineItems: [{ description: '', quantity: 1, unitPrice: 0, pricingType: 'fixed' }],
         });
         setLineItemsFromCalculator(false);
       }
@@ -276,15 +304,25 @@ export default function CreatePricingForm() {
         description: item.description || '',
         quantity: item.quantity || 0,
         unitPrice: Math.round((item.unitPrice || 0) * 100), // Convert to cents
+        pricingType: item.pricingType,
       })
     );
-    const taxRate = watch('includeTax') ? 0.17 : 0;
+    const taxRate = watch('includeTax') ? TAX_RATE : 0;
     const subtotal = calculateTotalAmount(items, 0); // items sum
     const taxAmount = Math.round(subtotal * taxRate);
     const totalAmount = subtotal + taxAmount;
 
     return { totalAmount, subtotal, taxAmount };
   }, [watchedLineItems, watch('includeTax')]);
+
+  const watchedPaymentRequired = watch('paymentRequired');
+  const watchedDepositAmount = watch('depositAmount');
+
+  useEffect(() => {
+    if (watchedPaymentRequired && !watchedDepositAmount && totalAmount > 0) {
+      setValue('depositAmount', totalAmount / 100);
+    }
+  }, [watchedPaymentRequired, watchedDepositAmount, totalAmount, setValue]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (!userData?.id || !orgId || typeof orgId !== 'string') {
@@ -300,29 +338,44 @@ export default function CreatePricingForm() {
 
     try {
       // Convert prices from dollars to cents
-      const lineItems = data.lineItems.map(item => ({
+      const lineItems = data.lineItems.map((item, index) => ({
         description: item.description,
         quantity: item.quantity,
         unitPrice: Math.round(item.unitPrice * 100),
         notes: item.notes,
+        pricingType: item.pricingType || 'fixed',
+        sortOrder: index,
+        requestId: item.requestId,
       }));
+      const assignedDeveloper = agencyTeam.data?.find(member => member.id === data.assignedTo);
 
-      const request = await createPricingRequest(
+      const request = await createPricingRequest({
         orgId,
-        userData.id,
-        userData.name || t('portal.common.unknown'),
-        {
+        userId: userData.id,
+        userName: userData.name || t('portal.common.unknown'),
+        data: {
           title: data.title,
           description: data.description,
           lineItems,
           currency: data.currency,
           validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
+          timeframe: data.timeframe,
+          workDeadline: data.workDeadline ? new Date(data.workDeadline) : undefined,
+          assignedTo: data.assignedTo,
+          assignedToName: assignedDeveloper?.name || assignedDeveloper?.email || '',
           clientName: data.clientName,
           clientEmail: data.clientEmail,
           agencyNotes: data.agencyNotes,
           requestIds: selectedRequestIds.length > 0 ? selectedRequestIds : undefined,
-        }
-      );
+          proposalType: 'work_proposal',
+          terms: data.terms,
+          publicAccessEnabled: true,
+          taxRate: data.includeTax ? TAX_RATE : 0,
+          paymentRequired: data.paymentRequired,
+          depositAmount: data.paymentRequired ? Math.round(data.depositAmount * 100) : 0,
+          billingMode: 'manual_installments',
+        },
+      });
 
       // If sending, update status to SENT
       if (shouldSend) {
@@ -431,6 +484,17 @@ export default function CreatePricingForm() {
                   className="portal-input w-full resize-none"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('portal.pricing.form.terms')}
+                </label>
+                <textarea
+                  {...register('terms')}
+                  rows={10}
+                  className="portal-input w-full resize-y text-sm leading-6"
+                />
+              </div>
             </div>
           </Card>
 
@@ -532,6 +596,14 @@ export default function CreatePricingForm() {
                           errors.lineItems?.[index]?.description && 'border-red-500'
                         )}
                       />
+                      <select
+                        {...register(`lineItems.${index}.pricingType`)}
+                        className="portal-input mt-2 w-full text-xs"
+                      >
+                        <option value="fixed">{t('portal.pricing.form.pricingType.fixed')}</option>
+                        <option value="hourly">{t('portal.pricing.form.pricingType.hourly')}</option>
+                        <option value="estimate">{t('portal.pricing.form.pricingType.estimate')}</option>
+                      </select>
                     </div>
                     {/* Quantity and Price row on mobile */}
                     <div className="flex gap-3 w-full sm:contents">
@@ -668,6 +740,48 @@ export default function CreatePricingForm() {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('portal.pricing.form.timeframe')} *
+                </label>
+                <input
+                  {...register('timeframe')}
+                  className="portal-input w-full"
+                  placeholder={t('portal.pricing.form.timeframePlaceholder')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('portal.pricing.form.workDeadline')}
+                </label>
+                <div className="relative">
+                  <CalendarIcon
+                    size={16}
+                    className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
+                  />
+                  <input
+                    {...register('workDeadline')}
+                    type="date"
+                    className="portal-input w-full ps-10"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('portal.pricing.form.assignedDeveloper')} *
+                </label>
+                <select {...register('assignedTo')} className="portal-input w-full">
+                  <option value="">{t('portal.pricing.form.selectDeveloper')}</option>
+                  {(agencyTeam.data || []).map(member => (
+                    <option key={member.id} value={member.id}>
+                      {member.name || member.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </Card>
 
@@ -702,6 +816,31 @@ export default function CreatePricingForm() {
                 />
               </div>
             </div>
+          </Card>
+
+          {/* Agency Notes */}
+          <Card className="p-6">
+            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
+              {t('portal.pricing.form.payment')}
+            </h3>
+            <label className="flex items-start gap-3 text-sm text-surface-600 dark:text-surface-300">
+              <input type="checkbox" className="mt-1" {...register('paymentRequired')} />
+              <span>{t('portal.pricing.form.requireDeposit')}</span>
+            </label>
+            {watchedPaymentRequired && (
+              <div className="mt-4">
+                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
+                  {t('portal.pricing.form.depositAmount')}
+                </label>
+                <input
+                  {...register('depositAmount', { valueAsNumber: true })}
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  className="portal-input w-full"
+                />
+              </div>
+            )}
           </Card>
 
           {/* Agency Notes */}

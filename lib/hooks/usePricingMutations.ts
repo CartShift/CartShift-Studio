@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createPricingRequest,
+  updatePricingRequest,
   sendPricingRequest,
   acceptPricingRequest,
   declinePricingRequest,
@@ -8,7 +9,7 @@ import {
 } from '@/lib/services/pricing-requests';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { CreatePricingRequestData } from '@/lib/types/pricing';
+import { CreatePricingRequestData, UpdatePricingRequestData } from '@/lib/types/pricing';
 import { queryKeys } from '@/lib/utils/query-keys';
 
 export function usePricingMutations() {
@@ -46,13 +47,33 @@ export function usePricingMutations() {
 
   const sendMutation = useMutation({
     mutationFn: sendPricingRequest,
-    onSuccess: () => {
+    onSuccess: (_result, requestId) => {
       toast.success(t('form.sendSuccess' as any));
       invalidatePricing();
+      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.detail(requestId) });
     },
     onError: error => {
       console.error('Failed to send pricing request:', error);
       toast.error(t('form.sendFailed' as any));
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({
+      requestId,
+      data,
+    }: {
+      requestId: string;
+      data: UpdatePricingRequestData;
+    }) => updatePricingRequest(requestId, data),
+    onSuccess: (_result, { requestId }) => {
+      toast.success(t('form.updateSuccess' as any));
+      invalidatePricing();
+      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.detail(requestId) });
+    },
+    onError: error => {
+      console.error('Failed to update pricing request:', error);
+      toast.error(t('form.errors.generic' as any));
     },
   });
 
@@ -100,6 +121,9 @@ export function usePricingMutations() {
     createMutation,
     createPricingRequest: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
+    updateMutation,
+    updatePricingRequest: updateMutation.mutateAsync,
+    isUpdating: updateMutation.isPending,
     sendMutation,
     sendPricingRequest: sendMutation.mutateAsync,
     isSending: sendMutation.isPending,

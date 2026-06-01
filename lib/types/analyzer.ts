@@ -96,6 +96,7 @@ export interface AnalysisMeta {
   cached: boolean;
   screenshotsInEmailReport?: boolean;
   emailReportStatus?: 'pending' | 'sent' | 'failed' | 'unconfigured';
+  leadCaptureStatus?: 'captured' | 'deduped' | 'failed' | 'unconfigured';
 }
 
 export interface AnalysisResult {

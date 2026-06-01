@@ -1,7 +1,7 @@
 /**
  * Translation Type Definitions
  * Auto-generated from translation files
- * Last updated: 2026-05-27T21:15:59.176Z
+ * Last updated: 2026-06-01T22:38:36.203Z
  * 
  * Usage:
  * import { Portal, Common } from '~/lib/types/i18n';
@@ -1041,10 +1041,12 @@ common: {
   unknownError: string;
   authRequired: string;
   retry: string;
+  refresh: string;
   add: string;
   noData: string;
   save: string;
   cancel: string;
+  close: string;
   delete: string;
   deleteSuccess: string;
   removeLabel: string;
@@ -1717,6 +1719,11 @@ pricing: {
     total: string;
     currency: string;
     validUntil: string;
+    timeframe: string;
+    timeframePlaceholder: string;
+    workDeadline: string;
+    assignedDeveloper: string;
+    selectDeveloper: string;
     clientName: string;
     clientEmail: string;
     agencyNotes: string;
@@ -1743,14 +1750,33 @@ pricing: {
       checkLineItems: string;
       notFound: string;
       failedToLoad: string;
+      generic: string;
     };
     sendConfirm: string;
     sendFailed: string;
     deleteConfirm: string;
     deleteFailed: string;
+    createSuccess: string;
+    sendSuccess: string;
+    updateSuccess: string;
+    acceptSuccess: string;
+    declineSuccess: string;
+    cancelSuccess: string;
     itemDescriptionPlaceholder: string;
     agencyNotesPlaceholder: string;
     createOffer: string;
+    terms: string;
+    defaultTerms: string;
+    payment: string;
+    requireDeposit: string;
+    depositAmount: string;
+    lockedTitle: string;
+    lockedDescription: string;
+    pricingType: {
+      fixed: string;
+      hourly: string;
+      estimate: string;
+    };
   };
   detail: {
     breakdown: string;
@@ -1763,6 +1789,53 @@ pricing: {
     paymentComplete: string;
     paidOn: string;
     transactionId: string;
+    locked: string;
+    terms: string;
+    signatureEvidence: string;
+    signedBy: string;
+    continuePayment: string;
+    deliveryPlan: string;
+    assignedDeveloper: string;
+    timeframe: string;
+    workDeadline: string;
+  };
+  proposalPayments: {
+    title: string;
+    description: string;
+    copyPublicLink: string;
+    publicLinkCopied: string;
+    copyLink: string;
+    paymentLinkCopied: string;
+    linkFailed: string;
+    created: string;
+    createFailed: string;
+    canceled: string;
+    cancelFailed: string;
+    manualRecorded: string;
+    manualFailed: string;
+    paid: string;
+    balance: string;
+    available: string;
+    empty: string;
+    cancel: string;
+    labelPlaceholder: string;
+    amountPlaceholder: string;
+    create: string;
+    recordManual: string;
+    recordManualDescription: string;
+    manualLabel: string;
+    referencePlaceholder: string;
+    reference: string;
+    notePlaceholder: string;
+    manualMethods: {
+      bank_transfer: string;
+      cash: string;
+      bit: string;
+      paybox: string;
+      check: string;
+      credit_card_manual: string;
+      other: string;
+    };
   };
   payment: {
     loadError: string;
@@ -1855,6 +1928,77 @@ pricing: {
   valueProps: {
     title: string;
     description: string;
+  };
+};
+profitSplits: {
+  title: string;
+  subtitle: string;
+  accessDenied: string;
+  create: string;
+  createTitle: string;
+  editorTitle: string;
+  editorSubtitle: string;
+  selectPaidRequest: string;
+  selectPaidRequestPlaceholder: string;
+  noPaidRequests: string;
+  projectTitle: string;
+  client: string;
+  grossRevenue: string;
+  expenses: string;
+  expensesHint: string;
+  expenseDescription: string;
+  addExpense: string;
+  removeExpense: string;
+  noExpenses: string;
+  totalExpenses: string;
+  netProfit: string;
+  participants: string;
+  participantsHint: string;
+  addParticipant: string;
+  removeParticipant: string;
+  unassigned: string;
+  percentage: string;
+  notes: string;
+  liveCalculation: string;
+  totalNetProfit: string;
+  totalAllocated: string;
+  unallocated: string;
+  finalizedSplits: string;
+  draftSplits: string;
+  projects: string;
+  allocationStatus: string;
+  updated: string;
+  unknownClient: string;
+  emptyTitle: string;
+  emptySubtitle: string;
+  employeeSummary: string;
+  employeeSummaryHint: string;
+  employee: string;
+  totalEarned: string;
+  projectsCount: string;
+  noEmployeeSummary: string;
+  saveDraft: string;
+  finalize: string;
+  draftHint: string;
+  finalizedLocked: string;
+  negativeProfitWarning: string;
+  allocationWarning: string;
+  loadError: string;
+  status: {
+    draft: string;
+    finalized: string;
+  };
+  roles: {
+    lead: string;
+    sales: string;
+    management: string;
+    delivery: string;
+  };
+  toast: {
+    created: string;
+    saved: string;
+    finalized: string;
+    deleted: string;
   };
 };
 quickActions: {
@@ -2027,6 +2171,15 @@ requests: {
     acceptQuote: string;
     decline: string;
     pricingTitle: string;
+    paymentTracking: string;
+    amountPaid: string;
+    balanceDue: string;
+    paymentStatus: string;
+    paymentStatuses: {
+      unpaid: string;
+      partially_paid: string;
+      paid: string;
+    };
     markAsFree: string;
     freeDesc: string;
     history: string;
@@ -2504,6 +2657,7 @@ sidebar: {
     workboard: string;
     sales: string;
     marketing: string;
+    profitSplits: string;
     clients: string;
     settings: string;
     dashboard: string;
@@ -2685,6 +2839,47 @@ workboard: {
     noRequests: string;
     dragToMove: string;
   };
+};
+}
+
+export interface Proposal {
+preparedFor: string;
+scope: string;
+pricingType: {
+  fixed: string;
+  hourly: string;
+  estimate: string;
+};
+subtotal: string;
+vat: string;
+total: string;
+amountPaid: string;
+balanceDue: string;
+validUntil: string;
+timeframe: string;
+workDeadline: string;
+terms: string;
+preview: string;
+error: string;
+notFound: string;
+unavailable: string;
+accepted: {
+  title: string;
+  description: string;
+};
+approve: {
+  title: string;
+  description: string;
+  fullName: string;
+  email: string;
+  signature: string;
+  checkbox: string;
+  submit: string;
+};
+payment: {
+  complete: string;
+  amount: string;
+  unavailable: string;
 };
 }
 
@@ -3534,6 +3729,8 @@ whatYouGet: {
 };
 stats: {
   categories: string;
+  durationValue: string;
+  durationLabel: string;
   freeValue: string;
   reportFormat: string;
 };
@@ -3590,6 +3787,10 @@ results: {
   overallScore: string;
   breakdown: string;
   emailSent: string;
+  emailPendingTitle: string;
+  emailPendingDescription: string;
+  emailUnavailableTitle: string;
+  emailUnavailableDescription: string;
   emailDelayedTitle: string;
   emailDelayedDescription: string;
   partialDataNotice: string;
@@ -3619,6 +3820,10 @@ results: {
         hint: string;
       };
       email: {
+        label: string;
+        hint: string;
+      };
+      lead: {
         label: string;
         hint: string;
       };
@@ -3862,6 +4067,31 @@ recommendations: {
       description: string;
       action: string;
     };
+    add_to_cart_missing: {
+      title: string;
+      description: string;
+      action: string;
+    };
+    checkout_path_missing: {
+      title: string;
+      description: string;
+      action: string;
+    };
+    payment_cues_missing: {
+      title: string;
+      description: string;
+      action: string;
+    };
+    visual_contrast_audit: {
+      title: string;
+      description: string;
+      action: string;
+    };
+    mobile_layout_friction: {
+      title: string;
+      description: string;
+      action: string;
+    };
     checkout_trust: {
       title: string;
       description: string;
@@ -4101,12 +4331,18 @@ export type TranslationKey =
   | 'analyzer.recommendations.items.accessibility_audit.action'
   | 'analyzer.recommendations.items.accessibility_audit.description'
   | 'analyzer.recommendations.items.accessibility_audit.title'
+  | 'analyzer.recommendations.items.add_to_cart_missing.action'
+  | 'analyzer.recommendations.items.add_to_cart_missing.description'
+  | 'analyzer.recommendations.items.add_to_cart_missing.title'
   | 'analyzer.recommendations.items.button_name.action'
   | 'analyzer.recommendations.items.button_name.description'
   | 'analyzer.recommendations.items.button_name.title'
   | 'analyzer.recommendations.items.cart_visible.action'
   | 'analyzer.recommendations.items.cart_visible.description'
   | 'analyzer.recommendations.items.cart_visible.title'
+  | 'analyzer.recommendations.items.checkout_path_missing.action'
+  | 'analyzer.recommendations.items.checkout_path_missing.description'
+  | 'analyzer.recommendations.items.checkout_path_missing.title'
   | 'analyzer.recommendations.items.checkout_trust.action'
   | 'analyzer.recommendations.items.checkout_trust.description'
   | 'analyzer.recommendations.items.checkout_trust.title'
@@ -4143,6 +4379,12 @@ export type TranslationKey =
   | 'analyzer.recommendations.items.meta_description.action'
   | 'analyzer.recommendations.items.meta_description.description'
   | 'analyzer.recommendations.items.meta_description.title'
+  | 'analyzer.recommendations.items.mobile_layout_friction.action'
+  | 'analyzer.recommendations.items.mobile_layout_friction.description'
+  | 'analyzer.recommendations.items.mobile_layout_friction.title'
+  | 'analyzer.recommendations.items.payment_cues_missing.action'
+  | 'analyzer.recommendations.items.payment_cues_missing.description'
+  | 'analyzer.recommendations.items.payment_cues_missing.title'
   | 'analyzer.recommendations.items.privacy_policy.action'
   | 'analyzer.recommendations.items.privacy_policy.description'
   | 'analyzer.recommendations.items.privacy_policy.title'
@@ -4164,6 +4406,9 @@ export type TranslationKey =
   | 'analyzer.recommendations.items.viewport.action'
   | 'analyzer.recommendations.items.viewport.description'
   | 'analyzer.recommendations.items.viewport.title'
+  | 'analyzer.recommendations.items.visual_contrast_audit.action'
+  | 'analyzer.recommendations.items.visual_contrast_audit.description'
+  | 'analyzer.recommendations.items.visual_contrast_audit.title'
   | 'analyzer.recommendations.nextAction'
   | 'analyzer.results.analyzeDifferentUrl'
   | 'analyzer.results.analyzedOn'
@@ -4175,6 +4420,8 @@ export type TranslationKey =
   | 'analyzer.results.coverage.items.competitors.label'
   | 'analyzer.results.coverage.items.email.hint'
   | 'analyzer.results.coverage.items.email.label'
+  | 'analyzer.results.coverage.items.lead.hint'
+  | 'analyzer.results.coverage.items.lead.label'
   | 'analyzer.results.coverage.items.lighthouse.hint'
   | 'analyzer.results.coverage.items.lighthouse.label'
   | 'analyzer.results.coverage.items.product.hint'
@@ -4188,7 +4435,11 @@ export type TranslationKey =
   | 'analyzer.results.dontLetIssuesHurtSales'
   | 'analyzer.results.emailDelayedDescription'
   | 'analyzer.results.emailDelayedTitle'
+  | 'analyzer.results.emailPendingDescription'
+  | 'analyzer.results.emailPendingTitle'
   | 'analyzer.results.emailSent'
+  | 'analyzer.results.emailUnavailableDescription'
+  | 'analyzer.results.emailUnavailableTitle'
   | 'analyzer.results.expertsCanFix'
   | 'analyzer.results.expertsCanFix_singular'
   | 'analyzer.results.fullReportSent'
@@ -4238,6 +4489,8 @@ export type TranslationKey =
   | 'analyzer.sections.seo'
   | 'analyzer.sections.trust'
   | 'analyzer.stats.categories'
+  | 'analyzer.stats.durationLabel'
+  | 'analyzer.stats.durationValue'
   | 'analyzer.stats.freeValue'
   | 'analyzer.stats.reportFormat'
   | 'analyzer.steps.complete'
@@ -5159,6 +5412,7 @@ export type TranslationKey =
   | 'portal.common.cancel'
   | 'portal.common.clearFilters'
   | 'portal.common.client'
+  | 'portal.common.close'
   | 'portal.common.collapse'
   | 'portal.common.confirm'
   | 'portal.common.connected'
@@ -5217,6 +5471,7 @@ export type TranslationKey =
   | 'portal.common.pin'
   | 'portal.common.prev'
   | 'portal.common.recently'
+  | 'portal.common.refresh'
   | 'portal.common.removeLabel'
   | 'portal.common.retry'
   | 'portal.common.rollback'
@@ -5651,13 +5906,22 @@ export type TranslationKey =
   | 'portal.pricing.customPrice'
   | 'portal.pricing.detail.acceptOffer'
   | 'portal.pricing.detail.addNotes'
+  | 'portal.pricing.detail.assignedDeveloper'
   | 'portal.pricing.detail.breakdown'
+  | 'portal.pricing.detail.continuePayment'
   | 'portal.pricing.detail.declineOffer'
+  | 'portal.pricing.detail.deliveryPlan'
+  | 'portal.pricing.detail.locked'
   | 'portal.pricing.detail.paidOn'
   | 'portal.pricing.detail.payNow'
   | 'portal.pricing.detail.paymentComplete'
+  | 'portal.pricing.detail.signatureEvidence'
+  | 'portal.pricing.detail.signedBy'
   | 'portal.pricing.detail.subtotal'
+  | 'portal.pricing.detail.terms'
+  | 'portal.pricing.detail.timeframe'
   | 'portal.pricing.detail.transactionId'
+  | 'portal.pricing.detail.workDeadline'
   | 'portal.pricing.detail.yourNotes'
   | 'portal.pricing.editOffer'
   | 'portal.pricing.editOfferDescription'
@@ -5667,22 +5931,30 @@ export type TranslationKey =
   | 'portal.pricing.effort.medium'
   | 'portal.pricing.effortGuide.title'
   | 'portal.pricing.effortLevel'
+  | 'portal.pricing.form.acceptSuccess'
   | 'portal.pricing.form.addItem'
   | 'portal.pricing.form.agencyNotes'
   | 'portal.pricing.form.agencyNotesPlaceholder'
   | 'portal.pricing.form.allRequestsInOffers'
+  | 'portal.pricing.form.assignedDeveloper'
+  | 'portal.pricing.form.cancelSuccess'
   | 'portal.pricing.form.clientEmail'
   | 'portal.pricing.form.clientInfo'
   | 'portal.pricing.form.clientName'
   | 'portal.pricing.form.createNewDescription'
   | 'portal.pricing.form.createOffer'
+  | 'portal.pricing.form.createSuccess'
   | 'portal.pricing.form.currency'
+  | 'portal.pricing.form.declineSuccess'
+  | 'portal.pricing.form.defaultTerms'
   | 'portal.pricing.form.deleteConfirm'
   | 'portal.pricing.form.deleteFailed'
+  | 'portal.pricing.form.depositAmount'
   | 'portal.pricing.form.descriptionLabel'
   | 'portal.pricing.form.descriptionPlaceholder'
   | 'portal.pricing.form.errors.checkLineItems'
   | 'portal.pricing.form.errors.failedToLoad'
+  | 'portal.pricing.form.errors.generic'
   | 'portal.pricing.form.errors.notFound'
   | 'portal.pricing.form.errors.priceMustBePositive'
   | 'portal.pricing.form.errors.quantityMustBeAtLeast1'
@@ -5694,28 +5966,42 @@ export type TranslationKey =
   | 'portal.pricing.form.lineItemsFromCalculator'
   | 'portal.pricing.form.linkedRequestsLabel'
   | 'portal.pricing.form.linkedRequestsNote'
+  | 'portal.pricing.form.lockedDescription'
+  | 'portal.pricing.form.lockedTitle'
   | 'portal.pricing.form.noRequestsAvailable'
   | 'portal.pricing.form.offerDetails'
+  | 'portal.pricing.form.payment'
+  | 'portal.pricing.form.pricingType.estimate'
+  | 'portal.pricing.form.pricingType.fixed'
+  | 'portal.pricing.form.pricingType.hourly'
   | 'portal.pricing.form.quantity'
+  | 'portal.pricing.form.requireDeposit'
   | 'portal.pricing.form.saveChanges'
   | 'portal.pricing.form.saveDraft'
   | 'portal.pricing.form.saving'
+  | 'portal.pricing.form.selectDeveloper'
   | 'portal.pricing.form.selectRequests'
   | 'portal.pricing.form.selectRequestsDescription'
   | 'portal.pricing.form.selected'
   | 'portal.pricing.form.selected_singular'
   | 'portal.pricing.form.sendConfirm'
   | 'portal.pricing.form.sendFailed'
+  | 'portal.pricing.form.sendSuccess'
   | 'portal.pricing.form.sendToClient'
   | 'portal.pricing.form.sending'
   | 'portal.pricing.form.settings'
   | 'portal.pricing.form.subtotal'
   | 'portal.pricing.form.tax'
+  | 'portal.pricing.form.terms'
+  | 'portal.pricing.form.timeframe'
+  | 'portal.pricing.form.timeframePlaceholder'
   | 'portal.pricing.form.titleLabel'
   | 'portal.pricing.form.titlePlaceholder'
   | 'portal.pricing.form.total'
   | 'portal.pricing.form.unitPrice'
+  | 'portal.pricing.form.updateSuccess'
   | 'portal.pricing.form.validUntil'
+  | 'portal.pricing.form.workDeadline'
   | 'portal.pricing.globalModifiers'
   | 'portal.pricing.globalSettings'
   | 'portal.pricing.globalSettingsDesc'
@@ -5736,6 +6022,40 @@ export type TranslationKey =
   | 'portal.pricing.overriddenPrice'
   | 'portal.pricing.payment.loadError'
   | 'portal.pricing.payment.statusUnknown'
+  | 'portal.pricing.proposalPayments.amountPlaceholder'
+  | 'portal.pricing.proposalPayments.available'
+  | 'portal.pricing.proposalPayments.balance'
+  | 'portal.pricing.proposalPayments.cancel'
+  | 'portal.pricing.proposalPayments.cancelFailed'
+  | 'portal.pricing.proposalPayments.canceled'
+  | 'portal.pricing.proposalPayments.copyLink'
+  | 'portal.pricing.proposalPayments.copyPublicLink'
+  | 'portal.pricing.proposalPayments.create'
+  | 'portal.pricing.proposalPayments.createFailed'
+  | 'portal.pricing.proposalPayments.created'
+  | 'portal.pricing.proposalPayments.description'
+  | 'portal.pricing.proposalPayments.empty'
+  | 'portal.pricing.proposalPayments.labelPlaceholder'
+  | 'portal.pricing.proposalPayments.linkFailed'
+  | 'portal.pricing.proposalPayments.manualFailed'
+  | 'portal.pricing.proposalPayments.manualLabel'
+  | 'portal.pricing.proposalPayments.manualMethods.bank_transfer'
+  | 'portal.pricing.proposalPayments.manualMethods.bit'
+  | 'portal.pricing.proposalPayments.manualMethods.cash'
+  | 'portal.pricing.proposalPayments.manualMethods.check'
+  | 'portal.pricing.proposalPayments.manualMethods.credit_card_manual'
+  | 'portal.pricing.proposalPayments.manualMethods.other'
+  | 'portal.pricing.proposalPayments.manualMethods.paybox'
+  | 'portal.pricing.proposalPayments.manualRecorded'
+  | 'portal.pricing.proposalPayments.notePlaceholder'
+  | 'portal.pricing.proposalPayments.paid'
+  | 'portal.pricing.proposalPayments.paymentLinkCopied'
+  | 'portal.pricing.proposalPayments.publicLinkCopied'
+  | 'portal.pricing.proposalPayments.recordManual'
+  | 'portal.pricing.proposalPayments.recordManualDescription'
+  | 'portal.pricing.proposalPayments.reference'
+  | 'portal.pricing.proposalPayments.referencePlaceholder'
+  | 'portal.pricing.proposalPayments.title'
   | 'portal.pricing.quickAddRequest'
   | 'portal.pricing.quote.base'
   | 'portal.pricing.quote.currencyLocked'
@@ -5780,6 +6100,69 @@ export type TranslationKey =
   | 'portal.pricing.toast.modifiersApplyFailed'
   | 'portal.pricing.valueProps.description'
   | 'portal.pricing.valueProps.title'
+  | 'portal.profitSplits.accessDenied'
+  | 'portal.profitSplits.addExpense'
+  | 'portal.profitSplits.addParticipant'
+  | 'portal.profitSplits.allocationStatus'
+  | 'portal.profitSplits.allocationWarning'
+  | 'portal.profitSplits.client'
+  | 'portal.profitSplits.create'
+  | 'portal.profitSplits.createTitle'
+  | 'portal.profitSplits.draftHint'
+  | 'portal.profitSplits.draftSplits'
+  | 'portal.profitSplits.editorSubtitle'
+  | 'portal.profitSplits.editorTitle'
+  | 'portal.profitSplits.employee'
+  | 'portal.profitSplits.employeeSummary'
+  | 'portal.profitSplits.employeeSummaryHint'
+  | 'portal.profitSplits.emptySubtitle'
+  | 'portal.profitSplits.emptyTitle'
+  | 'portal.profitSplits.expenseDescription'
+  | 'portal.profitSplits.expenses'
+  | 'portal.profitSplits.expensesHint'
+  | 'portal.profitSplits.finalize'
+  | 'portal.profitSplits.finalizedLocked'
+  | 'portal.profitSplits.finalizedSplits'
+  | 'portal.profitSplits.grossRevenue'
+  | 'portal.profitSplits.liveCalculation'
+  | 'portal.profitSplits.loadError'
+  | 'portal.profitSplits.negativeProfitWarning'
+  | 'portal.profitSplits.netProfit'
+  | 'portal.profitSplits.noEmployeeSummary'
+  | 'portal.profitSplits.noExpenses'
+  | 'portal.profitSplits.noPaidRequests'
+  | 'portal.profitSplits.notes'
+  | 'portal.profitSplits.participants'
+  | 'portal.profitSplits.participantsHint'
+  | 'portal.profitSplits.percentage'
+  | 'portal.profitSplits.projectTitle'
+  | 'portal.profitSplits.projects'
+  | 'portal.profitSplits.projectsCount'
+  | 'portal.profitSplits.removeExpense'
+  | 'portal.profitSplits.removeParticipant'
+  | 'portal.profitSplits.roles.delivery'
+  | 'portal.profitSplits.roles.lead'
+  | 'portal.profitSplits.roles.management'
+  | 'portal.profitSplits.roles.sales'
+  | 'portal.profitSplits.saveDraft'
+  | 'portal.profitSplits.selectPaidRequest'
+  | 'portal.profitSplits.selectPaidRequestPlaceholder'
+  | 'portal.profitSplits.status.draft'
+  | 'portal.profitSplits.status.finalized'
+  | 'portal.profitSplits.subtitle'
+  | 'portal.profitSplits.title'
+  | 'portal.profitSplits.toast.created'
+  | 'portal.profitSplits.toast.deleted'
+  | 'portal.profitSplits.toast.finalized'
+  | 'portal.profitSplits.toast.saved'
+  | 'portal.profitSplits.totalAllocated'
+  | 'portal.profitSplits.totalEarned'
+  | 'portal.profitSplits.totalExpenses'
+  | 'portal.profitSplits.totalNetProfit'
+  | 'portal.profitSplits.unallocated'
+  | 'portal.profitSplits.unassigned'
+  | 'portal.profitSplits.unknownClient'
+  | 'portal.profitSplits.updated'
   | 'portal.quickActions.addClient'
   | 'portal.quickActions.addClientDesc'
   | 'portal.quickActions.createProposal'
@@ -5806,12 +6189,14 @@ export type TranslationKey =
   | 'portal.requests.detail.addLineItem'
   | 'portal.requests.detail.addPricing'
   | 'portal.requests.detail.addQuote'
+  | 'portal.requests.detail.amountPaid'
   | 'portal.requests.detail.archived'
   | 'portal.requests.detail.assets'
   | 'portal.requests.detail.assetsSubtitle'
   | 'portal.requests.detail.assetsTitle'
   | 'portal.requests.detail.assignedSpecialist'
   | 'portal.requests.detail.backToRequests'
+  | 'portal.requests.detail.balanceDue'
   | 'portal.requests.detail.brief'
   | 'portal.requests.detail.closeRequest'
   | 'portal.requests.detail.commentPlaceholder'
@@ -5848,7 +6233,12 @@ export type TranslationKey =
   | 'portal.requests.detail.overview'
   | 'portal.requests.detail.payPayPal'
   | 'portal.requests.detail.paymentError'
+  | 'portal.requests.detail.paymentStatus'
+  | 'portal.requests.detail.paymentStatuses.paid'
+  | 'portal.requests.detail.paymentStatuses.partially_paid'
+  | 'portal.requests.detail.paymentStatuses.unpaid'
   | 'portal.requests.detail.paymentSuccess'
+  | 'portal.requests.detail.paymentTracking'
   | 'portal.requests.detail.placeholder'
   | 'portal.requests.detail.price'
   | 'portal.requests.detail.pricingTitle'
@@ -6279,6 +6669,7 @@ export type TranslationKey =
   | 'portal.sidebar.nav.files'
   | 'portal.sidebar.nav.marketing'
   | 'portal.sidebar.nav.pricing'
+  | 'portal.sidebar.nav.profitSplits'
   | 'portal.sidebar.nav.requests'
   | 'portal.sidebar.nav.review'
   | 'portal.sidebar.nav.sales'
@@ -6518,6 +6909,36 @@ export type TranslationKey =
   | 'process.steps.launch.title'
   | 'process.subtitle'
   | 'process.title'
+  | 'proposal.accepted.description'
+  | 'proposal.accepted.title'
+  | 'proposal.amountPaid'
+  | 'proposal.approve.checkbox'
+  | 'proposal.approve.description'
+  | 'proposal.approve.email'
+  | 'proposal.approve.fullName'
+  | 'proposal.approve.signature'
+  | 'proposal.approve.submit'
+  | 'proposal.approve.title'
+  | 'proposal.balanceDue'
+  | 'proposal.error'
+  | 'proposal.notFound'
+  | 'proposal.payment.amount'
+  | 'proposal.payment.complete'
+  | 'proposal.payment.unavailable'
+  | 'proposal.preparedFor'
+  | 'proposal.preview'
+  | 'proposal.pricingType.estimate'
+  | 'proposal.pricingType.fixed'
+  | 'proposal.pricingType.hourly'
+  | 'proposal.scope'
+  | 'proposal.subtotal'
+  | 'proposal.terms'
+  | 'proposal.timeframe'
+  | 'proposal.total'
+  | 'proposal.unavailable'
+  | 'proposal.validUntil'
+  | 'proposal.vat'
+  | 'proposal.workDeadline'
   | 'seo.clientPortalH1'
   | 'servicesOverview.shopify.description'
   | 'servicesOverview.shopify.features'
@@ -6710,6 +7131,7 @@ export type TranslationNamespace =
   | 'privacy'
   | 'terms'
   | 'portal'
+  | 'proposal'
   | 'hero'
   | 'heroForm'
   | 'about'

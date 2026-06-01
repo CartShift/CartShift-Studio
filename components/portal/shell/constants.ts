@@ -6,6 +6,7 @@ import {
   FolderOpen,
   Kanban,
   DollarSign,
+  PieChart,
   Calendar,
   Star,
   Settings,
@@ -28,6 +29,7 @@ type NavTranslationKey =
   | 'sidebar.nav.workboard'
   | 'sidebar.nav.sales'
   | 'sidebar.nav.marketing'
+  | 'sidebar.nav.profitSplits'
   | 'sidebar.nav.clients'
   | 'sidebar.nav.pricing'
   | 'sidebar.nav.testimonials'
@@ -81,6 +83,12 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           icon: Mail,
           href: getPortalPath('/agency/leads/'),
           roles: PERMISSIONS.VIEW_SALES_DASHBOARD,
+        },
+        {
+          label: t('sidebar.nav.profitSplits'),
+          icon: PieChart,
+          href: getPortalPath('/agency/profit-splits/'),
+          roles: PERMISSIONS.VIEW_PROFIT_SPLITS,
         },
       ],
     },

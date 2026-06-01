@@ -2,10 +2,23 @@ import 'server-only';
 import * as admin from 'firebase-admin';
 
 if (!admin.apps.length) {
+  const explicitFirebaseCredentials =
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY
+      ? {
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        }
+      : null;
+
   try {
     admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-      // If valid service account file is present, or using automatic Google Cloud creds in Vercel/CloudRun
+      credential: explicitFirebaseCredentials
+        ? admin.credential.cert(explicitFirebaseCredentials)
+        : admin.credential.applicationDefault(),
+      // Prefer Firebase-specific env vars so unrelated Google integrations cannot break Admin SDK startup.
     });
   } catch (_error) {
     if (!process.env.FIREBASE_PRIVATE_KEY && process.env.NODE_ENV === 'development') {

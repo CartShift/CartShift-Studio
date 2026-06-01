@@ -32,7 +32,22 @@ service cloud.firestore {
              (
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
-             );
+              );
+    }
+
+    function canManageProfitSplits() {
+      return isAgencyUser() && (
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') == 'owner' ||
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') == 'admin' ||
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') == 'sales_manager' ||
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') == ''
+      );
+    }
+
+    function isValidProfitSplitFinalization() {
+      return request.resource.data.get('status', '') == 'finalized' &&
+             request.resource.data.get('totalAllocatedPercentage', 0) == 100 &&
+             request.resource.data.get('netProfit', -1) >= 0;
     }
 
     // Helper to check if user has access to an organization
@@ -123,6 +138,22 @@ service cloud.firestore {
     }
 
     match /portal_requests/{requestId} {
+      function changesServerManagedProposalRequestFields() {
+        return resource.data.get('pricingOfferId', '') != '' &&
+               request.resource.data.diff(resource.data).affectedKeys().hasAny([
+                 'pricingOfferId',
+                 'proposalLineItemId',
+                 'amountPaid',
+                 'balanceDue',
+                 'paymentStatus',
+                 'paymentIds',
+                 'paymentAllocations',
+                 'paymentId',
+                 'paymentMethod',
+                 'paidAt'
+               ]);
+      }
+
       // Clients can read requests pre-assigned to their email (before registration)
       // or requests in orgs they're members of
       allow read: if isAuthenticated() && (
@@ -144,7 +175,7 @@ service cloud.firestore {
         resource.data.get('clientEmail', '') == request.auth.token.email ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
-      );
+      ) && !changesServerManagedProposalRequestFields();
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
         resource.data.get('createdBy', '') == getUserId() ||
@@ -215,6 +246,35 @@ service cloud.firestore {
     }
 
     match /portal_pricing_requests/{requestId} {
+      function isLockedPricingProposal() {
+        return resource.data.get('status', '') == 'ACCEPTED' ||
+               resource.data.get('status', '') == 'PAID' ||
+               resource.data.get('lockedAt', null) != null;
+      }
+
+      function changesProtectedPricingProposalFields() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'acceptedAt',
+          'acceptedByName',
+          'acceptedByEmail',
+          'signatureText',
+          'termsAcceptedAt',
+          'acceptedIp',
+          'acceptedUserAgent',
+          'lockedAt',
+          'amountPaid',
+          'pendingAmount',
+          'paymentReference',
+          'paymentId',
+          'paymentMethod',
+          'paidAt',
+          'firstPaymentAt',
+          'lastPaymentAt',
+          'materializedRequestIds',
+          'requestsMaterializedAt'
+        ]);
+      }
+
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
         resource == null ||
@@ -225,16 +285,47 @@ service cloud.firestore {
         isAgencyUser() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
         isOrgOwner(request.resource.data.get('orgId', ''))
-      );
+      ) &&
+      request.resource.data.get('status', '') == 'DRAFT' &&
+      request.resource.data.get('amountPaid', 0) == 0;
       allow update: if isAuthenticated() && (
         resource == null ||
         canAccessOrg(resource.data.get('orgId', '')) ||
         resource.data.get('createdBy', '') == getUserId()
-      );
+      ) &&
+      !isLockedPricingProposal() &&
+      request.resource.data.get('status', '') != 'ACCEPTED' &&
+      request.resource.data.get('status', '') != 'PAID' &&
+      !changesProtectedPricingProposalFields();
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
         resource.data.get('createdBy', '') == getUserId()
-      );
+      ) && !isLockedPricingProposal();
+    }
+
+    match /portal_proposal_payments/{paymentId} {
+      allow read, write: if false;
+    }
+
+    match /_server_rate_limits/{rateLimitId} {
+      allow read, write: if false;
+    }
+
+    match /portal_profit_splits/{splitId} {
+      allow read: if isAuthenticated() && canManageProfitSplits();
+      allow create: if isAuthenticated() &&
+                    canManageProfitSplits() &&
+                    request.resource.data.get('status', '') == 'draft';
+      allow update: if isAuthenticated() &&
+                    canManageProfitSplits() &&
+                    resource.data.get('status', '') == 'draft' &&
+                    (
+                      request.resource.data.get('status', '') == 'draft' ||
+                      isValidProfitSplitFinalization()
+                    );
+      allow delete: if isAuthenticated() &&
+                    canManageProfitSplits() &&
+                    resource.data.get('status', '') == 'draft';
     }
 
     match /portal_activities/{activityId} {

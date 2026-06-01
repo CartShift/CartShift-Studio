@@ -68,6 +68,13 @@ export function AnalyzerCoverageStrip({ meta, isDark = false }: AnalyzerCoverage
         meta.emailReportStatus === 'pending' || meta.emailReportStatus === 'failed'
       ),
     },
+    {
+      key: 'lead',
+      status: resolveStatus(
+        meta.leadCaptureStatus === 'captured' || meta.leadCaptureStatus === 'deduped',
+        meta.leadCaptureStatus === 'failed'
+      ),
+    },
   ];
 
   return (

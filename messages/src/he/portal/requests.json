@@ -154,6 +154,15 @@
         "acceptQuote": "אשר הצעת מחיר",
         "decline": "דחה",
         "pricingTitle": "תמחור",
+        "paymentTracking": "מעקב תשלומים",
+        "amountPaid": "שולם",
+        "balanceDue": "יתרה לתשלום",
+        "paymentStatus": "סטטוס תשלום",
+        "paymentStatuses": {
+          "unpaid": "טרם שולם",
+          "partially_paid": "שולם חלקית",
+          "paid": "שולם"
+        },
         "markAsFree": "סמן כחינם",
         "freeDesc": "בקשה זו מטופלת כשירות משלים כפי שסוכם.",
         "history": "היסטוריה",

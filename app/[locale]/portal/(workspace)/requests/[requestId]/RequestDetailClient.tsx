@@ -717,6 +717,34 @@ export default function RequestDetailClient() {
                     </span>
                   </div>
 
+                  {request.paymentStatus && (
+                    <div className="mt-4 rounded-xl border border-surface-200 p-3 dark:border-surface-800">
+                      <p className="text-xs font-black uppercase tracking-widest text-surface-400">
+                        {t('requests.detail.paymentTracking')}
+                      </p>
+                      <div className="mt-3 space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-surface-500">{t('requests.detail.amountPaid')}</span>
+                          <span className="font-bold text-emerald-600">
+                            {formatCurrency(request.amountPaid || 0, request.currency || 'ILS')}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-surface-500">{t('requests.detail.balanceDue')}</span>
+                          <span className="font-bold text-surface-900 dark:text-white">
+                            {formatCurrency(request.balanceDue || 0, request.currency || 'ILS')}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-surface-500">{t('requests.detail.paymentStatus')}</span>
+                          <Badge variant={request.paymentStatus === 'paid' ? 'green' : 'gray'}>
+                            {t(`requests.detail.paymentStatuses.${request.paymentStatus}`)}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Invoice Download (for paid requests) */}
                   {request.paidAt && organization && (
                     <div className="mt-4">

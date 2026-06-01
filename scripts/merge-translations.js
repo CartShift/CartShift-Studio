@@ -18,6 +18,41 @@ const brotliCompress = promisify(zlib.brotliCompress);
 
 const isSilent = process.argv.includes('--silent') || process.env.QUIET === '1';
 
+const RETRIABLE_FS_ERRORS = new Set(['EBUSY', 'EPERM', 'EACCES', 'UNKNOWN']);
+
+function sleepSync(ms) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    /* wait for file locks (Windows IDE/sync tools) */
+  }
+}
+
+function writeFileAtomicWithRetry(filePath, content, maxRetries = 8) {
+  const dir = path.dirname(filePath);
+  const tempPath = path.join(dir, `.${path.basename(filePath)}.${process.pid}.tmp`);
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      fs.writeFileSync(tempPath, content, 'utf8');
+      fs.renameSync(tempPath, filePath);
+      return;
+    } catch (error) {
+      try {
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      } catch {
+        /* ignore cleanup failures */
+      }
+
+      if (RETRIABLE_FS_ERRORS.has(error.code) && attempt < maxRetries) {
+        sleepSync(attempt * 75);
+        continue;
+      }
+
+      throw error;
+    }
+  }
+}
+
 // Try to use jsonlint if available, otherwise fall back to native JSON.parse
 let jsonlint;
 try {
@@ -203,9 +238,9 @@ async function mergeTranslations(locale) {
     ...merged,
   };
 
-  // Write merged output with consistent formatting
+  // Write merged output with consistent formatting (atomic + retry for Windows file locks)
   const output = JSON.stringify(mergedWithMeta, null, 2);
-  fs.writeFileSync(outputPath, output);
+  writeFileAtomicWithRetry(outputPath, output);
 
   // Calculate compression stats asynchronously
   const rawSize = Buffer.byteLength(output, 'utf8');

@@ -370,10 +370,22 @@ export interface Request {
   // Payment info
   paymentId?: string; // PayPal transaction ID
   paidAt?: Timestamp;
-  paymentMethod?: 'paypal';
+  paymentMethod?: 'paypal' | 'manual';
+  paymentStatus?: 'unpaid' | 'partially_paid' | 'paid';
+  amountPaid?: number;
+  balanceDue?: number;
+  paymentIds?: string[];
+  paymentAllocations?: Array<{
+    paymentId: string;
+    amount: number;
+    method: 'paypal' | 'manual';
+  }>;
 
   // Pricing offer reference
   pricingOfferId?: string; // Link to PricingRequest that includes this request
+  proposalLineItemId?: string;
+  workDeadline?: Timestamp;
+  timeframe?: string;
 }
 
 export interface Comment {

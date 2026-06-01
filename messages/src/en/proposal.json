@@ -1,0 +1,42 @@
+{
+  "proposal": {
+    "preparedFor": "Prepared for {name}",
+    "scope": "Scope",
+    "pricingType": {
+      "fixed": "Fixed price",
+      "hourly": "Hourly",
+      "estimate": "Estimate"
+    },
+    "subtotal": "Subtotal",
+    "vat": "VAT ({rate}%)",
+    "total": "Total",
+    "amountPaid": "Paid",
+    "balanceDue": "Balance due",
+    "validUntil": "Valid until {date}",
+    "timeframe": "Estimated timeframe: {timeframe}",
+    "workDeadline": "Target delivery date: {date}",
+    "terms": "Proposal terms",
+    "preview": "Preview mode: this draft can be reviewed but cannot be signed until it is sent.",
+    "error": "Something went wrong. Please try again.",
+    "notFound": "This proposal link is unavailable.",
+    "unavailable": "This proposal is not available for signing.",
+    "accepted": {
+      "title": "Proposal accepted",
+      "description": "Your signature has been recorded. Keep this link for your records."
+    },
+    "approve": {
+      "title": "Accept this proposal",
+      "description": "Review the scope and terms before signing.",
+      "fullName": "Full name",
+      "email": "Email (optional)",
+      "signature": "Typed signature",
+      "checkbox": "I accept the proposal terms and payment obligations.",
+      "submit": "Sign and accept"
+    },
+    "payment": {
+      "complete": "Payment complete",
+      "amount": "Amount due: {amount}",
+      "unavailable": "Online payment is temporarily unavailable. Please contact the agency for assistance."
+    }
+  }
+}

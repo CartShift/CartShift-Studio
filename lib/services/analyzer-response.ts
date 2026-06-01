@@ -8,6 +8,7 @@ const defaultMeta: AnalysisResult['meta'] = {
   productAnalysisAvailable: false,
   competitorAnalysisAvailable: false,
   cached: false,
+  leadCaptureStatus: undefined,
 };
 
 /** Strips heavy screenshot payloads from API responses; full captures stay in the emailed PDF. */

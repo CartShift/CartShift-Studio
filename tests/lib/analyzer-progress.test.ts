@@ -8,7 +8,7 @@ import {
 describe('analyzer progress model', () => {
   it('ramps slowly and caps below 85% until complete', () => {
     expect(progressFromElapsedMs(0)).toBe(0);
-    expect(progressFromElapsedMs(5_000)).toBeGreaterThan(10);
+    expect(progressFromElapsedMs(5_000)).toBeGreaterThanOrEqual(10);
     expect(progressFromElapsedMs(5_000)).toBeLessThan(30);
     expect(progressFromElapsedMs(60_000)).toBeLessThanOrEqual(85);
     expect(progressFromElapsedMs(120_000)).toBeLessThanOrEqual(85);

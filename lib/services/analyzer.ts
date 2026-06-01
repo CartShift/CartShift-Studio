@@ -6,8 +6,11 @@ import {
   SectionResult,
 } from '@/lib/types/analyzer';
 import { logError } from '@/lib/error-handler';
+import { Logger } from '@/lib/logger';
 import { recordAnalyzerServiceFailure } from './analyzer-telemetry';
+import { analyzeBestPracticesFallback } from './analyzer-best-practices-fallback';
 import { CacheService } from './cache-service';
+import { analyzeCartExperience } from './cart-analyzer-advanced';
 import { CompetitorService } from './competitor-service';
 import { AIReadinessService } from './ai-readiness';
 import { BenchmarkService } from './benchmark';
@@ -211,13 +214,13 @@ async function fetchPageSpeedData(url: string): Promise<PageSpeedResult | null> 
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('PageSpeed API error:', errorText);
+      Logger.warn('PageSpeed API error', { errorText });
       return null;
     }
 
     return await response.json();
   } catch (error) {
-    console.error('PageSpeed API fetch error:', error);
+    Logger.warn('PageSpeed API fetch error', { error });
     return null;
   }
 }
@@ -563,86 +566,6 @@ function analyzeAccessibilityFallback(html: string): SectionResult {
   };
 }
 
-function analyzeCart(html: string): SectionResult {
-  const findings: Finding[] = [];
-  const recommendations: Recommendation[] = [];
-  let score = 50;
-
-  const hasCart =
-    /href=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
-    /class=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html) ||
-    /aria-label=["'][^"']*(cart|basket|bag)[^"']*["']/i.test(html);
-
-  if (hasCart) {
-    findings.push({
-      type: 'positive',
-      title: 'Cart accessible',
-      description: 'Cart link or icon detected.',
-    });
-    score += 25;
-  } else {
-    findings.push({
-      type: 'issue',
-      title: 'Cart visibility low',
-      description: 'Could not clearly identify a cart link.',
-    });
-    recommendations.push(
-      createRecommendation(
-        'cart-visible',
-        'Make the cart easy to find',
-        'high',
-        'A hidden cart creates friction for returning shoppers and makes checkout feel less predictable.',
-        'Add a persistent cart entry point in the header with a clear icon, accessible label, and item count.',
-        'No clear cart link, basket link, or cart aria-label was detected.',
-        'medium'
-      )
-    );
-  }
-
-  const hasAddToCart =
-    /add\s*to\s*(cart|bag)|buy\s*now|checkout/i.test(html) ||
-    /name=["']add["']|type=["']submit["']/i.test(html);
-
-  if (hasAddToCart) {
-    findings.push({
-      type: 'positive',
-      title: 'Purchase actions found',
-      description: 'Add to cart or Buy buttons detected.',
-    });
-    score += 25;
-  }
-
-  const hasSecureTerms = /secure|ssl|encrypt|lock|guarantee|safe/i.test(html);
-  if (hasSecureTerms) {
-    score += 10;
-    findings.push({
-      type: 'positive',
-      title: 'Security terms found',
-      description: 'Page mentions security.',
-    });
-  } else {
-    recommendations.push(
-      createRecommendation(
-        'checkout-trust',
-        'Add checkout trust cues',
-        'medium',
-        'Trust cues near purchase actions reduce hesitation when shoppers are about to enter payment details.',
-        'Place secure payment, returns, warranty, or guarantee messaging near cart and checkout entry points.',
-        'No security, guarantee, or safe-payment language was detected.',
-        'quick'
-      )
-    );
-  }
-
-  return {
-    name: 'Cart & Checkout',
-    score: Math.min(100, score),
-    status: getScoreStatus(score),
-    findings,
-    recommendations,
-  };
-}
-
 function analyzeTrust(html: string): SectionResult {
   const findings: Finding[] = [];
   const recommendations: Recommendation[] = [];
@@ -709,6 +632,78 @@ function analyzeTrust(html: string): SectionResult {
   };
 }
 
+function addRecommendationOnce(section: SectionResult, recommendation: Recommendation) {
+  if (section.recommendations.some(rec => rec.code === recommendation.code)) {
+    return;
+  }
+  section.recommendations.push(recommendation);
+}
+
+function addFindingOnce(section: SectionResult, title: string, description: string) {
+  if (section.findings.some(finding => finding.title === title)) {
+    return;
+  }
+  section.findings.push({
+    type: 'issue',
+    title,
+    description,
+  });
+}
+
+function lowerSectionScore(section: SectionResult, score: number) {
+  section.score = Math.max(0, Math.min(section.score, score));
+  section.status = getScoreStatus(section.score);
+}
+
+function enrichSectionsWithVisualSignals(
+  sections: AnalysisResult['sections'],
+  visualData: AnalysisResult['visualAnalysis']
+) {
+  if (!visualData) return;
+
+  if (visualData.contrastIssues > 0) {
+    const evidence = `${visualData.contrastIssues} potential low-contrast text pair${
+      visualData.contrastIssues === 1 ? '' : 's'
+    } were detected during visual capture.`;
+
+    addFindingOnce(sections.accessibility, 'Visual contrast risks detected', evidence);
+    addRecommendationOnce(
+      sections.accessibility,
+      createRecommendation(
+        'visual-contrast-audit',
+        'Fix visible contrast risks',
+        'high',
+        'Low contrast makes merchandising, pricing, and checkout copy harder to read on real devices.',
+        'Review the captured page against WCAG AA and adjust text, button, and badge colors until normal text reaches 4.5:1 contrast.',
+        evidence,
+        'medium'
+      )
+    );
+    lowerSectionScore(sections.accessibility, Math.max(45, sections.accessibility.score - 8));
+  }
+
+  if (visualData.mobileResponsivenessScore < 80) {
+    const evidence = `Mobile visual score was ${Math.round(
+      visualData.mobileResponsivenessScore
+    )}/100 from horizontal-scroll and touch-target checks.`;
+
+    addFindingOnce(sections.performance, 'Mobile layout friction detected', evidence);
+    addRecommendationOnce(
+      sections.performance,
+      createRecommendation(
+        'mobile-layout-friction',
+        'Repair mobile shopping friction',
+        'high',
+        'Mobile layout issues make browsing, tapping, and checkout slower for the traffic most likely to abandon.',
+        'Remove horizontal overflow, resize small tap targets to at least 44px, and retest product cards, menus, cart drawers, and checkout CTAs at 320-390px widths.',
+        evidence,
+        'medium'
+      )
+    );
+    lowerSectionScore(sections.performance, Math.max(40, visualData.mobileResponsivenessScore));
+  }
+}
+
 async function runHeavyAnalysisTasks(html: string, normalizedUrl: string, fetchedUrl: string) {
   return Promise.all([
     CompetitorService.analyzeCompetitors(html, normalizedUrl).catch(err => {
@@ -747,7 +742,7 @@ export class AnalyzerService {
     // 1. Check Cache
     const cached = await CacheService.get<AnalysisResult>(cacheKey);
     if (cached) {
-      console.log('Returning cached analysis for', normalizedUrl);
+      Logger.debug('Returning cached analysis', { url: normalizedUrl });
       return {
         ...cached,
         meta: {
@@ -856,7 +851,7 @@ export class AnalyzerService {
           status: getScoreStatus(bpScore),
           ...extractLighthouseFindings(audits, 'best-practices'),
         },
-        cart: analyzeCart(html),
+        cart: analyzeCartExperience(html, { platform }),
         trust: analyzeTrust(html),
       };
 
@@ -881,21 +876,13 @@ export class AnalyzerService {
       }
     } else {
       usedHtmlFallback = true;
-      console.warn('Using fallback analysis for', normalizedUrl);
+      Logger.warn('Using fallback analysis', { url: normalizedUrl });
       sections = {
         performance: analyzePerformanceFallback(html),
         seo: analyzeSEOFallback(html),
         accessibility: analyzeAccessibilityFallback(html),
-        bestPractices: {
-          name: 'Best Practices',
-          score: 70,
-          status: 'good',
-          findings: [
-            { type: 'positive', title: 'HTTPS Check', description: 'Basic security check passed.' },
-          ],
-          recommendations: [],
-        },
-        cart: analyzeCart(html),
+        bestPractices: analyzeBestPracticesFallback(fetchedUrl),
+        cart: analyzeCartExperience(html, { platform }),
         trust: analyzeTrust(html),
       };
 
@@ -924,10 +911,17 @@ export class AnalyzerService {
     const [competitorData, scraperData, aiData] = await (heavyTasksPromise ??
       runHeavyAnalysisTasks(html, normalizedUrl, fetchedUrl));
 
-    console.log(`External services completed in ${Date.now() - serviceStartTime}ms`);
+    Logger.debug('External services completed', {
+      durationMs: Date.now() - serviceStartTime,
+    });
 
     // Destructure scraper results
     const { visualAnalysis: visualData, productAnalysis: productData } = scraperData;
+    sections.cart = analyzeCartExperience(html, {
+      platform,
+      productAnalysis: productData,
+    });
+    enrichSectionsWithVisualSignals(sections, visualData || undefined);
 
     // 8. Calculate Overall Score
     const weights = {

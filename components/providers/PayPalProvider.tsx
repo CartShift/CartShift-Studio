@@ -6,15 +6,16 @@ import { useLocale } from 'next-intl';
 
 interface PayPalProviderProps {
   children: React.ReactNode;
+  currency?: string;
 }
 
-export function PayPalProvider({ children }: PayPalProviderProps) {
+export function PayPalProvider({ children, currency = 'USD' }: PayPalProviderProps) {
   const locale = useLocale();
   const clientId = getPayPalClientId();
 
   const initialOptions = {
     clientId,
-    currency: 'USD', // Default currency, can be overridden per order
+    currency,
     intent: 'capture',
     locale: getPayPalLocale(locale),
   };

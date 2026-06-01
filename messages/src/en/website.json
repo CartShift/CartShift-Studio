@@ -531,7 +531,7 @@
     "badge": "Free Store Analyzer",
     "title": "Boost your store's",
     "titleSpan": "performance",
-    "description": "Get a comprehensive audit of your e-commerce store in less than 60 seconds. We analyze performance, SEO, accessibility, and trust signals to help you convert more visitors.",
+    "description": "Get a comprehensive audit of your e-commerce store in 1–2 minutes. We analyze performance, SEO, accessibility, and trust signals to help you convert more visitors.",
     "cta": "Analyze My Store",
     "features": {
       "performance": {
@@ -1191,12 +1191,12 @@
     "hero": {
       "title": "Free Store Analyzer",
       "subtitle": "Is Your Store Losing Sales?",
-      "description": "Get a comprehensive audit of your e-commerce store in about a minute. Discover performance issues, SEO gaps, and conversion opportunities.",
+      "description": "Get a comprehensive audit of your e-commerce store in 1–2 minutes. Discover performance issues, SEO gaps, and conversion opportunities.",
       "badge": "Free Tool"
     },
     "form": {
       "title": "Analyze Your Store",
-      "subtitle": "Get your free report in about a minute",
+      "subtitle": "Get your free report in 1–2 minutes",
       "urlLabel": "Your Store URL",
       "urlPlaceholder": "https://your-store.com",
       "urlRequired": "Store URL is required",
@@ -1275,7 +1275,7 @@
     },
     "trust": {
       "free": "Free forever",
-      "instant": "Instant results",
+      "instant": "On-screen results",
       "secure": "Secure & private",
       "expert": "Expert insights"
     },
@@ -1285,6 +1285,8 @@
     },
     "stats": {
       "categories": "Audit categories",
+      "durationValue": "1–2 min",
+      "durationLabel": "Typical runtime",
       "freeValue": "Free",
       "reportFormat": "PDF email report"
     },
@@ -1300,7 +1302,7 @@
       },
       "step3": {
         "title": "Get Results",
-        "description": "Receive instant insights + full email report"
+        "description": "See results on screen and receive the full PDF by email"
       }
     },
     "steps": {
@@ -1314,7 +1316,7 @@
     },
     "analyzing": {
       "title": "Analyzing Your Store",
-      "durationHint": "This usually takes 20–45 seconds depending on store speed.",
+      "durationHint": "This usually takes 1–2 minutes depending on store speed and live checks.",
       "inProgress": "In progress",
       "finishing": "Finishing up",
       "phaseLabel": "Stage: {phase}",
@@ -1341,6 +1343,10 @@
       "overallScore": "Overall Score",
       "breakdown": "Score Breakdown",
       "emailSent": "Comprehensive Report Sent!",
+      "emailPendingTitle": "PDF report on its way",
+      "emailPendingDescription": "Your on-screen results are ready. The full PDF usually arrives within a few minutes—check spam if needed.",
+      "emailUnavailableTitle": "On-screen report ready",
+      "emailUnavailableDescription": "Email delivery is not configured for this environment. Your full results are available on this page.",
       "emailDelayedTitle": "Report saved — email may be delayed",
       "emailDelayedDescription": "Your results are on screen. If the PDF does not arrive within a few minutes, check spam or run the analyzer again.",
       "partialDataNotice": "Some live performance data was unavailable, so parts of this report use HTML-based estimates. The emailed PDF reflects the same analysis run.",
@@ -1372,6 +1378,10 @@
           "email": {
             "label": "PDF email",
             "hint": "Full report delivery to your inbox."
+          },
+          "lead": {
+            "label": "Lead saved",
+            "hint": "Your contact details were stored for follow-up and the PDF report."
           }
         }
       },
@@ -1612,6 +1622,31 @@
           "title": "Make the cart easy to find",
           "description": "A hidden cart creates friction for returning shoppers and makes checkout feel less predictable.",
           "action": "Add a persistent cart entry point in the header with a clear icon, accessible label, and item count."
+        },
+        "add_to_cart_missing": {
+          "title": "Make the purchase action unmistakable",
+          "description": "If shoppers cannot immediately identify how to add an item to cart, product intent leaks before checkout begins.",
+          "action": "Use a high-contrast add-to-cart or buy-now button on product cards and product pages, with disabled states reserved only for unavailable variants."
+        },
+        "checkout_path_missing": {
+          "title": "Expose a predictable checkout path",
+          "description": "A clear path from cart to checkout reduces hesitation and prevents dead-end shopping sessions.",
+          "action": "Ensure cart forms, mini-cart drawers, and checkout buttons use visible labels and link to a real cart or checkout route."
+        },
+        "payment_cues_missing": {
+          "title": "Show accepted payment methods",
+          "description": "Payment cues reduce risk perception before shoppers commit to checkout.",
+          "action": "Add accepted payment logos or wallet labels near the cart, checkout button, and footer."
+        },
+        "visual_contrast_audit": {
+          "title": "Fix visible contrast risks",
+          "description": "Low contrast makes merchandising, pricing, and checkout copy harder to read on real devices.",
+          "action": "Review the captured page against WCAG AA and adjust text, button, and badge colors until normal text reaches 4.5:1 contrast."
+        },
+        "mobile_layout_friction": {
+          "title": "Repair mobile shopping friction",
+          "description": "Mobile layout issues make browsing, tapping, and checkout slower for the traffic most likely to abandon.",
+          "action": "Remove horizontal overflow, resize small tap targets to at least 44px, and retest product cards, menus, cart drawers, and checkout CTAs at 320-390px widths."
         },
         "checkout_trust": {
           "title": "Add checkout trust cues",

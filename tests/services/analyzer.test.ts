@@ -57,6 +57,21 @@ const shopifyHtml = `<!DOCTYPE html>
 
 const sparseHtml = '<html><body><p>Hello</p></body></html>';
 
+const weakCheckoutHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Weak Store</title>
+  <meta name="description" content="Products">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Catalog</h1>
+  <a href="/collections/new">New arrivals</a>
+  <button>Learn more</button>
+  <p>Catalog-only content with no commerce assurances visible.</p>
+</body>
+</html>`;
+
 function buildPageSpeedPayload() {
   return {
     lighthouseResult: {
@@ -221,6 +236,26 @@ describe('AnalyzerService.analyzeStore', () => {
     expect(result.meta?.usedHtmlFallback).toBe(true);
     expect(result.sections.seo.findings.some(f => f.title.includes('title'))).toBe(true);
     expect(result.sections.cart.findings.some(f => f.type === 'issue')).toBe(true);
+    expect(result.sections.bestPractices.findings.some(f => f.title === 'HTTPS enabled')).toBe(
+      true
+    );
+  });
+
+  it('flags HTTP storefronts in fallback best practices scoring', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('quota exceeded', { status: 429 }))
+    );
+    mockSafeFetch.mockResolvedValueOnce({
+      html: sparseHtml,
+      finalUrl: 'http://insecure.example.com',
+    });
+
+    const result = await AnalyzerService.analyzeStore('http://insecure.example.com');
+
+    expect(result.sections.bestPractices.findings.some(f => f.title === 'HTTPS not detected')).toBe(
+      true
+    );
   });
 
   it('maps fetch timeouts to a user-facing timeout error', async () => {
@@ -252,5 +287,57 @@ describe('AnalyzerService.analyzeStore', () => {
 
     expect(result.meta?.visualAnalysisAvailable).toBe(false);
     expect(result.overallScore).toBeGreaterThan(0);
+  });
+
+  it('scores cart diagnostics from multiple checkout signals instead of one keyword', async () => {
+    mockSafeFetch.mockResolvedValueOnce({
+      html: weakCheckoutHtml,
+      finalUrl: 'https://weak.example.com',
+    });
+    mockScrape.mockResolvedValueOnce({
+      visualAnalysis: null,
+      productAnalysis: {
+        hasBuyButtonAboveFold: false,
+        imageCount: 1,
+        hasReviews: false,
+        descriptionLength: 40,
+        score: 50,
+        cartActionabilityStatus: 'unknown',
+      },
+    });
+
+    const result = await AnalyzerService.analyzeStore('https://weak.example.com');
+
+    expect(result.sections.cart.score).toBeLessThanOrEqual(40);
+    expect(result.sections.cart.recommendations.map(rec => rec.code)).toEqual(
+      expect.arrayContaining([
+        'cart-visible',
+        'add-to-cart-missing',
+        'checkout-path-missing',
+        'payment-cues-missing',
+      ])
+    );
+    expect(result.sections.cart.recommendations.every(rec => rec.evidence)).toBe(true);
+  });
+
+  it('promotes mobile and contrast visual findings into prioritized recommendations', async () => {
+    mockScrape.mockResolvedValueOnce({
+      visualAnalysis: {
+        screenshots: [],
+        contrastIssues: 3,
+        mobileResponsivenessScore: 62,
+        dominantColors: ['#111111', '#ffffff'],
+      },
+      productAnalysis: undefined,
+    });
+
+    const result = await AnalyzerService.analyzeStore('https://shop.example.com');
+
+    expect(result.sections.accessibility.recommendations.map(rec => rec.code)).toContain(
+      'visual-contrast-audit'
+    );
+    expect(result.sections.performance.recommendations.map(rec => rec.code)).toContain(
+      'mobile-layout-friction'
+    );
   });
 });

@@ -22,6 +22,7 @@ export async function deliverStoreAnalysisReport(params: {
   locale: string;
   results: AnalysisResult;
   subscribeNewsletter: boolean;
+  skipLeadCapture?: boolean;
 }): Promise<ReportDeliveryStatus> {
   const reportUrl = buildFirebaseFunctionUrl(
     env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL,

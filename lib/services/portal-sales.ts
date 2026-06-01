@@ -48,6 +48,13 @@ function daysBetween(start: Date, end: Date): number {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
+function getRecognizedRevenue(pricingRequest: PricingRequest): number {
+  return (
+    pricingRequest.amountPaid ??
+    (pricingRequest.status === PRICING_STATUS.PAID ? pricingRequest.totalAmount || 0 : 0)
+  );
+}
+
 // ============================================
 // CORE FUNCTIONS
 // ============================================
@@ -119,6 +126,7 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
 
   // Filter pricing requests by status
   const paidRequests = pricingRequests.filter(pr => pr.status === PRICING_STATUS.PAID);
+  const revenueBearingRequests = pricingRequests.filter(pr => getRecognizedRevenue(pr) > 0);
   const acceptedRequests = pricingRequests.filter(pr => pr.status === PRICING_STATUS.ACCEPTED);
   const declinedRequests = pricingRequests.filter(pr => pr.status === PRICING_STATUS.DECLINED);
   const sentRequests = pricingRequests.filter(
@@ -126,22 +134,29 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
   );
 
   // Revenue calculations
-  const totalRevenue = paidRequests.reduce((sum, pr) => sum + (pr.totalAmount || 0), 0);
-  const pendingRevenue = acceptedRequests.reduce((sum, pr) => sum + (pr.totalAmount || 0), 0);
+  const totalRevenue = revenueBearingRequests.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
+  const pendingRevenue = acceptedRequests.reduce(
+    (sum, pr) => sum + (pr.balanceDue ?? pr.totalAmount ?? 0),
+    0
+  );
 
   // This month's revenue
-  const revenueThisMonth = paidRequests
-    .filter(pr => pr.paidAt && pr.paidAt.toDate() >= thisMonthStart)
-    .reduce((sum, pr) => sum + (pr.totalAmount || 0), 0);
+  const revenueThisMonth = revenueBearingRequests
+    .filter(pr => {
+      const paymentAt = pr.lastPaymentAt || pr.paidAt;
+      return paymentAt ? paymentAt.toDate() >= thisMonthStart : false;
+    })
+    .reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
 
   // Last month's revenue
-  const revenueLastMonth = paidRequests
+  const revenueLastMonth = revenueBearingRequests
     .filter(pr => {
-      if (!pr.paidAt) return false;
-      const paidDate = pr.paidAt.toDate();
+      const paymentAt = pr.lastPaymentAt || pr.paidAt;
+      if (!paymentAt) return false;
+      const paidDate = paymentAt.toDate();
       return paidDate >= lastMonthStart && paidDate < thisMonthStart;
     })
-    .reduce((sum, pr) => sum + (pr.totalAmount || 0), 0);
+    .reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
 
   // Revenue growth
   const revenueGrowth =
@@ -191,7 +206,7 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
       : 0;
 
   // Determine primary currency (most used)
-  const currencyCounts = paidRequests.reduce(
+  const currencyCounts = revenueBearingRequests.reduce(
     (acc, pr) => {
       const curr = pr.currency || 'USD';
       acc[curr] = (acc[curr] || 0) + 1;
@@ -259,7 +274,7 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
     const data = orgData.get(pr.orgId)!;
     data.all.push(pr);
 
-    if (pr.status === PRICING_STATUS.PAID) {
+    if (getRecognizedRevenue(pr) > 0) {
       data.paid.push(pr);
     } else if (pr.status === PRICING_STATUS.ACCEPTED) {
       data.accepted.push(pr);
@@ -270,13 +285,16 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
   const revenueData: ClientRevenueData[] = [];
 
   orgData.forEach((data, orgId) => {
-    const totalRevenue = data.paid.reduce((sum, pr) => sum + (pr.totalAmount || 0), 0);
-    const pendingRevenue = data.accepted.reduce((sum, pr) => sum + (pr.totalAmount || 0), 0);
+    const totalRevenue = data.paid.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
+    const pendingRevenue = data.accepted.reduce(
+      (sum, pr) => sum + (pr.balanceDue ?? pr.totalAmount ?? 0),
+      0
+    );
 
     // Find first and last payment dates
     const paidDates = data.paid
-      .filter(pr => pr.paidAt)
-      .map(pr => pr.paidAt!.toDate())
+      .filter(pr => pr.lastPaymentAt || pr.paidAt)
+      .map(pr => (pr.lastPaymentAt || pr.paidAt)!.toDate())
       .sort((a, b) => a.getTime() - b.getTime());
 
     const firstPaymentAt = paidDates.length > 0 ? Timestamp.fromDate(paidDates[0]) : undefined;
@@ -334,8 +352,9 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
 
     // Filter requests for this month
     const monthPaid = pricingRequests.filter(pr => {
-      if (!pr.paidAt) return false;
-      const paidDate = pr.paidAt.toDate();
+      const paymentAt = pr.lastPaymentAt || pr.paidAt;
+      if (!paymentAt || getRecognizedRevenue(pr) <= 0) return false;
+      const paidDate = paymentAt.toDate();
       return paidDate >= monthDate && paidDate <= monthEnd;
     });
 
@@ -353,7 +372,7 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
 
     result.push({
       month: monthStr,
-      revenue: monthPaid.reduce((sum, pr) => sum + (pr.totalAmount || 0), 0),
+      revenue: monthPaid.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0),
       proposalsSent: monthSent.length,
       proposalsPaid: monthPaid.length,
       newClients,

@@ -43,6 +43,12 @@ vi.mock('@/lib/utils/store-url', () => ({
   validateStoreUrlForAnalysis: vi.fn(),
 }));
 
+vi.mock('@/lib/services/store-analysis-leads', () => ({
+  captureStoreAnalysisLead: vi.fn(),
+}));
+
+import { captureStoreAnalysisLead } from '@/lib/services/store-analysis-leads';
+
 function buildAnalysisResult(): AnalysisResult {
   return {
     storeUrl: 'https://shop.example.com',
@@ -134,6 +140,7 @@ describe('POST /api/analyze-store', () => {
     vi.mocked(AnalyzerService.analyzeStore).mockResolvedValue(buildAnalysisResult());
     vi.mocked(deliverStoreAnalysisReport).mockResolvedValue('sent');
     vi.mocked(resolveInitialEmailReportStatus).mockReturnValue('pending');
+    vi.mocked(captureStoreAnalysisLead).mockResolvedValue('captured');
   });
 
   afterEach(async () => {
@@ -259,6 +266,13 @@ describe('POST /api/analyze-store', () => {
     const payload = await response.json();
     expect(payload.overallScore).toBe(74);
     expect(payload.meta.emailReportStatus).toBe('pending');
+    expect(payload.meta.leadCaptureStatus).toBe('captured');
+    expect(captureStoreAnalysisLead).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'owner@example.com',
+        storeUrl: 'https://shop.example.com',
+      })
+    );
     expect(deliverStoreAnalysisReport).not.toHaveBeenCalled();
 
     await flushAfterCallbacks();
@@ -268,6 +282,7 @@ describe('POST /api/analyze-store', () => {
         email: 'owner@example.com',
         storeUrl: 'https://shop.example.com',
         subscribeNewsletter: true,
+        skipLeadCapture: true,
       })
     );
   });

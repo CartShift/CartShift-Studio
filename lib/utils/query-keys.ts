@@ -12,6 +12,8 @@ export const queryKeys = {
   pricing: {
     allRequests: ['all-pricing-requests'] as const,
     byOrg: ['org-pricing-requests'] as const,
+    detail: (pricingId: string) => ['pricing-request', pricingId] as const,
+    payments: (pricingId: string) => ['proposal-payments', pricingId] as const,
     config: (orgId: string, requestId?: string) =>
       requestId
         ? (['pricing-config', orgId, requestId] as const)
@@ -45,6 +47,13 @@ export const queryKeys = {
     clientRevenue: ['client-revenue-data'] as const,
     monthlyRevenue: (months: number) => ['monthly-revenue', months] as const,
     topClients: (limit: number) => ['top-clients', limit] as const,
+  },
+  profitSplits: {
+    all: ['profit-splits'] as const,
+    paidPricingRequests: ['profit-splits-paid-pricing-requests'] as const,
+    detail: (id: string) => ['profit-split', id] as const,
+    byPricingRequest: (pricingRequestId: string) =>
+      ['profit-split-by-pricing-request', pricingRequestId] as const,
   },
   marketing: {
     dashboard: ['marketing-dashboard'] as const,
