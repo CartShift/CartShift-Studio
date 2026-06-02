@@ -24,12 +24,12 @@ General UI elements (buttons, common errors) live in `messages/src/{locale}/comm
    - Add the corresponding key to `messages/src/he/`.
 
 2. **Watch Mode**:
-   - The watch mode is now **integrated into `npm run dev`**.
-   - It runs automatically in the background, merging changes and regenerating types as you save files.
-   - You can also run it standalone via `npm run i18n:watch` if needed.
+   - The watch mode is integrated into `pnpm dev`.
+   - It runs automatically in the background and merges debounced source changes.
+   - You can also run it standalone via `pnpm i18n:watch` if needed.
 
 3. **Validation**:
-   - Run `npm run i18n:validate` to check for missing keys or mismatching parameters.
+   - Run `pnpm i18n:validate` to check for missing keys or mismatching parameters.
    - The validation script runs automatically on pre-commit (planned).
 
 ## 🔑 Naming Conventions
@@ -40,7 +40,7 @@ General UI elements (buttons, common errors) live in `messages/src/{locale}/comm
 
 ## 🧩 TypeScript Types
 
-Types are automatically generated into `types/i18n.ts`.
+Types are provided by the `next-intl` augmentation in `i18n/global.ts`.
 **Always use `useTranslations('portal')` for portal translations** - this provides better type safety and cleaner code.
 
 ```tsx

@@ -5,8 +5,10 @@
  */
 
 import { spawn, execSync } from 'child_process';
-import { existsSync, unlinkSync, rmSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
+
+const includeFunctions = process.argv.includes('--full');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ANSI COLORS & STYLES
@@ -57,8 +59,8 @@ const services = {
     icon: '🌐',
     url: 'http://localhost:3000',
     healthUrl: 'http://localhost:3000',
-    command: 'pnpm',
-    args: ['run', 'dev:legacy'],
+    command: process.platform === 'win32' ? 'next.cmd' : 'next',
+    args: ['dev'],
     cwd: '.',
     readyPattern: /Ready in|✓ Ready/,
   },
@@ -114,11 +116,14 @@ ${c.brightCyan}${c.bold}    ╔════════════════�
 }
 
 function showServiceInfo() {
+  const functionsLine = includeFunctions
+    ? `${c.gray}│${c.reset}  ${c.brightYellow}${c.bold}🔥 FNC${c.reset}       ${c.cyan}http://localhost:4000${c.reset}        ${c.dim}Cloud Functions${c.reset}         ${c.gray}│${c.reset}\n`
+    : '';
+
   console.log(`
 ${c.gray}┌──────────────────────────────────────────────────────────────────────────┐${c.reset}
-${c.gray}│${c.reset}  ${c.brightGreen}${c.bold}🌐 WEB${c.reset}       ${c.cyan}http://localhost:3000${c.reset}        ${c.dim}Next.js 15 • React 19${c.reset}   ${c.gray}│${c.reset}
-${c.gray}│${c.reset}  ${c.brightYellow}${c.bold}🔥 FNC${c.reset}       ${c.cyan}http://localhost:4000${c.reset}        ${c.dim}Cloud Functions${c.reset}         ${c.gray}│
-│  ${c.brightMagenta}${c.bold}🌍 I18N${c.reset}       ${c.dim}Watch Mode${c.reset}                   ${c.dim}Auto-merge & Types${c.reset}      ${c.gray}│
+${c.gray}│${c.reset}  ${c.brightGreen}${c.bold}🌐 WEB${c.reset}       ${c.cyan}http://localhost:3000${c.reset}        ${c.dim}Next.js 16 • React 19${c.reset}   ${c.gray}│${c.reset}
+${functionsLine}${c.gray}│${c.reset}  ${c.brightMagenta}${c.bold}🌍 I18N${c.reset}       ${c.dim}Watch Mode${c.reset}                   ${c.dim}Debounced auto-merge${c.reset}     ${c.gray}│
 └──────────────────────────────────────────────────────────────────────────┘${c.reset}
 `);
 
@@ -177,51 +182,6 @@ async function checkHealth(url, timeout = 5000) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 
-async function cleanupPort(port) {
-  const isWin = process.platform === 'win32';
-
-  try {
-    if (isWin) {
-      // Windows: Find process using port and kill it
-      const command = `netstat -ano | findstr :${port}`;
-      try {
-        const output = execSync(command, { encoding: 'utf-8', stdio: 'pipe' });
-        const lines = output.trim().split('\n').filter(l => l.trim());
-        const pids = new Set();
-
-        for (const line of lines) {
-          const parts = line.trim().split(/\s+/);
-          const pid = parts[parts.length - 1];
-          if (pid && pid !== '0' && /^\d+$/.test(pid)) {
-            pids.add(pid);
-          }
-        }
-
-        for (const pid of pids) {
-          try {
-            execSync(`taskkill /F /PID ${pid}`, { stdio: 'pipe' });
-            console.log(`${c.yellow}   Killed process ${pid} on port ${port}${c.reset}`);
-          } catch {
-            // Process might already be dead
-          }
-        }
-      } catch {
-        // No process found on port - that's fine
-      }
-
-    } else {
-      // Unix: Use lsof
-      try {
-        execSync(`lsof -ti:${port} | xargs kill -9`, { stdio: 'pipe' });
-      } catch {
-        // No process found - that's fine
-      }
-    }
-  } catch (_error) {
-    // Ignore cleanup errors
-  }
-}
-
 async function cleanupNextLock() {
   const lockPaths = [
     join(process.cwd(), '.next', 'dev', 'lock'), // Adjusted path for root .next
@@ -239,26 +199,19 @@ async function cleanupNextLock() {
     }
   }
 
-  // Also try to remove .next/dev folder if it's problematic
-  const devPath = join(process.cwd(), '.next', 'dev');
-  if (existsSync(devPath)) {
-    try {
-      rmSync(devPath, { recursive: true, force: true });
-      console.log(`${c.yellow}   Cleaned .next/dev directory${c.reset}`);
-    } catch {
-      // Directory might be in use - that's OK
-    }
-  }
 }
 
 function isPortInUse(port) {
   const isWin = process.platform === 'win32';
   try {
     if (isWin) {
-      const result = execSync(`netstat -ano | findstr :${port}`, { encoding: 'utf-8', stdio: 'pipe' });
-      return result.trim().length > 0;
+      const result = execSync('netstat -ano -p tcp', { encoding: 'utf-8', stdio: 'pipe' });
+      return result.split('\n').some((line) => {
+        const parts = line.trim().split(/\s+/);
+        return parts[0] === 'TCP' && parts[3] === 'LISTENING' && parts[1].endsWith(`:${port}`);
+      });
     } else {
-      execSync(`lsof -ti:${port}`, { stdio: 'pipe' });
+      execSync(`lsof -tiTCP:${port} -sTCP:LISTEN`, { stdio: 'pipe' });
       return true;
     }
   } catch {
@@ -267,24 +220,17 @@ function isPortInUse(port) {
 }
 
 async function prepareEnvironment() {
-  console.log(`${c.brightCyan}${c.bold}🧹 Cleaning up ports and lock files...${c.reset}\n`);
+  console.log(`${c.brightCyan}${c.bold}🧹 Checking ports and lock files...${c.reset}\n`);
 
-  // Clean up specific ports multiple times
-  // 3000: Web, 4000: Emulator UI, 5001: Functions, 8080: Firestore, 9099: Auth
-  const ports = [3000, 4000, 5001, 8080, 9099];
+  const ports = includeFunctions ? [3000, 4000, 5001, 4400, 4500] : [3000];
 
   for (const port of ports) {
     if (isPortInUse(port)) {
-      await cleanupPort(port);
-      await new Promise(r => setTimeout(r, 500));
-      await cleanupPort(port);
+      throw new Error(`Port ${port} is already in use. Stop the existing service or run pnpm dev:force.`);
     }
   }
 
   await cleanupNextLock();
-
-  // Give ports time to fully release
-  await new Promise(r => setTimeout(r, 2000));
 
   console.log();
 }
@@ -404,33 +350,18 @@ function startService(key, service) {
   });
 }
 
-async function waitForPortFree(port, maxAttempts = 10) {
-  for (let i = 0; i < maxAttempts; i++) {
-    if (!isPortInUse(port)) {
-      return true;
-    }
-    await new Promise(r => setTimeout(r, 500));
-  }
-  return false;
-}
-
 async function startAllServices() {
   const startTime = Date.now();
   console.log(`${c.brightCyan}${c.bold}🚀 Starting services...${c.reset}\n`);
 
-  // Verify ports are free before starting
-  if (isPortInUse(3000)) {
-    console.log(`${c.yellow}⚠ Port 3000 still in use, cleaning up again...${c.reset}`);
-    await cleanupPort(3000);
-    await new Promise(r => setTimeout(r, 1000));
+  const promiseList = [
+    startService('web', services.web),
+    startService('i18n', services.i18n),
+  ];
+
+  if (includeFunctions) {
+    promiseList.push(startService('funcs', services.funcs));
   }
-
-  // Start both services in parallel
-  const promiseList = [startService('web', services.web)];
-
-  // Optionally start firebase if needed, currently set to start
-  promiseList.push(startService('funcs', services.funcs));
-  promiseList.push(startService('i18n', services.i18n));
 
   await Promise.all(promiseList);
 
@@ -438,8 +369,6 @@ async function startAllServices() {
   console.log();
 
   const webStarted = serviceStatus.get('web') === 'ready';
-  const funcsStarted = serviceStatus.get('funcs') === 'ready';
-
   if (webStarted) {
     console.log(`${c.brightGreen}${c.bold}✨ Services started!${c.reset} ${c.dim}(${duration}s)${c.reset}`);
     console.log(`${c.dim}   Press 'h' for health check, 'r' to restart, Ctrl+C to stop${c.reset}\n`);
@@ -480,7 +409,16 @@ async function restartAllServices() {
 async function showHealthStatus() {
   console.log(`\n${c.cyan}${c.bold}🏥 Health Check${c.reset}\n`);
 
-  for (const [_key, service] of Object.entries(services)) {
+  const activeServices = includeFunctions
+    ? Object.values(services)
+    : [services.web, services.i18n];
+
+  for (const service of activeServices) {
+    if (!service.healthUrl) {
+      console.log(`   ${service.icon} ${c.bold}${service.name}${c.reset}  ${c.brightGreen}● WATCHING${c.reset}`);
+      continue;
+    }
+
     const isHealthy = await checkHealth(service.healthUrl);
     const status = isHealthy
       ? `${c.brightGreen}● HEALTHY${c.reset}`
@@ -510,14 +448,15 @@ ${c.gray}───────────────────────�
 function showQuickStatus() {
   const now = new Date().toLocaleTimeString('en-US', { hour12: false });
   const webStatus = serviceStatus.get('web') || 'unknown';
-  const funcsStatus = serviceStatus.get('funcs') || 'unknown';
   const i18nStatus = serviceStatus.get('i18n') || 'unknown';
 
   const webIcon = webStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
-  const funcsIcon = funcsStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
   const i18nIcon = i18nStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
+  const funcsStatus = serviceStatus.get('funcs') || 'unknown';
+  const funcsIcon = funcsStatus === 'ready' ? `${c.brightGreen}●${c.reset}` : `${c.yellow}○${c.reset}`;
+  const functionsSummary = includeFunctions ? `  ${funcsIcon} FNC` : '';
 
-  console.log(`\n${c.dim}[${now}]${c.reset} ${webIcon} WEB  ${funcsIcon} FNC  ${i18nIcon} I18N\n`);
+  console.log(`\n${c.dim}[${now}]${c.reset} ${webIcon} WEB${functionsSummary}  ${i18nIcon} I18N\n`);
 }
 
 function setupInputHandler() {

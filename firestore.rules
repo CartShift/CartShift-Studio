@@ -307,6 +307,19 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /portal_payments/{paymentId} {
+      allow read: if isAuthenticated() && (
+        isAgencyUser() ||
+        canAccessOrg(resource.data.get('orgId', ''))
+      );
+      allow write: if false;
+    }
+
+    match /portal_billing_profiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
     match /_server_rate_limits/{rateLimitId} {
       allow read, write: if false;
     }

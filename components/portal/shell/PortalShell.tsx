@@ -1,7 +1,8 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { getLocaleDirection, getLocaleFontFamily } from '@/lib/locale-config';
@@ -21,14 +22,30 @@ import { PortalShellProps } from './types';
 
 // Existing UI components
 import { Breadcrumbs } from '../ui/Breadcrumbs';
-import { MobileSearch } from '../ui/MobileSearch';
 import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
-import { NotificationDropdown } from '@/components/portal/ui/NotificationDropdown';
 import { MobileBottomNav } from '@/components/portal/shell/MobileBottomNav';
-import { CommandPalette } from '@/components/portal/CommandPalette';
-import { OnboardingTour } from '../OnboardingTour';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
 import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
+
+const CommandPalette = dynamic(
+  () => import('@/components/portal/CommandPalette').then(module => module.CommandPalette),
+  { ssr: false }
+);
+const MobileSearch = dynamic(
+  () => import('../ui/MobileSearch').then(module => module.MobileSearch),
+  { ssr: false }
+);
+const NotificationDropdown = dynamic(
+  () =>
+    import('@/components/portal/ui/NotificationDropdown').then(
+      module => module.NotificationDropdown
+    ),
+  { ssr: false }
+);
+const OnboardingTour = dynamic(
+  () => import('../OnboardingTour').then(module => module.OnboardingTour),
+  { ssr: false }
+);
 
 export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }: PortalShellProps) {
   const t = useTranslations('portal');
@@ -41,6 +58,18 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const mobileNavBadges = useMobileNavBadges(state.isAgency);
+
+  useEffect(() => {
+    const handleCommandPaletteShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setIsCommandPaletteOpen(open => !open);
+      }
+    };
+
+    window.addEventListener('keydown', handleCommandPaletteShortcut);
+    return () => window.removeEventListener('keydown', handleCommandPaletteShortcut);
+  }, []);
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
@@ -196,8 +225,13 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           </div>
 
           {/* Portal Elements */}
-          <CommandPalette isOpen={isCommandPaletteOpen} onOpenChange={setIsCommandPaletteOpen} />
-          {state.mounted && typeof document !== 'undefined' && document.body
+          {isCommandPaletteOpen && (
+            <CommandPalette isOpen={isCommandPaletteOpen} onOpenChange={setIsCommandPaletteOpen} />
+          )}
+          {state.mounted &&
+          state.isNotificationOpen &&
+          typeof document !== 'undefined' &&
+          document.body
             ? createPortal(
                 <NotificationDropdown
                   isOpen={state.isNotificationOpen}
@@ -222,10 +256,12 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           )}
 
           {/* Mobile Search */}
-          <MobileSearch
-            isOpen={state.isMobileSearchOpen}
-            onClose={() => state.setIsMobileSearchOpen(false)}
-          />
+          {state.isMobileSearchOpen && (
+            <MobileSearch
+              isOpen={state.isMobileSearchOpen}
+              onClose={() => state.setIsMobileSearchOpen(false)}
+            />
+          )}
         </>
       )}
     </div>

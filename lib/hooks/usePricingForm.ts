@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   PricingLineItem,
   Currency,
@@ -12,10 +12,12 @@ interface UsePricingFormResult {
   // State
   lineItems: PricingLineItem[];
   currency: Currency;
+  taxRate: number;
   isFormVisible: boolean;
 
   // Setters
   setCurrency: (currency: Currency) => void;
+  setTaxRate: (taxRate: number) => void;
   setFormVisible: (visible: boolean) => void;
 
   // Line item actions
@@ -53,10 +55,13 @@ const createEmptyLineItem = (): PricingLineItem => ({
  * } = usePricingForm();
  * ```
  */
-export function usePricingForm(defaultCurrency: Currency = 'USD'): UsePricingFormResult {
+export function usePricingForm(defaultCurrency: Currency = 'USD', defaultTaxRate = 0): UsePricingFormResult {
   const [lineItems, setLineItems] = useState<PricingLineItem[]>([createEmptyLineItem()]);
   const [currency, setCurrency] = useState<Currency>(defaultCurrency);
+  const [taxRate, setTaxRate] = useState(defaultTaxRate);
   const [isFormVisible, setFormVisible] = useState(false);
+  useEffect(() => setCurrency(defaultCurrency), [defaultCurrency]);
+  useEffect(() => setTaxRate(defaultTaxRate), [defaultTaxRate]);
 
   const addLineItem = useCallback(() => {
     setLineItems(prev => [...prev, createEmptyLineItem()]);
@@ -88,15 +93,17 @@ export function usePricingForm(defaultCurrency: Currency = 'USD'): UsePricingFor
     [lineItems]
   );
 
-  const totalAmount = useMemo(() => calculateTotalAmount(lineItems), [lineItems]);
+  const totalAmount = useMemo(() => calculateTotalAmount(lineItems, taxRate), [lineItems, taxRate]);
 
   const isValid = validItems.length > 0;
 
   return {
     lineItems,
     currency,
+    taxRate,
     isFormVisible,
     setCurrency,
+    setTaxRate,
     setFormVisible,
     addLineItem,
     removeLineItem,

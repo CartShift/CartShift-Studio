@@ -1,65 +1,24 @@
 'use client';
-
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { Request, Organization } from '@/lib/types/portal';
-import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
 import { FileText, Loader2 } from 'lucide-react';
-import { InvoiceDocument } from './InvoiceDocument';
-import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+import { useLocale, useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
+import { BillingDocumentType, BillingProfile, Organization, PaymentRecord, Request } from '@/lib/types/portal';
 
-//  component for dynamic import
-const PDFButton = () => {
-  const t = useTranslations();
-  return (
-    <Button variant="outline" disabled className="gap-2">
-      <Loader2 size={16} className="animate-spin" />
-      {t('portal.invoices.loadingPdf')}
-    </Button>
-  );
-};
-
-// Dynamically import PDFDownloadLink to avoid SSR issues
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
-  {
-    ssr: false,
-    loading: () => <PDFButton />,
-  }
-);
-
-interface InvoiceDownloadButtonProps {
-  request: Request;
-  organization: Organization;
-  className?: string;
+export function InvoiceDownloadButton({ request, organization, billingProfile, payments = [], documentType, label, className }: {
+  request: Request; organization: Organization; billingProfile?: BillingProfile | null; payments?: PaymentRecord[]; documentType: BillingDocumentType; label?: string; className?: string;
+}) {
+  const t = useTranslations('portal.invoices'); const locale = useLocale(); const [loading, setLoading] = useState(false);
+  const id = `REQ-${request.id.slice(0, 8).toUpperCase()}`;
+  const download = async () => {
+    setLoading(true);
+    try {
+      const [{ pdf }, { InvoiceDocument }] = await Promise.all([import('@react-pdf/renderer'), import('./InvoiceDocument')]);
+      const blob = await pdf(<InvoiceDocument request={request} organization={organization} billingProfile={billingProfile} payments={payments} documentType={documentType} invoiceId={id} locale={locale} />).toBlob();
+      const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `${documentType}-${id}.pdf`; link.click(); URL.revokeObjectURL(url);
+      toast.success(t('downloaded'));
+    } catch { toast.error(t('failed')); } finally { setLoading(false); }
+  };
+  return <Button variant="outline" className={className} disabled={loading} onClick={download}>{loading ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}{label ?? t(`download.${documentType}`)}</Button>;
 }
-
-export const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
-  request,
-  organization,
-  className,
-}) => {
-  const t = useTranslations();
-  const invoiceId = `INV-${request.id.substring(0, 8).toUpperCase()}`;
-  const fileName = `invoice-${invoiceId}.pdf`;
-
-  return (
-    <div className={className}>
-      <PDFDownloadLink
-        document={
-          <InvoiceDocument request={request} organization={organization} invoiceId={invoiceId} />
-        }
-        fileName={fileName}
-      >
-        {({ loading }) => (
-          <Button variant="outline" disabled={loading} className="flex items-center gap-2">
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
-            {loading
-              ? t('portal.invoices.generatingInvoice')
-              : t('portal.invoices.downloadInvoice')}
-          </Button>
-        )}
-      </PDFDownloadLink>
-    </div>
-  );
-};

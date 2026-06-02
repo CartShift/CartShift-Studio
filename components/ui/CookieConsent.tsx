@@ -21,7 +21,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
   delayMs = 1500,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const t = useTranslations();
+  const t = useTranslations('common.cookieConsent');
 
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
@@ -43,10 +43,10 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
   };
 
   const content = {
-    message: t('privacy.sections.cookies.consent.message'),
-    accept: t('privacy.sections.cookies.consent.accept'),
-    decline: t('privacy.sections.cookies.consent.decline'),
-    learnMore: t('privacy.sections.cookies.consent.learnMore'),
+    message: t('message'),
+    accept: t('accept'),
+    decline: t('decline'),
+    learnMore: t('learnMore'),
   };
 
   const isCompact = variant === 'compact';

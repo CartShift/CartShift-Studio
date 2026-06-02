@@ -189,7 +189,7 @@ interface ToastItemProps extends VariantProps<typeof toastVariants> {
 }
 
 function ToastItem({ type, title, message, action, onDismiss, duration }: ToastItemProps) {
-  const t = useTranslations();
+  const t = useTranslations('common');
 
   const icons = {
     success: CheckCircle2,
@@ -235,7 +235,7 @@ function ToastItem({ type, title, message, action, onDismiss, duration }: ToastI
             onDismiss();
           }}
           className="flex-shrink-0 p-1 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-200/50 dark:hover:bg-surface-800/50 transition-colors"
-          aria-label={t('portal.toast.dismiss') || 'Dismiss'}
+          aria-label={t('dismiss')}
         >
           <X size={14} />
         </button>

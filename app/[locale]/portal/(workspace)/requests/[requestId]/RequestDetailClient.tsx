@@ -30,7 +30,7 @@ import { Skeleton as PortalSkeleton } from '@/components/ui/Skeleton';
 import { RequestMilestones } from '@/components/portal/requests/RequestMilestones';
 import { RequestAttachments } from '@/components/portal/requests/RequestAttachments';
 import { RequestDiscussion } from '@/components/portal/requests/RequestDiscussion';
-import { InvoiceDownloadButton } from '@/components/portal/invoices/InvoiceDownloadButton';
+import { PaymentSummaryCard } from '@/components/portal/billing/PaymentSummaryCard';
 import { ActivityTimeline } from '@/components/portal/ActivityTimeline';
 import { PayPalProvider } from '@/components/providers/PayPalProvider';
 import { PayPalCheckoutButton } from '@/components/portal/PayPalCheckoutButton';
@@ -40,6 +40,8 @@ import { RequestStatusWorkflow } from '@/components/portal/requests/RequestStatu
 import { useRequestDetail } from '@/lib/hooks/useRequestDetail';
 import { useRequestActions } from '@/lib/hooks/useRequestActions';
 import { usePricingForm } from '@/lib/hooks/usePricingForm';
+import { useBillingProfile } from '@/lib/hooks/useBillingProfile';
+import { useRequestPayments } from '@/lib/hooks/useRequestPayments';
 
 // Consolidated utilities (no more mapStatusColor duplication!)
 import {
@@ -174,7 +176,6 @@ export default function RequestDetailClient() {
     isDeclining,
     handleStartWork,
     isWork,
-    handlePaymentSuccess,
     handleAssignSpecialist,
     isAssigning,
     handleRequestRevision,
@@ -195,6 +196,8 @@ export default function RequestDetailClient() {
     onCommentsUpdate: setComments,
   });
 
+  const { profile: billingProfile } = useBillingProfile(Boolean(userData));
+
   // ========== CONSOLIDATED PRICING FORM ==========
   // All pricing form state is now in usePricingForm hook
   const {
@@ -209,13 +212,17 @@ export default function RequestDetailClient() {
     resetForm: resetPricingForm,
     totalAmount: pricingTotal,
     isValid: isPricingValid,
-  } = usePricingForm(request?.currency || 'USD');
+    taxRate: pricingTaxRate,
+    setTaxRate: setPricingTaxRate,
+  } = usePricingForm(request?.currency || billingProfile?.defaultCurrency || 'USD', billingProfile?.defaultTaxRate ?? 0);
+  const requestPayments = useRequestPayments(request?.id || '', Boolean(request?.isBillable));
 
   // ========== LOCAL UI STATE ==========
   const [activeTab, setActiveTab] = useState<'overview' | 'discussion' | 'history'>('overview');
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
+  const [paymentDueAt, setPaymentDueAt] = useState('');
 
   // ========== RENDER ==========
 
@@ -228,9 +235,15 @@ export default function RequestDetailClient() {
   }
 
   const handlePricingSubmit = async () => {
-    const success = await handleAddPricing(pricingLineItems, pricingCurrency);
+    const success = await handleAddPricing(
+      pricingLineItems,
+      pricingCurrency,
+      pricingTaxRate,
+      paymentDueAt ? new Date(`${paymentDueAt}T12:00:00`) : undefined
+    );
     if (success) {
       resetPricingForm();
+      setPaymentDueAt('');
     }
   };
 
@@ -533,6 +546,28 @@ export default function RequestDetailClient() {
                     </select>
                   </div>
 
+                  <div>
+                    <label className="block text-xs font-bold text-surface-500 mb-2">
+                      {t('requests.detail.taxRate')}
+                    </label>
+                    <input
+                      className="portal-input h-10 text-sm"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      value={pricingTaxRate * 100}
+                      onChange={e => setPricingTaxRate(Number(e.target.value || 0) / 100)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-surface-500 mb-2">
+                      {t('requests.detail.paymentDueAt')}
+                    </label>
+                    <input className="portal-input h-10 text-sm" type="date" value={paymentDueAt} onChange={e => setPaymentDueAt(e.target.value)} />
+                  </div>
+
                   {/* Line Items */}
                   <div className="space-y-3">
                     <label className="block text-xs font-bold text-surface-500">
@@ -717,44 +752,6 @@ export default function RequestDetailClient() {
                     </span>
                   </div>
 
-                  {request.paymentStatus && (
-                    <div className="mt-4 rounded-xl border border-surface-200 p-3 dark:border-surface-800">
-                      <p className="text-xs font-black uppercase tracking-widest text-surface-400">
-                        {t('requests.detail.paymentTracking')}
-                      </p>
-                      <div className="mt-3 space-y-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-surface-500">{t('requests.detail.amountPaid')}</span>
-                          <span className="font-bold text-emerald-600">
-                            {formatCurrency(request.amountPaid || 0, request.currency || 'ILS')}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-surface-500">{t('requests.detail.balanceDue')}</span>
-                          <span className="font-bold text-surface-900 dark:text-white">
-                            {formatCurrency(request.balanceDue || 0, request.currency || 'ILS')}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-surface-500">{t('requests.detail.paymentStatus')}</span>
-                          <Badge variant={request.paymentStatus === 'paid' ? 'green' : 'gray'}>
-                            {t(`requests.detail.paymentStatuses.${request.paymentStatus}`)}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Invoice Download (for paid requests) */}
-                  {request.paidAt && organization && (
-                    <div className="mt-4">
-                      <InvoiceDownloadButton
-                        request={request}
-                        organization={organization}
-                        className="w-full"
-                      />
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -812,27 +809,59 @@ export default function RequestDetailClient() {
               {/* PayPal Payment - For DELIVERED billable requests */}
               {showClientActions && request.status === 'DELIVERED' && request.isBillable && (
                 <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-800">
-                  <PayPalProvider>
+                  <PayPalProvider currency={request.currency || 'USD'}>
                     <PayPalCheckoutButton
                       pricingRequest={{
                         id: request.id,
                         orgId: request.orgId,
                         title: request.title,
-                        totalAmount: request.totalAmount || 0,
+                        totalAmount: request.balanceDue ?? request.totalAmount ?? 0,
                         currency: request.currency || 'USD',
-                        lineItems: request.lineItems || [],
+                        lineItems:
+                          (request.amountPaid ?? 0) > 0
+                            ? [
+                                {
+                                  id: 'outstanding-balance',
+                                  description: t('requests.detail.balanceDue'),
+                                  quantity: 1,
+                                  unitPrice: request.balanceDue ?? 0,
+                                },
+                              ]
+                            : request.lineItems || [],
                         status: 'ACCEPTED',
                         createdBy: request.createdBy,
                         createdByName: request.createdByName || '',
                         createdAt: request.createdAt,
                         updatedAt: request.updatedAt,
                       }}
-                      onSuccess={handlePaymentSuccess}
+                      onSuccess={result => result.paymentId && requestPayments.paypal.mutate(result.paymentId)}
                       onError={err => console.error('Payment error:', err)}
                     />
                   </PayPalProvider>
                 </div>
               )}
+            </Card>
+          )}
+
+          {request.isBillable && (clientOrganization || organization) && (
+            <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
+              <CardSectionTitle
+                as="h4"
+                icon={DollarSign}
+                iconClassName="text-emerald-500"
+                className="mb-6"
+              >
+                {t('requests.detail.paymentTracking')}
+              </CardSectionTitle>
+              <PaymentSummaryCard
+                request={request}
+                organization={(clientOrganization || organization)!}
+                profile={billingProfile}
+                payments={requestPayments.payments}
+                isAgency={showAgencyActions}
+                recordPayment={input => requestPayments.manual.mutateAsync(input)}
+                recording={requestPayments.manual.isPending}
+              />
             </Card>
           )}
 

@@ -1,25 +1,9 @@
 import type { Metadata } from 'next';
 import { Outfit, Rubik } from 'next/font/google';
-import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
-import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import { LocaleAttributes } from '@/components/providers/LocaleAttributes';
-import { GeoLocaleRedirect } from '@/components/providers/GeoLocaleRedirect';
-
-import { generateOrganizationSchema } from '@/lib/seo';
-import { ConditionalLayout } from '@/components/layout/ConditionalLayout';
-import { MotionProvider } from '@/lib/motion';
-import { MotionConfig } from '@/lib/motion';
-import Script from 'next/script';
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { hasLocale } from 'next-intl';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { BrandingProvider } from '@/components/providers/BrandingProvider';
-import { QueryProvider } from '@/components/providers/QueryProvider';
-import { ToastProvider } from '@/components/ui/Toast';
-import { Logger } from '@/lib/logger';
-import { headers } from 'next/headers';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
 const rubik = Rubik({ subsets: ['hebrew', 'latin'], variable: '--font-rubik', display: 'swap' });
@@ -126,19 +110,6 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const messages = await getMessages();
-  const orgSchema = generateOrganizationSchema();
-  const headersList = await headers();
-  const isPortalSubdomain = headersList.get('x-is-portal-subdomain') === '1';
-
-  let schemaJson: string;
-  try {
-    schemaJson = JSON.stringify(orgSchema);
-  } catch (error) {
-    Logger.error('Failed to stringify organization schema', error);
-    schemaJson = '{}';
-  }
-
   const direction = locale === 'he' ? 'rtl' : 'ltr';
   const isRtl = locale === 'he';
 
@@ -146,6 +117,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={direction}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${outfit.variable} ${rubik.variable} ${isRtl ? 'rtl-ready' : ''}`}
     >
@@ -154,45 +126,9 @@ export default async function LocaleLayout({
         {process.env.GOOGLE_SITE_VERIFICATION && (
           <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION} />
         )}
-        <Script
-          id="organization-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schemaJson }}
-        />
       </head>
       <body className={`font-sans ${isRtl ? 'lang-he' : ''}`} suppressHydrationWarning>
-        <ThemeProvider>
-          <BrandingProvider>
-            <MotionProvider>
-              <MotionConfig
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 30,
-                  mass: 0.8,
-                }}
-              >
-                <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
-                  <QueryProvider>
-                    <ToastProvider
-                      position={isRtl ? 'bottom-left' : 'bottom-right'}
-                      maxToasts={5}
-                    >
-                      <LocaleAttributes />
-                      <GeoLocaleRedirect />
-                      <GoogleAnalytics />
-                      <AnalyticsProvider>
-                        <ConditionalLayout isPortalSubdomain={isPortalSubdomain}>
-                          {children}
-                        </ConditionalLayout>
-                      </AnalyticsProvider>
-                    </ToastProvider>
-                  </QueryProvider>
-                </NextIntlClientProvider>
-              </MotionConfig>
-            </MotionProvider>
-          </BrandingProvider>
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

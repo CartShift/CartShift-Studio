@@ -1,9 +1,80 @@
 {
   "portal": {
     "invoices": {
-      "generatingInvoice": "מייצר חשבונית...",
-      "downloadInvoice": "הורד חשבונית",
-      "loadingPdf": "טוען PDF..."
+      "downloaded": "מסמך התשלום הורד",
+      "failed": "יצירת מסמך התשלום נכשלה",
+      "subtotal": "סכום ביניים",
+      "tax": "מע״מ / מס",
+      "total": "סה״כ",
+      "amountPaid": "שולם",
+      "balanceDue": "יתרה לתשלום",
+      "status": "סטטוס תשלום",
+      "history": "היסטוריית תשלומים",
+      "legacy": "תשלום ישן",
+      "reference": "אסמכתת תשלום",
+      "notes": "הערות פנימיות",
+      "clientBilling": "פרטי חיוב לקוח",
+      "proposalManaged": "החיוב עבור בקשה זו מנוהל דרך ההצעה המקושרת. יש לנהל תשלומים במסך ההצעה.",
+      "download": {
+        "payment_request": "הורד דרישת תשלום",
+        "invoice": "הורד חשבונית מעודכנת",
+        "paid_invoice": "הורד חשבונית ששולמה",
+        "payment_receipt": "הורד אישור תשלום"
+      },
+      "statuses": {
+        "unpaid": "טרם שולם",
+        "partially_paid": "שולם חלקית",
+        "paid": "שולם"
+      },
+      "methods": {
+        "paypal": "PayPal",
+        "manual": "ידני",
+        "bank_transfer": "העברה בנקאית",
+        "cash": "מזומן",
+        "bit": "Bit",
+        "other": "אחר"
+      },
+      "validation": {
+        "amount": "יש להזין סכום גדול מאפס שאינו עולה על היתרה לתשלום."
+      },
+      "manual": {
+        "title": "רישום תשלום ידני",
+        "max": "יתרה לתשלום: {amount}",
+        "action": "רשום תשלום",
+        "recorded": "התשלום נרשם",
+        "failed": "רישום התשלום נכשל"
+      },
+      "settings": {
+        "title": "פרופיל חיוב",
+        "description": "פרטי העסק שיופיעו במסמכי התשלום המקצועיים.",
+        "loading": "טוען פרופיל חיוב...",
+        "businessName": "שם העסק",
+        "legalName": "שם משפטי",
+        "vatId": "מספר עוסק / מס",
+        "email": "אימייל לחיוב",
+        "phone": "טלפון",
+        "website": "אתר",
+        "logoUrl": "כתובת URL ללוגו",
+        "address1": "כתובת",
+        "address2": "כתובת נוספת",
+        "city": "עיר",
+        "country": "מדינה",
+        "postalCode": "מיקוד",
+        "paypal": "אימייל PayPal",
+        "currency": "מטבע ברירת מחדל",
+        "taxRate": "שיעור מע״מ / מס ברירת מחדל (%)",
+        "bankName": "שם הבנק",
+        "branch": "מספר סניף",
+        "account": "מספר חשבון",
+        "beneficiary": "שם המוטב",
+        "iban": "IBAN",
+        "swift": "SWIFT",
+        "terms": "תנאי תשלום ברירת מחדל",
+        "instructions": "הנחיות תשלום",
+        "save": "שמור פרופיל חיוב",
+        "saved": "פרופיל החיוב נשמר",
+        "failed": "שמירת פרופיל החיוב נכשלה"
+      }
     }
   }
 }

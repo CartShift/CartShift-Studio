@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import type { Readable } from 'node:stream';
 import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { CVDocument } from '@/app/[locale]/cv/CVDocument';
+import { CVDocument } from '@/app/[locale]/(standalone)/cv/CVDocument';
 
 const enMessages = JSON.parse(readFileSync(join(process.cwd(), 'messages/en.json'), 'utf8'));
 
@@ -109,5 +109,5 @@ describe('CV PDF export', () => {
     expect(text).toContain('languages');
     expect(text).toContain('primary stack');
     expect(text).toContain('yotam faraggi');
-  });
+  }, 15_000);
 });

@@ -80,6 +80,9 @@ export type AccountType = (typeof ACCOUNT_TYPE)[keyof typeof ACCOUNT_TYPE];
 export type Currency = (typeof CURRENCY)[keyof typeof CURRENCY];
 export type ConsultationType = (typeof CONSULTATION_TYPE)[keyof typeof CONSULTATION_TYPE];
 export type ConsultationStatus = (typeof CONSULTATION_STATUS)[keyof typeof CONSULTATION_STATUS];
+export type PaymentStatus = 'unpaid' | 'partially_paid' | 'paid';
+export type PaymentMethod = 'paypal' | 'manual' | 'bank_transfer' | 'cash' | 'bit' | 'other';
+export type BillingDocumentType = 'payment_request' | 'invoice' | 'paid_invoice' | 'payment_receipt';
 
 // Account type configuration for UI
 export const ACCOUNT_TYPE_CONFIG: Record<
@@ -183,6 +186,64 @@ export interface Organization {
 
   // Agency Responsibility
   responsibleAgencyUserId?: string; // ID of the agency user responsible for this client
+
+  // Billing details used on payment documents
+  billingName?: string;
+  billingEmail?: string;
+  billingTaxId?: string;
+  billingAddressLine1?: string;
+  billingAddressLine2?: string;
+  billingCity?: string;
+  billingCountry?: string;
+  billingPostalCode?: string;
+}
+
+export interface BillingProfile {
+  id?: string;
+  businessName: string;
+  legalName?: string;
+  taxId?: string;
+  vatId?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  country?: string;
+  postalCode?: string;
+  defaultCurrency: Currency;
+  defaultTaxRate: number;
+  defaultPaymentTerms?: string;
+  paymentInstructions?: string;
+  bankDetails?: {
+    bankName?: string;
+    branchNumber?: string;
+    accountNumber?: string;
+    iban?: string;
+    swift?: string;
+    beneficiaryName?: string;
+  };
+  paypalEmail?: string;
+  logoUrl?: string;
+  updatedAt?: Timestamp;
+}
+
+export interface PaymentRecord {
+  id: string;
+  requestId: string;
+  orgId: string;
+  amount: number;
+  currency: Currency;
+  method: PaymentMethod;
+  reference?: string;
+  notes?: string;
+  paidAt: Timestamp;
+  recordedBy: string;
+  recordedByName?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  isLegacy?: boolean;
 }
 
 export interface OrganizationMember {
@@ -354,9 +415,12 @@ export interface Request {
   isBillable?: boolean;
   lineItems?: PricingLineItem[];
   totalAmount?: number; // in cents
+  subtotal?: number;
+  taxAmount?: number;
   taxRate?: number;
   currency?: Currency;
   validUntil?: Timestamp;
+  paymentDueAt?: Timestamp;
   quotedAt?: Timestamp;
   isFree?: boolean;
   markedFreeAt?: Timestamp;
@@ -370,15 +434,15 @@ export interface Request {
   // Payment info
   paymentId?: string; // PayPal transaction ID
   paidAt?: Timestamp;
-  paymentMethod?: 'paypal' | 'manual';
-  paymentStatus?: 'unpaid' | 'partially_paid' | 'paid';
+  paymentMethod?: PaymentMethod;
+  paymentStatus?: PaymentStatus;
   amountPaid?: number;
   balanceDue?: number;
   paymentIds?: string[];
   paymentAllocations?: Array<{
     paymentId: string;
     amount: number;
-    method: 'paypal' | 'manual';
+    method: PaymentMethod;
   }>;
 
   // Pricing offer reference

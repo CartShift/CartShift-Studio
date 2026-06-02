@@ -1,9 +1,80 @@
 {
   "portal": {
     "invoices": {
-      "generatingInvoice": "Generating Invoice...",
-      "downloadInvoice": "Download Invoice",
-      "loadingPdf": "Loading PDF..."
+      "downloaded": "Payment document downloaded",
+      "failed": "Failed to generate payment document",
+      "subtotal": "Subtotal",
+      "tax": "VAT / Tax",
+      "total": "Total",
+      "amountPaid": "Amount paid",
+      "balanceDue": "Balance due",
+      "status": "Payment status",
+      "history": "Payment history",
+      "legacy": "Legacy payment",
+      "reference": "Payment reference",
+      "notes": "Internal notes",
+      "clientBilling": "Client billing details",
+      "proposalManaged": "This request is billed through its linked proposal. Manage payments from the proposal payment panel.",
+      "download": {
+        "payment_request": "Download payment request",
+        "invoice": "Download updated invoice",
+        "paid_invoice": "Download paid invoice",
+        "payment_receipt": "Download payment receipt"
+      },
+      "statuses": {
+        "unpaid": "Unpaid",
+        "partially_paid": "Partially paid",
+        "paid": "Paid"
+      },
+      "methods": {
+        "paypal": "PayPal",
+        "manual": "Manual",
+        "bank_transfer": "Bank transfer",
+        "cash": "Cash",
+        "bit": "Bit",
+        "other": "Other"
+      },
+      "validation": {
+        "amount": "Enter an amount greater than zero and no more than the outstanding balance."
+      },
+      "manual": {
+        "title": "Record manual payment",
+        "max": "Outstanding balance: {amount}",
+        "action": "Record payment",
+        "recorded": "Payment recorded",
+        "failed": "Failed to record payment"
+      },
+      "settings": {
+        "title": "Billing profile",
+        "description": "These business details appear on professional payment documents.",
+        "loading": "Loading billing profile...",
+        "businessName": "Business name",
+        "legalName": "Legal name",
+        "vatId": "VAT / Tax ID",
+        "email": "Billing email",
+        "phone": "Phone",
+        "website": "Website",
+        "logoUrl": "Logo URL",
+        "address1": "Address line 1",
+        "address2": "Address line 2",
+        "city": "City",
+        "country": "Country",
+        "postalCode": "Postal code",
+        "paypal": "PayPal email",
+        "currency": "Default currency",
+        "taxRate": "Default VAT / tax rate (%)",
+        "bankName": "Bank name",
+        "branch": "Branch number",
+        "account": "Account number",
+        "beneficiary": "Beneficiary name",
+        "iban": "IBAN",
+        "swift": "SWIFT",
+        "terms": "Default payment terms",
+        "instructions": "Payment instructions",
+        "save": "Save billing profile",
+        "saved": "Billing profile saved",
+        "failed": "Failed to save billing profile"
+      }
     }
   }
 }

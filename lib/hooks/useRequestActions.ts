@@ -42,7 +42,7 @@ interface UseRequestActionsParams {
 
 interface UseRequestActionsResult {
   // Pricing actions
-  handleAddPricing: (lineItems: PricingLineItem[], currency: Currency) => Promise<boolean>;
+  handleAddPricing: (lineItems: PricingLineItem[], currency: Currency, taxRate?: number, paymentDueAt?: Date) => Promise<boolean>;
   isAddingPricing: boolean;
   handleMarkAsFree: () => Promise<boolean>;
   isMarkingFree: boolean;
@@ -145,7 +145,7 @@ export function useRequestActions({
 
   // Add pricing to request
   const handleAddPricing = useCallback(
-    async (lineItems: PricingLineItem[], currency: Currency): Promise<boolean> => {
+    async (lineItems: PricingLineItem[], currency: Currency, taxRate = 0, paymentDueAt?: Date): Promise<boolean> => {
       if (!canPerformAction()) return false;
 
       const validItems = lineItems.filter(
@@ -163,7 +163,7 @@ export function useRequestActions({
           orgId!,
           userData!.id,
           userData!.name || userData!.email,
-          { lineItems: validItems, currency }
+          { lineItems: validItems, currency, taxRate, paymentDueAt }
         );
         toast.success(t('quoteSent'), t('quoteSentDesc'));
         return true;

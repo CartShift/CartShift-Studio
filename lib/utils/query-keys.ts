@@ -8,6 +8,7 @@ export const queryKeys = {
         ? (['request-comments', requestId, orgId] as const)
         : (['request-comments', requestId] as const),
     portal: ['portal-requests'] as const,
+    payments: (requestId: string) => ['request-payments', requestId] as const,
   },
   pricing: {
     allRequests: ['all-pricing-requests'] as const,

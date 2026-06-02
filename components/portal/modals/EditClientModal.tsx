@@ -38,6 +38,14 @@ const editOrgSchema = (t: TranslationFunction) =>
       .or(z.literal('')),
     responsibleAgencyUserId: z.string().optional(),
     status: z.enum(['active', 'inactive', 'suspended']).optional(),
+    billingName: z.string().max(160).optional(),
+    billingEmail: z.string().email().optional().or(z.literal('')),
+    billingTaxId: z.string().max(80).optional(),
+    billingAddressLine1: z.string().max(160).optional(),
+    billingAddressLine2: z.string().max(160).optional(),
+    billingCity: z.string().max(100).optional(),
+    billingCountry: z.string().max(100).optional(),
+    billingPostalCode: z.string().max(40).optional(),
   });
 
 type EditOrgFormData = z.infer<ReturnType<typeof editOrgSchema>>;
@@ -74,6 +82,14 @@ export const EditClientModal = ({
       industry: organization.industry || '',
       responsibleAgencyUserId: organization.responsibleAgencyUserId || '',
       status: organization.status || 'active',
+      billingName: organization.billingName || '',
+      billingEmail: organization.billingEmail || '',
+      billingTaxId: organization.billingTaxId || '',
+      billingAddressLine1: organization.billingAddressLine1 || '',
+      billingAddressLine2: organization.billingAddressLine2 || '',
+      billingCity: organization.billingCity || '',
+      billingCountry: organization.billingCountry || '',
+      billingPostalCode: organization.billingPostalCode || '',
     },
   });
 
@@ -85,6 +101,14 @@ export const EditClientModal = ({
       industry: organization.industry || '',
       responsibleAgencyUserId: organization.responsibleAgencyUserId || '',
       status: organization.status || 'active',
+      billingName: organization.billingName || '',
+      billingEmail: organization.billingEmail || '',
+      billingTaxId: organization.billingTaxId || '',
+      billingAddressLine1: organization.billingAddressLine1 || '',
+      billingAddressLine2: organization.billingAddressLine2 || '',
+      billingCity: organization.billingCity || '',
+      billingCountry: organization.billingCountry || '',
+      billingPostalCode: organization.billingPostalCode || '',
     });
   }, [organization, reset]);
 
@@ -113,6 +137,14 @@ export const EditClientModal = ({
         website: data.website || undefined,
         industry: data.industry || undefined,
         responsibleAgencyUserId: data.responsibleAgencyUserId || null,
+        billingName: data.billingName,
+        billingEmail: data.billingEmail,
+        billingTaxId: data.billingTaxId,
+        billingAddressLine1: data.billingAddressLine1,
+        billingAddressLine2: data.billingAddressLine2,
+        billingCity: data.billingCity,
+        billingCountry: data.billingCountry,
+        billingPostalCode: data.billingPostalCode,
       });
 
       onSuccess();
@@ -156,6 +188,21 @@ export const EditClientModal = ({
               {...register('industry')}
               className="font-outfit"
             />
+
+            <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
+              <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">
+                {t('invoices.clientBilling')}
+              </p>
+              <div className="space-y-3">
+                <Input label={t('invoices.settings.businessName')} {...register('billingName')} />
+                <Input label={t('invoices.settings.email')} type="email" error={errors.billingEmail?.message} {...register('billingEmail')} />
+                <Input label={t('invoices.settings.vatId')} {...register('billingTaxId')} />
+                <Input label={t('invoices.settings.address1')} {...register('billingAddressLine1')} />
+                <Input label={t('invoices.settings.address2')} {...register('billingAddressLine2')} />
+                <div className="grid grid-cols-2 gap-3"><Input label={t('invoices.settings.city')} {...register('billingCity')} /><Input label={t('invoices.settings.country')} {...register('billingCountry')} /></div>
+                <Input label={t('invoices.settings.postalCode')} {...register('billingPostalCode')} />
+              </div>
+            </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-surface-700 dark:text-surface-300">

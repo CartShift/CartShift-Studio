@@ -121,6 +121,11 @@ describe('Portal Shell', () => {
     setupFirebaseMocks();
     vi.clearAllMocks();
     mockPush.mockClear();
+    mockUsePortalAuth.mockReturnValue({
+      loading: false,
+      isAuthenticated: true,
+      isAgency: false,
+    });
   });
 
   const defaultState = {

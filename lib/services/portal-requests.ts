@@ -605,7 +605,9 @@ export async function getRequestStats(orgId: string): Promise<{
 export interface AddPricingData {
   lineItems: PricingLineItem[];
   currency: Currency;
+  taxRate?: number;
   validUntil?: Date;
+  paymentDueAt?: Date;
 }
 
 /**
@@ -618,7 +620,10 @@ export async function addPricingToRequest(
   userName: string,
   data: AddPricingData
 ): Promise<void> {
-  const totalAmount = calculateTotalAmount(data.lineItems);
+  const subtotal = data.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const taxRate = data.taxRate ?? 0;
+  const taxAmount = Math.round(subtotal * taxRate);
+  const totalAmount = calculateTotalAmount(data.lineItems, taxRate);
 
   await waitForAuth();
   const db = getFirestoreDb();
@@ -626,8 +631,15 @@ export async function addPricingToRequest(
     isBillable: true,
     lineItems: data.lineItems,
     totalAmount,
+    subtotal,
+    taxRate,
+    taxAmount,
+    amountPaid: 0,
+    balanceDue: totalAmount,
+    paymentStatus: 'unpaid',
     currency: data.currency,
     validUntil: data.validUntil ? Timestamp.fromDate(data.validUntil) : null,
+    paymentDueAt: data.paymentDueAt ? Timestamp.fromDate(data.paymentDueAt) : null,
     quotedAt: serverTimestamp(),
     status: REQUEST_STATUS.QUOTED,
     updatedAt: serverTimestamp(),

@@ -328,6 +328,17 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                     <p className="text-sm text-surface-600 dark:text-surface-400">
                       {caseStudy.siteUrl || caseStudy.platform}
                     </p>
+                    {caseStudy.siteUrl && (
+                      <a
+                        href={caseStudy.siteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary-700 transition-colors hover:text-primary-600 dark:text-primary-300 dark:hover:text-primary-200"
+                      >
+                        {workT.detail.visitSite}
+                        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                      </a>
+                    )}
                   </div>
                 </div>
                 {caseStudy.duration && (

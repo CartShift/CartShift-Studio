@@ -47,6 +47,7 @@ import {
 } from '@/lib/services/portal-google-calendar';
 import { Switch } from '@/components/ui/Switch';
 import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
+import { BillingProfileForm } from '@/components/portal/billing/BillingProfileForm';
 
 interface AgencyProfile {
   name: string;
@@ -1610,18 +1611,7 @@ export default function AgencysClient() {
 
           {activeTab === 'billing' && (
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
-              <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-4 font-outfit">
-                {t('agency.settings.tabs.billing')}
-              </h3>
-              <p className="text-sm text-surface-500 dark:text-surface-400 mb-6 underline-offset-4">
-                Configure payment methods and billing information.
-              </p>
-              <div className="py-12 text-center opacity-40">
-                <CreditCard className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-3" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-surface-500 dark:text-surface-400">
-                  Billing configuration coming soon
-                </p>
-              </div>
+              <BillingProfileForm />
             </Card>
           )}
         </div>

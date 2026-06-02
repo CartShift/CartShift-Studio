@@ -35,7 +35,14 @@
     "contactUs": "דברו איתנו",
     "getStarted": "התחילו",
     "viewWork": "לטינג עבודות",
-    "hidden": "מוסתר"
+    "hidden": "מוסתר",
+    "dismiss": "סגור",
+    "cookieConsent": {
+      "message": "אנו משתמשים בקובצי Cookie כדי לשפר את חוויית הגלישה ולנתח את השימוש באתר.",
+      "accept": "אישור",
+      "decline": "דחייה",
+      "learnMore": "למידע נוסף"
+    }
   },
   "navigation": {
     "home": "ראשי",

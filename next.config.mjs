@@ -1,5 +1,4 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -9,22 +8,14 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  trailingSlash: false,
-  assetPrefix: '',
-
-  // Explicitly set the workspace root to avoid lockfile detection issues
-  outputFileTracingRoot: __dirname,
-
-  transpilePackages: ['next-intl', '@react-pdf/renderer'],
+  turbopack: {
+    root: __dirname,
+  },
   experimental: {
-    optimizePackageImports: [
-      'lucide-react',
-      'date-fns',
-      'framer-motion',
-      '@nivo/core',
-      '@nivo/line',
-    ],
+    turbopackFileSystemCacheForBuild: true,
+    optimizePackageImports: ['framer-motion'],
+    // Content-heavy blog prerenders can otherwise oversubscribe each export worker.
+    staticGenerationMaxConcurrency: 4,
   },
   images: {
     unoptimized: false,
@@ -37,7 +28,6 @@ const nextConfig = {
       },
     ],
   },
-  compress: true,
   poweredByHeader: false,
 
   async headers() {
@@ -54,64 +44,8 @@ const nextConfig = {
     ];
   },
   reactStrictMode: true,
-  generateBuildId: async () => {
-    return 'build-' + Date.now();
-  },
   typescript: {
     ignoreBuildErrors: false,
-  },
-
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.plugins = config.plugins || [];
-      const hasMiniCssExtractPlugin = config.plugins.some(
-        plugin => plugin.constructor.name === 'MiniCssExtractPlugin'
-      );
-
-      if (!hasMiniCssExtractPlugin) {
-        config.plugins.push(
-          new MiniCssExtractPlugin({
-            filename: 'static/css/[name].[contenthash:8].css',
-            chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
-          })
-        );
-      }
-    }
-
-    config.ignoreWarnings = [
-      ...(config.ignoreWarnings || []),
-      {
-        message: /Parsing of .* for build dependencies failed at 'import\(t\)'/,
-      },
-      {
-        message: /Build dependencies behind this expression are ignored/,
-      },
-      warning => {
-        const message = warning.message || warning.toString();
-        const module = warning.module?.resource || warning.module?.identifier || '';
-        return (
-          (message.includes('Parsing of') && message.includes('import(t)')) ||
-          message.includes('Build dependencies behind this expression') ||
-          (module.includes('next-intl') && module.includes('extractor'))
-        );
-      },
-    ];
-
-    // Use a single RegExp to ignore directories and Windows system files
-    config.watchOptions = {
-      ...config.watchOptions,
-      ignored:
-        /([/\\](node_modules|\.git|\.next|build_out|out|coverage|\.firebase)[/\\])|(DumpStack\.log\.tmp|hiberfil\.sys|pagefile\.sys|swapfile\.sys)$/i,
-      aggregateTimeout: 300,
-      poll: false,
-    };
-
-    config.infrastructureLogging = {
-      ...config.infrastructureLogging,
-      level: 'error',
-    };
-
-    return config;
   },
 };
 

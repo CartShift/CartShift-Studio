@@ -260,7 +260,7 @@ export default function DashboardClient({
   }
 
   return (
-    <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'}>
+    <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'} timeZone="UTC">
       <DashboardClientContent />
     </NextIntlClientProvider>
   );

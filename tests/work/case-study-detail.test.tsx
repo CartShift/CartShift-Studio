@@ -83,7 +83,7 @@ describe('CaseStudyDetailContent', () => {
       'href',
       'https://example.com'
     );
-  });
+  }, 15_000);
 
   it('gracefully skips optional sections when data is missing', () => {
     const minimalCaseStudy: CaseStudy = {

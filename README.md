@@ -10,8 +10,8 @@ CartShift Studio provides a seamless experience for both agency administrators a
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (recommended) or npm
+- Node.js 22.x (see `.nvmrc`)
+- pnpm
 - Firebase CLI (`npm install -g firebase-tools`)
 
 ### Installation
@@ -34,13 +34,17 @@ cd ..
    - Copy `.env.example` to `.env.local`
    - Fill in your Firebase and API configuration values.
 
-4. Run development server:
+4. Run the fast web development server with the debounced translation watcher:
 
 ```bash
 pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+Use `pnpm dev:full` when Firebase Functions are also needed, `pnpm dev:functions`
+for the Functions emulator alone, and `pnpm clean:cache` only when recovering
+from a stale Turbopack cache.
 
 ## Project Architecture
 

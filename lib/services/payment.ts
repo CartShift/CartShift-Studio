@@ -42,6 +42,10 @@ export function createPayPalOrderFromPricingRequest(pricingRequest: PricingReque
           currency_code: string;
           value: string;
         };
+        tax_total?: {
+          currency_code: string;
+          value: string;
+        };
       };
     };
     items: Array<{
@@ -70,6 +74,7 @@ export function createPayPalOrderFromPricingRequest(pricingRequest: PricingReque
   const itemTotal = pricingRequest.lineItems
     .reduce((sum, item) => sum + (item.quantity * item.unitPrice) / 100, 0)
     .toFixed(2);
+  const taxTotal = Math.max(0, pricingRequest.totalAmount / 100 - Number(itemTotal)).toFixed(2);
 
   return {
     purchase_units: [
@@ -84,6 +89,9 @@ export function createPayPalOrderFromPricingRequest(pricingRequest: PricingReque
               currency_code: currencyCode,
               value: itemTotal,
             },
+            ...(Number(taxTotal) > 0
+              ? { tax_total: { currency_code: currencyCode, value: taxTotal } }
+              : {}),
           },
         },
         items,

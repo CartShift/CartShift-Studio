@@ -1,102 +1,46 @@
-# Comprehensive Turbopack Cache Cleanup Script
-# Fixes corrupted Turbopack cache database errors
-# Usage: powershell -ExecutionPolicy Bypass -File scripts/clean-turbopack-cache.ps1
+# Explicit recovery command for corrupted Next.js or Turbopack caches.
 
-Write-Host "CartShift Studio - Turbopack Cache Cleanup" -ForegroundColor Magenta
-Write-Host "==================================================" -ForegroundColor Gray
-Write-Host ""
+$ErrorActionPreference = "Stop"
+$ports = @(3000, 4000, 5001, 4400, 4500, 8080, 9099)
+$workspace = (Resolve-Path -LiteralPath (Get-Location)).Path
+$nextPath = Join-Path $workspace ".next"
 
-# Step 1: Kill all Node.js processes
-Write-Host "Step 1: Terminating all Node.js processes..." -ForegroundColor Cyan
-$nodeProcesses = Get-Process node -ErrorAction SilentlyContinue
-if ($nodeProcesses) {
-    Write-Host "  Found $($nodeProcesses.Count) Node.js process(es)" -ForegroundColor Yellow
-    foreach ($proc in $nodeProcesses) {
-        try {
-            Stop-Process -Id $proc.Id -Force -ErrorAction Stop
-            Write-Host "    [OK] Terminated PID: $($proc.Id)" -ForegroundColor Green
-        } catch {
-            Write-Host "    [FAIL] Failed to terminate PID: $($proc.Id): $($_.Exception.Message)" -ForegroundColor Red
-        }
-    }
-    Write-Host "  Waiting for processes to fully terminate..." -ForegroundColor Cyan
-    Start-Sleep -Seconds 3
-} else {
-    Write-Host "  [OK] No Node.js processes found." -ForegroundColor Green
+function Get-PortProcessIds([int]$Port) {
+    Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty OwningProcess -Unique |
+        Where-Object { $_ -gt 0 }
 }
 
-Write-Host ""
+Write-Host "CartShift Studio - Turbopack cache recovery" -ForegroundColor Magenta
+Write-Host "Stopping CartShift development ports..." -ForegroundColor Cyan
 
-# Step 2: Clear .next directory
-Write-Host "Step 2: Clearing .next directory..." -ForegroundColor Cyan
-if (Test-Path ".next") {
+$processIds = @(
+    foreach ($port in $ports) {
+        Get-PortProcessIds $port
+    }
+) | Sort-Object -Unique
+
+foreach ($processId in $processIds) {
     try {
-        Remove-Item -Recurse -Force ".next" -ErrorAction Stop
-        Write-Host "  [OK] .next directory cleared successfully." -ForegroundColor Green
+        Stop-Process -Id $processId -Force -ErrorAction Stop
+        Write-Host "  Stopped PID $processId" -ForegroundColor Yellow
     } catch {
-        Write-Host "  [WARN] Failed to clear .next: $($_.Exception.Message)" -ForegroundColor Yellow
-        Write-Host "  Tip: Try closing any file explorers or IDEs that might have .next open." -ForegroundColor Gray
-    }
-} else {
-    Write-Host "  [INFO] No .next directory found." -ForegroundColor Gray
-}
-
-Write-Host ""
-
-# Step 3: Clear Turbopack cache from system temp directories
-Write-Host "Step 3: Clearing Turbopack system cache..." -ForegroundColor Cyan
-
-$cacheLocations = @(
-    "$env:LOCALAPPDATA\nextjs",
-    "$env:TEMP\nextjs",
-    "$env:APPDATA\nextjs",
-    ".next\cache\turbo",
-    "node_modules\.cache"
-)
-
-$clearedCount = 0
-foreach ($location in $cacheLocations) {
-    if (Test-Path $location) {
-        try {
-            Write-Host "  Clearing: $location" -ForegroundColor Gray
-            Remove-Item -Recurse -Force $location -ErrorAction Stop
-            Write-Host "    [OK] Cleared successfully" -ForegroundColor Green
-            $clearedCount++
-        } catch {
-            Write-Host "    [WARN] Failed to clear: $($_.Exception.Message)" -ForegroundColor Yellow
-        }
+        Write-Host "  Could not stop PID $processId`: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
-if ($clearedCount -eq 0) {
-    Write-Host "  [INFO] No Turbopack cache directories found in standard locations." -ForegroundColor Gray
-} else {
-    Write-Host "  [OK] Cleared $clearedCount cache location(s)." -ForegroundColor Green
-}
+Start-Sleep -Milliseconds 500
 
-Write-Host ""
-
-# Step 4: Clear Next.js panic logs (optional)
-Write-Host "Step 4: Clearing Next.js panic logs..." -ForegroundColor Cyan
-$panicLogs = Get-ChildItem "$env:LOCALAPPDATA\Temp" -Filter "next-panic-*.log" -ErrorAction SilentlyContinue
-if ($panicLogs) {
-    foreach ($log in $panicLogs) {
-        try {
-            Remove-Item $log.FullName -Force -ErrorAction Stop
-            Write-Host "  [OK] Removed: $($log.Name)" -ForegroundColor Green
-        } catch {
-            Write-Host "  [WARN] Failed to remove: $($log.Name)" -ForegroundColor Yellow
-        }
+if (Test-Path -LiteralPath $nextPath) {
+    $resolvedNext = (Resolve-Path -LiteralPath $nextPath).Path
+    if (-not $resolvedNext.StartsWith("$workspace\", [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Refusing to clear cache outside workspace: $resolvedNext"
     }
+
+    Remove-Item -LiteralPath $resolvedNext -Recurse -Force
+    Write-Host "Cleared $resolvedNext" -ForegroundColor Green
 } else {
-    Write-Host "  [INFO] No panic logs found." -ForegroundColor Gray
+    Write-Host "No .next cache found." -ForegroundColor Gray
 }
 
-Write-Host ""
-Write-Host "==================================================" -ForegroundColor Gray
-Write-Host "[OK] Cache cleanup complete!" -ForegroundColor Green
-Write-Host ""
-Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "  1. Run: pnpm run dev" -ForegroundColor White
-Write-Host "  2. If issues persist, try: pnpm run dev:force" -ForegroundColor White
-Write-Host ""
+Write-Host "Cache recovery complete. Run pnpm dev." -ForegroundColor Green

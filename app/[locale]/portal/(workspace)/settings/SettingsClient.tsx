@@ -64,6 +64,14 @@ export default function sClient() {
     website: '',
     industry: '',
     bio: '',
+    billingName: '',
+    billingEmail: '',
+    billingTaxId: '',
+    billingAddressLine1: '',
+    billingAddressLine2: '',
+    billingCity: '',
+    billingCountry: '',
+    billingPostalCode: '',
   });
 
   const [notificationPrefs, setNotificationPrefs] = useState({
@@ -159,6 +167,14 @@ export default function sClient() {
             website: org.website || '',
             industry: org.industry || '',
             bio: org.bio || '',
+            billingName: org.billingName || '',
+            billingEmail: org.billingEmail || '',
+            billingTaxId: org.billingTaxId || '',
+            billingAddressLine1: org.billingAddressLine1 || '',
+            billingAddressLine2: org.billingAddressLine2 || '',
+            billingCity: org.billingCity || '',
+            billingCountry: org.billingCountry || '',
+            billingPostalCode: org.billingPostalCode || '',
           });
         } else {
           const errorMsg = t('settings.general.orgNotFound');
@@ -245,6 +261,14 @@ export default function sClient() {
         website: formData.website,
         industry: formData.industry,
         bio: formData.bio,
+        billingName: formData.billingName,
+        billingEmail: formData.billingEmail,
+        billingTaxId: formData.billingTaxId,
+        billingAddressLine1: formData.billingAddressLine1,
+        billingAddressLine2: formData.billingAddressLine2,
+        billingCity: formData.billingCity,
+        billingCountry: formData.billingCountry,
+        billingPostalCode: formData.billingPostalCode,
       });
       showFeedback('success', t('settings.general.success'));
     } catch (error: unknown) {
@@ -483,6 +507,21 @@ export default function sClient() {
                     <p className="text-xs font-bold text-surface-400 uppercase tracking-widest mt-0.5">
                       {t('settings.general.subtitle')}
                     </p>
+                  </div>
+                  <div className="space-y-4 border-t border-surface-100 pt-6 dark:border-surface-800">
+                    <p className="text-xs font-black uppercase tracking-widest text-surface-400">
+                      {t('invoices.clientBilling')}
+                    </p>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <Input label={t('invoices.settings.businessName')} value={formData.billingName} onChange={e => setFormData({ ...formData, billingName: e.target.value })} />
+                      <Input label={t('invoices.settings.email')} type="email" value={formData.billingEmail} onChange={e => setFormData({ ...formData, billingEmail: e.target.value })} />
+                      <Input label={t('invoices.settings.vatId')} value={formData.billingTaxId} onChange={e => setFormData({ ...formData, billingTaxId: e.target.value })} />
+                      <Input label={t('invoices.settings.address1')} value={formData.billingAddressLine1} onChange={e => setFormData({ ...formData, billingAddressLine1: e.target.value })} />
+                      <Input label={t('invoices.settings.address2')} value={formData.billingAddressLine2} onChange={e => setFormData({ ...formData, billingAddressLine2: e.target.value })} />
+                      <Input label={t('invoices.settings.city')} value={formData.billingCity} onChange={e => setFormData({ ...formData, billingCity: e.target.value })} />
+                      <Input label={t('invoices.settings.country')} value={formData.billingCountry} onChange={e => setFormData({ ...formData, billingCountry: e.target.value })} />
+                      <Input label={t('invoices.settings.postalCode')} value={formData.billingPostalCode} onChange={e => setFormData({ ...formData, billingPostalCode: e.target.value })} />
+                    </div>
                   </div>
                 </div>
 

@@ -181,6 +181,14 @@ export async function updateOrganization(
     shopifyAccessRequestedAt?: import('firebase/firestore').Timestamp;
     shopifyConnectedAt?: import('firebase/firestore').Timestamp;
     responsibleAgencyUserId?: string | null;
+    billingName?: string;
+    billingEmail?: string;
+    billingTaxId?: string;
+    billingAddressLine1?: string;
+    billingAddressLine2?: string;
+    billingCity?: string;
+    billingCountry?: string;
+    billingPostalCode?: string;
   }
 ): Promise<void> {
   await waitForAuth();

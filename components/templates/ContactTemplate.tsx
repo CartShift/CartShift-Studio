@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { PageHero } from '@/components/sections/PageHero';
 import { ContactPageContent } from '@/components/sections/ContactPageContent';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
@@ -26,7 +26,9 @@ export const ContactTemplate: React.FC = () => {
           <Breadcrumb items={breadcrumbItems} />
         </div>
       </div>
-      <ContactPageContent />
+      <Suspense fallback={null}>
+        <ContactPageContent />
+      </Suspense>
     </>
   );
 };

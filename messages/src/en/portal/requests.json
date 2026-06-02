@@ -144,6 +144,8 @@
         "paymentSuccess": "Payment Successful",
         "paymentError": "Payment Failed",
         "currency": "Currency",
+        "taxRate": "VAT / Tax rate (%)",
+        "paymentDueAt": "Payment due date (optional)",
         "lineItems": "Line Items",
         "descriptionPlaceholder": "Description...",
         "qty": "Qty",

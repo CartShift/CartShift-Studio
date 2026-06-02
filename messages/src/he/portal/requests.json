@@ -144,6 +144,8 @@
         "paymentSuccess": "התשלום בוצע בהצלחה",
         "paymentError": "התשלום נכשל",
         "currency": "מטבע",
+        "taxRate": "שיעור מע״מ / מס (%)",
+        "paymentDueAt": "מועד תשלום (אופציונלי)",
         "lineItems": "פירוט",
         "descriptionPlaceholder": "תיאור...",
         "qty": "כמות",

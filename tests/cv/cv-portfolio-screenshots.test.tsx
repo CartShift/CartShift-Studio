@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import CVPageContent from '@/app/[locale]/cv/CVPageContent';
+import CVPageContent from '@/app/[locale]/(standalone)/cv/CVPageContent';
 
 vi.mock('@/lib/hooks/useLanguageSync', () => ({
   useLanguageSync: vi.fn(),

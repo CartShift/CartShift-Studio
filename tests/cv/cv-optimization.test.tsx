@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type React from 'react';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import CVPageContent from '@/app/[locale]/cv/CVPageContent';
+import CVPageContent from '@/app/[locale]/(standalone)/cv/CVPageContent';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 
 vi.mock('@/lib/hooks/useLanguageSync', () => ({

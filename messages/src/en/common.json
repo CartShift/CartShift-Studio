@@ -35,7 +35,14 @@
     "contactUs": "Contact Us",
     "getStarted": "Get Started",
     "viewWork": "View Our Work",
-    "hidden": "Hidden"
+    "hidden": "Hidden",
+    "dismiss": "Dismiss",
+    "cookieConsent": {
+      "message": "We use cookies to improve your browsing experience and analyze site usage.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "learnMore": "Learn more"
+    }
   },
   "navigation": {
     "home": "Home",

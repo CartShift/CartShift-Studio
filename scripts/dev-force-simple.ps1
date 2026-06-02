@@ -1,42 +1,38 @@
-# PowerShell script to kill existing Next.js processes and start dev server
-# Usage: .\scripts\dev-force-simple.ps1
+# Stop CartShift development services on known ports and restart the fast stack.
 
-Write-Host "Checking for existing Next.js dev processes..." -ForegroundColor Cyan
+$ErrorActionPreference = "Stop"
+$ports = @(3000, 4000, 5001, 4400, 4500, 8080, 9099)
 
-# Simple approach: Kill all node.exe processes
-# This is aggressive but effective for development
-$taskkillResult = taskkill /IM node.exe /F 2>&1
-$taskkillExitCode = $LASTEXITCODE
-
-if ($taskkillExitCode -eq 0) {
-    Write-Host "Terminated all Node.js processes." -ForegroundColor Red
-    # Wait a moment for processes to fully terminate
-    Start-Sleep -Seconds 3
-} elseif ($taskkillResult -like "*not found*") {
-    Write-Host "No Node.js processes found to terminate." -ForegroundColor Green
-} else {
-    Write-Host "Taskkill completed with warnings, continuing..." -ForegroundColor Yellow
+function Get-PortProcessIds([int]$Port) {
+    Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty OwningProcess -Unique |
+        Where-Object { $_ -gt 0 }
 }
 
-# Clear Next.js cache to ensure clean start
-Write-Host "Clearing Next.js cache..." -ForegroundColor Cyan
-if (Test-Path ".next") {
+Write-Host "Stopping CartShift development ports..." -ForegroundColor Cyan
+
+$processIds = @(
+    foreach ($port in $ports) {
+        Get-PortProcessIds $port
+    }
+) | Sort-Object -Unique
+
+foreach ($processId in $processIds) {
     try {
-        Remove-Item -Recurse -Force ".next" -ErrorAction Stop
-        Write-Host "  Cache cleared successfully." -ForegroundColor Green
+        Stop-Process -Id $processId -Force -ErrorAction Stop
+        Write-Host "  Stopped PID $processId" -ForegroundColor Yellow
     } catch {
-        Write-Host "  Failed to clear cache: $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "  Could not stop PID $processId`: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
-# Start the dev server
-Write-Host "Starting Next.js development server..." -ForegroundColor Green
-Write-Host "Command: pnpm run dev" -ForegroundColor Gray
-Write-Host ""
+Start-Sleep -Milliseconds 500
 
-try {
-    & pnpm run dev
-} catch {
-    Write-Host "Failed to start dev server: $($_.Exception.Message)" -ForegroundColor Red
-    exit 1
+$lockPath = Join-Path (Get-Location) ".next\dev\lock"
+if (Test-Path -LiteralPath $lockPath) {
+    Remove-Item -LiteralPath $lockPath -Force
+    Write-Host "Removed stale Next.js lock file." -ForegroundColor Yellow
 }
+
+Write-Host "Starting CartShift web development..." -ForegroundColor Green
+& pnpm run dev

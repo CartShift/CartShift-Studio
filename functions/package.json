@@ -12,7 +12,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22"
   },
   "main": "index.js",
   "dependencies": {
@@ -22,13 +22,13 @@
     "@sparticuz/chromium": "^148.0.0",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
-    "firebase-admin": "^13.6.0",
-    "firebase-functions": "^7.0.2",
+    "firebase-admin": "^13.10.0",
+    "firebase-functions": "^7.2.5",
     "html-to-text": "^9.0.5",
     "pdfkit": "^0.17.2",
     "puppeteer-core": "^25.0.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "resend": "^6.7.0",
     "zod": "^4.3.6"
   },

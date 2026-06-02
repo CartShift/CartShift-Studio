@@ -103,6 +103,19 @@ export async function capturePayPalProposalOrder(orderId: string): Promise<{
   });
 }
 
+export async function getPayPalOrder(orderId: string): Promise<{
+  id: string;
+  status?: string;
+  purchase_units?: Array<{
+    reference_id?: string;
+    amount?: { currency_code?: string; value?: string };
+  }>;
+}> {
+  return paypalFetch(`/v2/checkout/orders/${encodeURIComponent(orderId)}`, {
+    method: 'GET',
+  });
+}
+
 export async function verifyPayPalWebhook(input: {
   transmissionId: string | null;
   transmissionTime: string | null;
