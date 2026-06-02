@@ -31,7 +31,7 @@ const shapes: Shape[] = [
     delay: 0.5,
   },
   { type: 'circle', size: 'sm', position: { top: '18%', right: '22%' }, animation: 'pulse' },
-  { type: 'square', size: 'md', position: { top: '6%', right: '12%' }, animation: 'wobble' },
+  { type: 'square', size: 'md', position: { top: '6%', right: '12%' }, animation: 'float' },
   {
     type: 'dot',
     size: 'sm',
@@ -40,7 +40,7 @@ const shapes: Shape[] = [
     delay: 1,
   },
 
-  { type: 'rect', size: 'xl', position: { top: '28%', left: '3%' }, animation: 'wobble' },
+  { type: 'rect', size: 'xl', position: { top: '28%', left: '3%' }, animation: 'float' },
   {
     type: 'circle',
     size: 'xs',
@@ -62,7 +62,7 @@ const shapes: Shape[] = [
   },
   { type: 'circle', size: 'md', position: { top: '42%', left: '38%' }, animation: 'pulse' },
   { type: 'dot', size: 'sm', position: { top: '48%', right: '38%' }, animation: 'complexFloat' },
-  { type: 'square', size: 'sm', position: { top: '52%', right: '25%' }, animation: 'wobble' },
+  { type: 'square', size: 'sm', position: { top: '52%', right: '25%' }, animation: 'float' },
   {
     type: 'dot',
     size: 'xs',
@@ -79,7 +79,7 @@ const shapes: Shape[] = [
     position: { top: '65%', left: '30%' },
     animation: 'scaleAndRotate',
   },
-  { type: 'rect', size: 'lg', position: { top: '60%', right: '32%' }, animation: 'wobble' },
+  { type: 'rect', size: 'lg', position: { top: '60%', right: '32%' }, animation: 'float' },
   {
     type: 'dot',
     size: 'xs',
@@ -105,7 +105,7 @@ const shapes: Shape[] = [
   { type: 'rect', size: 'lg', position: { bottom: '18%', left: '40%' }, animation: 'rotate' },
   { type: 'circle', size: 'xs', position: { bottom: '25%', right: '35%' }, animation: 'float' },
   { type: 'dot', size: 'sm', position: { bottom: '30%', right: '20%' }, animation: 'complexFloat' },
-  { type: 'rect', size: 'md', position: { bottom: '20%', right: '8%' }, animation: 'wobble' },
+  { type: 'rect', size: 'md', position: { bottom: '20%', right: '8%' }, animation: 'float' },
   { type: 'dot', size: 'xs', position: { bottom: '35%', right: '3%' }, animation: 'pulse' },
 ];
 

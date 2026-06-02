@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useAllPricingRequests } from '@/lib/hooks/usePricingRequests';
+import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
+import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import {
   Search,
   MoreVertical,
@@ -29,27 +32,31 @@ import {
   PRICING_STATUS,
   formatCurrency,
 } from '@/lib/types/pricing';
-import { subscribeToAllPricingRequests, sendPricingRequest } from '@/lib/services/pricing-requests';
-import { getAllOrganizations } from '@/lib/services/portal-organizations';
 import { Organization } from '@/lib/types/portal';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
-import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { DateDisplay, OrgDisplay, filterAndPaginatePricingRequests } from '@/lib/utils/portal-ui';
 import { ITEMS_PER_PAGE } from '@/lib/constants/pricing';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
-import { toast } from 'sonner';
 
 export default function AgencyPricingClient() {
-  const [requests, setRequests] = useState<PricingRequest[]>([]);
-  const [organizations, setOrganizations] = useState<Record<string, Organization>>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { requests, loading: isLoading, error: requestsError } = useAllPricingRequests();
+  const { organizations: agencyOrganizations } = useAgencyClients();
+  const { sendPricingRequest } = usePricingMutations();
+  const organizations = useMemo(
+    () =>
+      Object.fromEntries(agencyOrganizations.map(org => [org.id, org])) as Record<
+        string,
+        Organization
+      >,
+    [agencyOrganizations]
+  );
+  const error = requestsError;
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,7 +66,6 @@ export default function AgencyPricingClient() {
   const locale = useLocale();
   const router = useRouter();
   const { switchOrg } = useOrg();
-  const { isAuthenticated, loading: auth, user, isAgency } = usePortalAuth();
 
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; requestId: string | null }>({
@@ -75,50 +81,6 @@ export default function AgencyPricingClient() {
     PRICING_STATUS.PAID,
     PRICING_STATUS.DECLINED,
   ];
-
-  useEffect(() => {
-    if (auth || !isAuthenticated || !user) {
-      return;
-    }
-
-    // Guard against non-agency users accessing agency data
-    if (!isAgency) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    async function fetchOrganizations() {
-      try {
-        const orgs = await getAllOrganizations();
-        const orgsMap: Record<string, Organization> = {};
-        orgs.forEach(org => {
-          orgsMap[org.id] = org;
-        });
-        setOrganizations(orgsMap);
-      } catch (err) {
-        console.error('Failed to fetch organizations:', err);
-      }
-    }
-    fetchOrganizations();
-  }, [auth, isAuthenticated, user]);
-
-  useEffect(() => {
-    setError(null);
-
-    const unsubscribe = subscribeToAllPricingRequests(data => {
-      setRequests(data);
-      setIsLoading(false);
-    });
-
-    return () => {
-      try {
-        unsubscribe();
-      } catch (err) {
-        console.error('Failed to unsubscribe from pricing requests:', err);
-      }
-    };
-  }, [t]);
 
   // Reset to page 1 when filter or search changes
   useEffect(() => {
@@ -143,10 +105,6 @@ export default function AgencyPricingClient() {
 
     try {
       await sendPricingRequest(requestId);
-      toast.success(t('pricing.form.sendSuccess'));
-    } catch (err) {
-      console.error('Failed to send pricing request:', err);
-      toast.error(t('pricing.form.sendFailed'));
     } finally {
       setProcessingId(null);
     }
@@ -254,16 +212,16 @@ export default function AgencyPricingClient() {
           </div>
         </Card>
 
-        <Card className="p-4 bg-accent-50 dark:bg-accent-950/20 border-purple-200/50 dark:border-purple-800/30">
+        <Card className="p-4 bg-accent-50 dark:bg-accent-950/20 border-accent-200/50 dark:border-accent-800/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-accent-500/10 rounded-xl flex items-center justify-center">
+              <Building2 className="w-5 h-5 text-accent-600" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-purple-600/70 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-accent-600/70 uppercase tracking-widest">
                 {t('pricing.status.accepted')}
               </p>
-              <p className="text-2xl font-black text-purple-700 dark:text-purple-400">
+              <p className="text-2xl font-black text-accent-700 dark:text-accent-400">
                 {statsData.accepted}
               </p>
             </div>

@@ -3,16 +3,21 @@ import { cancelInvite, removeMember, updateMemberRole } from '@/lib/services/por
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { UserRole } from '@/lib/types/portal';
+import { invalidatePortalTeamData } from '@/lib/utils/portal-cache-invalidation';
 
-export function useTeamMutations() {
+export function useTeamMutations(orgId?: string) {
   const queryClient = useQueryClient();
   const t = useTranslations('portal.team');
+
+  const invalidateTeam = () => {
+    invalidatePortalTeamData(queryClient, orgId);
+  };
 
   const cancelInviteMutation = useMutation({
     mutationFn: cancelInvite,
     onSuccess: () => {
-      toast.success(t('success.cancelInvite' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-invites'] });
+      toast.success(t('success.cancelInvite' as Parameters<typeof t>[0]));
+      invalidateTeam();
     },
     onError: error => {
       console.error('Failed to cancel invite:', error);
@@ -23,16 +28,16 @@ export function useTeamMutations() {
   const removeMemberMutation = useMutation({
     mutationFn: ({
       memberId,
-      orgId,
+      orgId: memberOrgId,
       userId,
     }: {
       memberId: string;
       orgId: string;
       userId: string;
-    }) => removeMember(memberId, orgId, userId),
+    }) => removeMember(memberId, memberOrgId, userId),
     onSuccess: () => {
-      toast.success(t('success.removeMember' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-members'] });
+      toast.success(t('success.removeMember' as Parameters<typeof t>[0]));
+      invalidateTeam();
     },
     onError: error => {
       console.error('Failed to remove member:', error);
@@ -44,8 +49,8 @@ export function useTeamMutations() {
     mutationFn: ({ memberId, role }: { memberId: string; role: UserRole }) =>
       updateMemberRole(memberId, role),
     onSuccess: () => {
-      toast.success(t('success.updateRole' as any));
-      queryClient.invalidateQueries({ queryKey: ['org-members'] });
+      toast.success(t('success.updateRole' as Parameters<typeof t>[0]));
+      invalidateTeam();
     },
     onError: error => {
       console.error('Failed to update member role:', error);
@@ -62,6 +67,6 @@ export function useTeamMutations() {
     isRemovingMember: removeMemberMutation.isPending,
     updateRoleMutation,
     updateMemberRole: updateRoleMutation.mutate,
-    isRole: updateRoleMutation.isPending,
+    isUpdatingRole: updateRoleMutation.isPending,
   };
 }

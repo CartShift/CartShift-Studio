@@ -272,7 +272,7 @@ export default function RequestDetailClient() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6">
       <motion.div
         layoutId={`request-container-${request.id}`}
         className="flex flex-col md:flex-row md:items-center gap-6 p-4 rounded-xl"

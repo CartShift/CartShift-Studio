@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   PointerSensor,
   KeyboardSensor,
@@ -12,11 +13,12 @@ import {
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import {
-  getAllRequests,
   updateRequestStatus,
   deleteRequest,
   createRequest,
 } from '@/lib/services/portal-requests';
+import { useRequests } from '@/lib/hooks/useRequests';
+import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidation';
 import {
   Request,
   RequestStatus,
@@ -67,9 +69,16 @@ export function useWorkboardState({
   success,
   showError,
 }: UseWorkboardStateParams) {
-  // ── Data State ──────────────────────────────────────────────
+  const queryClient = useQueryClient();
+  const { requests: subscribedRequests, loading: requestsQueryLoading } = useRequests();
+
+  // ── Data State (synced with TanStack + Firestore subscription) ──
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const syncPortalCaches = (orgId?: string, requestId?: string) => {
+    invalidatePortalRequestData(queryClient, { orgId, requestId });
+  };
 
   // ── UI State ────────────────────────────────────────────────
   const [showMyRequests, setShowMyRequests] = useState(false);
@@ -112,25 +121,22 @@ export function useWorkboardState({
     })
   );
 
-  // ── Fetch Requests ──────────────────────────────────────────
+  // ── Sync requests from shared portal cache (same source as /requests list) ──
   useEffect(() => {
     if (!authLoading && isAuthenticated && user && isAgency) {
-      const fetchRequests = async () => {
-        try {
-          const data = await getAllRequests();
-          setRequests(data);
-        } catch (error) {
-          console.error('Failed to fetch requests', error);
-          showError(t('common.error'), 'Failed to fetch requests');
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchRequests();
+      setRequests(subscribedRequests);
+      setLoading(requestsQueryLoading);
     } else if (!authLoading && (!isAuthenticated || !isAgency)) {
       setLoading(false);
     }
-  }, [authLoading, isAuthenticated, user, isAgency, showError, t]);
+  }, [
+    subscribedRequests,
+    requestsQueryLoading,
+    authLoading,
+    isAuthenticated,
+    user,
+    isAgency,
+  ]);
 
   // ── Column Definitions ──────────────────────────────────────
   const columns: Column[] = useMemo(
@@ -138,30 +144,30 @@ export function useWorkboardState({
       {
         id: 'backlog',
         title: t('workboard.columns.backlog'),
-        status: ['NEW', 'ON_HOLD', 'NEEDS_INFO'],
+        status: [REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO, REQUEST_STATUS.QUEUED],
         color: 'slate',
         defaultNewStatus: REQUEST_STATUS.NEW,
       },
       {
         id: 'in_progress',
         title: t('workboard.columns.inProgress'),
-        status: ['IN_PROGRESS'],
+        status: [REQUEST_STATUS.IN_PROGRESS, REQUEST_STATUS.ACCEPTED],
         color: 'blue',
-        defaultNewStatus: 'IN_PROGRESS' as RequestStatus,
+        defaultNewStatus: REQUEST_STATUS.IN_PROGRESS,
       },
       {
         id: 'review',
         title: t('workboard.columns.review'),
-        status: ['IN_REVIEW', 'QA'],
+        status: [REQUEST_STATUS.IN_REVIEW, REQUEST_STATUS.QUOTED],
         color: 'amber',
-        defaultNewStatus: 'IN_REVIEW' as RequestStatus,
+        defaultNewStatus: REQUEST_STATUS.IN_REVIEW,
       },
       {
         id: 'delivered',
         title: t('workboard.columns.delivered'),
-        status: ['DELIVERED', 'COMPLETED', 'APPROVED'],
+        status: [REQUEST_STATUS.DELIVERED, REQUEST_STATUS.PAID, REQUEST_STATUS.CLOSED],
         color: 'emerald',
-        defaultNewStatus: 'DELIVERED' as RequestStatus,
+        defaultNewStatus: REQUEST_STATUS.DELIVERED,
       },
     ],
     [t]
@@ -234,6 +240,7 @@ export function useWorkboardState({
     try {
       await Promise.all(Array.from(selectedRequests).map(id => deleteRequest(id)));
       setRequests(prev => prev.filter(r => !selectedRequests.has(r.id)));
+      syncPortalCaches();
       success(t('common.delete'), `${selectedRequests.size} items deleted`);
       setSelectedRequests(new Set());
       setIsSelectionMode(false);
@@ -254,6 +261,7 @@ export function useWorkboardState({
       setRequests(prev =>
         prev.map(r => (selectedRequests.has(r.id) ? { ...r, status: newStatus } : r))
       );
+      syncPortalCaches();
       success(t('common.save'), `${selectedRequests.size} items moved`);
       setSelectedRequests(new Set());
       setIsSelectionMode(false);
@@ -287,6 +295,7 @@ export function useWorkboardState({
       }
 
       setRequests(prev => [newRequest, ...prev]);
+      syncPortalCaches(orgId, newRequest.id);
       success(t('common.created'), title);
       setCreatingInColumnId(null);
     } catch (err) {
@@ -303,6 +312,7 @@ export function useWorkboardState({
     try {
       await deleteRequest(requestToDelete.id);
       setRequests(prev => prev.filter(r => r.id !== requestToDelete.id));
+      syncPortalCaches(undefined, requestToDelete.id);
       success(t('common.delete'), t('common.deleted'));
     } catch (_e) {
       showError(t('common.error'), 'Failed to delete');
@@ -346,6 +356,7 @@ export function useWorkboardState({
 
         try {
           await updateRequestStatus(requestId, newStatus);
+          syncPortalCaches(request.orgId, requestId);
           success(t('common.moved'));
         } catch (error) {
           console.error('Move failed', error);

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Link } from '@/i18n/navigation';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -5,12 +7,13 @@ import { cn } from '@/lib/utils';
 import { LucideIcon, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { EmptyStateIllustration } from '@/components/ui/EmptyStateIllustration';
+import { useTranslations } from 'next-intl';
 
 const emptyStateVariants = cva('flex flex-col items-center justify-center text-center p-8', {
   variants: {
     variant: {
       default:
-        'bg-surface-50/50 dark:bg-surface-900/20 border border-dashed border-surface-200 dark:border-surface-800 rounded-3xl',
+        'bg-surface-50/50 dark:bg-surface-900/20 border border-dashed border-surface-200 dark:border-surface-800 rounded-2xl',
       plain: '',
     },
   },
@@ -54,15 +57,12 @@ export const EmptyState = ({
       {illustration ? (
         <EmptyStateIllustration variant={illustration} className="mb-4" />
       ) : (
-        <div className="relative group mb-6">
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl transition-transform duration-500" />
-          <div className="relative w-16 h-16 bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-sm flex items-center justify-center transition-transform duration-300">
-            <Icon className="w-8 h-8 text-surface-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
-          </div>
+        <div className="mb-5 w-14 h-14 bg-surface-100 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex items-center justify-center">
+          <Icon className="w-7 h-7 text-surface-500 dark:text-surface-400" aria-hidden />
         </div>
       )}
 
-      <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
+      <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-2">
         {title}
       </h3>
 
@@ -70,9 +70,8 @@ export const EmptyState = ({
         {description}
       </p>
 
-      {/* Render Actions */}
       {(action || primaryAction || secondaryAction) && (
-        <div className="flex flex-col sm:flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
           {action}
 
           {primaryAction &&
@@ -118,20 +117,21 @@ export const EmptyState = ({
   );
 };
 
-// Column-specific empty state for Kanban boards
 export function EmptyColumnState({ className }: { className?: string }) {
+  const t = useTranslations('portal.common');
+
   return (
     <div
       className={cn(
-        'py-12 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl flex flex-col items-center justify-center text-center opacity-50 transition-opacity',
+        'py-10 border border-dashed border-surface-200 dark:border-surface-800 rounded-xl flex flex-col items-center justify-center text-center',
         className
       )}
     >
-      <div className="w-10 h-10 bg-surface-100 dark:bg-surface-800 rounded-xl flex items-center justify-center mb-3 text-surface-400">
-        <Plus size={20} />
+      <div className="w-10 h-10 bg-surface-100 dark:bg-surface-800 rounded-lg flex items-center justify-center mb-2 text-surface-400">
+        <Plus size={18} aria-hidden />
       </div>
-      <span className="text-[10px] font-black uppercase tracking-widest text-surface-400">
-        No items
+      <span className="text-xs font-semibold text-surface-500 dark:text-surface-400">
+        {t('noItems')}
       </span>
     </div>
   );

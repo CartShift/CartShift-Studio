@@ -14,7 +14,8 @@
         "settings": "Settings",
         "workboard": "Workboard",
         "clients": "Clients",
-        "salesRevenue": "Sales & Revenue"
+        "salesRevenue": "Sales & Revenue",
+        "help": "Help & support"
       },
       "footer": {
         "toNavigate": "to navigate",

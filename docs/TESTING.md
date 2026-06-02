@@ -153,6 +153,53 @@ tests/
 - React state updates in async operations may need `act()` wrapping
 - Some integration tests are simplified placeholders
 
+## Agent / Browser Visual Testing (Portal)
+
+For local visual QA (Cursor browser, Playwright, gstack browse), use the **localhost dev login** flow instead of filling the login form.
+
+### Setup (once)
+
+1. Ensure Firebase Admin credentials are in `.env.local` (`FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`).
+2. Pick an existing portal test account (must have a `portal_users` doc and at least one org for dashboard access).
+3. Add to `.env.local`:
+
+```env
+PORTAL_DEV_AUTH_ENABLED=true
+PORTAL_DEV_AUTH_SECRET=choose-a-long-random-string
+PORTAL_DEV_AUTH_EMAIL=your-test-user@example.com
+```
+
+4. Restart `pnpm dev`.
+
+### Agent login URL
+
+Open this once per browser session (localhost only):
+
+```text
+http://localhost:3000/en/portal/dev-login/?secret=YOUR_SECRET&redirect=/dashboard/
+```
+
+The page exchanges the secret for a Firebase custom token, signs in with real auth + session cookie, then redirects into the portal.
+
+For agency test accounts, dev login also sets `agencyRole: owner` and ensures `portal_members.role: owner` for every org in the user's `organizations` array.
+
+### Safety guards
+
+- `NODE_ENV=development` only
+- `PORTAL_DEV_AUTH_ENABLED=true` required (opt-in)
+- Request host must be `localhost` / `127.0.0.1`
+- Secret must match `PORTAL_DEV_AUTH_SECRET`
+- Disabled routes return **404** (not exposed in production builds)
+
+### Troubleshooting
+
+| Symptom | Fix |
+| --- | --- |
+| 404 on `/api/dev/portal-auth` | Set `PORTAL_DEV_AUTH_ENABLED=true` and restart dev server |
+| `admin-not-configured` | Add Firebase Admin env vars |
+| Redirects to login after dev-login | Test user missing Firestore `portal_users` doc or org membership |
+| Works in browser but not agent | Agent must hit `localhost`, not production/preview URLs |
+
 ## Future Improvements
 
 - Add E2E tests with Playwright

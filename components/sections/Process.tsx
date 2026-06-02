@@ -87,7 +87,7 @@ export const Process: React.FC = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-500 rounded-2xl opacity-20 blur-lg group-hover:opacity-40 transition-opacity"></div>
                   <div className="relative w-full h-full bg-white dark:bg-surface-900 border-2 border-surface-300/70 dark:border-surface-700 group-hover:border-accent-500/50 rounded-2xl flex items-center justify-center transition-[border-color,box-shadow] duration-300 shadow-lg">
-                    <span className="text-2xl font-display font-bold bg-gradient-to-br from-primary-600 to-accent-600 bg-clip-text text-transparent">
+                    <span className="text-2xl font-display font-bold text-primary-600 dark:text-primary-400">
                       {step.number}
                     </span>
                   </div>

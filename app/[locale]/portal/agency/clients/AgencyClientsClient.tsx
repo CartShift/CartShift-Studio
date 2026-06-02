@@ -21,6 +21,9 @@ import {
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { deleteOrganization } from '@/lib/services/portal-organizations';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidation';
+import { queryKeys } from '@/lib/utils/query-keys';
 import { repairAgencyAccount } from '@/lib/services/portal-users';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
@@ -55,6 +58,7 @@ function formatRevenue(amountInCents: number, currency: Currency = 'USD'): strin
 export default function AgencyClientsClient() {
   const t = useTranslations('portal');
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { loading: auth, isAuthenticated, user } = usePortalAuth();
   const { organizations, loading: clients, userData } = useAgencyClients();
   const { viewAsClient } = useImpersonation();
@@ -153,12 +157,13 @@ export default function AgencyClientsClient() {
     if (!orgToDelete) return;
     setIsDeleting(true);
     try {
-      await deleteOrganization(orgToDelete.id);
+      const deletedOrgId = orgToDelete.id;
+      await deleteOrganization(deletedOrgId);
       setOrgToDelete(null);
-      // The organizations list should refresh if it's using a subscription,
-      // otherwise we might need a manual refresh or window reload.
-      // useAgencyClients seems to use snapshots or re-fetches.
-      window.location.reload();
+      invalidatePortalRequestData(queryClient, { orgId: deletedOrgId });
+      queryClient.invalidateQueries({ queryKey: queryKeys.agencyClients });
+      queryClient.invalidateQueries({ queryKey: queryKeys.sales.clientRevenue });
+      queryClient.invalidateQueries({ queryKey: queryKeys.sales.metrics });
     } catch (err) {
       console.error('Failed to delete client:', err);
       toast.error(t('agency.clients.deleteFailed' as any) ?? 'Failed to delete client');

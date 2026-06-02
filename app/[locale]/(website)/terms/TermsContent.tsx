@@ -16,7 +16,7 @@ interface SectionProps {
 const Section = ({ id, number, title, children }: SectionProps) => (
   <section id={id} className="scroll-mt-24">
     <div className="flex items-start gap-4 mb-4">
-      <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 dark:from-purple-500/30 dark:to-purple-600/20 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm border border-purple-500/20">
+      <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500/20 to-primary-600/10 dark:from-primary-500/30 dark:to-primary-600/20 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-sm border border-primary-500/20">
         {number}
       </span>
       <h2 className="text-xl md:text-2xl font-bold text-surface-900 dark:text-white pt-1.5">
@@ -35,8 +35,8 @@ export default function TermsContent() {
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-b from-surface-100 via-white to-white dark:from-surface-900 dark:via-surface-950 dark:to-surface-950 pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-20">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-1/2 -left-1/4 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-purple-500/5 to-accent-500/5 blur-3xl" />
-          <div className="absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-purple-500/5 to-pink-500/5 blur-3xl" />
+          <div className="absolute -top-1/2 -left-1/4 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-primary-500/5 to-accent-500/5 blur-3xl" />
+          <div className="absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-primary-500/5 to-accent-500/5 blur-3xl" />
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -49,10 +49,10 @@ export default function TermsContent() {
           </Link>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/25">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/25">
               <Icon name="file-text" size={24} />
             </div>
-            <span className="px-3 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-sm font-medium">
+            <span className="px-3 py-1 rounded-full bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 text-sm font-medium">
               Legal
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function TermsContent() {
               <nav className="space-y-1 max-h-[calc(100vh-150px)] overflow-y-auto">
                 <a
                   href="#agreement"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     1
@@ -96,7 +96,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#services"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     2
@@ -105,7 +105,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#projectAgreements"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     3
@@ -114,7 +114,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#payment"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     4
@@ -123,7 +123,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#ip"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     5
@@ -132,7 +132,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#clientResponsibilities"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     6
@@ -141,7 +141,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#liability"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     7
@@ -150,7 +150,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#warranties"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     8
@@ -159,7 +159,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#termination"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     9
@@ -168,7 +168,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#confidentiality"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     10
@@ -177,7 +177,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#governingLaw"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     11
@@ -186,7 +186,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#changes"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     12
@@ -195,7 +195,7 @@ export default function TermsContent() {
                 </a>
                 <a
                   href="#contact"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-all"
                 >
                   <span className="w-5 h-5 rounded-md bg-surface-200/60 dark:bg-surface-800 flex items-center justify-center text-xs font-medium">
                     13
@@ -210,7 +210,7 @@ export default function TermsContent() {
           <main className="space-y-12">
             {/* Section 1: Agreement to Terms */}
             <Section id="agreement" number={1} title={t('sections.agreement.title')}>
-              <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200/60 dark:border-purple-500/20">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/20 border border-primary-200/60 dark:border-primary-500/20">
                 <p className="text-surface-700 dark:text-surface-300">
                   {t('sections.agreement.content')}
                 </p>
@@ -259,7 +259,7 @@ export default function TermsContent() {
                     <Icon
                       name="file-text"
                       size={16}
-                      className="text-purple-600 dark:text-purple-400"
+                      className="text-primary-600 dark:text-primary-400"
                     />
                     <span className="text-sm text-surface-700 dark:text-surface-300">{item}</span>
                   </div>
@@ -397,7 +397,7 @@ export default function TermsContent() {
                   <Icon
                     name="globe"
                     size={20}
-                    className="text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5"
+                    className="text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5"
                   />
                   <p className="text-surface-700 dark:text-surface-300">
                     {t('sections.governingLaw.content')}
@@ -418,16 +418,16 @@ export default function TermsContent() {
               <p className="text-surface-600 dark:text-surface-400 mb-4">
                 {t('sections.contact.intro')}
               </p>
-              <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200/60 dark:border-purple-500/20">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/20 border border-primary-200/60 dark:border-primary-500/20">
                 <div className="flex items-center gap-3">
-                  <Icon name="mail" size={20} className="text-purple-600 dark:text-purple-400" />
+                  <Icon name="mail" size={20} className="text-primary-600 dark:text-primary-400" />
                   <div>
                     <span className="text-sm text-surface-500 dark:text-surface-500">
                       {t('sections.contact.email')}:
                     </span>
                     <a
                       href="mailto:hello@cart-shift.com"
-                      className="block text-purple-600 dark:text-purple-400 font-medium hover:underline"
+                      className="block text-primary-600 dark:text-primary-400 font-medium hover:underline"
                     >
                       hello@cart-shift.com
                     </a>

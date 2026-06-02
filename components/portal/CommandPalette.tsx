@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useRequests } from '@/lib/hooks/useRequests';
 import { createPortal } from 'react-dom';
 import { useRouter } from '@/i18n/navigation';
 import { motion, AnimatePresence } from '@/lib/motion';
@@ -15,15 +16,14 @@ import {
   ClipboardList,
   Calendar,
   Command,
+  HelpCircle,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-import { Request } from '@/lib/types/portal';
-import { subscribeToOrgRequests } from '@/lib/services/portal-requests';
-import { Logger } from '@/lib/logger';
+import { getHelpPath } from '@/lib/portal/help-topics';
 
 interface CommandItemProps {
   icon: React.ElementType;
@@ -84,38 +84,8 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   const t = useTranslations();
   const orgId = useResolvedOrgId();
   const { isAgency } = usePortalAuth();
-  const [requests, setRequests] = useState<Request[]>([]);
+  const { requests } = useRequests();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Subscribe to requests
-  useEffect(() => {
-    if (!orgId) return;
-
-    let unsubscribe: (() => void) | undefined;
-
-    const handleData = (data: Request[]) => {
-      setRequests(data);
-    };
-
-    const setupSubscription = async () => {
-      try {
-        const { waitForAuth } = await import('@/lib/firebase');
-        await waitForAuth();
-
-        // Using orgId if available, or assume Agency mode might need all requests or handled by orgId logic
-        // For now simpler to just use orgId subscription as CommandPalette usually in context of org/agency
-        unsubscribe = subscribeToOrgRequests(orgId, handleData);
-      } catch (error) {
-        Logger.error('Error in CommandPalette subscription', error);
-      }
-    };
-
-    setupSubscription();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [orgId]);
 
   // Toggle on Ctrl+K / Cmd+K
   useEffect(() => {
@@ -168,6 +138,12 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
         label: t('portal.commandPalette.items.settings'),
         path: getPortalPath('/settings/profile'),
         keywords: ['profile', 'account', 'preferences'],
+      },
+      {
+        icon: HelpCircle,
+        label: t('portal.commandPalette.items.help'),
+        path: getHelpPath(isAgency),
+        keywords: ['help', 'support', 'docs', 'guide', 'shortcuts'],
       },
     ];
     if (isAgency) {

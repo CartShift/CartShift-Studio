@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ import {
   ModalBody,
   ModalFooter,
 } from '@/components/ui/ModalBackdrop';
+import { invalidatePortalTeamData } from '@/lib/utils/portal-cache-invalidation';
 
 export const InviteTeamMemberForm = ({
   orgId,
@@ -24,9 +26,10 @@ export const InviteTeamMemberForm = ({
   onSuccess,
   onCancel,
 }: InviteTeamMemberFormProps) => {
-  const [loading, set] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userData } = usePortalAuth();
+  const queryClient = useQueryClient();
   const t = useTranslations();
 
   const inviteSchema = useMemo(
@@ -50,7 +53,7 @@ export const InviteTeamMemberForm = ({
   });
 
   const onSubmit = async (data: InviteFormData) => {
-    set(true);
+    setLoading(true);
     setError(null);
 
     try {
@@ -63,6 +66,7 @@ export const InviteTeamMemberForm = ({
           userData.id,
           userData.name || userData.email
         );
+        invalidatePortalTeamData(queryClient);
       } else if (orgId) {
         await inviteTeamMember(
           orgId,
@@ -71,6 +75,7 @@ export const InviteTeamMemberForm = ({
           userData.id,
           userData.name || userData.email
         );
+        invalidatePortalTeamData(queryClient, orgId);
       } else {
         throw new Error('Organization ID is required for client invites');
       }
@@ -80,7 +85,7 @@ export const InviteTeamMemberForm = ({
       console.error('Invite error:', error);
       setError(error instanceof Error ? error.message : t('portal.team.inviteForm.errors.generic'));
     } finally {
-      set(false);
+      setLoading(false);
     }
   };
 

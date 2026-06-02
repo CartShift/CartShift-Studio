@@ -178,7 +178,7 @@ export const StoreAnalyzerContent: React.FC = () => {
       icon: Eye,
       title: t('analyzer.features.accessibility.title') || 'Accessibility',
       description: t('analyzer.features.accessibility.description') || 'WCAG compliance',
-      gradient: 'from-purple-500 to-pink-600',
+      gradient: 'from-accent-500 to-primary-600',
     },
     {
       icon: Award,
@@ -253,7 +253,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                         'Free E-Commerce'}
                     </span>
                     <br />
-                    <span className="bg-gradient-to-r from-primary-600 via-accent-500 to-primary-600 dark:from-primary-400 dark:via-accent-400 dark:to-primary-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                    <span className="text-primary-600 dark:text-primary-400">
                       {t('analyzer.hero.subtitle') || 'Store Analyzer'}
                     </span>
                   </motion.h1>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Menu, Bell, Command } from 'lucide-react';
+import { Menu, Bell, Command, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -13,13 +13,14 @@ import { useTranslations } from 'next-intl';
 import { ACCOUNT_TYPE, AccountType, Notification } from '@/lib/types/portal';
 import { cva } from 'class-variance-authority';
 import { Dropdown } from '@/components/ui/Dropdown';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { LogOut, Settings, User, ExternalLink } from 'lucide-react';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { getHelpPath } from '@/lib/portal/help-topics';
 import { usePlatformModifierKey } from '@/lib/hooks/usePlatformModifierKey';
 
 const notificationButtonVariants = cva(
-  'portal-focus-ring relative w-9 h-9 rounded-xl flex items-center justify-center transition-colors duration-200',
+  'portal-focus-ring relative min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center transition-colors duration-200',
   {
     variants: {
       isOpen: {
@@ -88,8 +89,14 @@ export function PortalHeader({
   const tA11y = useTranslations('portal.accessibility');
   const router = useRouter();
   const modifierKey = usePlatformModifierKey();
+  const helpHref = getHelpPath(userData?.isAgency ?? accountType === ACCOUNT_TYPE.AGENCY);
 
   const profileItems = [
+    {
+      label: t('portal.sidebar.help'),
+      icon: <HelpCircle size={16} />,
+      onClick: () => router.push(helpHref),
+    },
     {
       label: t('portal.header.visitWebsite'),
       icon: <ExternalLink size={16} />,
@@ -171,10 +178,20 @@ export function PortalHeader({
             <ThemeToggle />
           </div>
 
+          {/* Help */}
+          <Link
+            href={helpHref}
+            className="portal-focus-ring min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100/80 dark:hover:bg-surface-800/50 transition-colors"
+            aria-label={tA11y('helpCenter')}
+          >
+            <HelpCircle size={20} aria-hidden />
+          </Link>
+
           {/* Notifications */}
           <div className="relative" ref={notificationRef}>
             <button
               ref={notificationButtonRef}
+              data-tour="header-notifications"
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               className={cn(notificationButtonVariants({ isOpen: isNotificationOpen }))}
               aria-label={t('portal.header.notifications')}

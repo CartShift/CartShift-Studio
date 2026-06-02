@@ -172,7 +172,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
             sidebarRef={sidebarRef}
             mobileMenuLabel={tA11y('mainNavigation')}
           >
-            <SidebarBrand isExpanded={state.isExpanded} />
+            <SidebarBrand isExpanded={state.isExpanded} isAgency={state.isAgency} />
 
             <OrganizationSwitcher
               organizations={state.fullOrganizations}
@@ -185,6 +185,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               navGroups={filteredNavGroups}
               isExpanded={state.isExpanded}
               isMobile={state.isMobile}
+              isAgency={state.isAgency}
               onItemClick={() => state.setIsMobileMenuOpen(false)}
               userRole={state.memberRole}
             />
@@ -192,6 +193,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
             <SidebarFooter
               isExpanded={state.isExpanded}
               isSidebarOpen={state.isSidebarOpen}
+              isAgency={state.isAgency}
               onToggleSidebar={() => state.setIsSidebarOpen(!state.isSidebarOpen)}
               onSignOut={state.handleSignOut}
             />

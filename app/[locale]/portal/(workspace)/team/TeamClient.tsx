@@ -22,62 +22,53 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { SkeletonMemberCard, Skeleton as PortalSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { cancelInvite, removeMember, updateMemberRole } from '@/lib/services/portal-organizations';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { InviteTeamMemberForm } from '@/components/portal/forms/InviteTeamMemberForm';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
-import { toast } from 'sonner';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTeam } from '@/lib/hooks/useTeam';
+import { useTeamMutations } from '@/lib/hooks/useTeamMutations';
 import { OrganizationMember, UserRole, Invite } from '@/lib/types/portal';
 
 export default function TeamClient() {
   const orgId = useResolvedOrgId();
+  const safeOrgId = typeof orgId === 'string' ? orgId : '';
   const { members, invites, loading, error } = useTeam();
+  const {
+    cancelInvite,
+    isCancellingInvite,
+    removeMember,
+    isRemovingMember,
+    updateMemberRole,
+  } = useTeamMutations(safeOrgId);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [cancellingInvite, setCancellingInvite] = useState<string | null>(null);
+  const [cancellingInviteId, setCancellingInviteId] = useState<string | null>(null);
   const [copiedInviteId, setCopiedInviteId] = useState<string | null>(null);
   const t = useTranslations('portal');
   const locale = useLocale();
 
-  const handleInviteSuccess = async () => {
+  const handleInviteSuccess = () => {
     setShowInviteModal(false);
   };
 
-  const handleCancelInvite = async (inviteId: string) => {
+  const handleCancelInvite = (inviteId: string) => {
     if (!confirm(t('team.confirmCancel'))) return;
-
-    setCancellingInvite(inviteId);
-    try {
-      await cancelInvite(inviteId);
-    } catch (error) {
-      console.error('Error cancelling invite:', error);
-      toast.error(t('team.errors.cancelInvite'));
-    } finally {
-      setCancellingInvite(null);
-    }
+    setCancellingInviteId(inviteId);
+    cancelInvite(inviteId, {
+      onSettled: () => setCancellingInviteId(null),
+    });
   };
 
-  const handleRemoveMember = async (member: OrganizationMember) => {
+  const handleRemoveMember = (member: OrganizationMember) => {
     if (!confirm(t('team.removeMemberConfirm', { name: member.name || member.email }))) return;
-
-    try {
-      await removeMember(member.id, orgId as string, member.userId);
-    } catch (error) {
-      console.error('Error removing member:', error);
-      toast.error(t('common.error'));
-    }
+    if (!safeOrgId) return;
+    removeMember({ memberId: member.id, orgId: safeOrgId, userId: member.userId });
   };
 
-  const handleChangeRole = async (memberId: string, newRole: UserRole) => {
-    try {
-      await updateMemberRole(memberId, newRole);
-    } catch (error) {
-      console.error('Error changing role:', error);
-      toast.error(t('common.error'));
-    }
+  const handleChangeRole = (memberId: string, newRole: UserRole) => {
+    updateMemberRole({ memberId, role: newRole });
   };
 
   const copyInviteLink = (invite: Invite) => {
@@ -137,7 +128,7 @@ export default function TeamClient() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
@@ -254,10 +245,12 @@ export default function TeamClient() {
                     </div>
                     <button
                       onClick={() => handleCancelInvite(invite.id)}
-                      disabled={cancellingInvite === invite.id}
+                      disabled={
+                        cancellingInviteId === invite.id || isCancellingInvite || isRemovingMember
+                      }
                       className="text-[9px] font-black text-rose-500 uppercase tracking-widest hover:bg-rose-50 dark:hover:bg-rose-950/50 px-2.5 py-1.5 border border-rose-100 dark:border-rose-900/30 rounded-lg transition-colors disabled:opacity-50"
                     >
-                      {cancellingInvite === invite.id ? (
+                      {cancellingInviteId === invite.id ? (
                         <Loader2 size={12} className="animate-spin" />
                       ) : (
                         t('team.cancel')

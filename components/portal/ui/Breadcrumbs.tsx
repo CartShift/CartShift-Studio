@@ -160,6 +160,7 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
       new: t('portal.breadcrumbs.new'),
       calculator: t('portal.breadcrumbs.calculator'),
       sales: t('portal.breadcrumbs.sales'),
+      help: t('portal.breadcrumbs.help'),
       ...customLabels,
     };
 

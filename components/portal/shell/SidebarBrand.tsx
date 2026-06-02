@@ -8,18 +8,21 @@ import { SidebarBrandProps } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useBranding } from '@/components/providers/BrandingProvider';
 
-export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
+export function SidebarBrand({ isExpanded, isAgency = false }: SidebarBrandProps) {
   const t = useTranslations();
   const { branding } = useBranding();
+  const homeHref = isAgency
+    ? getPortalPath('/agency/workboard/')
+    : getPortalPath('/dashboard/');
 
   // Determine which logo to show
   // If expanded: Use branding.logoUrl (full logo) if it exists, otherwise use default icon + text
   // If collapsed: Use branding.iconUrl (mark) if it exists, otherwise use default icon
 
   return (
-    <div className="h-[68px] flex items-center px-3.5 border-b border-surface-200/50 dark:border-surface-800/30 flex-shrink-0">
+    <div className="h-[68px] flex items-center px-3.5 border-b border-surface-800/40 flex-shrink-0">
       <Link
-        href={getPortalPath('/dashboard/')}
+        href={homeHref}
         className="flex items-center gap-2.5 group w-full min-w-0"
       >
         {(!isExpanded || !branding?.logoUrl) && (
@@ -62,10 +65,10 @@ export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
               />
             ) : (
               <>
-                <span className="font-bold text-sm tracking-tight text-surface-900 dark:text-white truncate">
+                <span className="font-bold text-sm tracking-tight text-surface-100 truncate">
                   {t('portal.sidebar.title')}
                 </span>
-                <span className="text-[9px] font-bold text-primary-500 uppercase tracking-wider mt-0.5 opacity-80">
+                <span className="text-[9px] font-bold text-primary-400 uppercase tracking-wider mt-0.5 opacity-90">
                   {t('portal.sidebar.subtitle')}
                 </span>
               </>

@@ -8,8 +8,41 @@ export interface NavItem {
   roles?: readonly import('@/lib/types/portal').UserRole[];
 }
 
+export type NavGroupLabelKey =
+  | 'sidebar.groups.operations'
+  | 'sidebar.groups.clients'
+  | 'sidebar.groups.growth'
+  | 'sidebar.groups.settings'
+  | 'sidebar.groups.overview'
+  | 'sidebar.groups.workspace'
+  | 'sidebar.groups.billing';
+
+export type NavGroupAbbrevKey =
+  | 'sidebar.groupsAbbrev.operations'
+  | 'sidebar.groupsAbbrev.clients'
+  | 'sidebar.groupsAbbrev.growth'
+  | 'sidebar.groupsAbbrev.settings'
+  | 'sidebar.groupsAbbrev.overview'
+  | 'sidebar.groupsAbbrev.workspace'
+  | 'sidebar.groupsAbbrev.billing';
+
+const NAV_GROUP_ABBREV: Record<NavGroupLabelKey, NavGroupAbbrevKey> = {
+  'sidebar.groups.operations': 'sidebar.groupsAbbrev.operations',
+  'sidebar.groups.clients': 'sidebar.groupsAbbrev.clients',
+  'sidebar.groups.growth': 'sidebar.groupsAbbrev.growth',
+  'sidebar.groups.settings': 'sidebar.groupsAbbrev.settings',
+  'sidebar.groups.overview': 'sidebar.groupsAbbrev.overview',
+  'sidebar.groups.workspace': 'sidebar.groupsAbbrev.workspace',
+  'sidebar.groups.billing': 'sidebar.groupsAbbrev.billing',
+};
+
+export function getNavGroupAbbrevKey(labelKey: NavGroupLabelKey): NavGroupAbbrevKey {
+  return NAV_GROUP_ABBREV[labelKey];
+}
+
 export interface NavGroup {
   id: string;
+  labelKey?: NavGroupLabelKey;
   items: NavItem[];
 }
 
@@ -33,12 +66,14 @@ export interface PortalSidebarProps {
 
 export interface SidebarBrandProps {
   isExpanded: boolean;
+  isAgency?: boolean;
 }
 
 export interface SidebarNavigationProps {
   navGroups: NavGroup[];
   isExpanded: boolean;
   isMobile: boolean;
+  isAgency?: boolean;
   onItemClick: () => void;
   userRole?: import('@/lib/types/portal').UserRole;
 }
@@ -53,6 +88,7 @@ export interface OrganizationSwitcherProps {
 export interface SidebarFooterProps {
   isExpanded: boolean;
   isSidebarOpen: boolean;
+  isAgency?: boolean;
   onToggleSidebar: () => void;
   onSignOut: () => void;
 }

@@ -8,6 +8,25 @@
       "signOut": "Sign Out",
       "signOutFailed": "Sign out failed",
       "signOutFailedDesc": "Please try again",
+      "help": "Help & support",
+      "groups": {
+        "operations": "Operations",
+        "clients": "Clients & requests",
+        "growth": "Growth",
+        "settings": "Settings",
+        "overview": "Overview",
+        "workspace": "Workspace",
+        "billing": "Billing"
+      },
+      "groupsAbbrev": {
+        "operations": "Ops",
+        "clients": "Clients",
+        "growth": "Growth",
+        "settings": "Set",
+        "overview": "Home",
+        "workspace": "Work",
+        "billing": "Bill"
+      },
       "nav": {
         "workboard": "Workboard",
         "sales": "Sales Dashboard",
@@ -22,7 +41,9 @@
         "files": "Files",
         "consultations": "Consultations",
         "review": "Leave a Review",
-        "testimonials": "Testimonials"
+        "testimonials": "Testimonials",
+        "calculator": "Calculator",
+        "more": "More"
       }
     }
   }

@@ -67,7 +67,7 @@ export function PortalState() {
         </header>
 
         {/* Content - Matches PortalShell main area */}
-        <main className="p-4 md:p-5 lg:p-6 space-y-5 animate-in fade-in duration-500">
+        <main className="p-4 md:p-5 lg:p-6 space-y-5">
           {/* Breadcrumbs */}
           <Skeleton className="h-4 w-48 mb-5" />
 

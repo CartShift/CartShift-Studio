@@ -425,7 +425,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                     className={`flex items-center justify-between gap-3 p-3 rounded-lg border ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs font-bold text-white">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
                         {comp.name.substring(0, 1).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -434,7 +434,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                         >
                           {comp.name}
                         </div>
-                        <div className="truncate text-xs text-indigo-400">
+                        <div className="truncate text-xs text-primary-400">
                           {comp.url.replace('https://', '')}
                         </div>
                       </div>
@@ -443,7 +443,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                       <div className="text-xs font-medium text-surface-500">
                         {t('market.similarity')}
                       </div>
-                      <div className="text-sm font-bold text-indigo-500">
+                      <div className="text-sm font-bold text-primary-500">
                         {comp.similarityScore}%
                       </div>
                       <div className="text-[10px] text-surface-400">
@@ -779,7 +779,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 </span>
               </div>
               <div
-                className={`p-3 rounded-lg border ${results.productAnalysis.descriptionLength > 200 ? 'bg-green-500/10 border-green-500/20 text-green-600' : 'bg-gray-500/10 border-gray-500/20 text-gray-600'}`}
+                className={`p-3 rounded-lg border ${results.productAnalysis.descriptionLength > 200 ? 'bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-400' : 'bg-surface-500/10 border-surface-500/20 text-surface-700 dark:text-surface-300'}`}
               >
                 <span className="block text-xs uppercase opacity-70 mb-1">
                   {t('product.content')}
@@ -791,7 +791,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 </span>
               </div>
               <div
-                className={`p-3 rounded-lg border ${results.productAnalysis.cartActionabilityStatus === 'clickable' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600' : 'bg-surface-500/10 border-surface-500/20 text-surface-600'}`}
+                className={`p-3 rounded-lg border ${results.productAnalysis.cartActionabilityStatus === 'clickable' ? 'bg-primary-500/10 border-primary-500/20 text-primary-600 dark:text-primary-400' : 'bg-surface-500/10 border-surface-500/20 text-surface-600'}`}
               >
                 <span className="block text-xs uppercase opacity-70 mb-1">
                   {t('product.checkoutFlow')}
@@ -1018,7 +1018,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                     className={`w-7 h-7 rounded-full border-2 flex items-center justify-center ${isDark ? 'border-surface-950 bg-surface-800' : 'border-white bg-surface-300'}`}
                   >
                     <div
-                      className={`w-full h-full bg-gradient-to-br ${i === 1 ? 'from-blue-400 to-blue-600' : i === 2 ? 'from-purple-400 to-purple-600' : 'from-pink-400 to-pink-600'}`}
+                      className={`w-full h-full rounded-full ${i === 1 ? 'bg-blue-500' : i === 2 ? 'bg-primary-500' : 'bg-accent-500'}`}
                     />
                   </div>
                 ))}

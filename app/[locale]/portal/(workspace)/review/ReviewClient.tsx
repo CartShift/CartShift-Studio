@@ -142,7 +142,7 @@ export default function ReviewClient() {
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       {/* Page Header */}
       <PageHeader title={t('testimonial.pageTitle')} description={t('testimonial.pageSubtitle')} />
 

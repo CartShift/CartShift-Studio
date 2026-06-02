@@ -1,0 +1,72 @@
+{
+  "portal": {
+    "help": {
+      "eyebrow": "Help center",
+      "title": "Help & support",
+      "subtitle": "Task-focused guides, keyboard shortcuts, and direct support — without leaving the portal.",
+      "searchPlaceholder": "Search help topics…",
+      "topicsHeading": "Guides",
+      "noResults": "No topics match your search. Try different keywords or email us below.",
+      "openTopic": "Open in portal",
+      "topics": {
+        "client": [
+          {
+            "id": "requests",
+            "title": "Submit and track requests",
+            "body": "Open Requests to create work, attach files, and follow status updates. Pinned requests on your dashboard surface the items that need attention first."
+          },
+          {
+            "id": "files",
+            "title": "Share files securely",
+            "body": "Upload deliverables and references from Files. Everything stays scoped to your organization and is available to your CartShift team."
+          },
+          {
+            "id": "pricing",
+            "title": "Review pricing and proposals",
+            "body": "Pricing & Proposals holds active quotes. Open an item to review scope, approve, or request changes before work moves forward."
+          },
+          {
+            "id": "team",
+            "title": "Invite teammates",
+            "body": "Team lets you invite colleagues with the right role. Pending invites can be copied or revoked from the same screen."
+          }
+        ],
+        "agency": [
+          {
+            "id": "workboard",
+            "title": "Run the workboard",
+            "body": "Drag cards across columns, bulk-update status, and filter by client. The workboard is the operational home for active delivery."
+          },
+          {
+            "id": "clients",
+            "title": "Manage client organizations",
+            "body": "Clients lists every account you serve. Open a client to impersonate their view, review requests, or adjust settings."
+          },
+          {
+            "id": "sales",
+            "title": "Monitor revenue",
+            "body": "Sales Dashboard summarizes pipeline and closed revenue. Pair it with Marketing Leads when you need source-to-close visibility."
+          },
+          {
+            "id": "settings",
+            "title": "Configure agency settings",
+            "body": "Agency Settings controls branding, integrations, and defaults that propagate to client workspaces."
+          }
+        ]
+      },
+      "shortcuts": {
+        "heading": "Keyboard shortcuts",
+        "items": [
+          { "label": "Open command palette", "keys": "{mod}+K" },
+          { "label": "Close dialogs and palettes", "keys": "Esc" },
+          { "label": "Navigate onboarding tour", "keys": "← / →" },
+          { "label": "Confirm onboarding step", "keys": "Enter" }
+        ]
+      },
+      "support": {
+        "title": "Still need a human?",
+        "description": "Email our team directly. We reply from the same address for billing, access, and delivery questions."
+      }
+    }
+  }
+}

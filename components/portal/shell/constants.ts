@@ -12,6 +12,7 @@ import {
   Settings,
   TrendingUp,
   Mail,
+  Calculator,
 } from 'lucide-react';
 import { NavGroup } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -33,6 +34,7 @@ type NavTranslationKey =
   | 'sidebar.nav.clients'
   | 'sidebar.nav.pricing'
   | 'sidebar.nav.testimonials'
+  | 'sidebar.nav.calculator'
   | 'sidebar.nav.help'
   | 'sidebar.nav.agency_dashboard'
   | 'sidebar.nav.agency_settings';
@@ -47,12 +49,11 @@ export const navItemVariants = cva(
   {
   variants: {
     isActive: {
-      true: 'portal-nav-item-active text-primary-600 dark:text-primary-400 font-bold bg-primary-50/50 dark:bg-primary-500/10',
-      false:
-        'text-surface-600 dark:text-surface-400 hover:bg-surface-100/60 dark:hover:bg-surface-800/40 hover:text-surface-900 dark:hover:text-white',
+      true: 'portal-nav-item-active text-primary-300 font-bold bg-primary-500/10',
+      false: 'text-surface-400 hover:bg-white/5 hover:text-surface-100',
     },
     isCollapsed: {
-      true: 'md:justify-center md:px-0',
+      true: 'md:flex-col md:items-center md:justify-center md:gap-0.5 md:px-1 md:py-2 md:min-h-[52px]',
       false: '',
     },
   },
@@ -69,6 +70,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
   return [
     {
       id: 'agency-operations',
+      labelKey: 'sidebar.groups.operations',
       items: [
         {
           label: t('sidebar.nav.workboard'),
@@ -98,6 +100,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     },
     {
       id: 'agency-clients',
+      labelKey: 'sidebar.groups.clients',
       items: [
         {
           label: t('sidebar.nav.clients'),
@@ -121,11 +124,18 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     },
     {
       id: 'agency-growth',
+      labelKey: 'sidebar.groups.growth',
       items: [
         {
           label: t('sidebar.nav.pricing'),
           icon: DollarSign,
           href: getPortalPath('/agency/pricing/'),
+          roles: PERMISSIONS.MANAGE_PRICING,
+        },
+        {
+          label: t('sidebar.nav.calculator'),
+          icon: Calculator,
+          href: getPortalPath('/agency/calculator/'),
           roles: PERMISSIONS.MANAGE_PRICING,
         },
         {
@@ -138,6 +148,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
     },
     {
       id: 'agency-settings',
+      labelKey: 'sidebar.groups.settings',
       items: [
         {
           label: t('sidebar.nav.settings'),
@@ -154,6 +165,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
   return [
     {
       id: 'client-overview',
+      labelKey: 'sidebar.groups.overview',
       items: [
         {
           label: t('sidebar.nav.dashboard'),
@@ -169,6 +181,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     },
     {
       id: 'client-workspace',
+      labelKey: 'sidebar.groups.workspace',
       items: [
         {
           label: t('sidebar.nav.team'),
@@ -189,6 +202,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     },
     {
       id: 'client-billing',
+      labelKey: 'sidebar.groups.billing',
       items: [
         {
           label: t('sidebar.nav.pricing'),
@@ -204,6 +218,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
     },
     {
       id: 'client-settings',
+      labelKey: 'sidebar.groups.settings',
       items: [
         {
           label: t('sidebar.nav.settings'),

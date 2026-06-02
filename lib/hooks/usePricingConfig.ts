@@ -2,37 +2,27 @@
 
 import { useTranslations } from 'next-intl';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getFirestoreDb } from '@/lib/firebase';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { RequestPricingConfig } from '@/components/portal/pricing/RequestPricingCalculator';
+import type { RequestPricingConfig } from '@/components/portal/pricing/RequestPricingCalculator';
+import {
+  applyRequestPricingModifiers,
+  getRequestPricingConfig,
+  removeRequestPricingConfig,
+  upsertRequestPricingConfig,
+} from '@/lib/services/portal-pricing-config';
 import { toast } from 'sonner';
 import { queryKeys } from '@/lib/utils/query-keys';
 
-/**
- * Custom hook for pricing configuration with TanStack Query
- * Follows AGENTS.md pattern for Firestore interactions
- */
 export function usePricingConfig(orgId: string, requestId: string) {
-  const db = getFirestoreDb();
-
   return useQuery({
     queryKey: queryKeys.pricing.config(orgId, requestId),
-    queryFn: async () => {
-      const docRef = doc(db, 'organizations', orgId, 'pricing-configs', requestId);
-      const snap = await getDoc(docRef);
-      return snap.exists() ? (snap.data() as RequestPricingConfig) : null;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: () => getRequestPricingConfig(orgId, requestId),
+    staleTime: 1000 * 60 * 5,
     enabled: !!orgId && !!requestId,
   });
 }
 
-/**
- * Hook for updating pricing configuration with optimistic updates
- */
 export function useUpdatePricingConfig(orgId: string) {
   const queryClient = useQueryClient();
-  const db = getFirestoreDb();
   const t = useTranslations('portal.pricing.toast');
 
   return useMutation({
@@ -42,32 +32,20 @@ export function useUpdatePricingConfig(orgId: string) {
     }: {
       requestId: string;
       config: Partial<RequestPricingConfig>;
-    }) => {
-      const docRef = doc(db, 'organizations', orgId, 'pricing-configs', requestId);
-
-      // Get existing config to merge
-      const snap = await getDoc(docRef);
-      const existing = snap.exists() ? snap.data() : {};
-
-      const updatedConfig = { ...existing, ...config, requestId };
-
-      await setDoc(docRef, updatedConfig, { merge: true });
-      return updatedConfig;
-    },
+    }) => upsertRequestPricingConfig(orgId, requestId, config),
 
     onMutate: async ({ requestId, config }) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
 
-      // Snapshot previous value
       const previousConfig =
-        queryClient.getQueryData(queryKeys.pricing.config(orgId, requestId)) ?? undefined;
+        queryClient.getQueryData<RequestPricingConfig | null>(
+          queryKeys.pricing.config(orgId, requestId)
+        ) ?? undefined;
 
-      // Optimistically update
       queryClient.setQueryData(
         queryKeys.pricing.config(orgId, requestId),
-        (old: RequestPricingConfig | undefined) => {
-          if (!old) return config as RequestPricingConfig;
+        (old: RequestPricingConfig | null | undefined) => {
+          if (!old) return { ...config, requestId } as RequestPricingConfig;
           return { ...old, ...config };
         }
       );
@@ -76,8 +54,7 @@ export function useUpdatePricingConfig(orgId: string) {
     },
 
     onError: (_error, variables, context) => {
-      // Rollback on error
-      if (context?.previousConfig) {
+      if (context?.previousConfig !== undefined) {
         queryClient.setQueryData(
           queryKeys.pricing.config(orgId, variables.requestId),
           context.previousConfig
@@ -91,7 +68,6 @@ export function useUpdatePricingConfig(orgId: string) {
     },
 
     onSettled: (_data, _error, variables) => {
-      // Invalidate and refetch
       queryClient.invalidateQueries({
         queryKey: queryKeys.pricing.config(orgId, variables.requestId),
       });
@@ -100,12 +76,8 @@ export function useUpdatePricingConfig(orgId: string) {
   });
 }
 
-/**
- * Hook for applying global modifiers to all requests
- */
 export function useApplyGlobalModifiers(orgId: string) {
   const queryClient = useQueryClient();
-  const db = getFirestoreDb();
   const t = useTranslations('portal.pricing.toast');
 
   return useMutation({
@@ -116,30 +88,24 @@ export function useApplyGlobalModifiers(orgId: string) {
       requestIds: string[];
       modifiers: Partial<RequestPricingConfig>;
     }) => {
-      const updates = requestIds.map(requestId => {
-        const docRef = doc(db, 'organizations', orgId, 'pricing-configs', requestId);
-        return updateDoc(docRef, modifiers);
-      });
-
-      await Promise.all(updates);
+      await applyRequestPricingModifiers(orgId, requestIds, modifiers);
       return { requestIds, modifiers };
     },
 
     onMutate: async ({ requestIds, modifiers }) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: queryKeys.pricing.config(orgId) });
 
-      // Snapshot previous values
       const previousConfigs = requestIds.map(id => ({
         id,
-        data: queryClient.getQueryData(queryKeys.pricing.config(orgId, id)),
+        data: queryClient.getQueryData<RequestPricingConfig | null>(
+          queryKeys.pricing.config(orgId, id)
+        ),
       }));
 
-      // Optimistically update all
       requestIds.forEach(id => {
         queryClient.setQueryData(
           queryKeys.pricing.config(orgId, id),
-          (old: RequestPricingConfig | undefined) => {
+          (old: RequestPricingConfig | null | undefined) => {
             if (!old) return undefined;
             return { ...old, ...modifiers };
           }
@@ -150,10 +116,9 @@ export function useApplyGlobalModifiers(orgId: string) {
     },
 
     onError: (_error, _variables, context) => {
-      // Rollback all changes
       if (context?.previousConfigs) {
-        context.previousConfigs.forEach(({ id, data }: { id: string; data: any }) => {
-          if (data) {
+        context.previousConfigs.forEach(({ id, data }) => {
+          if (data !== undefined) {
             queryClient.setQueryData(queryKeys.pricing.config(orgId, id), data);
           }
         });
@@ -171,24 +136,21 @@ export function useApplyGlobalModifiers(orgId: string) {
   });
 }
 
-/**
- * Hook for removing pricing configuration
- */
 export function useRemovePricingConfig(orgId: string) {
   const queryClient = useQueryClient();
-  const db = getFirestoreDb();
   const t = useTranslations('portal.pricing.toast');
 
   return useMutation({
     mutationFn: async (requestId: string) => {
-      const docRef = doc(db, 'organizations', orgId, 'pricing-configs', requestId);
-      await deleteDoc(docRef);
+      await removeRequestPricingConfig(orgId, requestId);
       return requestId;
     },
 
     onMutate: async requestId => {
       await queryClient.cancelQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
-      const previousConfig = queryClient.getQueryData(queryKeys.pricing.config(orgId, requestId));
+      const previousConfig = queryClient.getQueryData<RequestPricingConfig | null>(
+        queryKeys.pricing.config(orgId, requestId)
+      );
 
       queryClient.removeQueries({ queryKey: queryKeys.pricing.config(orgId, requestId) });
 
@@ -196,7 +158,7 @@ export function useRemovePricingConfig(orgId: string) {
     },
 
     onError: (_error, requestId, context) => {
-      if (context?.previousConfig) {
+      if (context?.previousConfig !== undefined) {
         queryClient.setQueryData(
           queryKeys.pricing.config(orgId, requestId),
           context.previousConfig

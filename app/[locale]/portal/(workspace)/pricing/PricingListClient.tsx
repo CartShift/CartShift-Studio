@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useOrgPricingRequests } from '@/lib/hooks/usePricingRequests';
+import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
 import {
   Plus,
   Search,
@@ -18,25 +20,13 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Dropdown } from '@/components/ui/Dropdown';
-import {
-  PricingRequest,
-  PRICING_STATUS_CONFIG,
-  PRICING_STATUS,
-  formatCurrency,
-} from '@/lib/types/pricing';
-import {
-  subscribeToOrgPricingRequests,
-  sendPricingRequest,
-  deletePricingRequest,
-} from '@/lib/services/pricing-requests';
+import { PRICING_STATUS_CONFIG, PRICING_STATUS, formatCurrency } from '@/lib/types/pricing';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
-import { toast } from 'sonner';
 import { Link, useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 // Centralized utilities
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -44,18 +34,19 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 // mapStatusColor moved to lib/utils/portal-helpers.ts
 
 export default function PricingListClient() {
-  const orgId = useResolvedOrgId();
   const router = useRouter();
-  const [requests, setRequests] = useState<PricingRequest[]>([]);
-  const [loading, set] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isAgency } = usePortalAuth();
+  const { requests, loading, error: requestsError } = useOrgPricingRequests({
+    excludeDrafts: !isAgency,
+  });
+  const { sendPricingRequest, deletePricingRequest } = usePricingMutations();
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const t = useTranslations('portal');
   const locale = useLocale();
-  const { isAgency } = usePortalAuth();
+  const error = requestsError;
 
   const filters = [
     'All',
@@ -65,56 +56,19 @@ export default function PricingListClient() {
     PRICING_STATUS.PAID,
   ];
 
-  useEffect(() => {
-    if (!orgId || typeof orgId !== 'string') return undefined;
-
-    set(true);
-    setError(null);
-
-    try {
-      // Agency sees all requests, clients only see non-drafts
-      const unsubscribe = subscribeToOrgPricingRequests(
-        orgId,
-        data => {
-          setRequests(data);
-          set(false);
-        },
-        { excludeDrafts: !isAgency }
-      );
-
-      return () => unsubscribe();
-    } catch (err) {
-      console.error('Failed to subscribe to pricing requests:', err);
-      setError(t('common.error'));
-      set(false);
-      return undefined;
-    }
-  }, [orgId, isAgency, t]);
-
   // Reset to page 1 when filter or search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [activeFilter, searchQuery]);
 
   const handleSend = async (requestId: string) => {
-    try {
-      if (!confirm(t('pricing.form.sendConfirm'))) return;
-      await sendPricingRequest(requestId);
-      toast.success(t('pricing.form.sendSuccess'));
-    } catch (err) {
-      console.error('Failed to send pricing request:', err);
-      toast.error(t('pricing.form.sendFailed'));
-    }
+    if (!confirm(t('pricing.form.sendConfirm'))) return;
+    await sendPricingRequest(requestId);
   };
 
   const handleDelete = async (requestId: string) => {
     if (!confirm(t('pricing.form.deleteConfirm'))) return;
-    try {
-      await deletePricingRequest(requestId);
-    } catch (err) {
-      console.error('Failed to delete pricing request:', err);
-      toast.error(t('pricing.form.deleteFailed'));
-    }
+    await deletePricingRequest(requestId);
   };
 
   const filteredRequests = requests.filter(req => {

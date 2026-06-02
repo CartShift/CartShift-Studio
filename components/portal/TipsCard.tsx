@@ -12,11 +12,9 @@ export function TipsCard() {
   const direction = useDirection();
   const isRtl = direction === 'rtl';
 
-  // Get tips from translations
   const tips = t.raw('items') as string[];
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
-  // Auto-rotate tips every 8 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTipIndex(prev => (prev + 1) % tips.length);
@@ -36,13 +34,13 @@ export function TipsCard() {
   const NextIcon = isRtl ? ChevronLeft : ChevronRight;
 
   return (
-    <Card className="border-primary-100 dark:border-primary-900/30 bg-primary-50/80 dark:bg-primary-950/30 shadow-sm overflow-hidden">
+    <Card className="border-surface-200/80 dark:border-surface-800/60 bg-surface-50/80 dark:bg-surface-900/40 shadow-sm overflow-hidden">
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 p-2 rounded-xl bg-primary-100 dark:bg-primary-900/50">
-          <Lightbulb className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+        <div className="flex-shrink-0 p-2 rounded-xl border border-surface-200/80 dark:border-surface-700/60 bg-white/80 dark:bg-surface-900/60">
+          <Lightbulb className="w-4 h-4 text-surface-600 dark:text-surface-300" />
         </div>
         <div className="flex-1 min-w-0">
-          <CardSectionTitle as="h4" className="text-primary-600/70 dark:text-primary-400/70 mb-2">
+          <CardSectionTitle as="h4" className="text-surface-500 dark:text-surface-400 mb-2">
             {t('title')}
           </CardSectionTitle>
           <div className="relative h-12 overflow-hidden">
@@ -60,7 +58,6 @@ export function TipsCard() {
             </AnimatePresence>
           </div>
 
-          {/* Navigation dots and arrows */}
           <div className="flex items-center justify-between mt-3">
             <div className="flex gap-1.5">
               {tips.map((_, index) => (
@@ -70,8 +67,8 @@ export function TipsCard() {
                   onClick={() => setCurrentTipIndex(index)}
                   className={`portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
                     index === currentTipIndex
-                      ? 'bg-primary-600 dark:bg-primary-400 w-4'
-                      : 'bg-surface-300 dark:bg-surface-600 hover:bg-primary-400 dark:hover:bg-primary-500'
+                      ? 'bg-surface-700 dark:bg-surface-300 w-4'
+                      : 'bg-surface-300 dark:bg-surface-600 hover:bg-surface-400 dark:hover:bg-surface-500'
                   }`}
                   aria-label={`Tip ${index + 1}`}
                 />
@@ -81,7 +78,7 @@ export function TipsCard() {
               <button
                 type="button"
                 onClick={goToPrevTip}
-                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
+                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors"
                 aria-label="Previous tip"
               >
                 <PrevIcon className="w-4 h-4 text-surface-400" />
@@ -89,7 +86,7 @@ export function TipsCard() {
               <button
                 type="button"
                 onClick={goToNextTip}
-                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
+                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors"
                 aria-label="Next tip"
               >
                 <NextIcon className="w-4 h-4 text-surface-400" />

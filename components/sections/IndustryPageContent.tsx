@@ -40,7 +40,7 @@ const INDUSTRY_CONFIG: Record<IndustrySlug, IndustryConfig> = {
   fashion: {
     icon: ShoppingBag,
     color: 'text-pink-600 dark:text-pink-400',
-    bgGradient: 'from-pink-600 to-purple-600',
+    bgGradient: 'from-pink-600 to-accent-600',
     accentColor: 'pink',
   },
   food: {
@@ -58,14 +58,14 @@ const INDUSTRY_CONFIG: Record<IndustrySlug, IndustryConfig> = {
   tech: {
     icon: Cpu,
     color: 'text-blue-600 dark:text-blue-400',
-    bgGradient: 'from-blue-600 to-indigo-600',
+    bgGradient: 'from-blue-600 to-primary-600',
     accentColor: 'blue',
   },
   arts: {
     icon: Palette,
-    color: 'text-purple-600 dark:text-purple-400',
-    bgGradient: 'from-purple-600 to-pink-600',
-    accentColor: 'purple',
+    color: 'text-accent-600 dark:text-accent-400',
+    bgGradient: 'from-accent-600 to-primary-600',
+    accentColor: 'accent',
   },
   local: {
     icon: Store,
@@ -220,9 +220,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="p-6"
             >
-              <div
-                className={`text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r ${config.bgGradient} bg-clip-text text-transparent`}
-              >
+              <div className={`text-4xl md:text-5xl font-bold mb-2 ${config.color}`}>
                 <Counter value={stat.value} suffix={stat.suffix} inView={isStatsInView} />
               </div>
               <div className="text-sm text-surface-500 dark:text-surface-400">{stat.label}</div>

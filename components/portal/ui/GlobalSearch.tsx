@@ -2,17 +2,16 @@
 
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { FileText, ChevronRight, Search, Clock, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { Request, CLIENT_STATUS_MAP } from '@/lib/types/portal';
-import { subscribeToOrgRequests, subscribeToAllRequests } from '@/lib/services/portal-requests';
+import { useRequests } from '@/lib/hooks/useRequests';
 import { Badge } from '@/components/ui/Badge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-import { Logger } from '@/lib/logger';
 import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { CardSectionTitle } from '@/components/ui/Card';
 
@@ -67,14 +66,13 @@ interface GlobalSearchProps {
   className?: string;
 }
 
-export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearchProps) {
+export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps) {
   const router = useRouter();
   const t = useTranslations();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [filteredResults, setFilteredResults] = useState<Request[]>([]);
+  const { requests } = useRequests();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -84,63 +82,32 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
   const { recentSearches, addSearch, clearSearches, removeFromHistory } = useRecentSearches();
   const showHistory = isOpen && !query.trim() && recentSearches.length > 0;
 
-  // Subscribe to data once on mount (or when deps change)
-  // Wait for authentication before subscribing
-  useEffect(() => {
-    if (!orgId && !isAgency) return;
 
-    let unsubscribe: (() => void) | undefined;
-
-    const handleData = (data: Request[]) => {
-      setRequests(data);
-    };
-
-    // Wait for auth before subscribing to prevent permission errors
-    const setupSubscription = async () => {
-      try {
-        const { waitForAuth } = await import('@/lib/firebase');
-        await waitForAuth();
-
-        // Check if component is still mounted and conditions still valid
-        if (isAgency) {
-          unsubscribe = subscribeToAllRequests(handleData);
-        } else if (orgId) {
-          unsubscribe = subscribeToOrgRequests(orgId, handleData);
-        }
-      } catch (error) {
-        Logger.error('Error setting up subscription', error);
-      }
-    };
-
-    setupSubscription();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [orgId, isAgency]);
-
-  // Filter results when query changes
-  useEffect(() => {
-    if (!query.trim()) {
-      setFilteredResults([]);
-      setActiveIndex(-1);
-      return;
-    }
+  const filteredResults = useMemo(() => {
+    if (!query.trim()) return [];
 
     const searchTerm = query.toLowerCase().trim();
-    const results = requests
+    return requests
       .filter(
         req =>
           (req.title?.toLowerCase() || '').includes(searchTerm) ||
           (req.id?.toLowerCase() || '').includes(searchTerm) ||
           (req.description?.toLowerCase() || '').includes(searchTerm)
       )
-      .slice(0, 5); // Limit to top 5 results
-
-    setFilteredResults(results);
-    setIsOpen(true);
-    setActiveIndex(0); // Auto-select first result
+      .slice(0, 5);
   }, [query, requests]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setActiveIndex(-1);
+      return;
+    }
+    setActiveIndex(prev => {
+      if (filteredResults.length === 0) return -1;
+      if (prev < 0 || prev >= filteredResults.length) return 0;
+      return prev;
+    });
+  }, [query, filteredResults.length]);
 
   // Handle click outside
   useEffect(() => {
@@ -205,7 +172,11 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
           ref={inputRef}
           type="text"
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={e => {
+            const next = e.target.value;
+            setQuery(next);
+            if (next.trim()) setIsOpen(true);
+          }}
           onFocus={() => {
             setIsFocused(true);
             setIsOpen(true);

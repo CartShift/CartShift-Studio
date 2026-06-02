@@ -44,6 +44,8 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { deleteRequest, updateRequestStatus } from '@/lib/services/portal-requests';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidation';
 import { toast } from 'sonner';
 import { Request } from '@/lib/types/portal'; // Explicit import to avoid DOM Request conflict
 import { EditRequestModal } from '@/components/portal/requests/EditRequestModal';
@@ -98,8 +100,10 @@ const getPriorityTranslationKey = (priority: string | undefined): string => {
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const t = useTranslations('portal');
   const { loading: auth, isAgency } = usePortalAuth();
+  const safeOrgId = typeof orgId === 'string' ? orgId : undefined;
 
   // Edit & Archive logic
   const [requestToEdit, setRequestToEdit] = useState<Request | null>(null);
@@ -108,6 +112,7 @@ export default function RequestsClient() {
     // "Archive" means CLOSED in this context
     try {
       await updateRequestStatus(req.id, 'CLOSED');
+      invalidatePortalRequestData(queryClient, { orgId: req.orgId ?? safeOrgId, requestId: req.id });
       toast.success(t('requests.toast.statusUpdated'));
     } catch (e) {
       console.error(e);
@@ -229,9 +234,15 @@ export default function RequestsClient() {
   const handleConfirmDelete = async () => {
     if (!requestToDelete) return;
 
+    const deleted = requests.find(r => r.id === requestToDelete);
+
     setIsDeleting(true);
     try {
       await deleteRequest(requestToDelete);
+      invalidatePortalRequestData(queryClient, {
+        orgId: deleted?.orgId ?? safeOrgId,
+        requestId: requestToDelete,
+      });
       toast.success(t('common.deleteSuccess'));
       setDeleteModalOpen(false);
       setRequestToDelete(null);

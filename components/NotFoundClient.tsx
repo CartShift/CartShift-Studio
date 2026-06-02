@@ -49,7 +49,7 @@ export default function NotClient({ isPortalRoute = false }: NotClientProps) {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-[10rem] md:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-surface-200 via-surface-300 to-surface-200 dark:from-surface-800 dark:via-surface-700 dark:to-surface-800 select-none leading-none font-outfit"
+            className="text-[10rem] md:text-[12rem] font-black text-surface-200 dark:text-surface-700 select-none leading-none font-outfit"
           >
             404
           </motion.div>

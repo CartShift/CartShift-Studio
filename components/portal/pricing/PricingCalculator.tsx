@@ -142,8 +142,8 @@ export function PricingCalculator({
       {/* SECTION 1: GLOBAL SETTINGS */}
       {/* ============================================ */}
       <PortalSettingsSection
-        title={t('portal.pricing.globals' as any)}
-        description={t('portal.pricing.globalsDesc' as any)}
+        title={t('portal.pricing.globalSettings')}
+        description={t('portal.pricing.globalSettingsDesc')}
         defaultOpen
         icon={
           <div className="w-10 h-10 bg-surface-600 dark:bg-surface-500 rounded-xl flex items-center justify-center shadow-lg shadow-slate-500/20 shrink-0">
@@ -291,7 +291,7 @@ export function PricingCalculator({
       {/* ============================================ */}
       <PortalSettingsSection
         title={t('portal.pricing.itemBuilder')}
-        description={t('portal.pricing.itemBuilderDesc' as any)}
+        description={t('portal.pricing.itemBuilderDesc')}
         defaultOpen
         icon={
           <div className="w-10 h-10 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 shrink-0">

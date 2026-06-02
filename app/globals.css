@@ -302,14 +302,7 @@ body {
 
 @layer components {
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-brand;
-    background-size: 200% auto;
-  }
-
-  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
-    .gradient-text {
-      animation: gradient 8s linear infinite;
-    }
+    @apply text-primary-600 dark:text-primary-400;
   }
 
   .fashion-gradient {
@@ -650,28 +643,19 @@ body {
   }
 
   .text-gradient-accent {
-    background: linear-gradient(
-      135deg,
-      rgb(var(--color-accent-600)) 0%,
-      rgb(var(--color-accent-400)) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: rgb(var(--color-accent-600));
+  }
+
+  .dark .text-gradient-accent {
+    color: rgb(var(--color-accent-400));
   }
 
   .text-gradient-brand {
-    background: linear-gradient(
-      135deg,
-      rgb(var(--color-primary-600)) 0%,
-      rgb(var(--color-accent-600)) 50%,
-      rgb(var(--color-primary-600)) 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradient 8s linear infinite;
+    color: rgb(var(--color-primary-600));
+  }
+
+  .dark .text-gradient-brand {
+    color: rgb(var(--color-primary-400));
   }
 }
 
@@ -1173,22 +1157,22 @@ body {
   /* ===== CALLOUT BOXES ===== */
   /* Tip box - green accent */
   .prose-article .tip-box {
-    @apply relative bg-emerald-50 dark:bg-emerald-900/20 border-s-4 border-emerald-500 rounded-e-xl p-5 my-8;
+    @apply relative bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-5 my-8;
   }
 
   /* Info box - blue accent */
   .prose-article .info-box {
-    @apply relative bg-primary-50 dark:bg-primary-900/20 border-s-4 border-primary-500 rounded-e-xl p-5 my-8;
+    @apply relative bg-primary-50 dark:bg-primary-900/20 border border-primary-500/30 rounded-xl p-5 my-8;
   }
 
   /* Warning box - amber accent */
   .prose-article .warning-box {
-    @apply relative bg-amber-50 dark:bg-amber-900/20 border-s-4 border-amber-500 rounded-e-xl p-5 my-8;
+    @apply relative bg-amber-50 dark:bg-amber-900/20 border border-amber-500/30 rounded-xl p-5 my-8;
   }
 
-  /* Important box - purple accent */
+  /* Important box - accent */
   .prose-article .important-box {
-    @apply relative bg-accent-50 dark:bg-accent-900/20 border-s-4 border-accent-500 rounded-e-xl p-5 my-8;
+    @apply relative bg-accent-50 dark:bg-accent-900/20 border border-accent-500/30 rounded-xl p-5 my-8;
   }
 
   /* ===== STATS/METRICS HIGHLIGHT BOX ===== */
@@ -1232,207 +1216,6 @@ body {
 
   .prose-article .summary-box h4::before {
     content: '📋';
-  }
-
-  /* ========================================
-     PORTAL DESIGN SYSTEM
-     Complete portal interface styles
-     ======================================== */
-
-  /* Portal CSS Variables */
-  :root {
-    --portal-bg-primary: #f8fafc;
-    --portal-bg-secondary: #ffffff;
-    --portal-border: rgba(148, 163, 184, 0.2);
-    --portal-text-primary: #0f172a;
-    --portal-text-secondary: #475569;
-    --portal-sidebar-width: 280px;
-    --portal-topbar-height: 80px;
-  }
-
-  .dark {
-    --portal-bg-primary: #0f172a;
-    --portal-bg-secondary: #1e293b;
-    --portal-border: rgba(255, 255, 255, 0.1);
-    --portal-text-primary: #f8fafc;
-    --portal-text-secondary: #94a3b8;
-  }
-
-  /* Portal Shell Layout */
-  .portal-shell {
-    @apply min-h-screen flex bg-[var(--portal-bg-primary)];
-  }
-
-  .portal-sidebar {
-    @apply h-screen bg-[var(--portal-bg-secondary)] border-e rtl:border-e-0 rtl:border-s border-[var(--portal-border)] flex flex-col z-50 transition-all duration-300 ease-in-out;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
-  }
-
-  .dark .portal-sidebar {
-    box-shadow: none;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-  }
-
-  .portal-main {
-    @apply flex-1 flex flex-col overflow-hidden;
-  }
-
-  .portal-topbar {
-    @apply h-16 bg-[var(--portal-bg-secondary)] border-b border-[var(--portal-border)] px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-40;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-
-  .portal-content {
-    @apply flex-1 overflow-y-auto p-4 md:p-6 lg:p-8;
-  }
-
-  /* Portal Navigation */
-  .portal-nav-section {
-    @apply px-3 py-2;
-  }
-
-  .portal-nav-section-title {
-    @apply px-3 py-2 text-xs font-semibold text-surface-500 dark:text-surface-400;
-  }
-
-  .portal-nav-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-surface-600 dark:text-surface-300 transition-all duration-200 cursor-pointer;
-  }
-
-  .portal-nav-item:hover {
-    @apply bg-surface-100 dark:bg-white/5 text-surface-900 dark:text-white;
-  }
-
-  .portal-nav-item.active {
-    @apply bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400;
-    box-shadow: 0 0 0 1px rgb(var(--color-primary-600) / 0.1);
-  }
-
-  .dark .portal-nav-item.active {
-    box-shadow: 0 0 0 1px rgb(var(--color-primary-600) / 0.2);
-  }
-
-  .portal-nav-icon {
-    @apply w-5 h-5 flex-shrink-0;
-  }
-
-  .portal-nav-badge {
-    @apply bg-red-500 text-white text-xs rounded-full px-2 py-0.5 font-semibold min-w-[20px] text-center;
-  }
-
-  /* Portal Typography Scale - Comprehensive hierarchy */
-  .portal-heading-xl {
-    @apply text-2xl md:text-3xl lg:text-4xl font-outfit font-black text-surface-900 dark:text-white tracking-tight leading-tight;
-  }
-
-  .portal-heading-lg {
-    @apply text-xl md:text-2xl font-outfit font-bold text-surface-900 dark:text-white tracking-tight leading-tight;
-  }
-
-  .portal-heading-md {
-    @apply text-lg md:text-xl font-outfit font-bold text-surface-900 dark:text-white leading-snug;
-  }
-
-  .portal-heading-sm {
-    @apply text-base md:text-lg font-outfit font-semibold text-surface-900 dark:text-white;
-  }
-
-  .portal-body-lg {
-    @apply text-base text-surface-700 dark:text-surface-300 leading-relaxed;
-  }
-
-  .portal-body {
-    @apply text-sm text-surface-700 dark:text-surface-300 leading-relaxed;
-  }
-
-  .portal-body-sm {
-    @apply text-xs text-surface-600 dark:text-surface-400;
-  }
-
-  .portal-body-xs {
-    @apply text-[11px] text-surface-500 dark:text-surface-500;
-  }
-
-  /* Labels and Captions */
-  .portal-label {
-    @apply text-xs font-medium text-surface-500 dark:text-surface-400;
-  }
-
-  .portal-label-sm {
-    @apply text-[11px] font-medium text-surface-600 dark:text-surface-400;
-  }
-
-  .portal-caption {
-    @apply text-xs font-medium text-surface-500 dark:text-surface-400;
-  }
-
-  /* Mono text for IDs, codes */
-  .portal-mono {
-    @apply font-mono text-[11px] font-medium bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-surface-600 dark:text-surface-400;
-  }
-
-  /* Link styles */
-  .portal-link {
-    @apply text-blue-600 dark:text-blue-400 font-medium hover:underline underline-offset-2 transition-colors;
-  }
-
-  .portal-link-subtle {
-    @apply text-surface-500 dark:text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
-  }
-
-  /* Portal Scrollbar */
-  .portal-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .portal-scrollbar::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-
-  .portal-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-surface-300 dark:bg-surface-600 rounded-full;
-  }
-
-  .portal-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-surface-400 dark:bg-surface-500;
-  }
-
-  /* Hidden Scrollbar - keeps functionality, hides visual */
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-  }
-
-  /* Portal Transitions */
-  .portal-fade-enter {
-    opacity: 0;
-  }
-
-  .portal-fade-enter-active {
-    opacity: 1;
-    transition: opacity 200ms;
-  }
-
-  .portal-fade-exit {
-    opacity: 1;
-  }
-
-  .portal-fade-exit-active {
-    opacity: 0;
-    transition: opacity 200ms;
-  }
-
-  /* Portal Mobile Menu */
-  @media (max-width: 1023px) {
-    .portal-sidebar {
-      @apply fixed inset-y-0 start-0;
-    }
   }
 
   /* ========================================
@@ -1629,14 +1412,16 @@ body {
     position: absolute;
     bottom: -2px;
     left: 0;
-    width: 0;
+    width: 100%;
     height: 2px;
     background: linear-gradient(90deg, rgb(var(--color-primary-600)), rgb(var(--color-accent-600)));
-    transition: width 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: inline-start;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .underline-grow:hover::after {
-    width: 100%;
+    transform: scaleX(1);
   }
 
   [dir='rtl'] .underline-grow::after {
@@ -1918,7 +1703,15 @@ body {
   }
 
   .portal-sidebar {
-    @apply transition-all duration-300 ease-in-out border-e border-surface-200 dark:border-surface-800/50 bg-white/80 dark:bg-surface-900/80 backdrop-blur-xl z-[50];
+    @apply transition-all duration-300 ease-in-out border-e border-surface-800/50 bg-surface-950/95 backdrop-blur-xl z-[50];
+  }
+
+  .portal-nav-section-title {
+    @apply px-2.5 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-surface-500;
+  }
+
+  .portal-nav-group-abbrev {
+    @apply hidden md:block px-1 pt-1.5 pb-0.5 text-[10px] font-bold uppercase tracking-wide text-surface-600 text-center truncate;
   }
 
   .portal-header {
@@ -1974,19 +1767,19 @@ body {
 
   /* Portal Navigation */
   .portal-nav-item {
-    @apply flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-surface-500 dark:text-surface-400 font-outfit font-semibold tracking-tight transition-all duration-200;
+    @apply flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-surface-400 font-outfit font-semibold tracking-tight transition-all duration-200;
   }
 
   .portal-nav-item:hover {
-    @apply bg-surface-100/80 dark:bg-surface-800/50 text-surface-900 dark:text-white translate-x-1 rtl:-translate-x-1;
+    @apply bg-white/5 text-surface-100 translate-x-1 rtl:-translate-x-1;
   }
 
   .portal-nav-item-active {
-    @apply relative bg-primary-50/80 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/15 dark:ring-primary-400/20;
+    @apply relative bg-primary-500/10 text-primary-300 shadow-sm ring-1 ring-primary-400/20;
   }
 
   .portal-nav-item-active:hover {
-    @apply bg-primary-50 dark:bg-primary-500/15;
+    @apply bg-primary-500/15 text-primary-200;
   }
 
   .portal-focus-ring {

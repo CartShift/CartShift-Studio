@@ -399,7 +399,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                           key={heading.id}
                           type="button"
                           onClick={() => scrollToHeading(heading.id)}
-                          className="w-full text-start block text-sm text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 transition-all py-2 ps-3 border-s-2 border-surface-200 dark:border-white/5 hover:border-primary-500 dark:hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-e-lg group"
+                          className="w-full text-start block text-sm text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 transition-all py-2 ps-3 border border-surface-200 dark:border-white/5 hover:border-primary-500/50 dark:hover:border-primary-400/50 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-lg group"
                         >
                           <span className="flex items-center gap-2">
                             <span className="text-xs text-surface-400 dark:text-surface-500 font-mono group-hover:text-primary-500 transition-colors">
@@ -782,7 +782,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                           </span>
                           <h3 className="text-lg md:text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
                             {t('blogPost.storeAnalyzerCta.title')}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-primary-600 dark:from-accent-400 dark:to-primary-400">
+                            <span className="text-primary-600 dark:text-primary-400">
                               {t('blogPost.storeAnalyzerCta.titleSpan')}
                             </span>
                           </h3>

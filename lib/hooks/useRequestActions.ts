@@ -30,6 +30,7 @@ import {
 import { Timestamp } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/utils/query-keys';
+import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidation';
 
 interface UseRequestActionsParams {
   request: Request | null;
@@ -217,7 +218,10 @@ export function useRequestActions({
       });
 
       await acceptRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+      invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
       toast.success(t('quoteAccepted'), t('quoteAcceptedDesc'));
     } catch (err) {
       console.error('Error accepting quote:', err);
@@ -251,7 +255,10 @@ export function useRequestActions({
       });
 
       await declineRequest(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+      invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
       toast.info(t('quoteDeclined'), t('quoteDeclinedDesc'));
     } catch (err) {
       console.error('Error declining quote:', err);
@@ -285,7 +292,10 @@ export function useRequestActions({
       });
 
       await startRequestWork(requestId!, orgId!, userData!.id, userData!.name || userData!.email);
-      await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+      invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
       toast.success(t('workStarted'), t('workStartedDesc'));
     } catch (err) {
       console.error('Error starting work:', err);
@@ -326,7 +336,10 @@ export function useRequestActions({
           userData!.name || userData!.email,
           result.paymentId
         );
-        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+        invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
         toast.success(t('paymentSuccess'), t('paymentSuccessDesc'));
       } catch (err) {
         console.error('Error marking as paid:', err);
@@ -369,7 +382,10 @@ export function useRequestActions({
           specialistId,
           specialistName
         );
-        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+        invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
         toast.success(
           t('specialistAssigned'),
           t('specialistAssignedDesc', { name: specialistName })
@@ -415,7 +431,10 @@ export function useRequestActions({
           userData!.name || userData!.email,
           notes.trim()
         );
-        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+        invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
         toast.success(t('revisionRequested'), t('revisionRequestedDesc'));
         return true;
       } catch (err) {
@@ -488,7 +507,10 @@ export function useRequestActions({
         });
 
         await updateRequestStatus(requestId!, newStatus);
-        await queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(requestId!) });
+        invalidatePortalRequestData(queryClient, {
+        orgId: orgId ?? undefined,
+        requestId: requestId!,
+      });
 
         await logActivity({
           orgId: orgId!,

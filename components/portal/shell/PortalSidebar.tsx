@@ -28,8 +28,8 @@ export function PortalSidebar({
       })}
       className={cn(
         'portal-sidebar fixed top-0 bottom-0 z-[70] flex flex-col transition-transform duration-300',
-        'bg-white dark:bg-surface-950/95',
-        'border-e border-surface-200/50 dark:border-surface-800/30 shadow-2xl shadow-surface-950/20',
+        'bg-surface-950/95 dark:bg-surface-950/95 text-surface-100',
+        'border-e border-surface-800/40 dark:border-surface-800/40 shadow-2xl shadow-surface-950/40',
         'w-[85vw] max-w-[320px] min-h-screen-mobile overflow-hidden',
         'pb-safe',
         'start-0',

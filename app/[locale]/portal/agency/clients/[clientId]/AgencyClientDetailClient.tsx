@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Briefcase,
@@ -26,28 +27,17 @@ import { Avatar } from '@/components/ui/Avatar';
 import { EditClientModal } from '@/components/portal/modals/EditClientModal';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { InviteClientForm } from '@/components/portal/forms/InviteClientForm';
-import {
-  subscribeToOrganization,
-  getOrganizationMembers,
-  removeMember,
-  getInvitesByOrg,
-  cancelInvite,
-} from '@/lib/services/portal-organizations';
-import { subscribeToOrgRequests } from '@/lib/services/portal-requests';
-import { subscribeToOrgActivities } from '@/lib/services/portal-activities';
-import {
-  Organization,
-  Request,
-  ActivityLog,
-  OrganizationMember,
-  PortalUser,
-  Invite,
-} from '@/lib/types/portal';
+import { OrganizationMember } from '@/lib/types/portal';
 import { getPortalUser } from '@/lib/services/portal-users';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedClientId } from '@/lib/hooks/useResolvedClientId';
+import { useOrganization } from '@/lib/hooks/useOrganization';
+import { useOrgScopedRequests } from '@/lib/hooks/useOrgScopedRequests';
+import { useOrgScopedActivities } from '@/lib/hooks/useOrgScopedActivities';
+import { useOrgTeam } from '@/lib/hooks/useOrgTeam';
+import { useTeamMutations } from '@/lib/hooks/useTeamMutations';
 import { useTranslations, useLocale } from 'next-intl';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale, getDateLocaleString } from '@/lib/locale-config';
@@ -68,125 +58,66 @@ export default function AgencyClientDetailClient({
   const { switchOrg } = useOrg();
   const router = useRouter();
 
-  const [organization, setOrganization] = useState<Organization | null>(null);
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [activities, setActivities] = useState<ActivityLog[]>([]);
-  const [members, setMembers] = useState<OrganizationMember[]>([]);
-  const [pendingInvites, setPendingInvites] = useState<Invite[]>([]);
-  const [responsibleAgent, setResponsibleAgent] = useState<PortalUser | null>(null);
-  const [loading, set] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const canView = Boolean(clientId && userData?.isAgency && !auth);
+  const dataEnabled = canView;
+
+  const { organization, loading: orgLoading } = useOrganization(clientId, {
+    enabled: dataEnabled,
+  });
+  const { requests, loading: requestsLoading } = useOrgScopedRequests(clientId, {
+    enabled: dataEnabled,
+  });
+  const { activities, loading: activitiesLoading } = useOrgScopedActivities(clientId, {
+    enabled: dataEnabled,
+  });
+  const { members, invites, loading: teamLoading } = useOrgTeam(clientId, {
+    enabled: dataEnabled,
+  });
+  const { removeMember: removeMemberMutation, cancelInvite, isRemovingMember } =
+    useTeamMutations(clientId);
+
+  const pendingInvites = useMemo(
+    () => invites.filter(inv => inv.isClientInvite && inv.status === 'pending'),
+    [invites]
+  );
+
+  const responsibleUserId = organization?.responsibleAgencyUserId;
+  const { data: responsibleAgent = null } = useQuery({
+    queryKey: ['portal-user', responsibleUserId],
+    queryFn: () => getPortalUser(responsibleUserId!),
+    enabled: Boolean(responsibleUserId),
+    staleTime: 60_000,
+  });
+
+  const [pageError, setPageError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<OrganizationMember | null>(null);
   const [isRemoveMemberOpen, setIsRemoveMemberOpen] = useState(false);
-  const [isRemovingMember, setIsRemovingMember] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [resendingInvite, setResendingInvite] = useState<string | null>(null);
 
+  const loading =
+    auth ||
+    (!clientId && !auth) ||
+    (canView && (orgLoading || requestsLoading || activitiesLoading || teamLoading));
+
+  const error = useMemo(() => {
+    if (!clientId) return t('clients.noClientId' as any);
+    if (!auth && !userData) return 'You must be logged in to view this page';
+    if (!auth && userData && !userData.isAgency) {
+      return 'You do not have permission to view this page. Agency access required.';
+    }
+    if (pageError) return pageError;
+    if (canView && !orgLoading && organization === null) {
+      return 'Client not found or you do not have permission to view it';
+    }
+    return null;
+  }, [clientId, auth, userData, pageError, canView, orgLoading, organization, t]);
+
   useEffect(() => {
-    if (!clientId) {
-      setError(t('clients.noClientId' as any));
-      set(false);
-      return undefined;
-    }
-
-    if (auth) {
-      // Waiting for auth...
-      return undefined;
-    }
-
-    if (!userData) {
-      // No user data
-      setError('You must be logged in to view this page');
-      set(false);
-      return undefined;
-    }
-
-    // Debug logging removed
-
-    if (!userData.isAgency) {
-      // User is not an agency user
-      setError('You do not have permission to view this page. Agency access required.');
-      set(false);
-      return undefined;
-    }
-
-    let mounted = true;
-
-    set(true);
-    setError(null);
-
-    // client loaded
-
-    try {
-      // Subscribe to organization data
-      const unsubOrg = subscribeToOrganization(clientId, org => {
-        if (!mounted) return;
-        // Organization loaded
-        if (org === null) {
-          setError('Client not found or you do not have permission to view it');
-        } else {
-          setOrganization(org);
-
-          // Fetch responsible agent if exists
-          if (org.responsibleAgencyUserId) {
-            getPortalUser(org.responsibleAgencyUserId)
-              .then(user => {
-                if (mounted && user) setResponsibleAgent(user);
-              })
-              .catch(err => console.error('Failed to fetch responsible agent:', err));
-          } else {
-            setResponsibleAgent(null);
-          }
-        }
-        set(false);
-      });
-
-      // Subscribe to requests
-      const unsubRequests = subscribeToOrgRequests(clientId, reqs => {
-        if (!mounted) return;
-        // Requests loaded
-        setRequests(reqs);
-      });
-
-      // Subscribe to activities
-      const unsubActivities = subscribeToOrgActivities(clientId, acts => {
-        if (!mounted) return;
-        // Activities loaded
-        setActivities(acts);
-      });
-
-      // Fetch members
-      getOrganizationMembers(clientId)
-        .then(membersList => {
-          if (mounted) {
-            // Members loaded
-            setMembers(membersList);
-          }
-        })
-        .catch(err => {
-          console.error('[AgencyClientDetail] Error loading members:', err);
-          // Don't set error state for members, just log it
-        });
-
-      return () => {
-        mounted = false;
-        unsubOrg();
-        unsubRequests();
-        unsubActivities();
-      };
-    } catch (err) {
-      console.error('[AgencyClientDetail] Critical error in useEffect:', err);
-      if (mounted) {
-        setError(err instanceof Error ? err.message : t('clients.unexpectedError' as any));
-        set(false);
-      }
-      return () => {
-        mounted = false;
-      };
-    }
-  }, [clientId, auth, userData, t]);
+    setPageError(null);
+  }, [clientId]);
 
   // Prevent hydration mismatch for time-sensitive content
   useEffect(() => {
@@ -219,58 +150,42 @@ export default function AgencyClientDetailClient({
   const recentActivities = activities.slice(0, 8);
   const recentRequests = requests.slice(0, 5);
 
-  const fetchMembers = async () => {
-    if (!clientId) return;
-    try {
-      const membersList = await getOrganizationMembers(clientId);
-      setMembers(membersList);
-
-      // Also fetch pending invites
-      const invites = await getInvitesByOrg(clientId);
-      setPendingInvites(invites.filter(inv => inv.isClientInvite && inv.status === 'pending'));
-    } catch (err) {
-      console.error('[AgencyClientDetail] Error loading members:', err);
-    }
-  };
-
   const handleRemoveMember = (member: OrganizationMember) => {
     setMemberToRemove(member);
     setIsRemoveMemberOpen(true);
   };
 
-  const confirmRemoveMember = async () => {
+  const confirmRemoveMember = () => {
     if (!memberToRemove || !organization) return;
 
-    setIsRemovingMember(true);
-    try {
-      await removeMember(memberToRemove.id, organization.id, memberToRemove.userId);
-      await fetchMembers();
-      setIsRemoveMemberOpen(false);
-      setMemberToRemove(null);
-    } catch (err) {
-      console.error('Failed to remove member:', err);
-      // Ideally show a toast here, but for now we'll just log it
-      // setError('Failed to remove member'); // Don't block the whole page
-    } finally {
-      setIsRemovingMember(false);
-    }
+    removeMemberMutation(
+      {
+        memberId: memberToRemove.id,
+        orgId: organization.id,
+        userId: memberToRemove.userId,
+      },
+      {
+        onSuccess: () => {
+          setIsRemoveMemberOpen(false);
+          setMemberToRemove(null);
+        },
+      }
+    );
   };
 
-  const handleResendInvite = async (inviteId: string, _email: string) => {
+  const handleResendInvite = (inviteId: string, _email: string) => {
     setResendingInvite(inviteId);
-    try {
-      // Cancel the old invite
-      await cancelInvite(inviteId);
-      // Trigger the invite modal to open with pre-filled email
-      setIsInviteModalOpen(true);
-      toast.success('Previous invitation cancelled. Please send a new one.');
-      await fetchMembers(); // Refresh the list
-    } catch (err) {
-      console.error('Failed to resend invite:', err);
-      toast.error('Failed to resend invitation');
-    } finally {
-      setResendingInvite(null);
-    }
+    cancelInvite(inviteId, {
+      onSuccess: () => {
+        setIsInviteModalOpen(true);
+        toast.success('Previous invitation cancelled. Please send a new one.');
+        setResendingInvite(null);
+      },
+      onError: () => {
+        toast.error('Failed to resend invitation');
+        setResendingInvite(null);
+      },
+    });
   };
 
   if (loading) {

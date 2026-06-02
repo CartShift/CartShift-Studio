@@ -6,19 +6,19 @@ import {
   acceptPricingRequest,
   declinePricingRequest,
   cancelPricingRequest,
+  deletePricingRequest,
 } from '@/lib/services/pricing-requests';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { CreatePricingRequestData, UpdatePricingRequestData } from '@/lib/types/pricing';
-import { queryKeys } from '@/lib/utils/query-keys';
+import { invalidatePortalPricingData } from '@/lib/utils/portal-cache-invalidation';
 
 export function usePricingMutations() {
   const queryClient = useQueryClient();
   const t = useTranslations('portal.pricing');
 
-  const invalidatePricing = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.pricing.byOrg });
-    queryClient.invalidateQueries({ queryKey: queryKeys.pricing.allRequests });
+  const invalidatePricing = (options?: { pricingId?: string; orgId?: string; requestId?: string }) => {
+    invalidatePortalPricingData(queryClient, options);
   };
 
   const createMutation = useMutation({
@@ -35,8 +35,7 @@ export function usePricingMutations() {
     }) => createPricingRequest(orgId, userId, userName, data),
     onSuccess: pricingOffer => {
       toast.success(t('form.createSuccess' as any));
-      invalidatePricing();
-      queryClient.invalidateQueries({ queryKey: queryKeys.requests.portal });
+      invalidatePricing({ orgId: pricingOffer.orgId, pricingId: pricingOffer.id });
       return pricingOffer;
     },
     onError: error => {
@@ -49,8 +48,7 @@ export function usePricingMutations() {
     mutationFn: sendPricingRequest,
     onSuccess: (_result, requestId) => {
       toast.success(t('form.sendSuccess' as any));
-      invalidatePricing();
-      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.detail(requestId) });
+      invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to send pricing request:', error);
@@ -68,8 +66,7 @@ export function usePricingMutations() {
     }) => updatePricingRequest(requestId, data),
     onSuccess: (_result, { requestId }) => {
       toast.success(t('form.updateSuccess' as any));
-      invalidatePricing();
-      queryClient.invalidateQueries({ queryKey: queryKeys.pricing.detail(requestId) });
+      invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to update pricing request:', error);
@@ -83,7 +80,6 @@ export function usePricingMutations() {
     onSuccess: () => {
       toast.success(t('form.acceptSuccess' as any));
       invalidatePricing();
-      queryClient.invalidateQueries({ queryKey: queryKeys.requests.portal });
     },
     onError: error => {
       console.error('Failed to accept pricing request:', error);
@@ -94,9 +90,9 @@ export function usePricingMutations() {
   const declineMutation = useMutation({
     mutationFn: ({ requestId, reason }: { requestId: string; reason?: string }) =>
       declinePricingRequest(requestId, reason),
-    onSuccess: () => {
+    onSuccess: (_result, { requestId }) => {
       toast.success(t('form.declineSuccess' as any));
-      invalidatePricing();
+      invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to decline pricing request:', error);
@@ -106,13 +102,24 @@ export function usePricingMutations() {
 
   const cancelMutation = useMutation({
     mutationFn: cancelPricingRequest,
-    onSuccess: () => {
+    onSuccess: (_result, requestId) => {
       toast.success(t('form.cancelSuccess' as any));
-      invalidatePricing();
-      queryClient.invalidateQueries({ queryKey: queryKeys.requests.portal });
+      invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to cancel pricing request:', error);
+      toast.error(t('form.deleteFailed' as any));
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deletePricingRequest,
+    onSuccess: (_result, requestId) => {
+      toast.success(t('form.cancelSuccess' as any));
+      invalidatePricing({ pricingId: requestId });
+    },
+    onError: error => {
+      console.error('Failed to delete pricing request:', error);
       toast.error(t('form.deleteFailed' as any));
     },
   });
@@ -136,5 +143,8 @@ export function usePricingMutations() {
     cancelMutation,
     cancelPricingRequest: cancelMutation.mutateAsync,
     isCanceling: cancelMutation.isPending,
+    deleteMutation,
+    deletePricingRequest: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
   };
 }

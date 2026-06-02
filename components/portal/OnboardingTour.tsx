@@ -40,70 +40,100 @@ interface OnboardingTourProps {
 export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComplete, onSkip }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = isRTLLocale(locale);
 
   useEffect(() => {
     setMounted(true);
-    // Prevent scroll during tour
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
     };
   }, []);
 
+const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
+
   const steps: TourStep[] = [
     {
       id: 'welcome',
       title: t('portal.onboarding.steps.welcome.title'),
       description: t('portal.onboarding.steps.welcome.description'),
-      icon: <Sparkles className="w-8 h-8 text-yellow-500" />,
+      icon: <Sparkles className={tourIconClass} />,
       position: 'center',
     },
     {
       id: 'dashboard',
       title: t('portal.onboarding.steps.dashboard.title'),
       description: t('portal.onboarding.steps.dashboard.description'),
-      icon: <LayoutDashboard className="w-8 h-8 text-primary-500" />,
-      position: 'center',
+      icon: <LayoutDashboard className={tourIconClass} />,
+      highlight: '[data-tour="nav-dashboard"]',
+      position: 'bottom-right',
     },
     {
       id: 'requests',
       title: t('portal.onboarding.steps.requests.title'),
       description: t('portal.onboarding.steps.requests.description'),
-      icon: <ClipboardList className="w-8 h-8 text-purple-500" />,
-      position: 'center',
+      icon: <ClipboardList className={tourIconClass} />,
+      highlight: '[data-tour="nav-requests"]',
+      position: 'bottom-right',
     },
     {
       id: 'pricing',
       title: t('portal.onboarding.steps.pricing.title'),
       description: t('portal.onboarding.steps.pricing.description'),
-      icon: <DollarSign className="w-8 h-8 text-green-500" />,
-      position: 'center',
+      icon: <DollarSign className={tourIconClass} />,
+      highlight: '[data-tour="nav-pricing"]',
+      position: 'bottom-right',
     },
     {
       id: 'team',
       title: t('portal.onboarding.steps.team.title'),
       description: t('portal.onboarding.steps.team.description'),
-      icon: <Users className="w-8 h-8 text-indigo-500" />,
-      position: 'center',
+      icon: <Users className={tourIconClass} />,
+      highlight: '[data-tour="nav-team"]',
+      position: 'bottom-right',
     },
     {
       id: 'notifications',
       title: t('portal.onboarding.steps.notifications.title'),
       description: t('portal.onboarding.steps.notifications.description'),
-      icon: <Bell className="w-8 h-8 text-amber-500" />,
-      position: 'center',
+      icon: <Bell className={tourIconClass} />,
+      highlight: '[data-tour="header-notifications"]',
+      position: 'top-center',
     },
     {
       id: 'complete',
       title: t('portal.onboarding.steps.complete.title'),
       description: t('portal.onboarding.steps.complete.description'),
-      icon: <Rocket className="w-8 h-8 text-primary-600" />,
+      icon: <Rocket className={tourIconClass} />,
       position: 'center',
     },
   ];
+
+  const step = steps[currentStep];
+
+  useEffect(() => {
+    if (!step.highlight) {
+      setHighlightRect(null);
+      return;
+    }
+
+    const updateHighlight = () => {
+      const target = document.querySelector(step.highlight!);
+      if (!target) {
+        setHighlightRect(null);
+        return;
+      }
+      target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      setHighlightRect(target.getBoundingClientRect());
+    };
+
+    updateHighlight();
+    window.addEventListener('resize', updateHighlight);
+    return () => window.removeEventListener('resize', updateHighlight);
+  }, [currentStep, step.highlight]);
 
   const handleNext = useCallback(() => {
     if (currentStep < steps.length - 1) {
@@ -173,9 +203,24 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
 
   if (!mounted) return null;
 
-  const step = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
   const isFirstStep = currentStep === 0;
+  const isAnchored = Boolean(highlightRect);
+  const cardStyle = isAnchored
+    ? {
+        position: 'fixed' as const,
+        top: Math.min(
+          highlightRect!.bottom + 16,
+          window.innerHeight - 420
+        ),
+        left: Math.min(
+          Math.max(highlightRect!.left, 16),
+          window.innerWidth - 420
+        ),
+        width: 'min(100vw - 2rem, 28rem)',
+        zIndex: 101,
+      }
+    : undefined;
 
   const tourContent = (
     <AnimatePresence mode="wait">
@@ -184,24 +229,42 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        className={cn(
+          'fixed inset-0 z-[100] p-4',
+          isAnchored ? 'pointer-events-none' : 'flex items-center justify-center'
+        )}
       >
-        {/* Backdrop */}
         <motion.div
-          className="absolute inset-0 bg-surface-950/80 backdrop-blur-sm"
+          className="absolute inset-0 bg-surface-950/80 backdrop-blur-sm pointer-events-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         />
 
-        {/* Tour Card */}
+        {highlightRect && (
+          <div
+            className="pointer-events-none absolute rounded-xl ring-2 ring-primary-400 shadow-[0_0_0_9999px_rgba(2,6,23,0.78)]"
+            style={{
+              top: highlightRect.top - 6,
+              left: highlightRect.left - 6,
+              width: highlightRect.width + 12,
+              height: highlightRect.height + 12,
+            }}
+            aria-hidden
+          />
+        )}
+
         <motion.div
           key={step.id}
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: -20 }}
+          exit={{ opacity: 0, scale: 0.96, y: -12 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-white dark:bg-surface-900 rounded-3xl shadow-2xl overflow-hidden"
+          style={cardStyle}
+          className={cn(
+            'relative bg-white dark:bg-surface-900 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto',
+            !isAnchored && 'w-full max-w-lg'
+          )}
         >
           {/* Progress Bar */}
           <div className="absolute top-0 start-0 end-0 h-1 bg-surface-100 dark:bg-surface-800">

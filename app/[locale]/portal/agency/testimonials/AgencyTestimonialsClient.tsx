@@ -36,6 +36,8 @@ import {
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidatePortalTestimonialData } from '@/lib/utils/portal-cache-invalidation';
 import { toast } from 'sonner';
 import { useDirection } from '@/lib/i18n-utils';
 
@@ -435,6 +437,7 @@ export default function AgencyTestimonialsClient() {
   const t = useTranslations('portal');
   const toastT = useTranslations('portal.agency.testimonials.toast');
   const { user } = usePortalAuth();
+  const queryClient = useQueryClient();
   const dir = useDirection();
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -508,11 +511,13 @@ export default function AgencyTestimonialsClient() {
     status: TestimonialStatus,
     notes?: string
   ) => {
+    const testimonial = testimonials.find(item => item.id === testimonialId);
     try {
       await updateTestimonialStatus(testimonialId, status, user?.uid, notes);
       setTestimonials(prev =>
         prev.map(t => (t.id === testimonialId ? { ...t, status, adminNotes: notes } : t))
       );
+      invalidatePortalTestimonialData(queryClient, testimonial?.orgId);
       toast.success(
         status === 'approved'
           ? t('agency.testimonials.toast.approved')

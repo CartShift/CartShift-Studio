@@ -36,6 +36,10 @@
           "description": "Start by creating your first request to get the ball rolling."
         }
       },
+      "secondaryPanel": {
+        "show": "Show tips & service status",
+        "hide": "Hide tips & service status"
+      },
       "insight": {
         "title": "Insight",
         "partner": "Growth Partner",

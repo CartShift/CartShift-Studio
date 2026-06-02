@@ -252,7 +252,7 @@ export const ClientPortalPageContent: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight mb-4">
               {portalInfo.benefits.title}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-300 via-primary-200 to-accent-300 dark:from-primary-400 dark:via-accent-400 dark:to-primary-400">
+              <span className="text-accent-200 dark:text-accent-300">
                 {portalInfo.benefits.titleSpan}
               </span>
             </h2>
@@ -329,17 +329,17 @@ export const ClientPortalPageContent: React.FC = () => {
                     {
                       label: portalInfo.preview.stats.active,
                       value: '3',
-                      color: 'from-primary-500 to-primary-600',
+                      color: 'text-primary-400',
                     },
                     {
                       label: portalInfo.preview.stats.pending,
                       value: '1',
-                      color: 'from-yellow-500 to-amber-500',
+                      color: 'text-amber-400',
                     },
                     {
                       label: portalInfo.preview.stats.completed,
                       value: '12',
-                      color: 'from-green-500 to-emerald-500',
+                      color: 'text-emerald-400',
                     },
                   ].map((stat, i) => (
                     <motion.div
@@ -351,7 +351,7 @@ export const ClientPortalPageContent: React.FC = () => {
                       className="p-2 sm:p-3 md:p-4 rounded-lg md:rounded-xl bg-surface-700/30 border border-surface-600/30 text-center"
                     >
                       <div
-                        className={`text-lg sm:text-2xl md:text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}
+                        className={`text-lg sm:text-2xl md:text-3xl font-bold ${stat.color}`}
                       >
                         {stat.value}
                       </div>
@@ -458,7 +458,7 @@ export const ClientPortalPageContent: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight mb-6">
               {portalInfo.cta.title}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-300 to-primary-300">
+              <span className="text-accent-200 dark:text-accent-300">
                 {portalInfo.cta.titleSpan}
               </span>
             </h2>

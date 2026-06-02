@@ -102,7 +102,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
             <X className="w-5 h-5 text-surface-500" />
           </button>
 
-          <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 p-8 text-white overflow-hidden">
+          <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-700 p-8 text-white overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <div
                 className="absolute inset-0"
@@ -174,7 +174,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
                     className="rtl:-scale-x-100 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
                   />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-600 via-primary-700 to-accent-700 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Button>
             </Link>
 

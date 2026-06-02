@@ -8,6 +8,25 @@
       "signOut": "התנתק",
       "signOutFailed": "ההתנתקות נכשלה",
       "signOutFailedDesc": "אנא נסה שוב",
+      "help": "עזרה ותמיכה",
+      "groups": {
+        "operations": "תפעול",
+        "clients": "לקוחות ובקשות",
+        "growth": "צמיחה",
+        "settings": "הגדרות",
+        "overview": "סקירה",
+        "workspace": "סביבת עבודה",
+        "billing": "חיוב"
+      },
+      "groupsAbbrev": {
+        "operations": "תפעול",
+        "clients": "לקוחות",
+        "growth": "צמיחה",
+        "settings": "הגדר",
+        "overview": "בית",
+        "workspace": "עבודה",
+        "billing": "חיוב"
+      },
       "nav": {
         "workboard": "לוח עבודה",
         "sales": "לוח מכירות",
@@ -22,7 +41,9 @@
         "files": "קבצים",
         "consultations": "פגישות ייעוץ",
         "review": "השאר המלצה",
-        "testimonials": "המלצות"
+        "testimonials": "המלצות",
+        "calculator": "מחשבון",
+        "more": "עוד"
       }
     }
   }

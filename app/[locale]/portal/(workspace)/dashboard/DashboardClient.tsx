@@ -2,7 +2,7 @@
 
 import { Suspense, lazy, useMemo, useState, useEffect } from 'react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
-import { Clock, AlertCircle, ChevronDown } from 'lucide-react';
+import { Clock, AlertCircle, ChevronDown, Sparkles } from 'lucide-react';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useTranslations, NextIntlClientProvider } from 'next-intl';
@@ -14,14 +14,12 @@ import { motion } from '@/lib/motion';
 import { useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-// Lazy load the ActivityTimeline for better initial load
 const ActivityTimeline = lazy(() =>
   import('@/components/portal/ActivityTimeline').then(mod => ({
     default: mod.ActivityTimeline,
   }))
 );
 
-// Helper to get time-based greeting key
 function getGreetingKey(): 'morning' | 'afternoon' | 'evening' | 'default' {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return 'morning';
@@ -35,49 +33,49 @@ function DashboardClientContent() {
   const params = useParams();
   const locale = (typeof params.locale === 'string' ? params.locale : 'en') as 'en' | 'he';
 
-  // Use the new TanStack Query hook
   const { requests, activities, loading, error, orgId, userData } = useDashboardData();
 
-  // Memoize greeting to prevent recalculation
   const greeting = useMemo(() => {
     const key = getGreetingKey();
     const firstName = userData?.name?.split(' ')[0] || '';
     return t(`dashboard.greeting.${key}`, { name: firstName });
   }, [t, userData?.name]);
 
-  // Collapsible Service Status Logic
-  const [isServiceStatusOpen, setIsServiceStatusOpen] = useState(true);
+  const [isSecondaryOpen, setIsSecondaryOpen] = useState(false);
+  const [isServiceStatusOpen, setIsServiceStatusOpen] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('cartshift_service_status_open');
-    if (saved !== null) {
-      setIsServiceStatusOpen(saved === 'true');
+    const savedSecondary = localStorage.getItem('cartshift_dashboard_secondary_open');
+    const savedService = localStorage.getItem('cartshift_service_status_open');
+    if (savedSecondary !== null) {
+      setIsSecondaryOpen(savedSecondary === 'true');
+    }
+    if (savedService !== null) {
+      setIsServiceStatusOpen(savedService === 'true');
     }
   }, []);
 
+  const toggleSecondary = () => {
+    const next = !isSecondaryOpen;
+    setIsSecondaryOpen(next);
+    localStorage.setItem('cartshift_dashboard_secondary_open', String(next));
+  };
+
   const toggleServiceStatus = () => {
-    const newState = !isServiceStatusOpen;
-    setIsServiceStatusOpen(newState);
-    localStorage.setItem('cartshift_service_status_open', String(newState));
+    const next = !isServiceStatusOpen;
+    setIsServiceStatusOpen(next);
+    localStorage.setItem('cartshift_service_status_open', String(next));
   };
 
   if (loading) {
     return (
-      <>
-        {/* Show QuickActions optimistically while loading */}
-        <div className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="h-9 w-64 bg-surface-200 dark:bg-surface-800 rounded-lg animate-pulse" />
-              <div className="h-5 w-80 bg-surface-100 dark:bg-surface-800/50 rounded-lg animate-pulse" />
-            </div>
-          </div>
-          <QuickActions />
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <div className="h-9 w-64 bg-surface-200 dark:bg-surface-800 rounded-lg animate-pulse" />
+          <div className="h-5 w-80 bg-surface-100 dark:bg-surface-800/50 rounded-lg animate-pulse" />
         </div>
-        <div className="mt-8">
-          <DashboardSkeleton />
-        </div>
-      </>
+        <DashboardSkeleton />
+      </div>
     );
   }
 
@@ -97,40 +95,39 @@ function DashboardClientContent() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Header with Personalized Greeting */}
+    <div className="space-y-6">
       <motion.div
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4"
-        initial={{ opacity: 0, y: -10 }}
+        className="flex flex-col md:flex-row md:items-end justify-between gap-4"
+        initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.3 }}
       >
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit flex items-center gap-3">
-            <span className="text-surface-900 dark:text-white">{greeting}</span>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
+            {greeting}
           </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
+          <p className="text-surface-500 dark:text-surface-400 mt-1 text-sm font-medium">
             {t('dashboard.subtitle')}
           </p>
         </div>
+        <div className="hidden md:block md:max-w-md lg:max-w-lg w-full">
+          <QuickActions />
+        </div>
       </motion.div>
 
-      {/* Quick Actions */}
-      <QuickActions />
+      <PinnedRequests
+        requests={requests}
+        orgId={orgId ?? ''}
+        locale={locale}
+        isAgency={userData?.isAgency ?? false}
+      />
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content: Pinned Requests & Activity */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Pinned Requests - Top Priority */}
-          <PinnedRequests
-            requests={requests}
-            orgId={orgId ?? ''}
-            locale={locale}
-            isAgency={userData?.isAgency ?? false}
-          />
+      <div className="md:hidden">
+        <QuickActions />
+      </div>
 
-          {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
           <Card variant="glass" noPadding className="overflow-hidden">
             <CardSectionTitle
               as="h2"
@@ -158,90 +155,107 @@ function DashboardClientContent() {
           </Card>
         </div>
 
-        {/* Sidebar Info: Tips & Status */}
-        <div className="space-y-6">
-          {/* Tips Card */}
-          <TipsCard />
-
-          {/* Service Status */}
-          <Card
-            variant="elevated"
-            accent="primary"
-            className="shadow-lg transition-all duration-300"
+        <div className="space-y-4">
+          <button
+            type="button"
+            onClick={toggleSecondary}
+            className="portal-focus-ring w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50/80 dark:bg-surface-900/40 text-start touch-target-sm"
+            aria-expanded={isSecondaryOpen}
           >
-            <button
-              onClick={toggleServiceStatus}
-              className="w-full flex items-center justify-between group"
-            >
-              <CardSectionTitle
-                as="h4"
-                icon={Clock}
-                iconClassName="text-primary-500"
-                className="mb-0 group-hover:text-primary-600 transition-colors"
-              >
-                {t('dashboard.serviceStatus.title')}
-              </CardSectionTitle>
-              <ChevronDown
-                className={cn(
-                  'w-5 h-5 text-surface-400 transition-transform duration-200',
-                  isServiceStatusOpen ? 'rotate-180' : 'rotate-0'
-                )}
-              />
-            </button>
+            <span className="flex items-center gap-2 text-sm font-semibold text-surface-700 dark:text-surface-300">
+              <Sparkles className="w-4 h-4 text-primary-500" aria-hidden />
+              {isSecondaryOpen
+                ? t('dashboard.secondaryPanel.hide')
+                : t('dashboard.secondaryPanel.show')}
+            </span>
+            <ChevronDown
+              className={cn(
+                'w-4 h-4 text-surface-400 transition-transform duration-200',
+                isSecondaryOpen && 'rotate-180'
+              )}
+              aria-hidden
+            />
+          </button>
 
+          {isSecondaryOpen && (
             <motion.div
-              initial={false}
-              animate={{
-                height: isServiceStatusOpen ? 'auto' : 0,
-                opacity: isServiceStatusOpen ? 1 : 0,
-                marginBottom: isServiceStatusOpen ? 24 : 0,
-              }}
-              className="overflow-hidden"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="space-y-4 overflow-hidden"
             >
-              <div className="pt-6 space-y-5">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                    {t('dashboard.serviceStatus.design')}
-                  </span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-2 text-xs">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    {t('dashboard.serviceStatus.active')}
-                  </span>
-                </div>
-                <Card variant="glass" padding="lg">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                      {t('dashboard.serviceStatus.dev')}
-                    </span>
-                    <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-2 text-xs">
-                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-                      {t('dashboard.serviceStatus.peak')}
-                    </span>
+              <TipsCard />
+
+              <Card variant="elevated" accent="primary" className="shadow-sm">
+                <button
+                  type="button"
+                  onClick={toggleServiceStatus}
+                  className="portal-focus-ring w-full flex items-center justify-between group touch-target-sm"
+                  aria-expanded={isServiceStatusOpen}
+                >
+                  <CardSectionTitle
+                    as="h4"
+                    icon={Clock}
+                    iconClassName="text-primary-500"
+                    className="mb-0 group-hover:text-primary-600 transition-colors"
+                  >
+                    {t('dashboard.serviceStatus.title')}
+                  </CardSectionTitle>
+                  <ChevronDown
+                    className={cn(
+                      'w-5 h-5 text-surface-400 transition-transform duration-200',
+                      isServiceStatusOpen && 'rotate-180'
+                    )}
+                    aria-hidden
+                  />
+                </button>
+
+                {isServiceStatusOpen && (
+                  <div className="pt-6 space-y-5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
+                        {t('dashboard.serviceStatus.design')}
+                      </span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-2 text-xs">
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full motion-safe:animate-pulse" />
+                        {t('dashboard.serviceStatus.active')}
+                      </span>
+                    </div>
+                    <Card variant="glass" padding="lg">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
+                          {t('dashboard.serviceStatus.dev')}
+                        </span>
+                        <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-2 text-xs">
+                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full motion-safe:animate-pulse" />
+                          {t('dashboard.serviceStatus.peak')}
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-amber-500"
+                          initial={{ width: 0 }}
+                          animate={{ width: '92%' }}
+                          transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+                        />
+                      </div>
+                      <p className="mt-3 text-xs text-surface-400 font-medium">
+                        {t('dashboard.serviceStatus.etaLabel')}: 4-6{' '}
+                        {t('dashboard.serviceStatus.days')}
+                      </p>
+                    </Card>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
+                        {t('dashboard.serviceStatus.avgResponse')}
+                      </span>
+                      <span className="text-surface-900 dark:text-white font-semibold text-xs">
+                        {t('dashboard.serviceStatus.responseTime')}
+                      </span>
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-amber-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: '92%' }}
-                      transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
-                    />
-                  </div>
-                  <p className="mt-3 text-[10px] text-surface-400 font-bold uppercase tracking-tight">
-                    {t('dashboard.serviceStatus.etaLabel')}: 4-6 {t('dashboard.serviceStatus.days')}
-                  </p>
-                </Card>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                    {t('dashboard.serviceStatus.avgResponse')}
-                  </span>
-                  <span className="text-surface-900 dark:text-white font-semibold text-xs">
-                    {t('dashboard.serviceStatus.responseTime')}
-                  </span>
-                </div>
-              </div>
+                )}
+              </Card>
             </motion.div>
-          </Card>
+          )}
         </div>
       </div>
     </div>

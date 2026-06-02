@@ -162,7 +162,7 @@ function MetricCard({ label, value, icon, tone }: MetricCardProps) {
       'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10 text-amber-700 dark:text-amber-300',
     rose: 'from-rose-50 to-rose-100/50 dark:from-rose-900/20 dark:to-rose-800/10 text-rose-700 dark:text-rose-300',
     purple:
-      'from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10 text-purple-700 dark:text-purple-300',
+      'from-accent-50 to-accent-100/50 dark:from-accent-900/20 dark:to-accent-800/10 text-accent-700 dark:text-accent-300',
   }[tone];
 
   return (

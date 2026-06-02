@@ -125,7 +125,7 @@ export default function ConsultationsClient() {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-600 border-t-transparent" />
           </div>
         ) : upcomingConsultations.length === 0 ? (
           <div className="text-center py-12 bg-surface-50 dark:bg-surface-900/50 rounded-2xl border border-surface-200 dark:border-surface-800">

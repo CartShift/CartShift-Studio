@@ -40,7 +40,7 @@ const skillCategories: SkillCategory[] = [
   {
     key: 'primary',
     icon: Code,
-    gradient: 'from-cyan-400 via-blue-500 to-indigo-600',
+    gradient: 'from-cyan-400 via-blue-500 to-primary-600',
     bgGlow: 'cyan',
   },
   {
@@ -52,8 +52,8 @@ const skillCategories: SkillCategory[] = [
   {
     key: 'ai',
     icon: Sparkles,
-    gradient: 'from-indigo-400 via-blue-500 to-cyan-600',
-    bgGlow: 'indigo',
+    gradient: 'from-primary-400 via-accent-500 to-cyan-600',
+    bgGlow: 'primary',
   },
   {
     key: 'cloud',
@@ -145,9 +145,9 @@ const portfolioProjects: PortfolioProject[] = [
         dark: '/images/cv/portfolio/starlinker-en-dark.png',
       },
     },
-    gradient: 'from-indigo-500 via-sky-500 to-cyan-400',
+    gradient: 'from-primary-500 via-sky-500 to-cyan-400',
     surface:
-      'from-indigo-500/[0.14] via-sky-500/[0.08] to-cyan-400/[0.14] dark:from-indigo-500/[0.14] dark:via-sky-500/[0.05] dark:to-cyan-400/[0.12]',
+      'from-primary-500/[0.14] via-sky-500/[0.08] to-cyan-400/[0.14] dark:from-primary-500/[0.14] dark:via-sky-500/[0.05] dark:to-cyan-400/[0.12]',
   },
   {
     key: 'atlasIrwin',
@@ -470,7 +470,7 @@ export default function CVPageContent() {
           delay={2}
         />
         <GradientOrb
-          className="absolute -bottom-40 end-1/4 w-[400px] h-[400px] bg-gradient-to-br from-violet-300/30 to-indigo-300/20 dark:from-violet-500/15 dark:to-indigo-500/10 rounded-full blur-[100px]"
+          className="absolute -bottom-40 end-1/4 w-[400px] h-[400px] bg-gradient-to-br from-primary-300/30 to-accent-300/20 dark:from-primary-500/15 dark:to-accent-500/10 rounded-full blur-[100px]"
           delay={4}
         />
 
@@ -799,7 +799,7 @@ export default function CVPageContent() {
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                               <span
-                                className={`${isSelfEmployment ? 'text-sm text-slate-500 dark:text-surface-400' : 'text-sm sm:text-base font-semibold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent'}`}
+                                className={`${isSelfEmployment ? 'text-sm text-slate-500 dark:text-surface-400' : 'text-sm sm:text-base font-semibold text-primary-600 dark:text-primary-400'}`}
                               >
                                 {t(`experience.${expKey}.company` as any)}
                               </span>
@@ -998,8 +998,8 @@ export default function CVPageContent() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl blur-lg opacity-50" />
-                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl blur-lg opacity-50" />
+                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-lg">
                   <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
               </div>
@@ -1059,8 +1059,8 @@ export default function CVPageContent() {
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-violet-500 rounded-xl blur-lg opacity-50" />
-              <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-accent-500 rounded-xl blur-lg opacity-50" />
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-accent-600 flex items-center justify-center shadow-lg">
                 <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
             </div>

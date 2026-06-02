@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-03T00:00:00.000Z",
+  "title": "Design System: CartShift Studio",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "WordPress Channel Blue",
+        "canonical": "oklch(52% 0.11 235)",
+        "tonalRamp": ["#0d2f3e", "#14465d", "#1a698c", "#21759b", "#3783a5", "#569ebf", "#7ab8d4", "#a8d4e8", "#d4ecf5", "#eef6fa"]
+      },
+      "accent": {
+        "role": "secondary",
+        "displayName": "Shopify Growth Green",
+        "canonical": "oklch(72% 0.14 125)",
+        "tonalRamp": ["#3c4c1d", "#5a731f", "#87ac41", "#96bf48", "#a1c55a", "#b2d07a", "#c4dc9a", "#d7e8ba", "#eaf4da", "#f5faeb"]
+      },
+      "surface-900": {
+        "role": "neutral",
+        "displayName": "Studio Night",
+        "canonical": "oklch(20% 0.03 260)",
+        "tonalRamp": ["#020617", "#0f172a", "#172033", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#f8fafc"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero and page titles only." },
+      "body": { "displayName": "Body", "purpose": "Portal copy, tables, form help." }
+    },
+    "shadows": [
+      { "name": "card-dark", "value": "0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.15)", "purpose": "Resting dark cards." },
+      { "name": "btn-primary", "value": "0 1px 2px rgba(0,0,0,0.1), 0 4px 12px rgba(33,117,155,0.25)", "purpose": "Primary button at rest." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default UI transitions." },
+      { "name": "duration-ui", "value": "300ms", "purpose": "Buttons, borders, shadow shifts." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "375px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "3xl", "value": "1920px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main portal and site CTA.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Save changes</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 24px; border: none; border-radius: 12px; background: linear-gradient(to bottom, #3783a5, #21759b); color: #fff; font-family: var(--font-outfit, system-ui, sans-serif); font-size: 1rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 4px 12px rgba(33,117,155,0.25); cursor: pointer; transition: transform 300ms cubic-bezier(0.4,0,0.2,1), box-shadow 300ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { background: linear-gradient(to bottom, #569ebf, #21759b); box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 24px rgba(33,117,155,0.35); transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid #569ebf; outline-offset: 2px; } .ds-btn-primary:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary actions on dark surfaces.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.08); color: #f8fafc; font-family: var(--font-outfit, system-ui, sans-serif); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 300ms ease, border-color 300ms ease; } .ds-btn-secondary:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.12); } .ds-btn-secondary:focus-visible { outline: 2px solid #569ebf; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Default form field on dark portal backgrounds.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Project name\" aria-label=\"Project name\" />",
+      "css": ".ds-input { width: 100%; min-height: 40px; padding: 10px 16px; border-radius: 12px; border: 1px solid #334155; background: #172033; color: #f8fafc; font-family: var(--font-main, system-ui, sans-serif); font-size: 0.875rem; transition: border-color 200ms ease, box-shadow 200ms ease; } .ds-input::placeholder { color: #94a3b8; } .ds-input:focus { outline: none; border-color: #569ebf; box-shadow: 0 0 0 2px rgba(86,158,190,0.25); }"
+    },
+    {
+      "name": "Portal Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Elevated panel on studio-night background.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Active requests</h3><p class=\"ds-card-body\">Track status, deadlines, and approvals in one place.</p></div>",
+      "css": ".ds-card { padding: 24px; border-radius: 12px; border: 1px solid #334155; background: #172033; box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.15); } .ds-card-title { margin: 0 0 8px; color: #f8fafc; font-family: var(--font-outfit, system-ui, sans-serif); font-size: 1.125rem; font-weight: 600; line-height: 1.4; } .ds-card-body { margin: 0; color: #cbd5e1; font-size: 0.875rem; line-height: 1.6; max-width: 65ch; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "Compact status label for workboard states.",
+      "html": "<span class=\"ds-badge\">In progress</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); color: #6ee7b7; font-family: var(--font-outfit, system-ui, sans-serif); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Commerce Control Room",
+    "overview": "CartShift Studio looks like a studio floor for serious e-commerce work: dark, legible, bordered, and fast. Surfaces stack in tonal layers instead of decorative chrome. WordPress blue and Shopify green appear as expert signals, not as a rainbow SaaS palette.",
+    "keyCharacteristics": [
+      "Dark-first portal with surface-900 body and elevated surface-850 cards",
+      "High-contrast borders and restrained glass on overlays only",
+      "CVA-driven components with semantic z-index and 44px touch targets on primary actions",
+      "Outfit for EN; Rubik for HE via --font-main",
+      "Framer Motion for layoutId transitions with reduced-motion fallbacks"
+    ],
+    "rules": [
+      { "name": "The Platform Accent Rule", "body": "Blue drives action; green marks secondary emphasis or brand pairing.", "section": "colors" },
+      { "name": "The Dark Default Rule", "body": "Portal surfaces default to dark surface-900.", "section": "colors" },
+      { "name": "The Locale Font Rule", "body": "--font-main follows lang: he → Rubik, en → Outfit.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Shadows appear on hover, focus, or modal elevation only.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use logical properties for RTL parity.",
+      "Do toast async outcomes with Sonner.",
+      "Do keep primary mobile actions at 48px height.",
+      "Do use semantic z-index tokens from Tailwind config."
+    ],
+    "donts": [
+      "Don't use generic SaaS landing clichés or hero-metric stat blocks.",
+      "Don't use glassmorphism as wallpaper.",
+      "Don't use side-stripe borders greater than 1px as colored accents.",
+      "Don't use numbered section markers without real sequence meaning.",
+      "Don't gate content visibility on entrance animations."
+    ]
+  }
+}
