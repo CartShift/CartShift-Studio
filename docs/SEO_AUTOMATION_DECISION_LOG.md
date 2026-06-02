@@ -79,3 +79,14 @@ The automation should append a new entry for every run, even when it decides not
 - Validation: `pnpm exec prettier --check content/blog/shopify-seo-performance-evaluation.md` passed. `pnpm build` was attempted twice and timed out, first after 120 seconds with an `EPIPE` from the killed process and then after an extended run with no successful completion.
 - Deployment: Not attempted; build validation did not complete successfully, so no commit or push was made.
 - Notes: Search Console access works for `sc-domain:cart-shift.com`, while `.env.local` still lists `https://cart-shift.com/`; future runs should update `GOOGLE_SEARCH_CONSOLE_SITE_URL` to the accessible domain property or keep the domain-property fallback. GA4 access succeeded. Workspace still contains many pre-existing dirty blog/test files; only the new article and decision log should be staged when validation passes.
+
+## 2026-06-02T15:30:06+03:00 - Blocked: local automation runner unavailable
+
+- **Status:** Blocked before SEO analysis or editing.
+- **Missing/unverifiable access category:** The Windows sandbox could not start any local process (`CreateProcessAsUserW failed: 5`). As a result, the automation could not verify the required non-interactive Google Search Console/GA4 credential variables or Git push access to `origin/main`.
+- **Source data:** Not accessed. Google Search Console, GA4, repo SEO docs, and `content/blog/` inventory could not be inspected.
+- **Chosen page:** None. No article was selected or modified.
+- **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md` only.
+- **Validation:** Skipped. `pnpm build` could not be started.
+- **Deployment:** Skipped. No files were staged, committed, or pushed.
+- **Likely fix:** Restore local sandbox process execution, then rerun the automation so it can verify credential variables and Git push access before making SEO changes.

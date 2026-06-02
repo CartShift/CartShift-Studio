@@ -212,6 +212,19 @@
           "billing": "תשלומים",
           "system": "גישה למערכת"
         },
+        "navGroups": {
+          "organization": "ארגון",
+          "account": "החשבון שלך",
+          "operations": "תפעול"
+        },
+        "brandingSections": {
+          "assets": "נכסי מותג",
+          "assetsDesc": "לוגו ואייקון שמוצגים בפורטל הלקוחות",
+          "appearance": "צבעים וטיפוגרפיה",
+          "appearanceDesc": "פלטה, גופנים ורדיוס פינות",
+          "preview": "תצוגת ערכת נושא",
+          "previewDesc": "דוגמת ממשק עם הגדרות המותג הנוכחיות"
+        },
         "system": {
           "title": "הגדרות מערכת",
           "subtitle": "שליטה בנראות גלובלית של דפים ותכונות.",

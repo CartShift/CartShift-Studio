@@ -11,7 +11,7 @@ const columnIndicatorVariants = cva('w-2 h-2 rounded-full', {
   variants: {
     color: {
       slate: 'bg-surface-500',
-      blue: 'bg-blue-500',
+      blue: 'bg-primary-500',
       amber: 'bg-amber-500',
       emerald: 'bg-emerald-500',
     },
@@ -26,7 +26,7 @@ const droppableAreaVariants = cva(
   {
     variants: {
       isOver: {
-        true: 'bg-blue-50/50 dark:bg-blue-500/5 ring-2 ring-blue-500/30 ring-inset',
+        true: 'bg-primary-50/50 dark:bg-primary-500/5 ring-2 ring-primary-500/30 ring-inset',
         false: '',
       },
     },
@@ -80,7 +80,7 @@ export function DroppableColumn({
         {onMoreClick && (
           <button
             onClick={onMoreClick}
-            className="text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+            className="portal-focus-ring text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
             aria-label="More options"
           >
             <MoreHorizontal size={16} />
@@ -108,7 +108,7 @@ export function DroppableColumn({
       {onAddClick && (
         <button
           onClick={onAddClick}
-          className="w-full py-2.5 rounded-xl border border-dashed border-surface-200 dark:border-surface-800 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 text-surface-400 hover:text-blue-600 transition-all flex items-center justify-center gap-2 group"
+          className="portal-focus-ring w-full py-2.5 rounded-xl border border-dashed border-surface-200 dark:border-surface-800 hover:border-primary-300 hover:bg-primary-50/30 dark:hover:bg-primary-900/10 text-surface-400 hover:text-primary-600 transition-all flex items-center justify-center gap-2 group"
         >
           <PlusCircle size={14} className="group-hover:scale-110 transition-transform" />
           <span className="text-[10px] font-black uppercase tracking-widest">

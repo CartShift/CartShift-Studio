@@ -125,6 +125,9 @@ export interface PricingRequest {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   sentAt?: Timestamp;
+  lastSentAt?: Timestamp;
+  offerEmailQueueId?: string;
+  offerEmailRecipient?: string;
   acceptedAt?: Timestamp;
   declinedAt?: Timestamp;
 }

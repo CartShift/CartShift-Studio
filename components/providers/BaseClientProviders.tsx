@@ -29,6 +29,7 @@ export function BaseClientProviders({
       <BrandingProvider>
         <MotionProvider>
           <MotionConfig
+            reducedMotion="user"
             transition={{
               type: 'spring',
               stiffness: 300,

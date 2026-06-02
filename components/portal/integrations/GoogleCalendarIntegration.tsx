@@ -133,7 +133,7 @@ export default function GoogleCalendarIntegration({
       className={cn(
         'relative p-6 rounded-2xl border-2 transition-all',
         isConnected
-          ? 'bg-gradient-to-br from-green-50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/10 border-green-200 dark:border-green-800/50'
+          ? 'bg-emerald-50 dark:bg-emerald-950/20 border-green-200 dark:border-green-800/50'
           : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800'
       )}
     >
@@ -143,8 +143,8 @@ export default function GoogleCalendarIntegration({
           className={cn(
             'w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg',
             isConnected
-              ? 'bg-gradient-to-br from-green-500 to-emerald-600'
-              : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+              ? 'bg-emerald-600 dark:bg-emerald-500'
+              : 'bg-primary-600 dark:bg-primary-500'
           )}
         >
           <Calendar className="w-7 h-7 text-white" />
@@ -206,7 +206,7 @@ export default function GoogleCalendarIntegration({
                       onChange={e => handleCalendarChange(e.target.value)}
                       disabled={updating}
                       className={cn(
-                        'w-full appearance-none bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg py-2 ps-3 pe-8 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20',
+                        'w-full appearance-none bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg py-2 ps-3 pe-8 text-sm text-surface-700 dark:text-surface-300 focus:outline-none',
                         updating && 'opacity-50 cursor-wait'
                       )}
                     >
@@ -265,15 +265,15 @@ export default function GoogleCalendarIntegration({
             <div className="p-4 rounded-xl bg-surface-50/80 dark:bg-surface-800/30 border border-dashed border-surface-200 dark:border-surface-700">
               <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-400">
                 <li className="flex items-center gap-2">
-                  <Check size={14} className="text-blue-500" />
+                  <Check size={14} className="text-primary-500" />
                   {t('googleCalendar.feature1')}
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check size={14} className="text-blue-500" />
+                  <Check size={14} className="text-primary-500" />
                   {t('googleCalendar.feature2')}
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check size={14} className="text-blue-500" />
+                  <Check size={14} className="text-primary-500" />
                   {t('googleCalendar.feature3')}
                 </li>
               </ul>
@@ -315,7 +315,7 @@ export default function GoogleCalendarIntegration({
             size="sm"
             onClick={handleConnect}
             disabled={connecting}
-            className="gap-2 shadow-lg shadow-blue-500/20"
+            className="gap-2 shadow-lg shadow-primary-500/20"
           >
             {connecting ? <Loader2 size={16} className="animate-spin" /> : <Calendar size={16} />}
             {connecting ? t('googleCalendar.connecting') : t('googleCalendar.connect')}

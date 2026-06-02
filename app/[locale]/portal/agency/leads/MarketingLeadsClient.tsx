@@ -185,7 +185,7 @@ export default function MarketingLeadsClient() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/20">
               <Mail className="h-5 w-5" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
@@ -202,7 +202,7 @@ export default function MarketingLeadsClient() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: t('metrics.totalLeads'), value: dashboard?.metrics.totalLeads || 0, icon: Users },
           { label: t('metrics.hotLeads'), value: dashboard?.metrics.hotLeads || 0, icon: TrendingUp },
@@ -266,7 +266,7 @@ export default function MarketingLeadsClient() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Card padding="none">
           <div className="border-b border-surface-200 p-5 dark:border-white/10">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

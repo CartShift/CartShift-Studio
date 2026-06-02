@@ -5,12 +5,12 @@ import { Check, AlertCircle } from 'lucide-react';
 
 const inputVariants = cva(
   [
-    'w-full rounded-xl border transition-all duration-200',
+    'w-full rounded-lg border transition-all duration-200',
     'bg-white dark:bg-surface-900/80',
     'text-surface-900 dark:text-white',
     'placeholder:text-surface-400 dark:placeholder:text-surface-500',
     'focus:outline-none',
-    'h-10 text-sm font-medium',
+    'h-10 text-[13px] font-medium',
     'shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)]',
     'dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)]',
   ],
@@ -36,8 +36,8 @@ const inputVariants = cva(
       },
       inputSize: {
         sm: 'h-8 text-xs px-3',
-        md: 'h-10 text-sm px-4',
-        lg: 'h-12 text-base px-4',
+        md: 'h-10 text-[13px] px-3.5',
+        lg: 'h-11 text-sm px-4',
       },
       isDisabled: {
         true: [
@@ -97,7 +97,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
+            className="text-[13px] font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
           >
             {label}
           </label>

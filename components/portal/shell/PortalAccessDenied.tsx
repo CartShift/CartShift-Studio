@@ -5,9 +5,10 @@ import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { SUPPORT_EMAIL } from '@/lib/constants/contact';
 
 export function PortalAccessDenied() {
-  const t = useTranslations();
+  const t = useTranslations('portal.access');
 
   return (
     <div className="min-h-screen bg-white dark:bg-surface-950 flex flex-col items-center justify-center p-4">
@@ -17,27 +18,27 @@ export function PortalAccessDenied() {
         </div>
         <div className="space-y-3">
           <h1 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
-            {t('portal.access.restrictedTitle')}
+            {t('restrictedTitle')}
           </h1>
           <p className="text-surface-500 dark:text-surface-400 font-medium leading-relaxed">
-            {t('portal.access.restrictedMessage')}
+            {t('restrictedMessage')}
           </p>
         </div>
         <div className="pt-4 flex flex-col gap-3">
           <Link href={getPortalPath('/')}>
             <Button
               variant="primary"
-              className="w-full h-12 font-outfit shadow-xl shadow-blue-500/20"
+              className="w-full h-12 font-outfit shadow-xl shadow-primary-500/20"
             >
-              {t('portal.access.switchWorkspace')}
+              {t('switchWorkspace')}
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            className="w-full h-12 font-outfit border-surface-200 dark:border-surface-800"
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="inline-flex items-center justify-center w-full h-12 font-outfit font-semibold rounded-xl border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors"
           >
-            {t('portal.access.contactSupport')}
-          </Button>
+            {t('contactSupport')}
+          </a>
         </div>
       </div>
     </div>

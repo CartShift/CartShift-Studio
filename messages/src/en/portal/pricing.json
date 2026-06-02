@@ -49,6 +49,7 @@
         "agencyNotes": "Internal Notes",
         "saveDraft": "Save Draft",
         "sendToClient": "Send to Client",
+        "resendToClient": "Resend to Client",
         "sending": "Sending...",
         "saveChanges": "Save Changes",
         "saving": "Saving...",

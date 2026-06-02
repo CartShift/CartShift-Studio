@@ -156,7 +156,7 @@ export default function FilesClient() {
         </div>
         <Button
           onClick={() => setShowUploadModal(true)}
-          className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
+          className="flex items-center gap-2 shadow-lg shadow-primary-500/20 font-outfit"
         >
           <Upload size={18} />
           {t('files.upload')}
@@ -176,7 +176,7 @@ export default function FilesClient() {
             <input
               type="text"
               placeholder={t('files.searchPlaceholder')}
-              className="w-full ps-11 pe-4 py-2.5 rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-surface-900 dark:text-white"
+              className="portal-input ps-11 pe-4 py-2.5 rounded-2xl text-sm font-medium"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
@@ -260,7 +260,7 @@ export default function FilesClient() {
                           href={file.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-8 h-8 flex items-center justify-center text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          className="portal-focus-ring w-11 h-11 flex items-center justify-center text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20"
                         >
                           <Download size={16} />
                         </a>
@@ -288,19 +288,19 @@ export default function FilesClient() {
               <table className="hidden md:table w-full text-start">
                 <thead>
                   <tr className="bg-surface-50/50 dark:bg-surface-900/50">
-                    <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
+                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
                       {t('files.table.identity')}
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
+                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
                       {t('files.table.metadata')}
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
+                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
                       {t('files.table.format')}
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit">
+                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
                       {t('files.table.transmission')}
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit text-end">
+                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit text-end">
                       {t('files.table.actions')}
                     </th>
                   </tr>
@@ -376,7 +376,7 @@ export default function FilesClient() {
                             href={file.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-9 h-9 flex items-center justify-center text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30"
+                            className="portal-focus-ring w-11 h-11 flex items-center justify-center text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 border border-transparent hover:border-primary-100 dark:hover:border-primary-900/30"
                             title="Download"
                           >
                             <Download size={16} />

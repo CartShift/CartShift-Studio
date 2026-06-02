@@ -37,9 +37,7 @@ export function ClientsFilterBar({
         <Input
           type="text"
           placeholder={t('agency.clients.searchPlaceholder')}
-          className="ps-10 h-10 bg-surface-50 dark:bg-surface-900/50 border-surface-200 dark:border-surface-700 focus:ring-blue-500" // using Input component directly or native input with styles?
-          // The previous code used native input with 'portal-input' class. Let's stick to standard Input component or similar styling.
-          // Using standard Input component which usually has className prop.
+          className="portal-input ps-10 h-10"
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
         />
@@ -47,7 +45,7 @@ export function ClientsFilterBar({
 
       <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
         <div className="flex items-center gap-3">
-          <div className="hidden lg:block text-[10px] font-black text-surface-400 uppercase tracking-widest px-2 whitespace-nowrap">
+          <div className="hidden lg:block portal-label-sm text-[10px] px-2 whitespace-nowrap">
             {activeCount} {t('agency.clients.activeAccounts')}
           </div>
 
@@ -69,11 +67,12 @@ export function ClientsFilterBar({
           {/* View Mode Toggle */}
           <div className="flex items-center bg-surface-100 dark:bg-surface-800 p-1 rounded-lg border border-surface-200 dark:border-surface-700">
             <button
+              type="button"
               onClick={() => onViewModeChange('grid')}
               className={cn(
-                'p-1.5 rounded-md transition-all',
+                'portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md transition-all',
                 viewMode === 'grid'
-                  ? 'bg-white dark:bg-surface-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'bg-white dark:bg-surface-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-surface-400 hover:text-surface-600 dark:hover:text-surface-300'
               )}
               aria-label="Grid View"
@@ -81,11 +80,12 @@ export function ClientsFilterBar({
               <LayoutGrid size={18} />
             </button>
             <button
+              type="button"
               onClick={() => onViewModeChange('list')}
               className={cn(
-                'p-1.5 rounded-md transition-all',
+                'portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md transition-all',
                 viewMode === 'list'
-                  ? 'bg-white dark:bg-surface-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'bg-white dark:bg-surface-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-surface-400 hover:text-surface-600 dark:hover:text-surface-300'
               )}
               aria-label="List View"

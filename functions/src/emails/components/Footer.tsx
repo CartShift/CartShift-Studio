@@ -1,25 +1,35 @@
 import { Section, Text, Link, Hr } from '@react-email/components';
 import { theme } from '../theme';
 
-export const Footer = () => {
+interface FooterProps {
+  locale?: 'en' | 'he';
+}
+
+export const Footer = ({ locale = 'en' }: FooterProps) => {
   const currentYear = new Date().getFullYear();
+  const isRtl = locale === 'he';
 
   return (
     <Section style={styles.footer}>
       <Hr style={styles.divider} />
-      <Text style={styles.text}>&copy; {currentYear} CartShift Studio. All rights reserved.</Text>
-      <Text style={styles.subText}>Premium E-commerce Development & Design</Text>
+      <Text style={styles.text}>
+        &copy; {currentYear} CartShift Studio.{' '}
+        {isRtl ? 'כל הזכויות שמורות.' : 'All rights reserved.'}
+      </Text>
+      <Text style={styles.subText}>
+        {isRtl ? 'פיתוח, עיצוב וצמיחה למסחר דיגיטלי' : 'E-commerce development, design and growth'}
+      </Text>
       <Text style={styles.utilityLinks}>
         <Link href="https://cart-shift.com" style={styles.link}>
-          Website
+          {isRtl ? 'אתר' : 'Website'}
         </Link>{' '}
         •{' '}
         <Link href="https://portal.cart-shift.com" style={styles.link}>
-          Client Portal
+          {isRtl ? 'פורטל לקוחות' : 'Client portal'}
         </Link>{' '}
         •{' '}
         <Link href="mailto:hello@cart-shift.com" style={styles.link}>
-          Contact Support
+          {isRtl ? 'יצירת קשר' : 'Contact'}
         </Link>
       </Text>
     </Section>
@@ -29,7 +39,7 @@ export const Footer = () => {
 const styles = {
   footer: {
     padding: `${theme.spacing.s6} ${theme.spacing.s10}`,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f8fafc',
     textAlign: 'center' as const,
   },
   divider: {

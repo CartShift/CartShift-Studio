@@ -17,11 +17,11 @@ import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { CardSectionTitle } from '@/components/ui/Card';
 
 const searchInputVariants = cva(
-  'w-full h-10 ps-12 pe-12 bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200/50 dark:border-surface-800/30 rounded-xl focus:outline-none focus:ring-2 transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
+  'portal-input h-10 ps-12 pe-12 rounded-xl transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
   {
     variants: {
       isFocused: {
-        true: 'focus:ring-primary-500/20 focus:border-primary-500',
+        true: '',
         false: '',
       },
     },
@@ -264,7 +264,7 @@ export function GlobalSearch({ orgId, isAgency = false, className }: GlobalSearc
                       e.stopPropagation();
                       removeFromHistory(historyItem);
                     }}
-                    className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all"
+                    className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all"
                     aria-label={`Remove "${historyItem}" from history`}
                   >
                     <X size={12} className="text-surface-400" />

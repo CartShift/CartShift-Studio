@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { Trash2, X } from 'lucide-react';
-import { m, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from '@/lib/motion';
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -24,14 +24,14 @@ export function BulkActionsBar({
     <div className="fixed bottom-6 start-1/2 -translate-x-1/2 z-50 pointer-events-none">
       <AnimatePresence>
         {selectedCount > 0 && (
-          <m.div
+          <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
             className="flex items-center gap-4 bg-surface-900 text-white px-6 py-3 rounded-full shadow-2xl border border-surface-700/50 pointer-events-auto"
           >
             <div className="flex items-center gap-3 border-r border-surface-700 pe-4 me-1">
-              <span className="font-bold text-sm bg-blue-600 px-2 py-0.5 rounded-md">
+              <span className="font-bold text-sm bg-primary-600 px-2 py-0.5 rounded-md">
                 {selectedCount}
               </span>
               <span className="text-sm font-medium text-surface-300 hidden sm:inline">
@@ -92,7 +92,7 @@ export function BulkActionsBar({
                 <X size={16} />
               </Button>
             </div>
-          </m.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

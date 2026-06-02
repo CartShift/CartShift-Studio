@@ -52,10 +52,10 @@ export function RequestSelector({
 
   return (
     <Card padding="none" className="overflow-hidden">
-      <div className="p-4 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+      <div className="p-4 border-b border-surface-100 dark:border-surface-800 bg-primary-50 dark:bg-primary-950/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center">
               <Package className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -129,9 +129,9 @@ export function RequestSelector({
                   aria-label={`${request.title}, ${t(`portal.requests.types.${request.type}`)}, ${request.priority === 'URGENT' ? 'Urgent priority' : ''}. ${isSelected ? 'Selected' : 'Not selected'}. ${isExpanded ? 'Configuration expanded' : 'Configuration collapsed'}`}
                   className={cn(
                     'p-4 flex items-start gap-3 sm:gap-4 cursor-pointer transition-colors',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500',
+                    'portal-focus-ring',
                     isSelected
-                      ? 'bg-blue-50/50 dark:bg-blue-900/10'
+                      ? 'bg-primary-50/50 dark:bg-primary-900/10'
                       : 'hover:bg-surface-50 dark:hover:bg-surface-900/50'
                   )}
                   onClick={() => toggleRequest(request.id)}
@@ -147,7 +147,7 @@ export function RequestSelector({
                     className={cn(
                       'flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all mt-0.5',
                       isSelected
-                        ? 'bg-blue-500 border-blue-500 text-white'
+                        ? 'bg-primary-500 border-primary-500 text-white'
                         : 'border-surface-300 dark:border-surface-600'
                     )}
                     aria-hidden="true"
@@ -192,7 +192,7 @@ export function RequestSelector({
                   {/* Price Preview (if selected) */}
                   {isSelected && result && (
                     <div className="flex-shrink-0 text-end hidden sm:block">
-                      <div className="text-lg font-black text-blue-600 dark:text-blue-400 font-outfit">
+                      <div className="text-lg font-black text-primary-600 dark:text-primary-400 font-outfit">
                         {formatCalculatorPrice(result.adjustedPrice, currency)}
                       </div>
                       <div className="text-xs text-surface-500 dark:text-surface-400">
@@ -218,7 +218,7 @@ export function RequestSelector({
                           'p-2 rounded-lg transition-colors',
                           'text-surface-400 hover:text-surface-600 dark:hover:text-surface-300',
                           'hover:bg-surface-100 dark:hover:bg-surface-800',
-                          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500'
+                          'portal-focus-ring'
                         )}
                       >
                         {/* Chevron icons would be imported */}

@@ -149,7 +149,7 @@ export default function TeamClient() {
         </div>
         <Button
           onClick={() => setShowInviteModal(true)}
-          className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit"
+          className="flex items-center gap-2 shadow-lg shadow-primary-500/20 font-outfit"
         >
           <UserPlus size={18} />
           {t('team.invite')}
@@ -249,7 +249,7 @@ export default function TeamClient() {
                         {invite.email}
                       </p>
                       <p className="text-[9px] font-black text-surface-400 flex items-center gap-1.5 uppercase tracking-widest">
-                        <Shield size={12} className="text-blue-500" /> {invite.role}
+                        <Shield size={12} className="text-primary-500" /> {invite.role}
                       </p>
                     </div>
                     <button
@@ -277,7 +277,7 @@ export default function TeamClient() {
                         'flex items-center gap-1.5 uppercase tracking-widest transition-colors',
                         copiedInviteId === invite.id
                           ? 'text-emerald-500'
-                          : 'text-blue-600 dark:text-blue-400 hover:underline'
+                          : 'text-primary-600 dark:text-primary-400 hover:underline'
                       )}
                     >
                       {copiedInviteId === invite.id ? (
@@ -305,8 +305,8 @@ export default function TeamClient() {
             )}
 
             <div className="pt-4 border-t border-surface-100 dark:border-surface-800">
-              <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100/50 dark:border-blue-900/20 mb-6">
-                <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed font-bold uppercase tracking-tight">
+              <div className="p-4 bg-primary-50/50 dark:bg-primary-900/10 rounded-2xl border border-primary-100/50 dark:border-primary-900/20 mb-6">
+                <p className="text-[11px] text-primary-600 dark:text-primary-400 leading-relaxed font-bold uppercase tracking-tight">
                   {t('team.guideNote')}
                 </p>
               </div>
@@ -321,7 +321,7 @@ export default function TeamClient() {
           </Card>
 
           <Card className="bg-surface-900 border-none shadow-2xl relative overflow-hidden">
-            <div className="absolute -end-8 -bottom-8 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl transition-transform duration-1000" />
+            <div className="absolute -end-8 -bottom-8 w-32 h-32 bg-primary-600/20 rounded-full blur-3xl transition-transform duration-1000" />
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-bold text-sm text-white font-outfit">{t('team.capacity')}</h4>
@@ -329,7 +329,7 @@ export default function TeamClient() {
               </div>
               <div className="w-full bg-surface-800 h-2.5 rounded-full overflow-hidden mb-4 p-0.5">
                 <div
-                  className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-1000"
+                  className="bg-primary-600 dark:bg-primary-500 h-full rounded-full shadow-[0_0_10px_rgb(var(--color-primary-600)/0.5)] transition-all duration-1000"
                   style={{ width: `${(members.length / 10) * 100}%` }}
                 />
               </div>
@@ -337,7 +337,7 @@ export default function TeamClient() {
                 <p className="text-[10px] text-surface-400 font-black uppercase tracking-widest">
                   <span className="text-white">{members.length}</span> / 10 {t('team.activeSeats')}
                 </p>
-                <button className="text-[10px] text-blue-400 font-black uppercase tracking-widest hover:text-blue-300 transition-colors">
+                <button className="text-[10px] text-primary-400 font-black uppercase tracking-widest hover:text-primary-300 transition-colors">
                   {t('team.upgrade')}
                 </button>
               </div>

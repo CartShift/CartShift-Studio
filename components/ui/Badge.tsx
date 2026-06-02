@@ -8,9 +8,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         blue: [
-          'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200',
-          'border border-blue-200/60 dark:border-blue-400/30',
-          'shadow-[0_1px_2px_rgba(59,130,246,0.06)]',
+          'bg-primary-50 dark:bg-primary-500/20 text-primary-700 dark:text-primary-200',
+          'border border-primary-200/60 dark:border-primary-400/30',
+          'shadow-[0_1px_2px_rgb(var(--color-primary-600)/0.06)]',
         ],
         green: [
           'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-200',
@@ -53,8 +53,8 @@ const badgeVariants = cva(
         ],
         // Solid variants for more prominent badges
         'solid-blue': [
-          'bg-blue-500 text-white border border-blue-600/20',
-          'shadow-[0_2px_4px_rgba(59,130,246,0.2)]',
+          'bg-primary-500 text-white border border-primary-600/20',
+          'shadow-[0_2px_4px_rgb(var(--color-primary-600)/0.2)]',
         ],
         'solid-green': [
           'bg-emerald-500 text-white border border-emerald-600/20',
@@ -91,7 +91,7 @@ const badgeVariants = cva(
       },
     },
     compoundVariants: [
-      { variant: 'blue', glow: true, className: 'shadow-[0_0_12px_rgba(59,130,246,0.3)]' },
+      { variant: 'blue', glow: true, className: 'shadow-[0_0_12px_rgb(var(--color-primary-600)/0.3)]' },
       { variant: 'green', glow: true, className: 'shadow-[0_0_12px_rgba(16,185,129,0.3)]' },
       { variant: 'yellow', glow: true, className: 'shadow-[0_0_12px_rgba(245,158,11,0.3)]' },
       { variant: 'red', glow: true, className: 'shadow-[0_0_12px_rgba(244,63,94,0.3)]' },
@@ -121,7 +121,7 @@ export interface BadgeProps
 
 // Dot color mapping for status indicators
 const dotColorMap: Record<string, string> = {
-  blue: 'bg-blue-500',
+  blue: 'bg-primary-500',
   green: 'bg-emerald-500',
   yellow: 'bg-amber-500',
   red: 'bg-rose-500',

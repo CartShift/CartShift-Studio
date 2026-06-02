@@ -47,7 +47,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
       className={cn('overflow-hidden', className)}
     >
       <div className="flex items-center gap-2 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">
-        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+        <div className="w-6 h-6 rounded-lg bg-amber-600 dark:bg-amber-500 flex items-center justify-center">
           <Pin size={12} className="text-white" />
         </div>
         {t('portal.dashboard.pinned.title')}
@@ -71,7 +71,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
               <div className="flex-1 min-w-0">
                 <Link
                   href={getPortalPath(`/requests/${request.id}`)}
-                  className="group/link flex items-center gap-2"
+                  className="portal-focus-ring group/link flex items-center gap-2 rounded-md"
                 >
                   <span className="text-sm font-medium text-surface-900 dark:text-white truncate group-hover/link:text-primary-600 dark:group-hover/link:text-primary-400 transition-colors">
                     {request.title}
@@ -105,7 +105,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
 
               <button
                 onClick={() => unpinRequest(request.id)}
-                className="p-1.5 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-amber-200/50 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-all"
+                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-amber-200/50 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-all"
                 aria-label={t('portal.dashboard.pinned.unpin')}
               >
                 <X size={14} />
@@ -148,7 +148,7 @@ export const PinButton: React.FC<PinButtonProps> = ({
       }}
       disabled={loading}
       className={cn(
-        'transition-all relative',
+        'portal-focus-ring transition-all relative',
         size === 'sm' ? 'p-1.5 rounded-lg' : 'p-2.5 rounded-xl',
         pinned
           ? 'text-amber-500 bg-amber-100 dark:bg-amber-500/20 hover:bg-amber-200 dark:hover:bg-amber-500/30'

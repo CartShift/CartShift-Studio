@@ -61,7 +61,7 @@ const filterButtonVariants = cva(
   {
     variants: {
       active: {
-        true: 'bg-blue-600 text-white shadow-sm',
+        true: 'bg-primary-600 text-white shadow-sm',
         false:
           'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700',
       },
@@ -77,14 +77,14 @@ const activityIconVariants = cva(
   {
     variants: {
       action: {
-        CREATED_REQUEST: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+        CREATED_REQUEST: 'text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30',
         ASSIGNED_REQUEST:
           'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30',
         ADDED_PRICING:
           'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30',
         ACCEPTED_QUOTE: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
         DECLINED_QUOTE: 'text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/30',
-        STARTED_WORK: 'text-blue-500 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20',
+        STARTED_WORK: 'text-primary-500 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20',
         PAID_REQUEST: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30',
         ADDED_COMMENT:
           'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-900/30',
@@ -240,7 +240,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                     {activity.details?.title ? (
                       <>
                         <span className="w-1 h-1 rounded-full bg-surface-300" />
-                        <span className="text-xs text-blue-600 dark:text-blue-400 font-bold truncate">
+                        <span className="text-xs text-primary-600 dark:text-primary-400 font-bold truncate">
                           {String(activity.details.title)}
                         </span>
                       </>

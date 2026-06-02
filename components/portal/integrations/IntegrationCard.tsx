@@ -16,7 +16,7 @@ export default function IntegrationCard({
   title,
   description,
   icon: Icon,
-  iconGradient = 'from-surface-400 to-surface-500',
+  iconGradient = 'bg-surface-600 dark:bg-surface-500',
   comingSoon = false,
   children,
 }: IntegrationCardProps) {
@@ -38,7 +38,7 @@ export default function IntegrationCard({
       <div className="flex items-start gap-4 mb-4">
         <div
           className={cn(
-            'w-12 h-12 rounded-xl flex items-center justify-center shadow-md bg-gradient-to-br',
+            'w-12 h-12 rounded-xl flex items-center justify-center shadow-sm',
             iconGradient
           )}
         >

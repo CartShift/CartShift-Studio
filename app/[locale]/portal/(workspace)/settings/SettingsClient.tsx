@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -39,19 +40,27 @@ import { CreateOrganizationForm } from '@/components/portal/forms/CreateOrganiza
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { Switch } from '@/components/ui/Switch';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
+import {
+  isClientSettingsTab,
+  type ClientSettingsTabId,
+} from '@/components/portal/settings/ClientSettingsNav';
 import { useOrg } from '@/lib/context/OrgContext';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 
-export default function sClient() {
+export default function SettingsClient() {
   const orgId = useResolvedOrgId();
   const { switchOrg } = useOrg();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const initialTab: ClientSettingsTabId = isClientSettingsTab(tabFromUrl) ? tabFromUrl : 'general';
   const { user, userData } = usePortalAuth();
   const t = useTranslations('portal');
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState<ClientSettingsTabId>(initialTab);
   const [loading, setLoading] = useState(true);
   const [showCreateOrgModal, setShowCreateOrgModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -94,6 +103,18 @@ export default function sClient() {
 
   const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const selectTab = (tabId: ClientSettingsTabId) => {
+    setActiveTab(tabId);
+    router.replace(`${pathname}?tab=${tabId}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    const urlTab = searchParams.get('tab');
+    if (isClientSettingsTab(urlTab) && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [searchParams, activeTab]);
 
   // Memoize userData fields to ensure stable dependency array
   const userName = useMemo(() => userData?.name || '', [userData?.name]);
@@ -436,10 +457,8 @@ export default function sClient() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-40 space-y-4">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-        <p className="text-surface-500 font-bold font-outfit uppercase tracking-widest text-xs">
-          {t('common.loading')}
-        </p>
+        <Loader2 className="w-8 h-8 text-primary-600 dark:text-primary-400 animate-spin" />
+        <p className="portal-label-sm">{t('common.loading')}</p>
       </div>
     );
   }
@@ -463,11 +482,11 @@ export default function sClient() {
             {tabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => selectTab(tab.id as ClientSettingsTabId)}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 min-h-[48px] text-sm font-bold rounded-2xl transition-all font-outfit whitespace-nowrap touch-manipulation shrink-0 lg:w-full',
                   activeTab === tab.id
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 lg:translate-x-1'
+                    ? 'bg-primary-600 text-white shadow-sm lg:bg-primary-50 lg:dark:bg-primary-500/10 lg:text-primary-600 lg:dark:text-primary-400 lg:shadow-sm lg:translate-x-1'
                     : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800'
                 )}
               >
@@ -533,7 +552,7 @@ export default function sClient() {
                     </label>
                     <div className="flex items-center gap-6">
                       <div className="relative group">
-                        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-surface-800 dark:to-surface-900 border-2 border-dashed border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-blue-400 dark:group-hover:border-blue-500">
+                        <div className="w-24 h-24 rounded-2xl bg-primary-50 dark:bg-surface-800 border-2 border-dashed border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-primary-400 dark:group-hover:border-primary-500">
                           {organization?.logoUrl ? (
                             <img
                               src={organization.logoUrl}
@@ -550,7 +569,7 @@ export default function sClient() {
                         </div>
                         {uploadingOrgLogo && (
                           <div className="absolute inset-0 bg-white/80 dark:bg-surface-900/80 rounded-2xl flex items-center justify-center z-10">
-                            <Loader2 size={24} className="animate-spin text-blue-500" />
+                            <Loader2 size={24} className="animate-spin text-primary-500" />
                           </div>
                         )}
                       </div>
@@ -604,14 +623,14 @@ export default function sClient() {
                     placeholder={t('settings.general.websitePlaceholder')}
                   />
                   <div>
-                    <label className="block text-xs font-black text-surface-400 uppercase tracking-widest mb-2.5">
+                    <label className="block portal-label-sm mb-2.5">
                       {t('settings.general.bio')}
                     </label>
                     <textarea
                       value={formData.bio}
                       onChange={e => setFormData({ ...formData, bio: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 focus:bg-white dark:focus:bg-surface-950 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-surface-900 dark:text-white text-sm font-medium leading-relaxed"
+                      className="portal-input rounded-2xl py-3 resize-none text-sm font-medium leading-relaxed"
                       placeholder={t('settings.general.bioPlaceholder')}
                     />
                   </div>
@@ -620,7 +639,7 @@ export default function sClient() {
                   <Button
                     onClick={handleSave}
                     loading={saving}
-                    className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
+                    className="flex items-center gap-2 shadow-xl shadow-primary-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
                     {saving ? t('settings.general.saving') : t('settings.general.save')}
@@ -646,8 +665,8 @@ export default function sClient() {
                   </Button>
                 </Card>
 
-                <Card className="border-blue-200 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm">
-                  <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2 font-outfit">
+                <Card className="border-primary-200 dark:border-primary-900/20 bg-primary-50/20 dark:bg-primary-900/5 shadow-sm">
+                  <h3 className="text-lg font-bold text-primary-600 dark:text-primary-400 mb-2 flex items-center gap-2 font-outfit">
                     <RefreshCw size={20} />
                     {t('settings.general.onboarding.title')}
                   </h3>
@@ -658,7 +677,7 @@ export default function sClient() {
                     onClick={handleRestartOnboarding}
                     loading={restartingOnboarding}
                     variant="outline"
-                    className="w-full shadow-lg shadow-blue-500/10 border-blue-300 dark:border-blue-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-outfit"
+                    className="w-full shadow-lg shadow-primary-500/10 border-primary-300 dark:border-primary-800 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 font-outfit"
                   >
                     <RefreshCw size={18} className="me-2" />
                     {t('settings.general.onboarding.button')}
@@ -708,14 +727,14 @@ export default function sClient() {
             <div className="space-y-6">
               <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <div className="flex items-center gap-3 mb-10">
-                  <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-900/30">
+                  <div className="p-2.5 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 border border-primary-100 dark:border-primary-900/30">
                     <UserIcon size={20} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
                       {t('settings.profile.title')}
                     </h3>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-0.5">
+                    <p className="portal-label-sm text-[10px] mt-0.5">
                       {t('settings.profile.subtitle')}
                     </p>
                   </div>
@@ -736,7 +755,7 @@ export default function sClient() {
                           <Loader2 className="w-6 h-6 text-white animate-spin" />
                         </div>
                       )}
-                      <label className="absolute -bottom-1 -end-1 p-2 bg-blue-600 text-white rounded-xl shadow-lg cursor-pointer hover:bg-blue-700 transition-all hover:scale-110 active:scale-95">
+                      <label className="absolute -bottom-1 -end-1 p-2 bg-primary-600 text-white rounded-xl shadow-lg cursor-pointer hover:bg-primary-700 transition-all hover:scale-110 active:scale-95">
                         <Camera size={16} />
                         <input
                           type="file"
@@ -806,7 +825,7 @@ export default function sClient() {
                   <Button
                     onClick={handleProfileSave}
                     loading={profile}
-                    className="flex items-center gap-2 shadow-xl shadow-blue-500/20 font-outfit px-8"
+                    className="flex items-center gap-2 shadow-xl shadow-primary-500/20 font-outfit px-8"
                   >
                     <Save size={18} />
                     {profile ? t('settings.general.saving') : t('settings.profile.save')}
@@ -820,14 +839,14 @@ export default function sClient() {
             <div className="space-y-6">
               <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
                 <div className="flex items-center gap-3 mb-10">
-                  <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-900/30">
+                  <div className="p-2.5 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 border border-primary-100 dark:border-primary-900/30">
                     <Bell size={20} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
                       {t('settings.notifications.title')}
                     </h3>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-0.5">
+                    <p className="portal-label-sm text-[10px] mt-0.5">
                       {t('settings.notifications.subtitle')}
                     </p>
                   </div>
@@ -885,7 +904,7 @@ export default function sClient() {
 
                 <div className="mt-10 pt-6 border-t border-surface-100 dark:border-surface-800">
                   {notif ? (
-                    <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 animate-pulse tracking-widest uppercase">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-primary-600 animate-pulse tracking-widest uppercase">
                       <Loader2 size={12} className="animate-spin" />
                       {t('settings.notifications.syncing')}
                     </div>
@@ -901,7 +920,7 @@ export default function sClient() {
               <Card className="bg-surface-50/50 dark:bg-surface-900/30 border-surface-200 dark:border-surface-800 text-center py-10 rounded-3xl">
                 <p className="text-[11px] font-bold text-surface-500 dark:text-surface-400 max-w-sm mx-auto uppercase tracking-widest leading-relaxed">
                   {t('settings.notifications.pushBeta')} <br />
-                  <span className="text-blue-500 mt-2 block">
+                  <span className="text-primary-500 mt-2 block">
                     {t('settings.notifications.pushBetaSub')}
                   </span>
                 </p>
@@ -920,7 +939,7 @@ export default function sClient() {
                     <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
                       {t('settings.security.title')}
                     </h3>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-0.5">
+                    <p className="portal-label-sm text-[10px] mt-0.5">
                       {t('settings.security.subtitle')}
                     </p>
                   </div>
@@ -1010,14 +1029,14 @@ export default function sClient() {
                 noPadding
                 className="border-surface-200 dark:border-surface-800 shadow-xl overflow-hidden bg-white dark:bg-surface-950"
               >
-                <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 text-white relative">
+                <div className="bg-primary-700 dark:bg-primary-800 p-8 text-white relative">
                   <div className="absolute end-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-6">
                       <Badge className="bg-white/20 text-white border-white/20 uppercase font-black tracking-widest text-[9px] px-3">
                         {formData.name}
                       </Badge>
-                      <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest bg-blue-500/30 px-3 py-1 rounded-full">
+                      <span className="text-[10px] font-black text-primary-100 uppercase tracking-widest bg-primary-500/30 px-3 py-1 rounded-full">
                         {organization?.plan?.toUpperCase() || t('common.free')}
                       </span>
                     </div>
@@ -1030,7 +1049,7 @@ export default function sClient() {
                           )
                         : t('settings.billing.plans.free' as Parameters<typeof t>[0])}
                     </h3>
-                    <p className="text-sm text-blue-100/70 font-medium font-outfit uppercase tracking-wider">
+                    <p className="text-sm text-primary-100/70 font-medium font-outfit uppercase tracking-wider">
                       {organization?.plan === 'enterprise'
                         ? t('settings.billing.enterpriseStatus')
                         : t('settings.billing.activeSubscription')}
@@ -1041,7 +1060,7 @@ export default function sClient() {
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                      <p className="portal-label-sm text-[10px]">
                         {t('settings.billing.investment')}
                       </p>
                       <p className="text-2xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
@@ -1058,7 +1077,7 @@ export default function sClient() {
                       </p>
                     </div>
                     <div className="space-y-1.5">
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                      <p className="portal-label-sm text-[10px]">
                         {t('settings.billing.workflowLimit')}
                       </p>
                       <p className="text-2xl font-bold text-emerald-500 font-outfit flex items-center gap-2">
@@ -1068,7 +1087,7 @@ export default function sClient() {
                       </p>
                     </div>
                     <div className="space-y-1.5">
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                      <p className="portal-label-sm text-[10px]">
                         {t('settings.billing.teamAvailability')}
                       </p>
                       <p className="text-2xl font-bold text-surface-900 dark:text-white font-outfit tracking-tight">
@@ -1082,7 +1101,7 @@ export default function sClient() {
                   </div>
 
                   <div className="pt-8 border-t border-surface-100 dark:border-surface-800 flex flex-wrap gap-4">
-                    <Button className="flex items-center gap-2 font-outfit px-8 shadow-xl shadow-blue-500/10 h-11">
+                    <Button className="flex items-center gap-2 font-outfit px-8 shadow-xl shadow-primary-500/10 h-11">
                       <CreditCard size={18} /> {t('settings.billing.stripeDashboard')}
                     </Button>
                     <Button
@@ -1095,9 +1114,9 @@ export default function sClient() {
                 </div>
               </Card>
 
-              <Card className="border-blue-100 dark:border-blue-900/20 bg-blue-50/20 dark:bg-blue-900/5 shadow-sm rounded-3xl">
+              <Card className="border-primary-100 dark:border-primary-900/20 bg-primary-50/20 dark:bg-primary-900/5 shadow-sm rounded-3xl">
                 <div className="flex items-start gap-4">
-                  <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 border border-blue-200/50 dark:border-blue-900/30">
+                  <div className="p-2.5 rounded-xl bg-primary-100 dark:bg-primary-900/30 text-primary-600 border border-primary-200/50 dark:border-primary-900/30">
                     <ShieldCheck size={20} />
                   </div>
                   <div>

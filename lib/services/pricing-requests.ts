@@ -304,13 +304,19 @@ export async function updatePricingRequest(
 
 export async function sendPricingRequest(requestId: string): Promise<void> {
   await waitForAuth();
-  const db = getFirestoreDb();
-  const docRef = doc(db, PRICING_REQUESTS_COLLECTION, requestId);
-  await updateDoc(docRef, {
-    status: PRICING_STATUS.SENT,
-    sentAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+  const token = await getFirebaseAuth().currentUser?.getIdToken();
+  if (!token) throw new Error('Unauthenticated');
+  const locale =
+    typeof document !== 'undefined' && document.documentElement.lang === 'he' ? 'he' : 'en';
+  const response = await fetch(`/api/portal/proposals/${encodeURIComponent(requestId)}/send`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ locale }),
   });
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error || 'Failed to queue proposal email');
+  }
 }
 
 export async function acceptPricingRequest(requestId: string, clientNotes?: string): Promise<void> {

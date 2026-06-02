@@ -137,9 +137,9 @@ export const MentionInput = ({
                 type="button"
                 onClick={() => insertMention(user)}
                 className={cn(
-                  'w-full text-start px-3 py-2 flex items-center gap-2 transition-colors',
+                  'portal-focus-ring w-full text-start px-3 py-2 flex items-center gap-2 transition-colors outline-none',
                   index === suggestionIndex
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
                     : 'hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200'
                 )}
               >

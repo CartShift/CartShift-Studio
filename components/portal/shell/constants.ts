@@ -42,7 +42,9 @@ interface NavTranslationFunction {
   (key: NavTranslationKey): string;
 }
 
-export const navItemVariants = cva('portal-nav-item group relative transition-all duration-200', {
+export const navItemVariants = cva(
+  'portal-nav-item portal-focus-ring group relative transition-all duration-200',
+  {
   variants: {
     isActive: {
       true: 'portal-nav-item-active text-primary-600 dark:text-primary-400 font-bold bg-primary-50/50 dark:bg-primary-500/10',
@@ -58,13 +60,15 @@ export const navItemVariants = cva('portal-nav-item group relative transition-al
     isActive: false,
     isCollapsed: false,
   },
-});
+  }
+);
 
 import { PERMISSIONS } from '@/lib/utils/permissions';
 
 export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
   return [
     {
+      id: 'agency-operations',
       items: [
         {
           label: t('sidebar.nav.workboard'),
@@ -93,6 +97,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       ],
     },
     {
+      id: 'agency-clients',
       items: [
         {
           label: t('sidebar.nav.clients'),
@@ -115,6 +120,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       ],
     },
     {
+      id: 'agency-growth',
       items: [
         {
           label: t('sidebar.nav.pricing'),
@@ -131,6 +137,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       ],
     },
     {
+      id: 'agency-settings',
       items: [
         {
           label: t('sidebar.nav.settings'),
@@ -146,6 +153,7 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
 export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
   return [
     {
+      id: 'client-overview',
       items: [
         {
           label: t('sidebar.nav.dashboard'),
@@ -160,6 +168,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
       ],
     },
     {
+      id: 'client-workspace',
       items: [
         {
           label: t('sidebar.nav.team'),
@@ -179,6 +188,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
       ],
     },
     {
+      id: 'client-billing',
       items: [
         {
           label: t('sidebar.nav.pricing'),
@@ -193,6 +203,7 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
       ],
     },
     {
+      id: 'client-settings',
       items: [
         {
           label: t('sidebar.nav.settings'),

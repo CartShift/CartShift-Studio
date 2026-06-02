@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Html, Head, Body, Container, Section, Img, Preview, Font } from '@react-email/components';
+import { Html, Head, Body, Container, Section, Text, Preview, Font } from '@react-email/components';
 import { theme } from '../theme';
 import { Footer } from './Footer';
 
@@ -7,29 +7,37 @@ interface LayoutProps {
   children: React.ReactNode;
   preview?: string;
   title?: string;
+  locale?: 'en' | 'he';
 }
 
-export const Layout = ({ children, preview, title = 'CartShift Studio' }: LayoutProps) => {
+export const Layout = ({
+  children,
+  preview,
+  title = 'CartShift Studio',
+  locale = 'en',
+}: LayoutProps) => {
+  const isRtl = locale === 'he';
+
   return (
-    <Html>
+    <Html lang={locale} dir={isRtl ? 'rtl' : 'ltr'}>
       <Head>
         <title>{title}</title>
         <Font
-          fontFamily="Roboto"
-          fallbackFontFamily="Helvetica"
+          fontFamily="Rubik"
+          fallbackFontFamily={['Arial', 'Helvetica', 'sans-serif']}
           webFont={{
-            url: 'https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2',
-            format: 'woff2',
+            url: 'https://portal.cart-shift.com/fonts/Rubik-Regular.ttf',
+            format: 'truetype',
           }}
           fontWeight={400}
           fontStyle="normal"
         />
         <Font
-          fontFamily="Roboto"
-          fallbackFontFamily="Helvetica"
+          fontFamily="Rubik"
+          fallbackFontFamily={['Arial', 'Helvetica', 'sans-serif']}
           webFont={{
-            url: 'https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmWUlfBBc4AMP6lQ.woff2',
-            format: 'woff2',
+            url: 'https://portal.cart-shift.com/fonts/Rubik-Bold.ttf',
+            format: 'truetype',
           }}
           fontWeight={700}
           fontStyle="normal"
@@ -39,17 +47,16 @@ export const Layout = ({ children, preview, title = 'CartShift Studio' }: Layout
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.header}>
-            <Img
-              src="https://cart-shift.com/assets/logo-email.png" // Ensure this asset exists or use a robust URL
-              alt="CartShift Studio"
-              width="150"
-              style={styles.logo}
-            />
+            <Text style={styles.wordmark}>CARTSHIFT</Text>
+            <Text style={styles.studio}>STUDIO</Text>
+            <Text style={styles.headerLine}>
+              {isRtl ? 'מסחר דיגיטלי. בנוי נכון.' : 'Digital commerce, built with intent.'}
+            </Text>
           </Section>
 
           <Section style={styles.content}>{children}</Section>
 
-          <Footer />
+          <Footer locale={locale} />
         </Container>
       </Body>
     </Html>
@@ -58,30 +65,47 @@ export const Layout = ({ children, preview, title = 'CartShift Studio' }: Layout
 
 const styles = {
   body: {
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#f3f6fb',
     margin: '0',
     fontFamily: theme.fontFamily.sans,
   },
   container: {
     backgroundColor: theme.colors.surface,
-    margin: '40px auto',
+    margin: '32px auto',
     padding: '0',
-    borderRadius: theme.borderRadius.lg,
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    borderRadius: '18px',
+    boxShadow: '0 14px 40px rgba(15, 23, 42, 0.10)',
     maxWidth: '600px',
     overflow: 'hidden' as const,
   },
   header: {
-    backgroundColor: theme.colors.primary,
-    padding: `${theme.spacing.s8} 0`,
+    backgroundColor: '#102a43',
+    padding: '28px 40px 24px',
     textAlign: 'center' as const,
   },
-  logo: {
-    margin: '0 auto',
-    display: 'block',
-    // Fallback for missing image - maybe use text if image fails
+  wordmark: {
+    color: '#ffffff',
+    fontSize: '24px',
+    fontWeight: '700',
+    letterSpacing: '5px',
+    lineHeight: '1',
+    margin: '0',
+  },
+  studio: {
+    color: '#7dd3fc',
+    fontSize: '10px',
+    fontWeight: '700',
+    letterSpacing: '8px',
+    lineHeight: '1',
+    margin: '8px 0 0',
+  },
+  headerLine: {
+    color: '#cbd5e1',
+    fontSize: '12px',
+    lineHeight: '1.5',
+    margin: '16px 0 0',
   },
   content: {
-    padding: theme.spacing.s10,
+    padding: '38px 40px 34px',
   },
 };

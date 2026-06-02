@@ -44,7 +44,7 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
     <Card
       key={client.id}
       noPadding
-      className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900 transition-all group h-full flex flex-col"
+      className="border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-xl hover:border-primary-200 dark:hover:border-primary-900 transition-all group h-full flex flex-col"
     >
       <div className="p-5 flex-1 flex flex-col">
         {/* Header */}
@@ -144,7 +144,7 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
                 {t('agency.clients.tickets')}
               </span>
               <div className="flex items-center gap-1.5 text-surface-900 dark:text-white font-bold">
-                <Ticket size={14} className="text-blue-500" />
+                <Ticket size={14} className="text-primary-500" />
                 <span>{client.requestCount || 0}</span>
               </div>
             </div>
@@ -153,10 +153,10 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
       </div>
 
       {/* Footer Action */}
-      <div className="px-5 py-3 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-100 dark:border-surface-800 rounded-b-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/10 transition-colors">
+      <div className="px-5 py-3 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-100 dark:border-surface-800 rounded-b-2xl group-hover:bg-primary-50 dark:group-hover:bg-primary-900/10 transition-colors">
         <Link
           href={getPortalPath(`/agency/clients/${client.id}/`)}
-          className="flex items-center justify-between text-surface-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-xs font-bold uppercase tracking-widest"
+          className="flex items-center justify-between text-surface-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors text-xs font-bold uppercase tracking-widest"
         >
           {t('agency.clients.manageClient')}
           <ArrowUpRight size={14} />

@@ -65,7 +65,7 @@ export const RequestDiscussion = ({
       className="flex flex-col border-surface-200 dark:border-surface-800 shadow-sm bg-surface-50/50 dark:bg-surface-900/10 min-h-[500px] overflow-hidden animate-in slide-in-from-end-4 duration-500"
     >
       <div className="p-6 pb-0">
-        <CardSectionTitle icon={MessageSquare} iconClassName="text-blue-500">
+        <CardSectionTitle icon={MessageSquare} iconClassName="text-primary-500">
           {t('requests.detail.discussion')}
         </CardSectionTitle>
       </div>
@@ -112,14 +112,15 @@ export const RequestDiscussion = ({
       <div className="p-4 border-t border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-950">
         {/* Reply Context */}
         {replyTo && (
-          <div className="flex items-center justify-between bg-surface-50 dark:bg-surface-900 p-2 rounded-lg mb-2 text-xs border-s-2 border-blue-500">
+          <div className="flex items-center justify-between bg-primary-50/60 dark:bg-primary-500/10 p-2 rounded-lg mb-2 text-xs ring-1 ring-primary-500/20">
             <span className="text-surface-500">
               {t('requests.detail.replyingTo')}{' '}
               <span className="font-bold">{replyTo.userName}</span>
             </span>
             <button
+              type="button"
               onClick={() => setReplyTo(null)}
-              className="text-surface-400 hover:text-surface-600"
+              className="portal-focus-ring text-surface-400 hover:text-surface-600 rounded-md px-2 py-1 min-h-[44px]"
             >
               {t('common.cancel')}
             </button>
@@ -137,9 +138,11 @@ export const RequestDiscussion = ({
           />
 
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || !newComment.trim()}
-            className="absolute end-3 bottom-3 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none"
+            aria-label={t('accessibility.sendMessage')}
+            className="portal-focus-ring absolute end-3 bottom-3 p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50 disabled:shadow-none"
           >
             {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
           </button>

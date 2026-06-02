@@ -223,7 +223,7 @@ export async function sendEmailWithLogging(
 // Utilities (ported from JS)
 // ----------------------------------------------------------------------------
 
-function generateIdempotencyKey(
+export function generateIdempotencyKey(
   to: string | string[],
   subject: string,
   template: string,

@@ -210,13 +210,13 @@ export const ModalHeader = ({ title, description, onClose, className }: ModalHea
   return (
     <div
       className={cn(
-        'flex items-start justify-between p-6 border-b border-surface-200 dark:border-surface-800',
+        'flex items-start justify-between p-5 border-b border-surface-200 dark:border-surface-800',
         className
       )}
     >
       <div className="flex-1">
         {title && (
-          <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
+          <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
             {title}
           </h3>
         )}
@@ -261,7 +261,7 @@ export interface ModalBodyProps {
 }
 
 export const ModalBody = ({ children, className, scrollable }: ModalBodyProps) => {
-  const baseClasses = 'p-6';
+  const baseClasses = 'p-5';
   const scrollableClasses = scrollable ? 'overflow-y-auto max-h-[70vh]' : '';
 
   return <div className={cn(baseClasses, scrollableClasses, className)}>{children}</div>;
@@ -286,7 +286,7 @@ export const ModalFooter = ({ children, className, align = 'end' }: ModalFooterP
   return (
     <div
       className={cn(
-        'flex gap-3 p-6 border-t border-surface-200 dark:border-surface-800',
+        'flex gap-3 p-5 border-t border-surface-200 dark:border-surface-800',
         alignClasses[align],
         className
       )}

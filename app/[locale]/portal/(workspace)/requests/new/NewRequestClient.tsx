@@ -21,7 +21,7 @@ export default function NewRequestClient() {
       <div className="flex items-center gap-4">
         <Link
           href={getPortalPath('/requests/')}
-          className="p-2.5 border border-surface-200 dark:border-surface-800 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors shadow-sm bg-white dark:bg-surface-950"
+          className="portal-focus-ring p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center border border-surface-200 dark:border-surface-800 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors shadow-sm bg-white dark:bg-surface-950"
         >
           <ArrowLeft size={20} className="text-surface-500" />
         </Link>
@@ -43,11 +43,11 @@ export default function NewRequestClient() {
         </div>
 
         <div className="space-y-6">
-          <Card className="bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/20 shadow-sm">
-            <h3 className="font-bold text-blue-900 dark:text-blue-400 mb-2 flex items-center gap-2">
+          <Card className="bg-primary-50 dark:bg-primary-900/10 border-primary-100 dark:border-primary-900/20 shadow-sm">
+            <h3 className="font-bold text-primary-900 dark:text-primary-400 mb-2 flex items-center gap-2">
               <Info size={18} /> {t('requests.new.tips.title')}
             </h3>
-            <ul className="text-xs text-blue-800/80 dark:text-blue-300/80 space-y-2 list-disc ps-4 leading-relaxed">
+            <ul className="text-xs text-primary-800/80 dark:text-primary-300/80 space-y-2 list-disc ps-4 leading-relaxed">
               <li>{t('requests.new.tips.tip1')}</li>
               <li>{t('requests.new.tips.tip2')}</li>
               <li>{t('requests.new.tips.tip3')}</li>

@@ -2,10 +2,11 @@
 
 import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { getLocaleDirection, getLocaleFontFamily } from '@/lib/locale-config';
+import { canAccessNav } from '@/lib/utils/permissions';
 
 // Shell components
 import { PortalSidebar } from './PortalSidebar';
@@ -18,7 +19,10 @@ import { PortalAccessDenied } from './PortalAccessDenied';
 import { getAgencyNavGroups, getClientNavGroups } from './constants';
 import { usePortalShellState } from './hooks/usePortalShellState';
 import { useMobileNavBadges } from './hooks/useMobileNavBadges';
+import { announcePortal } from './portal-announcer';
+import { useMobileMenuFocusTrap } from './useMobileMenuFocusTrap';
 import { PortalShellProps } from './types';
+import { shouldShowPortalBreadcrumbs } from '@/lib/utils/portal-nav';
 
 // Existing UI components
 import { Breadcrumbs } from '../ui/Breadcrumbs';
@@ -49,7 +53,9 @@ const OnboardingTour = dynamic(
 
 export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }: PortalShellProps) {
   const t = useTranslations('portal');
+  const tA11y = useTranslations('portal.accessibility');
   const locale = useLocale();
+  const sidebarRef = useRef<HTMLElement>(null);
 
   const state = usePortalShellState({
     orgIdProp: orgId,
@@ -57,7 +63,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
   });
 
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const mobileNavBadges = useMobileNavBadges(state.isAgency);
+  const mobileNavBadges = useMobileNavBadges(state.isAgency, state.isMobile);
 
   useEffect(() => {
     const handleCommandPaletteShortcut = (event: KeyboardEvent) => {
@@ -76,31 +82,47 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
     ? getAgencyNavGroups(key => t(key as any))
     : getClientNavGroups(key => t(key as any));
 
-  // Calculate if breadcrumbs should be shown
-  const showBreadcrumbs = (() => {
-    if (!state.pathname) return false;
-    const normalizePath = (p: string) => (p.endsWith('/') ? p.slice(0, -1) : p);
-    const currentPath = normalizePath(state.pathname);
+  const filteredNavGroups = useMemo(
+    () =>
+      navGroups
+        .map(group => ({
+          ...group,
+          items: group.items.filter(item => canAccessNav(state.memberRole, item.roles)),
+        }))
+        .filter(group => group.items.length > 0),
+    [navGroups, state.memberRole]
+  );
 
-    const mainPagePaths = new Set(
-      navGroups.flatMap(group => group.items.map(item => normalizePath(item.href)))
-    );
-    mainPagePaths.add('/portal');
+  const closeMobileMenu = () => state.setIsMobileMenuOpen(false);
 
-    return !mainPagePaths.has(currentPath);
-  })();
+  useMobileMenuFocusTrap(state.isMobileMenuOpen, closeMobileMenu, sidebarRef);
+
+  const mainPagePaths = filteredNavGroups.flatMap(group => group.items.map(item => item.href));
+  const showBreadcrumbs = shouldShowPortalBreadcrumbs(state.pathname, mainPagePaths);
+
+  const handleOrgSwitch = (orgId: string) => {
+    const org = state.fullOrganizations.find(o => o.id === orgId);
+    state.handleOrgSwitch(orgId);
+    if (org) {
+      announcePortal(t('accessibility.orgSwitched', { name: org.name }));
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await state.handleMarkAllAsRead();
+    announcePortal(t('accessibility.allNotificationsRead'));
+  };
 
   // Only show loading state on initial load, not during subsequent navigations
   const showState = !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
 
   // Access denied state - only if explicitly denied (not null/loading)
-  const showAccessDenied =
-    !showState && state.isAuthorized === false && !state.hasEverBeenAuthorized;
+  const showAccessDenied = !showState && state.isAuthorized === false;
 
   return (
     <div
       className={cn(
-        'portal-shell min-h-screen bg-white dark:bg-surface-950 text-surface-900 dark:text-surface-50 antialiased overflow-x-hidden selection:bg-blue-500/20',
+        'portal-shell min-h-screen bg-white dark:bg-surface-950 text-surface-900 dark:text-surface-50 antialiased overflow-x-hidden selection:bg-primary-500/20',
         getLocaleFontFamily(locale)
       )}
       dir={getLocaleDirection(locale)}
@@ -108,7 +130,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
       {/* Skip to main content link for accessibility - enhanced visibility on focus */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-always-on-top focus:px-6 focus:py-3 focus:bg-blue-600 focus:text-white focus:font-bold focus:rounded-2xl focus:shadow-xl focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 focus:outline-none focus:text-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-always-on-top focus:px-6 focus:py-3 focus:bg-primary-600 focus:text-white focus:font-bold focus:rounded-2xl focus:shadow-xl focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 focus:outline-none focus:text-lg"
       >
         {t('accessibility.skipToContent')}
       </a>
@@ -136,30 +158,31 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
             onClick={() => state.setIsMobileMenuOpen(false)}
             variant="light"
             blur="md"
-            zIndex="60"
-            preventScroll={false} // Already handled by mobile menu logic
+            zIndex="65"
+            preventScroll={false}
           />
 
           {/* Sidebar - Persistent element excluded from page transitions */}
           <PortalSidebar
             isExpanded={state.isExpanded}
             isMobileMenuOpen={state.isMobileMenuOpen}
-            onClose={() => state.setIsMobileMenuOpen(false)}
             onTouchStart={state.handleTouchStart}
             onTouchEnd={state.handleTouchEnd}
             viewTransitionName="sidebar"
+            sidebarRef={sidebarRef}
+            mobileMenuLabel={tA11y('mainNavigation')}
           >
             <SidebarBrand isExpanded={state.isExpanded} />
 
             <OrganizationSwitcher
               organizations={state.fullOrganizations}
               currentOrgId={state.effectiveOrgId ?? null}
-              onSwitch={state.handleOrgSwitch}
+              onSwitch={handleOrgSwitch}
               isExpanded={state.isExpanded && state.hasMultipleOrgs}
             />
 
             <SidebarNavigation
-              navGroups={navGroups}
+              navGroups={filteredNavGroups}
               isExpanded={state.isExpanded}
               isMobile={state.isMobile}
               onItemClick={() => state.setIsMobileMenuOpen(false)}
@@ -188,8 +211,12 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
             <ImpersonationBanner />
 
             <PortalHeader
-              onMobileMenuToggle={() => state.setIsMobileMenuOpen(true)}
-              onMobileSearchToggle={() => setIsCommandPaletteOpen(true)}
+              onMobileMenuToggle={() => {
+                state.setIsMobileMenuOpen(true);
+                announcePortal(t('accessibility.openMenu'));
+              }}
+              isMobileMenuOpen={state.isMobileMenuOpen}
+              onMobileSearchToggle={() => state.setIsMobileSearchOpen(true)}
               userData={state.userData as HeaderUserData | null}
               accountType={state.accountType}
               userRole={state.memberRole}
@@ -200,7 +227,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               notificationRef={state.notificationRef}
               notificationButtonRef={state.notificationButtonRef}
               handleNotificationClick={state.handleNotificationClick}
-              handleMarkAllAsRead={state.handleMarkAllAsRead}
+              handleMarkAllAsRead={handleMarkAllAsRead}
               orgId={state.effectiveOrgId}
               onSignOut={state.handleSignOut}
               viewTransitionName="header"
@@ -221,7 +248,11 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               <div className="portal-reveal">{children}</div>
             </main>
 
-            <MobileBottomNav isAgency={state.isAgency} badges={mobileNavBadges} />
+            <MobileBottomNav
+              isAgency={state.isAgency}
+              navGroups={filteredNavGroups}
+              badges={mobileNavBadges}
+            />
           </div>
 
           {/* Portal Elements */}
@@ -237,7 +268,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
                   isOpen={state.isNotificationOpen}
                   notifications={state.notifications}
                   unreadCount={state.unreadCount}
-                  onMarkAllAsRead={state.handleMarkAllAsRead}
+                  onMarkAllAsRead={handleMarkAllAsRead}
                   onNotificationClick={state.handleNotificationClick}
                   position={state.notificationPosition}
                   dropdownRef={state.notificationDropdownRef}
@@ -259,7 +290,10 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
           {state.isMobileSearchOpen && (
             <MobileSearch
               isOpen={state.isMobileSearchOpen}
-              onClose={() => state.setIsMobileSearchOpen(false)}
+              onClose={() => {
+                state.setIsMobileSearchOpen(false);
+                announcePortal(t('accessibility.searchClosed'));
+              }}
             />
           )}
         </>

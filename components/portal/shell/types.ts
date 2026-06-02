@@ -9,6 +9,7 @@ export interface NavItem {
 }
 
 export interface NavGroup {
+  id: string;
   items: NavItem[];
 }
 
@@ -22,11 +23,12 @@ export interface PortalShellProps {
 export interface PortalSidebarProps {
   isExpanded: boolean;
   isMobileMenuOpen: boolean;
-  onClose: () => void;
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchEnd: (e: React.TouchEvent) => void;
   children: React.ReactNode;
   viewTransitionName?: string;
+  sidebarRef?: React.RefObject<HTMLElement | null>;
+  mobileMenuLabel?: string;
 }
 
 export interface SidebarBrandProps {

@@ -163,7 +163,7 @@ export default function AgencyConsultationsClient() {
                       <button
                         key={org.id}
                         onClick={() => setSelectedOrg(org)}
-                        className="w-full p-3 text-start rounded-xl border border-surface-200 dark:border-surface-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+                        className="w-full p-3 text-start rounded-xl border border-surface-200 dark:border-surface-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
                       >
                         <p className="font-bold text-surface-900 dark:text-white">{org.name}</p>
                         {org.industry && <p className="text-sm text-surface-500">{org.industry}</p>}
@@ -204,8 +204,8 @@ export default function AgencyConsultationsClient() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="p-4 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
               <p className="text-2xl font-black text-surface-900 dark:text-white">
@@ -287,7 +287,7 @@ export default function AgencyConsultationsClient() {
               className={cn(
                 'px-4 py-2.5 min-h-[40px] rounded-xl text-sm font-bold transition-all touch-manipulation active:scale-95 shrink-0 whitespace-nowrap',
                 statusFilter === status
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary-600 text-white'
                   : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
               )}
             >
@@ -300,7 +300,7 @@ export default function AgencyConsultationsClient() {
       {/* Consultations List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : filteredConsultations.length === 0 ? (
         <div className="text-center py-20">
@@ -334,7 +334,7 @@ export default function AgencyConsultationsClient() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group p-5 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-blue-300 dark:hover:border-blue-800 transition-all"
+                  className="group p-5 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-primary-300 dark:hover:border-primary-800 transition-all"
                 >
                   <div className="flex items-start gap-4">
                     <div
@@ -385,9 +385,9 @@ export default function AgencyConsultationsClient() {
                               href={consultation.externalCalendarLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 rounded-lg bg-surface-100 dark:bg-surface-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                              className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 rounded-lg bg-surface-100 dark:bg-surface-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
                             >
-                              <Video size={16} className="text-blue-600" />
+                              <Video size={16} className="text-primary-600" />
                             </a>
                           )}
                           {consultation.status === CONSULTATION_STATUS.SCHEDULED && (
@@ -398,7 +398,7 @@ export default function AgencyConsultationsClient() {
                                   isCompleting &&
                                   completeMutation.variables?.consultationId === consultation.id
                                 }
-                                className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50"
+                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 rounded-lg bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50"
                                 title="Mark as completed"
                               >
                                 {isCompleting &&
@@ -414,7 +414,7 @@ export default function AgencyConsultationsClient() {
                                   isCanceling &&
                                   cancelMutation.variables?.consultationId === consultation.id
                                 }
-                                className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
+                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
                                 title={t('consultations.cancel')}
                               >
                                 {isCanceling &&

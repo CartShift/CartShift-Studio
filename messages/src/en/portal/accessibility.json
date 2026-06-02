@@ -8,7 +8,27 @@
       "notifications": "View notifications",
       "userProfile": "User profile",
       "search": "Search",
-      "searchPlaceholder": "Search..."
+      "searchPlaceholder": "Search...",
+      "mainNavigation": "Main navigation",
+      "switchOrganization": "Switch organization",
+      "orgSwitched": "Switched to {name}",
+      "navigatedTo": "Navigated to {page}",
+      "allNotificationsRead": "All notifications marked as read",
+      "searchClosed": "Search closed",
+      "moreNavigation": "More",
+      "moreMenu": "Open more navigation",
+      "commandPaletteHint": "Command palette ({modifier}+K)",
+      "commandPalette": "Open command palette",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
+      "signOut": "Sign out",
+      "sendMessage": "Send message",
+      "replyToComment": "Reply to comment",
+      "addReaction": "Add reaction",
+      "previewFile": "Preview file",
+      "downloadFile": "Download file",
+      "showVersionHistory": "Show version history",
+      "toggleMilestoneStatus": "Toggle milestone status"
     }
   }
 }

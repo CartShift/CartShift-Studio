@@ -401,7 +401,7 @@ export default function CreatePricingForm() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
         </div>
       </div>
     );
@@ -554,7 +554,7 @@ export default function CreatePricingForm() {
                     append({ description: '', quantity: 1, unitPrice: 0 });
                     setLineItemsFromCalculator(false);
                   }}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                 >
                   <Plus size={16} />
                   {t('portal.pricing.form.addItem')}
@@ -647,7 +647,7 @@ export default function CreatePricingForm() {
                             type="button"
                             onClick={() => remove(index)}
                             aria-label={t('portal.common.delete')}
-                            className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                            className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -682,7 +682,7 @@ export default function CreatePricingForm() {
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      className="form-checkbox h-4 w-4 text-primary-600 rounded border-gray-300 focus-visible:ring-primary-500/40"
                       {...register('includeTax')}
                     />
                   </label>

@@ -27,3 +27,4 @@ export { navItemVariants, getAgencyNavGroups, getClientNavGroups } from './const
 
 // Export hook
 export { usePortalShellState } from './hooks/usePortalShellState';
+export { announcePortal } from './portal-announcer';

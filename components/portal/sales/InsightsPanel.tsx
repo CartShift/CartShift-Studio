@@ -5,7 +5,7 @@ import { SalesMetrics } from '@/lib/types/portal';
 import { Lightbulb, TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion';
 
 interface InsightsPanelProps {
   metrics: SalesMetrics;
@@ -112,7 +112,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
               insight.type === 'negative' &&
                 'bg-rose-50/50 dark:bg-rose-900/10 border-rose-100 dark:border-rose-800/30 hover:border-rose-200 dark:hover:border-rose-700/50',
               insight.type === 'neutral' &&
-                'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/30 hover:border-blue-200 dark:hover:border-blue-700/50'
+                'bg-primary-50/50 dark:bg-primary-900/10 border-primary-100 dark:border-primary-800/30 hover:border-primary-200 dark:hover:border-primary-700/50'
             )}
           >
             <div className="flex items-start gap-4">
@@ -124,7 +124,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
                   insight.type === 'negative' &&
                     'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400',
                   insight.type === 'neutral' &&
-                    'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                    'bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400'
                 )}
               >
                 <insight.icon size={18} strokeWidth={2.5} />
@@ -144,7 +144,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
                       className={cn(
                         insight.type === 'positive' && 'text-emerald-600 dark:text-emerald-400',
                         insight.type === 'negative' && 'text-rose-600 dark:text-rose-400',
-                        insight.type === 'neutral' && 'text-blue-600 dark:text-blue-400'
+                        insight.type === 'neutral' && 'text-primary-600 dark:text-primary-400'
                       )}
                     >
                       {insight.action}
@@ -155,7 +155,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
                         'transition-transform group-hover:translate-x-0.5',
                         insight.type === 'positive' && 'text-emerald-600 dark:text-emerald-400',
                         insight.type === 'negative' && 'text-rose-600 dark:text-rose-400',
-                        insight.type === 'neutral' && 'text-blue-600 dark:text-blue-400'
+                        insight.type === 'neutral' && 'text-primary-600 dark:text-primary-400'
                       )}
                     />
                   </button>

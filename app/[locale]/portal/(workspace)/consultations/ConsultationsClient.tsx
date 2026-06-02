@@ -114,10 +114,10 @@ export default function ConsultationsClient() {
       {/* Upcoming Consultations */}
       <section className="mb-10">
         <h2 className="text-lg font-bold text-surface-900 dark:text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-blue-600" />
+          <Calendar className="w-5 h-5 text-primary-600" />
           {t('consultations.upcoming')}
           {upcomingConsultations.length > 0 && (
-            <span className="ms-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-lg">
+            <span className="ms-2 px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold rounded-lg">
               {upcomingConsultations.length}
             </span>
           )}
@@ -125,7 +125,7 @@ export default function ConsultationsClient() {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
           </div>
         ) : upcomingConsultations.length === 0 ? (
           <div className="text-center py-12 bg-surface-50 dark:bg-surface-900/50 rounded-2xl border border-surface-200 dark:border-surface-800">
@@ -156,7 +156,7 @@ export default function ConsultationsClient() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="p-5 bg-white dark:bg-surface-900 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg shadow-blue-500/5"
+                  className="p-5 bg-white dark:bg-surface-900 rounded-2xl border-2 border-primary-200 dark:border-primary-800 shadow-lg shadow-primary-500/5"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                     <div
@@ -173,11 +173,11 @@ export default function ConsultationsClient() {
                       </h3>
                       <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-surface-500">
                         <span className="flex items-center gap-1 font-medium">
-                          <Calendar size={14} className="text-blue-500" />
+                          <Calendar size={14} className="text-primary-500" />
                           {format(scheduledDate, 'EEEE, MMMM d, yyyy', { locale: dateLocale })}
                         </span>
                         <span className="flex items-center gap-1 font-medium">
-                          <Clock size={14} className="text-blue-500" />
+                          <Clock size={14} className="text-primary-500" />
                           {format(scheduledDate, 'HH:mm', { locale: dateLocale })}
                         </span>
                         <span className="flex items-center gap-1">
@@ -201,7 +201,7 @@ export default function ConsultationsClient() {
                                 key={i}
                                 className="text-sm text-surface-600 dark:text-surface-400 flex items-center gap-2"
                               >
-                                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                                <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
                                 {item}
                               </li>
                             ))}
@@ -215,7 +215,7 @@ export default function ConsultationsClient() {
                           href={consultation.externalCalendarLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors justify-center touch-manipulation active:scale-95"
+                          className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-sm transition-colors justify-center touch-manipulation active:scale-95"
                         >
                           <Video size={16} />
                           {t('consultations.join')}

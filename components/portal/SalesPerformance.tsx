@@ -43,22 +43,22 @@ const metricCardVariants = cva(
     variants: {
       intent: {
         revenue: [
-          'bg-gradient-to-br from-emerald-500 to-teal-600',
+          'bg-emerald-600 dark:bg-emerald-500',
           'text-white',
           'shadow-lg shadow-emerald-500/25',
         ],
         growth: [
-          'bg-gradient-to-br from-blue-500 to-indigo-600',
+          'bg-primary-600 dark:bg-primary-500',
           'text-white',
-          'shadow-lg shadow-blue-500/25',
+          'shadow-sm',
         ],
         clients: [
-          'bg-gradient-to-br from-purple-500 to-pink-600',
+          'bg-accent-600 dark:bg-accent-500',
           'text-white',
-          'shadow-lg shadow-purple-500/25',
+          'shadow-sm',
         ],
         conversion: [
-          'bg-gradient-to-br from-amber-500 to-orange-600',
+          'bg-amber-600 dark:bg-amber-500',
           'text-white',
           'shadow-lg shadow-amber-500/25',
         ],
@@ -142,7 +142,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
               'w-12 h-12 rounded-xl flex items-center justify-center',
               isHero
                 ? 'bg-white/20 backdrop-blur-sm'
-                : 'bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-800 dark:to-surface-700'
+                : 'bg-surface-100 dark:bg-surface-800'
             )}
           >
             <Icon
@@ -217,9 +217,9 @@ interface MiniStatProps {
 
 const MiniStat: React.FC<MiniStatProps> = ({ label, value, icon: Icon, color = 'blue' }) => {
   const colorClasses: Record<string, string> = {
-    blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-500/20',
+    blue: 'text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-500/20',
     green: 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/20',
-    purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-500/20',
+    purple: 'text-accent-600 dark:text-accent-400 bg-purple-100 dark:bg-purple-500/20',
     amber: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/20',
     red: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/20',
   };
@@ -271,8 +271,8 @@ const RevenueBar: React.FC<RevenueBarProps> = ({ month, revenue, maxRevenue, cur
           transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
           className={cn(
             'w-full rounded-t-lg min-h-[4px]',
-            'bg-gradient-to-t from-blue-500 to-blue-400',
-            'shadow-sm shadow-blue-500/30'
+            'bg-primary-500 dark:bg-primary-400',
+            'shadow-sm shadow-primary-500/30'
           )}
         />
       </div>
@@ -329,7 +329,7 @@ const TopClientRow: React.FC<TopClientRowProps> = ({ rank, name, revenue, deals,
         </p>
       </div>
 
-      <ArrowUpRight className="w-4 h-4 text-surface-300 group-hover:text-blue-500 transition-colors" />
+      <ArrowUpRight className="w-4 h-4 text-surface-300 group-hover:text-primary-500 transition-colors" />
     </motion.div>
   );
 };
@@ -426,7 +426,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
           {/* Secondary Metrics */}
           <Card variant="default" padding="lg">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-600 dark:bg-primary-500 flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -473,7 +473,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
             <Card variant="default" padding="lg">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center">
                     <BarChart3 className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -505,7 +505,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
             <Card variant="default" padding="lg">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-amber-600 dark:bg-amber-500 flex items-center justify-center">
                     <Award className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -544,7 +544,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
           {/* Proposal Stats */}
           <Card variant="default" padding="lg">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-accent-600 dark:bg-accent-500 flex items-center justify-center">
                 <FileText className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -567,20 +567,20 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
                 </p>
               </div>
 
-              <div className="text-center p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10">
-                <p className="text-2xl font-black text-blue-600 dark:text-blue-400">
+              <div className="text-center p-4 rounded-xl bg-primary-50 dark:bg-primary-500/10">
+                <p className="text-2xl font-black text-primary-600 dark:text-primary-400">
                   <AnimatedNumber value={metrics.proposalsThisMonth} />
                 </p>
-                <p className="text-xs font-bold text-blue-600/70 dark:text-blue-400/70 uppercase tracking-wider mt-1">
+                <p className="text-xs font-bold text-primary-600/70 dark:text-primary-400/70 uppercase tracking-wider mt-1">
                   {t('sales.proposals.thisMonth')}
                 </p>
               </div>
 
               <div className="text-center p-4 rounded-xl bg-purple-50 dark:bg-purple-500/10">
-                <p className="text-2xl font-black text-purple-600 dark:text-purple-400">
+                <p className="text-2xl font-black text-accent-600 dark:text-accent-400">
                   <AnimatedNumber value={metrics.acceptedProposals} />
                 </p>
-                <p className="text-xs font-bold text-purple-600/70 dark:text-purple-400/70 uppercase tracking-wider mt-1">
+                <p className="text-xs font-bold text-accent-600/70 dark:text-accent-400/70 uppercase tracking-wider mt-1">
                   {t('sales.proposals.accepted')}
                 </p>
               </div>

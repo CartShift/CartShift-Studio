@@ -20,6 +20,7 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import { Select } from '@/components/ui/Select';
 import {
   useCanManageProfitSplits,
@@ -156,7 +157,7 @@ function MetricCard({ label, value, icon, tone }: MetricCardProps) {
   const toneClass = {
     emerald:
       'from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10 text-emerald-700 dark:text-emerald-300',
-    blue: 'from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 text-blue-700 dark:text-blue-300',
+    blue: 'from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 text-primary-700 dark:text-primary-300',
     amber:
       'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10 text-amber-700 dark:text-amber-300',
     rose: 'from-rose-50 to-rose-100/50 dark:from-rose-900/20 dark:to-rose-800/10 text-rose-700 dark:text-rose-300',
@@ -166,7 +167,7 @@ function MetricCard({ label, value, icon, tone }: MetricCardProps) {
 
   return (
     <Card
-      className={cn('p-4 bg-gradient-to-br border-surface-200/70 dark:border-white/10', toneClass)}
+      className={cn('p-4 bg-surface-50 dark:bg-surface-900/50 border-surface-200/70 dark:border-white/10', toneClass)}
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 flex items-center justify-center">
@@ -309,310 +310,173 @@ function ProfitSplitEditor({
   };
 
   return (
-    <div className="fixed inset-0 z-modal flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="profit-split-editor-title"
-        className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-surface-950"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-surface-200 p-5 dark:border-surface-800">
-          <div>
-            <h2
-              id="profit-split-editor-title"
-              className="text-2xl font-black text-surface-900 dark:text-white"
-            >
-              {split ? t('profitSplits.editorTitle') : t('profitSplits.createTitle')}
-            </h2>
-            <p className="mt-1 text-sm font-medium text-surface-500 dark:text-surface-400">
-              {t('profitSplits.editorSubtitle')}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-surface-500 transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
-            aria-label={t('common.close')}
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-5">
-          {!split ? (
-            <div className="mx-auto max-w-2xl space-y-5">
-              <Card className="p-5">
-                <Select
-                  label={t('profitSplits.selectPaidRequest')}
-                  value={selectedPricingRequestId}
-                  onChange={event => setSelectedPricingRequestId(event.target.value)}
-                >
-                  <option value="">{t('profitSplits.selectPaidRequestPlaceholder')}</option>
-                  {availablePaidRequests.map(request => (
-                    <option key={request.id} value={request.id}>
-                      {request.title} · {formatCurrency(request.totalAmount, request.currency)}
-                    </option>
-                  ))}
-                </Select>
-
-                {selectedPricingRequest && (
-                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
-                    <p className="font-bold">{selectedPricingRequest.title}</p>
-                    <p className="mt-1">
-                      {selectedPricingRequest.clientName ||
-                        selectedPricingRequest.clientEmail ||
-                        'Client'}{' '}
-                      ·{' '}
-                      {formatCurrency(
-                        selectedPricingRequest.totalAmount,
-                        selectedPricingRequest.currency
-                      )}
-                    </p>
-                  </div>
-                )}
-
-                {availablePaidRequests.length === 0 && (
-                  <p className="mt-4 text-sm font-medium text-surface-500">
-                    {t('profitSplits.noPaidRequests')}
-                  </p>
-                )}
-              </Card>
+    <ModalBackdrop isOpen onClick={onClose} variant="surface" zIndex={80}>
+      <div className="pointer-events-none fixed inset-0 flex items-center justify-center p-3 sm:p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="profit-split-editor-title"
+          className="pointer-events-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[860px] flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl dark:border-surface-800 dark:bg-surface-950 sm:max-h-[calc(100dvh-2rem)]"
+        >
+          <div className="flex items-start justify-between gap-3 border-b border-surface-200 p-3.5 dark:border-surface-800 sm:p-4">
+            <div>
+              <h2
+                id="profit-split-editor-title"
+                className="text-xl font-black text-surface-900 dark:text-white"
+              >
+                {split ? t('profitSplits.editorTitle') : t('profitSplits.createTitle')}
+              </h2>
+              <p className="mt-1 text-[13px] font-medium text-surface-500 dark:text-surface-400">
+                {t('profitSplits.editorSubtitle')}
+              </p>
             </div>
-          ) : (
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-              <div className="space-y-5">
-                <Card className="p-5">
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <label className="space-y-1.5 md:col-span-2">
-                      <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                        {t('profitSplits.projectTitle')}
-                      </span>
-                      <input
-                        value={projectTitle}
-                        onChange={event => setProjectTitle(event.target.value)}
-                        className="portal-input h-10 w-full"
-                        disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                      />
-                    </label>
-                    <label className="space-y-1.5">
-                      <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                        {t('profitSplits.client')}
-                      </span>
-                      <input
-                        value={clientName}
-                        onChange={event => setClientName(event.target.value)}
-                        className="portal-input h-10 w-full"
-                        disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                      />
-                    </label>
-                    <label className="space-y-1.5">
-                      <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                        {t('profitSplits.grossRevenue')}
-                      </span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={(grossRevenue / 100).toString()}
-                        onChange={event => setGrossRevenue(centsFromInput(event.target.value))}
-                        className="portal-input h-10 w-full"
-                        disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                      />
-                    </label>
-                  </div>
-                </Card>
+            <button
+              onClick={onClose}
+              className="rounded-lg p-2 text-surface-500 transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
+              aria-label={t('common.close')}
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-                <Card className="p-5">
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-black text-surface-900 dark:text-white">
-                        {t('profitSplits.expenses')}
-                      </h3>
-                      <p className="text-sm text-surface-500 dark:text-surface-400">
-                        {t('profitSplits.expensesHint')}
+          <div className="flex-1 overflow-y-auto p-3.5 sm:p-4">
+            {!split ? (
+              <div className="mx-auto max-w-xl space-y-4">
+                <Card className="p-4">
+                  <Select
+                    label={t('profitSplits.selectPaidRequest')}
+                    value={selectedPricingRequestId}
+                    onChange={event => setSelectedPricingRequestId(event.target.value)}
+                  >
+                    <option value="">{t('profitSplits.selectPaidRequestPlaceholder')}</option>
+                    {availablePaidRequests.map(request => (
+                      <option key={request.id} value={request.id}>
+                        {request.title} · {formatCurrency(request.totalAmount, request.currency)}
+                      </option>
+                    ))}
+                  </Select>
+
+                  {selectedPricingRequest && (
+                    <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-[13px] text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
+                      <p className="font-bold">{selectedPricingRequest.title}</p>
+                      <p className="mt-1">
+                        {selectedPricingRequest.clientName ||
+                          selectedPricingRequest.clientEmail ||
+                          'Client'}{' '}
+                        ·{' '}
+                        {formatCurrency(
+                          selectedPricingRequest.totalAmount,
+                          selectedPricingRequest.currency
+                        )}
                       </p>
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addExpense}
-                      disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                    >
-                      <Plus size={16} />
-                      {t('profitSplits.addExpense')}
-                    </Button>
-                  </div>
+                  )}
 
-                  <div className="space-y-3">
-                    {directExpenses.map(expense => (
-                      <div key={expense.id} className="grid gap-3 md:grid-cols-[1fr_160px_44px]">
+                  {availablePaidRequests.length === 0 && (
+                    <p className="mt-4 text-sm font-medium text-surface-500">
+                      {t('profitSplits.noPaidRequests')}
+                    </p>
+                  )}
+                </Card>
+              </div>
+            ) : (
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
+                <div className="space-y-4">
+                  <Card className="p-4">
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <label className="space-y-1.5 md:col-span-2">
+                        <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
+                          {t('profitSplits.projectTitle')}
+                        </span>
                         <input
-                          value={expense.description}
-                          onChange={event =>
-                            setDirectExpenses(prev =>
-                              prev.map(item =>
-                                item.id === expense.id
-                                  ? { ...item, description: event.target.value }
-                                  : item
-                              )
-                            )
-                          }
-                          placeholder={t('profitSplits.expenseDescription')}
+                          value={projectTitle}
+                          onChange={event => setProjectTitle(event.target.value)}
                           className="portal-input h-10 w-full"
                           disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
                         />
+                      </label>
+                      <label className="space-y-1.5">
+                        <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
+                          {t('profitSplits.client')}
+                        </span>
+                        <input
+                          value={clientName}
+                          onChange={event => setClientName(event.target.value)}
+                          className="portal-input h-10 w-full"
+                          disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                        />
+                      </label>
+                      <label className="space-y-1.5">
+                        <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
+                          {t('profitSplits.grossRevenue')}
+                        </span>
                         <input
                           type="number"
                           min="0"
                           step="0.01"
-                          value={(expense.amount / 100).toString()}
-                          onChange={event =>
-                            setDirectExpenses(prev =>
-                              prev.map(item =>
-                                item.id === expense.id
-                                  ? { ...item, amount: centsFromInput(event.target.value) }
-                                  : item
-                              )
-                            )
-                          }
+                          value={(grossRevenue / 100).toString()}
+                          onChange={event => setGrossRevenue(centsFromInput(event.target.value))}
                           className="portal-input h-10 w-full"
                           disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
                         />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setDirectExpenses(prev => prev.filter(item => item.id !== expense.id))
-                          }
-                          disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                          aria-label={t('profitSplits.removeExpense')}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    ))}
-                    {directExpenses.length === 0 && (
-                      <p className="rounded-2xl bg-surface-50 p-4 text-sm font-medium text-surface-500 dark:bg-surface-900 dark:text-surface-400">
-                        {t('profitSplits.noExpenses')}
-                      </p>
-                    )}
-                  </div>
-                </Card>
-
-                <Card className="p-5">
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-black text-surface-900 dark:text-white">
-                        {t('profitSplits.participants')}
-                      </h3>
-                      <p className="text-sm text-surface-500 dark:text-surface-400">
-                        {t('profitSplits.participantsHint')}
-                      </p>
+                      </label>
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addParticipant}
-                      disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                    >
-                      <Plus size={16} />
-                      {t('profitSplits.addParticipant')}
-                    </Button>
-                  </div>
+                  </Card>
 
-                  <div className="space-y-3">
-                    {participants.map(participant => {
-                      const calculatedParticipant = calculation?.participants.find(
-                        item => item.id === participant.id
-                      );
+                  <Card className="p-4">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-black text-surface-900 dark:text-white">
+                          {t('profitSplits.expenses')}
+                        </h3>
+                        <p className="text-sm text-surface-500 dark:text-surface-400">
+                          {t('profitSplits.expensesHint')}
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addExpense}
+                        disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                      >
+                        <Plus size={16} />
+                        {t('profitSplits.addExpense')}
+                      </Button>
+                    </div>
 
-                      return (
-                        <div
-                          key={participant.id}
-                          className="grid gap-3 rounded-2xl border border-surface-200 p-3 dark:border-surface-800 lg:grid-cols-[140px_1fr_120px_140px_1fr_44px]"
-                        >
-                          <Select
-                            value={participant.role}
+                    <div className="space-y-3">
+                      {directExpenses.map(expense => (
+                        <div key={expense.id} className="grid gap-3 md:grid-cols-[1fr_160px_44px]">
+                          <input
+                            value={expense.description}
                             onChange={event =>
-                              setParticipants(prev =>
+                              setDirectExpenses(prev =>
                                 prev.map(item =>
-                                  item.id === participant.id
-                                    ? { ...item, role: event.target.value as ProfitSplitRole }
+                                  item.id === expense.id
+                                    ? { ...item, description: event.target.value }
                                     : item
                                 )
                               )
                             }
+                            placeholder={t('profitSplits.expenseDescription')}
+                            className="portal-input h-10 w-full"
                             disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                            options={roleOrder.map(role => ({
-                              value: role,
-                              label: t(`profitSplits.roles.${role}`),
-                            }))}
                           />
-                          <Select
-                            value={participant.userId}
-                            onChange={event => {
-                              const user = agencyTeam.find(
-                                member => member.id === event.target.value
-                              );
-                              setParticipants(prev =>
-                                prev.map(item =>
-                                  item.id === participant.id
-                                    ? {
-                                        ...item,
-                                        userId: user?.id ?? '',
-                                        userName: user?.name || user?.email || '',
-                                      }
-                                    : item
-                                )
-                              );
-                            }}
-                            disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                          >
-                            <option value="">{t('profitSplits.unassigned')}</option>
-                            {agencyTeam.map(member => (
-                              <option key={member.id} value={member.id}>
-                                {member.name || member.email}
-                              </option>
-                            ))}
-                          </Select>
                           <input
                             type="number"
                             min="0"
-                            max="100"
                             step="0.01"
-                            value={participant.percentage.toString()}
+                            value={(expense.amount / 100).toString()}
                             onChange={event =>
-                              setParticipants(prev =>
+                              setDirectExpenses(prev =>
                                 prev.map(item =>
-                                  item.id === participant.id
-                                    ? { ...item, percentage: Number(event.target.value) || 0 }
+                                  item.id === expense.id
+                                    ? { ...item, amount: centsFromInput(event.target.value) }
                                     : item
                                 )
                               )
                             }
-                            className="portal-input h-10 w-full"
-                            aria-label={t('profitSplits.percentage')}
-                            disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                          />
-                          <div className="flex h-10 items-center rounded-xl bg-surface-50 px-3 text-sm font-black text-surface-900 dark:bg-surface-900 dark:text-white">
-                            {calculatedParticipant
-                              ? formatCurrency(calculatedParticipant.amount, split.currency)
-                              : formatCurrency(0, split.currency)}
-                          </div>
-                          <input
-                            value={participant.notes ?? ''}
-                            onChange={event =>
-                              setParticipants(prev =>
-                                prev.map(item =>
-                                  item.id === participant.id
-                                    ? { ...item, notes: event.target.value }
-                                    : item
-                                )
-                              )
-                            }
-                            placeholder={t('profitSplits.notes')}
                             className="portal-input h-10 w-full"
                             disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
                           />
@@ -621,173 +485,316 @@ function ProfitSplitEditor({
                             variant="ghost"
                             size="icon"
                             onClick={() =>
-                              setParticipants(prev =>
-                                prev.filter(item => item.id !== participant.id)
-                              )
+                              setDirectExpenses(prev => prev.filter(item => item.id !== expense.id))
                             }
                             disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
-                            aria-label={t('profitSplits.removeParticipant')}
+                            aria-label={t('profitSplits.removeExpense')}
                           >
                             <Trash2 size={16} />
                           </Button>
                         </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-              </div>
+                      ))}
+                      {directExpenses.length === 0 && (
+                        <p className="rounded-2xl bg-surface-50 p-4 text-sm font-medium text-surface-500 dark:bg-surface-900 dark:text-surface-400">
+                          {t('profitSplits.noExpenses')}
+                        </p>
+                      )}
+                    </div>
+                  </Card>
 
-              {calculation && (
-                <aside className="space-y-4">
-                  <Card
-                    className="p-5"
-                    accent={
-                      allocationTone({ ...split, ...calculation }) === 'success'
-                        ? 'success'
-                        : 'warning'
-                    }
-                  >
-                    <h3 className="text-lg font-black text-surface-900 dark:text-white">
-                      {t('profitSplits.liveCalculation')}
-                    </h3>
-                    <div className="mt-4 space-y-3 text-sm">
-                      <div className="flex justify-between gap-3">
-                        <span className="text-surface-500">{t('profitSplits.grossRevenue')}</span>
-                        <span className="font-black text-surface-900 dark:text-white">
-                          {formatCurrency(grossRevenue, split.currency)}
-                        </span>
+                  <Card className="p-4">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-black text-surface-900 dark:text-white">
+                          {t('profitSplits.participants')}
+                        </h3>
+                        <p className="text-sm text-surface-500 dark:text-surface-400">
+                          {t('profitSplits.participantsHint')}
+                        </p>
                       </div>
-                      <div className="flex justify-between gap-3">
-                        <span className="text-surface-500">{t('profitSplits.totalExpenses')}</span>
-                        <span className="font-black text-rose-600">
-                          {formatCurrency(calculation.totalExpenses, split.currency)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between gap-3 border-t border-surface-200 pt-3 dark:border-surface-800">
-                        <span className="text-surface-500">{t('profitSplits.netProfit')}</span>
-                        <span
-                          className={cn(
-                            'font-black',
-                            calculation.netProfit < 0
-                              ? 'text-rose-600'
-                              : 'text-emerald-700 dark:text-emerald-300'
-                          )}
-                        >
-                          {formatCurrency(calculation.netProfit, split.currency)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <span className="text-surface-500">{t('profitSplits.totalAllocated')}</span>
-                        <span className="font-black text-surface-900 dark:text-white">
-                          {calculation.totalAllocatedPercentage}% ·{' '}
-                          {formatCurrency(calculation.totalAllocatedAmount, split.currency)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <span className="text-surface-500">{t('profitSplits.unallocated')}</span>
-                        <span className="font-black text-surface-900 dark:text-white">
-                          {calculation.unallocatedPercentage}% ·{' '}
-                          {formatCurrency(calculation.unallocatedAmount, split.currency)}
-                        </span>
-                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addParticipant}
+                        disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                      >
+                        <Plus size={16} />
+                        {t('profitSplits.addParticipant')}
+                      </Button>
                     </div>
 
-                    {calculation.netProfit < 0 && (
-                      <div className="mt-4 rounded-2xl bg-rose-50 p-3 text-sm font-bold text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
-                        {t('profitSplits.negativeProfitWarning')}
-                      </div>
-                    )}
-                    {calculation.totalAllocatedPercentage !== 100 && (
-                      <div className="mt-4 rounded-2xl bg-amber-50 p-3 text-sm font-bold text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
-                        {t('profitSplits.allocationWarning')}
-                      </div>
-                    )}
+                    <div className="space-y-3">
+                      {participants.map(participant => {
+                        const calculatedParticipant = calculation?.participants.find(
+                          item => item.id === participant.id
+                        );
+
+                        return (
+                          <div
+                            key={participant.id}
+                            className="grid gap-2.5 rounded-xl border border-surface-200 p-2.5 dark:border-surface-800 xl:grid-cols-[132px_1fr_112px_132px_1fr_40px]"
+                          >
+                            <Select
+                              value={participant.role}
+                              onChange={event =>
+                                setParticipants(prev =>
+                                  prev.map(item =>
+                                    item.id === participant.id
+                                      ? { ...item, role: event.target.value as ProfitSplitRole }
+                                      : item
+                                  )
+                                )
+                              }
+                              disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                              options={roleOrder.map(role => ({
+                                value: role,
+                                label: t(`profitSplits.roles.${role}`),
+                              }))}
+                            />
+                            <Select
+                              value={participant.userId}
+                              onChange={event => {
+                                const user = agencyTeam.find(
+                                  member => member.id === event.target.value
+                                );
+                                setParticipants(prev =>
+                                  prev.map(item =>
+                                    item.id === participant.id
+                                      ? {
+                                          ...item,
+                                          userId: user?.id ?? '',
+                                          userName: user?.name || user?.email || '',
+                                        }
+                                      : item
+                                  )
+                                );
+                              }}
+                              disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                            >
+                              <option value="">{t('profitSplits.unassigned')}</option>
+                              {agencyTeam.map(member => (
+                                <option key={member.id} value={member.id}>
+                                  {member.name || member.email}
+                                </option>
+                              ))}
+                            </Select>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              value={participant.percentage.toString()}
+                              onChange={event =>
+                                setParticipants(prev =>
+                                  prev.map(item =>
+                                    item.id === participant.id
+                                      ? { ...item, percentage: Number(event.target.value) || 0 }
+                                      : item
+                                  )
+                                )
+                              }
+                              className="portal-input h-10 w-full"
+                              aria-label={t('profitSplits.percentage')}
+                              disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                            />
+                            <div className="flex h-10 items-center rounded-lg bg-surface-50 px-3 text-[13px] font-black text-surface-900 dark:bg-surface-900 dark:text-white">
+                              {calculatedParticipant
+                                ? formatCurrency(calculatedParticipant.amount, split.currency)
+                                : formatCurrency(0, split.currency)}
+                            </div>
+                            <input
+                              value={participant.notes ?? ''}
+                              onChange={event =>
+                                setParticipants(prev =>
+                                  prev.map(item =>
+                                    item.id === participant.id
+                                      ? { ...item, notes: event.target.value }
+                                      : item
+                                  )
+                                )
+                              }
+                              placeholder={t('profitSplits.notes')}
+                              className="portal-input h-10 w-full"
+                              disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                setParticipants(prev =>
+                                  prev.filter(item => item.id !== participant.id)
+                                )
+                              }
+                              disabled={split.status === PROFIT_SPLIT_STATUS.FINALIZED}
+                              aria-label={t('profitSplits.removeParticipant')}
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </Card>
-                </aside>
+                </div>
+
+                {calculation && (
+                  <aside className="space-y-3">
+                    <Card
+                      className="p-4"
+                      accent={
+                        allocationTone({ ...split, ...calculation }) === 'success'
+                          ? 'success'
+                          : 'warning'
+                      }
+                    >
+                      <h3 className="text-base font-black text-surface-900 dark:text-white">
+                        {t('profitSplits.liveCalculation')}
+                      </h3>
+                      <div className="mt-3 space-y-2.5 text-[13px]">
+                        <div className="flex justify-between gap-3">
+                          <span className="text-surface-500">{t('profitSplits.grossRevenue')}</span>
+                          <span className="font-black text-surface-900 dark:text-white">
+                            {formatCurrency(grossRevenue, split.currency)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-3">
+                          <span className="text-surface-500">
+                            {t('profitSplits.totalExpenses')}
+                          </span>
+                          <span className="font-black text-rose-600">
+                            {formatCurrency(calculation.totalExpenses, split.currency)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-3 border-t border-surface-200 pt-2.5 dark:border-surface-800">
+                          <span className="text-surface-500">{t('profitSplits.netProfit')}</span>
+                          <span
+                            className={cn(
+                              'font-black',
+                              calculation.netProfit < 0
+                                ? 'text-rose-600'
+                                : 'text-emerald-700 dark:text-emerald-300'
+                            )}
+                          >
+                            {formatCurrency(calculation.netProfit, split.currency)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-3">
+                          <span className="text-surface-500">
+                            {t('profitSplits.totalAllocated')}
+                          </span>
+                          <span className="font-black text-surface-900 dark:text-white">
+                            {calculation.totalAllocatedPercentage}% ·{' '}
+                            {formatCurrency(calculation.totalAllocatedAmount, split.currency)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-3">
+                          <span className="text-surface-500">{t('profitSplits.unallocated')}</span>
+                          <span className="font-black text-surface-900 dark:text-white">
+                            {calculation.unallocatedPercentage}% ·{' '}
+                            {formatCurrency(calculation.unallocatedAmount, split.currency)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {calculation.netProfit < 0 && (
+                        <div className="mt-3 rounded-xl bg-rose-50 p-2.5 text-[13px] font-bold text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
+                          {t('profitSplits.negativeProfitWarning')}
+                        </div>
+                      )}
+                      {calculation.totalAllocatedPercentage !== 100 && (
+                        <div className="mt-3 rounded-xl bg-amber-50 p-2.5 text-[13px] font-bold text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+                          {t('profitSplits.allocationWarning')}
+                        </div>
+                      )}
+                    </Card>
+                  </aside>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-3 border-t border-surface-200 p-3.5 dark:border-surface-800 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+            <div className="text-[13px] font-medium text-surface-500">
+              {split?.status === PROFIT_SPLIT_STATUS.FINALIZED
+                ? t('profitSplits.finalizedLocked')
+                : t('profitSplits.draftHint')}
+            </div>
+            <div className="flex flex-wrap justify-end gap-2">
+              {split && split.status === PROFIT_SPLIT_STATUS.DRAFT && (
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={async () => {
+                    if (!window.confirm(t('common.confirm'))) return;
+                    try {
+                      await remove.mutateAsync(split.id);
+                      onClose();
+                    } catch {
+                      // Mutation feedback is handled by Sonner in the hook.
+                    }
+                  }}
+                  disabled={isMutating}
+                >
+                  <Trash2 size={16} />
+                  {t('common.delete')}
+                </Button>
+              )}
+              <Button type="button" variant="outline" onClick={onClose}>
+                {t('common.cancel')}
+              </Button>
+              {!split ? (
+                <Button
+                  type="button"
+                  onClick={handleCreate}
+                  loading={createFromPricingRequest.isPending}
+                  disabled={!selectedPricingRequestId || isMutating}
+                >
+                  <Plus size={16} />
+                  {t('profitSplits.create')}
+                </Button>
+              ) : (
+                <>
+                  {split.status === PROFIT_SPLIT_STATUS.DRAFT && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleSave}
+                      loading={saveDraft.isPending}
+                      disabled={isMutating}
+                    >
+                      <Save size={16} />
+                      {t('profitSplits.saveDraft')}
+                    </Button>
+                  )}
+                  {split.status === PROFIT_SPLIT_STATUS.DRAFT && (
+                    <Button
+                      type="button"
+                      variant="success"
+                      onClick={async () => {
+                        if (!(await handleSave())) return;
+                        try {
+                          await finalize.mutateAsync(split.id);
+                          onClose();
+                        } catch {
+                          // Mutation feedback is handled by Sonner in the hook.
+                        }
+                      }}
+                      loading={finalize.isPending}
+                      disabled={!canFinalize || isMutating}
+                    >
+                      <CheckCircle2 size={16} />
+                      {t('profitSplits.finalize')}
+                    </Button>
+                  )}
+                </>
               )}
             </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-surface-200 p-5 dark:border-surface-800 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-sm font-medium text-surface-500">
-            {split?.status === PROFIT_SPLIT_STATUS.FINALIZED
-              ? t('profitSplits.finalizedLocked')
-              : t('profitSplits.draftHint')}
-          </div>
-          <div className="flex flex-wrap justify-end gap-2">
-            {split && split.status === PROFIT_SPLIT_STATUS.DRAFT && (
-              <Button
-                type="button"
-                variant="danger"
-                onClick={async () => {
-                  if (!window.confirm(t('common.confirm'))) return;
-                  try {
-                    await remove.mutateAsync(split.id);
-                    onClose();
-                  } catch {
-                    // Mutation feedback is handled by Sonner in the hook.
-                  }
-                }}
-                disabled={isMutating}
-              >
-                <Trash2 size={16} />
-                {t('common.delete')}
-              </Button>
-            )}
-            <Button type="button" variant="outline" onClick={onClose}>
-              {t('common.cancel')}
-            </Button>
-            {!split ? (
-              <Button
-                type="button"
-                onClick={handleCreate}
-                loading={createFromPricingRequest.isPending}
-                disabled={!selectedPricingRequestId || isMutating}
-              >
-                <Plus size={16} />
-                {t('profitSplits.create')}
-              </Button>
-            ) : (
-              <>
-                {split.status === PROFIT_SPLIT_STATUS.DRAFT && (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={handleSave}
-                    loading={saveDraft.isPending}
-                    disabled={isMutating}
-                  >
-                    <Save size={16} />
-                    {t('profitSplits.saveDraft')}
-                  </Button>
-                )}
-                {split.status === PROFIT_SPLIT_STATUS.DRAFT && (
-                  <Button
-                    type="button"
-                    variant="success"
-                    onClick={async () => {
-                      if (!(await handleSave())) return;
-                      try {
-                        await finalize.mutateAsync(split.id);
-                        onClose();
-                      } catch {
-                        // Mutation feedback is handled by Sonner in the hook.
-                      }
-                    }}
-                    loading={finalize.isPending}
-                    disabled={!canFinalize || isMutating}
-                  >
-                    <CheckCircle2 size={16} />
-                    {t('profitSplits.finalize')}
-                  </Button>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }
 
@@ -829,7 +836,7 @@ export default function ProfitSplitsClient() {
   if (accessLoading) {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+        <Loader2 className="h-10 w-10 animate-spin text-primary-600" />
         <p className="text-xs font-bold uppercase tracking-widest text-surface-500">
           {t('common.loading')}
         </p>
@@ -854,7 +861,7 @@ export default function ProfitSplitsClient() {
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <div className="mb-1 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/25">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 dark:bg-emerald-500 shadow-lg shadow-emerald-500/25">
               <PieChart className="h-5 w-5 text-white" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
@@ -938,7 +945,7 @@ export default function ProfitSplitsClient() {
           </div>
         ) : loading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
             <p className="text-sm font-bold text-surface-400">{t('common.loading')}</p>
           </div>
         ) : splits.length === 0 ? (

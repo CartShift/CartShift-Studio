@@ -8,6 +8,7 @@ import { updateRequestMilestones, updateMilestoneStatus } from '@/lib/services/p
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 
@@ -93,7 +94,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
           <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
             {t('portal.milestones.title')}
           </h3>
-          <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-1">
+          <p className="portal-label-sm text-[10px] mt-1">
             {t('portal.milestones.subtitle')}
           </p>
         </div>
@@ -115,11 +116,11 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-surface-400">
               <span>{t('portal.milestones.overallProgress')}</span>
-              <span className="text-blue-600">{Math.round(progress)}%</span>
+              <span className="text-primary-600">{Math.round(progress)}%</span>
             </div>
             <div className="w-full h-2 bg-surface-100 dark:bg-surface-900 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-1000"
+                className="h-full bg-primary-600 dark:bg-primary-500 transition-all duration-1000"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -135,19 +136,24 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                   <div key={ms.id} className="relative">
                     <div
                       onClick={() => handleToggleStatus(ms)}
+                      onKeyDown={e => {
+                        if (!isAgency || isEditing) return;
+                        activateOnKeyboard(e, () => handleToggleStatus(ms));
+                      }}
+                      tabIndex={isAgency && !isEditing ? 0 : undefined}
                       className={cn(
-                        'absolute -start-8 mt-1 w-6.5 h-6.5 rounded-full border-4 border-white dark:border-surface-950 flex items-center justify-center transition-all z-dropdown',
+                        'absolute -start-8 mt-1 w-6.5 h-6.5 rounded-full border-4 border-white dark:border-surface-950 flex items-center justify-center transition-all z-dropdown outline-none',
                         isAgency && !isEditing
-                          ? 'cursor-pointer hover:scale-110 active:scale-95'
+                          ? 'portal-focus-ring cursor-pointer hover:scale-110 active:scale-95'
                           : '',
                         isCompleted
                           ? 'bg-emerald-500 text-white'
                           : isActive
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                            ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
                             : 'bg-surface-100 dark:bg-surface-800 text-surface-400'
                       )}
                       role={isAgency && !isEditing ? 'button' : undefined}
-                      aria-label="Toggle status"
+                      aria-label={t('portal.accessibility.toggleMilestoneStatus')}
                     >
                       {isCompleted ? (
                         <CheckCircle2 size={12} strokeWidth={3} />
@@ -169,7 +175,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                           {ms.title}
                         </h4>
                         {isActive && (
-                          <span className="text-[9px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-900/30">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-md border border-primary-100 dark:border-primary-900/30">
                             {t('portal.milestones.current')}
                           </span>
                         )}
@@ -208,13 +214,13 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                 <GripVertical size={18} className="text-surface-300 cursor-move" />
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
-                    className="bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-2 text-sm font-bold font-outfit"
+                    className="portal-input bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-2 text-sm font-bold font-outfit"
                     value={ms.title}
                     onChange={e => handleUpdateMilestone(ms.id, { title: e.target.value })}
                     placeholder={t('portal.milestones.milestoneTitle')}
                   />
                   <select
-                    className="bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-2 text-sm font-bold font-outfit"
+                    className="portal-input bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-2 text-sm font-bold font-outfit"
                     value={ms.status}
                     onChange={e => handleUpdateMilestone(ms.id, { status: e.target.value as any })}
                   >
@@ -225,8 +231,10 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                   </select>
                 </div>
                 <button
+                  type="button"
                   onClick={() => handleRemoveMilestone(ms.id)}
-                  className="p-2 text-surface-400 hover:text-rose-500 transition-colors"
+                  aria-label={t('portal.common.delete')}
+                  className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-500 transition-colors"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -235,8 +243,9 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
           </div>
 
           <button
+            type="button"
             onClick={handleAddMilestone}
-            className="w-full py-4 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl text-surface-400 hover:text-blue-500 hover:border-blue-500 hover:bg-blue-50/20 transition-all font-outfit font-bold flex items-center justify-center gap-2"
+            className="portal-focus-ring w-full py-4 min-h-[44px] border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl text-surface-400 hover:text-primary-500 hover:border-primary-500 hover:bg-primary-50/20 transition-all font-outfit font-bold flex items-center justify-center gap-2"
           >
             <Plus size={18} /> {t('portal.milestones.addNewPhase')}
           </button>
@@ -246,7 +255,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
               {t('portal.milestones.discard')}
             </Button>
             <Button
-              className="flex-1 shadow-lg shadow-blue-500/20"
+              className="flex-1 shadow-lg shadow-primary-500/20"
               onClick={handleSave}
               loading={isSaving}
             >

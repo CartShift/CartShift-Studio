@@ -257,7 +257,7 @@ export function RequestPricingCalculator({
 
       {/* Summary Section (if requests selected) */}
       {selectedRequestIds.length > 0 && (
-        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl border border-blue-200/50 dark:border-blue-800/30">
+        <div className="mt-6 p-4 bg-primary-50 dark:bg-primary-950/20 rounded-xl border border-primary-200/50 dark:border-primary-800/30">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-bold text-surface-900 dark:text-white">
@@ -271,7 +271,7 @@ export function RequestPricingCalculator({
               </p>
             </div>
             <div className="text-end">
-              <div className="text-2xl font-black text-blue-600 dark:text-blue-400 font-outfit">
+              <div className="text-2xl font-black text-primary-600 dark:text-primary-400 font-outfit">
                 {formatCalculatorPrice(
                   pricingResults.reduce((sum, r) => sum + r.adjustedPrice, 0),
                   currency

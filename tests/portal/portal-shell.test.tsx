@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '../utils/test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '../utils/test-utils';
 import { setupFirebaseMocks, mockUserData } from '../utils/mock-firebase';
 import { PortalShell } from '@/components/portal/PortalShell';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { announcePortal } from '@/components/portal/shell/portal-announcer';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +27,9 @@ vi.mock('@/i18n/navigation', () => ({
     back: vi.fn(),
   }),
   usePathname: () => mockPathname,
-  Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
 vi.mock('@/lib/services/portal-notifications', () => ({
@@ -38,11 +41,6 @@ vi.mock('@/lib/services/portal-notifications', () => ({
 
 vi.mock('@/lib/services/portal-organizations', () => ({
   getMemberByUserId: vi.fn().mockResolvedValue({
-    id: 'member-1',
-    userId: 'test-user-id',
-    role: 'OWNER',
-  }),
-  ensureMembership: vi.fn().mockResolvedValue({
     id: 'member-1',
     userId: 'test-user-id',
     role: 'OWNER',
@@ -69,9 +67,14 @@ vi.mock('@/components/portal/shell/hooks/usePortalShellState', () => ({
   usePortalShellState: () => mockUsePortalShellState(),
 }));
 
-// Mock child components
+vi.mock('@/components/portal/shell/hooks/useMobileNavBadges', () => ({
+  useMobileNavBadges: () => ({}),
+}));
+
 vi.mock('@/components/portal/shell/PortalSidebar', () => ({
-  PortalSidebar: ({ children }: any) => <div data-testid="portal-sidebar">{children}</div>,
+  PortalSidebar: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="portal-sidebar">{children}</div>
+  ),
 }));
 vi.mock('@/components/portal/shell/SidebarBrand', () => ({
   SidebarBrand: () => <div>Sidebar Brand</div>,
@@ -86,25 +89,53 @@ vi.mock('@/components/portal/shell/SidebarFooter', () => ({
   SidebarFooter: () => <div>Sidebar Footer</div>,
 }));
 vi.mock('@/components/portal/ui/PortalHeader', () => ({
-  PortalHeader: () => <div data-testid="portal-header">Portal Header</div>,
+  PortalHeader: ({
+    onMobileMenuToggle,
+    onMobileSearchToggle,
+    onOpenCommandPalette,
+  }: {
+    onMobileMenuToggle: () => void;
+    onMobileSearchToggle: () => void;
+    onOpenCommandPalette?: () => void;
+  }) => (
+    <div data-testid="portal-header">
+      <button type="button" onClick={onMobileMenuToggle}>
+        Open menu
+      </button>
+      <button type="button" onClick={onMobileSearchToggle}>
+        Open search
+      </button>
+      <button type="button" onClick={onOpenCommandPalette}>
+        Open commands
+      </button>
+    </div>
+  ),
 }));
 vi.mock('@/components/portal/ui/NotificationDropdown', () => ({
   NotificationDropdown: () => null,
 }));
-vi.mock('@/components/portal/shell/ImpersonationBanner', () => ({
+vi.mock('@/components/portal/ui/ImpersonationBanner', () => ({
   ImpersonationBanner: () => null,
 }));
 vi.mock('@/components/ui/ModalBackdrop', () => ({
   ModalBackdrop: () => null,
 }));
 vi.mock('@/components/portal/ui/Breadcrumbs', () => ({
-  Breadcrumbs: () => <div>Breadcrumbs</div>,
+  Breadcrumbs: () => <div data-testid="breadcrumbs">Breadcrumbs</div>,
 }));
 vi.mock('@/components/portal/ui/MobileSearch', () => ({
-  MobileSearch: () => null,
+  MobileSearch: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="mobile-search">Mobile Search</div> : null,
 }));
 vi.mock('@/components/portal/OnboardingTour', () => ({
   OnboardingTour: () => null,
+}));
+vi.mock('@/components/portal/CommandPalette', () => ({
+  CommandPalette: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="command-palette">Command Palette</div> : null,
+}));
+vi.mock('@/components/portal/shell/MobileBottomNav', () => ({
+  MobileBottomNav: () => null,
 }));
 
 vi.mock('@/lib/context/ImpersonationContext', () => ({
@@ -126,6 +157,11 @@ describe('Portal Shell', () => {
       isAuthenticated: true,
       isAgency: false,
     });
+
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
   });
 
   const defaultState = {
@@ -157,7 +193,7 @@ describe('Portal Shell', () => {
     notificationRef: { current: null },
     notificationButtonRef: { current: null },
     handleNotificationClick: vi.fn(),
-    handleMarkAllAsRead: vi.fn(),
+    handleMarkAllAsRead: vi.fn().mockResolvedValue(undefined),
     mounted: true,
     showOnboarding: false,
     setShowOnboarding: vi.fn(),
@@ -177,17 +213,17 @@ describe('Portal Shell', () => {
 
     render(
       <TestWrapper>
-        <PortalShell orgId="org-1">
+        <PortalShell>
           <div>Test Content</div>
         </PortalShell>
       </TestWrapper>
     );
-    // PortalState renders loading skeletons which have skeleton-shimmer class by default
+
     const skeletons = document.querySelectorAll('.skeleton-shimmer');
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
-  it('renders content when authenticated and authorized', async () => {
+  it('renders content when authenticated and authorized', () => {
     mockUsePortalShellState.mockReturnValue({
       ...defaultState,
       loading: false,
@@ -197,20 +233,38 @@ describe('Portal Shell', () => {
 
     render(
       <TestWrapper>
-        <PortalShell orgId="org-1">
+        <PortalShell>
           <div>Test Content</div>
         </PortalShell>
       </TestWrapper>
     );
 
-    // Check if mock was called
     expect(mockUsePortalShellState).toHaveBeenCalled();
-
-    // Should render children immediately if state allows
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
-  it('displays navigation sidebar', async () => {
+  it('shows access denied when unauthorized', () => {
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
+      isAuthorized: false,
+      hasEverBeenAuthorized: false,
+      initialLoadComplete: true,
+      loading: false,
+    });
+
+    render(
+      <TestWrapper>
+        <PortalShell>
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/access restricted/i)).toBeInTheDocument();
+    expect(screen.queryByText('Test Content')).not.toBeInTheDocument();
+  });
+
+  it('displays navigation sidebar', () => {
     mockUsePortalShellState.mockReturnValue({
       ...defaultState,
       loading: false,
@@ -220,12 +274,80 @@ describe('Portal Shell', () => {
 
     render(
       <TestWrapper>
-        <PortalShell orgId="org-1">
+        <PortalShell>
           <div>Test Content</div>
         </PortalShell>
       </TestWrapper>
     );
 
     expect(screen.getByTestId('portal-sidebar')).toBeInTheDocument();
+  });
+
+  it('shows breadcrumbs on nested routes', () => {
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
+      pathname: '/portal/dashboard/reports',
+    });
+
+    render(
+      <TestWrapper>
+        <PortalShell>
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
+    );
+
+    expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument();
+  });
+
+  it('opens mobile search from header', () => {
+    const setIsMobileSearchOpen = vi.fn();
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
+      setIsMobileSearchOpen,
+      isMobileSearchOpen: false,
+    });
+
+    render(
+      <TestWrapper>
+        <PortalShell>
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
+    );
+
+    fireEvent.click(screen.getByText('Open search'));
+    expect(setIsMobileSearchOpen).toHaveBeenCalledWith(true);
+  });
+
+  it('opens command palette from header control', async () => {
+    mockUsePortalShellState.mockReturnValue({
+      ...defaultState,
+    });
+
+    render(
+      <TestWrapper>
+        <PortalShell>
+          <div>Test Content</div>
+        </PortalShell>
+      </TestWrapper>
+    );
+
+    expect(screen.queryByTestId('command-palette')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Open commands'));
+    await waitFor(() => {
+      expect(screen.getByTestId('command-palette')).toBeInTheDocument();
+    });
+  });
+});
+
+describe('announcePortal', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="portal-announcer" role="status" class="sr-only"></div>';
+  });
+
+  it('writes message to live region', () => {
+    announcePortal('Hello');
+    expect(document.getElementById('portal-announcer')?.textContent).toBe('Hello');
   });
 });

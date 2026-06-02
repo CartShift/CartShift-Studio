@@ -41,7 +41,7 @@ export function RevenueSummary({
             <DollarSign size={20} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+            <p className="portal-label-sm text-[10px]">
               {t('sales.metrics.totalRevenue')}
             </p>
             <p className="text-xl font-bold text-surface-900 dark:text-white">
@@ -54,11 +54,11 @@ export function RevenueSummary({
         <div className="hidden sm:flex h-8 w-px bg-surface-200 dark:bg-surface-700" />
 
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+          <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400">
             <Users size={20} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+            <p className="portal-label-sm text-[10px]">
               {t('sales.metrics.activeClients')}
             </p>
             <p className="text-xl font-bold text-surface-900 dark:text-white">{activeClients}</p>
@@ -69,11 +69,11 @@ export function RevenueSummary({
         <div className="hidden sm:flex h-8 w-px bg-surface-200 dark:bg-surface-700" />
 
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-accent-600 dark:text-accent-400">
             <TrendingUp size={20} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+            <p className="portal-label-sm text-[10px]">
               {t('sales.metrics.avgDealSize')}
             </p>
             <p className="text-xl font-bold text-surface-900 dark:text-white">

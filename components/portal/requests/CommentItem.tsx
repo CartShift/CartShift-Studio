@@ -8,6 +8,7 @@ import { Smile, Reply } from 'lucide-react';
 import { addReaction, removeReaction } from '@/lib/services/portal-comments';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { Avatar } from '@/components/ui/Avatar';
+import { useTranslations } from 'next-intl';
 
 interface CommentItemProps {
   comment: Comment;
@@ -32,7 +33,7 @@ const renderSafeContent = (content: string): React.ReactNode => {
         {parts.map((part, partIndex) => {
           if (part.startsWith('@')) {
             return (
-              <span key={partIndex} className="font-bold text-blue-500">
+              <span key={partIndex} className="font-bold text-primary-500">
                 {part}
               </span>
             );
@@ -51,6 +52,7 @@ export const CommentItem = ({
   onReply,
   isReply = false,
 }: CommentItemProps) => {
+  const tA11y = useTranslations('portal.accessibility');
   const [showReactions, setShowReactions] = useState(false);
 
   // Optimistic reactions state
@@ -115,7 +117,7 @@ export const CommentItem = ({
       {/* Content */}
       <div className={cn('flex flex-col max-w-[85%]', isAuthor && 'items-end')}>
         <div className="flex items-center gap-2 mb-1 px-1">
-          <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+          <span className="portal-label-sm text-[10px]">
             {comment.userName}
           </span>
           <span className="text-[9px] font-bold text-surface-300 dark:text-surface-600 uppercase tracking-tighter">
@@ -128,7 +130,7 @@ export const CommentItem = ({
             className={cn(
               'p-3.5 rounded-2xl text-sm shadow-sm font-medium leading-relaxed relative z-dropdown',
               isAuthor
-                ? 'bg-blue-600 text-white rounded-se-none'
+                ? 'bg-primary-600 text-white rounded-se-none'
                 : 'bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 border border-surface-100 dark:border-surface-700 rounded-ss-none'
             )}
           >
@@ -143,14 +145,19 @@ export const CommentItem = ({
             )}
           >
             <button
+              type="button"
               onClick={() => setShowReactions(!showReactions)}
-              className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-600 transition-colors"
+              aria-expanded={showReactions}
+              aria-label={tA11y('addReaction')}
+              className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-600 transition-colors"
             >
               <Smile size={14} />
             </button>
             <button
+              type="button"
               onClick={() => onReply(comment)}
-              className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-600 transition-colors"
+              aria-label={tA11y('replyToComment')}
+              className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-400 hover:text-surface-600 transition-colors"
             >
               <Reply size={14} />
             </button>
@@ -167,8 +174,9 @@ export const CommentItem = ({
                   {EMOJI_OPTIONS.map(emoji => (
                     <button
                       key={emoji}
+                      type="button"
                       onClick={() => handleReaction(emoji)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-50 dark:hover:bg-surface-700 text-lg transition-transform hover:scale-110"
+                      className="portal-focus-ring w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-50 dark:hover:bg-surface-700 text-lg transition-transform hover:scale-110"
                     >
                       {emoji}
                     </button>
@@ -189,11 +197,12 @@ export const CommentItem = ({
               {Object.entries(reactions).map(([emoji, users]) => (
                 <button
                   key={emoji}
+                  type="button"
                   onClick={() => handleReaction(emoji)}
                   className={cn(
-                    'flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] shadow-sm border transition-colors',
+                    'portal-focus-ring flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] shadow-sm border transition-colors',
                     users.includes(currentUserId)
-                      ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
+                      ? 'bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-300'
                       : 'bg-white dark:bg-surface-800 border-surface-200 dark:border-surface-700 text-surface-500'
                   )}
                 >

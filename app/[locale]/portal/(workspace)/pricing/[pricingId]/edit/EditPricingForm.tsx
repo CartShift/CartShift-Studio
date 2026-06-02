@@ -362,7 +362,7 @@ export default function EditPricingForm() {
   if (isLoading) {
     return (
       <div className="py-20 flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
         <p className="text-sm font-bold text-surface-400 font-outfit">{t('common.loading')}</p>
       </div>
     );
@@ -544,7 +544,7 @@ export default function EditPricingForm() {
                 {linkedRequests.map(request => (
                   <div
                     key={request.id}
-                    className="p-4 rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    className="p-4 rounded-xl border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -562,7 +562,7 @@ export default function EditPricingForm() {
                           </p>
                         )}
                       </div>
-                      <div className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center bg-blue-500 text-white">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center bg-primary-500 text-white">
                         <Check size={14} />
                       </div>
                     </div>
@@ -597,7 +597,7 @@ export default function EditPricingForm() {
                 onClick={() =>
                   append({ id: generateLineItemId(), description: '', quantity: 1, unitPrice: 0 })
                 }
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
               >
                 <Plus size={16} />
                 {t('pricing.form.addItem')}
@@ -671,7 +671,7 @@ export default function EditPricingForm() {
                         <button
                           type="button"
                           onClick={() => remove(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                          className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -705,7 +705,7 @@ export default function EditPricingForm() {
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      className="form-checkbox h-4 w-4 text-primary-600 rounded border-gray-300 focus-visible:ring-primary-500/40"
                       {...register('includeTax')}
                     />
                   </label>

@@ -36,13 +36,13 @@ export function TipsCard() {
   const NextIcon = isRtl ? ChevronLeft : ChevronRight;
 
   return (
-    <Card className="border-blue-100 dark:border-blue-900/30 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-blue-950/30 dark:to-indigo-950/30 shadow-sm overflow-hidden">
+    <Card className="border-primary-100 dark:border-primary-900/30 bg-primary-50/80 dark:bg-primary-950/30 shadow-sm overflow-hidden">
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 p-2 rounded-xl bg-blue-100 dark:bg-blue-900/50">
-          <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        <div className="flex-shrink-0 p-2 rounded-xl bg-primary-100 dark:bg-primary-900/50">
+          <Lightbulb className="w-4 h-4 text-primary-600 dark:text-primary-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <CardSectionTitle as="h4" className="text-blue-600/70 dark:text-blue-400/70 mb-2">
+          <CardSectionTitle as="h4" className="text-primary-600/70 dark:text-primary-400/70 mb-2">
             {t('title')}
           </CardSectionTitle>
           <div className="relative h-12 overflow-hidden">
@@ -65,12 +65,13 @@ export function TipsCard() {
             <div className="flex gap-1.5">
               {tips.map((_, index) => (
                 <button
+                  type="button"
                   key={index}
                   onClick={() => setCurrentTipIndex(index)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  className={`portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
                     index === currentTipIndex
-                      ? 'bg-blue-600 dark:bg-blue-400 w-4'
-                      : 'bg-surface-300 dark:bg-surface-600 hover:bg-blue-400 dark:hover:bg-blue-500'
+                      ? 'bg-primary-600 dark:bg-primary-400 w-4'
+                      : 'bg-surface-300 dark:bg-surface-600 hover:bg-primary-400 dark:hover:bg-primary-500'
                   }`}
                   aria-label={`Tip ${index + 1}`}
                 />
@@ -78,15 +79,17 @@ export function TipsCard() {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={goToPrevTip}
-                className="p-1 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
                 aria-label="Previous tip"
               >
                 <PrevIcon className="w-4 h-4 text-surface-400" />
               </button>
               <button
+                type="button"
                 onClick={goToNextTip}
-                className="p-1 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
                 aria-label="Next tip"
               >
                 <NextIcon className="w-4 h-4 text-surface-400" />

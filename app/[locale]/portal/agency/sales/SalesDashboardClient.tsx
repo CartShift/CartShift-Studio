@@ -32,7 +32,7 @@ export default function SalesDashboardClient() {
   if (auth) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
         <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
           {t('sales.dashboard.loading')}
         </p>
@@ -47,7 +47,7 @@ export default function SalesDashboardClient() {
     if (isImpersonating) {
       return (
         <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
           <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
             Redirecting to Client View...
           </p>
@@ -73,7 +73,7 @@ export default function SalesDashboardClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white leading-tight">
@@ -118,7 +118,7 @@ export default function SalesDashboardClient() {
       {!loading && !hasData ? (
         <Card variant="default" padding="lg">
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 flex items-center justify-center mb-6">
+            <div className="w-20 h-20 rounded-2xl bg-emerald-500/15 dark:bg-emerald-500/10 flex items-center justify-center mb-6">
               <BarChart3 className="w-10 h-10 text-emerald-500" />
             </div>
             <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2">

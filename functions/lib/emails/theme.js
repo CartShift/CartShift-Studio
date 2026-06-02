@@ -55,7 +55,7 @@ exports.theme = {
         full: '9999px',
     },
     fontFamily: {
-        sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        sans: 'Rubik, Arial, Helvetica, sans-serif',
     },
 };
 //# sourceMappingURL=theme.js.map

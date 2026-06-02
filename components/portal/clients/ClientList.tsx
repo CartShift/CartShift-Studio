@@ -70,7 +70,7 @@ export function ClientList({ clients, currentUserId, onViewAsClient, onDelete }:
                       <div>
                         <Link
                           href={getPortalPath(`/agency/clients/${client.id}/`)}
-                          className="font-bold text-surface-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors block leading-tight"
+                          className="font-bold text-surface-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors block leading-tight"
                         >
                           {client.name}
                         </Link>

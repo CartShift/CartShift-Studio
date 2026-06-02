@@ -170,7 +170,7 @@ export default function AgencyClientsClient() {
   if (auth || (loading && userData?.isAgency)) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
         <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
           {t('agency.clients.loading' as any)}
         </p>
@@ -229,7 +229,7 @@ export default function AgencyClientsClient() {
           </p>
         </div>
         <Link href={getPortalPath('/agency/clients/new/')}>
-          <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20">
+          <Button className="flex items-center gap-2 shadow-lg shadow-primary-500/20">
             <Plus size={18} />
             {t('agency.clients.onboard' as any)}
           </Button>
@@ -240,7 +240,7 @@ export default function AgencyClientsClient() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link
           href={getPortalPath('/agency/sales')}
-          className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer group"
+          className="p-4 rounded-2xl bg-emerald-600 dark:bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -255,7 +255,7 @@ export default function AgencyClientsClient() {
 
         <Link
           href={getPortalPath('/agency/sales')}
-          className="p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-all cursor-pointer group"
+          className="p-4 rounded-2xl bg-amber-600 dark:bg-amber-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -268,7 +268,7 @@ export default function AgencyClientsClient() {
           <p className="text-2xl font-black">{formatRevenue(totals.pendingRevenue)}</p>
         </Link>
 
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25">
+        <div className="p-4 rounded-2xl bg-accent-600 dark:bg-accent-500 text-white shadow-lg shadow-purple-500/25">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
               <Users className="w-5 h-5" />
@@ -282,7 +282,7 @@ export default function AgencyClientsClient() {
 
         <Link
           href={getPortalPath('/agency/sales')}
-          className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all cursor-pointer group"
+          className="p-4 rounded-2xl bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/35 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -379,7 +379,7 @@ export default function AgencyClientsClient() {
               <div className="p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl flex items-center justify-center shadow-inner transition-transform duration-300">
-                    <Briefcase size={28} className="text-blue-600 opacity-80" />
+                    <Briefcase size={28} className="text-primary-600 opacity-80" />
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge
@@ -459,7 +459,7 @@ export default function AgencyClientsClient() {
 
                 {/* Revenue Highlight */}
                 {(org.totalRevenue ?? 0) > 0 && (
-                  <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10 border border-emerald-100 dark:border-emerald-500/20">
+                  <div className="mb-6 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <DollarSign size={16} className="text-emerald-600 dark:text-emerald-400" />
@@ -486,7 +486,7 @@ export default function AgencyClientsClient() {
 
                 <div className="grid grid-cols-2 gap-4 pt-6 border-t border-surface-50 dark:border-surface-800/50">
                   <div>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">
+                    <p className="portal-label-sm text-[10px] mb-1">
                       {t('agency.clients.tickets' as any)}
                     </p>
                     <div className="flex items-center gap-2">
@@ -497,7 +497,7 @@ export default function AgencyClientsClient() {
                     </div>
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">
+                    <p className="portal-label-sm text-[10px] mb-1">
                       {t('agency.clients.members' as any)}
                     </p>
                     <div
@@ -523,7 +523,7 @@ export default function AgencyClientsClient() {
               <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl transition-colors">
                 <Link
                   href={getPortalPath(`/agency/clients/${org.id}/`)}
-                  className="flex items-center justify-between text-blue-600 dark:text-blue-400 transition-colors"
+                  className="flex items-center justify-between text-primary-600 dark:text-primary-400 transition-colors"
                 >
                   <span className="text-xs font-black uppercase tracking-widest">
                     {t('agency.clients.detail.overview' as any)}

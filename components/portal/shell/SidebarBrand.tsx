@@ -17,13 +17,13 @@ export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
   // If collapsed: Use branding.iconUrl (mark) if it exists, otherwise use default icon
 
   return (
-    <div className="h-20 flex items-center px-4 border-b border-surface-200/50 dark:border-surface-800/30 flex-shrink-0">
+    <div className="h-[68px] flex items-center px-3.5 border-b border-surface-200/50 dark:border-surface-800/30 flex-shrink-0">
       <Link
         href={getPortalPath('/dashboard/')}
-        className="flex items-center gap-3 group w-full min-w-0"
+        className="flex items-center gap-2.5 group w-full min-w-0"
       >
         {(!isExpanded || !branding?.logoUrl) && (
-          <div className="w-9 h-9 flex-shrink-0 relative group-hover:scale-110 transition-transform duration-300">
+          <div className="w-8 h-8 flex-shrink-0 relative group-hover:scale-105 transition-transform duration-300">
             {branding?.iconUrl ? (
               <img
                 src={branding.iconUrl}
@@ -44,8 +44,8 @@ export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
         )}
         {isExpanded && (
           <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="flex flex-col leading-none"
           >
             {branding?.logoUrl ? (
@@ -58,11 +58,11 @@ export function SidebarBrand({ isExpanded }: SidebarBrandProps) {
               <img
                 src={branding.logoUrl}
                 alt="Brand Logo"
-                className={`h-8 object-contain object-left max-w-[140px] ${branding.invertLogoInDarkMode ? 'dark:brightness-0 dark:invert' : ''}`}
+                className={`h-7 object-contain object-left max-w-[132px] ${branding.invertLogoInDarkMode ? 'dark:brightness-0 dark:invert' : ''}`}
               />
             ) : (
               <>
-                <span className="font-bold text-base tracking-tight text-surface-900 dark:text-white truncate">
+                <span className="font-bold text-sm tracking-tight text-surface-900 dark:text-white truncate">
                   {t('portal.sidebar.title')}
                 </span>
                 <span className="text-[9px] font-bold text-primary-500 uppercase tracking-wider mt-0.5 opacity-80">

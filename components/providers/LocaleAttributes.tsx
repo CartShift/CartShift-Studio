@@ -29,20 +29,5 @@ export function LocaleAttributes() {
     }
   }, [locale, direction, isRTL]);
 
-  // Return an inline script for SSR hydration to set direction immediately
-  // This runs before React hydrates, preventing any flash
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `
-          (function(){
-            var d=document.documentElement;
-            d.lang="${locale}";
-            d.dir="${direction}";
-            ${isRTL ? 'document.body&&document.body.classList.add("lang-he");d.classList.add("rtl-ready");' : ''}
-          })();
-        `.replace(/\s+/g, ' '),
-      }}
-    />
-  );
+  return null;
 }

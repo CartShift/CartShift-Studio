@@ -5,11 +5,15 @@ import { useRequests } from '@/lib/hooks/useRequests';
 import { useConsultations } from '@/lib/hooks/useConsultations';
 import { REQUEST_STATUS, CONSULTATION_STATUS } from '@/lib/types/portal';
 
-export function useMobileNavBadges(isAgency: boolean) {
+export function useMobileNavBadges(isAgency: boolean, isMobile: boolean) {
   const { requests } = useRequests();
   const { consultations } = useConsultations();
 
   return useMemo(() => {
+    if (!isMobile) {
+      return {};
+    }
+
     if (isAgency) {
       // Workboard: only NEW requests that need to be triaged/started
       const newRequestsCount = requests.filter(r => r.status === REQUEST_STATUS.NEW).length;
@@ -38,5 +42,5 @@ export function useMobileNavBadges(isAgency: boolean) {
       requests: activeRequests || undefined,
       consultations: upcomingConsultations || undefined,
     };
-  }, [isAgency, requests, consultations]);
+  }, [isAgency, isMobile, requests, consultations]);
 }

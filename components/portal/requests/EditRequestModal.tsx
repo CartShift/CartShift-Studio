@@ -28,7 +28,7 @@ export function EditRequestModal({ isOpen, onClose, request, orgId }: EditReques
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 rounded-full transition-colors"
+              className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 rounded-full transition-colors"
             >
               <X size={20} />
             </button>

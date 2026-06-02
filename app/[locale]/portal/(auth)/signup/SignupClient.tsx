@@ -235,7 +235,7 @@ function SignupForm() {
                 ? `${getPortalPath('/login/')}?redirect=${encodeURIComponent(redirectPath)}`
                 : getPortalHref('/login/')
             }
-            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            className="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
           >
             {t('auth.signup.signIn')}
           </Link>
@@ -260,7 +260,7 @@ export default function SignupClient() {
       <Suspense
         fallback={
           <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-surface-500">{t('loading.auth.signup')}</p>
           </div>
         }

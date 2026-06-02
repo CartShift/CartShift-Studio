@@ -69,7 +69,7 @@ export function InlineRequestForm({
             <select
               value={selectedOrgId}
               onChange={e => setSelectedOrgId(e.target.value)}
-              className="w-full text-xs p-1.5 rounded-lg border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-600 dark:text-surface-300 focus:ring-1 focus:ring-primary-500"
+              className="portal-input w-full text-xs p-1.5 rounded-lg border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-600 dark:text-surface-300"
               disabled={isSubmitting}
             >
               {organizations.map(org => (

@@ -38,7 +38,7 @@ export function PayPalCheckoutButton({
   if (isPending) {
     return (
       <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
         <span className="ms-2 text-sm text-surface-500">{t('portal.common.loading')}</span>
       </div>
     );

@@ -75,7 +75,7 @@ export default function PricingDetailClient() {
   if (pricingQuery.isLoading) {
     return (
       <div className="py-20 flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
         <p className="text-sm font-bold text-surface-400 font-outfit">
           {t('common.loading' as any)}
         </p>
@@ -149,7 +149,7 @@ export default function PricingDetailClient() {
           <div className="space-y-4 mb-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs font-black text-surface-400 uppercase tracking-widest mb-1">
+                <p className="portal-label-sm mb-1">
                   {t('pricing.form.total' as any)}
                 </p>
                 <p className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
@@ -157,7 +157,7 @@ export default function PricingDetailClient() {
                 </p>
               </div>
               <div>
-                <p className="text-xs font-black text-surface-400 uppercase tracking-widest mb-1">
+                <p className="portal-label-sm mb-1">
                   {t('common.status' as any)}
                 </p>
                 <Badge variant={statusColor}>

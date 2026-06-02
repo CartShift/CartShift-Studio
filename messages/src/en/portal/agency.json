@@ -212,6 +212,19 @@
           "billing": "Payouts",
           "system": "System Access"
         },
+        "navGroups": {
+          "organization": "Organization",
+          "account": "Your account",
+          "operations": "Operations"
+        },
+        "brandingSections": {
+          "assets": "Brand assets",
+          "assetsDesc": "Logo and icon shown across client portals",
+          "appearance": "Colors & typography",
+          "appearanceDesc": "Palette, fonts, and corner radius",
+          "preview": "Theme preview",
+          "previewDesc": "Sample UI using your current brand settings"
+        },
         "system": {
           "title": "System Settings",
           "subtitle": "Control global visibility of pages and features.",

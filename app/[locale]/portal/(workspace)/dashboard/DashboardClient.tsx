@@ -107,7 +107,7 @@ function DashboardClientContent() {
       >
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit flex items-center gap-3">
-            <span className="text-gradient-brand">{greeting}</span>
+            <span className="text-surface-900 dark:text-white">{greeting}</span>
           </h1>
           <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
             {t('dashboard.subtitle')}
@@ -176,7 +176,7 @@ function DashboardClientContent() {
               <CardSectionTitle
                 as="h4"
                 icon={Clock}
-                iconClassName="text-blue-500"
+                iconClassName="text-primary-500"
                 className="mb-0 group-hover:text-primary-600 transition-colors"
               >
                 {t('dashboard.serviceStatus.title')}
@@ -204,7 +204,7 @@ function DashboardClientContent() {
                   <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
                     {t('dashboard.serviceStatus.design')}
                   </span>
-                  <span className="text-emerald-500 font-black flex items-center gap-2 text-[10px] uppercase tracking-widest">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-2 text-xs">
                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                     {t('dashboard.serviceStatus.active')}
                   </span>
@@ -214,7 +214,7 @@ function DashboardClientContent() {
                     <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
                       {t('dashboard.serviceStatus.dev')}
                     </span>
-                    <span className="text-amber-500 font-black flex items-center gap-2 text-[10px] uppercase tracking-widest">
+                    <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-2 text-xs">
                       <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
                       {t('dashboard.serviceStatus.peak')}
                     </span>
@@ -235,7 +235,7 @@ function DashboardClientContent() {
                   <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
                     {t('dashboard.serviceStatus.avgResponse')}
                   </span>
-                  <span className="text-surface-900 dark:text-white font-black text-[10px] uppercase tracking-widest">
+                  <span className="text-surface-900 dark:text-white font-semibold text-xs">
                     {t('dashboard.serviceStatus.responseTime')}
                   </span>
                 </div>

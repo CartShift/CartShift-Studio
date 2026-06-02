@@ -41,6 +41,7 @@ import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/
 import { PinButton } from '@/components/portal/PinnedRequests';
 import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { deleteRequest, updateRequestStatus } from '@/lib/services/portal-requests';
 import { toast } from 'sonner';
@@ -305,6 +306,14 @@ export default function RequestsClient() {
     }
   };
 
+  const openRequest = (req: Request) => {
+    if (isSelectionMode) return;
+    if (isAgency && req.orgId) {
+      switchOrg(req.orgId);
+    }
+    router.push(getPortalPath(`/requests/${req.id}/`));
+  };
+
   // Navigate to dedicated pricing form with selected request IDs
   const handleGoToPricing = () => {
     if (selectedRequestIds.length === 0) return;
@@ -399,7 +408,10 @@ export default function RequestsClient() {
             {t('dashboard.subtitle')}
           </p>
         </div>
-        <Link href={getPortalPath('/requests/new/')} className="flex-shrink-0">
+        <Link
+          href={getPortalPath('/requests/new/')}
+          className="portal-focus-ring flex-shrink-0 rounded-xl"
+        >
           <Button
             as="div"
             variant="primary"
@@ -429,7 +441,7 @@ export default function RequestsClient() {
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 portal-label-sm shrink-0">
               <Filter size={12} /> {t('common.filter')}:
             </div>
             {filters.map(filter => (
@@ -437,11 +449,12 @@ export default function RequestsClient() {
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
                 className={cn(
-                  'px-3 py-2.5 min-h-[40px] text-sm font-bold rounded-lg whitespace-nowrap transition-all font-outfit shrink-0 touch-manipulation active:scale-95',
+                  'portal-focus-ring px-3 py-2.5 min-h-[40px] text-sm font-bold rounded-lg whitespace-nowrap transition-all font-outfit shrink-0 touch-manipulation active:scale-95',
                   activeFilter === filter
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                    ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
                     : 'text-surface-500 hover:bg-surface-200 dark:hover:bg-surface-800'
                 )}
+                aria-pressed={activeFilter === filter}
               >
                 {filter === 'All'
                   ? t('common.all')
@@ -487,12 +500,12 @@ export default function RequestsClient() {
 
         {/* Selection Bar - Agency Only, shown when in selection mode */}
         {isAgency && isSelectionMode && (
-          <div className="p-4 border-b border-surface-100 dark:border-surface-800 bg-blue-50 dark:bg-blue-900/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in slide-in-from-top-2">
+          <div className="p-4 border-b border-surface-100 dark:border-surface-800 bg-primary-50 dark:bg-primary-900/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in slide-in-from-top-2">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                 {selectedRequestIds.length}
               </div>
-              <span className="text-sm font-bold text-blue-800 dark:text-blue-200">
+              <span className="text-sm font-bold text-primary-800 dark:text-primary-200">
                 {selectedRequestIds.length}{' '}
                 {selectedRequestIds.length === 1
                   ? t('requests.selected_singular')
@@ -570,14 +583,12 @@ export default function RequestsClient() {
                               // Layout animation started
                             }
                           }}
-                          onClick={() => {
-                            if (isAgency && req.orgId) {
-                              switchOrg(req.orgId);
-                            }
-                            router.push(getPortalPath(`/requests/${req.id}/`));
-                          }}
+                          role="link"
+                          tabIndex={isSelectionMode ? -1 : 0}
+                          onClick={() => openRequest(req)}
+                          onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
                           className={cn(
-                            'bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-4 shadow-sm active:scale-[0.98] cursor-pointer relative',
+                            'portal-focus-ring bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-4 shadow-sm active:scale-[0.98] cursor-pointer relative outline-none',
                             isNewlyPinned &&
                               'border-amber-400 dark:border-amber-500 bg-amber-50/30 dark:bg-amber-500/5 ring-4 ring-amber-400/20 dark:ring-amber-500/20',
                             isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
@@ -612,19 +623,19 @@ export default function RequestsClient() {
                         {isAgency && isSelectionMode && (
                           <th className="px-3 py-4 w-12">{/* Selection column */}</th>
                         )}
-                        <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest min-w-[200px]">
+                        <th className="px-3 md:px-6 py-4 portal-label-sm min-w-[200px]">
                           {t('requests.table.title')}
                         </th>
-                        <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center whitespace-nowrap">
+                        <th className="px-3 md:px-6 py-4 portal-label-sm text-center whitespace-nowrap">
                           {t('requests.table.status')}
                         </th>
-                        <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center whitespace-nowrap">
+                        <th className="px-3 md:px-6 py-4 portal-label-sm text-center whitespace-nowrap">
                           {t('requests.table.priority')}
                         </th>
-                        <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center whitespace-nowrap hidden md:table-cell">
+                        <th className="px-3 md:px-6 py-4 portal-label-sm text-center whitespace-nowrap hidden md:table-cell">
                           {t('requests.table.created')}
                         </th>
-                        <th className="px-3 md:px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end whitespace-nowrap">
+                        <th className="px-3 md:px-6 py-4 portal-label-sm text-end whitespace-nowrap">
                           {t('common.actions')}
                         </th>
                       </tr>
@@ -655,18 +666,15 @@ export default function RequestsClient() {
                                 mass: 0.8,
                               },
                             }}
-                            onClick={() => {
-                              if (isSelectionMode) return;
-                              if (isAgency && req.orgId) {
-                                switchOrg(req.orgId);
-                              }
-                              router.push(getPortalPath(`/requests/${req.id}/`));
-                            }}
+                            role="link"
+                            tabIndex={isSelectionMode ? -1 : 0}
+                            onClick={() => openRequest(req)}
+                            onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
                             className={cn(
-                              'hover:bg-surface-50/50 dark:hover:bg-surface-800/30 group cursor-pointer relative',
-                              isSelected && 'bg-blue-50 dark:bg-blue-900/10',
+                              'portal-focus-ring hover:bg-surface-50/50 dark:hover:bg-surface-800/30 group cursor-pointer relative outline-none',
+                              isSelected && 'bg-primary-50 dark:bg-primary-900/10',
                               isNewlyPinned &&
-                                'border-s-4 border-amber-400 dark:border-amber-500 bg-amber-50/30 dark:bg-amber-500/5 ring-4 ring-amber-400/20 dark:ring-amber-500/20',
+                                'bg-amber-50/40 dark:bg-amber-500/10 ring-2 ring-amber-400/40 dark:ring-amber-500/30',
                               isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
                             )}
                           >
@@ -681,7 +689,14 @@ export default function RequestsClient() {
                                       e.stopPropagation();
                                       toggleRequestSelection(req.id);
                                     }}
-                                    /* ... */
+                                    aria-pressed={isSelected}
+                                    aria-label={`${t('common.select')}: ${req.title}`}
+                                    className={cn(
+                                      'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
+                                      isSelected
+                                        ? 'bg-primary-600 border-primary-600 text-white'
+                                        : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'
+                                    )}
                                   >
                                     {isSelected && <Check size={12} />}
                                   </button>
@@ -696,13 +711,13 @@ export default function RequestsClient() {
                             <td className="px-3 md:px-6 py-4 min-w-0">
                               <div className="flex flex-col min-w-0">
                                 {isAgency && req.orgId && (
-                                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider truncate mb-0.5">
+                                  <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider truncate mb-0.5">
                                     {organizations[req.orgId]?.name || t('common.unknown')}
                                   </span>
                                 )}
                                 <motion.span
                                   layoutId={!isMobile ? `request-title-${req.id}` : undefined}
-                                  className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit"
+                                  className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit"
                                 >
                                   {req.title}
                                 </motion.span>
@@ -747,7 +762,7 @@ export default function RequestsClient() {
                                       ? 'bg-rose-500 shadow-sm shadow-rose-500/50'
                                       : req.priority === 'NORMAL'
                                         ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                                        : 'bg-blue-500 shadow-sm shadow-blue-500/50'
+                                        : 'bg-primary-500 shadow-sm shadow-primary-500/50'
                                   )}
                                 />
                                 <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
@@ -782,13 +797,14 @@ export default function RequestsClient() {
                                     e.stopPropagation();
                                     router.push(getPortalPath(`/requests/${req.id}/`));
                                   }}
-                                  className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                  className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                                  aria-label={req.title}
                                 >
                                   <MessageSquare size={16} />
                                 </button>
                                 <Dropdown
                                   trigger={
-                                    <span className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 inline-flex">
+                                    <span className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 inline-flex items-center justify-center">
                                       <MoreVertical size={16} />
                                     </span>
                                   }
@@ -834,7 +850,7 @@ export default function RequestsClient() {
                     <Link href={getPortalPath('/requests/new/')}>
                       <Button
                         as="div"
-                        className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/20"
+                        className="h-11 px-8 font-outfit shadow-lg shadow-primary-500/20"
                       >
                         <Plus size={18} className="me-2" />
                         {t('requests.newRequest')}

@@ -106,7 +106,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
           <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
             {t('portal.requests.detail.assetsTitle')}
           </h3>
-          <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mt-1">
+          <p className="portal-label-sm text-[10px] mt-1">
             {t('portal.requests.detail.assetsSubtitle')}
           </p>
         </div>
@@ -114,7 +114,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
 
       {loading ? (
         <div className="py-12 flex justify-center">
-          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
         </div>
       ) : Object.keys(groupedFiles).length > 0 ? (
         <div className="space-y-3">
@@ -132,6 +132,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                   <div className="flex items-center gap-4 flex-1">
                     {latest.mimeType.startsWith('image/') ? (
                       <button
+                        type="button"
                         onClick={() =>
                           setPreviewImage({
                             url: latest.url,
@@ -139,8 +140,8 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                             storagePath: latest.storagePath,
                           })
                         }
-                        className="w-12 h-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 flex-shrink-0 group-hover:border-blue-100 dark:group-hover:border-blue-900/30 transition-all hover:scale-105 cursor-pointer"
-                        title="Click to preview"
+                        aria-label={t('portal.accessibility.previewFile')}
+                        className="portal-focus-ring w-12 h-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 flex-shrink-0 group-hover:border-primary-100 dark:group-hover:border-primary-900/30 transition-all hover:scale-105 cursor-pointer outline-none"
                       >
                         <FileImage
                           src={latest.url}
@@ -150,7 +151,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                         />
                       </button>
                     ) : (
-                      <div className="p-2.5 rounded-xl bg-surface-50 dark:bg-surface-900 text-surface-400 border border-surface-100 dark:border-surface-800 group-hover:text-blue-500 group-hover:border-blue-100 dark:group-hover:border-blue-900/30 transition-all">
+                      <div className="p-2.5 rounded-xl bg-surface-50 dark:bg-surface-900 text-surface-400 border border-surface-100 dark:border-surface-800 group-hover:text-primary-500 group-hover:border-primary-100 dark:group-hover:border-primary-900/30 transition-all">
                         {getIcon(latest.mimeType)}
                       </div>
                     )}
@@ -160,7 +161,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                           {fileName}
                         </span>
                         {hasHistory && (
-                          <span className="text-[9px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-900/30">
+                          <span className="text-[9px] font-black text-primary-600 bg-primary-50 dark:bg-primary-900/20 px-1.5 py-0.5 rounded border border-primary-100 dark:border-primary-900/30">
                             v{latest.version}
                           </span>
                         )}
@@ -178,8 +179,11 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                   <div className="flex items-center gap-1">
                     {hasHistory && (
                       <button
+                        type="button"
                         onClick={() => setExpandedFileId(isExpanded ? null : fileName)}
-                        className="p-2 text-surface-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                        aria-expanded={isExpanded}
+                        aria-label={t('portal.accessibility.showVersionHistory')}
+                        className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                       >
                         {isExpanded ? <ChevronUp size={16} /> : <History size={16} />}
                       </button>
@@ -188,14 +192,17 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                       href={latest.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 text-surface-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                      aria-label={t('portal.accessibility.downloadFile')}
+                      className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                     >
                       <Download size={16} />
                     </a>
                     {isAgency && (
                       <button
+                        type="button"
                         onClick={() => handleDelete(latest)}
-                        className="p-2 text-surface-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
+                        aria-label={t('portal.files.actions.delete')}
+                        className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -228,14 +235,17 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                             href={v.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 text-surface-400 hover:text-blue-500 rounded-lg transition-all"
+                            aria-label={t('portal.accessibility.downloadFile')}
+                            className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-500 rounded-lg transition-all"
                           >
                             <Download size={14} />
                           </a>
                           {isAgency && (
                             <button
+                              type="button"
                               onClick={() => handleDelete(v)}
-                              className="p-1.5 text-surface-400 hover:text-rose-500 rounded-lg transition-all"
+                              aria-label={t('portal.files.actions.delete')}
+                              className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-500 rounded-lg transition-all"
                             >
                               <Trash2 size={14} />
                             </button>

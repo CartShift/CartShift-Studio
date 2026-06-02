@@ -613,7 +613,27 @@
       "notifications": "צפה בהתראות",
       "userProfile": "פרופיל משתמש",
       "search": "חיפוש",
-      "searchPlaceholder": "חיפוש..."
+      "searchPlaceholder": "חיפוש...",
+      "mainNavigation": "ניווט ראשי",
+      "switchOrganization": "החלפת ארגון",
+      "orgSwitched": "עברת ל-{name}",
+      "navigatedTo": "ניווט ל-{page}",
+      "allNotificationsRead": "כל ההתראות סומנו כנקראו",
+      "searchClosed": "החיפוש נסגר",
+      "moreNavigation": "עוד",
+      "moreMenu": "פתח ניווט נוסף",
+      "commandPaletteHint": "לוח פקודות ({modifier}+K)",
+      "commandPalette": "פתח לוח פקודות",
+      "expandSidebar": "הרחב סרגל צד",
+      "collapseSidebar": "כווץ סרגל צד",
+      "signOut": "התנתק",
+      "sendMessage": "שלח הודעה",
+      "replyToComment": "השב לתגובה",
+      "addReaction": "הוסף תגובה",
+      "previewFile": "תצוגה מקדימה של קובץ",
+      "downloadFile": "הורדת קובץ",
+      "showVersionHistory": "הצג היסטוריית גרסאות",
+      "toggleMilestoneStatus": "החלפת סטטוס אבן דרך"
     },
     "accountType": {
       "client": "לקוח",
@@ -864,6 +884,19 @@
           "integrations": "אינטגרציות",
           "billing": "תשלומים",
           "system": "גישה למערכת"
+        },
+        "navGroups": {
+          "organization": "ארגון",
+          "account": "החשבון שלך",
+          "operations": "תפעול"
+        },
+        "brandingSections": {
+          "assets": "נכסי מותג",
+          "assetsDesc": "לוגו ואייקון שמוצגים בפורטל הלקוחות",
+          "appearance": "צבעים וטיפוגרפיה",
+          "appearanceDesc": "פלטה, גופנים ורדיוס פינות",
+          "preview": "תצוגת ערכת נושא",
+          "previewDesc": "דוגמת ממשק עם הגדרות המותג הנוכחיות"
         },
         "system": {
           "title": "הגדרות מערכת",
@@ -1966,6 +1999,7 @@
         "agencyNotes": "הערות פנימיות",
         "saveDraft": "שמור טיוטה",
         "sendToClient": "שלח ללקוח",
+        "resendToClient": "שלח שוב ללקוח",
         "sending": "שולח...",
         "saveChanges": "שמור שינויים",
         "saving": "שומר...",

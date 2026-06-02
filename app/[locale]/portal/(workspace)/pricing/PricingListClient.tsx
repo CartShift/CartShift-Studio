@@ -98,8 +98,9 @@ export default function PricingListClient() {
 
   const handleSend = async (requestId: string) => {
     try {
-      if (!confirm('Send this pricing offer to the client?')) return;
+      if (!confirm(t('pricing.form.sendConfirm'))) return;
       await sendPricingRequest(requestId);
+      toast.success(t('pricing.form.sendSuccess'));
     } catch (err) {
       console.error('Failed to send pricing request:', err);
       toast.error(t('pricing.form.sendFailed'));
@@ -159,7 +160,7 @@ export default function PricingListClient() {
         </div>
         {isAgency && (
           <Link href={getPortalPath('/pricing/new/')}>
-            <Button className="flex items-center gap-2 shadow-lg shadow-blue-500/20 font-outfit">
+            <Button className="flex items-center gap-2 shadow-lg shadow-primary-500/20 font-outfit">
               <Plus size={18} />
               {t('pricing.newOffer')}
             </Button>
@@ -187,7 +188,7 @@ export default function PricingListClient() {
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 portal-label-sm shrink-0">
               <Filter size={12} /> {t('common.filter')}:
             </div>
             {filters.map(filter => (
@@ -197,7 +198,7 @@ export default function PricingListClient() {
                 className={cn(
                   'px-3 py-2.5 min-h-[40px] text-sm font-bold rounded-lg whitespace-nowrap transition-all font-outfit shrink-0 touch-manipulation active:scale-95',
                   activeFilter === filter
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                    ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
                     : 'text-surface-500 hover:bg-surface-200 dark:hover:bg-surface-800'
                 )}
               >
@@ -213,7 +214,7 @@ export default function PricingListClient() {
         <div className="w-full min-w-0">
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
-              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
               <p className="text-sm font-bold text-surface-400 font-outfit">
                 {t('common.loading')}
               </p>
@@ -235,7 +236,7 @@ export default function PricingListClient() {
                         </span>
                         <div className="flex items-center gap-2 mt-1">
                           {req.clientName && (
-                            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 truncate max-w-[100px]">
+                            <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 truncate max-w-[100px]">
                               {req.clientName}
                             </span>
                           )}
@@ -256,7 +257,7 @@ export default function PricingListClient() {
 
                     <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <span className="portal-label-sm text-[10px]">
                           {t('pricing.form.total')}
                         </span>
                         <span className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
@@ -264,7 +265,7 @@ export default function PricingListClient() {
                         </span>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <span className="portal-label-sm text-[10px]">
                           {t('common.date')}
                         </span>
                         <span className="text-xs font-bold text-surface-600 dark:text-surface-300 font-outfit">
@@ -283,19 +284,19 @@ export default function PricingListClient() {
                 <table className="w-full text-start border-collapse">
                   <thead>
                     <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
+                      <th className="px-6 py-4 portal-label-sm">
                         {t('pricing.form.titleLabel')}
                       </th>
-                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                      <th className="px-6 py-4 portal-label-sm text-center">
                         {t('common.status')}
                       </th>
-                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                      <th className="px-6 py-4 portal-label-sm text-center">
                         {t('pricing.form.total')}
                       </th>
-                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                      <th className="px-6 py-4 portal-label-sm text-center">
                         {t('common.date')}
                       </th>
-                      <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
+                      <th className="px-6 py-4 portal-label-sm text-end">
                         {t('common.actions')}
                       </th>
                     </tr>
@@ -311,7 +312,7 @@ export default function PricingListClient() {
                             href={getPortalPath(`/pricing/${req.id}/`)}
                             className="flex flex-col max-w-md"
                           >
-                            <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
+                            <span className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit">
                               {req.title}
                             </span>
                             <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
@@ -369,7 +370,7 @@ export default function PricingListClient() {
                         <td className="px-6 py-4 text-end">
                           <div className="flex items-center justify-end gap-1">
                             <Link href={getPortalPath(`/pricing/${req.id}/`)}>
-                              <button className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                              <button type="button" className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20">
                                 <Eye size={16} />
                               </button>
                             </Link>
@@ -377,22 +378,29 @@ export default function PricingListClient() {
                               (req.status === PRICING_STATUS.DRAFT ||
                                 req.status === PRICING_STATUS.SENT) && (
                                 <Link href={getPortalPath(`/pricing/${req.id}/edit`)}>
-                                  <button className="p-2 text-surface-400 hover:text-amber-600 dark:hover:text-amber-400 transition-all rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
+                                  <button type="button" className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-amber-600 dark:hover:text-amber-400 transition-all rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
                                     <Pencil size={16} />
                                   </button>
                                 </Link>
                               )}
-                            {isAgency && req.status === PRICING_STATUS.DRAFT && (
+                            {isAgency &&
+                              (req.status === PRICING_STATUS.DRAFT ||
+                                req.status === PRICING_STATUS.SENT) && (
                               <button
                                 onClick={() => handleSend(req.id)}
-                                className="p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
+                                title={
+                                  req.status === PRICING_STATUS.SENT
+                                    ? t('pricing.form.resendToClient')
+                                    : t('pricing.form.sendToClient')
+                                }
+                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
                               >
                                 <Send size={16} />
                               </button>
                             )}
                             <Dropdown
                               trigger={
-                                <button className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
+                                <button type="button" className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
                                   <MoreVertical size={16} />
                                 </button>
                               }
@@ -414,10 +422,15 @@ export default function PricingListClient() {
                                       },
                                     ]
                                   : []),
-                                ...(isAgency && req.status === PRICING_STATUS.DRAFT
+                                ...(isAgency &&
+                                (req.status === PRICING_STATUS.DRAFT ||
+                                  req.status === PRICING_STATUS.SENT)
                                   ? [
                                       {
-                                        label: 'Send to Client',
+                                        label:
+                                          req.status === PRICING_STATUS.SENT
+                                            ? t('pricing.form.resendToClient')
+                                            : t('pricing.form.sendToClient'),
                                         icon: <Send size={14} />,
                                         onClick: () => handleSend(req.id),
                                       },
@@ -459,7 +472,7 @@ export default function PricingListClient() {
               </div>
               {isAgency && !searchQuery && activeFilter === 'All' && (
                 <Link href={getPortalPath('/pricing/new/')} className="pt-4">
-                  <Button className="h-11 px-8 font-outfit shadow-lg shadow-blue-500/10">
+                  <Button className="h-11 px-8 font-outfit shadow-lg shadow-primary-500/10">
                     {t('pricing.newOffer')}
                   </Button>
                 </Link>
@@ -470,7 +483,7 @@ export default function PricingListClient() {
         {/* Footer info */}
         {!loading && filteredRequests.length > 0 && (
           <div className="p-5 border-t border-surface-100 dark:border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
-            <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+            <span className="portal-label-sm text-[10px]">
               {t('common.showing', {
                 count: paginatedRequests.length,
                 total: filteredRequests.length,

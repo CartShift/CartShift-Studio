@@ -49,9 +49,9 @@ const TYPE_COLORS: Record<RequestType, { bg: string; text: string; border: strin
     border: 'border-amber-200 dark:border-amber-800',
   },
   content: {
-    bg: 'bg-blue-100 dark:bg-blue-900/30',
-    text: 'text-blue-700 dark:text-blue-300',
-    border: 'border-blue-200 dark:border-blue-800',
+    bg: 'bg-primary-100 dark:bg-primary-900/30',
+    text: 'text-primary-700 dark:text-primary-300',
+    border: 'border-primary-200 dark:border-primary-800',
   },
   design: {
     bg: 'bg-pink-100 dark:bg-pink-900/30',
@@ -136,7 +136,7 @@ export function EmbeddedCalculator({
       className={cn(
         'border-2 border-dashed rounded-2xl transition-all duration-300',
         isExpanded
-          ? 'border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-950/20'
+          ? 'border-primary-300 dark:border-primary-700 bg-primary-50/50 dark:bg-primary-950/20'
           : 'border-surface-200 dark:border-surface-700',
         className
       )}
@@ -152,7 +152,7 @@ export function EmbeddedCalculator({
             className={cn(
               'w-10 h-10 rounded-xl flex items-center justify-center transition-all',
               isExpanded
-                ? 'bg-blue-500 text-white'
+                ? 'bg-primary-500 text-white'
                 : 'bg-surface-100 dark:bg-surface-800 text-surface-500'
             )}
           >
@@ -189,7 +189,7 @@ export function EmbeddedCalculator({
             <div className="p-4 pt-0 space-y-5">
               {/* Request Type Selection */}
               <div className="space-y-2">
-                <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+                <label className="portal-label-sm">
                   {t('portal.requests.form.type')}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -220,7 +220,7 @@ export function EmbeddedCalculator({
 
               {/* Effort Level Selection */}
               <div className="space-y-2">
-                <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+                <label className="portal-label-sm">
                   {t('portal.pricing.effortLevel')}
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -259,7 +259,7 @@ export function EmbeddedCalculator({
               </div>
 
               {/* Price Preview & Add Button */}
-              <div className="flex items-center justify-between gap-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-xl border border-emerald-200/50 dark:border-emerald-800/30">
+              <div className="flex items-center justify-between gap-4 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200/50 dark:border-emerald-800/30">
                 <div>
                   <div className="text-xs font-black text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-widest">
                     {t('portal.pricing.itemPrice')}
@@ -276,7 +276,7 @@ export function EmbeddedCalculator({
                 <Button
                   type="button"
                   onClick={handleAddItem}
-                  className="h-12 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                  className="h-12 px-5 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                 >
                   <Plus size={18} className={cn(isRTL ? 'ms-2' : 'me-2')} />
                   {t('portal.pricing.form.addItem')}

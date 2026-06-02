@@ -33,7 +33,7 @@ export function OnboardingStep({
         <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">{title}</h2>
         {description && <p className="text-surface-500 dark:text-surface-400">{description}</p>}
       </div>
-      <div className="bg-white dark:bg-surface-900/50 backdrop-blur-sm border border-surface-200 dark:border-surface-800 rounded-2xl p-6 md:p-8 shadow-xl shadow-blue-500/5">
+      <div className="bg-white dark:bg-surface-900/50 backdrop-blur-sm border border-surface-200 dark:border-surface-800 rounded-2xl p-6 md:p-8 shadow-xl shadow-primary-500/5">
         {children}
       </div>
     </motion.div>

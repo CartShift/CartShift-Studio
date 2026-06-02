@@ -21,6 +21,7 @@ import { WorkboardSkeleton } from '@/components/portal/skeletons/WorkboardSkelet
 
 import { useToast } from '@/components/portal/ui';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { cn } from '@/lib/utils';
 
 import { BulkActionsBar } from '@/components/portal/workboard/BulkActionsBar';
@@ -87,6 +88,12 @@ export default function AgencyWorkboardClient() {
     showError,
   });
 
+  const openRequest = (req: { id: string; orgId: string }) => {
+    if (isSelectionMode) return;
+    switchOrg(req.orgId);
+    router.push(getPortalPath(`/requests/${req.id}/`));
+  };
+
   // ── Column Rendering Helper ──────────────────────────────────
   const renderColumn = (column: Column, isHiddenOnMobile: boolean) => {
     const columnRequests = getRequestsForColumn(column);
@@ -121,13 +128,19 @@ export default function AgencyWorkboardClient() {
                     e.stopPropagation();
                     handleToggleSelection(req.id);
                   } else {
-                    switchOrg(req.orgId);
-                    router.push(getPortalPath(`/requests/${req.id}/`));
+                    openRequest(req);
                   }
                 }}
                 role="button"
                 tabIndex={0}
-                className={cn('outline-none rounded-2xl', isSelectionMode && 'cursor-default')}
+                onKeyDown={e => {
+                  if (isSelectionMode) return;
+                  activateOnKeyboard(e, () => openRequest(req));
+                }}
+                className={cn(
+                  'portal-focus-ring rounded-2xl outline-none',
+                  isSelectionMode && 'cursor-default'
+                )}
               >
                 <RequestCard
                   request={req}
@@ -199,9 +212,9 @@ export default function AgencyWorkboardClient() {
               key={col.id}
               onClick={() => setActiveMobileTab(col.id)}
               className={cn(
-                'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all snap-center whitespace-nowrap flex items-center gap-2',
+                'portal-focus-ring flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all snap-center whitespace-nowrap flex items-center gap-2',
                 isActive
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                  ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/25'
                   : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
               )}
               aria-label={`${col.title} column, ${columnRequests.length} items`}
@@ -245,12 +258,12 @@ export default function AgencyWorkboardClient() {
             adjustScale={false}
             dropAnimation={{
               duration: 200,
-              easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
             {activeRequest ? (
               <div
-                className="opacity-95 shadow-2xl shadow-blue-500/20 rounded-2xl"
+                className="opacity-95 shadow-2xl shadow-primary-500/20 rounded-2xl"
                 style={{ cursor: 'grabbing' }}
               >
                 <RequestCard request={activeRequest} locale={locale} isMounted={isMounted} />

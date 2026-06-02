@@ -47,7 +47,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
+            className="text-[13px] font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors"
           >
             {label}
           </label>
@@ -56,11 +56,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         <div className="relative">
           <select
             className={cn(
-              'appearance-none w-full rounded-xl border transition-all duration-200',
+              'appearance-none w-full rounded-lg border transition-all duration-200',
               'bg-white dark:bg-surface-900/80',
               'text-surface-900 dark:text-white',
               'focus:outline-none',
-              'h-10 text-sm font-medium px-4 pe-10', // Extra padding for arrow
+              'h-10 text-[13px] font-medium px-3.5 pe-9', // Extra padding for arrow
               'shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)]',
               'dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)]',
 

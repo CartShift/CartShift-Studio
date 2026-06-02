@@ -85,7 +85,7 @@ export function OnboardingWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-2xl">
         {/* Progress Dots */}
         <div className="flex justify-center gap-2 mb-12">
@@ -125,7 +125,7 @@ export function OnboardingWizard() {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/30"
+                  className="w-24 h-24 bg-primary-600 dark:bg-primary-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-primary-500/30"
                 >
                   <Sparkles size={48} className="text-white" />
                 </motion.div>
@@ -139,7 +139,7 @@ export function OnboardingWizard() {
                 <Button
                   onClick={handleNext}
                   size="lg"
-                  className="w-full md:w-auto min-w-[200px] h-14 text-lg font-bold shadow-lg shadow-blue-500/20"
+                  className="w-full md:w-auto min-w-[200px] h-14 text-lg font-bold shadow-lg shadow-primary-500/20"
                 >
                   {t('onboarding.welcome.cta' as any)}
                   <ArrowRight className="ms-2" size={20} />
@@ -246,7 +246,7 @@ export function OnboardingWizard() {
                     onClick={handleSubmit}
                     loading={isSubmitting}
                     disabled={!formData.name.trim()}
-                    className="min-w-[140px] shadow-lg shadow-blue-500/20"
+                    className="min-w-[140px] shadow-lg shadow-primary-500/20"
                   >
                     <span>{t('onboarding.form.createButton' as any)}</span>
                     {!isSubmitting && <ArrowRight className="ms-2" size={18} />}

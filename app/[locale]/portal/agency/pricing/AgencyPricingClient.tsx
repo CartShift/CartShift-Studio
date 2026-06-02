@@ -10,6 +10,7 @@ import {
   DollarSign,
   Send,
   Eye,
+  Pencil,
   Plus,
   X,
   ChevronRight,
@@ -21,6 +22,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { Dropdown } from '@/components/ui/Dropdown';
 import {
   PricingRequest,
   PRICING_STATUS_CONFIG,
@@ -41,6 +43,7 @@ import { DateDisplay, OrgDisplay, filterAndPaginatePricingRequests } from '@/lib
 import { ITEMS_PER_PAGE } from '@/lib/constants/pricing';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
+import { toast } from 'sonner';
 
 export default function AgencyPricingClient() {
   const [requests, setRequests] = useState<PricingRequest[]>([]);
@@ -126,6 +129,11 @@ export default function AgencyPricingClient() {
     setConfirmModal({ isOpen: true, requestId });
   };
 
+  const openPricingOffer = (request: PricingRequest, mode: 'view' | 'edit' = 'view') => {
+    switchOrg(request.orgId);
+    router.push(getPortalPath(`/pricing/${request.id}/${mode === 'edit' ? 'edit/' : ''}`));
+  };
+
   const processSend = async () => {
     const requestId = confirmModal.requestId;
     if (!requestId) return;
@@ -135,8 +143,10 @@ export default function AgencyPricingClient() {
 
     try {
       await sendPricingRequest(requestId);
+      toast.success(t('pricing.form.sendSuccess'));
     } catch (err) {
       console.error('Failed to send pricing request:', err);
+      toast.error(t('pricing.form.sendFailed'));
     } finally {
       setProcessingId(null);
     }
@@ -168,6 +178,7 @@ export default function AgencyPricingClient() {
     currentPage,
     ITEMS_PER_PAGE
   );
+  const pendingSendRequest = requests.find(request => request.id === confirmModal.requestId);
 
   if (error) {
     return (
@@ -211,23 +222,23 @@ export default function AgencyPricingClient() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 border-blue-200/50 dark:border-blue-800/30">
+        <Card className="p-4 bg-primary-50 dark:bg-primary-950/20 border-primary-200/50 dark:border-primary-800/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-primary-500/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-primary-600/70 uppercase tracking-widest">
                 {t('pricing.form.total')}
               </p>
-              <p className="text-2xl font-black text-blue-700 dark:text-blue-400">
+              <p className="text-2xl font-black text-primary-700 dark:text-primary-400">
                 {statsData.total}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10 border-amber-200/50 dark:border-amber-800/30">
+        <Card className="p-4 bg-amber-50 dark:bg-amber-950/20 border-amber-200/50 dark:border-amber-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
               <Send className="w-5 h-5 text-amber-600" />
@@ -243,7 +254,7 @@ export default function AgencyPricingClient() {
           </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10 border-purple-200/50 dark:border-purple-800/30">
+        <Card className="p-4 bg-accent-50 dark:bg-accent-950/20 border-purple-200/50 dark:border-purple-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center">
               <Building2 className="w-5 h-5 text-purple-600" />
@@ -259,7 +270,7 @@ export default function AgencyPricingClient() {
           </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10 border-emerald-200/50 dark:border-emerald-800/30">
+        <Card className="p-4 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-800/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -297,7 +308,7 @@ export default function AgencyPricingClient() {
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-surface-400 uppercase tracking-widest shrink-0">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 portal-label-sm shrink-0">
               <Filter size={12} /> {t('common.filter')}:
             </div>
             {filters.map(filter => (
@@ -307,7 +318,7 @@ export default function AgencyPricingClient() {
                 className={cn(
                   'px-3 py-2 min-h-[40px] text-sm font-bold rounded-lg whitespace-nowrap transition-all font-outfit touch-manipulation active:scale-95 shrink-0',
                   activeFilter === filter
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                    ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
                     : 'text-surface-500 hover:bg-surface-200 dark:hover:bg-surface-800'
                 )}
               >
@@ -323,7 +334,7 @@ export default function AgencyPricingClient() {
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
-              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
               <p className="text-sm font-bold text-surface-400 font-outfit">
                 {t('common.loading')}
               </p>
@@ -372,7 +383,7 @@ export default function AgencyPricingClient() {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       {/* Organization */}
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <p className="portal-label-sm text-[10px]">
                           {t('agency.clientOrg')}
                         </p>
                         <OrgDisplay
@@ -384,7 +395,7 @@ export default function AgencyPricingClient() {
 
                       {/* Total Amount */}
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <p className="portal-label-sm text-[10px]">
                           {t('pricing.form.total')}
                         </p>
                         <div className="flex items-center gap-1.5">
@@ -397,7 +408,7 @@ export default function AgencyPricingClient() {
 
                       {/* Created Date */}
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <p className="portal-label-sm text-[10px]">
                           {t('common.date')}
                         </p>
                         <DateDisplay
@@ -409,7 +420,7 @@ export default function AgencyPricingClient() {
 
                       {/* Status Date (Draft/Sent) */}
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                        <p className="portal-label-sm text-[10px]">
                           {req.status === PRICING_STATUS.DRAFT ? 'Status' : 'Sent'}
                         </p>
                         <DateDisplay
@@ -435,14 +446,17 @@ export default function AgencyPricingClient() {
                         {t('common.view')}
                       </Button>
 
-                      {req.status === PRICING_STATUS.DRAFT && (
+                      {(req.status === PRICING_STATUS.DRAFT ||
+                        req.status === PRICING_STATUS.SENT) && (
                         <Button
                           size="sm"
                           onClick={() => handleSend(req.id)}
                           className="bg-green-600 hover:bg-green-700 text-white"
                         >
                           <Send size={16} className="me-2" />
-                          Send
+                          {req.status === PRICING_STATUS.SENT
+                            ? t('pricing.form.resendToClient')
+                            : t('pricing.form.sendToClient')}
                         </Button>
                       )}
                     </div>
@@ -454,22 +468,22 @@ export default function AgencyPricingClient() {
               <table className="hidden md:table w-full text-start border-collapse">
                 <thead>
                   <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
+                    <th className="px-6 py-4 portal-label-sm">
                       {t('pricing.form.titleLabel')}
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest">
+                    <th className="px-6 py-4 portal-label-sm">
                       {t('agency.clientOrg')}
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                    <th className="px-6 py-4 portal-label-sm text-center">
                       {t('common.status')}
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                    <th className="px-6 py-4 portal-label-sm text-center">
                       {t('pricing.form.total')}
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-center">
+                    <th className="px-6 py-4 portal-label-sm text-center">
                       {t('common.date')}
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-black text-surface-400 uppercase tracking-widest text-end">
+                    <th className="px-6 py-4 portal-label-sm text-end">
                       {t('common.actions')}
                     </th>
                   </tr>
@@ -488,7 +502,7 @@ export default function AgencyPricingClient() {
                           }}
                           className="flex flex-col max-w-md text-start"
                         >
-                          <span className="font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate font-outfit">
+                          <span className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit">
                             {req.title}
                           </span>
                           <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
@@ -553,25 +567,63 @@ export default function AgencyPricingClient() {
                       <td className="px-6 py-4 text-end">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => {
-                              switchOrg(req.orgId);
-                              router.push(getPortalPath(`/pricing/${req.id}/`));
-                            }}
-                            className="p-2 text-surface-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                            onClick={() => openPricingOffer(req)}
+                            aria-label={t('common.view')}
+                            className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20"
                           >
                             <Eye size={16} />
                           </button>
-                          {req.status === PRICING_STATUS.DRAFT && (
+                          {(req.status === PRICING_STATUS.DRAFT ||
+                            req.status === PRICING_STATUS.SENT) && (
                             <button
                               onClick={() => handleSend(req.id)}
-                              className="p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
+                              title={
+                                req.status === PRICING_STATUS.SENT
+                                  ? t('pricing.form.resendToClient')
+                                  : t('pricing.form.sendToClient')
+                              }
+                              className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
                             >
                               <Send size={16} />
                             </button>
                           )}
-                          <button className="p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
-                            <MoreVertical size={16} />
-                          </button>
+                          <Dropdown
+                            trigger={
+                              <button
+                                type="button"
+                                aria-label={t('common.actions')}
+                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800"
+                              >
+                                <MoreVertical size={16} />
+                              </button>
+                            }
+                            items={[
+                              {
+                                label: t('common.view'),
+                                icon: <Eye size={14} />,
+                                onClick: () => openPricingOffer(req),
+                              },
+                              ...(req.status === PRICING_STATUS.DRAFT ||
+                              req.status === PRICING_STATUS.SENT
+                                ? [
+                                    {
+                                      label: t('common.edit'),
+                                      icon: <Pencil size={14} />,
+                                      onClick: () => openPricingOffer(req, 'edit'),
+                                    },
+                                    {
+                                      label:
+                                        req.status === PRICING_STATUS.SENT
+                                          ? t('pricing.form.resendToClient')
+                                          : t('pricing.form.sendToClient'),
+                                      icon: <Send size={14} />,
+                                      onClick: () => handleSend(req.id),
+                                    },
+                                  ]
+                                : []),
+                            ]}
+                            align="right"
+                          />
                         </div>
                       </td>
                     </tr>
@@ -603,7 +655,7 @@ export default function AgencyPricingClient() {
         {/* Footer info */}
         {!isLoading && paginatedRequests.length > 0 && (
           <div className="p-5 border-t border-surface-100 dark:border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
-            <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+            <span className="portal-label-sm text-[10px]">
               {t('common.showing', {
                 count: paginatedRequests.length,
                 total: paginatedRequests.length,
@@ -646,7 +698,7 @@ export default function AgencyPricingClient() {
               </div>
               <button
                 onClick={() => setShowNewOfferModal(false)}
-                className="p-2 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors"
+                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors"
               >
                 <X size={20} className="text-surface-500" />
               </button>
@@ -684,14 +736,14 @@ export default function AgencyPricingClient() {
                   >
                     <Avatar name={org.name} size="md" />
                     <div className="flex-1">
-                      <p className="font-bold text-surface-900 dark:text-white font-outfit group-hover:text-blue-600 transition-colors">
+                      <p className="font-bold text-surface-900 dark:text-white font-outfit group-hover:text-primary-600 transition-colors">
                         {org.name}
                       </p>
                       <p className="text-xs text-surface-500">{org.id.slice(0, 8)}...</p>
                     </div>
                     <ChevronRight
                       size={16}
-                      className="text-surface-300 group-hover:text-blue-500"
+                      className="text-surface-300 group-hover:text-primary-500"
                     />
                   </button>
                 ))}
@@ -709,7 +761,11 @@ export default function AgencyPricingClient() {
         onConfirm={processSend}
         title={t('pricing.form.sendConfirm')}
         description={t('pricing.form.sendConfirm')}
-        confirmText={t('pricing.form.sendToClient')}
+        confirmText={
+          pendingSendRequest?.status === PRICING_STATUS.SENT
+            ? t('pricing.form.resendToClient')
+            : t('pricing.form.sendToClient')
+        }
         cancelText={t('common.cancel')}
         isLoading={!!processingId}
       />

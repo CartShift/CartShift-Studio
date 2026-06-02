@@ -55,7 +55,7 @@ export function NotificationDropdown({
             {unreadCount > 0 && (
               <button
                 onClick={onMarkAllAsRead}
-                className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 hover:underline decoration-2 underline-offset-4 transition-all"
+                className="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1.5 hover:underline decoration-2 underline-offset-4 transition-all"
               >
                 <CheckCheck size={14} />
                 {t('portal.header.markAllRead')}
@@ -85,14 +85,14 @@ export function NotificationDropdown({
                       onClick={() => onNotificationClick(notification)}
                       className={cn(
                         'w-full p-5 text-start hover:bg-surface-50/80 dark:hover:bg-surface-800/40 transition-all flex items-start gap-4 group',
-                        !notification.read && 'bg-blue-50/30 dark:bg-blue-900/10'
+                        !notification.read && 'bg-primary-50/30 dark:bg-primary-900/10'
                       )}
                     >
                       <div
                         className={cn(
                           'w-2 h-2 rounded-full mt-2 flex-shrink-0 transition-all group-hover:scale-150',
                           !notification.read
-                            ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]'
+                            ? 'bg-primary-600 shadow-[0_0_8px_rgb(var(--color-primary-600)/0.6)]'
                             : 'bg-transparent border border-surface-300 dark:border-surface-700'
                         )}
                       />

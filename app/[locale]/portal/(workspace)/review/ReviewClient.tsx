@@ -8,6 +8,8 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { TestimonialForm } from '@/components/portal/TestimonialForm';
 import { useRouter } from '@/i18n/navigation';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { portalIconSurfaceVariants } from '@/lib/utils/portal-visual';
+import { cn } from '@/lib/utils';
 
 // Why Share Card
 function WhyShareCard() {
@@ -18,11 +20,7 @@ function WhyShareCard() {
   }>;
 
   const icons = [TrendingUp, Heart, Award];
-  const gradients = [
-    'from-blue-500 to-cyan-500',
-    'from-rose-500 to-pink-500',
-    'from-amber-500 to-orange-500',
-  ];
+  const iconTones = ['primary', 'accent', 'warning'] as const;
 
   return (
     <Card variant="gradient" className="overflow-hidden">
@@ -32,7 +30,7 @@ function WhyShareCard() {
 
       <div className="relative">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 shadow-lg shadow-primary-500/25">
+          <div className="p-2.5 rounded-xl bg-primary-600 dark:bg-primary-500 shadow-lg shadow-primary-500/25">
             <Quote className="w-5 h-5 text-white" />
           </div>
           <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
@@ -50,7 +48,10 @@ function WhyShareCard() {
               className="flex items-start gap-3"
             >
               <div
-                className={`p-2 rounded-lg bg-gradient-to-br ${gradients[index]} shadow-md shrink-0 transition-transform duration-200`}
+                className={cn(
+                  portalIconSurfaceVariants({ tone: iconTones[index], size: 'sm' }),
+                  'shrink-0 transition-transform duration-200'
+                )}
               >
                 {(() => {
                   const Icon = icons[index];

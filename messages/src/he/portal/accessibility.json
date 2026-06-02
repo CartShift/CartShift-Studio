@@ -8,7 +8,27 @@
       "notifications": "צפה בהתראות",
       "userProfile": "פרופיל משתמש",
       "search": "חיפוש",
-      "searchPlaceholder": "חיפוש..."
+      "searchPlaceholder": "חיפוש...",
+      "mainNavigation": "ניווט ראשי",
+      "switchOrganization": "החלפת ארגון",
+      "orgSwitched": "עברת ל-{name}",
+      "navigatedTo": "ניווט ל-{page}",
+      "allNotificationsRead": "כל ההתראות סומנו כנקראו",
+      "searchClosed": "החיפוש נסגר",
+      "moreNavigation": "עוד",
+      "moreMenu": "פתח ניווט נוסף",
+      "commandPaletteHint": "לוח פקודות ({modifier}+K)",
+      "commandPalette": "פתח לוח פקודות",
+      "expandSidebar": "הרחב סרגל צד",
+      "collapseSidebar": "כווץ סרגל צד",
+      "signOut": "התנתק",
+      "sendMessage": "שלח הודעה",
+      "replyToComment": "השב לתגובה",
+      "addReaction": "הוסף תגובה",
+      "previewFile": "תצוגה מקדימה של קובץ",
+      "downloadFile": "הורדת קובץ",
+      "showVersionHistory": "הצג היסטוריית גרסאות",
+      "toggleMilestoneStatus": "החלפת סטטוס אבן דרך"
     }
   }
 }

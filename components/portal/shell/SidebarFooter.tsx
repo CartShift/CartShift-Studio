@@ -13,10 +13,11 @@ export function SidebarFooter({
   onToggleSidebar,
   onSignOut,
 }: SidebarFooterProps) {
-  const t = useTranslations();
+  const t = useTranslations('portal');
+  const tA11y = useTranslations('portal.accessibility');
 
   return (
-    <div className="flex-shrink-0 p-3 border-t border-surface-200/50 dark:border-surface-800/30 space-y-2">
+    <div className="flex-shrink-0 p-2.5 border-t border-surface-200/50 dark:border-surface-800/30 space-y-1.5">
       {/* Language & Theme Controls - Mobile only */}
       <div className="flex md:hidden items-center gap-1.5 p-1.5 bg-surface-100/80 dark:bg-surface-800/60 rounded-2xl border border-surface-200/60 dark:border-surface-700/40 backdrop-blur-sm w-fit">
         <LanguageSwitcher />
@@ -27,29 +28,30 @@ export function SidebarFooter({
       <button
         onClick={onToggleSidebar}
         className={cn(
-          'hidden md:flex items-center gap-3 portal-nav-item w-full',
+          'portal-focus-ring hidden md:flex items-center gap-3 portal-nav-item w-full',
           !isExpanded && 'justify-center px-0'
         )}
-        aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+        aria-label={isSidebarOpen ? tA11y('collapseSidebar') : tA11y('expandSidebar')}
       >
         <div className="transition-transform duration-500">
           <ChevronLeft size={20} className="rtl:rotate-180" />
         </div>
-        {isExpanded && <span className="text-sm font-bold">{t('portal.sidebar.collapse')}</span>}
+        {isExpanded && <span className="text-[13px] font-bold">{t('sidebar.collapse')}</span>}
       </button>
 
       <button
         onClick={onSignOut}
         className={cn(
-          'flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all font-semibold text-sm',
+          'portal-focus-ring flex items-center gap-2 w-full px-2.5 py-2 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all font-semibold text-[13px]',
           !isExpanded && 'justify-center px-0'
         )}
+        aria-label={tA11y('signOut')}
       >
         <LogOut
           size={20}
           className="flex-shrink-0 group-hover:ltr:translate-x-1 group-hover:rtl:-translate-x-1 transition-transform"
         />
-        {isExpanded && <span className="text-sm">{t('portal.sidebar.signOut')}</span>}
+        {isExpanded && <span>{t('sidebar.signOut')}</span>}
       </button>
     </div>
   );

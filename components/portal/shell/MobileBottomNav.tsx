@@ -1,21 +1,24 @@
 'use client';
 
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import {
   Home,
   LayoutList,
   Users,
-  Settings,
   FolderOpen,
   CalendarClock,
-  DollarSign,
   BarChart3,
   Kanban,
+  LayoutGrid,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { isPortalNavActive } from '@/lib/utils/portal-nav';
+import { isRTLLocale } from '@/lib/locale-config';
+import { MobileNavMoreSheet } from './MobileNavMoreSheet';
+import type { NavGroup } from './types';
 
 interface NavItemProps {
   href: string;
@@ -29,13 +32,14 @@ const NavItem = ({ href, icon: Icon, label, isActive, badge }: NavItemProps) => 
   <Link
     href={href}
     className={cn(
-      'relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-colors active:opacity-70',
+      'portal-focus-ring relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-colors active:opacity-70 min-h-[44px] rounded-lg',
       isActive ? 'text-primary-600 dark:text-primary-400' : 'text-surface-400 dark:text-surface-500'
     )}
+    aria-current={isActive ? 'page' : undefined}
   >
     {isActive && <span className="absolute top-0 inset-x-4 h-0.5 bg-primary-500 rounded-full" />}
     <span className="relative flex items-center justify-center">
-      <Icon size={22} strokeWidth={isActive ? 2.25 : 1.75} />
+      <Icon size={22} strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
       {badge !== undefined && badge > 0 && (
         <span className="absolute -top-1.5 -end-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white bg-rose-500 rounded-full shadow-sm">
           {badge > 99 ? '99+' : badge}
@@ -50,6 +54,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, badge }: NavItemProps) => 
 
 interface MobileBottomNavProps {
   isAgency?: boolean;
+  navGroups: NavGroup[];
   badges?: {
     requests?: number;
     consultations?: number;
@@ -59,21 +64,16 @@ interface MobileBottomNavProps {
   };
 }
 
-export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomNavProps) {
+export function MobileBottomNav({ isAgency = false, navGroups, badges = {} }: MobileBottomNavProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const t = useTranslations('portal.sidebar.nav');
+  const locale = useLocale();
+  const tNav = useTranslations('portal.sidebar.nav');
+  const tA11y = useTranslations('portal.accessibility');
+  const navRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
-
-  const isActive = (path: string) => {
-    const dashboardPath = getPortalPath('/dashboard');
-    const workboardPath = getPortalPath('/agency/workboard');
-    if (path === dashboardPath || path === workboardPath) {
-      return pathname === path;
-    }
-    return pathname?.startsWith(path);
-  };
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const clientNav = [
     {
@@ -100,12 +100,6 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
       labelKey: 'consultations' as const,
       badgeKey: 'consultations' as const,
     },
-    {
-      href: getPortalPath('/settings'),
-      icon: Settings,
-      labelKey: 'settings' as const,
-      badgeKey: undefined,
-    },
   ];
 
   const agencyNav = [
@@ -122,10 +116,10 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
       badgeKey: 'clients' as const,
     },
     {
-      href: getPortalPath('/agency/pricing'),
-      icon: DollarSign,
-      labelKey: 'pricing' as const,
-      badgeKey: 'pricing' as const,
+      href: getPortalPath('/requests'),
+      icon: LayoutList,
+      labelKey: 'requests' as const,
+      badgeKey: 'requests' as const,
     },
     {
       href: getPortalPath('/agency/sales'),
@@ -133,17 +127,15 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
       labelKey: 'sales' as const,
       badgeKey: undefined,
     },
-    {
-      href: getPortalPath('/agency/settings'),
-      icon: Settings,
-      labelKey: 'settings' as const,
-      badgeKey: undefined,
-    },
   ];
 
   const navItems = isAgency ? agencyNav : clientNav;
+  const primaryHrefs = navItems.map(item => item.href);
 
-  const currentIndex = navItems.findIndex(item => isActive(item.href));
+  const overflowItems = navGroups.flatMap(g => g.items.filter(i => !primaryHrefs.includes(i.href)));
+  const isMoreActive = overflowItems.some(item => isPortalNavActive(pathname, item.href));
+
+  const currentIndex = navItems.findIndex(item => isPortalNavActive(pathname, item.href));
 
   const navigateToIndex = useCallback(
     (index: number) => {
@@ -155,13 +147,22 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
   );
 
   useEffect(() => {
+    const navEl = navRef.current;
+    if (!navEl) return;
+
     const handleTouchStart = (e: TouchEvent) => {
+      if (!navEl.contains(e.target as Node)) return;
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       if (touchStartX.current === null || touchStartY.current === null) return;
+      if (!navEl.contains(e.target as Node)) {
+        touchStartX.current = null;
+        touchStartY.current = null;
+        return;
+      }
 
       const touchEndX = e.changedTouches[0].clientX;
       const touchEndY = e.changedTouches[0].clientY;
@@ -172,7 +173,7 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
       const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY) * 1.5;
 
       if (isHorizontalSwipe && Math.abs(deltaX) > minSwipeDistance) {
-        const isRTL = document.dir === 'rtl';
+        const isRTL = isRTLLocale(locale);
         const swipeLeft = deltaX < 0;
         const goNext = isRTL ? !swipeLeft : swipeLeft;
 
@@ -187,29 +188,67 @@ export function MobileBottomNav({ isAgency = false, badges = {} }: MobileBottomN
       touchStartY.current = null;
     };
 
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    navEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+    navEl.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchend', handleTouchEnd);
+      navEl.removeEventListener('touchstart', handleTouchStart);
+      navEl.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [currentIndex, navItems.length, navigateToIndex]);
+  }, [currentIndex, locale, navItems.length, navigateToIndex]);
 
   return (
-    <nav className="fixed bottom-0 start-0 end-0 z-50 bg-white dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 md:hidden">
-      <div className="flex items-center justify-around h-16 px-2">
-        {navItems.map(({ href, icon, labelKey, badgeKey }) => (
-          <NavItem
-            key={href}
-            href={href}
-            icon={icon}
-            label={t(labelKey)}
-            isActive={!!isActive(href)}
-            badge={badgeKey ? badges[badgeKey] : undefined}
-          />
-        ))}
-      </div>
-    </nav>
+    <>
+      <nav
+        ref={navRef}
+        className="fixed bottom-0 start-0 end-0 z-50 bg-white dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 md:hidden pb-safe"
+        aria-label={tA11y('mainNavigation')}
+      >
+        <div className="flex items-center justify-around h-16 px-1">
+          {navItems.map(({ href, icon, labelKey, badgeKey }) => (
+            <NavItem
+              key={href}
+              href={href}
+              icon={icon}
+              label={tNav(labelKey)}
+              isActive={isPortalNavActive(pathname, href)}
+              badge={badgeKey ? badges[badgeKey] : undefined}
+            />
+          ))}
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            className={cn(
+              'portal-focus-ring relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-colors min-h-[44px] rounded-lg',
+              isMoreActive || moreOpen
+                ? 'text-primary-600 dark:text-primary-400'
+                : 'text-surface-400 dark:text-surface-500'
+            )}
+            aria-label={tA11y('moreMenu')}
+            aria-expanded={moreOpen}
+          >
+            {(isMoreActive || moreOpen) && (
+              <span className="absolute top-0 inset-x-4 h-0.5 bg-primary-500 rounded-full" />
+            )}
+            <LayoutGrid size={22} strokeWidth={isMoreActive || moreOpen ? 2.25 : 1.75} aria-hidden />
+            <span
+              className={cn(
+                'text-[10px] font-medium leading-tight',
+                (isMoreActive || moreOpen) && 'font-semibold'
+              )}
+            >
+              {tA11y('moreNavigation')}
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      <MobileNavMoreSheet
+        isOpen={moreOpen}
+        onClose={() => setMoreOpen(false)}
+        navGroups={navGroups}
+        primaryHrefs={primaryHrefs}
+      />
+    </>
   );
 }

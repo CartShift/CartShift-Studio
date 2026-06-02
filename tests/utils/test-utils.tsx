@@ -164,6 +164,11 @@ const messages = {
       userProfile: 'User profile',
       search: 'Search',
       searchPlaceholder: 'Search...',
+      mainNavigation: 'Main navigation',
+      commandPalette: 'Open command palette',
+      expandSidebar: 'Expand sidebar',
+      collapseSidebar: 'Collapse sidebar',
+      signOut: 'Sign out',
     },
     auth: {
       login: {

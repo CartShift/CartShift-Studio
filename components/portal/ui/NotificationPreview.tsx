@@ -50,11 +50,11 @@ export function NotificationPreview({
               <div className="p-4 border-b border-surface-200/50 dark:border-surface-800/30">
                 <div className="flex items-center gap-2">
                   <Bell size={16} className="text-surface-400" />
-                  <h4 className="text-sm font-black text-surface-900 dark:text-white font-outfit">
+                  <h4 className="text-sm font-semibold text-surface-900 dark:text-white font-outfit">
                     {t('portal.header.recentNotifications')}
                   </h4>
                   {unreadCount > 0 && (
-                    <span className="ms-auto text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-full">
+                    <span className="ms-auto text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-2 py-0.5 rounded-full">
                       {unreadCount} {t('portal.header.new')}
                     </span>
                   )}
@@ -76,14 +76,14 @@ export function NotificationPreview({
                         }}
                         className={cn(
                           'w-full p-4 text-start hover:bg-surface-50/80 dark:hover:bg-surface-800/40 transition-all flex items-start gap-3 group',
-                          !notification.read && 'bg-blue-50/30 dark:bg-blue-900/10'
+                          !notification.read && 'bg-primary-50/30 dark:bg-primary-900/10'
                         )}
                       >
                         <div
                           className={cn(
                             'w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 transition-all',
                             !notification.read
-                              ? 'bg-blue-600 shadow-[0_0_6px_rgba(37,99,235,0.5)]'
+                              ? 'bg-primary-600 shadow-[0_0_6px_rgb(var(--color-primary-600)/0.5)]'
                               : 'bg-transparent'
                           )}
                         />

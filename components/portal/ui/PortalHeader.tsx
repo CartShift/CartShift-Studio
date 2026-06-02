@@ -14,15 +14,16 @@ import { ACCOUNT_TYPE, AccountType, Notification } from '@/lib/types/portal';
 import { cva } from 'class-variance-authority';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useRouter } from '@/i18n/navigation';
-import { LogOut, Settings, User, Building2, ExternalLink } from 'lucide-react';
+import { LogOut, Settings, User, ExternalLink } from 'lucide-react';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { usePlatformModifierKey } from '@/lib/hooks/usePlatformModifierKey';
 
 const notificationButtonVariants = cva(
-  'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300',
+  'portal-focus-ring relative w-9 h-9 rounded-xl flex items-center justify-center transition-colors duration-200',
   {
     variants: {
       isOpen: {
-        true: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rotate-12',
+        true: 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400',
         false:
           'text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100/80 dark:hover:bg-surface-800/50',
       },
@@ -46,6 +47,7 @@ export interface HeaderUserData {
 interface PortalHeaderProps {
   onMobileMenuToggle: () => void;
   onMobileSearchToggle: () => void;
+  isMobileMenuOpen?: boolean;
   userData: HeaderUserData | null;
   accountType: AccountType;
   userRole?: string;
@@ -66,6 +68,7 @@ interface PortalHeaderProps {
 export function PortalHeader({
   onMobileMenuToggle,
   onMobileSearchToggle,
+  isMobileMenuOpen = false,
   userData,
   accountType,
   userRole,
@@ -82,7 +85,9 @@ export function PortalHeader({
   onOpenCommandPalette,
 }: PortalHeaderProps) {
   const t = useTranslations();
+  const tA11y = useTranslations('portal.accessibility');
   const router = useRouter();
+  const modifierKey = usePlatformModifierKey();
 
   const profileItems = [
     {
@@ -108,15 +113,6 @@ export function PortalHeader({
           userData?.isAgency ? getPortalPath('/agency/settings') : getPortalPath('/settings')
         ),
     },
-    ...(userData?.isAgency
-      ? [
-          {
-            label: t('portal.sidebar.nav.settings'),
-            icon: <Building2 size={16} />,
-            onClick: () => router.push(getPortalPath('/agency/settings')),
-          },
-        ]
-      : []),
     {
       label: t('portal.sidebar.signOut'),
       icon: <LogOut size={16} />,
@@ -128,13 +124,15 @@ export function PortalHeader({
   return (
     <header
       {...(viewTransitionName && { 'view-transition-name': viewTransitionName })}
-      className="portal-header flex items-center justify-between px-4 md:px-6 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md border-b border-surface-200/50 dark:border-surface-800/30 sticky top-0 z-header h-16 md:h-20 transition-all duration-300"
+      className="portal-header flex items-center justify-between px-4 md:px-5 bg-white dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 sticky top-0 z-header h-14 md:h-[68px]"
     >
-      <div className="flex items-center gap-3 md:gap-6">
+      <div className="flex items-center gap-3 md:gap-4">
         <button
+          id="portal-mobile-menu-button"
           onClick={onMobileMenuToggle}
-          className="md:hidden p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors touch-manipulation active:scale-95 rounded-xl hover:bg-surface-100/50 dark:hover:bg-surface-800/50"
-          aria-label="Open menu"
+          className="portal-focus-ring md:hidden p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors touch-manipulation active:scale-95 rounded-xl hover:bg-surface-100/50 dark:hover:bg-surface-800/50"
+          aria-label={tA11y('openMenu')}
+          aria-expanded={isMobileMenuOpen}
         >
           <Menu size={24} />
         </button>
@@ -142,31 +140,32 @@ export function PortalHeader({
         <GlobalSearch
           orgId={orgId}
           isAgency={accountType === ACCOUNT_TYPE.AGENCY}
-          className="hidden lg:block w-72 xl:w-96"
+          className="hidden lg:block w-64 xl:w-80"
         />
         <button
           onClick={onOpenCommandPalette}
-          className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100/50 hover:bg-surface-100 dark:bg-surface-800/30 dark:hover:bg-surface-800 rounded-lg transition-colors border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
-          title="Command Palette (Cmd+K)"
+          className="portal-focus-ring hidden md:flex items-center gap-2 px-2.5 py-2 text-xs font-medium text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100/50 hover:bg-surface-100 dark:bg-surface-800/30 dark:hover:bg-surface-800 rounded-lg transition-colors border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
+          aria-label={tA11y('commandPalette')}
+          title={tA11y('commandPaletteHint', { modifier: modifierKey })}
         >
           <span className="hidden xl:inline">{t('portal.header.commands')}</span>
           <kbd className="inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500 dark:text-surface-400">
-            <span className="text-xs">⌘</span>K
+            <span className="text-xs">{modifierKey}</span>K
           </kbd>
         </button>
         <button
           onClick={onOpenCommandPalette}
-          className="md:hidden p-2 text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors"
-          aria-label={t('portal.header.commands')}
+          className="portal-focus-ring md:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors rounded-xl hover:bg-surface-100/50 dark:hover:bg-surface-800/50"
+          aria-label={tA11y('commandPalette')}
         >
           <Command size={20} />
         </button>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-4 lg:gap-6">
+      <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
         <div className="flex items-center gap-2">
           {/* Controls wrapper - Language & Theme */}
-          <div className="hidden sm:flex items-center gap-1.5 p-1.5 bg-surface-100/80 dark:bg-surface-800/60 rounded-2xl border border-surface-200/60 dark:border-surface-700/40 backdrop-blur-sm">
+          <div className="hidden sm:flex items-center gap-1.5 p-1.5 bg-surface-100/80 dark:bg-surface-800/60 rounded-2xl border border-surface-200/60 dark:border-surface-700/40">
             <LanguageSwitcher />
             <div className="w-[1px] h-5 bg-surface-300/60 dark:bg-surface-600/50" />
             <ThemeToggle />
@@ -189,7 +188,7 @@ export function PortalHeader({
               />
               {unreadCount > 0 && (
                 <span
-                  className="absolute top-2.5 end-2.5 w-2.5 h-2.5 bg-blue-600 rounded-full ring-2 ring-white dark:ring-surface-950 animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.6)]"
+                  className="absolute top-2.5 end-2.5 w-2.5 h-2.5 bg-primary-600 rounded-full ring-2 ring-white dark:ring-surface-950 motion-safe:animate-pulse"
                   aria-label={t('portal.header.unreadNotifications', { count: unreadCount })}
                 />
               )}
@@ -204,9 +203,9 @@ export function PortalHeader({
         </div>
 
         {/* User Profile */}
-        <div className="flex items-center gap-3 border-s border-surface-200 dark:border-surface-800 ps-3 md:ps-6">
+        <div className="flex items-center gap-2.5 border-s border-surface-200 dark:border-surface-800 ps-3 md:ps-4">
           <div className="hidden sm:flex flex-col items-end leading-none gap-1">
-            <span className="text-sm font-black text-surface-900 dark:text-white font-outfit truncate max-w-[150px]">
+            <span className="text-[13px] font-semibold text-surface-900 dark:text-white font-outfit truncate max-w-[140px]">
               {userData?.name || t('portal.header.authorizedMember' as never)}
             </span>
             <div className="flex items-center gap-1.5">
@@ -217,10 +216,10 @@ export function PortalHeader({
               ) : (
                 <span
                   className={cn(
-                    'text-[9px] font-black uppercase tracking-widest',
+                    'text-[10px] font-semibold',
                     accountType === ACCOUNT_TYPE.AGENCY
-                      ? 'text-purple-600 dark:text-purple-400'
-                      : 'text-blue-600 dark:text-blue-400'
+                      ? 'text-accent-600 dark:text-accent-400'
+                      : 'text-primary-600 dark:text-primary-400'
                   )}
                 >
                   {accountType === ACCOUNT_TYPE.AGENCY
@@ -235,7 +234,7 @@ export function PortalHeader({
             align="right"
             trigger={
               <button
-                className="portal-avatar group cursor-pointer hover:ring-2 hover:ring-blue-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 shadow-lg shadow-blue-500/5"
+                className="portal-avatar portal-focus-ring group cursor-pointer hover:ring-2 hover:ring-primary-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 rounded-full"
                 aria-label={t('portal.header.profileMenu' as any)}
               >
                 <Avatar

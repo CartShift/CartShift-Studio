@@ -32,7 +32,7 @@ export function OrgDisplay({ orgName, size = 'md' }: OrgDisplayProps) {
   return (
     <div className="flex items-center gap-2">
       <div
-        className={`w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white ${classes.avatar}`}
+        className={`bg-primary-600 dark:bg-primary-500 rounded-lg flex items-center justify-center text-white ${classes.avatar}`}
       >
         {initial}
       </div>

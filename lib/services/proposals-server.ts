@@ -15,6 +15,7 @@ import {
   PublicPricingProposal,
   PublicProposalPayment,
   allocateLineItemTotals,
+  formatCurrency,
 } from '@/lib/types/pricing';
 
 const PROPOSALS_COLLECTION = 'portal_pricing_requests';
@@ -552,6 +553,82 @@ export async function ensureProposalPublicToken(proposalId: string): Promise<str
     });
     return publicToken;
   });
+}
+
+function getProposalPublicUrl(token: string, locale: 'en' | 'he') {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_PORTAL_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://portal.cart-shift.com';
+  return `${baseUrl.replace(/\/$/, '')}/${locale}/proposal/${token}`;
+}
+
+export async function queueProposalOfferEmail(
+  proposalId: string,
+  locale: 'en' | 'he'
+): Promise<{ queueId: string }> {
+  const db = getDb();
+  const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(proposalId);
+  const queueRef = db.collection('email_queue').doc();
+
+  await db.runTransaction(async transaction => {
+    const snapshot = await transaction.get(proposalRef);
+    const proposal = snapshot.data() as ProposalDocument | undefined;
+    if (!proposal) throw new Error('NOT_FOUND');
+    if (proposal.status !== 'DRAFT' && proposal.status !== 'SENT') {
+      throw new Error('NOT_SENDABLE');
+    }
+
+    const recipient = proposal.clientEmail?.trim().toLowerCase();
+    if (!recipient || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
+      throw new Error('INVALID_CLIENT_EMAIL');
+    }
+
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    const publicToken = proposal.publicToken || randomUUID();
+    const totalAmount = formatCurrency(proposal.totalAmount, proposal.currency);
+    const actionUrl = getProposalPublicUrl(publicToken, locale);
+    const subject =
+      locale === 'he'
+        ? `הצעת המחיר שלך מוכנה | ${proposal.title}`
+        : `Your proposal is ready | ${proposal.title}`;
+
+    transaction.create(queueRef, {
+      status: 'pending',
+      to: recipient,
+      subject,
+      templateName: 'quote_received',
+      data: {
+        requestTitle: proposal.title,
+        totalAmount,
+        actionUrl,
+        locale,
+        clientName: proposal.clientName ?? null,
+        validUntil: proposal.validUntil?.toDate
+          ? proposal.validUntil.toDate().toLocaleDateString(locale === 'he' ? 'he-IL' : 'en-US')
+          : null,
+        timeframe: proposal.timeframe ?? null,
+        proposalId,
+        orgId: proposal.orgId,
+      },
+      tags: [
+        { name: 'type', value: 'proposal_offer' },
+        { name: 'locale', value: locale },
+      ],
+      createdAt: now,
+    });
+    transaction.update(proposalRef, {
+      status: 'SENT',
+      publicToken,
+      publicAccessEnabled: true,
+      sentAt: proposal.sentAt ?? now,
+      lastSentAt: now,
+      offerEmailQueueId: queueRef.id,
+      offerEmailRecipient: recipient,
+      updatedAt: now,
+    });
+  });
+  return { queueId: queueRef.id };
 }
 
 export async function listProposalPayments(proposalId: string): Promise<AgencyProposalPayment[]> {

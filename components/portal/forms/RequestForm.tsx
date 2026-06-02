@@ -249,7 +249,7 @@ export const RequestForm = ({
         <p className="text-surface-500 dark:text-surface-400 font-medium max-w-xs">
           {t('portal.requests.form.successDesc')}
         </p>
-        <div className="pt-4 flex items-center gap-2 text-[10px] font-black text-surface-400 uppercase tracking-widest animate-pulse">
+        <div className="pt-4 flex items-center gap-2 portal-label-sm text-[10px] animate-pulse">
           <Loader2 size={12} className="animate-spin" />
           {t('portal.requests.form.redirecting')}
         </div>
@@ -262,13 +262,13 @@ export const RequestForm = ({
       <div className="space-y-6">
         {mode === 'create' && isAgency && clients.length > 0 && (
           <div className="space-y-2">
-            <label className="block text-[10px] font-black text-surface-400 uppercase tracking-widest px-1">
+            <label className="block portal-label-sm text-[10px] px-1">
               {t('portal.requests.form.clientLabel')}
             </label>
             <select
               value={selectedClientId}
               onChange={e => setSelectedClientId(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 transition-all text-surface-900 dark:text-white text-sm font-bold font-outfit focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="portal-input rounded-2xl py-3 text-sm font-bold font-outfit"
             >
               <option value="">{t('portal.requests.form.clientSelect')}</option>
               {clients.map(client => (
@@ -289,13 +289,13 @@ export const RequestForm = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="block text-[10px] font-black text-surface-400 uppercase tracking-widest px-1">
+            <label className="block portal-label-sm text-[10px] px-1">
               {t('portal.requests.form.categoryLabel')}
             </label>
             <select
               {...register('type')}
               className={cn(
-                'w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 transition-all text-surface-900 dark:text-white text-sm font-bold font-outfit focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
+                'portal-input rounded-2xl py-3 text-sm font-bold font-outfit',
                 errors.type && 'border-red-500 focus:ring-red-500/20 focus:border-red-500'
               )}
             >
@@ -316,12 +316,12 @@ export const RequestForm = ({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-[10px] font-black text-surface-400 uppercase tracking-widest px-1">
+            <label className="block portal-label-sm text-[10px] px-1">
               {t('portal.requests.form.priorityLabel')}
             </label>
             <select
               {...register('priority')}
-              className="w-full px-4 py-3 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 transition-all text-surface-900 dark:text-white text-sm font-bold font-outfit focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="portal-input rounded-2xl py-3 text-sm font-bold font-outfit"
             >
               {Object.keys(PRIORITY_CONFIG).map(p => (
                 <option key={p} value={p}>
@@ -333,14 +333,14 @@ export const RequestForm = ({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-black text-surface-400 uppercase tracking-widest px-1">
+          <label className="block portal-label-sm text-[10px] px-1">
             {t('portal.requests.form.detailsLabel')}
           </label>
           <textarea
             {...register('description')}
             rows={6}
             className={cn(
-              'w-full px-5 py-4 rounded-3xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 transition-all resize-none text-surface-900 dark:text-white text-sm font-medium leading-relaxed focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
+              'portal-input rounded-3xl py-4 resize-none text-sm font-medium leading-relaxed',
               errors.description && 'border-red-500 focus:ring-red-500/20 focus:border-red-500'
             )}
             placeholder={t('portal.requests.form.detailsPlaceholder')}
@@ -356,16 +356,17 @@ export const RequestForm = ({
         {mode === 'create' && (
           <div className="space-y-4 pt-4 border-t border-surface-100 dark:border-surface-800">
             <div className="flex items-center justify-between px-1">
-              <CardSectionTitle icon={Paperclip} iconClassName="text-blue-500">
+              <CardSectionTitle icon={Paperclip} iconClassName="text-primary-500">
                 {t('portal.requests.new.attachments')}
               </CardSectionTitle>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Upload Trigger */}
-              <div
+              <button
+                type="button"
                 onClick={openFilePicker}
-                className="border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all cursor-pointer group"
+                className="portal-focus-ring w-full border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-primary-500 dark:hover:border-primary-400 hover:bg-primary-50/50 dark:hover:bg-primary-900/10 transition-all cursor-pointer group outline-none"
               >
                 <input
                   type="file"
@@ -375,7 +376,7 @@ export const RequestForm = ({
                   onChange={handleFileSelect}
                 />
                 <div className="w-10 h-10 rounded-xl bg-surface-50 dark:bg-surface-900 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-white dark:group-hover:bg-surface-800 transition-all">
-                  <Plus className="text-surface-400 group-hover:text-blue-500" size={20} />
+                  <Plus className="text-surface-400 group-hover:text-primary-500" size={20} />
                 </div>
                 <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
                   {t('portal.requests.new.uploadText')}
@@ -383,7 +384,7 @@ export const RequestForm = ({
                 <p className="text-[10px] text-surface-500 uppercase tracking-tight font-medium mt-1">
                   {t('portal.requests.new.uploadSubtext')}
                 </p>
-              </div>
+              </button>
 
               {/* Selected Files List */}
               <div className="space-y-2 max-h-[160px] overflow-y-auto portal-scrollbar pe-2">
@@ -412,7 +413,7 @@ export const RequestForm = ({
                           e.stopPropagation();
                           removeFile(idx);
                         }}
-                        className="p-1.5 text-surface-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
+                        className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
                       >
                         <X size={14} />
                       </button>
@@ -431,13 +432,13 @@ export const RequestForm = ({
 
             {loading && uploadProgress > 0 && (
               <div className="space-y-1.5 animate-in fade-in duration-300">
-                <div className="flex justify-between text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                <div className="flex justify-between text-[10px] font-black text-primary-600 uppercase tracking-widest">
                   <span>{t('portal.files.uploadForm.uploading')}</span>
                   <span>{uploadProgress}%</span>
                 </div>
                 <div className="h-1 w-full bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-500 transition-all duration-500"
+                    className="h-full bg-primary-500 transition-all duration-500"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -475,7 +476,7 @@ export const RequestForm = ({
             type="submit"
             loading={loading}
             disabled={loading}
-            className="flex-1 md:flex-none font-outfit px-10 shadow-xl shadow-blue-500/20"
+            className="flex-1 md:flex-none font-outfit px-10 shadow-xl shadow-primary-500/20"
           >
             {loading
               ? mode === 'create'

@@ -28,6 +28,7 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useOrg } from '@/lib/context/OrgContext';
 import { useDirection } from '@/lib/i18n-utils';
+import { portalTextareaClassName } from '@/lib/utils/portal-interactive';
 
 // ============================================
 // CVA Variants
@@ -59,7 +60,7 @@ const aspectCardVariants = cva(
     variants: {
       selected: {
         true: [
-          'bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-950/40 dark:to-accent-950/40',
+          'bg-surface-50 dark:bg-surface-900/50',
           'border-2 border-primary-300 dark:border-primary-600',
           'shadow-md shadow-primary-500/10',
         ],
@@ -125,7 +126,7 @@ function StarRating({ value, onChange, size = 'md', label, showLabel = true }: S
               onMouseLeave={() => setHoverValue(null)}
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.95 }}
-              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full"
+              className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full"
             >
               <Star
                 className={cn(
@@ -187,7 +188,7 @@ function AspectRating({ icon: Icon, label, value, onChange, color }: AspectRatin
               onClick={() => onChange(star)}
               onMouseEnter={() => setHoverValue(star)}
               onMouseLeave={() => setHoverValue(null)}
-              className="focus:outline-none"
+              className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md"
             >
               <Star
                 className={cn(
@@ -222,10 +223,10 @@ function RecommendToggle({ value, onChange }: RecommendToggleProps) {
       type="button"
       onClick={() => onChange(!value)}
       className={cn(
-        'w-full p-4 rounded-2xl border-2 transition-all duration-300',
+        'portal-focus-ring w-full p-4 rounded-2xl border-2 transition-all duration-300',
         'flex items-center gap-4',
         value
-          ? 'border-emerald-400 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30'
+          ? 'border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
           : 'border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 hover:border-emerald-200 dark:hover:border-emerald-800'
       )}
       whileHover={{ scale: 1.01 }}
@@ -235,7 +236,7 @@ function RecommendToggle({ value, onChange }: RecommendToggleProps) {
         className={cn(
           'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
           value
-            ? 'bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30'
+            ? 'bg-emerald-600 dark:bg-emerald-500 shadow-lg shadow-emerald-500/30'
             : 'bg-surface-200 dark:bg-surface-700'
         )}
         animate={value ? { scale: [1, 1.1, 1] } : {}}
@@ -285,24 +286,16 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full space-y-1.5 group">
         {label && (
-          <label className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">
+          <label className="text-sm font-bold text-surface-700 dark:text-surface-300 group-focus-within:text-primary-600 dark:group-focus-within:text-primary-400 transition-colors">
             {label}
           </label>
         )}
         <textarea
           ref={ref}
           className={cn(
-            'w-full rounded-xl border transition-all duration-200',
-            'bg-white dark:bg-surface-900/80',
-            'text-surface-900 dark:text-white',
-            'placeholder:text-surface-400 dark:placeholder:text-surface-500',
-            'focus:outline-none',
-            'text-sm font-medium p-4 resize-none',
-            'shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)]',
-            'dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)]',
-            error
-              ? 'border-rose-300 dark:border-rose-500/30 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-              : 'border-surface-200/80 dark:border-white/[0.08] hover:border-surface-300 dark:hover:border-white/[0.12] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:ring-primary-400/20 dark:focus:border-primary-400',
+            portalTextareaClassName,
+            error &&
+              'border-rose-300 dark:border-rose-500/30 focus-visible:border-rose-500 focus-visible:ring-rose-500/20',
             className
           )}
           {...props}
@@ -453,7 +446,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
       <Card variant="gradient" className="overflow-hidden">
         <div className="text-center py-8 space-y-4">
           <motion.div
-            className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-xl shadow-emerald-500/30"
+            className="w-20 h-20 mx-auto rounded-2xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center shadow-xl shadow-emerald-500/30"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
@@ -501,7 +494,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
       {/* Progress Bar */}
       <div className="h-1 bg-surface-200 dark:bg-surface-800 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-6">
         <motion.div
-          className="h-full bg-gradient-to-r from-primary-500 to-accent-500"
+          className="h-full bg-primary-600 dark:bg-primary-500"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -516,9 +509,9 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
               className={cn(
                 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300',
                 index < currentStepIndex
-                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white'
+                  ? 'bg-emerald-600 dark:bg-emerald-500 text-white'
                   : index === currentStepIndex
-                    ? 'bg-gradient-to-br from-primary-500 to-accent-500 text-white shadow-lg shadow-primary-500/30'
+                    ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/30'
                     : 'bg-surface-100 dark:bg-surface-800 text-surface-400'
               )}
               animate={index === currentStepIndex ? { scale: [1, 1.1, 1] } : {}}
@@ -552,7 +545,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
           >
             <div className="text-center space-y-2">
               <motion.div
-                className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30"
+                className="w-16 h-16 mx-auto rounded-2xl bg-amber-600 dark:bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30"
                 animate={{ rotate: [0, -5, 5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
               >
@@ -585,7 +578,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             className="space-y-6"
           >
             <div className="text-center space-y-2">
-              <motion.div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/30">
+              <motion.div className="w-16 h-16 mx-auto rounded-2xl bg-primary-600 dark:bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-500/30">
                 <MessageSquareHeart className="w-8 h-8 text-white" />
               </motion.div>
               <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
@@ -643,7 +636,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
             className="space-y-6"
           >
             <div className="text-center space-y-2">
-              <motion.div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <motion.div className="w-16 h-16 mx-auto rounded-2xl bg-primary-600 dark:bg-primary-500 flex items-center justify-center shadow-sm">
                 <Award className="w-8 h-8 text-white" />
               </motion.div>
               <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
@@ -660,28 +653,28 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                 label={t('testimonial.testimonial.aspects.communication')}
                 value={aspects.communication}
                 onChange={v => setAspects(prev => ({ ...prev, communication: v }))}
-                color="bg-gradient-to-br from-blue-500 to-cyan-500"
+                color="bg-primary-600 dark:bg-primary-500"
               />
               <AspectRating
                 icon={Sparkles}
                 label={t('testimonial.testimonial.aspects.quality')}
                 value={aspects.quality}
                 onChange={v => setAspects(prev => ({ ...prev, quality: v }))}
-                color="bg-gradient-to-br from-purple-500 to-pink-500"
+                color="bg-accent-600 dark:bg-accent-500"
               />
               <AspectRating
                 icon={Clock}
                 label={t('testimonial.testimonial.aspects.timeliness')}
                 value={aspects.timeliness}
                 onChange={v => setAspects(prev => ({ ...prev, timeliness: v }))}
-                color="bg-gradient-to-br from-amber-500 to-orange-500"
+                color="bg-amber-600 dark:bg-amber-500"
               />
               <AspectRating
                 icon={Zap}
                 label={t('testimonial.testimonial.aspects.value')}
                 value={aspects.value}
                 onChange={v => setAspects(prev => ({ ...prev, value: v }))}
-                color="bg-gradient-to-br from-emerald-500 to-teal-500"
+                color="bg-emerald-600 dark:bg-emerald-500"
               />
             </div>
 
@@ -701,7 +694,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
           >
             <div className="text-center space-y-2">
               <motion.div
-                className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30"
+                className="w-16 h-16 mx-auto rounded-2xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30"
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
@@ -754,7 +747,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
               )}
 
               <div className="flex items-center gap-3 pt-3 border-t border-surface-100 dark:border-surface-800">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-500 flex items-center justify-center text-white font-bold">
                   {userData?.name?.charAt(0) || 'U'}
                 </div>
                 <div>

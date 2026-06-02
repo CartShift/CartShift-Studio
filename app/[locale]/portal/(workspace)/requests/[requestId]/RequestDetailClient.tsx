@@ -308,7 +308,7 @@ export default function RequestDetailClient() {
             </motion.div>
           </div>
           <div className="flex items-center gap-3 mt-1 underline-offset-4">
-            <p className="text-xs font-black text-surface-400 uppercase tracking-widest">
+            <p className="portal-label-sm">
               {request.type
                 ? t(`requests.type.${request.type.toLowerCase()}` as any)
                 : t('requests.type.design')}
@@ -342,38 +342,44 @@ export default function RequestDetailClient() {
       {/* Tabs */}
       <div className="flex items-center gap-1 p-1 bg-surface-100 dark:bg-surface-900 rounded-2xl w-full overflow-x-auto scrollbar-hide">
         <button
+          type="button"
           onClick={() => setActiveTab('overview')}
+          aria-pressed={activeTab === 'overview'}
           className={cn(
-            'px-4 sm:px-6 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all font-outfit touch-manipulation whitespace-nowrap',
+            'portal-focus-ring px-4 sm:px-6 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all font-outfit touch-manipulation whitespace-nowrap outline-none',
             activeTab === 'overview'
-              ? 'bg-white dark:bg-surface-800 text-blue-600 shadow-sm'
+              ? 'bg-white dark:bg-surface-800 text-primary-600 shadow-sm'
               : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           )}
         >
           {t('requests.detail.overview')}
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('discussion')}
+          aria-pressed={activeTab === 'discussion'}
           className={cn(
-            'px-4 sm:px-6 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all font-outfit touch-manipulation flex items-center gap-2 whitespace-nowrap',
+            'portal-focus-ring px-4 sm:px-6 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all font-outfit touch-manipulation flex items-center gap-2 whitespace-nowrap outline-none',
             activeTab === 'discussion'
-              ? 'bg-white dark:bg-surface-800 text-blue-600 shadow-sm'
+              ? 'bg-white dark:bg-surface-800 text-primary-600 shadow-sm'
               : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           )}
         >
           {t('requests.detail.discussion')}
           {comments.length > 0 && (
-            <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 px-1.5 py-0.5 rounded-md text-[10px]">
+            <span className="bg-primary-100 dark:bg-primary-900 text-primary-600 px-1.5 py-0.5 rounded-md text-[10px]">
               {comments.length}
             </span>
           )}
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('history')}
+          aria-pressed={activeTab === 'history'}
           className={cn(
-            'px-4 sm:px-6 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all font-outfit touch-manipulation flex items-center gap-2 whitespace-nowrap',
+            'portal-focus-ring px-4 sm:px-6 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all font-outfit touch-manipulation flex items-center gap-2 whitespace-nowrap outline-none',
             activeTab === 'history'
-              ? 'bg-white dark:bg-surface-800 text-blue-600 shadow-sm'
+              ? 'bg-white dark:bg-surface-800 text-primary-600 shadow-sm'
               : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           )}
         >
@@ -410,12 +416,12 @@ export default function RequestDetailClient() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest truncate">
+                        <p className="portal-label-sm text-[10px] truncate">
                           {t('common.client')}
                         </p>
                         <Link
                           href={getPortalPath(`/agency/clients/${clientOrganization.id}`)}
-                          className="text-sm font-bold text-surface-900 dark:text-white font-outfit hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate block"
+                          className="portal-focus-ring text-sm font-bold text-surface-900 dark:text-white font-outfit hover:text-primary-600 dark:hover:text-primary-400 transition-colors truncate block rounded-md"
                         >
                           {clientOrganization.name}
                         </Link>
@@ -427,7 +433,7 @@ export default function RequestDetailClient() {
                       <Calendar size={16} className="text-surface-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                      <p className="portal-label-sm text-[10px]">
                         {t('requests.detail.submissionDate')}
                       </p>
                       <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
@@ -452,7 +458,7 @@ export default function RequestDetailClient() {
                       />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                      <p className="portal-label-sm text-[10px]">
                         {t('requests.detail.priorityStatus')}
                       </p>
                       <p className="text-sm font-bold text-surface-900 dark:text-white capitalize font-outfit">
@@ -480,7 +486,7 @@ export default function RequestDetailClient() {
             />
           ) : (
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950 animate-in slide-in-from-bottom-4 duration-500">
-              <CardSectionTitle icon={Clock} iconClassName="text-blue-500" className="mb-4">
+              <CardSectionTitle icon={Clock} iconClassName="text-primary-500" className="mb-4">
                 {t('requests.detail.historyTitle')}
               </CardSectionTitle>
               <ActivityTimeline activities={activities} orgId={orgId as string} />
@@ -623,8 +629,10 @@ export default function RequestDetailClient() {
                           </div>
                           {pricingLineItems.length > 1 && (
                             <button
+                              type="button"
                               onClick={() => removeLineItem(item.id)}
-                              className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                              aria-label={t('common.delete')}
+                              className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -643,8 +651,9 @@ export default function RequestDetailClient() {
 
                   {/* Add Line Item */}
                   <button
+                    type="button"
                     onClick={addLineItem}
-                    className="w-full py-2 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="portal-focus-ring w-full py-2 min-h-[44px] text-sm font-bold text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus size={16} />
                     {t('requests.detail.addLineItem')}
@@ -899,9 +908,9 @@ export default function RequestDetailClient() {
                     disabled={isUploading}
                   >
                     {isUploading ? (
-                      <Loader2 size={16} className="me-3 animate-spin text-blue-500" />
+                      <Loader2 size={16} className="me-3 animate-spin text-primary-500" />
                     ) : (
-                      <Paperclip size={16} className="me-3 text-blue-500" />
+                      <Paperclip size={16} className="me-3 text-primary-500" />
                     )}
                     {t('requests.detail.addAttachment')}
                   </Button>

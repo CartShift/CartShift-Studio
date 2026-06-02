@@ -34,8 +34,8 @@ const WORKFLOW_STAGES: {
   {
     status: REQUEST_STATUS.NEW,
     icon: FileText,
-    color: 'text-blue-600 dark:text-blue-400',
-    bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+    color: 'text-primary-600 dark:text-primary-400',
+    bgColor: 'bg-primary-100 dark:bg-primary-900/30',
     allowedFrom: [], // Initial status
   },
   {
@@ -48,7 +48,7 @@ const WORKFLOW_STAGES: {
   {
     status: REQUEST_STATUS.QUOTED,
     icon: DollarSign,
-    color: 'text-purple-600 dark:text-purple-400',
+    color: 'text-accent-600 dark:text-accent-400',
     bgColor: 'bg-purple-100 dark:bg-purple-900/30',
     allowedFrom: [REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO],
   },
@@ -274,16 +274,16 @@ export function RequestStatusWorkflow({
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           disabled={isUpdating || availableTransitions.length === 0}
           className={cn(
-            'flex items-center gap-3 pe-4 ps-2 py-2 rounded-full border transition-all',
+            'portal-focus-ring flex items-center gap-3 pe-4 ps-2 py-2 rounded-full border transition-all outline-none',
             'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700',
             availableTransitions.length > 0 && !isUpdating
-              ? 'hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer shadow-sm hover:shadow-md'
+              ? 'hover:border-primary-300 dark:hover:border-primary-700 cursor-pointer shadow-sm hover:shadow-md'
               : 'cursor-default opacity-80'
           )}
         >
           <div className={cn('p-1.5 rounded-full', currentStage.bgColor)}>
             {isUpdating || pendingStatus ? (
-              <Loader2 size={16} className="animate-spin text-blue-500" />
+              <Loader2 size={16} className="animate-spin text-primary-500" />
             ) : (
               <CurrentIcon size={16} className={currentStage.color} />
             )}
@@ -331,7 +331,7 @@ export function RequestStatusWorkflow({
                   }}
                   className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 shadow-xl overflow-hidden p-1"
                 >
-                  <p className="px-3 py-2 text-[10px] font-black text-surface-400 uppercase tracking-widest">
+                  <p className="px-3 py-2 portal-label-sm text-[10px]">
                     {t('requests.detail.moveTo')}
                   </p>
                   <div className="space-y-1">
@@ -342,7 +342,7 @@ export function RequestStatusWorkflow({
                         <button
                           key={status}
                           onClick={() => handleStatusChange(status)}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-start"
+                          className="portal-focus-ring w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-start outline-none"
                         >
                           <div className={cn('p-1.5 rounded-lg shrink-0', stage.bgColor)}>
                             <StageIcon size={14} className={stage.color} />

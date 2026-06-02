@@ -152,6 +152,56 @@ All portal components now properly support dark mode with:
 - Components: `portal-card`, `portal-btn`, `portal-input`, `portal-badge`, `portal-avatar`
 - Utilities: `portal-scrollbar`, `portal-empty`, `portal-skeleton`
 
+## Portal brand consistency sweep (2026-06)
+
+- **Color SSOT:** Replaced legacy `blue-*` Tailwind accents with **`primary-*`** across all `components/portal/**` and `app/[locale]/portal/**` (61+ files).
+- **Shared primitives:** `Badge` `blue` variant and `Switch` checked state now use primary tokens; notification unread dots use `rgb(var(--color-primary-600)/…)`.
+- **Forms:** Standardized selects/textareas/search fields on `portal-input` where applicable (`RequestForm`, `CreateRequestForm`, `ManageServiceForm`, `FilesClient`, `ClientsFilterBar`, `GlobalSearch`, etc.).
+- **Upload zones:** `CreateRequestForm`, `UploadFileForm`, and `RequestForm` use `<button type="button">` + `portal-focus-ring` (not clickable `div`s).
+- **Shell:** Skip link and text selection use `primary-*` (`PortalShell`).
+
+## Portal UX audit (2026-06)
+
+- Removed sidebar **side-stripe** active indicator (`::before` + `layoutId` bar); active nav uses ring + tinted background only.
+- Added shared **`portal-focus-ring`** utility and applied across shell header, nav, mobile nav, settings sections, and quick actions.
+- **`MotionConfig reducedMotion="user"`** so Framer Motion respects system preferences.
+- Improved **secondary text contrast** (`--portal-text-secondary`, `.portal-label-sm`).
+- i18n **aria-labels** for command palette, sidebar collapse/expand, and sign out (`portal.accessibility`).
+- Mobile: **`pb-safe`** on bottom nav, **Escape** closes the “More” sheet.
+- Fixed default export names: `SettingsClient`, `AgencySettingsClient`.
+
+### Inner pages focus consistency (2026-06)
+
+- **Requests list** (`RequestsClient`): filter chips, org select (`portal-input`), mobile cards and desktop rows (`portal-focus-ring` + `activateOnKeyboard`), selection checkbox, message/actions controls, new-request link.
+- **Workboard** (`AgencyWorkboardClient`, `WorkboardFilterBar`, `DroppableColumn`, `RequestCard`, `InlineRequestForm`): mobile column tabs, card wrappers, filter/search/dropdown triggers, add/more column actions, selection checkbox as real `<button>`.
+- Shared helper: `lib/utils/portal-interactive.ts` (`activateOnKeyboard` for Enter/Space on keyboard-focusable rows).
+
+### Request detail + discussion (2026-06)
+
+- **`RequestDetailClient`**: tab strip uses `portal-focus-ring`, `aria-pressed`, and `primary-*` active states; pricing line-item controls and client link aligned.
+- **`RequestDiscussion`** + **`MentionInput`**: composer send/cancel, mention suggestions, and `portal-input` on textarea.
+- **`CommentItem`**: reaction/reply controls with focus rings; author bubble and chips use `primary-*`.
+- **`RequestStatusWorkflow`**: status dropdown trigger and menu items with focus rings.
+- **Requests list**: selection bar and table accents migrated from `blue-*` to `primary-*`.
+- **i18n**: `portal.accessibility.sendMessage`, `replyToComment`, `addReaction` (en/he).
+
+### Attachments, milestones, and new request (2026-06)
+
+- **`RequestAttachments`**: preview/history/download/delete controls use `portal-focus-ring`, 44px targets, `primary-*` hovers; aria-labels via `portal.accessibility.previewFile`, `showVersionHistory`, `downloadFile`, and `portal.files.actions.delete`.
+- **`RequestMilestones`**: progress/active states and edit inputs use `primary-*` / `portal-input`; milestone toggle uses `activateOnKeyboard` + `toggleMilestoneStatus`; add-phase dashed button uses `portal-focus-ring` and `primary-*` hovers.
+- **`NewRequestClient`**: back link focus ring; tips card accents `primary-*`.
+- **`RequestForm`**: selects/textarea use `portal-input`; upload zone is a `<button type="button">` with `portal-focus-ring` and `primary-*` hover states; submit shadow `primary-*`.
+
+### Perfection pass — modals, filters, icon actions (2026-06)
+
+- **SSOT utilities** (`lib/utils/portal-interactive.ts`): `portalSelectClassName`, `portalTextareaClassName`, `portalIconButtonClassName` alongside `activateOnKeyboard`.
+- **Modals / org forms**: `EditClientModal`, `CreateOrganizationForm` selects use `portalSelectClassName`; `InviteTeamMemberForm` role select aligned.
+- **`TestimonialForm`**: local textarea uses `portalTextareaClassName`; star/aspect/recommend controls use `portal-focus-ring` + 44px targets.
+- **`ClientMultiFilter`**: filter rows `type="button"` + focus ring; revenue min/max use `portal-input`.
+- **Icon row actions** (44px + focus ring): `PricingListClient`, `AgencyPricingClient`, `AgencySettingsClient`, `AgencyConsultationsClient`, `CreatePricingForm`, `EditPricingForm`, `PricingCalculator`, `EditRequestModal`, `MobileSearch`, `GlobalSearch`, `PinnedRequests`, `ShopifyStoreIntegration`, `TipsCard`.
+- **Settings / testimonials**: `AgencySettingsClient` bio textarea → `portal-input`; `AgencyTestimonialsClient` admin notes textarea → `portal-input`.
+- **`RequestSelector`**: list rows use `portal-focus-ring` instead of ad-hoc `focus-visible:ring-*`.
+
 ## ✨ Next Steps (Optional Enhancements)
 
 If you want to further improve the portal:

@@ -169,7 +169,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                 {query && (
                   <button
                     onClick={() => setQuery('')}
-                    className="p-1 rounded-lg text-surface-400 hover:text-surface-600 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                    className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1 rounded-lg text-surface-400 hover:text-surface-600 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                     aria-label="Clear search"
                   >
                     <X size={16} />
@@ -177,7 +177,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                 )}
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-xl text-surface-400 hover:text-surface-600 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-xs font-bold"
+                  className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl text-surface-400 hover:text-surface-600 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-xs font-bold"
                   aria-label="Close search"
                 >
                   ESC
@@ -271,7 +271,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                                   e.stopPropagation();
                                   removeFromHistory(search);
                                 }}
-                                className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all"
+                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all"
                                 aria-label={`Remove "${search}" from history`}
                               >
                                 <X size={12} className="text-surface-400" />

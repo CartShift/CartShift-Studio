@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderEmail = exports.EMAIL_CONFIG = void 0;
 exports.sendEmail = sendEmail;
 exports.sendEmailWithLogging = sendEmailWithLogging;
+exports.generateIdempotencyKey = generateIdempotencyKey;
 exports.sendBatchEmails = sendBatchEmails;
 exports.sendScheduledEmail = sendScheduledEmail;
 exports.cancelScheduledEmail = cancelScheduledEmail;

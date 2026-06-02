@@ -41,7 +41,7 @@ export function WorkboardFilterBar({
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
           placeholder={t('common.search')}
-          className="w-full ps-9 pe-4 py-2 bg-transparent border-none text-sm text-surface-900 dark:text-white placeholder:text-surface-400 focus:ring-0"
+          className="portal-input w-full ps-9 pe-4 py-2 bg-transparent border-none text-sm text-surface-900 dark:text-white placeholder:text-surface-400"
         />
       </div>
 
@@ -81,7 +81,7 @@ export function WorkboardFilterBar({
           trigger={
             <span
               className={cn(
-                'inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer',
+                'portal-focus-ring inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer',
                 priorityFilter
                   ? 'bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-white'
                   : 'text-surface-500 hover:text-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
@@ -127,7 +127,7 @@ export function WorkboardFilterBar({
         {/* Sort */}
         <Dropdown
           trigger={
-            <span className="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+            <span className="portal-focus-ring inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors whitespace-nowrap cursor-pointer">
               <SortAsc size={14} />
             </span>
           }

@@ -178,8 +178,8 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
           <div className="flex flex-wrap items-center gap-3 flex-1">
             {/* Total */}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-surface-800/80 border border-surface-200/50 dark:border-white/[0.06]">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
-                <FileText size={16} className="text-blue-500" />
+              <div className="w-8 h-8 rounded-lg bg-primary-500/10 dark:bg-primary-500/20 flex items-center justify-center">
+                <FileText size={16} className="text-primary-500" />
               </div>
               <div>
                 <div className="text-lg font-bold text-surface-900 dark:text-white leading-none">
@@ -327,7 +327,7 @@ export const ClientAnalyticsCompact: React.FC<{
   }, [requests]);
 
   const items = [
-    { label: t('portal.analytics.total'), value: analytics.total, color: 'bg-blue-500' },
+    { label: t('portal.analytics.total'), value: analytics.total, color: 'bg-primary-500' },
     { label: t('portal.analytics.active'), value: analytics.active, color: 'bg-amber-500' },
     { label: t('portal.analytics.done'), value: analytics.completed, color: 'bg-green-500' },
   ];

@@ -135,7 +135,7 @@ export default function InviteClient() {
             <p className="text-muted-foreground">{t('invite.guestIntro')}</p>
             <div className="space-y-2">
               <Link href={getPortalPath(`/signup?redirect=/invite/${code}/`)} className="block">
-                <Button className="w-full shadow-lg shadow-blue-500/20">
+                <Button className="w-full shadow-lg shadow-primary-500/20">
                   {t('invite.createAccount')}
                 </Button>
               </Link>
@@ -255,7 +255,7 @@ export default function InviteClient() {
                       )}
                       className="block"
                     >
-                      <Button className="w-full shadow-lg shadow-blue-500/20">
+                      <Button className="w-full shadow-lg shadow-primary-500/20">
                         {t('invite.createAccount')}
                       </Button>
                     </Link>

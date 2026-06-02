@@ -110,7 +110,7 @@ export function ClientMultiFilter({
         <span className="hidden sm:inline">{t('common.filters.title')}</span>
         <span className="sm:hidden">{t('common.filter')}</span>
         {hasActiveFilters && (
-          <span className="absolute -top-1 -end-1 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -end-1 w-4 h-4 bg-primary-600 rounded-full flex items-center justify-center">
             <span className="text-[8px] text-white font-bold">
               {(statusFilter.length || 0) +
                 (planFilter.length || 0) +
@@ -134,7 +134,7 @@ export function ClientMultiFilter({
             <div className="space-y-6">
               {/* Status Filter */}
               <div>
-                <h4 className="text-xs font-black text-surface-400 uppercase tracking-widest mb-3">
+                <h4 className="portal-label-sm mb-3">
                   {t('common.filters.status')}
                 </h4>
                 <div className="space-y-2">
@@ -142,18 +142,19 @@ export function ClientMultiFilter({
                     const isSelected = statusFilter.includes(option.value);
                     return (
                       <button
+                        type="button"
                         key={option.value}
                         onClick={() => toggleStatus(option.value)}
                         className={cn(
-                          'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all',
+                          'portal-focus-ring w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all min-h-[44px]',
                           isSelected
-                            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                            ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
                             : 'hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-700 dark:text-surface-300'
                         )}
                       >
                         <span className="font-medium">{option.label}</span>
                         {isSelected && (
-                          <Check size={16} className="text-blue-600 dark:text-blue-400" />
+                          <Check size={16} className="text-primary-600 dark:text-primary-400" />
                         )}
                       </button>
                     );
@@ -163,7 +164,7 @@ export function ClientMultiFilter({
 
               {/* Plan Filter */}
               <div>
-                <h4 className="text-xs font-black text-surface-400 uppercase tracking-widest mb-3">
+                <h4 className="portal-label-sm mb-3">
                   {t('common.filters.plan')}
                 </h4>
                 <div className="space-y-2">
@@ -171,18 +172,19 @@ export function ClientMultiFilter({
                     const isSelected = planFilter.includes(option.value);
                     return (
                       <button
+                        type="button"
                         key={option.value}
                         onClick={() => togglePlan(option.value)}
                         className={cn(
-                          'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all',
+                          'portal-focus-ring w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all min-h-[44px]',
                           isSelected
-                            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                            ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
                             : 'hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-700 dark:text-surface-300'
                         )}
                       >
                         <span className="font-medium">{option.label}</span>
                         {isSelected && (
-                          <Check size={16} className="text-blue-600 dark:text-blue-400" />
+                          <Check size={16} className="text-primary-600 dark:text-primary-400" />
                         )}
                       </button>
                     );
@@ -192,7 +194,7 @@ export function ClientMultiFilter({
 
               {/* Revenue Range */}
               <div>
-                <h4 className="text-xs font-black text-surface-400 uppercase tracking-widest mb-3">
+                <h4 className="portal-label-sm mb-3">
                   {t('common.filters.revenueRange')}
                 </h4>
                 <div className="space-y-3">
@@ -207,7 +209,7 @@ export function ClientMultiFilter({
                           max: revenueRange.max,
                         })
                       }
-                      className="flex-1 px-3 py-2 text-sm border border-surface-200 dark:border-surface-700 rounded-lg bg-surface-50 dark:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="portal-input flex-1 rounded-lg h-10"
                       aria-label={t('common.filters.minRevenue')}
                     />
                     <span className="text-surface-400">-</span>
@@ -221,7 +223,7 @@ export function ClientMultiFilter({
                           max: parseInt(e.target.value) || 10000000,
                         })
                       }
-                      className="flex-1 px-3 py-2 text-sm border border-surface-200 dark:border-surface-700 rounded-lg bg-surface-50 dark:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="portal-input flex-1 rounded-lg h-10"
                       aria-label={t('common.filters.maxRevenue')}
                     />
                   </div>

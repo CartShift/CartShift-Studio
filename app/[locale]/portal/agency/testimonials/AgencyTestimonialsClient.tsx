@@ -64,7 +64,7 @@ function StatsCard({
     default: 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400',
     warning: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400',
     success: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-    primary: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    primary: 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400',
   };
 
   return (
@@ -141,7 +141,7 @@ function TestimonialCard({
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-500 flex items-center justify-center text-white font-semibold">
               {testimonial.userName?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div>
@@ -267,12 +267,12 @@ function TestimonialDetailModal({
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900">
           <h2 className="text-xl font-bold text-surface-900 dark:text-white flex items-center gap-2">
-            <MessageSquareHeart className="w-5 h-5 text-blue-500" />
+            <MessageSquareHeart className="w-5 h-5 text-primary-500" />
             {t('agency.testimonials.modal.title')}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+            className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -282,7 +282,7 @@ function TestimonialDetailModal({
         <div className="p-5 space-y-6">
           {/* Author Info */}
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl font-semibold">
+            <div className="w-14 h-14 rounded-full bg-primary-600 dark:bg-primary-500 flex items-center justify-center text-white text-xl font-semibold">
               {testimonial.userName?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div>
@@ -347,7 +347,7 @@ function TestimonialDetailModal({
           {/* Testimonial Content */}
           <div>
             <div className="flex items-start gap-2 mb-3">
-              <Quote className="w-5 h-5 text-blue-500 shrink-0 mt-1" />
+              <Quote className="w-5 h-5 text-primary-500 shrink-0 mt-1" />
               <h4 className="text-lg font-semibold text-surface-900 dark:text-white">
                 {testimonial.headline}
               </h4>
@@ -357,7 +357,7 @@ function TestimonialDetailModal({
             </p>
             {testimonial.projectHighlight && (
               <div className="mt-3 ps-7">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-sm">
                   <Sparkles className="w-3.5 h-3.5" />
                   {testimonial.projectHighlight}
                 </span>
@@ -374,7 +374,7 @@ function TestimonialDetailModal({
               value={adminNotes}
               onChange={e => setAdminNotes(e.target.value)}
               placeholder={t('agency.testimonials.modal.adminNotesPlaceholder')}
-              className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-white placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
+              className="portal-input rounded-xl py-3 resize-none"
               rows={3}
               dir={dir}
             />
@@ -620,7 +620,7 @@ export type Testimonial = typeof testimonials[number];
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-surface-900 dark:text-white flex items-center gap-3">
-            <MessageSquareHeart className="w-7 h-7 text-blue-500" />
+            <MessageSquareHeart className="w-7 h-7 text-primary-500" />
             {t('agency.testimonials.title')}
           </h1>
           <p className="text-surface-600 dark:text-surface-400 mt-1">
@@ -656,7 +656,7 @@ export type Testimonial = typeof testimonials[number];
                     onClick={handleExportJSON}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 transition-colors text-start"
                   >
-                    <FileJson className="w-4 h-4 text-blue-500" />
+                    <FileJson className="w-4 h-4 text-primary-500" />
                     <div>
                       <div className="font-medium">{t('agency.testimonials.export.json')}</div>
                       <div className="text-xs text-surface-500">
@@ -721,7 +721,7 @@ export type Testimonial = typeof testimonials[number];
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search testimonials..."
-              className="w-full ps-10 pe-4 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-white placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="w-full ps-10 pe-4 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-white placeholder:text-surface-400 focus:outline-none "
               dir={dir}
             />
           </div>
@@ -736,7 +736,7 @@ export type Testimonial = typeof testimonials[number];
                 className={cn(
                   'px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
                   activeFilter === filter.value
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-primary-500 text-white'
                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
                 )}
               >
@@ -750,7 +750,7 @@ export type Testimonial = typeof testimonials[number];
       {/* Content */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
           <p className="text-surface-500">{t('agency.testimonials.loading')}</p>
         </div>
       ) : filteredTestimonials.length === 0 ? (

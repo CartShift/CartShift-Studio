@@ -26,6 +26,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PortalSettingsSection } from '@/components/portal/ui/PortalSettingsSection';
 import { usePricingCalculator } from '@/lib/hooks/usePricingCalculator';
 import { RequestType, REQUEST_TYPE, Currency } from '@/lib/types/portal';
 import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator';
@@ -59,9 +60,9 @@ const TYPE_COLORS: Record<RequestType, { bg: string; text: string; border: strin
     border: 'border-amber-200 dark:border-amber-800',
   },
   content: {
-    bg: 'bg-blue-100 dark:bg-blue-900/30',
-    text: 'text-blue-700 dark:text-blue-300',
-    border: 'border-blue-200 dark:border-blue-800',
+    bg: 'bg-primary-100 dark:bg-primary-900/30',
+    text: 'text-primary-700 dark:text-primary-300',
+    border: 'border-primary-200 dark:border-primary-800',
   },
   design: {
     bg: 'bg-pink-100 dark:bg-pink-900/30',
@@ -140,30 +141,22 @@ export function PricingCalculator({
       {/* ============================================ */}
       {/* SECTION 1: GLOBAL SETTINGS */}
       {/* ============================================ */}
-      <Card className="overflow-hidden border-surface-200 dark:border-surface-800">
-        {/* Global s Header */}
-        <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-950/30 dark:to-zinc-950/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-slate-500 to-zinc-600 rounded-xl flex items-center justify-center shadow-lg shadow-slate-500/20">
-              <Settings2 className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.globals' as any)}
-              </h2>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
-                {t('portal.pricing.globalsDesc' as any)}
-              </p>
-            </div>
+      <PortalSettingsSection
+        title={t('portal.pricing.globals' as any)}
+        description={t('portal.pricing.globalsDesc' as any)}
+        defaultOpen
+        icon={
+          <div className="w-10 h-10 bg-surface-600 dark:bg-surface-500 rounded-xl flex items-center justify-center shadow-lg shadow-slate-500/20 shrink-0">
+            <Settings2 className="w-5 h-5 text-white" />
           </div>
-        </div>
-
-        <div className="p-5 space-y-5">
+        }
+      >
+        <div className="space-y-5">
           {/* Currency Selection */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Coins size={14} className="text-surface-400" />
-              <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+              <label className="portal-label-sm">
                 {t('portal.pricing.form.currency')}
               </label>
             </div>
@@ -187,7 +180,7 @@ export function PricingCalculator({
 
           {/* Global Modifiers */}
           <div className="space-y-3">
-            <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+            <label className="portal-label-sm">
               {t('portal.pricing.modifiers.title')}
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -291,33 +284,25 @@ export function PricingCalculator({
             </div>
           </div>
         </div>
-      </Card>
+      </PortalSettingsSection>
 
       {/* ============================================ */}
       {/* SECTION 2: ITEM BUILDER */}
       {/* ============================================ */}
-      <Card className="overflow-hidden border-surface-200 dark:border-surface-800">
-        {/* Item Builder Header */}
-        <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Layers className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.itemBuilder')}
-              </h2>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
-                {t('portal.pricing.itemBuilderDesc')}
-              </p>
-            </div>
+      <PortalSettingsSection
+        title={t('portal.pricing.itemBuilder')}
+        description={t('portal.pricing.itemBuilderDesc' as any)}
+        defaultOpen
+        icon={
+          <div className="w-10 h-10 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 shrink-0">
+            <Layers className="w-5 h-5 text-white" />
           </div>
-        </div>
-
-        <div className="p-5 space-y-5">
+        }
+      >
+        <div className="space-y-5">
           {/* Request Type Selection */}
           <div className="space-y-3">
-            <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+            <label className="portal-label-sm">
               {t('portal.requests.form.type')}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -349,7 +334,7 @@ export function PricingCalculator({
 
           {/* Effort Level Selection */}
           <div className="space-y-3">
-            <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+            <label className="portal-label-sm">
               {t('portal.pricing.effortLevel')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -399,7 +384,7 @@ export function PricingCalculator({
           </div>
 
           {/* Current Item Preview */}
-          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-2xl p-5 border border-emerald-200/50 dark:border-emerald-800/30">
+          <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-5 border border-emerald-200/50 dark:border-emerald-800/30">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-black text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-widest mb-1">
@@ -436,7 +421,7 @@ export function PricingCalculator({
 
             <Button
               variant="outline"
-              className="flex-1 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+              className="flex-1 bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/30"
               onClick={() => addToQuote(locale)}
             >
               <Plus size={16} className={cn(isRTL ? 'ms-2' : 'me-2')} />
@@ -446,7 +431,7 @@ export function PricingCalculator({
             {showCreateButton && !quoteHasItems && (
               <Button
                 onClick={handleSingleOffer}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="flex-1 bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600"
               >
                 {t('portal.pricing.actions.createOffer')}
                 <ArrowRight size={16} className={cn(isRTL ? 'me-2 rotate-180' : 'ms-2')} />
@@ -454,7 +439,7 @@ export function PricingCalculator({
             )}
           </div>
         </div>
-      </Card>
+      </PortalSettingsSection>
 
       {/* ============================================ */}
       {/* SECTION 3: QUOTE SUMMARY */}
@@ -466,11 +451,11 @@ export function PricingCalculator({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
           >
-            <Card className="overflow-hidden border-blue-200 dark:border-blue-900 shadow-xl shadow-blue-500/5">
+            <Card className="overflow-hidden border-primary-200 dark:border-primary-900 shadow-xl shadow-primary-500/5">
               {/* Quote Header */}
-              <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 flex items-center justify-between">
+              <div className="p-5 border-b border-surface-100 dark:border-surface-800 bg-surface-50 dark:bg-surface-900/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                  <div className="w-10 h-10 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-sm">
                     <Package className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -537,7 +522,7 @@ export function PricingCalculator({
                         </div>
                         <button
                           onClick={() => removeFromQuote(item.id)}
-                          className="p-2 text-surface-400 hover:text-rose-500 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all opacity-0 group-hover:opacity-100"
+                          className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-rose-500 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all opacity-0 group-hover:opacity-100"
                           title={t('portal.pricing.quote.remove')}
                         >
                           <X size={16} />
@@ -586,7 +571,7 @@ export function PricingCalculator({
               )}
 
               {/* Quote Total & CTA */}
-              <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+              <div className="p-6 bg-primary-600 dark:bg-primary-500 text-white">
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <div className="text-xs font-black text-white/70 uppercase tracking-widest mb-1">
@@ -609,7 +594,7 @@ export function PricingCalculator({
 
                 <Button
                   onClick={handleMultipleOffers}
-                  className="w-full bg-white text-blue-600 hover:bg-blue-50 border-none shadow-xl h-14 text-lg font-black font-outfit"
+                  className="w-full bg-white text-primary-600 hover:bg-primary-50 border-none shadow-xl h-14 text-lg font-black font-outfit"
                 >
                   {t('portal.pricing.actions.createOffer')}
                   <ArrowRight size={20} className={cn(isRTL ? 'me-2 rotate-180' : 'ms-2')} />

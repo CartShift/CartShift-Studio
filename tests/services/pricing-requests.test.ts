@@ -29,13 +29,16 @@ vi.mock('firebase/firestore', () => ({
 }));
 
 vi.mock('@/lib/firebase', () => ({
-  getFirebaseAuth: vi.fn(() => ({ currentUser: { uid: 'user-1' } })),
+  getFirebaseAuth: vi.fn(() => ({
+    currentUser: { uid: 'user-1', getIdToken: vi.fn().mockResolvedValue('firebase-id-token') },
+  })),
   getFirestoreDb: vi.fn(() => ({ name: 'db' })),
   waitForAuth: vi.fn().mockResolvedValue(undefined),
 }));
 
 import {
   createPricingRequest,
+  sendPricingRequest,
   updatePricingRequest,
 } from '@/lib/services/pricing-requests';
 import {
@@ -55,6 +58,7 @@ const items: PricingLineItem[] = [
 describe('pricing proposal totals', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('fetch', vi.fn());
     firestore.addDoc.mockResolvedValue({ id: 'proposal-1' });
     firestore.updateDoc.mockResolvedValue(undefined);
   });
@@ -123,6 +127,22 @@ describe('pricing proposal totals', () => {
     await expect(updatePricingRequest('proposal-1', { title: 'Changed' })).rejects.toThrow(
       'Accepted or paid proposals are locked'
     );
+    expect(firestore.updateDoc).not.toHaveBeenCalled();
+  });
+
+  it('queues proposal delivery through the protected API instead of marking it sent client-side', async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 202 }));
+
+    await sendPricingRequest('proposal/1');
+
+    expect(fetch).toHaveBeenCalledWith('/api/portal/proposals/proposal%2F1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer firebase-id-token',
+      },
+      body: JSON.stringify({ locale: 'en' }),
+    });
     expect(firestore.updateDoc).not.toHaveBeenCalled();
   });
 });

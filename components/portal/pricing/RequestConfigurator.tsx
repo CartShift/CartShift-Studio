@@ -53,7 +53,7 @@ export function RequestConfigurator({
             aria-label={`${levelConfig.label} - ${levelConfig.hoursRange}`}
             className={cn(
               'p-3 rounded-xl border-2 transition-all text-start',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500',
+              'portal-focus-ring',
               isSelected
                 ? cn(levelConfig.bgColor, 'border-current', levelConfig.color, 'shadow-sm')
                 : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'
@@ -108,12 +108,12 @@ export function RequestConfigurator({
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: PRICING_UI.EXPANSION_ANIMATION_DURATION, ease: 'easeInOut' }}
-          className="overflow-hidden bg-blue-50/30 dark:bg-blue-900/5"
+          className="overflow-hidden bg-primary-50/30 dark:bg-primary-900/5"
         >
           <div className="px-4 pb-4 ps-10 sm:ps-16 pe-4 space-y-4 border-t border-surface-100 dark:border-surface-800 pt-4">
             {/* Effort Level */}
             <div className="space-y-2">
-              <label className="text-xs font-black text-surface-500 uppercase tracking-widest">
+              <label className="portal-label-sm">
                 {t('portal.pricing.effortLevel')}
               </label>
               {renderEffortSelector()}
@@ -125,7 +125,7 @@ export function RequestConfigurator({
                 {/* Custom Price Input */}
                 <div className="flex flex-col sm:flex-row sm:items-end gap-3">
                   <div className="flex-1">
-                    <label className="text-xs font-black text-surface-500 uppercase tracking-widest mb-2 block">
+                    <label className="portal-label-sm mb-2 block">
                       {t('portal.pricing.customPrice' as never) || 'Custom Price'}
                     </label>
                     <div className="relative">
@@ -178,8 +178,8 @@ export function RequestConfigurator({
                   className={cn(
                     'flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border',
                     config.customPrice !== undefined
-                      ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200/50 dark:border-amber-800/30'
-                      : 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200/50 dark:border-emerald-800/30'
+                      ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/50 dark:border-amber-800/30'
+                      : 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-800/30'
                   )}
                 >
                   <div>

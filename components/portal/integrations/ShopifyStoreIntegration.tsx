@@ -39,9 +39,9 @@ const ACCESS_STATUS_CONFIG = {
   },
   requested: {
     icon: Loader2,
-    color: 'text-blue-600',
-    bg: 'bg-blue-100 dark:bg-blue-900/30',
-    border: 'border-blue-200 dark:border-blue-800',
+    color: 'text-primary-600',
+    bg: 'bg-primary-100 dark:bg-primary-900/30',
+    border: 'border-primary-200 dark:border-primary-800',
   },
   connected: {
     icon: CheckCircle2,
@@ -214,13 +214,12 @@ export default function ShopifyStoreIntegration({
         className={cn(
           'relative p-6 rounded-2xl border-2 transition-all',
           statusConfig.border,
-          statusConfig.bg.replace('bg-', 'bg-gradient-to-br from-').replace('/30', '/10') +
-            ' to-white/50 dark:to-surface-900/50'
+          statusConfig.bg
         )}
       >
         {/* Header */}
         <div className="flex items-start gap-4 mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-lg">
+          <div className="w-14 h-14 rounded-2xl bg-accent-600 dark:bg-accent-500 flex items-center justify-center shadow-lg">
             <ShoppingBag className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -276,8 +275,9 @@ export default function ShopifyStoreIntegration({
                   {organization.shopifyCollaboratorCode}
                 </code>
                 <button
+                  type="button"
                   onClick={handleCopyCode}
-                  className="p-1.5 rounded-md hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+                  className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-md hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                 >
                   {copied ? (
                     <Check size={14} className="text-green-500" />
@@ -375,7 +375,7 @@ export default function ShopifyStoreIntegration({
       className={cn(
         'relative p-6 rounded-2xl border-2 transition-all',
         hasConnection
-          ? 'bg-gradient-to-br from-accent-600/10 to-emerald-50/50 dark:from-accent-600/5 dark:to-emerald-900/10 border-accent-600/30 dark:border-accent-600/20'
+          ? 'bg-accent-50/80 dark:bg-accent-950/20 border-accent-600/30 dark:border-accent-600/20'
           : 'bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800'
       )}
     >
@@ -385,8 +385,8 @@ export default function ShopifyStoreIntegration({
           className={cn(
             'w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg',
             hasConnection
-              ? 'bg-gradient-to-br from-accent-600 to-accent-700'
-              : 'bg-gradient-to-br from-accent-600 to-accent-700 opacity-80'
+              ? 'bg-accent-600 dark:bg-accent-500'
+              : 'bg-accent-600 dark:bg-accent-500 opacity-80'
           )}
         >
           <ShoppingBag className="w-7 h-7 text-white" />
@@ -476,9 +476,9 @@ export default function ShopifyStoreIntegration({
               </div>
 
               {/* Info Box */}
-              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 flex items-start gap-3">
-                <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-blue-700 dark:text-blue-300">
+              <div className="p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800/50 flex items-start gap-3">
+                <Info className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                <div className="text-xs text-primary-700 dark:text-primary-300">
                   <p className="font-bold mb-1">{t('form.infoTitle' as any)}</p>
                   <p className="leading-relaxed">{t('form.infoDesc' as any)}</p>
                 </div>
@@ -537,7 +537,7 @@ export default function ShopifyStoreIntegration({
               )}
               {accessStatus === 'requested' && (
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
-                  <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                  <p className="text-xs text-primary-600 dark:text-primary-400 flex items-center gap-2">
                     <Loader2 size={12} className="animate-spin" />
                     {t('statusMessages.requested' as any)}
                   </p>

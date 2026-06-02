@@ -19,6 +19,7 @@ import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser } from '@/lib/types/portal';
 
 import { useTranslations } from 'next-intl';
+import { portalSelectClassName } from '@/lib/utils/portal-interactive';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
@@ -166,7 +167,7 @@ export const CreateOrganizationForm = ({
                 {t('organization.createForm.responsibleAgentLabel' as any)}
               </label>
               <select
-                className="w-full rounded-xl border transition-all duration-200 bg-white dark:bg-surface-900/80 text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none h-10 text-sm font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.02)] border-surface-200/80 dark:border-white/[0.08] hover:border-surface-300 dark:hover:border-white/[0.12] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:ring-primary-400/20 dark:focus:border-primary-400 px-3 font-outfit"
+                className={portalSelectClassName}
                 {...register('responsibleAgencyUserId')}
               >
                 <option value="">
@@ -180,8 +181,8 @@ export const CreateOrganizationForm = ({
               </select>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/20 rounded-xl p-4">
-              <p className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed font-medium">
+            <div className="bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-900/20 rounded-xl p-4">
+              <p className="text-xs text-primary-800 dark:text-primary-300 leading-relaxed font-medium">
                 <strong className="font-bold">{t('organization.createForm.note' as any)}</strong>{' '}
                 {t('organization.createForm.noteText' as any)}
               </p>

@@ -40,7 +40,7 @@ export default function CalculatorClient() {
   if (auth) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function CalculatorClient() {
         {/* Tips Sidebar */}
         <div className="space-y-4">
           {/* Quick Tips Card */}
-          <Card className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200/50 dark:border-amber-800/30">
+          <Card className="p-5 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-800/30">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center">
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -128,8 +128,8 @@ export default function CalculatorClient() {
           {/* Effort Guide Card */}
           <Card className="p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 bg-primary-500/10 rounded-xl flex items-center justify-center">
+                <Clock className="w-5 h-5 text-primary-600 dark:text-primary-400" />
               </div>
               <h3 className="font-bold text-surface-900 dark:text-white font-outfit">
                 {t('pricing.effortGuide.title')}
@@ -143,7 +143,7 @@ export default function CalculatorClient() {
                 <span className="text-surface-500">1-4 {t('common.hours')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                <span className="text-primary-600 dark:text-primary-400 font-medium">
                   {t('pricing.effort.medium')}
                 </span>
                 <span className="text-surface-500">4-12 {t('common.hours')}</span>
@@ -164,7 +164,7 @@ export default function CalculatorClient() {
           </Card>
 
           {/* Value Prop Card */}
-          <Card className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-200/50 dark:border-emerald-800/30">
+          <Card className="p-5 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-800/30">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />

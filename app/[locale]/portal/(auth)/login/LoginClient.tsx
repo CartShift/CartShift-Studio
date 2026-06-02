@@ -161,7 +161,7 @@ function LoginForm() {
                 </label>
                 <Link
                   href={getPortalHref('/forgot-password/')}
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                  className="text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
                 >
                   {t('auth.login.forgotPassword')}
                 </Link>
@@ -194,7 +194,7 @@ function LoginForm() {
                 type="checkbox"
                 id="rememberMe"
                 {...register('rememberMe')}
-                className="w-4 h-4 rounded border-surface-200 dark:border-surface-800 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer"
+                className="w-4 h-4 rounded border-surface-200 dark:border-surface-800 text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500/40 transition-all cursor-pointer"
               />
               <label
                 htmlFor="rememberMe"
@@ -261,7 +261,7 @@ function LoginForm() {
                 ? `${getPortalPath('/signup/')}?redirect=${encodeURIComponent(redirectPath)}`
                 : getPortalHref('/signup/')
             }
-            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            className="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
             prefetch={false}
             onClick={e => {
               e.preventDefault();
@@ -294,7 +294,7 @@ export default function LoginClient() {
       <Suspense
         fallback={
           <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-surface-500">{t('loading.auth.login')}</p>
           </div>
         }

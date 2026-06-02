@@ -12,8 +12,8 @@ import { Check, X, Loader2 } from 'lucide-react';
  * @accessibility Touch Target Compliance (WCAG 2.1 AA):
  * - xs (h-7, 28px): ⚠️ Below 44px minimum - use only for non-critical, secondary actions
  * - sm (h-9, 36px): ⚠️ Below 44px minimum - use only for compact layouts with low error cost
- * - md (h-11, 44px): ✅ Meets minimum touch target requirement
- * - lg (h-14, 56px): ✅ Exceeds minimum, ideal for primary actions
+ * - md (h-10, 40px): Compact desktop default for dense portal screens
+ * - lg (h-12, 48px): ✅ Meets minimum touch target requirement for primary actions
  * - icon (h-10, 40px): ⚠️ Slightly below minimum - consider icon-lg for critical actions
  * - icon-sm (h-8, 32px): ⚠️ Below minimum - use only for toolbar-style compact UIs
  * - icon-lg (h-12, 48px): ✅ Meets minimum touch target requirement
@@ -93,12 +93,12 @@ export const buttonVariants = cva(
       },
       size: {
         xs: 'h-7 px-2.5 text-xs gap-1',
-        sm: 'h-9 px-4 text-sm gap-1.5',
-        md: 'h-11 px-6 text-base gap-2',
-        lg: 'h-14 px-8 text-lg gap-2.5',
-        icon: 'h-10 w-10 p-0',
+        sm: 'h-8 px-3 text-xs gap-1.5',
+        md: 'h-10 px-5 text-sm gap-2',
+        lg: 'h-12 px-6 text-base gap-2.5',
+        icon: 'h-9 w-9 p-0',
         'icon-sm': 'h-8 w-8 p-0',
-        'icon-lg': 'h-12 w-12 p-0',
+        'icon-lg': 'h-11 w-11 p-0',
       },
       btnState: {
         idle: '',

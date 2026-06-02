@@ -1,11 +1,12 @@
 import 'server-only';
+import type { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 import { getServerSession } from '@/lib/auth/server-auth';
 
 const ALLOWED_AGENCY_ROLES = new Set(['owner', 'admin', 'sales_manager', '']);
 
-export async function requireAgencySession(): Promise<{ uid: string; email?: string }> {
-  const session = await getServerSession();
+export async function requireAgencySession(request?: NextRequest): Promise<{ uid: string; email?: string }> {
+  const session = await getServerSession(request);
   if (!session) {
     throw new Error('UNAUTHENTICATED');
   }

@@ -113,11 +113,12 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
         <ModalBody>
           <div className="space-y-5">
             {!selectedFile ? (
-              <div
+              <button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-surface-300 dark:border-surface-700 rounded-xl p-12 text-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all group"
+                className="portal-focus-ring w-full border-2 border-dashed border-surface-300 dark:border-surface-700 rounded-xl p-12 text-center cursor-pointer hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all group outline-none"
               >
-                <UploadIcon className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-4 group-hover:text-blue-500 transition-colors" />
+                <UploadIcon className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-4 group-hover:text-primary-500 transition-colors" />
                 <p className="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-1">
                   {t('portal.files.uploadForm.browse')}
                 </p>
@@ -131,12 +132,12 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
                   className="hidden"
                   accept="image/*,.pdf,.doc,.docx,.zip,.rar"
                 />
-              </div>
+              </button>
             ) : (
               <div className="border border-surface-200 dark:border-surface-800 rounded-xl p-4 bg-surface-50 dark:bg-surface-900/50">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <File className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+                    <File className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-surface-900 dark:text-white truncate">
@@ -148,8 +149,9 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
                   </div>
                   {!loading && (
                     <button
+                      type="button"
                       onClick={() => setSelectedFile(null)}
-                      className="p-2 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-lg transition-colors"
+                      className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface-200 dark:hover:bg-surface-800 rounded-lg transition-colors"
                     >
                       <X size={16} className="text-surface-500" />
                     </button>
@@ -164,7 +166,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
                     </div>
                     <div className="h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-blue-600 transition-all duration-300"
+                        className="h-full bg-primary-600 transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>

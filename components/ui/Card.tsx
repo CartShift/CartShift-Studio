@@ -50,8 +50,8 @@ const cardVariants = cva(
       padding: {
         none: '',
         sm: 'p-3',
-        default: 'p-4 md:p-5',
-        lg: 'p-5 md:p-6',
+        default: 'p-3.5 md:p-4',
+        lg: 'p-4 md:p-5',
       },
       hover: {
         true: '',
@@ -203,7 +203,7 @@ export const CardHeader = ({
   return (
     <div
       className={cn(
-        'px-4 md:px-5 py-4 flex items-center justify-between gap-4',
+        'px-3.5 md:px-4 py-3.5 flex items-center justify-between gap-3',
         !noBorder && 'border-b border-surface-200/50 dark:border-white/[0.06]',
         className
       )}
@@ -224,7 +224,7 @@ export const CardTitle = ({
   return (
     <Component
       className={cn(
-        'text-lg font-outfit font-bold text-surface-900 dark:text-white tracking-tight leading-tight',
+        'text-base font-outfit font-bold text-surface-900 dark:text-white tracking-tight leading-tight',
         className
       )}
       {...props}
@@ -257,7 +257,7 @@ export const CardContent = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div className={cn('p-4 md:p-5', className)} {...props}>
+    <div className={cn('p-3.5 md:p-4', className)} {...props}>
       {children}
     </div>
   );
@@ -273,7 +273,7 @@ export const CardFooter = ({
   return (
     <div
       className={cn(
-        'px-4 md:px-5 py-4 flex items-center gap-3',
+        'px-3.5 md:px-4 py-3.5 flex items-center gap-3',
         !noBorder && 'border-t border-surface-200/50 dark:border-white/[0.06]',
         className
       )}

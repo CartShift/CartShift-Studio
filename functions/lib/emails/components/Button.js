@@ -17,13 +17,14 @@ exports.ActionButton = ActionButton;
 const styles = {
     base: {
         display: 'inline-block',
-        padding: '12px 24px',
-        borderRadius: theme_1.theme.borderRadius.md,
+        padding: '14px 28px',
+        borderRadius: '10px',
         fontSize: theme_1.theme.fontSize.base,
-        fontWeight: '600',
+        fontWeight: '700',
         textDecoration: 'none',
         textAlign: 'center',
         cursor: 'pointer',
+        boxShadow: '0 8px 18px rgba(37, 99, 235, 0.20)',
     },
     primary: {
         backgroundColor: theme_1.theme.colors.primary,

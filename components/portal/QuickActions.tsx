@@ -1,6 +1,5 @@
 'use client';
 
-import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import {
@@ -19,30 +18,13 @@ import { Link } from '@/i18n/navigation';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-
-const quickActionIconVariants = cva(
-  'w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110',
-  {
-    variants: {
-      intent: {
-        blue: 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30',
-        purple:
-          'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/30',
-        emerald:
-          'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30',
-      },
-    },
-    defaultVariants: {
-      intent: 'blue',
-    },
-  }
-);
+import { portalIconSurfaceVariants, type PortalIconSurfaceTone } from '@/lib/utils/portal-visual';
 
 interface Action {
   icon: LucideIcon;
   label: string;
   href: string;
-  intent: VariantProps<typeof quickActionIconVariants>['intent'];
+  tone: PortalIconSurfaceTone;
 }
 
 export function QuickActions() {
@@ -57,19 +39,19 @@ export function QuickActions() {
       icon: Plus,
       label: t('portal.quickActions.newRequest'),
       href: getPortalPath('/requests/new/'),
-      intent: 'blue',
+      tone: 'primary',
     },
     {
       icon: Calendar,
       label: t('portal.quickActions.schedule'),
       href: getPortalPath('/consultations?action=schedule'),
-      intent: 'purple',
+      tone: 'accent',
     },
     {
       icon: Upload,
       label: t('portal.quickActions.upload'),
       href: getPortalPath('/requests?action=upload'),
-      intent: 'emerald',
+      tone: 'success',
     },
   ];
 
@@ -78,19 +60,19 @@ export function QuickActions() {
       icon: Users,
       label: t('portal.quickActions.addClient'),
       href: getPortalPath('/agency/clients/new'),
-      intent: 'blue',
+      tone: 'primary',
     },
     {
       icon: FilePlus,
       label: t('portal.quickActions.createProposal'),
-      href: getPortalPath('/requests/new'), // Or specific proposal path if exists
-      intent: 'purple',
+      href: getPortalPath('/requests/new'),
+      tone: 'accent',
     },
     {
       icon: BarChart,
       label: t('portal.quickActions.viewReports'),
       href: getPortalPath('/agency/sales'),
-      intent: 'emerald',
+      tone: 'success',
     },
   ];
 
@@ -101,10 +83,10 @@ export function QuickActions() {
       <div className="md:col-span-1 flex items-center">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md shadow-amber-500/30">
+            <div className={cn(portalIconSurfaceVariants({ tone: 'warning', size: 'sm' }))}>
               <Zap size={16} className="text-white fill-white" />
             </div>
-            <h2 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
+            <h2 className="text-lg font-semibold text-surface-900 dark:text-white font-outfit">
               {t('portal.quickActions.title')}
             </h2>
           </div>
@@ -115,20 +97,19 @@ export function QuickActions() {
       </div>
 
       <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {actions.map((action, idx) => (
-          <Link key={idx} href={action.href} className="group">
-            <Card variant="interactive" hoverEffect="lift" className="h-full border-glow" noPadding>
+        {actions.map(action => (
+          <Link
+            key={action.href}
+            href={action.href}
+            className="group rounded-xl portal-focus-ring focus-visible:rounded-xl"
+          >
+            <Card variant="interactive" hoverEffect="lift" className="h-full" noPadding>
               <div className="p-3 flex items-center gap-3">
-                <div
-                  className={cn(
-                    quickActionIconVariants({ intent: action.intent }),
-                    'w-11 h-11 rounded-lg shrink-0'
-                  )}
-                >
+                <div className={cn(portalIconSurfaceVariants({ tone: action.tone, size: 'lg' }))}>
                   <action.icon size={18} className="stroke-[2.5]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="font-bold text-sm text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors block truncate">
+                  <span className="font-semibold text-sm text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors block truncate">
                     {action.label}
                   </span>
                 </div>

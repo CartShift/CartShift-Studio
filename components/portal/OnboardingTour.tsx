@@ -65,7 +65,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
       id: 'dashboard',
       title: t('portal.onboarding.steps.dashboard.title'),
       description: t('portal.onboarding.steps.dashboard.description'),
-      icon: <LayoutDashboard className="w-8 h-8 text-blue-500" />,
+      icon: <LayoutDashboard className="w-8 h-8 text-primary-500" />,
       position: 'center',
     },
     {
@@ -100,7 +100,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
       id: 'complete',
       title: t('portal.onboarding.steps.complete.title'),
       description: t('portal.onboarding.steps.complete.description'),
-      icon: <Rocket className="w-8 h-8 text-blue-600" />,
+      icon: <Rocket className="w-8 h-8 text-primary-600" />,
       position: 'center',
     },
   ];
@@ -206,7 +206,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
           {/* Progress Bar */}
           <div className="absolute top-0 start-0 end-0 h-1 bg-surface-100 dark:bg-surface-800">
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
+              className="h-full bg-primary-600 dark:bg-primary-500"
               initial={{ width: 0 }}
               animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
               transition={{ duration: 0.3 }}
@@ -241,7 +241,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.15 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-4"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-4"
             >
               <CheckCircle2 size={12} />
               {t('portal.onboarding.step')} {currentStep + 1} / {steps.length}
@@ -294,9 +294,9 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
                     className={cn(
                       'w-2 h-2 rounded-full transition-all duration-300',
                       index === currentStep
-                        ? 'w-6 bg-blue-500'
+                        ? 'w-6 bg-primary-500'
                         : index < currentStep
-                          ? 'bg-blue-300 dark:bg-blue-700'
+                          ? 'bg-primary-300 dark:bg-primary-700'
                           : 'bg-surface-200 dark:bg-surface-700'
                     )}
                     aria-label={`${t('portal.onboarding.goToStep')} ${index + 1}`}
@@ -307,7 +307,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
               {/* Next/Complete Button */}
               <Button
                 onClick={handleNext}
-                className="flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                className="flex items-center gap-2 shadow-lg shadow-primary-500/20"
               >
                 {isLastStep ? (
                   <>

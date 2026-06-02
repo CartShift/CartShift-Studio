@@ -37,8 +37,8 @@ export function RequestCard({
       className={cn(
         'p-3 md:p-4 border-surface-200 dark:border-surface-800 shadow-sm hover:shadow-md transition-all group relative bg-white dark:bg-surface-900',
         selected
-          ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50 dark:bg-blue-900/10'
-          : 'hover:border-blue-200 dark:hover:border-blue-900'
+          ? 'ring-2 ring-primary-500 border-primary-500 bg-primary-50 dark:bg-primary-900/10'
+          : 'hover:border-primary-200 dark:hover:border-primary-900'
       )}
     >
       {/* Selection Checkbox */}
@@ -48,21 +48,23 @@ export function RequestCard({
             'absolute top-3 start-3 z-20 transition-opacity',
             selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           )}
-          onClick={e => {
-            e.stopPropagation();
-            onSelect?.();
-          }}
         >
-          <div
+          <button
+            type="button"
+            aria-pressed={selected}
+            onClick={e => {
+              e.stopPropagation();
+              onSelect?.();
+            }}
             className={cn(
-              'w-6 h-6 rounded border flex items-center justify-center transition-colors cursor-pointer',
+              'portal-focus-ring w-6 h-6 rounded border flex items-center justify-center transition-colors touch-manipulation',
               selected
-                ? 'bg-blue-500 border-blue-500 text-white'
-                : 'bg-white dark:bg-surface-800 border-surface-300 dark:border-surface-600 hover:border-blue-400'
+                ? 'bg-primary-600 border-primary-600 text-white'
+                : 'bg-white dark:bg-surface-800 border-surface-300 dark:border-surface-600 hover:border-primary-400'
             )}
           >
             {selected && <Check size={12} strokeWidth={4} />}
-          </div>
+          </button>
         </div>
       )}
 
@@ -74,7 +76,11 @@ export function RequestCard({
         >
           <Dropdown
             trigger={
-              <button className="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg text-surface-400">
+              <button
+                type="button"
+                aria-label={t('common.actions')}
+                className="portal-focus-ring p-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg text-surface-400"
+              >
                 <MoreVertical size={14} />
               </button>
             }
@@ -118,7 +124,7 @@ export function RequestCard({
       {/* Title */}
       <h4
         className={cn(
-          'text-sm font-bold text-surface-900 dark:text-white leading-snug group-hover:text-blue-600 transition-colors line-clamp-2 mb-3',
+          'text-sm font-bold text-surface-900 dark:text-white leading-snug group-hover:text-primary-600 transition-colors line-clamp-2 mb-3',
           selectable && 'ps-0'
         )}
       >

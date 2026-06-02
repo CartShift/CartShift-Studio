@@ -1245,7 +1245,7 @@ body {
     --portal-bg-secondary: #ffffff;
     --portal-border: rgba(148, 163, 184, 0.2);
     --portal-text-primary: #0f172a;
-    --portal-text-secondary: #64748b;
+    --portal-text-secondary: #475569;
     --portal-sidebar-width: 280px;
     --portal-topbar-height: 80px;
   }
@@ -1293,7 +1293,7 @@ body {
   }
 
   .portal-nav-section-title {
-    @apply px-3 py-2 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider;
+    @apply px-3 py-2 text-xs font-semibold text-surface-500 dark:text-surface-400;
   }
 
   .portal-nav-item {
@@ -1356,11 +1356,11 @@ body {
 
   /* Labels and Captions */
   .portal-label {
-    @apply text-[10px] font-black uppercase tracking-widest text-surface-400 dark:text-surface-500;
+    @apply text-xs font-medium text-surface-500 dark:text-surface-400;
   }
 
   .portal-label-sm {
-    @apply text-[9px] font-black uppercase tracking-widest text-surface-400 dark:text-surface-500;
+    @apply text-[11px] font-medium text-surface-600 dark:text-surface-400;
   }
 
   .portal-caption {
@@ -1907,16 +1907,14 @@ body {
    ======================================== */
 
 :root {
-  --sidebar-width-expanded: 15rem; /* 60 - more compact */
-  --sidebar-width-collapsed: 5rem; /* 20 */
-  --portal-scale: 0.92; /* Global scale factor for compact UI */
+  --portal-header-height: 4.25rem;
 }
 
 @layer components {
   /* Portal Core Layout */
   .portal-shell {
     @apply min-h-screen flex w-full bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-50 antialiased overflow-hidden selection:bg-blue-500/20;
-    font-size: 14px; /* Slightly smaller base font for compact feel */
+    font-size: 13.5px;
   }
 
   .portal-sidebar {
@@ -1925,7 +1923,7 @@ body {
 
   .portal-header {
     @apply sticky top-0 z-[40] w-full bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800/30 transition-all duration-300;
-    height: 80px;
+    height: var(--portal-header-height);
   }
 
   .portal-main {
@@ -1933,7 +1931,7 @@ body {
   }
 
   .portal-content {
-    @apply flex-1 w-full max-w-[1600px] mx-auto p-6 md:p-6 lg:p-8 space-y-6 overflow-y-auto overflow-x-hidden;
+    @apply flex-1 w-full max-w-[1480px] mx-auto p-4 md:p-5 lg:p-6 space-y-5 overflow-y-auto overflow-x-hidden;
     /* Start visible to prevent flash - animation only for non-reduced-motion users */
     opacity: 1;
   }
@@ -1976,7 +1974,7 @@ body {
 
   /* Portal Navigation */
   .portal-nav-item {
-    @apply flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-surface-500 dark:text-surface-400 font-outfit font-semibold tracking-tight transition-all duration-200;
+    @apply flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-surface-500 dark:text-surface-400 font-outfit font-semibold tracking-tight transition-all duration-200;
   }
 
   .portal-nav-item:hover {
@@ -1984,32 +1982,20 @@ body {
   }
 
   .portal-nav-item-active {
-    @apply relative bg-gradient-to-r from-blue-50 to-blue-50/50 dark:from-blue-500/15 dark:to-blue-500/5 text-blue-600 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-500/20;
-  }
-
-  .portal-nav-item-active::before {
-    content: '';
-    position: absolute;
-    inset-inline-start: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 60%;
-    border-radius: 0 4px 4px 0;
-    background: linear-gradient(180deg, rgb(var(--color-blue-500)), rgb(var(--color-blue-600)));
-  }
-
-  [dir='rtl'] .portal-nav-item-active::before {
-    border-radius: 4px 0 0 4px;
+    @apply relative bg-primary-50/80 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/15 dark:ring-primary-400/20;
   }
 
   .portal-nav-item-active:hover {
-    @apply bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-500/20 dark:to-blue-500/10;
+    @apply bg-primary-50 dark:bg-primary-500/15;
+  }
+
+  .portal-focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-surface-950;
   }
 
   /* Portal Buttons */
   .portal-btn {
-    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-outfit font-bold uppercase tracking-wider text-[10px] transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg font-outfit font-bold uppercase tracking-wider text-[10px] transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .portal-btn-primary {
@@ -2030,11 +2016,11 @@ body {
   }
 
   .portal-icon-sm {
-    @apply w-5 h-5 flex-shrink-0;
+    @apply w-[18px] h-[18px] flex-shrink-0;
   }
 
   .portal-icon-md {
-    @apply w-6 h-6 flex-shrink-0;
+    @apply w-5 h-5 flex-shrink-0;
   }
 
   .portal-icon-lg {
@@ -2055,15 +2041,15 @@ body {
   }
 
   .portal-icon-box-md {
-    @apply w-10 h-10 rounded-xl;
+    @apply w-9 h-9 rounded-xl;
   }
 
   .portal-icon-box-lg {
-    @apply w-12 h-12 rounded-xl;
+    @apply w-11 h-11 rounded-xl;
   }
 
   .portal-icon-box-xl {
-    @apply w-16 h-16 rounded-2xl;
+    @apply w-14 h-14 rounded-2xl;
   }
 
   /* Icon box color variants */
@@ -2093,7 +2079,8 @@ body {
 
   /* Portal Inputs */
   .portal-input {
-    @apply w-full bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-800 rounded-xl px-4 py-2.5 font-outfit font-medium text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:focus:ring-blue-500/5 placeholder:text-surface-400 dark:placeholder:text-surface-600;
+    @apply w-full bg-surface-50/50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-800 rounded-lg px-3.5 py-2 font-outfit font-medium text-[13px] transition-all duration-300 placeholder:text-surface-400 dark:placeholder:text-surface-600;
+    @apply focus:outline-none focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-surface-950;
   }
 
   /* Portal Badges */
@@ -2116,15 +2103,15 @@ body {
 
   /* Portal Section Header */
   .portal-page-header {
-    @apply flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6;
+    @apply flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5;
   }
 
   .portal-page-title {
-    @apply text-2xl md:text-3xl lg:text-4xl font-outfit font-black tracking-tight text-surface-900 dark:text-white;
+    @apply text-xl md:text-2xl lg:text-3xl font-outfit font-black tracking-tight text-surface-900 dark:text-white;
   }
 
   .portal-page-subtitle {
-    @apply text-sm text-surface-500 dark:text-surface-400 font-medium;
+    @apply text-[13px] text-surface-500 dark:text-surface-400 font-medium;
   }
 
   /* Custom Scrollbar for Portal */
@@ -2142,11 +2129,11 @@ body {
 
   /* Portal Stat Cards */
   .portal-stat-card {
-    @apply portal-card p-4 md:p-5 flex items-center gap-4;
+    @apply portal-card p-3.5 md:p-4 flex items-center gap-3;
   }
 
   .portal-stat-icon {
-    @apply w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 transition-transform duration-300 group-hover:scale-110;
+    @apply w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 transition-transform duration-300 group-hover:scale-105;
   }
 
   .portal-stat-info {
@@ -2154,7 +2141,7 @@ body {
   }
 
   .portal-stat-value {
-    @apply text-xl md:text-2xl font-outfit font-black text-surface-900 dark:text-white leading-none;
+    @apply text-lg md:text-xl font-outfit font-black text-surface-900 dark:text-white leading-none;
   }
 
   .portal-stat-label {
@@ -2176,7 +2163,7 @@ body {
   }
 
   .portal-table th {
-    @apply px-6 py-4 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit;
+    @apply px-4 py-3 text-[10px] font-black text-surface-400 uppercase tracking-widest font-outfit;
   }
 
   .portal-table tbody {
@@ -2215,7 +2202,7 @@ body {
   }
 
   .portal-table td {
-    @apply px-6 py-4;
+    @apply px-4 py-3;
   }
 
   /* Table row selected state */
@@ -2448,6 +2435,7 @@ body {
 
     .animate-gradient,
     .animate-float,
+    .animate-pulse,
     .animate-pulse-glow,
     .animate-slow-spin,
     .portal-reveal {
@@ -2841,6 +2829,94 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: rgb(var(--color-surface-600));
+}
+
+/* Portal density calibration: make 100% browser zoom feel closer to the intended app scale. */
+.portal-shell .text-4xl {
+  font-size: 2rem;
+  line-height: 2.25rem;
+}
+
+.portal-shell .text-3xl {
+  font-size: 1.625rem;
+  line-height: 2rem;
+}
+
+.portal-shell .text-2xl {
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+}
+
+.portal-shell .text-xl {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .portal-shell .md\:text-3xl {
+    font-size: 1.625rem;
+    line-height: 2rem;
+  }
+
+  .portal-shell .md\:text-2xl {
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+  }
+
+  .portal-shell .md\:text-xl {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .portal-shell .lg\:text-4xl {
+    font-size: 2rem;
+    line-height: 2.25rem;
+  }
+
+  .portal-shell .lg\:text-3xl {
+    font-size: 1.625rem;
+    line-height: 2rem;
+  }
+
+  .portal-shell .lg\:text-2xl {
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+  }
+
+  .portal-shell .lg\:text-xl {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+  }
+}
+
+.portal-shell .gap-6 {
+  gap: 1.25rem;
+}
+
+.portal-shell .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.25rem * var(--tw-space-y-reverse));
+}
+
+.portal-shell table th,
+.portal-shell table td {
+  padding-block: 0.75rem;
+  padding-inline: 1rem;
+}
+
+.portal-shell table th {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+}
+
+@media (pointer: coarse) {
+  .portal-shell button,
+  .portal-shell [role='button'] {
+    min-block-size: 2.75rem;
+  }
 }
 
 /* === VIEW TRANSITIONS API STYLING === */

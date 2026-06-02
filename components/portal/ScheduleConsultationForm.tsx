@@ -214,7 +214,7 @@ export default function ScheduleConsultationForm({
                       ✨ Calendar event created automatically!
                     </p>
                     {meetLink && (
-                      <p className="text-sm text-blue-600 dark:text-blue-400 mb-6">
+                      <p className="text-sm text-primary-600 dark:text-primary-400 mb-6">
                         Meet link: {meetLink}
                       </p>
                     )}
@@ -258,7 +258,7 @@ export default function ScheduleConsultationForm({
                       <button
                         type="button"
                         onClick={initiateGoogleOAuth}
-                        className="text-xs font-bold text-blue-600 hover:underline"
+                        className="text-xs font-bold text-primary-600 hover:underline"
                       >
                         Connect Now
                       </button>
@@ -287,7 +287,7 @@ export default function ScheduleConsultationForm({
                             className={cn(
                               'p-3 rounded-xl border-2 transition-all flex items-center gap-2',
                               type === typeOption
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                                 : 'border-surface-200 dark:border-surface-700 hover:border-surface-300'
                             )}
                           >

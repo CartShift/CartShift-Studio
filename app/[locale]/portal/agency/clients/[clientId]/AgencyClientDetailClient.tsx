@@ -276,7 +276,7 @@ export default function AgencyClientDetailClient({
   if (loading) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
         <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
           {t('agency.clients.detail.loading' as any)}
         </p>
@@ -328,7 +328,7 @@ export default function AgencyClientDetailClient({
         {/* Back button */}
         <Link
           href={getPortalPath('/agency/clients/')}
-          className="inline-flex items-center gap-2 text-surface-500 hover:text-blue-600 transition-colors w-fit group"
+          className="inline-flex items-center gap-2 text-surface-500 hover:text-primary-600 transition-colors w-fit group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-bold uppercase tracking-widest">
@@ -341,7 +341,7 @@ export default function AgencyClientDetailClient({
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
               <div className="flex items-start gap-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-500/30 transform transition-transform duration-300">
+                <div className="w-20 h-20 bg-primary-600 dark:bg-primary-500 rounded-3xl flex items-center justify-center shadow-xl shadow-primary-500/30 transform transition-transform duration-300">
                   <Briefcase size={40} className="text-white" />
                 </div>
                 <div className="flex-1">
@@ -379,7 +379,7 @@ export default function AgencyClientDetailClient({
                         href={organization.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-bold group"
+                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 font-bold group"
                       >
                         <Globe size={14} />
                         <span>{organization.website.replace(/^https?:\/\//, '')}</span>
@@ -443,7 +443,7 @@ export default function AgencyClientDetailClient({
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-blue-200 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950"
+                  className="border-primary-200 dark:border-primary-900 hover:bg-primary-50 dark:hover:bg-primary-950"
                   onClick={() => {
                     switchOrg(clientId);
                     router.push(getPortalPath('/dashboard/'));
@@ -453,7 +453,7 @@ export default function AgencyClientDetailClient({
                   {t('agency.clients.detail.viewDashboard' as any)}
                 </Button>
                 <Button
-                  className="shadow-lg shadow-blue-500/20"
+                  className="shadow-lg shadow-primary-500/20"
                   onClick={() => {
                     switchOrg(clientId);
                     router.push(getPortalPath('/requests/'));
@@ -473,7 +473,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
+              <p className="portal-label-sm text-[10px] mb-3">
                 {t('agency.clients.detail.stats.totalRequests' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
@@ -483,8 +483,8 @@ export default function AgencyClientDetailClient({
                 {t('agency.clients.detail.stats.totalRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
-              <FileText size={24} className="text-blue-600" />
+            <div className="w-14 h-14 bg-primary-50 dark:bg-primary-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
+              <FileText size={24} className="text-primary-600" />
             </div>
           </div>
         </Card>
@@ -492,7 +492,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
+              <p className="portal-label-sm text-[10px] mb-3">
                 {t('agency.clients.detail.stats.activeRequests' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
@@ -511,7 +511,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
+              <p className="portal-label-sm text-[10px] mb-3">
                 {t('agency.clients.detail.stats.completedRequests' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
@@ -530,7 +530,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-3">
+              <p className="portal-label-sm text-[10px] mb-3">
                 {t('agency.clients.detail.stats.avgResolution' as any)}
               </p>
               <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
@@ -562,7 +562,7 @@ export default function AgencyClientDetailClient({
                   switchOrg(clientId);
                   router.push(getPortalPath('/requests/'));
                 }}
-                className="text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest flex items-center gap-2 group"
+                className="text-xs font-black text-primary-600 hover:text-primary-700 dark:text-primary-400 uppercase tracking-widest flex items-center gap-2 group"
               >
                 <span>{t('agency.clients.detail.requests.viewAll' as any)}</span>
                 <ExternalLink
@@ -585,7 +585,7 @@ export default function AgencyClientDetailClient({
                         switchOrg(clientId);
                         router.push(getPortalPath(`/requests/${request.id}/`));
                       }}
-                      className="w-full text-start block p-6 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition-colors group"
+                      className="w-full text-start block p-6 hover:bg-primary-50/30 dark:hover:bg-primary-950/20 transition-colors group"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
@@ -609,7 +609,7 @@ export default function AgencyClientDetailClient({
                               #ID-{request.id.slice(0, 6).toUpperCase()}
                             </span>
                           </div>
-                          <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1 group-hover:text-blue-600 transition-colors">
+                          <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1 group-hover:text-primary-600 transition-colors">
                             {request.title}
                           </h3>
                           <p className="text-xs text-surface-500 line-clamp-1">
@@ -662,8 +662,8 @@ export default function AgencyClientDetailClient({
               <div className="divide-y divide-surface-50 dark:divide-surface-800">
                 {recentActivities.map((activity, index) => (
                   <div key={index} className="p-5 flex items-start gap-4 transition-colors">
-                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/30 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform">
-                      <Activity size={18} className="text-blue-600" />
+                    <div className="w-10 h-10 bg-primary-50 dark:bg-primary-950/30 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform">
+                      <Activity size={18} className="text-primary-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-surface-900 dark:text-white mb-1">
@@ -716,7 +716,7 @@ export default function AgencyClientDetailClient({
               </h2>
               <button
                 onClick={() => setIsEditModalOpen(true)}
-                className="text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest flex items-center gap-2 group"
+                className="text-xs font-black text-primary-600 hover:text-primary-700 dark:text-primary-400 uppercase tracking-widest flex items-center gap-2 group"
               >
                 <span>{t('agency.clients.detail.editClient' as any) || 'Edit'}</span>
                 <Settings
@@ -730,14 +730,14 @@ export default function AgencyClientDetailClient({
               <div className="space-y-5">
                 {organization.website && (
                   <div>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
+                    <p className="portal-label-sm text-[10px] mb-2">
                       {t('agency.clients.detail.info.website' as any)}
                     </p>
                     <a
                       href={organization.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-2 group"
+                      className="text-sm font-bold text-primary-600 hover:text-primary-700 dark:text-primary-400 flex items-center gap-2 group"
                     >
                       <Globe size={14} />
                       <span className="truncate">
@@ -753,7 +753,7 @@ export default function AgencyClientDetailClient({
 
                 {organization.industry && (
                   <div>
-                    <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
+                    <p className="portal-label-sm text-[10px] mb-2">
                       {t('agency.clients.detail.info.industry' as any)}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white">
@@ -763,7 +763,7 @@ export default function AgencyClientDetailClient({
                 )}
 
                 <div>
-                  <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
+                  <p className="portal-label-sm text-[10px] mb-2">
                     {t('agency.clients.detail.info.plan' as any)}
                   </p>
                   <div className="flex items-center gap-2">
@@ -782,7 +782,7 @@ export default function AgencyClientDetailClient({
                 </div>
 
                 <div>
-                  <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
+                  <p className="portal-label-sm text-[10px] mb-2">
                     {t('agency.clients.detail.info.status' as any)}
                   </p>
                   <Badge
@@ -802,7 +802,7 @@ export default function AgencyClientDetailClient({
                 </div>
 
                 <div>
-                  <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">
+                  <p className="portal-label-sm text-[10px] mb-2">
                     {t('agency.clients.detail.info.responsibleAgent' as any)}
                   </p>
                   {responsibleAgent ? (
@@ -854,7 +854,7 @@ export default function AgencyClientDetailClient({
 
             <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
               <div className="flex items-center gap-2 mb-5">
-                <Users size={16} className="text-blue-600" />
+                <Users size={16} className="text-primary-600" />
                 <span className="text-sm font-black text-surface-900 dark:text-white">
                   {members.length + pendingInvites.length}{' '}
                   {members.length + pendingInvites.length === 1 ? 'Member' : 'Members'}
@@ -903,7 +903,7 @@ export default function AgencyClientDetailClient({
                   {pendingInvites.map(invite => (
                     <div
                       key={invite.id}
-                      className="flex items-center gap-3 group border-s-2 border-amber-400 ps-2"
+                      className="flex items-center gap-3 group bg-amber-50/40 dark:bg-amber-500/10 ring-1 ring-amber-400/40 rounded-lg p-2"
                     >
                       <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center flex-shrink-0">
                         <Mail size={14} className="text-amber-600 dark:text-amber-400" />
@@ -925,7 +925,7 @@ export default function AgencyClientDetailClient({
                       <button
                         onClick={() => handleResendInvite(invite.id, invite.email)}
                         disabled={resendingInvite === invite.id}
-                        className="p-1.5 text-surface-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 disabled:opacity-50"
+                        className="p-1.5 text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 disabled:opacity-50"
                         title="Resend invitation"
                       >
                         {resendingInvite === invite.id ? (
@@ -943,7 +943,7 @@ export default function AgencyClientDetailClient({
                         switchOrg(clientId);
                         router.push(getPortalPath('/team/'));
                       }}
-                      className="w-full text-center block text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 uppercase tracking-widest pt-2"
+                      className="w-full text-center block text-xs font-black text-primary-600 hover:text-primary-700 dark:text-primary-400 uppercase tracking-widest pt-2"
                     >
                       {t('agency.clients.detail.team.viewAll' as any)}
                     </button>
