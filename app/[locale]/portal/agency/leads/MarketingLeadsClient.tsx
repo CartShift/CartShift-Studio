@@ -202,10 +202,18 @@ export default function MarketingLeadsClient() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3.5 sm:grid-cols-2 min-[920px]:grid-cols-4">
         {[
-          { label: t('metrics.totalLeads'), value: dashboard?.metrics.totalLeads || 0, icon: Users },
-          { label: t('metrics.hotLeads'), value: dashboard?.metrics.hotLeads || 0, icon: TrendingUp },
+          {
+            label: t('metrics.totalLeads'),
+            value: dashboard?.metrics.totalLeads || 0,
+            icon: Users,
+          },
+          {
+            label: t('metrics.hotLeads'),
+            value: dashboard?.metrics.hotLeads || 0,
+            icon: TrendingUp,
+          },
           {
             label: t('metrics.leads7d'),
             value: dashboard?.metrics.leadsLast7Days || 0,
@@ -217,17 +225,17 @@ export default function MarketingLeadsClient() {
             icon: Clock,
           },
         ].map(metric => (
-          <Card key={metric.label} padding="default">
-            <div className="flex items-center justify-between gap-4">
+          <Card key={metric.label} className="min-h-[96px]" padding="sm">
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-surface-500">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-surface-500">
                   {metric.label}
                 </p>
-                <p className="mt-2 text-3xl font-black text-surface-900 dark:text-white">
+                <p className="mt-2 text-2xl font-black text-surface-900 dark:text-white leading-none">
                   {metric.value}
                 </p>
               </div>
-              <metric.icon className="h-7 w-7 text-primary-500" />
+              <metric.icon className="h-6 w-6 text-primary-500" />
             </div>
           </Card>
         ))}
@@ -266,7 +274,7 @@ export default function MarketingLeadsClient() {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-5 min-[1040px]:grid-cols-[minmax(0,1fr)_320px]">
         <Card padding="none">
           <div className="border-b border-surface-200 p-5 dark:border-white/10">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

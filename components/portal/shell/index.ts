@@ -17,7 +17,6 @@ export type {
   SidebarBrandProps,
   SidebarNavigationProps,
   OrganizationSwitcherProps,
-  SidebarFooterProps,
   NavItem,
   NavGroup,
 } from './types';

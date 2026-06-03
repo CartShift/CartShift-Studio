@@ -167,15 +167,18 @@ function MetricCard({ label, value, icon, tone }: MetricCardProps) {
 
   return (
     <Card
-      className={cn('p-4 bg-surface-50 dark:bg-surface-900/50 border-surface-200/70 dark:border-white/10', toneClass)}
+      className={cn(
+        'min-h-[96px] p-3.5 bg-surface-50 dark:bg-surface-900/50 border-surface-200/70 dark:border-white/10',
+        toneClass
+      )}
     >
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 flex items-center justify-center">
+      <div className="flex items-center gap-2.5">
+        <div className="w-9 h-9 rounded-lg bg-white/70 dark:bg-white/10 flex items-center justify-center">
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-70">{label}</p>
-          <p className="text-xl font-black truncate">{value}</p>
+          <p className="text-[10px] font-black uppercase tracking-wider opacity-70">{label}</p>
+          <p className="text-lg font-black truncate">{value}</p>
         </div>
       </div>
     </Card>
@@ -857,7 +860,7 @@ export default function ProfitSplitsClient() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <div className="mb-1 flex items-center gap-3">
@@ -890,7 +893,7 @@ export default function ProfitSplitsClient() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-3.5 md:grid-cols-2 min-[1040px]:grid-cols-5">
         <MetricCard
           label={t('profitSplits.totalNetProfit')}
           value={formatCurrencyBreakdown(summary.totalNetProfit, primaryCurrency)}
@@ -926,7 +929,7 @@ export default function ProfitSplitsClient() {
       </div>
 
       <Card noPadding className="overflow-hidden">
-        <div className="border-b border-surface-100 bg-surface-50/60 p-5 dark:border-surface-800 dark:bg-surface-900/40">
+        <div className="border-b border-surface-100 bg-surface-50/60 p-4 dark:border-surface-800 dark:bg-surface-900/40">
           <h2 className="text-lg font-black text-surface-900 dark:text-white">
             {t('profitSplits.projects')}
           </h2>
@@ -1071,7 +1074,7 @@ export default function ProfitSplitsClient() {
       </Card>
 
       <Card noPadding className="overflow-hidden">
-        <div className="flex flex-col justify-between gap-3 border-b border-surface-100 bg-surface-50/60 p-5 dark:border-surface-800 dark:bg-surface-900/40 md:flex-row md:items-center">
+        <div className="flex flex-col justify-between gap-3 border-b border-surface-100 bg-surface-50/60 p-4 dark:border-surface-800 dark:bg-surface-900/40 md:flex-row md:items-center">
           <div>
             <h2 className="text-lg font-black text-surface-900 dark:text-white">
               {t('profitSplits.employeeSummary')}

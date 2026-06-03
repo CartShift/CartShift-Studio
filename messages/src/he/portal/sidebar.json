@@ -4,7 +4,6 @@
       "title": "CartShift",
       "subtitle": "Studio Portal",
       "collapse": "כווץ",
-      "close": "סגור",
       "signOut": "התנתק",
       "signOutFailed": "ההתנתקות נכשלה",
       "signOutFailedDesc": "אנא נסה שוב",
@@ -42,8 +41,7 @@
         "consultations": "פגישות ייעוץ",
         "review": "השאר המלצה",
         "testimonials": "המלצות",
-        "calculator": "מחשבון",
-        "more": "עוד"
+        "calculator": "מחשבון"
       }
     }
   }

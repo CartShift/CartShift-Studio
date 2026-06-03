@@ -95,7 +95,7 @@ function DashboardClientContent() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <motion.div
         className="flex flex-col md:flex-row md:items-end justify-between gap-4"
         initial={{ opacity: 0, y: -8 }}
@@ -126,18 +126,18 @@ function DashboardClientContent() {
         <QuickActions />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
+        <div className="min-w-0">
           <Card variant="glass" noPadding className="overflow-hidden">
             <CardSectionTitle
               as="h2"
-              className="mb-0 px-6 pt-6 pb-4 border-b border-surface-100 dark:border-surface-800"
+              className="mb-0 px-5 pt-5 pb-3.5 border-b border-surface-100 dark:border-surface-800"
             >
               {t('activity.title')}
             </CardSectionTitle>
             <Suspense
               fallback={
-                <div className="p-6 space-y-4">
+                <div className="p-5 space-y-3.5">
                   {[1, 2, 3].map(i => (
                     <div key={i} className="flex items-start gap-4 animate-pulse">
                       <div className="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-800" />
@@ -155,7 +155,7 @@ function DashboardClientContent() {
           </Card>
         </div>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-3.5">
           <button
             type="button"
             onClick={toggleSecondary}

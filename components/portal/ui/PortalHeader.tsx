@@ -131,7 +131,7 @@ export function PortalHeader({
   return (
     <header
       {...(viewTransitionName && { 'view-transition-name': viewTransitionName })}
-      className="portal-header flex items-center justify-between px-4 md:px-5 bg-white dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 sticky top-0 z-header h-14 md:h-[68px]"
+      className="portal-header flex items-center justify-between px-3 md:px-4 bg-white dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 sticky top-0 z-header h-[var(--portal-header-height)]"
     >
       <div className="flex items-center gap-3 md:gap-4">
         <button

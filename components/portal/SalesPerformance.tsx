@@ -38,7 +38,7 @@ import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
 // ============================================
 
 const metricCardVariants = cva(
-  'relative p-5 rounded-2xl overflow-hidden group transition-all duration-300',
+  'relative min-h-[118px] p-3.5 rounded-xl overflow-hidden group transition-all duration-300',
   {
     variants: {
       intent: {
@@ -47,16 +47,8 @@ const metricCardVariants = cva(
           'text-white',
           'shadow-lg shadow-emerald-500/25',
         ],
-        growth: [
-          'bg-primary-600 dark:bg-primary-500',
-          'text-white',
-          'shadow-sm',
-        ],
-        clients: [
-          'bg-accent-600 dark:bg-accent-500',
-          'text-white',
-          'shadow-sm',
-        ],
+        growth: ['bg-primary-600 dark:bg-primary-500', 'text-white', 'shadow-sm'],
+        clients: ['bg-accent-600 dark:bg-accent-500', 'text-white', 'shadow-sm'],
         conversion: [
           'bg-amber-600 dark:bg-amber-500',
           'text-white',
@@ -135,19 +127,17 @@ const MetricCard: React.FC<MetricCardProps> = ({
         </div>
       )}
 
-      <div className="relative z-dropdown">
-        <div className="flex items-start justify-between mb-4">
+      <div className="relative z-dropdown flex min-h-[90px] flex-col justify-between">
+        <div className="flex items-start justify-between mb-3">
           <div
             className={cn(
-              'w-12 h-12 rounded-xl flex items-center justify-center',
-              isHero
-                ? 'bg-white/20 backdrop-blur-sm'
-                : 'bg-surface-100 dark:bg-surface-800'
+              'w-10 h-10 rounded-lg flex items-center justify-center',
+              isHero ? 'bg-white/20 backdrop-blur-sm' : 'bg-surface-100 dark:bg-surface-800'
             )}
           >
             <Icon
               className={cn(
-                'w-6 h-6',
+                'w-5 h-5',
                 isHero ? 'text-white' : 'text-surface-600 dark:text-surface-300'
               )}
             />
@@ -176,7 +166,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
 
         <p
           className={cn(
-            'text-xs font-bold uppercase tracking-widest mb-1',
+            'text-[11px] font-bold uppercase tracking-wider mb-1',
             isHero ? 'text-white/70' : 'text-surface-500 dark:text-surface-400'
           )}
         >
@@ -185,7 +175,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
 
         <p
           className={cn(
-            'text-3xl font-black tracking-tight',
+            'text-2xl font-black tracking-tight leading-none',
             isHero ? 'text-white' : 'text-surface-900 dark:text-white'
           )}
         >
@@ -195,7 +185,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
         {subtitle && (
           <p
             className={cn(
-              'text-sm mt-1',
+              'text-xs mt-1',
               isHero ? 'text-white/60' : 'text-surface-500 dark:text-surface-400'
             )}
           >
@@ -225,17 +215,17 @@ const MiniStat: React.FC<MiniStatProps> = ({ label, value, icon: Icon, color = '
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2.5">
       <div
-        className={cn('w-10 h-10 rounded-xl flex items-center justify-center', colorClasses[color])}
+        className={cn('w-9 h-9 rounded-lg flex items-center justify-center', colorClasses[color])}
       >
-        <Icon className="w-5 h-5" />
+        <Icon className="w-4 h-4" />
       </div>
       <div>
         <p className="text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
           {label}
         </p>
-        <p className="text-lg font-black text-surface-900 dark:text-white">
+        <p className="text-base font-black text-surface-900 dark:text-white">
           {typeof value === 'number' ? <AnimatedNumber value={value} /> : value}
         </p>
       </div>
@@ -377,9 +367,9 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
   const maxMonthlyRevenue = Math.max(...monthlyData.map(d => d.revenue), 1);
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-5', className)}>
       {/* Hero Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         <MetricCard
           title={t('sales.metrics.totalRevenue')}
           value={formatCurrency(metrics.totalRevenue, metrics.primaryCurrency)}
@@ -425,8 +415,8 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
         <>
           {/* Secondary Metrics */}
           <Card variant="default" padding="lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary-600 dark:bg-primary-500 flex items-center justify-center">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-lg bg-primary-600 dark:bg-primary-500 flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -439,7 +429,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <MiniStat
                 label={t('sales.metrics.pendingRevenue')}
                 value={formatCurrency(metrics.pendingRevenue, metrics.primaryCurrency)}
@@ -468,12 +458,12 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
           </Card>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 min-[980px]:grid-cols-2 gap-5">
             {/* Monthly Revenue Chart */}
             <Card variant="default" padding="lg">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center">
                     <BarChart3 className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -487,7 +477,7 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-end gap-2 h-48">
+              <div className="flex items-end gap-2 h-40">
                 {monthlyData.map((data, index) => (
                   <RevenueBar
                     key={data.month}
@@ -503,9 +493,9 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
 
             {/* Top Clients */}
             <Card variant="default" padding="lg">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-600 dark:bg-amber-500 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-lg bg-amber-600 dark:bg-amber-500 flex items-center justify-center">
                     <Award className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -543,8 +533,8 @@ export const SalesPerformance: React.FC<SalesPerformanceProps> = ({
 
           {/* Proposal Stats */}
           <Card variant="default" padding="lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-accent-600 dark:bg-accent-500 flex items-center justify-center">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-lg bg-accent-600 dark:bg-accent-500 flex items-center justify-center">
                 <FileText className="w-5 h-5 text-white" />
               </div>
               <div>

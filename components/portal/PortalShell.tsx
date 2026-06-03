@@ -9,7 +9,7 @@
  * - SidebarBrand.tsx - Logo and title
  * - SidebarNavigation.tsx - Navigation items
  * - OrganizationSwitcher.tsx - Org dropdown
- * - SidebarFooter.tsx - Collapse/Logout
+ * - SidebarFooter.tsx - Mobile locale/theme controls
  * - PortalState.tsx -  spinner
  * - PortalAccessDenied.tsx - Access denied screen
  * - hooks/usePortalShellState.ts - Consolidated state logic

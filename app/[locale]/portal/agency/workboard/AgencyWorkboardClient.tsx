@@ -239,7 +239,7 @@ export default function AgencyWorkboardClient() {
       </div>
 
       {/* Columns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start pb-20 mt-4 md:mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[1040px]:grid-cols-4 gap-4 items-start pb-20 mt-4 md:mt-6">
         {columns.map(column => renderColumn(column, activeMobileTab !== column.id))}
       </div>
 

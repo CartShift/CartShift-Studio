@@ -24,7 +24,7 @@ export function SalesPerformanceSkeleton({
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-5', className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -41,21 +41,21 @@ export function SalesPerformanceSkeleton({
       </div>
 
       {/* Metric cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         {Array.from({ length: 4 }).map((_, i) => (
           <MetricCardSkeleton key={i} index={i} />
         ))}
       </div>
 
       {/* Revenue chart */}
-      <div className="p-6 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 rounded-xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50">
+        <div className="flex items-center justify-between mb-5">
           <Skeleton className="h-5 w-32" />
           <Skeleton className="h-4 w-20" />
         </div>
 
         {/* Revenue bars */}
-        <div className="flex items-end justify-between h-48 gap-3">
+        <div className="flex items-end justify-between h-40 gap-3">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-2">
               <Skeleton
@@ -74,7 +74,7 @@ export function SalesPerformanceSkeleton({
       {/* Bottom section */}
       <div className="grid md:grid-cols-2 gap-4">
         {/* Top clients */}
-        <div className="p-5 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50">
+        <div className="p-4 rounded-xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50">
           <Skeleton className="h-5 w-28 mb-4" />
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -95,7 +95,7 @@ export function SalesPerformanceSkeleton({
         </div>
 
         {/* Mini stats */}
-        <div className="p-5 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50">
+        <div className="p-4 rounded-xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50">
           <Skeleton className="h-5 w-24 mb-4" />
           <div className="grid grid-cols-2 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -124,18 +124,18 @@ export function SalesPerformanceSkeleton({
 function MetricCardSkeleton({ index }: { index: number }) {
   return (
     <div
-      className="p-5 rounded-2xl overflow-hidden"
+      className="min-h-[118px] p-3.5 rounded-xl overflow-hidden"
       style={{
         background: `linear-gradient(135deg, hsl(${index * 60 + 160}, 50%, 40%) 0%, hsl(${index * 60 + 180}, 50%, 30%) 100%)`,
         animationDelay: `${index * 100}ms`,
       }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <Skeleton className="w-10 h-10 rounded-xl bg-white/20" animation="pulse" />
+      <div className="flex items-center justify-between mb-3">
+        <Skeleton className="w-9 h-9 rounded-lg bg-white/20" animation="pulse" />
         <Skeleton className="w-16 h-5 rounded-full bg-white/20" animation="pulse" />
       </div>
       <Skeleton className="h-3 w-20 mb-2 bg-white/20" animation="pulse" />
-      <Skeleton className="h-8 w-28 mb-1 bg-white/30" animation="pulse" />
+      <Skeleton className="h-6 w-24 mb-1 bg-white/30" animation="pulse" />
       <Skeleton className="h-3 w-16 bg-white/15" animation="pulse" />
     </div>
   );

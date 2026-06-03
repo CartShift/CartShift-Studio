@@ -67,13 +67,14 @@ export interface PortalSidebarProps {
 export interface SidebarBrandProps {
   isExpanded: boolean;
   isAgency?: boolean;
+  isSidebarOpen: boolean;
+  onToggleSidebar: () => void;
 }
 
 export interface SidebarNavigationProps {
   navGroups: NavGroup[];
   isExpanded: boolean;
   isMobile: boolean;
-  isAgency?: boolean;
   onItemClick: () => void;
   userRole?: import('@/lib/types/portal').UserRole;
 }
@@ -83,14 +84,6 @@ export interface OrganizationSwitcherProps {
   currentOrgId: string | null;
   onSwitch: (orgId: string) => void;
   isExpanded: boolean;
-}
-
-export interface SidebarFooterProps {
-  isExpanded: boolean;
-  isSidebarOpen: boolean;
-  isAgency?: boolean;
-  onToggleSidebar: () => void;
-  onSignOut: () => void;
 }
 
 export interface NotificationPosition {

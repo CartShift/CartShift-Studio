@@ -136,11 +136,11 @@ export default function SalesDashboardClient() {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
+          <div className="min-w-0">
             <SalesPerformance variant="full" />
           </div>
-          <div className="lg:col-span-1">
+          <div className="min-w-0">
             {metrics && <InsightsPanel metrics={metrics} loading={loading} />}
           </div>
         </div>

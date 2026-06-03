@@ -207,7 +207,7 @@ export default function AgencyClientsClient() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <div className="space-y-5 animate-in fade-in duration-700">
       <ConfirmationModal
         isOpen={!!orgToDelete}
         onClose={() => setOrgToDelete(null)}
@@ -242,62 +242,62 @@ export default function AgencyClientsClient() {
       </div>
 
       {/* Revenue Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         <Link
           href={getPortalPath('/agency/sales')}
-          className="p-4 rounded-2xl bg-emerald-600 dark:bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer group"
+          className="min-h-[118px] p-3.5 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer group"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <DollarSign className="w-5 h-5" />
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <DollarSign className="w-4 h-4" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
               {t('sales.metrics.totalRevenue' as any)}
             </span>
           </div>
-          <p className="text-2xl font-black">{formatRevenue(totals.totalRevenue)}</p>
+          <p className="text-xl font-black leading-none">{formatRevenue(totals.totalRevenue)}</p>
         </Link>
 
         <Link
           href={getPortalPath('/agency/sales')}
-          className="p-4 rounded-2xl bg-amber-600 dark:bg-amber-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-all cursor-pointer group"
+          className="min-h-[118px] p-3.5 rounded-xl bg-amber-600 dark:bg-amber-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-all cursor-pointer group"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Clock className="w-5 h-5" />
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Clock className="w-4 h-4" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
               {t('sales.metrics.pendingRevenue' as any)}
             </span>
           </div>
-          <p className="text-2xl font-black">{formatRevenue(totals.pendingRevenue)}</p>
+          <p className="text-xl font-black leading-none">{formatRevenue(totals.pendingRevenue)}</p>
         </Link>
 
-        <div className="p-4 rounded-2xl bg-accent-600 dark:bg-accent-500 text-white shadow-lg shadow-purple-500/25">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-              <Users className="w-5 h-5" />
+        <div className="min-h-[118px] p-3.5 rounded-xl bg-accent-600 dark:bg-accent-500 text-white shadow-lg shadow-purple-500/25">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
+              <Users className="w-4 h-4" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
               {t('sales.metrics.activeClients' as any)}
             </span>
           </div>
-          <p className="text-2xl font-black">{filteredOrgs.length}</p>
+          <p className="text-xl font-black leading-none">{filteredOrgs.length}</p>
         </div>
 
         <Link
           href={getPortalPath('/agency/sales')}
-          className="p-4 rounded-2xl bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/35 transition-all cursor-pointer group"
+          className="min-h-[118px] p-3.5 rounded-xl bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/35 transition-all cursor-pointer group"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <TrendingUp className="w-5 h-5" />
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <TrendingUp className="w-4 h-4" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
               {t('sales.metrics.avgDealSize' as any)}
             </span>
           </div>
-          <p className="text-2xl font-black">
+          <p className="text-xl font-black leading-none">
             {organizations.filter(o => o.paidCount && o.paidCount > 0).length > 0
               ? formatRevenue(
                   Math.round(
@@ -373,7 +373,7 @@ export default function AgencyClientsClient() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[1120px]:grid-cols-3 gap-5">
         {filteredOrgs.length > 0 ? (
           filteredOrgs.map(org => (
             <Card
@@ -381,10 +381,10 @@ export default function AgencyClientsClient() {
               noPadding
               className="border-surface-200 dark:border-surface-800 shadow-sm transition-all group"
             >
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div className="w-14 h-14 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl flex items-center justify-center shadow-inner transition-transform duration-300">
-                    <Briefcase size={28} className="text-primary-600 opacity-80" />
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-5">
+                  <div className="w-12 h-12 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl flex items-center justify-center shadow-inner transition-transform duration-300">
+                    <Briefcase size={24} className="text-primary-600 opacity-80" />
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge
@@ -444,11 +444,11 @@ export default function AgencyClientsClient() {
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
+                <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-2 leading-tight">
                   {org.name}
                 </h3>
 
-                <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center gap-2 mb-5">
                   <ShieldCheck
                     size={14}
                     className={cn(
@@ -464,7 +464,7 @@ export default function AgencyClientsClient() {
 
                 {/* Revenue Highlight */}
                 {(org.totalRevenue ?? 0) > 0 && (
-                  <div className="mb-6 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20">
+                  <div className="mb-5 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <DollarSign size={16} className="text-emerald-600 dark:text-emerald-400" />
@@ -489,7 +489,7 @@ export default function AgencyClientsClient() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 pt-6 border-t border-surface-50 dark:border-surface-800/50">
+                <div className="grid grid-cols-2 gap-3 pt-5 border-t border-surface-50 dark:border-surface-800/50">
                   <div>
                     <p className="portal-label-sm text-[10px] mb-1">
                       {t('agency.clients.tickets' as any)}
@@ -525,7 +525,7 @@ export default function AgencyClientsClient() {
                 </div>
               </div>
 
-              <div className="px-6 py-4 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl transition-colors">
+              <div className="px-5 py-3.5 bg-surface-50/50 dark:bg-surface-900/50 border-t border-surface-50 dark:border-surface-800 rounded-b-2xl transition-colors">
                 <Link
                   href={getPortalPath(`/agency/clients/${org.id}/`)}
                   className="flex items-center justify-between text-primary-600 dark:text-primary-400 transition-colors"

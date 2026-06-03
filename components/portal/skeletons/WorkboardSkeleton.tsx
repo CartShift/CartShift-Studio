@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 const workboardCardVariants = cva(
-  'p-4 rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950',
+  'p-3.5 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950',
   {
     variants: {
       variant: {
@@ -21,7 +21,7 @@ const workboardCardVariants = cva(
 
 export function WorkboardSkeleton() {
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-5 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-2">
@@ -44,7 +44,7 @@ export function WorkboardSkeleton() {
       </div>
 
       {/* Kanban Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[1040px]:grid-cols-4 gap-4 items-start">
         {[1, 2, 3, 4].map(col => (
           <div key={col} className="space-y-4">
             {/* Column Header */}

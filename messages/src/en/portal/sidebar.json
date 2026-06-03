@@ -4,7 +4,6 @@
       "title": "CartShift",
       "subtitle": "Studio Portal",
       "collapse": "Collapse",
-      "close": "Close",
       "signOut": "Sign Out",
       "signOutFailed": "Sign out failed",
       "signOutFailedDesc": "Please try again",
@@ -42,8 +41,7 @@
         "consultations": "Consultations",
         "review": "Leave a Review",
         "testimonials": "Testimonials",
-        "calculator": "Calculator",
-        "more": "More"
+        "calculator": "Calculator"
       }
     }
   }

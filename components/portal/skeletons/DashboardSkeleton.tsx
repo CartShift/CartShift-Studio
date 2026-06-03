@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 const skeletonCardVariants = cva(
-  'p-6 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50',
+  'p-4 rounded-xl border border-surface-200/50 dark:border-surface-800/50 bg-white/50 dark:bg-surface-900/50',
   {
     variants: {
       variant: {
@@ -21,7 +21,7 @@ const skeletonCardVariants = cva(
 
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-5 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-2">
@@ -32,7 +32,7 @@ export function DashboardSkeleton() {
       </div>
 
       {/* Analytics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         {[1, 2, 3, 4].map(i => (
           <div key={i} className={cn(skeletonCardVariants())}>
             <div className="flex items-center justify-between mb-4">
@@ -46,9 +46,9 @@ export function DashboardSkeleton() {
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
         {/* Activity Timeline */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="min-w-0 space-y-4">
           <Skeleton className="h-7 w-40" />
           <div className={cn(skeletonCardVariants(), 'space-y-6')}>
             {[1, 2, 3, 4].map(i => (
@@ -65,7 +65,7 @@ export function DashboardSkeleton() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-5">
           <div className={cn(skeletonCardVariants())}>
             <div className="flex items-center gap-2 mb-6">
               <Skeleton variant="circular" className="w-4 h-4" />

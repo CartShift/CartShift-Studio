@@ -7,8 +7,8 @@
   --foreground: #1e293b;
 
   /* === CRITICAL LAYOUT VARIABLES (set here to prevent flicker) === */
-  --sidebar-width-expanded: 280px;
-  --sidebar-width-collapsed: 80px;
+  --sidebar-width-expanded: 248px;
+  --sidebar-width-collapsed: 72px;
 
   /* === DESIGN SYSTEM TOKENS === */
 
@@ -1692,14 +1692,14 @@ body {
    ======================================== */
 
 :root {
-  --portal-header-height: 4.25rem;
+  --portal-header-height: 3.75rem;
 }
 
 @layer components {
   /* Portal Core Layout */
   .portal-shell {
     @apply min-h-screen flex w-full bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-50 antialiased overflow-hidden selection:bg-blue-500/20;
-    font-size: 13.5px;
+    font-size: 13px;
   }
 
   .portal-sidebar {
@@ -1724,7 +1724,7 @@ body {
   }
 
   .portal-content {
-    @apply flex-1 w-full max-w-[1480px] mx-auto p-4 md:p-5 lg:p-6 space-y-5 overflow-y-auto overflow-x-hidden;
+    @apply flex-1 w-full max-w-[1680px] mx-auto p-4 md:p-5 xl:p-6 space-y-5 overflow-y-auto overflow-x-hidden;
     /* Start visible to prevent flash - animation only for non-reduced-motion users */
     opacity: 1;
   }

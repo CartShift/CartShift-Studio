@@ -8,12 +8,15 @@ export function PortalState() {
       {/* Sidebar Skeleton - Matches PortalSidebar.tsx */}
       <div className="hidden md:flex md:w-[var(--sidebar-width-expanded)] flex-col border-e border-surface-200/50 dark:border-surface-800/30 bg-white dark:bg-surface-950/80 shrink-0 shadow-2xl shadow-surface-950/20 z-[70]">
         {/* Brand - Matches SidebarBrand.tsx */}
-        <div className="h-[68px] flex items-center px-3.5 border-b border-surface-200/50 dark:border-surface-800/30 shrink-0 gap-2.5">
-          <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
-          <div className="flex flex-col gap-1">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-2 w-16" />
+        <div className="h-[var(--portal-header-height)] flex items-center justify-between gap-2 px-3 border-b border-surface-200/50 dark:border-surface-800/30 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-2 w-16" />
+            </div>
           </div>
+          <Skeleton className="hidden md:block h-8 w-8 rounded-lg shrink-0" />
         </div>
 
         {/* Org Switcher - Matches OrganizationSwitcher.tsx */}
@@ -28,20 +31,16 @@ export function PortalState() {
           ))}
         </div>
 
-        {/* Footer - Matches SidebarFooter.tsx */}
-        <div className="p-2.5 border-t border-surface-200/50 dark:border-surface-800/30 mt-auto space-y-1.5 shrink-0">
-          <div className="hidden md:flex">
-            <Skeleton className="h-5 w-5 rounded-full" />
-            <Skeleton className="h-4 w-20 ms-3" />
-          </div>
-          <Skeleton className="h-9 w-full rounded-lg" />
+        {/* Footer - mobile locale/theme only (SidebarFooter.tsx) */}
+        <div className="p-2.5 border-t border-surface-200/50 dark:border-surface-800/30 mt-auto shrink-0 md:hidden">
+          <Skeleton className="h-10 w-36 rounded-2xl" />
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-surface-50 dark:bg-surface-950">
         {/* Header - Matches PortalHeader.tsx */}
-        <header className="h-14 md:h-[68px] px-4 md:px-5 border-b border-surface-200/50 dark:border-surface-800/30 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
+        <header className="h-[var(--portal-header-height)] px-3 md:px-4 border-b border-surface-200/50 dark:border-surface-800/30 bg-white/50 dark:bg-surface-950/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
           {/* Left: Mobile Toggle & Search */}
           <div className="flex items-center gap-3 md:gap-4">
             <Skeleton className="md:hidden h-10 w-10 rounded-xl" /> {/* Mobile Menu */}
@@ -67,7 +66,7 @@ export function PortalState() {
         </header>
 
         {/* Content - Matches PortalShell main area */}
-        <main className="p-4 md:p-5 lg:p-6 space-y-5">
+        <main className="p-4 md:p-5 xl:p-6 space-y-5">
           {/* Breadcrumbs */}
           <Skeleton className="h-4 w-48 mb-5" />
 
@@ -78,7 +77,7 @@ export function PortalState() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map(i => (
               <Skeleton key={i} className="h-28 rounded-2xl" />
             ))}

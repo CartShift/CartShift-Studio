@@ -70,11 +70,18 @@ export default function AgencyClientDetailClient({
   const { activities, loading: activitiesLoading } = useOrgScopedActivities(clientId, {
     enabled: dataEnabled,
   });
-  const { members, invites, loading: teamLoading } = useOrgTeam(clientId, {
+  const {
+    members,
+    invites,
+    loading: teamLoading,
+  } = useOrgTeam(clientId, {
     enabled: dataEnabled,
   });
-  const { removeMember: removeMemberMutation, cancelInvite, isRemovingMember } =
-    useTeamMutations(clientId);
+  const {
+    removeMember: removeMemberMutation,
+    cancelInvite,
+    isRemovingMember,
+  } = useTeamMutations(clientId);
 
   const pendingInvites = useMemo(
     () => invites.filter(inv => inv.isClientInvite && inv.status === 'pending'),
@@ -223,7 +230,7 @@ export default function AgencyClientDetailClient({
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <div className="space-y-5 animate-in fade-in duration-700">
       <ConfirmationModal
         isOpen={isRemoveMemberOpen}
         onClose={() => setIsRemoveMemberOpen(false)}
@@ -239,7 +246,7 @@ export default function AgencyClientDetailClient({
       />
 
       {/* Header */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         {/* Back button */}
         <Link
           href={getPortalPath('/agency/clients/')}
@@ -253,15 +260,15 @@ export default function AgencyClientDetailClient({
 
         {/* Client header card */}
         <Card className="border-surface-200 dark:border-surface-800 shadow-lg overflow-hidden">
-          <div className="p-8">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-              <div className="flex items-start gap-6">
-                <div className="w-20 h-20 bg-primary-600 dark:bg-primary-500 rounded-3xl flex items-center justify-center shadow-xl shadow-primary-500/30 transform transition-transform duration-300">
-                  <Briefcase size={40} className="text-white" />
+          <div className="p-5 md:p-6">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-primary-600 dark:bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/25 transform transition-transform duration-300">
+                  <Briefcase size={28} className="text-white" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h1 className="text-2xl font-black tracking-tight text-surface-900 dark:text-white">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-xl font-black tracking-tight text-surface-900 dark:text-white">
                       {organization.name}
                     </h1>
                     <Badge
@@ -288,7 +295,7 @@ export default function AgencyClientDetailClient({
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-4 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 mb-3">
                     {organization.website && (
                       <a
                         href={organization.website}
@@ -384,22 +391,22 @@ export default function AgencyClientDetailClient({
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-3">
+              <p className="portal-label-sm text-[10px] mb-2">
                 {t('agency.clients.detail.stats.totalRequests' as any)}
               </p>
-              <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
+              <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {requests.length}
               </p>
               <p className="text-xs text-surface-500 font-bold">
                 {t('agency.clients.detail.stats.totalRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-primary-50 dark:bg-primary-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
-              <FileText size={24} className="text-primary-600" />
+            <div className="w-10 h-10 bg-primary-50 dark:bg-primary-950/30 rounded-xl flex items-center justify-center transition-transform duration-300">
+              <FileText size={20} className="text-primary-600" />
             </div>
           </div>
         </Card>
@@ -407,18 +414,18 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-3">
+              <p className="portal-label-sm text-[10px] mb-2">
                 {t('agency.clients.detail.stats.activeRequests' as any)}
               </p>
-              <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
+              <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {activeRequests}
               </p>
               <p className="text-xs text-amber-600 dark:text-amber-400 font-bold">
                 {t('agency.clients.detail.stats.activeRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
-              <TrendingUp size={24} className="text-amber-600" />
+            <div className="w-10 h-10 bg-amber-50 dark:bg-amber-950/30 rounded-xl flex items-center justify-center transition-transform duration-300">
+              <TrendingUp size={20} className="text-amber-600" />
             </div>
           </div>
         </Card>
@@ -426,18 +433,18 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-3">
+              <p className="portal-label-sm text-[10px] mb-2">
                 {t('agency.clients.detail.stats.completedRequests' as any)}
               </p>
-              <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
+              <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {completedRequests}
               </p>
               <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
                 {t('agency.clients.detail.stats.completedRequests')}
               </p>
             </div>
-            <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
-              <BarChart3 size={24} className="text-emerald-600" />
+            <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl flex items-center justify-center transition-transform duration-300">
+              <BarChart3 size={20} className="text-emerald-600" />
             </div>
           </div>
         </Card>
@@ -445,30 +452,30 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-3">
+              <p className="portal-label-sm text-[10px] mb-2">
                 {t('agency.clients.detail.stats.avgResolution' as any)}
               </p>
-              <p className="text-2xl font-black text-surface-900 dark:text-white mb-1">
+              <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {avgResolution > 0 ? avgResolution : '—'}
               </p>
               <p className="text-xs text-surface-500 font-bold">
                 {avgResolution > 0 ? t('agency.clients.detail.stats.days' as any) : '—'}
               </p>
             </div>
-            <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center transition-transform duration-300">
-              <Clock size={24} className="text-purple-600" />
+            <div className="w-10 h-10 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center transition-transform duration-300">
+              <Clock size={20} className="text-purple-600" />
             </div>
           </div>
         </Card>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
         {/* Left Column - Recent Requests & Activity */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="min-w-0 space-y-5">
           {/* Recent Requests */}
           <div>
-            <div className="flex items-center justify-between mb-6 px-2">
+            <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
                 {t('agency.clients.detail.sections.requests' as any)}
               </h2>
@@ -500,7 +507,7 @@ export default function AgencyClientDetailClient({
                         switchOrg(clientId);
                         router.push(getPortalPath(`/requests/${request.id}/`));
                       }}
-                      className="w-full text-start block p-6 hover:bg-primary-50/30 dark:hover:bg-primary-950/20 transition-colors group"
+                      className="w-full text-start block p-5 hover:bg-primary-50/30 dark:hover:bg-primary-950/20 transition-colors group"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
@@ -569,14 +576,14 @@ export default function AgencyClientDetailClient({
           >
             <CardSectionTitle
               as="h2"
-              className="mb-0 px-6 pt-6 pb-4 border-b border-surface-100 dark:border-surface-800 uppercase tracking-tight"
+              className="mb-0 px-5 pt-5 pb-3.5 border-b border-surface-100 dark:border-surface-800 uppercase tracking-tight"
             >
               {t('agency.clients.detail.sections.recentActivity' as any)}
             </CardSectionTitle>
             {recentActivities.length > 0 ? (
               <div className="divide-y divide-surface-50 dark:divide-surface-800">
                 {recentActivities.map((activity, index) => (
-                  <div key={index} className="p-5 flex items-start gap-4 transition-colors">
+                  <div key={index} className="p-4 flex items-start gap-3.5 transition-colors">
                     <div className="w-10 h-10 bg-primary-50 dark:bg-primary-950/30 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform">
                       <Activity size={18} className="text-primary-600" />
                     </div>
@@ -622,10 +629,10 @@ export default function AgencyClientDetailClient({
         </div>
 
         {/* Right Column - Client Info & Team */}
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-5">
           {/* Client Information */}
           <div>
-            <div className="flex items-center justify-between mb-6 px-2">
+            <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
                 {t('agency.clients.detail.sections.information' as any)}
               </h2>
@@ -744,7 +751,7 @@ export default function AgencyClientDetailClient({
 
           {/* Shopify Store Integration */}
           <div>
-            <div className="flex items-center justify-between mb-6 px-2">
+            <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
                 Shopify Store
               </h2>
@@ -761,7 +768,7 @@ export default function AgencyClientDetailClient({
 
           {/* Team Members */}
           <div>
-            <div className="flex items-center justify-between mb-6 px-2">
+            <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
                 {t('agency.clients.detail.sections.team' as any)}
               </h2>

@@ -70,13 +70,13 @@ function StatsCard({
   };
 
   return (
-    <div className={cn('rounded-xl p-4 flex items-center gap-3', variants[variant])}>
+    <div className={cn('min-h-[96px] rounded-xl p-3 flex items-center gap-2.5', variants[variant])}>
       <div className="p-2 rounded-lg bg-white/50 dark:bg-black/20">
-        <Icon className="w-5 h-5" />
+        <Icon className="w-4 h-4" />
       </div>
       <div>
-        <p className="text-2xl font-bold">{value}</p>
-        <p className="text-sm opacity-80">{label}</p>
+        <p className="text-xl font-bold leading-none">{value}</p>
+        <p className="text-xs opacity-80">{label}</p>
       </div>
     </div>
   );
@@ -139,7 +139,7 @@ function TestimonialCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <Card className="p-5 hover:shadow-lg transition-shadow">
+      <Card className="p-4 hover:shadow-lg transition-shadow">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
@@ -620,7 +620,7 @@ export type Testimonial = typeof testimonials[number];
   };
 
   return (
-    <div className="space-y-6" dir={dir}>
+    <div className="space-y-5" dir={dir}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -689,7 +689,7 @@ export type Testimonial = typeof testimonials[number];
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         <StatsCard
           icon={MessageSquareHeart}
           label={t('agency.testimonials.stats.total')}

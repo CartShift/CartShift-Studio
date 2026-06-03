@@ -179,65 +179,65 @@ export default function AgencyPricingClient() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-primary-50 dark:bg-primary-950/20 border-primary-200/50 dark:border-primary-800/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-500/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-primary-600" />
+      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
+        <Card className="min-h-[96px] p-3.5 bg-primary-50 dark:bg-primary-950/20 border-primary-200/50 dark:border-primary-800/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-primary-500/10 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-4 h-4 text-primary-600" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-primary-600/70 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-primary-600/70 uppercase tracking-wider">
                 {t('pricing.form.total')}
               </p>
-              <p className="text-2xl font-black text-primary-700 dark:text-primary-400">
+              <p className="text-xl font-black text-primary-700 dark:text-primary-400 leading-none">
                 {statsData.total}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-amber-50 dark:bg-amber-950/20 border-amber-200/50 dark:border-amber-800/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
-              <Send className="w-5 h-5 text-amber-600" />
+        <Card className="min-h-[96px] p-3.5 bg-amber-50 dark:bg-amber-950/20 border-amber-200/50 dark:border-amber-800/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-amber-500/10 rounded-lg flex items-center justify-center">
+              <Send className="w-4 h-4 text-amber-600" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-amber-600/70 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-amber-600/70 uppercase tracking-wider">
                 {t('pricing.status.sent')}
               </p>
-              <p className="text-2xl font-black text-amber-700 dark:text-amber-400">
+              <p className="text-xl font-black text-amber-700 dark:text-amber-400 leading-none">
                 {statsData.sent}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-accent-50 dark:bg-accent-950/20 border-accent-200/50 dark:border-accent-800/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-accent-500/10 rounded-xl flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-accent-600" />
+        <Card className="min-h-[96px] p-3.5 bg-accent-50 dark:bg-accent-950/20 border-accent-200/50 dark:border-accent-800/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-accent-500/10 rounded-lg flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-accent-600" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-accent-600/70 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-accent-600/70 uppercase tracking-wider">
                 {t('pricing.status.accepted')}
               </p>
-              <p className="text-2xl font-black text-accent-700 dark:text-accent-400">
+              <p className="text-xl font-black text-accent-700 dark:text-accent-400 leading-none">
                 {statsData.accepted}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-800/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-emerald-600" />
+        <Card className="min-h-[96px] p-3.5 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-800/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-4 h-4 text-emerald-600" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-wider">
                 {t('agency.pricing.revenue')}
               </p>
-              <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400">
+              <p className="text-xl font-black text-emerald-700 dark:text-emerald-400 leading-none">
                 {formatCurrency(statsData.totalRevenue, 'USD')}
               </p>
             </div>
@@ -341,9 +341,7 @@ export default function AgencyPricingClient() {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       {/* Organization */}
                       <div className="space-y-1">
-                        <p className="portal-label-sm text-[10px]">
-                          {t('agency.clientOrg')}
-                        </p>
+                        <p className="portal-label-sm text-[10px]">{t('agency.clientOrg')}</p>
                         <OrgDisplay
                           orgId={req.orgId}
                           orgName={organizations[req.orgId]?.name || ''}
@@ -353,9 +351,7 @@ export default function AgencyPricingClient() {
 
                       {/* Total Amount */}
                       <div className="space-y-1">
-                        <p className="portal-label-sm text-[10px]">
-                          {t('pricing.form.total')}
-                        </p>
+                        <p className="portal-label-sm text-[10px]">{t('pricing.form.total')}</p>
                         <div className="flex items-center gap-1.5">
                           <DollarSign size={14} className="text-green-500 opacity-70" />
                           <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
@@ -366,9 +362,7 @@ export default function AgencyPricingClient() {
 
                       {/* Created Date */}
                       <div className="space-y-1">
-                        <p className="portal-label-sm text-[10px]">
-                          {t('common.date')}
-                        </p>
+                        <p className="portal-label-sm text-[10px]">{t('common.date')}</p>
                         <DateDisplay
                           timestamp={req.createdAt}
                           locale={locale}
@@ -426,24 +420,14 @@ export default function AgencyPricingClient() {
               <table className="hidden md:table w-full text-start border-collapse">
                 <thead>
                   <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                    <th className="px-6 py-4 portal-label-sm">
-                      {t('pricing.form.titleLabel')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm">
-                      {t('agency.clientOrg')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-center">
-                      {t('common.status')}
-                    </th>
+                    <th className="px-6 py-4 portal-label-sm">{t('pricing.form.titleLabel')}</th>
+                    <th className="px-6 py-4 portal-label-sm">{t('agency.clientOrg')}</th>
+                    <th className="px-6 py-4 portal-label-sm text-center">{t('common.status')}</th>
                     <th className="px-6 py-4 portal-label-sm text-center">
                       {t('pricing.form.total')}
                     </th>
-                    <th className="px-6 py-4 portal-label-sm text-center">
-                      {t('common.date')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-end">
-                      {t('common.actions')}
-                    </th>
+                    <th className="px-6 py-4 portal-label-sm text-center">{t('common.date')}</th>
+                    <th className="px-6 py-4 portal-label-sm text-end">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-100 dark:divide-surface-800">

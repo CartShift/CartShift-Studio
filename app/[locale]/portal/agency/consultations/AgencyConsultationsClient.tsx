@@ -201,14 +201,14 @@ export default function AgencyConsultationsClient() {
       </AnimatePresence>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="p-4 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5 mb-5">
+        <div className="min-h-[96px] p-3.5 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
-              <p className="text-2xl font-black text-surface-900 dark:text-white">
+              <p className="text-xl font-black text-surface-900 dark:text-white leading-none">
                 {upcomingCount}
               </p>
               <p className="text-xs text-surface-500 font-medium">
@@ -217,13 +217,13 @@ export default function AgencyConsultationsClient() {
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+        <div className="min-h-[96px] p-3.5 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-black text-surface-900 dark:text-white">
+              <p className="text-xl font-black text-surface-900 dark:text-white leading-none">
                 {consultationsData.filter(c => c.status === CONSULTATION_STATUS.COMPLETED).length}
               </p>
               <p className="text-xs text-surface-500 font-medium">
@@ -232,13 +232,13 @@ export default function AgencyConsultationsClient() {
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center">
-              <XCircle className="w-5 h-5 text-surface-500" />
+        <div className="min-h-[96px] p-3.5 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center">
+              <XCircle className="w-4 h-4 text-surface-500" />
             </div>
             <div>
-              <p className="text-2xl font-black text-surface-900 dark:text-white">
+              <p className="text-xl font-black text-surface-900 dark:text-white leading-none">
                 {consultationsData.filter(c => c.status === CONSULTATION_STATUS.CANCELED).length}
               </p>
               <p className="text-xs text-surface-500 font-medium">
@@ -247,13 +247,13 @@ export default function AgencyConsultationsClient() {
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+        <div className="min-h-[96px] p-3.5 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+              <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-2xl font-black text-surface-900 dark:text-white">
+              <p className="text-xl font-black text-surface-900 dark:text-white leading-none">
                 {consultationsData.length}
               </p>
               <p className="text-xs text-surface-500 font-medium">

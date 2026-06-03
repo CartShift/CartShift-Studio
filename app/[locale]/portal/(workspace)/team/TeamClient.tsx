@@ -36,13 +36,8 @@ export default function TeamClient() {
   const orgId = useResolvedOrgId();
   const safeOrgId = typeof orgId === 'string' ? orgId : '';
   const { members, invites, loading, error } = useTeam();
-  const {
-    cancelInvite,
-    isCancellingInvite,
-    removeMember,
-    isRemovingMember,
-    updateMemberRole,
-  } = useTeamMutations(safeOrgId);
+  const { cancelInvite, isCancellingInvite, removeMember, isRemovingMember, updateMemberRole } =
+    useTeamMutations(safeOrgId);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [cancellingInviteId, setCancellingInviteId] = useState<string | null>(null);
   const [copiedInviteId, setCopiedInviteId] = useState<string | null>(null);
@@ -80,7 +75,7 @@ export default function TeamClient() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse" role="status" aria-live="polite">
+      <div className="space-y-5 animate-pulse" role="status" aria-live="polite">
         <span className="sr-only"> team members...</span>
         <div className="flex justify-between items-center">
           <div className="space-y-2">
@@ -89,8 +84,8 @@ export default function TeamClient() {
           </div>
           <PortalSkeleton className="h-10 w-32 rounded-xl" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
+          <div className="min-w-0 space-y-4">
             <PortalSkeleton className="h-4 w-32" />
             <div className="space-y-0 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden">
               <SkeletonMemberCard />
@@ -100,7 +95,7 @@ export default function TeamClient() {
           </div>
           <div className="space-y-4">
             <PortalSkeleton className="h-4 w-32" />
-            <div className="space-y-6 border border-surface-200 dark:border-surface-800 rounded-2xl p-6">
+            <div className="space-y-5 border border-surface-200 dark:border-surface-800 rounded-2xl p-5">
               <div className="space-y-4">
                 <PortalSkeleton className="h-12 w-full" />
                 <PortalSkeleton className="h-12 w-full" />
@@ -128,7 +123,7 @@ export default function TeamClient() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
@@ -147,14 +142,14 @@ export default function TeamClient() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
+        <div className="min-w-0">
           <Card
             noPadding
             className="border-surface-200 dark:border-surface-800 shadow-sm !overflow-visible bg-white dark:bg-surface-950"
             style={{ overflow: 'visible' }}
           >
-            <CardSectionTitle className="p-5 pb-0">{t('team.activeMembers')}</CardSectionTitle>
+            <CardSectionTitle className="p-4 pb-0">{t('team.activeMembers')}</CardSectionTitle>
             <div
               className="divide-y divide-surface-100 dark:divide-surface-800 !overflow-visible"
               style={{ overflow: 'visible' }}
@@ -162,7 +157,7 @@ export default function TeamClient() {
               {members.map(member => (
                 <div
                   key={member.id}
-                  className="p-5 flex items-center justify-between transition-colors !overflow-visible relative"
+                  className="p-4 flex items-center justify-between transition-colors !overflow-visible relative"
                   style={{ overflow: 'visible' }}
                 >
                   <div className="flex items-center gap-4">
