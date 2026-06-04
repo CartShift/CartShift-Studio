@@ -11,6 +11,7 @@ const {
   handleWebhookEvent,
   generateIdempotencyKey,
   addToAudience,
+  SUPPORTED_EMAIL_TEMPLATES,
 } = require('./lib/emails/email-service');
 
 admin.initializeApp();
@@ -501,7 +502,8 @@ function resolveMarketingStepCopy(step, lead) {
 
   if (score >= 80 && step.stepId === 'professional-rebuild') {
     resolved.en.subject = 'Your store is strong — time to optimize for growth';
-    resolved.en.title = 'High scores usually mean the next wins are strategic, not emergency fixes.';
+    resolved.en.title =
+      'High scores usually mean the next wins are strategic, not emergency fixes.';
     resolved.en.intro =
       'You already cleared the basics. The next layer is merchandising depth, campaign velocity, and sharper analytics.';
     resolved.he.subject = 'החנות חזקה — הגיע הזמן לאופטימיזציה לצמיחה';
@@ -512,14 +514,16 @@ function resolveMarketingStepCopy(step, lead) {
 
   if (score >= 80 && step.stepId === 'case-study-proof') {
     resolved.en.subject = 'How strong stores unlock the next revenue tier';
-    resolved.en.title = 'Growth-focused stores compound small UX wins into bigger AOV and repeat rate.';
+    resolved.en.title =
+      'Growth-focused stores compound small UX wins into bigger AOV and repeat rate.';
     resolved.he.subject = 'איך חנויות חזקות פותחות את מדרגת ההכנסה הבאה';
     resolved.he.title = 'חנויות ממוקדות צמיחה מכפילות שיפורי UX קטנים ל-AOV וחזרה גבוהים יותר.';
   }
 
   if (score >= 80 && step.stepId === 'objections') {
     resolved.en.subject = 'Scaling a healthy store without unnecessary risk';
-    resolved.en.title = 'The right next project should expand revenue, not rebuild what already works.';
+    resolved.en.title =
+      'The right next project should expand revenue, not rebuild what already works.';
     resolved.en.intro =
       'When the fundamentals are solid, scope should focus on campaigns, merchandising systems, and measurable experiments.';
     resolved.he.subject = 'לסקל חנות בריאה בלי סיכון מיותר';
@@ -599,47 +603,49 @@ function renderMarketingEmail({ lead, job, step }) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${escapeHtml(copy.subject)}</title>
   </head>
-  <body style="margin:0;padding:0;background:#070a12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#f8fafc;">
+  <body style="margin:0;padding:0;background:#eef3f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#172033;">
     <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(copy.preheader)}</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#070a12;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef3f8;">
       <tr>
         <td align="center" style="padding:32px 16px;">
-          <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#0f172a;border:1px solid rgba(148,163,184,.22);border-radius:18px;overflow:hidden;direction:${dir};">
+          <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;background:#ffffff;border:1px solid #dbe4ef;border-radius:22px;overflow:hidden;direction:${dir};box-shadow:0 18px 45px rgba(15,23,42,.12);">
+            <tr><td style="height:5px;line-height:5px;background:#38bdf8;">&nbsp;</td></tr>
             <tr>
-              <td style="padding:34px 30px 18px;text-align:${textAlign};background:#0b1120;">
-                <div style="display:inline-block;padding:7px 12px;border-radius:999px;background:#1d4ed8;color:#dbeafe;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(copy.eyebrow)}</div>
-                <h1 style="margin:18px 0 12px;color:#ffffff;font-size:30px;line-height:1.12;font-weight:900;">${escapeHtml(copy.title)}</h1>
-                <p style="margin:0;color:#94a3b8;font-size:15px;line-height:1.7;">${escapeHtml(copy.intro)}</p>
+              <td style="padding:34px 34px 22px;text-align:${textAlign};background:#07111f;">
+                <p style="margin:0 0 18px;color:#ffffff;font-size:22px;line-height:1;font-weight:800;letter-spacing:4px;">CARTSHIFT <span style="color:#38bdf8;font-size:11px;letter-spacing:5px;">STUDIO</span></p>
+                <div style="display:inline-block;padding:7px 13px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(copy.eyebrow)}</div>
+                <h1 style="margin:18px 0 12px;color:#ffffff;font-size:32px;line-height:1.15;font-weight:900;">${escapeHtml(copy.title)}</h1>
+                <p style="margin:0;color:#b8c5d6;font-size:15px;line-height:1.75;">${escapeHtml(copy.intro)}</p>
               </td>
             </tr>
             <tr>
-              <td style="padding:0 30px 28px;text-align:${textAlign};background:#0b1120;">
-                <div style="border:1px solid rgba(59,130,246,.35);background:rgba(59,130,246,.12);border-radius:14px;padding:16px;color:#bfdbfe;font-size:14px;line-height:1.65;">${escapeHtml(scoreLine)}</div>
+              <td style="padding:0 34px 30px;text-align:${textAlign};background:#07111f;">
+                <div style="border:1px solid #263a56;background:#132238;border-radius:16px;padding:18px;color:#dbeafe;font-size:14px;line-height:1.7;">${escapeHtml(scoreLine)}</div>
               </td>
             </tr>
             <tr>
-              <td style="padding:30px;text-align:${textAlign};background:#ffffff;color:#0f172a;">
+              <td style="padding:34px;text-align:${textAlign};background:#ffffff;color:#172033;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   ${copy.bullets
                     .map(
                       item =>
-                        `<tr><td style="padding:0 0 14px;color:#334155;font-size:15px;line-height:1.65;"><span style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#2563eb;margin-inline-end:10px;"></span>${escapeHtml(item)}</td></tr>`
+                        `<tr><td style="padding:0 0 14px;color:#334155;font-size:15px;line-height:1.7;"><span style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#2563eb;margin-${isRtl ? 'left' : 'right'}:10px;"></span>${escapeHtml(item)}</td></tr>`
                     )
                     .join('')}
                 </table>
-                <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:22px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;">
                   <tr>
-                    <td style="border-radius:10px;background:#2563eb;">
-                      <a href="${ctaUrl}" style="display:inline-block;padding:15px 24px;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;">${escapeHtml(copy.cta)}</a>
+                    <td style="border-radius:12px;background:#2563eb;border:1px solid #1d4ed8;box-shadow:0 14px 26px rgba(37,99,235,.24);">
+                      <a href="${ctaUrl}" style="display:inline-block;padding:15px 28px;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;">${escapeHtml(copy.cta)}</a>
                     </td>
                   </tr>
                 </table>
               </td>
             </tr>
             <tr>
-              <td style="padding:24px 30px;text-align:center;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.6;">
+              <td style="padding:28px 34px;text-align:center;background:#07111f;color:#b8c5d6;font-size:12px;line-height:1.7;">
                 ${escapeHtml(footerText)}<br>
-                <a href="${unsubscribeUrl}" style="color:#475569;text-decoration:underline;">${locale === 'he' ? 'הסרה מרשימת התפוצה' : 'Unsubscribe'}</a>
+                <a href="${unsubscribeUrl}" style="color:#38bdf8;text-decoration:none;">${locale === 'he' ? 'הסרה מרשימת התפוצה' : 'Unsubscribe'}</a>
               </td>
             </tr>
           </table>
@@ -648,6 +654,42 @@ function renderMarketingEmail({ lead, job, step }) {
     </table>
   </body>
 </html>`;
+}
+
+function renderMarketingEmailText({ lead, step }) {
+  const resolvedStep = resolveMarketingStepCopy(step, lead);
+  const locale = getMarketingLocale(lead.locale);
+  const copy = resolvedStep[locale] || resolvedStep.en;
+  const scoreBand = lead.scoreBand && lead.scoreBand !== 'unknown' ? lead.scoreBand : null;
+  const platform = lead.platform || (locale === 'he' ? 'החנות' : 'your store');
+  const contactUrl = getMarketingContactUrl(locale, lead.leadId);
+  const unsubscribeUrl = getUnsubscribeUrl(lead, locale);
+  const scoreLine =
+    scoreBand && typeof lead.overallScore === 'number'
+      ? locale === 'he'
+        ? `בהתבסס על ציון ${lead.overallScore}/100, החנות מסומנת כ-${scoreBand}.`
+        : `Based on a ${lead.overallScore}/100 score, ${platform} is currently in the ${scoreBand} band.`
+      : locale === 'he'
+        ? 'המסר הבא מבוסס על דפוסי איקומרס שאנחנו רואים שוב ושוב.'
+        : 'This note is based on ecommerce patterns we see repeatedly.';
+  const footerText =
+    locale === 'he'
+      ? 'קיבלתם את האימייל כי ביקשתם תובנות מ-CartShift Studio.'
+      : 'You received this because you asked CartShift Studio for ecommerce insights.';
+
+  return [
+    copy.title,
+    '',
+    copy.intro,
+    '',
+    scoreLine,
+    '',
+    ...copy.bullets.map(item => `- ${item}`),
+    '',
+    `${copy.cta}: ${contactUrl}`,
+    '',
+    `${footerText} ${locale === 'he' ? 'הסרה:' : 'Unsubscribe:'} ${unsubscribeUrl}`,
+  ].join('\n');
 }
 
 async function recordMarketingEvent(leadId, type, data = {}) {
@@ -767,9 +809,7 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
         sequenceId: MARKETING_SEQUENCE_ID,
         stepId: step.stepId,
         status: 'pending',
-        dueAt: admin.firestore.Timestamp.fromDate(
-          new Date(now + delayDays * 24 * 60 * 60 * 1000)
-        ),
+        dueAt: admin.firestore.Timestamp.fromDate(new Date(now + delayDays * 24 * 60 * 60 * 1000)),
         attempts: 0,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -796,6 +836,21 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
 
 async function captureAndEnrollMarketingLead(data, options = {}) {
   const { leadId, lead } = await upsertMarketingLead(data);
+  if (lead?.marketingConsent || data.subscribeNewsletter === true) {
+    await addToAudience(resendApiKey.value(), {
+      email: lead.email,
+      firstName: lead.name ? String(lead.name).split(' ')[0] : undefined,
+      source: lead.latestSource || data.source || 'website',
+      properties: {
+        subscription_type: data.subscribeNewsletter ? 'newsletter_and_lead' : 'marketing_lead',
+        locale: lead.locale || 'en',
+        lead_id: leadId,
+        store_url: lead.storeUrl || '',
+        platform: lead.platform || 'unknown',
+        score_band: lead.scoreBand || 'unknown',
+      },
+    });
+  }
   await enrollMarketingSequence(leadId, lead, options);
   return { leadId, lead };
 }
@@ -833,6 +888,7 @@ async function sendMarketingJob(jobDoc) {
   const { Resend } = require('resend');
   const resend = new Resend(resendApiKey.value());
   const html = renderMarketingEmail({ lead, job, step: resolvedStep });
+  const unsubscribeUrl = getUnsubscribeUrl(lead, getMarketingLocale(lead.locale));
 
   await jobRef.update({
     status: 'sending',
@@ -846,7 +902,12 @@ async function sendMarketingJob(jobDoc) {
       to: lead.email,
       subject: copy.subject,
       html,
+      text: renderMarketingEmailText({ lead, step: resolvedStep }),
       reply_to: DEFAULT_CONTACT_EMAIL,
+      headers: {
+        'List-Unsubscribe': `<${unsubscribeUrl}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
       tags: [
         { name: 'type', value: 'marketing_nurture' },
         { name: 'sequence', value: MARKETING_SEQUENCE_ID },
@@ -1294,18 +1355,24 @@ exports.contactForm = onRequest(
           ? `פנייה חדשה: ${name}${projectType ? ` — ${projectType}` : ''}`
           : `New inquiry: ${name}${projectType ? ` — ${projectType}` : ''}`;
 
-      await sendPortalEmail(teamEmail, notificationSubject, 'contact_form_notification', {
-        name,
-        email,
-        company: company || null,
-        projectType: projectType || interest || null,
-        message: message || null,
-        locale,
-        leadsUrl,
-      }, {
-        tags: [{ name: 'type', value: 'contact_form_notification' }],
-        uniqueId: `contact_${getMarketingLeadId(email)}_${Date.now()}`,
-      });
+      await sendPortalEmail(
+        teamEmail,
+        notificationSubject,
+        'contact_form_notification',
+        {
+          name,
+          email,
+          company: company || null,
+          projectType: projectType || interest || null,
+          message: message || null,
+          locale,
+          leadsUrl,
+        },
+        {
+          tags: [{ name: 'type', value: 'contact_form_notification' }],
+          uniqueId: `contact_${getMarketingLeadId(email)}_${Date.now()}`,
+        }
+      );
 
       await admin
         .firestore()
@@ -2443,20 +2510,46 @@ exports.processEmailQueue = onDocumentCreated(
 
     if (email.status !== 'pending') return;
 
-    await emailDoc.ref.update({ status: 'processing' });
-
-    const result = await sendPortalEmail(email.to, email.subject, email.templateName, email.data, {
-      tags: email.tags || [],
-      uniqueId: event.params.emailId,
-      scheduledAt: email.scheduledAt,
-    });
-
     await emailDoc.ref.update({
-      status: result.success ? 'sent' : 'failed',
-      emailId: result.id || null,
-      result,
-      processedAt: admin.firestore.FieldValue.serverTimestamp(),
+      status: 'processing',
+      processingStartedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    try {
+      if (!SUPPORTED_EMAIL_TEMPLATES.includes(email.templateName)) {
+        throw new Error(`Unsupported email_queue templateName: ${email.templateName}`);
+      }
+
+      const result = await sendPortalEmail(
+        email.to,
+        email.subject,
+        email.templateName,
+        email.data,
+        {
+          tags: email.tags || [],
+          uniqueId: event.params.emailId,
+          scheduledAt: email.scheduledAt,
+        }
+      );
+
+      await emailDoc.ref.update({
+        status: result.success ? 'sent' : 'failed',
+        emailId: result.id || null,
+        error: result.success ? null : result.error || 'send_failed',
+        result,
+        processedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('[EmailQueue] Processing failed', event.params.emailId, error);
+      await emailDoc.ref.update({
+        status: 'failed',
+        error: error.message || 'queue_processing_failed',
+        processedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
   }
 );
 
@@ -2700,8 +2793,7 @@ const ANALYSIS_TEXTS = {
     week3: 'שבוע 3: SEO ואמון',
     week4: 'שבוע 4: אופטימיזציה',
     revenueImpactTitle: 'השפעת הכנסות פוטנציאלית',
-    revenueImpactText:
-      'הערכת טווח שמרנית לשיפור אפשרי בהמרות אם מתקנים ומאמתים את הבעיות בעדיפות.',
+    revenueImpactText: 'הערכת טווח שמרנית לשיפור אפשרי בהמרות אם מתקנים ומאמתים את הבעיות בעדיפות.',
     conversionIncrease: '15-35%',
     industryBenchmark: 'סטנדרט תעשייה',
     yourScore: 'הציון שלך',
@@ -2801,8 +2893,7 @@ const ANALYSIS_TEXTS = {
       'Links are crawlable': 'שיפור קישורים לסריקה',
       'Page is blocked from indexing': 'פתיחת העמוד לאינדוקס',
       'Links have descriptive text': 'שיפור טקסט הקישורים',
-      'Background and foreground colors have a sufficient contrast ratio':
-        'שיפור ניגודיות צבעים',
+      'Background and foreground colors have a sufficient contrast ratio': 'שיפור ניגודיות צבעים',
       'Buttons have an accessible name': 'מתן שם נגיש לכפתורים',
       'Links have a discernible name': 'מתן שם ברור לקישורים',
       'Form elements have associated labels': 'חיבור תוויות לשדות טופס',
@@ -2880,8 +2971,7 @@ const ANALYSIS_TEXTS = {
         'תזוזות לא צפויות עלולות לגרום ללחיצות שגויות ולתחושה שעמודי מוצר אינם יציבים.',
       'This audit did not meet Lighthouse standards.':
         'הבדיקה הזו לא עמדה בסטנדרטים של Lighthouse.',
-      'Accessibility score is below target.':
-        'ציון הנגישות נמוך מהיעד.',
+      'Accessibility score is below target.': 'ציון הנגישות נמוך מהיעד.',
     },
     recommendationActions: {
       'Audit theme/app scripts, remove unused tags, and defer anything not needed for first render.':
@@ -3210,36 +3300,40 @@ exports.sendStoreAnalysisReport = onRequest(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${emailData.headline}</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f1f5f9;">
+<body style="margin: 0; padding: 0; background-color: #eef3f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #eef3f8;">
     <tr>
       <td align="center" style="padding: 32px 16px;">
-        <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; direction: ${emailData.dir};">
+        <table width="640" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 640px; background-color: #ffffff; border: 1px solid #dbe4ef; border-radius: 22px; overflow: hidden; direction: ${emailData.dir}; box-shadow: 0 18px 45px rgba(15,23,42,.12);">
+          <tr>
+            <td style="height: 5px; line-height: 5px; background-color: #38bdf8;">&nbsp;</td>
+          </tr>
           <!-- Header -->
           <tr>
-            <td style="background-color: #0f172a; padding: 40px 32px; text-align: center;">
+            <td style="background-color: #07111f; padding: 38px 34px 34px; text-align: center;">
+              <p style="margin: 0 0 22px; color: #ffffff; font-size: 22px; line-height: 1; font-weight: 800; letter-spacing: 4px;">CARTSHIFT <span style="color: #38bdf8; font-size: 11px; letter-spacing: 5px;">STUDIO</span></p>
               <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom: 20px;">
                 <tr>
-                  <td style="background-color: #3b82f6; border-radius: 20px; padding: 8px 20px;">
-                    <span style="color: #ffffff; font-size: 12px; font-weight: 700; text-transform: uppercase;">${emailData.badge}</span>
+                  <td style="background-color: #eff6ff; border-radius: 999px; padding: 8px 20px;">
+                    <span style="color: #1d4ed8; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;">${emailData.badge}</span>
                   </td>
                 </tr>
               </table>
-              <h1 style="color: #ffffff; font-size: 28px; font-weight: 800; margin: 0 0 12px;">${emailData.headline}</h1>
-              <p dir="ltr" style="color: #94a3b8; font-size: 14px; margin: 0; direction: ltr; unicode-bidi: isolate;">${emailData.storeUrl}</p>
+              <h1 style="color: #ffffff; font-size: 32px; line-height: 1.16; font-weight: 900; margin: 0 0 12px;">${emailData.headline}</h1>
+              <p dir="ltr" style="color: #b8c5d6; font-size: 14px; margin: 0; direction: ltr; unicode-bidi: isolate;">${emailData.storeUrl}</p>
             </td>
           </tr>
           <!-- Score -->
           <tr>
-            <td style="background-color: #1e293b; padding: 40px; text-align: center;">
-              <p style="color: #94a3b8; font-size: 13px; font-weight: 600; margin: 0 0 20px; text-transform: uppercase; letter-spacing: 1.5px;">${emailData.overallScoreLabel}</p>
-              <table cellpadding="0" cellspacing="0" border="0" align="center" style="background-color: #334155; border-radius: 80px; width: 140px; height: 140px;">
+            <td style="background-color: #132238; padding: 42px 34px; text-align: center;">
+              <p style="color: #b8c5d6; font-size: 13px; font-weight: 700; margin: 0 0 20px; text-transform: uppercase; letter-spacing: 1.5px;">${emailData.overallScoreLabel}</p>
+              <table cellpadding="0" cellspacing="0" border="0" align="center" style="background-color: #07111f; border: 1px solid #263a56; border-radius: 86px; width: 148px; height: 148px;">
                 <tr>
                   <td align="center" valign="middle" style="padding: 8px;">
-                    <table cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 64px; width: 124px; height: 124px;">
+                    <table cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 68px; width: 130px; height: 130px;">
                       <tr>
                         <td align="center" valign="middle">
-                          <span dir="ltr" style="display: block; direction: ltr; unicode-bidi: isolate; font-size: 48px; font-weight: 900; color: #0f172a;">${emailData.overallScore}</span>
+                          <span dir="ltr" style="display: block; direction: ltr; unicode-bidi: isolate; font-size: 50px; font-weight: 900; color: #07111f;">${emailData.overallScore}</span>
                           <span dir="ltr" style="display: block; direction: ltr; unicode-bidi: isolate; font-size: 14px; color: #64748b; font-weight: 600;">/100</span>
                         </td>
                       </tr>
@@ -3247,17 +3341,17 @@ exports.sendStoreAnalysisReport = onRequest(
                   </td>
                 </tr>
               </table>
-              <p style="color: #ffffff; font-size: 16px; margin: 20px 0 0; font-weight: 600;">${emailData.scoreStatusText}</p>
+              <p style="color: #ffffff; font-size: 16px; margin: 22px 0 0; font-weight: 700;">${emailData.scoreStatusText}</p>
             </td>
           </tr>
           <!-- Content -->
           <tr>
-            <td style="background-color: #ffffff; padding: 32px; text-align: ${emailData.textAlign};">
+            <td style="background-color: #ffffff; padding: 36px 34px; text-align: ${emailData.textAlign};">
               <p style="color: #1e293b; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">${emailData.greeting}</p>
               <!-- PDF Attachment Notice -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 32px;">
                 <tr>
-                  <td style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px;">
+                  <td style="background-color: #eff6ff; border: 1px solid #93c5fd; border-radius: 18px; padding: 22px; box-shadow: 0 10px 24px rgba(15,23,42,.08);">
                     <p style="margin: 0; font-size: 15px; color: #1e40af; line-height: 1.6;">${emailData.pdfAttachmentMessage}</p>
                   </td>
                 </tr>
@@ -3265,7 +3359,7 @@ exports.sendStoreAnalysisReport = onRequest(
               <!-- Pro Tip -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 32px;">
                 <tr>
-                  <td style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 20px;">
+                  <td style="background-color: #fffbeb; border: 1px solid #fcd34d; border-radius: 18px; padding: 22px;">
                     <p style="margin: 0 0 6px; font-size: 14px; font-weight: 700; color: #92400e;">${emailData.proTipLabel}</p>
                     <p style="margin: 0; font-size: 14px; color: #b45309; line-height: 1.6;">${emailData.proTipText}</p>
                   </td>
@@ -3274,13 +3368,13 @@ exports.sendStoreAnalysisReport = onRequest(
               <!-- CTA -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="background-color: #0f172a; border-radius: 12px; padding: 32px; text-align: center;">
+                  <td style="background-color: #07111f; border: 1px solid #263a56; border-radius: 18px; padding: 34px; text-align: center;">
                     <h3 style="color: #ffffff; font-size: 20px; font-weight: 800; margin: 0 0 12px;">${emailData.ctaTitle}</h3>
-                    <p style="color: #94a3b8; font-size: 14px; margin: 0 0 24px; line-height: 1.6;">${emailData.ctaText}</p>
+                    <p style="color: #b8c5d6; font-size: 14px; margin: 0 0 24px; line-height: 1.6;">${emailData.ctaText}</p>
                     <table cellpadding="0" cellspacing="0" border="0" align="center">
                       <tr>
-                        <td style="background-color: #3b82f6; border-radius: 8px;">
-                          <a href="${emailData.ctaUrl}" style="display: inline-block; color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 15px; font-weight: 700;">${emailData.ctaButtonText}</a>
+                        <td style="background-color: #2563eb; border: 1px solid #1d4ed8; border-radius: 12px; box-shadow: 0 14px 26px rgba(37,99,235,.24);">
+                          <a href="${emailData.ctaUrl}" style="display: inline-block; color: #ffffff; text-decoration: none; padding: 15px 32px; font-size: 15px; font-weight: 800;">${emailData.ctaButtonText}</a>
                         </td>
                       </tr>
                     </table>
@@ -3291,9 +3385,9 @@ exports.sendStoreAnalysisReport = onRequest(
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
-              <p style="margin: 0 0 8px; font-size: 13px; color: #64748b;">${emailData.analyzedUrl}: <span dir="ltr" style="direction: ltr; unicode-bidi: isolate;">${emailData.storeUrl}</span></p>
-              <p style="margin: 0; font-size: 12px; color: #94a3b8;">${emailData.footerText}<br><span dir="ltr" style="direction: ltr; unicode-bidi: isolate;">&copy; ${emailData.footerYear} CartShift Studio</span></p>
+            <td style="background-color: #07111f; border-top: 1px solid #263a56; padding: 28px 34px; text-align: center;">
+              <p style="margin: 0 0 8px; font-size: 13px; color: #b8c5d6;">${emailData.analyzedUrl}: <span dir="ltr" style="direction: ltr; unicode-bidi: isolate;">${emailData.storeUrl}</span></p>
+              <p style="margin: 0; font-size: 12px; color: #8798ad;">${emailData.footerText}<br><span dir="ltr" style="direction: ltr; unicode-bidi: isolate;">&copy; ${emailData.footerYear} CartShift Studio</span></p>
             </td>
           </tr>
         </table>

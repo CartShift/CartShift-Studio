@@ -3,7 +3,7 @@
   "description": "Cloud Functions for CartShift Studio",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
-    "build": "rimraf lib && tsc",
+    "build": "rimraf lib/emails && tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",

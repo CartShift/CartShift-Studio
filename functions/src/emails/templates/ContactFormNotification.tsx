@@ -1,5 +1,5 @@
-import { Section, Text, Heading, Hr } from '@react-email/components';
-import { Layout } from '../components/Layout';
+import { Section, Text, Hr } from '@react-email/components';
+import { EmailHero, FinePrint, Layout, SurfaceCard } from '../components/Layout';
 import { ActionButton } from '../components/Button';
 import { InfoRow } from '../components/InfoRow';
 import { theme } from '../theme';
@@ -28,28 +28,45 @@ export const ContactFormNotification = ({
   const intro = isHe
     ? 'התקבלה פנייה חדשה מטופס יצירת הקשר.'
     : 'A new high-intent inquiry was submitted via the contact form.';
+  const activeLocale = isHe ? 'he' : 'en';
+  const align = isHe ? ('right' as const) : ('left' as const);
+  const valueAlign = isHe ? ('left' as const) : ('right' as const);
 
   return (
-    <Layout title={title} preview={`${name} — ${projectType || 'inquiry'}`}>
-      <Heading style={styles.heading}>{title}</Heading>
-      <Text style={styles.intro}>{intro}</Text>
+    <Layout locale={activeLocale} title={title} preview={`${name} — ${projectType || 'inquiry'}`}>
+      <EmailHero
+        eyebrow={isHe ? 'ליד חדש' : 'New lead'}
+        title={title}
+        description={intro}
+        align={align}
+      />
 
-      <Section style={styles.card}>
-        <InfoRow label={isHe ? 'שם' : 'Name'} value={name} />
-        <InfoRow label={isHe ? 'אימייל' : 'Email'} value={email} />
-        {company ? <InfoRow label={isHe ? 'חברה' : 'Company'} value={company} /> : null}
-        {projectType ? (
-          <InfoRow label={isHe ? 'סוג פרויקט' : 'Project type'} value={projectType} />
+      <SurfaceCard align={align}>
+        <InfoRow label={isHe ? 'שם' : 'Name'} value={name} valueAlign={valueAlign} />
+        <InfoRow label={isHe ? 'אימייל' : 'Email'} value={email} valueAlign={valueAlign} />
+        {company ? (
+          <InfoRow label={isHe ? 'חברה' : 'Company'} value={company} valueAlign={valueAlign} />
         ) : null}
-        <InfoRow label={isHe ? 'שפה' : 'Locale'} value={locale.toUpperCase()} />
+        {projectType ? (
+          <InfoRow
+            label={isHe ? 'סוג פרויקט' : 'Project type'}
+            value={projectType}
+            valueAlign={valueAlign}
+          />
+        ) : null}
+        <InfoRow
+          label={isHe ? 'שפה' : 'Locale'}
+          value={locale.toUpperCase()}
+          valueAlign={valueAlign}
+        />
         {message ? (
           <>
             <Hr style={{ borderColor: theme.colors.border, margin: '12px 0' }} />
-            <Text style={styles.label}>{isHe ? 'הודעה:' : 'Message:'}</Text>
-            <Text style={styles.description}>{message}</Text>
+            <Text style={{ ...styles.label, textAlign: align }}>{isHe ? 'הודעה' : 'Message'}</Text>
+            <Text style={{ ...styles.description, textAlign: align }}>{message}</Text>
           </>
         ) : null}
-      </Section>
+      </SurfaceCard>
 
       <Section style={styles.action}>
         <ActionButton href={leadsUrl}>
@@ -57,42 +74,21 @@ export const ContactFormNotification = ({
         </ActionButton>
       </Section>
 
-      <Text style={styles.replyHint}>
+      <FinePrint>
         {isHe
           ? `השיבו ישירות ל-${email} כדי להגיב במהירות.`
           : `Reply directly to ${email} for a fast response.`}
-      </Text>
+      </FinePrint>
     </Layout>
   );
 };
 
 const styles = {
-  heading: {
-    fontSize: theme.fontSize.xxl,
-    fontWeight: '700',
-    textAlign: 'center' as const,
-    margin: '0 0 24px',
-    color: theme.colors.text.primary,
-  },
-  intro: {
-    fontSize: theme.fontSize.base,
-    lineHeight: '1.6',
-    color: theme.colors.text.primary,
-    textAlign: 'center' as const,
-    marginBottom: '32px',
-  },
-  card: {
-    backgroundColor: '#f8fafc',
-    padding: '24px',
-    borderRadius: theme.borderRadius.md,
-    marginBottom: '32px',
-    border: `1px solid ${theme.colors.border}`,
-  },
   label: {
     fontSize: theme.fontSize.sm,
     color: theme.colors.text.secondary,
-    fontWeight: '600',
-    marginBottom: '8px',
+    fontWeight: '700',
+    margin: '0 0 8px',
   },
   description: {
     fontSize: theme.fontSize.base,
@@ -104,11 +100,6 @@ const styles = {
   action: {
     textAlign: 'center' as const,
     marginBottom: '24px',
-  },
-  replyHint: {
-    textAlign: 'center' as const,
-    color: theme.colors.text.muted,
-    fontSize: theme.fontSize.sm,
   },
 };
 

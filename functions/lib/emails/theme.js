@@ -3,31 +3,48 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.theme = void 0;
 exports.theme = {
     colors: {
-        primary: '#2563eb', // Blue-600
-        primaryDark: '#1e40af', // Blue-800
-        background: '#f8fafc', // Slate-50
+        primary: '#2563eb',
+        primaryDark: '#1d4ed8',
+        primarySoft: '#eff6ff',
+        navy: '#07111f',
+        navyMuted: '#132238',
+        cyan: '#38bdf8',
+        background: '#eef3f8',
         surface: '#ffffff',
+        surfaceMuted: '#f8fafc',
+        surfaceRaised: '#ffffff',
         text: {
-            primary: '#1e293b', // Slate-800
-            secondary: '#64748b', // Slate-500
-            muted: '#94a3b8', // Slate-400
+            primary: '#172033',
+            secondary: '#526173',
+            muted: '#8794a6',
+            inverse: '#ffffff',
+            inverseMuted: '#b8c5d6',
         },
-        border: '#e2e8f0', // Slate-200
+        border: '#dbe4ef',
+        borderStrong: '#c4d3e5',
         success: {
-            bg: '#d1fae5', // Emerald-100
-            text: '#065f46', // Emerald-800
+            bg: '#dcfce7',
+            soft: '#f0fdf4',
+            text: '#166534',
+            border: '#86efac',
         },
         info: {
-            bg: '#dbeafe', // Blue-100
-            text: '#1e40af', // Blue-800
+            bg: '#dbeafe',
+            soft: '#eff6ff',
+            text: '#1e40af',
+            border: '#93c5fd',
         },
         warning: {
-            bg: '#fef3c7', // Amber-100
-            text: '#92400e', // Amber-800
+            bg: '#fef3c7',
+            soft: '#fffbeb',
+            text: '#92400e',
+            border: '#fcd34d',
         },
         error: {
-            bg: '#fee2e2', // Red-100
-            text: '#991b1b', // Red-800
+            bg: '#fee2e2',
+            soft: '#fff1f2',
+            text: '#991b1b',
+            border: '#fca5a5',
         },
     },
     spacing: {
@@ -39,6 +56,7 @@ exports.theme = {
         s6: '24px',
         s8: '32px',
         s10: '40px',
+        s12: '48px',
     },
     fontSize: {
         xs: '12px',
@@ -47,12 +65,18 @@ exports.theme = {
         lg: '18px',
         xl: '20px',
         xxl: '24px',
+        display: '32px',
     },
     borderRadius: {
         sm: '4px',
         md: '8px',
         lg: '12px',
+        xl: '18px',
         full: '9999px',
+    },
+    shadows: {
+        card: '0 18px 45px rgba(15, 23, 42, 0.12)',
+        soft: '0 10px 24px rgba(15, 23, 42, 0.08)',
     },
     fontFamily: {
         sans: 'Rubik, Arial, Helvetica, sans-serif',

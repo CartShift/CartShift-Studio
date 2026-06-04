@@ -30,6 +30,7 @@ type NavTranslationKey =
   | 'sidebar.nav.workboard'
   | 'sidebar.nav.sales'
   | 'sidebar.nav.marketing'
+  | 'sidebar.nav.emailPreviews'
   | 'sidebar.nav.profitSplits'
   | 'sidebar.nav.clients'
   | 'sidebar.nav.pricing'
@@ -47,20 +48,20 @@ interface NavTranslationFunction {
 export const navItemVariants = cva(
   'portal-nav-item portal-focus-ring group relative transition-all duration-200',
   {
-  variants: {
-    isActive: {
-      true: 'portal-nav-item-active text-primary-300 font-bold bg-primary-500/10',
-      false: 'text-surface-400 hover:bg-white/5 hover:text-surface-100',
+    variants: {
+      isActive: {
+        true: 'portal-nav-item-active text-primary-300 font-bold bg-primary-500/10',
+        false: 'text-surface-400 hover:bg-white/5 hover:text-surface-100',
+      },
+      isCollapsed: {
+        true: 'md:flex-col md:items-center md:justify-center md:gap-0.5 md:px-1 md:py-2 md:min-h-[52px]',
+        false: '',
+      },
     },
-    isCollapsed: {
-      true: 'md:flex-col md:items-center md:justify-center md:gap-0.5 md:px-1 md:py-2 md:min-h-[52px]',
-      false: '',
+    defaultVariants: {
+      isActive: false,
+      isCollapsed: false,
     },
-  },
-  defaultVariants: {
-    isActive: false,
-    isCollapsed: false,
-  },
   }
 );
 
@@ -154,6 +155,12 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           label: t('sidebar.nav.settings'),
           icon: Settings,
           href: getPortalPath('/agency/settings/'),
+          roles: PERMISSIONS.MANAGE_SETTINGS,
+        },
+        {
+          label: t('sidebar.nav.emailPreviews'),
+          icon: Mail,
+          href: getPortalPath('/agency/email-preview/'),
           roles: PERMISSIONS.MANAGE_SETTINGS,
         },
       ],

@@ -1,5 +1,5 @@
-import { Section, Text, Heading, Hr } from '@react-email/components';
-import { Layout } from '../components/Layout';
+import { Section, Text, Hr } from '@react-email/components';
+import { EmailHero, FinePrint, Layout, SurfaceCard } from '../components/Layout';
 import { ActionButton } from '../components/Button';
 import { StatusBadge } from '../components/StatusBadge';
 import { InfoRow } from '../components/InfoRow';
@@ -36,13 +36,18 @@ export const NewRequest = ({
 
   return (
     <Layout title={`New Request: ${requestTitle}`} preview={`New request from ${organizationName}`}>
-      <Heading style={styles.heading}>New Request Received</Heading>
-      <Text style={styles.intro}>
-        <strong>{clientName}</strong> from <strong>{organizationName}</strong> has submitted a new
-        request.
-      </Text>
+      <EmailHero
+        eyebrow="Agency action required"
+        title="New request received"
+        description={
+          <>
+            <strong>{clientName}</strong> from <strong>{organizationName}</strong> submitted a new
+            request for review.
+          </>
+        }
+      />
 
-      <Section style={styles.card}>
+      <SurfaceCard>
         <InfoRow label="Title" value={requestTitle} />
         <InfoRow label="Type" value={requestType} />
         <InfoRow
@@ -50,46 +55,26 @@ export const NewRequest = ({
           value={<StatusBadge type={priorityType}>{requestPriority}</StatusBadge>}
         />
         <Hr style={{ borderColor: theme.colors.border, margin: '12px 0' }} />
-        <Text style={styles.label}>Description:</Text>
+        <Text style={styles.label}>Description</Text>
         <Text style={styles.description}>"{requestDescription}"</Text>
-      </Section>
+      </SurfaceCard>
 
       <Section style={styles.action}>
         <ActionButton href={actionUrl}>View Request in Portal</ActionButton>
       </Section>
 
-      <Text style={styles.idText}>Request ID: {requestId}</Text>
+      <FinePrint>Request ID: {requestId}</FinePrint>
     </Layout>
   );
 };
 
 const styles = {
-  heading: {
-    fontSize: theme.fontSize.xxl,
-    fontWeight: '700',
-    textAlign: 'center' as const,
-    margin: '0 0 24px',
-    color: theme.colors.text.primary,
-  },
-  intro: {
-    fontSize: theme.fontSize.base,
-    lineHeight: '1.6',
-    color: theme.colors.text.primary,
-    textAlign: 'center' as const,
-    marginBottom: '32px',
-  },
-  card: {
-    backgroundColor: '#f8fafc',
-    padding: '24px',
-    borderRadius: theme.borderRadius.md,
-    marginBottom: '32px',
-    border: `1px solid ${theme.colors.border}`,
-  },
   label: {
     fontSize: theme.fontSize.sm,
     color: theme.colors.text.secondary,
-    fontWeight: '600',
-    marginBottom: '8px',
+    fontWeight: '700',
+    letterSpacing: '0.5px',
+    margin: '0 0 8px',
   },
   description: {
     fontSize: theme.fontSize.base,
@@ -101,11 +86,6 @@ const styles = {
   action: {
     textAlign: 'center' as const,
     marginBottom: '24px',
-  },
-  idText: {
-    textAlign: 'center' as const,
-    color: theme.colors.text.muted,
-    fontSize: theme.fontSize.xs,
   },
 };
 

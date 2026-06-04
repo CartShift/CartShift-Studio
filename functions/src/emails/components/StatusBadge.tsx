@@ -17,13 +17,15 @@ export const StatusBadge = ({ children, type = 'neutral' }: StatusBadgeProps) =>
 
 const baseStyle = {
   display: 'inline-block',
-  padding: '6px 16px',
+  padding: '7px 14px',
   borderRadius: theme.borderRadius.full,
-  fontSize: theme.fontSize.sm,
+  fontSize: theme.fontSize.xs,
   fontWeight: '700',
   textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
+  letterSpacing: '0.8px',
   margin: '0',
+  border: `1px solid ${theme.colors.border}`,
+  lineHeight: '1.2',
 };
 
 const styles = {
@@ -31,9 +33,26 @@ const styles = {
   neutral: {
     backgroundColor: '#f1f5f9',
     color: '#475569',
+    borderColor: '#cbd5e1',
   },
-  info: theme.colors.info,
-  success: theme.colors.success,
-  warning: theme.colors.warning,
-  error: theme.colors.error,
+  info: {
+    backgroundColor: theme.colors.info.bg,
+    color: theme.colors.info.text,
+    borderColor: theme.colors.info.border,
+  },
+  success: {
+    backgroundColor: theme.colors.success.bg,
+    color: theme.colors.success.text,
+    borderColor: theme.colors.success.border,
+  },
+  warning: {
+    backgroundColor: theme.colors.warning.bg,
+    color: theme.colors.warning.text,
+    borderColor: theme.colors.warning.border,
+  },
+  error: {
+    backgroundColor: theme.colors.error.bg,
+    color: theme.colors.error.text,
+    borderColor: theme.colors.error.border,
+  },
 };

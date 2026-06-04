@@ -6,7 +6,10 @@
 
 import { spawn, execSync } from 'child_process';
 import { existsSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 const includeFunctions = process.argv.includes('--full');
 
@@ -61,7 +64,7 @@ const services = {
     healthUrl: 'http://localhost:3000',
     command: process.platform === 'win32' ? 'next.cmd' : 'next',
     args: ['dev'],
-    cwd: '.',
+    cwd: projectRoot,
     readyPattern: /Ready in|✓ Ready/,
   },
   funcs: {
@@ -73,7 +76,7 @@ const services = {
     healthUrl: 'http://localhost:4000', // Emulator UI
     command: process.platform === 'win32' ? 'firebase.cmd' : 'firebase',
     args: ['emulators:start', '--only', 'functions'],
-    cwd: '.',
+    cwd: projectRoot,
     readyPattern: /All emulators ready/,
   },
   i18n: {
@@ -85,7 +88,7 @@ const services = {
     healthUrl: '',
     command: 'node',
     args: ['scripts/merge-translations-watch.js'],
-    cwd: '.',
+    cwd: projectRoot,
     readyPattern: /Watching for translation changes/,
   },
 };
@@ -184,8 +187,8 @@ async function checkHealth(url, timeout = 5000) {
 
 async function cleanupNextLock() {
   const lockPaths = [
-    join(process.cwd(), '.next', 'dev', 'lock'), // Adjusted path for root .next
-    join(process.cwd(), '.next', 'lock'),
+    join(projectRoot, '.next', 'dev', 'lock'),
+    join(projectRoot, '.next', 'lock'),
   ];
 
   for (const lockPath of lockPaths) {

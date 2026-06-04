@@ -12,6 +12,7 @@ export const Footer = ({ locale = 'en' }: FooterProps) => {
   return (
     <Section style={styles.footer}>
       <Hr style={styles.divider} />
+      <Text style={styles.brand}>CartShift Studio</Text>
       <Text style={styles.text}>
         &copy; {currentYear} CartShift Studio.{' '}
         {isRtl ? 'כל הזכויות שמורות.' : 'All rights reserved.'}
@@ -38,32 +39,38 @@ export const Footer = ({ locale = 'en' }: FooterProps) => {
 
 const styles = {
   footer: {
-    padding: `${theme.spacing.s6} ${theme.spacing.s10}`,
-    backgroundColor: '#f8fafc',
+    padding: `${theme.spacing.s8} ${theme.spacing.s10}`,
+    backgroundColor: theme.colors.navy,
     textAlign: 'center' as const,
   },
   divider: {
-    borderColor: '#e2e8f0',
-    margin: `0 0 ${theme.spacing.s6} 0`,
+    borderColor: '#20314a',
+    margin: `0 0 ${theme.spacing.s6}`,
+  },
+  brand: {
+    color: theme.colors.text.inverse,
+    fontSize: theme.fontSize.sm,
+    fontWeight: '700',
+    letterSpacing: '1.6px',
+    margin: '0 0 10px',
   },
   text: {
     fontSize: theme.fontSize.xs,
-    color: theme.colors.text.secondary,
+    color: theme.colors.text.inverseMuted,
     margin: '0 0 4px',
     lineHeight: '1.5',
   },
   subText: {
     fontSize: theme.fontSize.xs,
-    color: theme.colors.text.muted,
+    color: '#8798ad',
     margin: '0 0 16px',
-    fontStyle: 'italic' as const,
   },
   utilityLinks: {
     fontSize: theme.fontSize.xs,
-    color: theme.colors.text.muted,
+    color: '#8798ad',
   },
   link: {
-    color: theme.colors.text.secondary,
+    color: theme.colors.cyan,
     textDecoration: 'none',
   },
 };

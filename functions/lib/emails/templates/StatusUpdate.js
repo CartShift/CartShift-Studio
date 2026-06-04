@@ -22,25 +22,10 @@ const StatusUpdate = ({ requestTitle, statusLabel, actionUrl }) => {
         return 'neutral';
     };
     const statusType = getStatusType(statusLabel);
-    return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { title: `Status Update: ${requestTitle}`, preview: `Your request is now ${statusLabel}`, children: [(0, jsx_runtime_1.jsx)(components_1.Heading, { style: styles.heading, children: "Status Information" }), (0, jsx_runtime_1.jsxs)(components_1.Section, { style: styles.statusContainer, children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.subheading, children: "Your request:" }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.title, children: requestTitle }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.arrow, children: "\u2193" }), (0, jsx_runtime_1.jsx)(StatusBadge_1.StatusBadge, { type: statusType, children: statusLabel })] }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.message, children: "The status of your request has been updated. You can view the details and any new comments in the portal." }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, children: "View Request" }) })] }));
+    return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { title: `Status Update: ${requestTitle}`, preview: `Your request is now ${statusLabel}`, children: [(0, jsx_runtime_1.jsx)(Layout_1.EmailHero, { eyebrow: "Project status", title: "Your request has moved forward", description: "A status change was posted in the portal. The latest comments, files, and next steps are available there." }), (0, jsx_runtime_1.jsxs)(Layout_1.SurfaceCard, { tone: "info", align: "center", children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.subheading, children: "Your request" }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.title, children: requestTitle }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.connector, children: "Updated to" }), (0, jsx_runtime_1.jsx)(StatusBadge_1.StatusBadge, { type: statusType, children: statusLabel })] }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.message, children: "Open the request to review what changed and keep the work moving with the team." }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, children: "View Request" }) })] }));
 };
 exports.StatusUpdate = StatusUpdate;
 const styles = {
-    heading: {
-        fontSize: theme_1.theme.fontSize.xxl,
-        fontWeight: '700',
-        textAlign: 'center',
-        margin: '0 0 32px',
-        color: theme_1.theme.colors.text.primary,
-    },
-    statusContainer: {
-        backgroundColor: '#fff',
-        border: `1px dashed ${theme_1.theme.colors.border}`,
-        borderRadius: theme_1.theme.borderRadius.lg,
-        padding: '32px',
-        textAlign: 'center',
-        marginBottom: '32px',
-    },
     subheading: {
         margin: '0 0 8px',
         color: theme_1.theme.colors.text.secondary,
@@ -50,19 +35,22 @@ const styles = {
     },
     title: {
         margin: '0 0 16px',
-        fontSize: theme_1.theme.fontSize.lg,
-        fontWeight: '600',
+        fontSize: theme_1.theme.fontSize.xl,
+        fontWeight: '700',
         color: theme_1.theme.colors.text.primary,
     },
-    arrow: {
+    connector: {
         display: 'block',
-        fontSize: '24px',
-        color: theme_1.theme.colors.text.muted,
-        marginBottom: '16px',
+        fontSize: theme_1.theme.fontSize.xs,
+        color: theme_1.theme.colors.primary,
+        fontWeight: '700',
+        letterSpacing: '1px',
+        margin: '0 0 12px',
+        textTransform: 'uppercase',
     },
     message: {
         textAlign: 'center',
-        color: theme_1.theme.colors.text.primary,
+        color: theme_1.theme.colors.text.secondary,
         fontSize: theme_1.theme.fontSize.base,
         marginBottom: '32px',
         lineHeight: '1.6',

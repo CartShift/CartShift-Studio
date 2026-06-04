@@ -1,5 +1,5 @@
-import { Section, Text, Heading } from '@react-email/components';
-import { Layout } from '../components/Layout';
+import { Section, Text } from '@react-email/components';
+import { EmailHero, Layout, SurfaceCard } from '../components/Layout';
 import { ActionButton } from '../components/Button';
 import { StatusBadge, StatusType } from '../components/StatusBadge';
 import { theme } from '../theme';
@@ -27,18 +27,21 @@ export const StatusUpdate = ({ requestTitle, statusLabel, actionUrl }: StatusUpd
 
   return (
     <Layout title={`Status Update: ${requestTitle}`} preview={`Your request is now ${statusLabel}`}>
-      <Heading style={styles.heading}>Status Information</Heading>
+      <EmailHero
+        eyebrow="Project status"
+        title="Your request has moved forward"
+        description="A status change was posted in the portal. The latest comments, files, and next steps are available there."
+      />
 
-      <Section style={styles.statusContainer}>
-        <Text style={styles.subheading}>Your request:</Text>
+      <SurfaceCard tone="info" align="center">
+        <Text style={styles.subheading}>Your request</Text>
         <Text style={styles.title}>{requestTitle}</Text>
-        <Text style={styles.arrow}>↓</Text>
+        <Text style={styles.connector}>Updated to</Text>
         <StatusBadge type={statusType}>{statusLabel}</StatusBadge>
-      </Section>
+      </SurfaceCard>
 
       <Text style={styles.message}>
-        The status of your request has been updated. You can view the details and any new comments
-        in the portal.
+        Open the request to review what changed and keep the work moving with the team.
       </Text>
 
       <Section style={styles.action}>
@@ -49,21 +52,6 @@ export const StatusUpdate = ({ requestTitle, statusLabel, actionUrl }: StatusUpd
 };
 
 const styles = {
-  heading: {
-    fontSize: theme.fontSize.xxl,
-    fontWeight: '700',
-    textAlign: 'center' as const,
-    margin: '0 0 32px',
-    color: theme.colors.text.primary,
-  },
-  statusContainer: {
-    backgroundColor: '#fff',
-    border: `1px dashed ${theme.colors.border}`,
-    borderRadius: theme.borderRadius.lg,
-    padding: '32px',
-    textAlign: 'center' as const,
-    marginBottom: '32px',
-  },
   subheading: {
     margin: '0 0 8px',
     color: theme.colors.text.secondary,
@@ -73,19 +61,22 @@ const styles = {
   },
   title: {
     margin: '0 0 16px',
-    fontSize: theme.fontSize.lg,
-    fontWeight: '600',
+    fontSize: theme.fontSize.xl,
+    fontWeight: '700',
     color: theme.colors.text.primary,
   },
-  arrow: {
+  connector: {
     display: 'block',
-    fontSize: '24px',
-    color: theme.colors.text.muted,
-    marginBottom: '16px',
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.primary,
+    fontWeight: '700',
+    letterSpacing: '1px',
+    margin: '0 0 12px',
+    textTransform: 'uppercase' as const,
   },
   message: {
     textAlign: 'center' as const,
-    color: theme.colors.text.primary,
+    color: theme.colors.text.secondary,
     fontSize: theme.fontSize.base,
     marginBottom: '32px',
     lineHeight: '1.6',

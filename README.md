@@ -43,8 +43,8 @@ pnpm dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 Use `pnpm dev:full` when Firebase Functions are also needed, `pnpm dev:functions`
-for the Functions emulator alone, and `pnpm clean:cache` only when recovering
-from a stale Turbopack cache.
+for the Functions emulator alone, and `pnpm clean:cache` when Turbopack reports
+a stale or corrupted cache (or after dependency changes on Windows ARM64).
 
 ## Project Architecture
 

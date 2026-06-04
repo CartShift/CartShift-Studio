@@ -11,23 +11,42 @@ const StatusBadge = ({ children, type = 'neutral' }) => {
 exports.StatusBadge = StatusBadge;
 const baseStyle = {
     display: 'inline-block',
-    padding: '6px 16px',
+    padding: '7px 14px',
     borderRadius: theme_1.theme.borderRadius.full,
-    fontSize: theme_1.theme.fontSize.sm,
+    fontSize: theme_1.theme.fontSize.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    letterSpacing: '0.8px',
     margin: '0',
+    border: `1px solid ${theme_1.theme.colors.border}`,
+    lineHeight: '1.2',
 };
 const styles = {
     base: baseStyle,
     neutral: {
         backgroundColor: '#f1f5f9',
         color: '#475569',
+        borderColor: '#cbd5e1',
     },
-    info: theme_1.theme.colors.info,
-    success: theme_1.theme.colors.success,
-    warning: theme_1.theme.colors.warning,
-    error: theme_1.theme.colors.error,
+    info: {
+        backgroundColor: theme_1.theme.colors.info.bg,
+        color: theme_1.theme.colors.info.text,
+        borderColor: theme_1.theme.colors.info.border,
+    },
+    success: {
+        backgroundColor: theme_1.theme.colors.success.bg,
+        color: theme_1.theme.colors.success.text,
+        borderColor: theme_1.theme.colors.success.border,
+    },
+    warning: {
+        backgroundColor: theme_1.theme.colors.warning.bg,
+        color: theme_1.theme.colors.warning.text,
+        borderColor: theme_1.theme.colors.warning.border,
+    },
+    error: {
+        backgroundColor: theme_1.theme.colors.error.bg,
+        color: theme_1.theme.colors.error.text,
+        borderColor: theme_1.theme.colors.error.border,
+    },
 };
 //# sourceMappingURL=StatusBadge.js.map

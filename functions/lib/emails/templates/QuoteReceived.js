@@ -54,26 +54,15 @@ const QuoteReceived = ({ requestTitle, totalAmount, actionUrl, locale = 'en', cl
     const isRtl = activeLocale === 'he';
     const text = copy[activeLocale];
     const align = isRtl ? 'right' : 'left';
-    return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { locale: activeLocale, title: text.title, preview: text.preview(requestTitle), children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.eyebrow, textAlign: align }, children: text.eyebrow }), (0, jsx_runtime_1.jsx)(components_1.Heading, { style: { ...styles.heading, textAlign: align }, children: text.title }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.greeting, textAlign: align }, children: text.greeting(clientName) }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.intro, textAlign: align }, children: text.intro(requestTitle) }), (0, jsx_runtime_1.jsxs)(components_1.Section, { style: styles.amountCard, children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.amountLabel, children: text.amountLabel }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.amount, children: totalAmount }), (0, jsx_runtime_1.jsx)(components_1.Hr, { style: styles.amountDivider }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.amountNote, textAlign: align }, children: text.amountNote }), (validUntil || timeframe) && ((0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.metadata, textAlign: align }, children: [validUntil ? text.validUntil(validUntil) : null, timeframe ? text.timeframe(timeframe) : null]
+    return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { locale: activeLocale, title: text.title, preview: text.preview(requestTitle), children: [(0, jsx_runtime_1.jsx)(Layout_1.EmailHero, { eyebrow: text.eyebrow, title: text.title, align: align }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.greeting, textAlign: align }, children: text.greeting(clientName) }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.intro, textAlign: align }, children: text.intro(requestTitle) }), (0, jsx_runtime_1.jsxs)(components_1.Section, { style: styles.amountCard, children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.amountLabel, children: text.amountLabel }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.amount, children: totalAmount }), (0, jsx_runtime_1.jsx)(components_1.Hr, { style: styles.amountDivider }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.amountNote, textAlign: align }, children: text.amountNote }), (validUntil || timeframe) && ((0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.metadata, textAlign: align }, children: [
+                            validUntil ? text.validUntil(validUntil) : null,
+                            timeframe ? text.timeframe(timeframe) : null,
+                        ]
                             .filter(Boolean)
-                            .join('  |  ') }))] }), (0, jsx_runtime_1.jsxs)(components_1.Section, { style: styles.highlights, children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.highlightsTitle, textAlign: align }, children: text.summaryTitle }), text.highlights.map(highlight => ((0, jsx_runtime_1.jsxs)(components_1.Text, { style: { ...styles.highlight, textAlign: align }, children: [(0, jsx_runtime_1.jsx)("span", { style: styles.check, children: "\u2713" }), " ", highlight] }, highlight)))] }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, children: text.action }) }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.reassurance, children: text.reassurance }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.closing, textAlign: align }, children: text.closing }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.signature, textAlign: align }, children: text.signature })] }));
+                            .join('  |  ') }))] }), (0, jsx_runtime_1.jsxs)(Layout_1.SurfaceCard, { align: align, children: [(0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.highlightsTitle, textAlign: align }, children: text.summaryTitle }), text.highlights.map(highlight => ((0, jsx_runtime_1.jsxs)(components_1.Text, { style: { ...styles.highlight, textAlign: align }, children: [(0, jsx_runtime_1.jsx)("span", { style: styles.check, children: "\u2022" }), " ", highlight] }, highlight)))] }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, children: text.action }) }), (0, jsx_runtime_1.jsx)(Layout_1.FinePrint, { children: text.reassurance }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.closing, textAlign: align }, children: text.closing }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: { ...styles.signature, textAlign: align }, children: text.signature })] }));
 };
 exports.QuoteReceived = QuoteReceived;
 const styles = {
-    eyebrow: {
-        color: '#2563eb',
-        fontSize: '12px',
-        fontWeight: '700',
-        letterSpacing: '0.5px',
-        margin: '0 0 10px',
-    },
-    heading: {
-        color: '#102a43',
-        fontSize: '30px',
-        fontWeight: '700',
-        lineHeight: '1.25',
-        margin: '0 0 26px',
-    },
     greeting: {
         color: '#243b53',
         fontSize: '17px',
@@ -88,51 +77,45 @@ const styles = {
         margin: '0 0 26px',
     },
     amountCard: {
-        backgroundColor: '#eff6ff',
-        border: '1px solid #bfdbfe',
-        borderRadius: '16px',
-        margin: '0 0 24px',
-        padding: '24px',
+        backgroundColor: '#07111f',
+        border: '1px solid #263a56',
+        borderRadius: '18px',
+        margin: '0 0 28px',
+        padding: '28px 24px',
         textAlign: 'center',
     },
     amountLabel: {
-        color: '#486581',
+        color: '#b8c5d6',
         fontSize: '12px',
         fontWeight: '700',
-        letterSpacing: '0.8px',
+        letterSpacing: '1.4px',
         margin: '0 0 8px',
+        textTransform: 'uppercase',
     },
     amount: {
-        color: '#1d4ed8',
-        fontSize: '38px',
+        color: '#ffffff',
+        fontSize: '42px',
         fontWeight: '700',
-        letterSpacing: '-0.8px',
+        letterSpacing: '0',
         lineHeight: '1.1',
         margin: '0',
     },
     amountDivider: {
-        borderColor: '#bfdbfe',
+        borderColor: '#38bdf8',
         margin: '18px auto 14px',
         width: '56px',
     },
     amountNote: {
-        color: '#486581',
+        color: '#cbd5e1',
         fontSize: '14px',
         lineHeight: '1.7',
         margin: '0',
     },
     metadata: {
-        color: '#627d98',
+        color: '#94a3b8',
         fontSize: '12px',
         lineHeight: '1.6',
         margin: '14px 0 0',
-    },
-    highlights: {
-        backgroundColor: '#ffffff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '14px',
-        margin: '0 0 26px',
-        padding: '18px 20px 14px',
     },
     highlightsTitle: {
         color: '#243b53',
@@ -147,26 +130,18 @@ const styles = {
         margin: '7px 0',
     },
     check: {
-        color: '#059669',
+        color: '#2563eb',
         fontWeight: '700',
     },
     action: {
         margin: '0 0 16px',
         textAlign: 'center',
     },
-    reassurance: {
-        color: '#627d98',
-        fontSize: '12px',
-        lineHeight: '1.7',
-        margin: '0 auto 24px',
-        maxWidth: '440px',
-        textAlign: 'center',
-    },
     closing: {
         color: '#486581',
         fontSize: '14px',
         lineHeight: '1.7',
-        margin: '0 0 14px',
+        margin: '24px 0 14px',
     },
     signature: {
         color: '#243b53',

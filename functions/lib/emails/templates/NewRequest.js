@@ -14,36 +14,16 @@ const NewRequest = ({ clientName, organizationName, requestTitle, requestDescrip
         : requestPriority.toLowerCase() === 'low'
             ? 'info'
             : 'warning';
-    return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { title: `New Request: ${requestTitle}`, preview: `New request from ${organizationName}`, children: [(0, jsx_runtime_1.jsx)(components_1.Heading, { style: styles.heading, children: "New Request Received" }), (0, jsx_runtime_1.jsxs)(components_1.Text, { style: styles.intro, children: [(0, jsx_runtime_1.jsx)("strong", { children: clientName }), " from ", (0, jsx_runtime_1.jsx)("strong", { children: organizationName }), " has submitted a new request."] }), (0, jsx_runtime_1.jsxs)(components_1.Section, { style: styles.card, children: [(0, jsx_runtime_1.jsx)(InfoRow_1.InfoRow, { label: "Title", value: requestTitle }), (0, jsx_runtime_1.jsx)(InfoRow_1.InfoRow, { label: "Type", value: requestType }), (0, jsx_runtime_1.jsx)(InfoRow_1.InfoRow, { label: "Priority", value: (0, jsx_runtime_1.jsx)(StatusBadge_1.StatusBadge, { type: priorityType, children: requestPriority }) }), (0, jsx_runtime_1.jsx)(components_1.Hr, { style: { borderColor: theme_1.theme.colors.border, margin: '12px 0' } }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.label, children: "Description:" }), (0, jsx_runtime_1.jsxs)(components_1.Text, { style: styles.description, children: ["\"", requestDescription, "\""] })] }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, children: "View Request in Portal" }) }), (0, jsx_runtime_1.jsxs)(components_1.Text, { style: styles.idText, children: ["Request ID: ", requestId] })] }));
+    return ((0, jsx_runtime_1.jsxs)(Layout_1.Layout, { title: `New Request: ${requestTitle}`, preview: `New request from ${organizationName}`, children: [(0, jsx_runtime_1.jsx)(Layout_1.EmailHero, { eyebrow: "Agency action required", title: "New request received", description: (0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)("strong", { children: clientName }), " from ", (0, jsx_runtime_1.jsx)("strong", { children: organizationName }), " submitted a new request for review."] }) }), (0, jsx_runtime_1.jsxs)(Layout_1.SurfaceCard, { children: [(0, jsx_runtime_1.jsx)(InfoRow_1.InfoRow, { label: "Title", value: requestTitle }), (0, jsx_runtime_1.jsx)(InfoRow_1.InfoRow, { label: "Type", value: requestType }), (0, jsx_runtime_1.jsx)(InfoRow_1.InfoRow, { label: "Priority", value: (0, jsx_runtime_1.jsx)(StatusBadge_1.StatusBadge, { type: priorityType, children: requestPriority }) }), (0, jsx_runtime_1.jsx)(components_1.Hr, { style: { borderColor: theme_1.theme.colors.border, margin: '12px 0' } }), (0, jsx_runtime_1.jsx)(components_1.Text, { style: styles.label, children: "Description" }), (0, jsx_runtime_1.jsxs)(components_1.Text, { style: styles.description, children: ["\"", requestDescription, "\""] })] }), (0, jsx_runtime_1.jsx)(components_1.Section, { style: styles.action, children: (0, jsx_runtime_1.jsx)(Button_1.ActionButton, { href: actionUrl, children: "View Request in Portal" }) }), (0, jsx_runtime_1.jsxs)(Layout_1.FinePrint, { children: ["Request ID: ", requestId] })] }));
 };
 exports.NewRequest = NewRequest;
 const styles = {
-    heading: {
-        fontSize: theme_1.theme.fontSize.xxl,
-        fontWeight: '700',
-        textAlign: 'center',
-        margin: '0 0 24px',
-        color: theme_1.theme.colors.text.primary,
-    },
-    intro: {
-        fontSize: theme_1.theme.fontSize.base,
-        lineHeight: '1.6',
-        color: theme_1.theme.colors.text.primary,
-        textAlign: 'center',
-        marginBottom: '32px',
-    },
-    card: {
-        backgroundColor: '#f8fafc',
-        padding: '24px',
-        borderRadius: theme_1.theme.borderRadius.md,
-        marginBottom: '32px',
-        border: `1px solid ${theme_1.theme.colors.border}`,
-    },
     label: {
         fontSize: theme_1.theme.fontSize.sm,
         color: theme_1.theme.colors.text.secondary,
-        fontWeight: '600',
-        marginBottom: '8px',
+        fontWeight: '700',
+        letterSpacing: '0.5px',
+        margin: '0 0 8px',
     },
     description: {
         fontSize: theme_1.theme.fontSize.base,
@@ -55,11 +35,6 @@ const styles = {
     action: {
         textAlign: 'center',
         marginBottom: '24px',
-    },
-    idText: {
-        textAlign: 'center',
-        color: theme_1.theme.colors.text.muted,
-        fontSize: theme_1.theme.fontSize.xs,
     },
 };
 exports.default = exports.NewRequest;

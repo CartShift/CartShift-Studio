@@ -15,11 +15,9 @@ export const ActionButton = ({
   variant = 'primary',
   fullWidth = false,
 }: ActionButtonProps) => {
-  const isPrimary = variant === 'primary';
-
   const buttonStyle = {
     ...styles.base,
-    ...(isPrimary ? styles.primary : styles.secondary),
+    ...styles[variant],
     ...(fullWidth ? styles.fullWidth : {}),
   };
 
@@ -33,23 +31,32 @@ export const ActionButton = ({
 const styles = {
   base: {
     display: 'inline-block',
-    padding: '14px 28px',
-    borderRadius: '10px',
+    padding: '15px 30px',
+    borderRadius: '12px',
     fontSize: theme.fontSize.base,
     fontWeight: '700',
     textDecoration: 'none',
     textAlign: 'center' as const,
     cursor: 'pointer',
-    boxShadow: '0 8px 18px rgba(37, 99, 235, 0.20)',
+    lineHeight: '1.2',
+    boxShadow: '0 14px 26px rgba(37, 99, 235, 0.24)',
   },
   primary: {
     backgroundColor: theme.colors.primary,
     color: '#ffffff',
+    border: `1px solid ${theme.colors.primaryDark}`,
   },
   secondary: {
-    backgroundColor: '#ffffff',
+    backgroundColor: theme.colors.primarySoft,
     color: theme.colors.primary,
-    border: `1px solid ${theme.colors.primary}`,
+    border: `1px solid ${theme.colors.info.border}`,
+    boxShadow: 'none',
+  },
+  outline: {
+    backgroundColor: '#ffffff',
+    color: theme.colors.text.primary,
+    border: `1px solid ${theme.colors.borderStrong}`,
+    boxShadow: 'none',
   },
   fullWidth: {
     display: 'block',

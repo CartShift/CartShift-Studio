@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import * as crypto from 'crypto';
+import type * as React from 'react';
 
 // Templates
 import NewRequest from './templates/NewRequest';
@@ -10,6 +11,7 @@ import QuoteReceived from './templates/QuoteReceived';
 import PaymentReceipt from './templates/PaymentReceipt';
 import NewComment from './templates/NewComment';
 import ContactFormNotification from './templates/ContactFormNotification';
+import TeamInvite from './templates/TeamInvite';
 
 // Types
 export interface EmailConfig {
@@ -53,27 +55,40 @@ export type EmailTemplate =
   | 'quote_received'
   | 'payment_receipt'
   | 'new_comment'
-  | 'contact_form_notification';
+  | 'contact_form_notification'
+  | 'team_invite';
+
+const EMAIL_TEMPLATE_REGISTRY = {
+  new_request: NewRequest,
+  status_update: StatusUpdate,
+  milestone_completed: MilestoneCompleted,
+  quote_received: QuoteReceived,
+  payment_receipt: PaymentReceipt,
+  new_comment: NewComment,
+  contact_form_notification: ContactFormNotification,
+  team_invite: TeamInvite,
+} satisfies Record<EmailTemplate, (data: any) => React.ReactElement>;
+
+export const SUPPORTED_EMAIL_TEMPLATES = Object.keys(EMAIL_TEMPLATE_REGISTRY) as EmailTemplate[];
+
+function getTemplateComponent(templateName: EmailTemplate) {
+  const Template = EMAIL_TEMPLATE_REGISTRY[templateName];
+  if (!Template) {
+    throw new Error(`Unknown template: ${templateName}`);
+  }
+  return Template;
+}
+
+function renderTemplate(templateName: EmailTemplate, data: any) {
+  return getTemplateComponent(templateName)(data);
+}
 
 export const renderEmail = async (templateName: EmailTemplate, data: any): Promise<string> => {
-  switch (templateName) {
-    case 'new_request':
-      return render(NewRequest(data));
-    case 'status_update':
-      return render(StatusUpdate(data));
-    case 'milestone_completed':
-      return render(MilestoneCompleted(data));
-    case 'quote_received':
-      return render(QuoteReceived(data));
-    case 'payment_receipt':
-      return render(PaymentReceipt(data));
-    case 'new_comment':
-      return render(NewComment(data));
-    case 'contact_form_notification':
-      return render(ContactFormNotification(data));
-    default:
-      throw new Error(`Unknown template: ${templateName}`);
-  }
+  return render(renderTemplate(templateName, data));
+};
+
+export const renderEmailText = async (templateName: EmailTemplate, data: any): Promise<string> => {
+  return render(renderTemplate(templateName, data), { plainText: true });
 };
 
 // ----------------------------------------------------------------------------
@@ -92,6 +107,19 @@ export interface SendEmailOptions {
   uniqueId?: string; // For auto-generating idempotency key
 }
 
+const EMAIL_ADDRESS_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function normalizeRecipients(to: string | string[]): string[] {
+  const recipients = (Array.isArray(to) ? to : [to]).map(item => item.trim().toLowerCase());
+  const invalid = recipients.filter(item => !EMAIL_ADDRESS_PATTERN.test(item));
+
+  if (recipients.length === 0 || invalid.length > 0) {
+    throw new Error(`Invalid recipient email address: ${invalid[0] || 'missing recipient'}`);
+  }
+
+  return [...new Set(recipients)];
+}
+
 export async function sendEmail(
   apiKey: string,
   options: SendEmailOptions,
@@ -104,28 +132,13 @@ export async function sendEmail(
   }
 
   try {
+    const recipients = normalizeRecipients(options.to);
     const html = await renderEmail(options.templateName, options.data);
-    const text = await render(
-      // @ts-ignore - Dynamic dispatch mostly safe here or we can use specific function
-      options.templateName === 'new_request'
-        ? NewRequest(options.data)
-        : options.templateName === 'status_update'
-          ? StatusUpdate(options.data)
-          : options.templateName === 'milestone_completed'
-            ? MilestoneCompleted(options.data)
-            : options.templateName === 'quote_received'
-              ? QuoteReceived(options.data)
-              : options.templateName === 'payment_receipt'
-                ? PaymentReceipt(options.data)
-                : options.templateName === 'contact_form_notification'
-                  ? ContactFormNotification(options.data)
-                  : NewComment(options.data),
-      { plainText: true }
-    );
+    const text = await renderEmailText(options.templateName, options.data);
 
     const emailPayload: any = {
       from: EMAIL_CONFIG.from,
-      to: Array.isArray(options.to) ? options.to : [options.to],
+      to: recipients,
       subject: options.subject,
       html,
       text,
@@ -158,7 +171,9 @@ export async function sendEmail(
       throw { message: error.message, statusCode: 400 };
     }
 
-    console.log(`[Email] ✅ Sent to ${options.to}: "${options.subject}" (ID: ${result?.id})`);
+    console.log(
+      `[Email] Sent to ${recipients.join(',')}: "${options.subject}" (ID: ${result?.id})`
+    );
     return { success: true, id: result?.id };
   } catch (error: any) {
     console.error(`[Email] ❌ Attempt ${attempt} failed:`, error.message);
@@ -230,7 +245,13 @@ export function generateIdempotencyKey(
   uniqueId = ''
 ) {
   const toStr = Array.isArray(to) ? to.join(',') : to;
-  const payload = `${toStr}-${subject}-${template}-${uniqueId}-${Date.now().toString().slice(0, -4)}`;
+  const normalizedTo = toStr
+    .split(',')
+    .map(item => item.trim().toLowerCase())
+    .sort()
+    .join(',');
+  const stableOrBucket = uniqueId || Date.now().toString().slice(0, -4);
+  const payload = `${normalizedTo}-${subject}-${template}-${stableOrBucket}`;
   return crypto.createHash('sha256').update(payload).digest('hex').slice(0, 64);
 }
 
@@ -247,26 +268,13 @@ export async function sendBatchEmails(apiKey: string, emails: SendEmailOptions[]
   try {
     const emailPayloads = await Promise.all(
       emails.map(async opt => {
+        const recipients = normalizeRecipients(opt.to);
         const html = await renderEmail(opt.templateName, opt.data);
-        const text = await render(
-          // @ts-ignore
-          opt.templateName === 'new_request'
-            ? NewRequest(opt.data)
-            : opt.templateName === 'status_update'
-              ? StatusUpdate(opt.data)
-              : opt.templateName === 'milestone_completed'
-                ? MilestoneCompleted(opt.data)
-                : opt.templateName === 'quote_received'
-                  ? QuoteReceived(opt.data)
-                  : opt.templateName === 'payment_receipt'
-                    ? PaymentReceipt(opt.data)
-                    : NewComment(opt.data),
-          { plainText: true }
-        );
+        const text = await renderEmailText(opt.templateName, opt.data);
 
         return {
           from: EMAIL_CONFIG.from,
-          to: Array.isArray(opt.to) ? opt.to : [opt.to],
+          to: recipients,
           subject: opt.subject,
           html,
           text,

@@ -1,5 +1,5 @@
-import { Section, Text, Heading, Hr } from '@react-email/components';
-import { Layout } from '../components/Layout';
+import { Section, Text, Hr } from '@react-email/components';
+import { EmailHero, FinePrint, Layout, SurfaceCard } from '../components/Layout';
 import { ActionButton } from '../components/Button';
 
 interface QuoteReceivedProps {
@@ -53,7 +53,8 @@ const copy = {
     validUntil: (date: string) => `Available for review until ${date}`,
     timeframe: (value: string) => `Estimated timeframe: ${value}`,
     action: 'View your proposal',
-    reassurance: 'Opening the proposal does not commit you to anything. If something needs refining, we will be happy to review it together.',
+    reassurance:
+      'Opening the proposal does not commit you to anything. If something needs refining, we will be happy to review it together.',
     closing: 'We are here for any question or adjustment. Simply reply to this email.',
     signature: 'Warm regards,\nThe CartShift Studio team',
   },
@@ -74,14 +75,8 @@ export const QuoteReceived = ({
   const align = isRtl ? ('right' as const) : ('left' as const);
 
   return (
-    <Layout
-      locale={activeLocale}
-      title={text.title}
-      preview={text.preview(requestTitle)}
-    >
-      <Text style={{ ...styles.eyebrow, textAlign: align }}>{text.eyebrow}</Text>
-      <Heading style={{ ...styles.heading, textAlign: align }}>{text.title}</Heading>
-
+    <Layout locale={activeLocale} title={text.title} preview={text.preview(requestTitle)}>
+      <EmailHero eyebrow={text.eyebrow} title={text.title} align={align} />
       <Text style={{ ...styles.greeting, textAlign: align }}>{text.greeting(clientName)}</Text>
       <Text style={{ ...styles.intro, textAlign: align }}>{text.intro(requestTitle)}</Text>
 
@@ -92,27 +87,30 @@ export const QuoteReceived = ({
         <Text style={{ ...styles.amountNote, textAlign: align }}>{text.amountNote}</Text>
         {(validUntil || timeframe) && (
           <Text style={{ ...styles.metadata, textAlign: align }}>
-            {[validUntil ? text.validUntil(validUntil) : null, timeframe ? text.timeframe(timeframe) : null]
+            {[
+              validUntil ? text.validUntil(validUntil) : null,
+              timeframe ? text.timeframe(timeframe) : null,
+            ]
               .filter(Boolean)
               .join('  |  ')}
           </Text>
         )}
       </Section>
 
-      <Section style={styles.highlights}>
+      <SurfaceCard align={align}>
         <Text style={{ ...styles.highlightsTitle, textAlign: align }}>{text.summaryTitle}</Text>
         {text.highlights.map(highlight => (
           <Text key={highlight} style={{ ...styles.highlight, textAlign: align }}>
-            <span style={styles.check}>✓</span> {highlight}
+            <span style={styles.check}>•</span> {highlight}
           </Text>
         ))}
-      </Section>
+      </SurfaceCard>
 
       <Section style={styles.action}>
         <ActionButton href={actionUrl}>{text.action}</ActionButton>
       </Section>
 
-      <Text style={styles.reassurance}>{text.reassurance}</Text>
+      <FinePrint>{text.reassurance}</FinePrint>
       <Text style={{ ...styles.closing, textAlign: align }}>{text.closing}</Text>
       <Text style={{ ...styles.signature, textAlign: align }}>{text.signature}</Text>
     </Layout>
@@ -120,20 +118,6 @@ export const QuoteReceived = ({
 };
 
 const styles = {
-  eyebrow: {
-    color: '#2563eb',
-    fontSize: '12px',
-    fontWeight: '700',
-    letterSpacing: '0.5px',
-    margin: '0 0 10px',
-  },
-  heading: {
-    color: '#102a43',
-    fontSize: '30px',
-    fontWeight: '700',
-    lineHeight: '1.25',
-    margin: '0 0 26px',
-  },
   greeting: {
     color: '#243b53',
     fontSize: '17px',
@@ -148,51 +132,45 @@ const styles = {
     margin: '0 0 26px',
   },
   amountCard: {
-    backgroundColor: '#eff6ff',
-    border: '1px solid #bfdbfe',
-    borderRadius: '16px',
-    margin: '0 0 24px',
-    padding: '24px',
+    backgroundColor: '#07111f',
+    border: '1px solid #263a56',
+    borderRadius: '18px',
+    margin: '0 0 28px',
+    padding: '28px 24px',
     textAlign: 'center' as const,
   },
   amountLabel: {
-    color: '#486581',
+    color: '#b8c5d6',
     fontSize: '12px',
     fontWeight: '700',
-    letterSpacing: '0.8px',
+    letterSpacing: '1.4px',
     margin: '0 0 8px',
+    textTransform: 'uppercase' as const,
   },
   amount: {
-    color: '#1d4ed8',
-    fontSize: '38px',
+    color: '#ffffff',
+    fontSize: '42px',
     fontWeight: '700',
-    letterSpacing: '-0.8px',
+    letterSpacing: '0',
     lineHeight: '1.1',
     margin: '0',
   },
   amountDivider: {
-    borderColor: '#bfdbfe',
+    borderColor: '#38bdf8',
     margin: '18px auto 14px',
     width: '56px',
   },
   amountNote: {
-    color: '#486581',
+    color: '#cbd5e1',
     fontSize: '14px',
     lineHeight: '1.7',
     margin: '0',
   },
   metadata: {
-    color: '#627d98',
+    color: '#94a3b8',
     fontSize: '12px',
     lineHeight: '1.6',
     margin: '14px 0 0',
-  },
-  highlights: {
-    backgroundColor: '#ffffff',
-    border: '1px solid #e2e8f0',
-    borderRadius: '14px',
-    margin: '0 0 26px',
-    padding: '18px 20px 14px',
   },
   highlightsTitle: {
     color: '#243b53',
@@ -207,26 +185,18 @@ const styles = {
     margin: '7px 0',
   },
   check: {
-    color: '#059669',
+    color: '#2563eb',
     fontWeight: '700',
   },
   action: {
     margin: '0 0 16px',
     textAlign: 'center' as const,
   },
-  reassurance: {
-    color: '#627d98',
-    fontSize: '12px',
-    lineHeight: '1.7',
-    margin: '0 auto 24px',
-    maxWidth: '440px',
-    textAlign: 'center' as const,
-  },
   closing: {
     color: '#486581',
     fontSize: '14px',
     lineHeight: '1.7',
-    margin: '0 0 14px',
+    margin: '24px 0 14px',
   },
   signature: {
     color: '#243b53',
