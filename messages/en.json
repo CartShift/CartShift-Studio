@@ -780,6 +780,7 @@
         "searchPlaceholder": "Search by company name...",
         "deleteTitle": "Delete Client",
         "deleteConfirm": "Are you sure you want to delete {name}? This will deactivate their workspace.",
+        "deleteSuccess": "{name} was deactivated.",
         "deleteFailed": "Failed to delete client.",
         "activeAccounts": "Active Accounts",
         "export": "Performance Export",

@@ -161,6 +161,7 @@ export interface Organization {
   bio?: string;
   status?: 'active' | 'inactive' | 'suspended';
   plan?: 'free' | 'pro' | 'enterprise';
+  removedAt?: Timestamp;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 

@@ -90,6 +90,45 @@ The automation should append a new entry for every run, even when it decides not
 - **Validation:** Skipped. `pnpm build` could not be started.
 - **Deployment:** Skipped. No files were staged, committed, or pushed.
 - **Likely fix:** Restore local sandbox process execution, then rerun the automation so it can verify credential variables and Git push access before making SEO changes.
+## 2026-06-08 - Blocked: local command runner unavailable
+
+- **Automation:** CartShift SEO Article Publisher
+- **Last run reference:** 2026-06-07T06:39:26.851Z
+- **Status:** Blocked before article selection, publishing, validation, commit, or deployment.
+- **What failed:** Every new non-interactive PowerShell command failed before execution with `CreateProcessAsUserW failed: 5`, so the run could not safely inspect git status, verify Google Search Console/GA4 environment variables, verify Git push access to `origin/main`, inspect `content/blog/`, or run validation.
+- **Missing/unverified access categories:** Google Search Console credentials, GA4 credentials, Git push access, repository inventory access through shell commands.
+- **Decision:** Skipped article creation and deployment to protect local work and avoid duplicate/cannibalizing content.
+- **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md`; automation memory only.
+- **Validation:** Not run; command execution unavailable.
+- **Deployment:** Not attempted.
+## 2026-06-09 - Blocked: access verification unavailable
+
+- **Automation:** CartShift SEO Content Refresher
+- **Chosen page:** None; no article was selected or edited.
+- **Source data:** Google Search Console and GA4 data were not queried because the local command runner failed before credential checks could execute.
+- **Rationale:** Release safety checks could not run. The automation could not inspect `git status`, read `docs/SEO_AUTOMATION_CREDENTIALS.md`, verify Google Search Console credentials, verify GA4 credentials, verify Git push access to `origin/main`, or run validation commands.
+- **Missing/unverified access category:** Non-interactive local command execution is unavailable (`CreateProcessAsUserW failed: 5`), which blocks verification of Google Search Console access, GA4 access, Git push access, and worktree cleanliness.
+- **Affected files:** This decision log only; no `content/blog/` article files were changed.
+- **Validation:** Not run; `pnpm build` could not be started because command execution is blocked.
+- **Deployment status:** Not deployed. No commit or push was attempted.
+- **Likely fix:** Restore non-interactive shell execution for the Codex workspace, then rerun the automation so it can read credentials guidance, inspect dirty files, query available SEO data, validate with `pnpm build`, and push only automation-owned changes.
+
+## 2026-06-15 - CartShift SEO Article Publisher
+
+- **Outcome:** Written, not deployed
+- **Data sources used:** Google Search Console Search Analytics for `sc-domain:cart-shift.com`, GA4 Data API, `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, and `content/blog/` inventory.
+- **Access verification:** Required Google credential categories were present; Search Console API returned `200`; GA4 Data API returned `200`; `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Opportunity:** WooCommerce to Shopify migration guide targeting the high-intent `woocommerce to shopify migration` / `migrate woocommerce to shopify` gap.
+- **Rationale:** Recent Search Console data was sparse and had no strong high-impression, low-CTR, position 4-20 opportunity. The Shopify SEO cluster is already crowded, while the keyword strategy explicitly lists WooCommerce-to-Shopify migration as a service-aligned gap. Existing posts cover broad ecommerce migration and platform comparison, but not a dedicated WooCommerce-to-Shopify operational migration guide.
+- **Target intent:** Commercial | Informational
+- **Primary keyword:** WooCommerce to Shopify migration
+- **Supporting keywords:** migrate WooCommerce to Shopify, WooCommerce migration to Shopify, Shopify migration checklist, ecommerce migration SEO, WordPress to Shopify migration
+- **Affected files:** `content/blog/woocommerce-to-shopify-migration.md`, `public/images/blog/woocommerce-to-shopify-migration.webp`, `public/images/blog/og/woocommerce-to-shopify-migration.webp`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Article notes:** Added one bilingual article with English frontmatter, Hebrew frontmatter fields, English body, Hebrew body after `---he---`, contextual internal links, and a service CTA. The image generation script could not create a new thumbnail because the OpenAI account returned `billing_hard_limit_reached`; the run used the existing migration-themed blog image as a slug-specific fallback to avoid broken image paths.
+- **Validation:** `pnpm exec prettier --check content/blog/woocommerce-to-shopify-migration.md` passed. The first `pnpm build` attempt was blocked by another active Next.js build lock. After that process exited, `pnpm build` was retried and reached compilation, TypeScript, and static generation, then exited during static page generation after several existing blog routes exceeded Next.js's 60-second static-generation timeout.
+- **Deployment:** Skipped. No files were staged, committed, or pushed because required build validation did not complete.
+- **Likely fix:** Investigate slow blog static generation for existing posts, especially the Hebrew and English blog routes that timed out during the retry, then rerun `pnpm build` before staging, committing, or pushing this article.
+- **Worktree safety:** Pre-existing dirty files were not staged or overwritten. Unrelated modified/untracked SEO monitor artifacts and portal/translation changes remained untouched.
 
 ## 2026-06-16 - CartShift SEO Content Refresher
 

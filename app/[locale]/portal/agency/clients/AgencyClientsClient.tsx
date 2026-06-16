@@ -116,12 +116,15 @@ export default function AgencyClientsClient() {
         return false;
       }
 
-      // Status filter
+      const orgStatus = org.status || 'active';
+
+      // Status filter — default view hides deactivated clients unless explicitly filtered
       if (statusFilter.length > 0) {
-        const orgStatus = org.status || 'active';
         if (!statusFilter.includes(orgStatus as ClientStatus)) {
           return false;
         }
+      } else if (orgStatus === 'inactive') {
+        return false;
       }
 
       // Plan filter
@@ -156,14 +159,26 @@ export default function AgencyClientsClient() {
   const handleDeleteClient = async () => {
     if (!orgToDelete) return;
     setIsDeleting(true);
+    const deletedOrgId = orgToDelete.id;
+    const deletedOrgName = orgToDelete.name;
     try {
-      const deletedOrgId = orgToDelete.id;
       await deleteOrganization(deletedOrgId);
+      queryClient.setQueryData(queryKeys.agencyClients, (currentOrgs: typeof organizations | undefined) =>
+        currentOrgs?.map(org =>
+          org.id === deletedOrgId ? { ...org, status: 'inactive' as const } : org
+        )
+      );
       setOrgToDelete(null);
       invalidatePortalRequestData(queryClient, { orgId: deletedOrgId });
-      queryClient.invalidateQueries({ queryKey: queryKeys.agencyClients });
-      queryClient.invalidateQueries({ queryKey: queryKeys.sales.clientRevenue });
-      queryClient.invalidateQueries({ queryKey: queryKeys.sales.metrics });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.agencyClients }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.sales.clientRevenue }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.sales.metrics }),
+      ]);
+      toast.success(
+        t('agency.clients.deleteSuccess' as any, { name: deletedOrgName } as any) ??
+          `${deletedOrgName} was deactivated`
+      );
     } catch (err) {
       console.error('Failed to delete client:', err);
       toast.error(t('agency.clients.deleteFailed' as any) ?? 'Failed to delete client');

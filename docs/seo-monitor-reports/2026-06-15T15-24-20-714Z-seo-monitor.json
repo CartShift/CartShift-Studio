@@ -1,0 +1,960 @@
+{
+  "timestamp": "2026-06-15T15:24:20.714Z",
+  "ranges": {
+    "current": {
+      "startDate": "2026-03-17",
+      "endDate": "2026-06-14"
+    },
+    "previous": {
+      "startDate": "2025-12-17",
+      "endDate": "2026-03-16"
+    }
+  },
+  "siteInfo": {
+    "configuredSite": "sc-domain:cart-shift.com",
+    "usedSite": "sc-domain:cart-shift.com",
+    "sites": [
+      {
+        "siteUrl": "sc-domain:cart-shift.com",
+        "permissionLevel": "siteFullUser"
+      }
+    ]
+  },
+  "gsc": {
+    "queryPage": {
+      "ok": true,
+      "rowCount": 31
+    },
+    "pages": {
+      "ok": true,
+      "rowCount": 17
+    },
+    "sitemaps": {
+      "ok": true,
+      "rowCount": 1,
+      "issueCount": 0
+    },
+    "urlInspection": {
+      "ok": true,
+      "inspectedUrlCount": 15,
+      "issueCount": 20
+    }
+  },
+  "ga4": {
+    "ok": true,
+    "rowCount": 123
+  },
+  "analysis": {
+    "thresholds": {
+      "minImpressions": 5
+    },
+    "lowCtrOpportunities": [],
+    "strikingDistance": [
+      {
+        "query": "shopify seo evaluation review 2025 2026",
+        "page": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 13
+      },
+      {
+        "query": "shopify seo performance evaluation 2025 or 2026",
+        "page": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 15
+      },
+      {
+        "query": "shopify seo agency audit",
+        "page": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 29
+      }
+    ],
+    "decliningPages": [
+      {
+        "page": "https://cart-shift.com/en/work/",
+        "previousImpressions": 7,
+        "currentImpressions": 0,
+        "drop": 7,
+        "dropPct": 1
+      },
+      {
+        "page": "https://cart-shift.com/en/terms",
+        "previousImpressions": 20,
+        "currentImpressions": 1,
+        "drop": 19,
+        "dropPct": 0.95
+      },
+      {
+        "page": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+        "previousImpressions": 16,
+        "currentImpressions": 2,
+        "drop": 14,
+        "dropPct": 0.875
+      }
+    ],
+    "cannibalizationRisks": [
+      {
+        "query": "shopify site seo report generator",
+        "pages": [
+          "https://cart-shift.com/blog/shopify-seo-complete-guide",
+          "https://cart-shift.com/en/blog/shopify-seo-complete-guide"
+        ],
+        "impressions": 36,
+        "clicks": 0
+      }
+    ],
+    "gaDeclines": [
+      {
+        "path": "/he/",
+        "previousSessions": 103,
+        "currentSessions": 0,
+        "drop": 103,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/workboard/",
+        "previousSessions": 33,
+        "currentSessions": 0,
+        "drop": 33,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/requests/",
+        "previousSessions": 28,
+        "currentSessions": 0,
+        "drop": 28,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/clients/",
+        "previousSessions": 25,
+        "currentSessions": 0,
+        "drop": 25,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/settings/",
+        "previousSessions": 23,
+        "currentSessions": 0,
+        "drop": 23,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/login/",
+        "previousSessions": 22,
+        "currentSessions": 0,
+        "drop": 22,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/login/",
+        "previousSessions": 19,
+        "currentSessions": 0,
+        "drop": 19,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/consultations/",
+        "previousSessions": 16,
+        "currentSessions": 0,
+        "drop": 16,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/org/R9rA7iA7gGgrS9T0cOP4/dashboard",
+        "previousSessions": 15,
+        "currentSessions": 0,
+        "drop": 15,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/requests/",
+        "previousSessions": 15,
+        "currentSessions": 0,
+        "drop": 15,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/agency/workboard/",
+        "previousSessions": 14,
+        "currentSessions": 0,
+        "drop": 14,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/dashboard/",
+        "previousSessions": 13,
+        "currentSessions": 0,
+        "drop": 13,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/login/",
+        "previousSessions": 12,
+        "currentSessions": 0,
+        "drop": 12,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/agency/sales/",
+        "previousSessions": 12,
+        "currentSessions": 0,
+        "drop": 12,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/dashboard/",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/org/R9rA7iA7gGgrS9T0cOP4/dashboard/",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/org/h0Ik3ryXs5wrMAt7TQHK/dashboard",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/he/portal/dashboard/",
+        "previousSessions": 11,
+        "currentSessions": 0,
+        "drop": 11,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/portal/agency/settings/",
+        "previousSessions": 10,
+        "currentSessions": 0,
+        "drop": 10,
+        "dropPct": 1
+      },
+      {
+        "path": "/en/pricing/",
+        "previousSessions": 10,
+        "currentSessions": 0,
+        "drop": 10,
+        "dropPct": 1
+      }
+    ],
+    "blogContentIssues": [
+      {
+        "slug": "abandoned-cart-recovery-strategies-2026",
+        "file": "abandoned-cart-recovery-strategies-2026.md",
+        "title": "Abandoned Cart Recovery: 17 Proven Strategies to Recover Lost Sales in 2026",
+        "issues": ["few internal links"]
+      },
+      {
+        "slug": "ai-tools-ecommerce-complete-guide-2026",
+        "file": "ai-tools-ecommerce-complete-guide-2026.md",
+        "title": "Best AI Tools for E-commerce in 2026: Complete Guide to AI-Powered Stores",
+        "issues": ["few internal links"]
+      },
+      {
+        "slug": "amazon-fba-vs-shopify-2026",
+        "file": "amazon-fba-vs-shopify-2026.md",
+        "title": "Amazon FBA vs Shopify in 2026: Which Platform is Right for Your Business?",
+        "issues": ["few internal links"]
+      },
+      {
+        "slug": "tiktok-shop-complete-guide-2026",
+        "file": "tiktok-shop-complete-guide-2026.md",
+        "title": "TikTok Shop Complete Guide 2026: How to Sell Products on TikTok",
+        "issues": ["few internal links"]
+      }
+    ],
+    "recommendations": [
+      {
+        "priority": "High",
+        "type": "Search Console technical",
+        "action": "Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.",
+        "evidence": {
+          "urlInspection": [
+            {
+              "url": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+              "type": "Index coverage issue",
+              "severity": "High",
+              "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+              "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+            },
+            {
+              "url": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+              "type": "Index coverage issue",
+              "severity": "High",
+              "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+              "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+            },
+            {
+              "url": "https://cart-shift.com/en/terms",
+              "type": "Index coverage issue",
+              "severity": "High",
+              "evidence": "verdict=NEUTRAL; coverageState=Excluded by ‘noindex’ tag",
+              "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+            },
+            {
+              "url": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+              "type": "Index coverage issue",
+              "severity": "High",
+              "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+              "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+            }
+          ],
+          "sitemaps": []
+        },
+        "safeAutomation": "Apply deterministic repo fixes only; otherwise write an issue with GSC evidence and the affected URL."
+      },
+      {
+        "priority": "High",
+        "type": "Decline",
+        "action": "Investigate pages with material Search Console or GA4 declines before publishing new content.",
+        "evidence": {
+          "gsc": [
+            {
+              "page": "https://cart-shift.com/en/work/",
+              "previousImpressions": 7,
+              "currentImpressions": 0,
+              "drop": 7,
+              "dropPct": 1
+            },
+            {
+              "page": "https://cart-shift.com/en/terms",
+              "previousImpressions": 20,
+              "currentImpressions": 1,
+              "drop": 19,
+              "dropPct": 0.95
+            },
+            {
+              "page": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+              "previousImpressions": 16,
+              "currentImpressions": 2,
+              "drop": 14,
+              "dropPct": 0.875
+            }
+          ],
+          "ga4": [
+            {
+              "path": "/he/",
+              "previousSessions": 103,
+              "currentSessions": 0,
+              "drop": 103,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/agency/workboard/",
+              "previousSessions": 33,
+              "currentSessions": 0,
+              "drop": 33,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/requests/",
+              "previousSessions": 28,
+              "currentSessions": 0,
+              "drop": 28,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/agency/clients/",
+              "previousSessions": 25,
+              "currentSessions": 0,
+              "drop": 25,
+              "dropPct": 1
+            },
+            {
+              "path": "/he/portal/agency/settings/",
+              "previousSessions": 23,
+              "currentSessions": 0,
+              "drop": 23,
+              "dropPct": 1
+            }
+          ]
+        },
+        "safeAutomation": "Report only unless a clear local metadata/internal-link fix is available."
+      },
+      {
+        "priority": "Medium",
+        "type": "Cannibalization",
+        "action": "Choose a canonical intent owner for duplicate query/page clusters and adjust internal links.",
+        "evidence": [
+          {
+            "query": "shopify site seo report generator",
+            "pages": [
+              "https://cart-shift.com/blog/shopify-seo-complete-guide",
+              "https://cart-shift.com/en/blog/shopify-seo-complete-guide"
+            ],
+            "impressions": 36,
+            "clicks": 0
+          }
+        ],
+        "safeAutomation": "Report only by default; internal-link edits require clean files."
+      },
+      {
+        "priority": "Medium",
+        "type": "Content quality",
+        "action": "Fix blog posts with missing localized content, thin body copy, or weak internal linking.",
+        "evidence": [
+          {
+            "slug": "abandoned-cart-recovery-strategies-2026",
+            "file": "abandoned-cart-recovery-strategies-2026.md",
+            "title": "Abandoned Cart Recovery: 17 Proven Strategies to Recover Lost Sales in 2026",
+            "issues": ["few internal links"]
+          },
+          {
+            "slug": "ai-tools-ecommerce-complete-guide-2026",
+            "file": "ai-tools-ecommerce-complete-guide-2026.md",
+            "title": "Best AI Tools for E-commerce in 2026: Complete Guide to AI-Powered Stores",
+            "issues": ["few internal links"]
+          },
+          {
+            "slug": "amazon-fba-vs-shopify-2026",
+            "file": "amazon-fba-vs-shopify-2026.md",
+            "title": "Amazon FBA vs Shopify in 2026: Which Platform is Right for Your Business?",
+            "issues": ["few internal links"]
+          },
+          {
+            "slug": "tiktok-shop-complete-guide-2026",
+            "file": "tiktok-shop-complete-guide-2026.md",
+            "title": "TikTok Shop Complete Guide 2026: How to Sell Products on TikTok",
+            "issues": ["few internal links"]
+          }
+        ],
+        "safeAutomation": "Can create a prioritized task report; content edits require validation."
+      }
+    ],
+    "searchConsoleTechnical": {
+      "sitemaps": {
+        "ok": true,
+        "status": 200,
+        "entries": [
+          {
+            "path": "https://cart-shift.com/sitemap.xml",
+            "type": "sitemap",
+            "isPending": false,
+            "isSitemapsIndex": false,
+            "lastSubmitted": "2026-02-05T22:01:22.442Z",
+            "lastDownloaded": "2026-02-05T22:01:23.861Z",
+            "warnings": 0,
+            "errors": 0,
+            "contents": [
+              {
+                "type": "web",
+                "submitted": 86,
+                "indexed": 0
+              }
+            ]
+          }
+        ],
+        "issues": []
+      },
+      "inspections": [
+        {
+          "url": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+          "reasons": [
+            "cannibalization risk for \"shopify site seo report generator\"",
+            "striking-distance query",
+            "top Search Console page"
+          ],
+          "ok": true,
+          "status": 200,
+          "verdict": "NEUTRAL",
+          "coverageState": "Crawled - currently not indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-04-26T10:38:37Z",
+          "sitemap": [],
+          "referringUrls": ["https://cart-shift.com/sitemap.xml"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=FlvdAit2P6qeGSttKnaAZQ&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+          "reasons": [
+            "material GSC impression decline",
+            "cannibalization risk for \"shopify site seo report generator\"",
+            "top Search Console page"
+          ],
+          "ok": true,
+          "status": 200,
+          "verdict": "NEUTRAL",
+          "coverageState": "Crawled - currently not indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-04-06T03:16:32Z",
+          "sitemap": [],
+          "referringUrls": ["http://cart-shift.com/"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=-G_RxzeBeUE-FjGdrmYxyA&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/terms",
+          "reasons": ["material GSC impression decline", "top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "NEUTRAL",
+          "coverageState": "Excluded by ‘noindex’ tag",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "BLOCKED_BY_META_TAG",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/terms",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-05-14T12:02:50Z",
+          "sitemap": [],
+          "referringUrls": ["https://cart-shift.com/he/terms", "http://cart-shift.com/"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=AhMRBztFfZMEry8tKsTDjA&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/work/",
+          "reasons": ["material GSC impression decline"],
+          "ok": true,
+          "status": 200,
+          "verdict": "NEUTRAL",
+          "coverageState": "Page with redirect",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/work/",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-04-25T07:59:25Z",
+          "sitemap": [],
+          "referringUrls": [],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=Q4Gvo943aQn6LyQih3ATwg&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+          "reasons": ["striking-distance query", "top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "NEUTRAL",
+          "coverageState": "Crawled - currently not indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-04-26T10:56:50Z",
+          "sitemap": [],
+          "referringUrls": ["https://cart-shift.com/en/blog/shopify-seo-complete-guide"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=ESbDKVc8iuhVPOwSiXPrqQ&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/blog",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/blog",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-05-19T21:58:36Z",
+          "sitemap": [],
+          "referringUrls": ["https://cart-shift.com/en/blog/", "https://cart-shift.com/privacy"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=2WrvQ-foNPDmghFz8cchkw&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/",
+          "userCanonical": "https://cart-shift.com/en/",
+          "lastCrawlTime": "2026-05-07T05:32:16Z",
+          "sitemap": [],
+          "referringUrls": ["http://cart-shift.com/"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=jiAi2Ue5P6o0D_Ed9Xhy_Q&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/blog/why-your-store-isnt-converting",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/blog/why-your-store-isnt-converting",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-05-11T21:46:46Z",
+          "sitemap": [],
+          "referringUrls": ["http://cart-shift.com/"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=Ad-u2nRhQHh9PG4j5Uqjfw&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/contact",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/contact",
+          "userCanonical": "",
+          "lastCrawlTime": "2026-05-10T09:03:37Z",
+          "sitemap": [],
+          "referringUrls": [
+            "https://cart-shift.com/he/contact",
+            "https://cart-shift.com/en/blog/customer-lifetime-value-guide"
+          ],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=k4BpEStt5UvFwjaXad1Evg&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/pricing",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/pricing",
+          "userCanonical": "https://cart-shift.com/en/pricing",
+          "lastCrawlTime": "2026-04-20T01:30:41Z",
+          "sitemap": [],
+          "referringUrls": [
+            "https://cart-shift.com/he/pricing",
+            "https://cart-shift.com/en/blog/why-your-store-isnt-converting",
+            "https://cart-shift.com/sitemap.xml"
+          ],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=CimD3ATA08yB8l9S9MU6JQ&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/en/tools/client-portal",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/en/tools/client-portal",
+          "userCanonical": "https://cart-shift.com/en/tools/client-portal",
+          "lastCrawlTime": "2026-03-19T06:14:47Z",
+          "sitemap": [],
+          "referringUrls": [],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=ijgzKA4DKx-zHoZBAlgtYQ&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/he/blog",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/he/blog",
+          "userCanonical": "https://cart-shift.com/he/blog",
+          "lastCrawlTime": "2026-03-15T13:25:21Z",
+          "sitemap": [],
+          "referringUrls": [
+            "https://cart-shift.com/en/blog/",
+            "https://cart-shift.com/he/solutions/shopify"
+          ],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=anh32gx9URvBz_eK1XIDzQ&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/he/contact",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/he/contact",
+          "userCanonical": "https://cart-shift.com/he/contact",
+          "lastCrawlTime": "2026-03-27T03:01:53Z",
+          "sitemap": [],
+          "referringUrls": ["https://cart-shift.com/sitemap.xml"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=5CqPYBXKvlOJmdJ65odQ-w&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/he/pricing",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/he/pricing",
+          "userCanonical": "https://cart-shift.com/he/pricing",
+          "lastCrawlTime": "2026-03-28T04:31:03Z",
+          "sitemap": [],
+          "referringUrls": [],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=_bfCSpwOVhwPGO92asgCrg&utm_medium=link&utm_source=api"
+        },
+        {
+          "url": "https://cart-shift.com/he/work",
+          "reasons": ["top Search Console page"],
+          "ok": true,
+          "status": 200,
+          "verdict": "PASS",
+          "coverageState": "Submitted and indexed",
+          "robotsTxtState": "ALLOWED",
+          "indexingState": "INDEXING_ALLOWED",
+          "pageFetchState": "SUCCESSFUL",
+          "googleCanonical": "https://cart-shift.com/he/work",
+          "userCanonical": "https://cart-shift.com/he/work",
+          "lastCrawlTime": "2026-03-14T12:42:20Z",
+          "sitemap": [],
+          "referringUrls": ["https://cart-shift.com/he/tools/store-analyzer"],
+          "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:cart-shift.com&id=u9O99AWxTPj8p9odJFC7Ig&utm_medium=link&utm_source=api"
+        }
+      ],
+      "inspectedUrlCount": 15,
+      "sitemapIssues": [],
+      "urlInspectionIssues": [
+        {
+          "url": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/terms",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Excluded by ‘noindex’ tag",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/en/terms",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/work/",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/blog",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/",
+          "type": "Canonical mismatch",
+          "severity": "Medium",
+          "evidence": "Google canonical=https://cart-shift.com/; user canonical=https://cart-shift.com/en/",
+          "safeAutomation": "Report first; canonical changes need page-intent review."
+        },
+        {
+          "url": "https://cart-shift.com/",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/blog/why-your-store-isnt-converting",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/contact",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/pricing",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/en/tools/client-portal",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/he/blog",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/he/contact",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/he/pricing",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        },
+        {
+          "url": "https://cart-shift.com/he/work",
+          "type": "URL not reported in GSC sitemap field",
+          "severity": "Low",
+          "evidence": "URL Inspection returned no sitemap membership.",
+          "safeAutomation": "Verify local sitemap output before changing app/sitemap.ts."
+        }
+      ],
+      "highSeverityIssues": [
+        {
+          "url": "https://cart-shift.com/en/blog/shopify-seo-complete-guide",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-complete-guide",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/en/terms",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Excluded by ‘noindex’ tag",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        },
+        {
+          "url": "https://cart-shift.com/blog/shopify-seo-audit-checklist",
+          "type": "Index coverage issue",
+          "severity": "High",
+          "evidence": "verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "safeAutomation": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content."
+        }
+      ]
+    },
+    "repoFixes": {
+      "plan": [
+        {
+          "type": "Localize Markdown blog links",
+          "priority": "High",
+          "files": ["lib/markdown.ts"],
+          "evidence": "Search Console showed default-locale /blog/* URLs competing with localized /{locale}/blog/* URLs.",
+          "action": "Ensure raw Markdown article links render to /{locale}/blog/* so Google receives one canonical localized path.",
+          "safeToApply": true
+        },
+        {
+          "type": "Index coverage issue",
+          "priority": "High",
+          "files": [],
+          "evidence": "https://cart-shift.com/en/blog/shopify-seo-complete-guide: verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "action": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content.",
+          "safeToApply": false
+        },
+        {
+          "type": "Index coverage issue",
+          "priority": "High",
+          "files": [],
+          "evidence": "https://cart-shift.com/blog/shopify-seo-complete-guide: verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "action": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content.",
+          "safeToApply": false
+        },
+        {
+          "type": "Index coverage issue",
+          "priority": "High",
+          "files": [],
+          "evidence": "https://cart-shift.com/en/terms: verdict=NEUTRAL; coverageState=Excluded by ‘noindex’ tag",
+          "action": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content.",
+          "safeToApply": false
+        },
+        {
+          "type": "Index coverage issue",
+          "priority": "High",
+          "files": [],
+          "evidence": "https://cart-shift.com/blog/shopify-seo-audit-checklist: verdict=NEUTRAL; coverageState=Crawled - currently not indexed",
+          "action": "Map to the local route, then fix technical blockers or create an editorial task for thin/duplicate content.",
+          "safeToApply": false
+        }
+      ],
+      "appliedFixes": [],
+      "skippedFixes": []
+    }
+  }
+}
