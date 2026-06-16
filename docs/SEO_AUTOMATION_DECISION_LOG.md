@@ -90,3 +90,21 @@ The automation should append a new entry for every run, even when it decides not
 - **Validation:** Skipped. `pnpm build` could not be started.
 - **Deployment:** Skipped. No files were staged, committed, or pushed.
 - **Likely fix:** Restore local sandbox process execution, then rerun the automation so it can verify credential variables and Git push access before making SEO changes.
+
+## 2026-06-16 - CartShift SEO Content Refresher
+
+- **Outcome:** Refreshed and deployed
+- **Run time:** 2026-06-16T20:32:41+03:00
+- **Data sources used:** `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, current `content/blog/` inventory, Google Search Console Search Analytics for `sc-domain:cart-shift.com`, GA4 Data API, git status, and Git push dry run.
+- **Access verification:** Required Google credential categories were present in `.env.local`; Search Console API returned `200`; GA4 Data API returned `200`; `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Chosen page:** `content/blog/shopify-seo-complete-guide.md`
+- **Source data:** GSC date range 2026-03-16 to 2026-06-13 showed `/en/blog/shopify-seo-complete-guide` with 367 impressions, 0 clicks, 0% CTR, and average position 74.8. Query-level data included `shopify seo` with 220 impressions, `website seo shopify` with 36 impressions, and `shopify site seo report generator` with 35 impressions, all at 0% CTR. The non-localized `/blog/shopify-seo-complete-guide` URL declined from 16 to 2 impressions versus the previous 90-day period. GA4 access succeeded and showed low but present blog traffic, with no qualifying GA4 decline for this page.
+- **Rationale:** The page is a strategic Shopify SEO pillar with the highest current GSC blog impressions, broad-query mismatch, 0% CTR, a report-generator query gap, and an opportunity to strengthen Hebrew support without rewriting strong existing sections.
+- **Target intent:** Informational | Commercial
+- **Primary keyword:** Shopify SEO
+- **Supporting keywords:** SEO for Shopify, Shopify SEO guide 2026, Shopify SEO audit, Shopify SEO report generator, Shopify SEO results, Shopify SEO performance evaluation
+- **Changes made:** Tightened English and Hebrew metadata, added an early quick-answer section for broad `shopify seo` intent, added a Shopify SEO report-generator section tied to analyzer/performance-evaluation internal links, clarified CTR/title guidance, and expanded the Hebrew article body with matching measurement, indexability, and intent-alignment content.
+- **Affected files:** `content/blog/shopify-seo-complete-guide.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Validation:** `pnpm exec prettier --check content/blog/shopify-seo-complete-guide.md` passed. `pnpm build` passed on Node v24.1.0 with an engine warning for the repo's Node 22.x target and several existing blog routes retrying after static generation exceeded 60 seconds, then completing successfully.
+- **Deployment:** Committed and pushed only automation-owned staged changes to `origin/main`; Vercel is expected to deploy automatically from the main branch.
+- **Worktree safety:** The target article was clean before editing. Pre-existing unrelated dirty files, generated translation files, monitor artifacts, and the unrelated untracked WooCommerce migration article/assets were not staged or overwritten.
