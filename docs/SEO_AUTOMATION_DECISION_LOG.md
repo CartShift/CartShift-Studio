@@ -90,6 +90,7 @@ The automation should append a new entry for every run, even when it decides not
 - **Validation:** Skipped. `pnpm build` could not be started.
 - **Deployment:** Skipped. No files were staged, committed, or pushed.
 - **Likely fix:** Restore local sandbox process execution, then rerun the automation so it can verify credential variables and Git push access before making SEO changes.
+
 ## 2026-06-08 - Blocked: local command runner unavailable
 
 - **Automation:** CartShift SEO Article Publisher
@@ -101,6 +102,7 @@ The automation should append a new entry for every run, even when it decides not
 - **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md`; automation memory only.
 - **Validation:** Not run; command execution unavailable.
 - **Deployment:** Not attempted.
+
 ## 2026-06-09 - Blocked: access verification unavailable
 
 - **Automation:** CartShift SEO Content Refresher
