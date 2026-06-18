@@ -147,3 +147,35 @@ The automation should append a new entry for every run, even when it decides not
 - **Validation:** `pnpm exec prettier --check content/blog/shopify-seo-complete-guide.md` passed. `pnpm build` passed on Node v24.1.0 with an engine warning for the repo's Node 22.x target and several existing blog routes retrying after static generation exceeded 60 seconds, then completing successfully.
 - **Deployment:** Committed and pushed only automation-owned staged changes to `origin/main`; Vercel is expected to deploy automatically from the main branch.
 - **Worktree safety:** The target article was clean before editing. Pre-existing unrelated dirty files, generated translation files, monitor artifacts, and the unrelated untracked WooCommerce migration article/assets were not staged or overwritten.
+
+## 2026-06-17 - CartShift SEO Article Publisher
+
+- **Outcome:** Blocked
+- **Run time:** 2026-06-17T18:23:36+03:00
+- **Data sources used:** `docs/SEO_AUTOMATION_CREDENTIALS.md`, local environment variable presence checks, `git status`, `git remote -v`, and `git push --dry-run origin HEAD:main`.
+- **Access verification:** `git push --dry-run origin HEAD:main` succeeded, so non-interactive Git push access is available. Required Google credential categories were missing in this environment and could not support Search Console or GA4 access. Secret values were not printed.
+- **Missing access category:** Google Search Console credentials and GA4 credentials. The following required variables/categories were absent: `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SEARCH_CONSOLE_SITE_URL`, `GA4_PROPERTY_ID`, and `GOOGLE_ANALYTICS_PROPERTY_ID`.
+- **Chosen opportunity:** None. SEO opportunity analysis was skipped because required Google data access was unavailable.
+- **Rationale:** The automation must verify Google Search Console and GA4 access before selecting an article opportunity or publishing. Proceeding without that data would break the run policy and risk low-signal or duplicate content decisions.
+- **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Validation:** Content validation and `pnpm build` were skipped because no article changes were made after the blocked access check.
+- **Deployment:** Skipped. No content files were created or modified, and no commit or push was attempted beyond the push-access dry run.
+- **Worktree safety:** The workspace was clean before logging this blocked run, so no local user changes were at risk.
+
+## 2026-06-18 - CartShift SEO Article Publisher
+
+- **Outcome:** Written and deployed
+- **Run time:** 2026-06-18T12:50:23+03:00
+- **Data sources used:** `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, current `content/blog/` inventory, Google Search Console Search Analytics for `sc-domain:cart-shift.com`, GA4 Data API, git status, and Git push dry run.
+- **Access verification:** Required Google credential categories were restored through the repo's dotenv-aware automation path in `.env.local`; Search Console API returned `200`; GA4 Data API returned `200`; `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Opportunity:** Shopify checkout optimization guide targeting the conversion-friction gap around stores that attract qualified traffic but still lose buyers late in the funnel.
+- **Source data:** GSC for 2026-03-20 to 2026-06-17 showed `/en/blog/why-your-store-isnt-converting` with 167 impressions and query demand including `shopify store not converting` (83 impressions, position 55.1) and `why is my shopify store not converting` (12 impressions, position 53.6). The stronger 4-20 query cluster remained the already-covered Shopify SEO performance-evaluation intent. GA4 showed ongoing sessions across the conversion cluster, including `/en/blog/store-speed-vs-conversion`, `/en/blog/conversion-audit-checklist`, and related localized conversion pages, confirming active interest but no dedicated Shopify checkout article in the current inventory.
+- **Rationale:** Existing conversion content covers broad diagnosis, speed, and audit workflows, but there was no focused article on Shopify checkout optimization or customization decisions. This article fills a service-aligned gap from the keyword strategy (`shopify checkout customization`) without duplicating the broader CRO and SEO posts, and it creates a clearer path from informational conversion content into Shopify implementation work.
+- **Target intent:** Informational | Commercial
+- **Primary keyword:** Shopify checkout optimization
+- **Supporting keywords:** Shopify checkout customization, optimize Shopify checkout, Shopify checkout friction, mobile checkout optimization, Shopify checkout conversion
+- **Affected files:** `content/blog/shopify-checkout-optimization.md`, `public/images/blog/shopify-checkout-optimization.webp`, `public/images/blog/og/shopify-checkout-optimization.webp`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Article notes:** Added one bilingual article with English frontmatter, Hebrew frontmatter fields, English body, Hebrew body after `---he---`, contextual internal links, and a service CTA. Reused the existing conversion-audit image assets as a slug-specific fallback to avoid broken image references while keeping the release deterministic.
+- **Validation:** `pnpm exec prettier --check content/blog/shopify-checkout-optimization.md` passed. `pnpm build` passed on Node v24.1.0 with the existing engine warning for the repo's Node 22.x target.
+- **Deployment:** Committed and pushed only automation-owned staged changes to `origin/main`; Vercel is expected to deploy automatically from the main branch.
+- **Worktree safety:** The unrelated dirty file `data/social/linkedin-blog-post-ledger.json` was left untouched and unstaged.
