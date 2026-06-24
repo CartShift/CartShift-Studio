@@ -181,3 +181,21 @@ The automation should append a new entry for every run, even when it decides not
 - **Validation:** `pnpm exec prettier --check content/blog/shopify-checkout-optimization.md` passed. `pnpm build` passed on Node v24.1.0 with the existing engine warning for the repo's Node 22.x target.
 - **Deployment:** Committed and pushed only automation-owned staged changes to `origin/main`; Vercel is expected to deploy automatically from the main branch.
 - **Worktree safety:** The unrelated dirty file `data/social/linkedin-blog-post-ledger.json` was left untouched and unstaged.
+
+## 2026-06-24 - CartShift SEO Content Refresher
+
+- **Outcome:** Refreshed and deployed
+- **Run time:** 2026-06-24T16:58:27+03:00
+- **Data sources used:** Automation memory, `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, current `content/blog/` inventory, Google Search Console Search Analytics for `sc-domain:cart-shift.com`, GA4 Data API, git status, and Git push dry run.
+- **Access verification:** Required Google credential categories were available through `.env.local`; Search Console returned `200`; GA4 returned `200`; `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Chosen page:** `content/blog/shopify-seo-performance-evaluation.md`
+- **Source data:** GSC for 2026-03-26 to 2026-06-23 showed `/en/blog/shopify-seo-performance-evaluation` with 10 impressions, 0 clicks, 0% CTR, and average position 14.7. Query-level data included `shopify seo review` with 8 impressions, 0 clicks, 0% CTR, and average position 16.4. Higher-impression Shopify SEO and conversion pages were outside the 4-20 range, while GA4 organic blog traffic remained sparse with one `/en/blog/amazon-fba-vs-shopify-2026` row at 2 sessions.
+- **Rationale:** This was the only existing clean article in the current GSC blog data that matched the automation's average-position 4-20 priority, and the ranking query used `review` language that the article only partially addressed.
+- **Target intent:** Diagnostic | Commercial
+- **Primary keyword:** Shopify SEO review
+- **Supporting keywords:** Shopify SEO performance evaluation, Shopify SEO audit, Shopify SEO report, Shopify SEO agency review, Shopify SEO rankings, Shopify SEO CTR
+- **Changes made:** Updated English and Hebrew metadata to include `Shopify SEO review`, adjusted the opening language, and added a concise bilingual intent-disambiguation section that separates review, audit, report, and agency-review intent with contextual links to the SEO audit checklist and store analyzer.
+- **Affected files:** `content/blog/shopify-seo-performance-evaluation.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Validation:** `pnpm exec prettier --check content/blog/shopify-seo-performance-evaluation.md` passed. `pnpm build` passed on Node v24.1.0 with the existing Node 22.x engine warning and several unrelated blog routes retrying after 60-second static-generation timeouts before all 199 pages generated successfully.
+- **Deployment:** Committed and pushed only automation-owned staged changes to `origin/main`; Vercel is expected to deploy automatically from the main branch.
+- **Worktree safety:** The target article was clean before editing. Pre-existing dirty and untracked files were preserved and left unstaged, including `content/blog/amazon-fba-vs-shopify-2026.md`, `content/blog/headless-shopify-guide.md`, `content/blog/woocommerce-performance-optimization.md`, social ledger/queue files, SEO monitor logs/reports, and the pre-existing uncommitted decision-log entry.
