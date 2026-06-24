@@ -15,6 +15,8 @@ Amazon and Shopify solve different problems. Amazon gives you marketplace demand
 
 The practical question is: where should the first serious channel bet go, and what control are you willing to trade for speed? For costs, always check [Amazon's seller pricing page](https://sell.amazon.com/pricing) and [Shopify's pricing page](https://www.shopify.com/pricing), because fees change and small differences matter once volume grows.
 
+If Shopify is the channel you want to own, use our [Shopify SEO guide](/blog/shopify-seo-complete-guide) to plan how that store will earn search visibility instead of depending only on paid acquisition.
+
 ## The Core Difference: Marketplace vs Owned Store
 
 **Amazon FBA (Fulfillment by Amazon):**
@@ -688,6 +690,8 @@ Your profitable e-commerce business starts today.
 Amazon ו-Shopify פותרות בעיות שונות. Amazon נותנת ביקוש של marketplace ומכונת fulfillment. Shopify נותנת בית למותג, קשר ישיר עם הלקוח ושליטה גדולה יותר בסיפור הרווח. כשמתייחסים אליהן כאויבות, ההחלטה נהיית שטחית.
 
 השאלה המעשית היא איפה לשים את ההימור הרציני הראשון, ועל איזו שליטה אתם מוכנים לוותר בשביל מהירות. לגבי עלויות, תמיד בדקו את [עמוד התמחור למוכרים של Amazon](https://sell.amazon.com/pricing) ואת [עמוד המחירים של Shopify](https://www.shopify.com/pricing), כי עמלות משתנות והבדלים קטנים נהיים חשובים כשהווליום גדל.
+
+אם Shopify היא הערוץ שאתם רוצים לבנות כנכס עצמאי, השתמשו ב[מדריך Shopify SEO](/blog/shopify-seo-complete-guide) שלנו כדי לתכנן איך החנות תשיג נראות אורגנית ולא תסתמך רק על רכישת תנועה בתשלום.
 
 ## ההבדל המרכזי: מרקטפלייס מול חנות עצמאית
 

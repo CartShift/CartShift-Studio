@@ -182,6 +182,44 @@ The automation should append a new entry for every run, even when it decides not
 - **Deployment:** Committed and pushed only automation-owned staged changes to `origin/main`; Vercel is expected to deploy automatically from the main branch.
 - **Worktree safety:** The unrelated dirty file `data/social/linkedin-blog-post-ledger.json` was left untouched and unstaged.
 
+## 2026-06-22 - CartShift SEO Article Publisher
+
+- **Outcome:** Written, not deployed
+- **Run time:** 2026-06-22T15:25:00+03:00
+- **Data sources used:** `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, current `content/blog/` inventory, Google Search Console Search Analytics and URL Inspection for `sc-domain:cart-shift.com`, GA4 Data API, official Shopify developer documentation, git status, and Git push dry run.
+- **Access verification:** Required Google credential categories were available through the repo's dotenv-aware `.env.local` path; Search Console API returned successfully; GA4 Data API returned successfully; `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Opportunity:** Headless Shopify decision guide targeting `headless Shopify`, `headless Shopify development`, and Hydrogen architecture evaluation intent.
+- **Source data:** GSC for 2026-03-24 to 2026-06-21 found no qualifying high-impression, low-CTR opportunity. The only position 4-20 queries were a tiny, already-covered Shopify SEO evaluation cluster with 1-2 impressions. GA4 access succeeded. The repo keyword strategy identifies `headless shopify development` as an advanced commercial opportunity, while the blog inventory had no dedicated headless, Hydrogen, or custom storefront decision guide.
+- **Rationale:** The article fills a documented, service-aligned gap without adding another thin variant to the crowded Shopify SEO, speed, apps, checkout, platform-comparison, or migration clusters. It focuses on architecture fit, operating cost, performance and SEO risk, Hydrogen versus a custom stack, and migration ownership.
+- **Target intent:** Informational | Commercial
+- **Primary keyword:** Headless Shopify
+- **Supporting keywords:** headless Shopify development, Shopify Hydrogen, Hydrogen and Oxygen, Shopify Storefront API, custom Shopify storefront, headless commerce SEO
+- **Affected files:** `content/blog/headless-shopify-guide.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Article notes:** Added exactly one bilingual article with English frontmatter, Hebrew title/excerpt/category fields, English body, Hebrew body after `---he---`, contextual internal links, natural service CTAs, and links to current official Shopify documentation. Reused an existing valid Shopify technology-stack image rather than generating or duplicating a new asset.
+- **Validation:** `pnpm exec prettier --check content/blog/headless-shopify-guide.md` passed. The first `pnpm build` attempt was blocked by an existing Next.js build lock. After confirming no active build owned the stale lock, the retry compiled successfully, finished TypeScript, and generated all 197 static pages. However, it remained alive with Next.js worker processes and no completion for nearly one hour after repeated existing static-generation timeouts, so the automation stopped only its own build process tree and treated validation as incomplete.
+- **Deployment:** Skipped. No files were staged, committed, or pushed because `pnpm build` did not exit successfully. Vercel Git deployment is not expected for this run.
+- **Likely fix:** Run the build in an isolated CI or local shell with only one Next.js build process, then investigate the existing long-running static-generation workers and 60-second retries across blog and website routes before releasing the article.
+- **Worktree safety:** Pre-existing and concurrently created changes in `content/blog/amazon-fba-vs-shopify-2026.md`, `data/social/linkedin-blog-post-ledger.json`, `data/social/linkedin-post-queue.json`, `docs/SEO_MONITOR_DECISION_LOG.md`, and the separate `2026-06-22T12-25-26-751Z` SEO monitor report were preserved and left unstaged.
+
+## 2026-06-24 - CartShift SEO Article Publisher
+
+- **Outcome:** Written, not deployed
+- **Run time:** 2026-06-24T16:48:08+03:00
+- **Data sources used:** Automation memory, `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, current `content/blog/` inventory, Google Search Console Search Analytics for `sc-domain:cart-shift.com`, GA4 Data API, official WooCommerce HPOS documentation, official WooCommerce developer HPOS documentation, Google Core Web Vitals documentation, git status, and Git push dry run.
+- **Access verification:** Required Google credential categories were available through `.env.local`; the raw service-account JSON required loose field extraction because literal private-key line breaks prevent strict JSON parsing, but Search Console returned `200`, GA4 returned `200`, and `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Opportunity:** WooCommerce performance optimization guide targeting `woocommerce performance optimization`, `woocommerce speed optimization`, WooCommerce Core Web Vitals, HPOS readiness, product/category page speed, and checkout performance.
+- **Source data:** GSC for 2026-03-24 to 2026-06-21 showed no strong high-impression, low-CTR, position 4-20 content gap; only tiny Shopify SEO evaluation variants appeared at positions 10-15 with 1-2 impressions and were already served by existing Shopify SEO content. GA4 returned one organic blog row for `/en/blog/amazon-fba-vs-shopify-2026` with 2 sessions. The repo keyword strategy explicitly lists `woocommerce performance optimization` as a medium-priority informational gap with a planned `/blog/woocommerce-performance-optimization` target, while the inventory had only broad WordPress performance and technical SEO coverage.
+- **Rationale:** A dedicated WooCommerce performance article fills a documented WordPress ecommerce service gap without adding another thin Shopify SEO, checkout, migration, or platform-comparison variant. The article focuses on WooCommerce-specific revenue paths: product templates, category/filter queries, dynamic cart and checkout, plugin load, HPOS, hosting, object cache, database cleanup, and measurement.
+- **Target intent:** Informational | Commercial
+- **Primary keyword:** WooCommerce performance optimization
+- **Supporting keywords:** WooCommerce speed optimization, WooCommerce Core Web Vitals, WooCommerce checkout speed, WooCommerce product page speed, WooCommerce HPOS, WordPress ecommerce performance
+- **Affected files:** `content/blog/woocommerce-performance-optimization.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Article notes:** Added exactly one bilingual article with English frontmatter, Hebrew title/excerpt/category fields, English body, Hebrew body after `---he---`, contextual internal links, official documentation links, and a natural CartShift Studio service CTA. Reused the existing WordPress performance image assets to avoid introducing broken or unvalidated media.
+- **Validation:** `pnpm exec prettier --check content/blog/woocommerce-performance-optimization.md` passed. `pnpm build` did not run to completion because an existing separate `pnpm build` / `next build` process that started at 2026-06-24T16:44:54+03:00 was still active and Next reported `Another next build process is already running`. The automation did not remove `.next/lock` or stop the unrelated build process.
+- **Deployment:** Skipped. No files were staged, committed, or pushed because full build validation was blocked by the active build lock. Vercel Git deployment is not expected for this run.
+- **Likely fix:** Let the active build finish or run validation in an isolated shell with no other Next build process, then rerun `pnpm build`; if it passes, stage only automation-owned files and push to `origin/main`.
+- **Worktree safety:** Pre-existing dirty files and untracked prior automation artifacts were preserved, including `content/blog/amazon-fba-vs-shopify-2026.md`, `content/blog/headless-shopify-guide.md`, social ledger/queue files, SEO monitor logs/reports, and the pre-existing uncommitted decision-log entry.
+
 ## 2026-06-24 - CartShift SEO Content Refresher
 
 - **Outcome:** Refreshed and deployed
