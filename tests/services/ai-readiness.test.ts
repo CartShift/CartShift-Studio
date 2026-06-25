@@ -16,9 +16,14 @@ describe('AIReadinessService.analyze', () => {
 
     const result = AIReadinessService.analyze(html);
 
-    expect(result.score).toBeGreaterThan(50);
+    expect(result.score).toBeGreaterThan(35);
+    expect(result.score).toBeLessThan(100);
     expect(result.openGraphTags).toBe(true);
     expect(result.structuredDataTypes).toContain('Product');
+    expect(result.confidence).toBe('insufficient_evidence');
+    expect(result.limitations).toContain(
+      'Product pages were not scanned, so product data coverage is not fully verified.'
+    );
   });
 
   it('flags sparse pages as needing improvement', () => {
@@ -26,5 +31,6 @@ describe('AIReadinessService.analyze', () => {
 
     expect(result.aiReadinessStatus).toBe('not_optimized');
     expect(result.structuredDataTypes).toEqual([]);
+    expect(result.label).toBe('Content & structured-data readiness');
   });
 });

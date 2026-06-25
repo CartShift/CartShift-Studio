@@ -72,6 +72,42 @@ const weakCheckoutHtml = `<!DOCTYPE html>
 </body>
 </html>`;
 
+const mayaHappyHairHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Maya Happy Hair</title>
+  <meta name="description" content="Maya Happy Hair sells salon-grade hair extensions and beauty care for confident everyday styling.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="canonical" href="https://maya.example.com/">
+  <script src="/wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.js"></script>
+  ${Array.from({ length: 24 }, (_, i) => `<script src="/wp-content/themes/maya/script-${i}.js"></script>`).join('\n')}
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Organization","name":"Maya Happy Hair","url":"https://maya.example.com"}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","name":"Maya Happy Hair","url":"https://maya.example.com"}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebPage","name":"Home"}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"ImageObject","contentUrl":"https://maya.example.com/hero.jpg"}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[]}
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Maya Happy Hair</h1>
+    <p>Premium hair extensions, beauty care, salon styling, and boutique hair accessories.</p>
+    <a href="https://wa.me/972501234567">Message us on WhatsApp</a>
+    <a href="https://gmpg.org/xfn/11">XFN profile</a>
+    <a href="/cart">Cart</a>
+  </main>
+</body>
+</html>`;
+
 function buildPageSpeedPayload() {
   return {
     lighthouseResult: {
@@ -371,5 +407,47 @@ describe('AnalyzerService.analyzeStore', () => {
       ])
     );
     expect(result.sections.seo.recommendations.every(rec => rec.evidence)).toBe(true);
+  });
+
+  it('keeps the Maya Happy Hair homepage regression confidence-aware', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('quota exceeded', { status: 429 }))
+    );
+    mockSafeFetch.mockResolvedValueOnce({
+      html: mayaHappyHairHtml,
+      finalUrl: 'https://maya.example.com',
+    });
+
+    const result = await AnalyzerService.analyzeStore('https://maya.example.com');
+
+    expect(result.competitorAnalysis?.competitors).toEqual([]);
+    expect(result.competitorAnalysis?.marketPosition).toBe('unknown');
+    expect(result.sections.seo.recommendations.map(rec => rec.code)).not.toContain(
+      'ai-product-schema'
+    );
+    expect(result.scanScope?.productSchemaCoverageStatus).toBe('not_scanned');
+    expect(result.scanScope?.productPagesScanned).toBe(false);
+
+    const scriptFinding = result.sections.performance.findings.find(
+      finding => finding.title === 'Many script references detected'
+    );
+    expect(scriptFinding?.confidence).toBe('estimated');
+    expect(result.sections.performance.recommendations.find(rec => rec.code === 'script-count')?.impact).not.toBe(
+      'high'
+    );
+
+    expect(result.aiAnalysis?.score).toBeLessThan(100);
+    expect(result.aiAnalysis?.confidence).toBe('insufficient_evidence');
+    expect(result.aiAnalysis?.limitations).toEqual(
+      expect.arrayContaining([
+        'Product pages were not scanned, so product data coverage is not fully verified.',
+      ])
+    );
+    expect(
+      Object.values(result.sections).flatMap(section =>
+        section.recommendations.map(rec => rec.source)
+      )
+    ).toContain('static_html');
   });
 });

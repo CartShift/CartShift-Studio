@@ -1,4 +1,8 @@
-import { Competitor, CompetitorAnalysis } from '@/lib/types/analyzer';
+import {
+  Competitor,
+  CompetitorAnalysis,
+  DomainClassification,
+} from '@/lib/types/analyzer';
 
 const CATEGORY_KEYWORDS: Record<
   string,
@@ -49,10 +53,14 @@ const CATEGORY_KEYWORDS: Record<
       'care',
       'wellness',
       'fragrance',
+      'hair',
+      'salon',
+      'extensions',
       'טיפוח',
       'יופי',
       'קוסמטיקה',
       'בושם',
+      'שיער',
     ],
     referenceStores: ['sephora.com', 'ulta.com', 'glossier.com'],
   },
@@ -74,29 +82,56 @@ const CATEGORY_KEYWORDS: Record<
   },
 };
 
-const EXCLUDED_EXTERNAL_DOMAINS = [
-  'facebook.com',
-  'instagram.com',
-  'twitter.com',
-  'x.com',
-  'tiktok.com',
-  'youtube.com',
-  'linkedin.com',
-  'pinterest.com',
-  'whatsapp.com',
-  'google.com',
-  'googletagmanager.com',
-  'google-analytics.com',
-  'paypal.com',
-  'stripe.com',
-  'shopify.com',
-  'woocommerce.com',
-  'wordpress.org',
-  'w.org',
-  'cloudflare.com',
-  'doubleclick.net',
-  'schema.org',
-];
+const DOMAIN_CLASSIFICATION_RULES: Record<DomainClassification, string[]> = {
+  social: [
+    'facebook.com',
+    'instagram.com',
+    'tiktok.com',
+    'youtube.com',
+    'pinterest.com',
+    'linkedin.com',
+    'x.com',
+    'twitter.com',
+  ],
+  messaging: ['wa.me', 'api.whatsapp.com', 'whatsapp.com'],
+  analytics: [
+    'google-analytics.com',
+    'cloudflareinsights.com',
+    'doubleclick.net',
+    'googleusercontent.com',
+  ],
+  'tag-manager': ['googletagmanager.com'],
+  'cdn-asset-host': [
+    'fonts.googleapis.com',
+    'fonts.gstatic.com',
+    'jsdelivr.net',
+    'unpkg.com',
+    'cloudflare.com',
+    'gravatar.com',
+    'wp.com',
+  ],
+  'schema-standards': [
+    'gmpg.org',
+    'w3.org',
+    'schema.org',
+    'wordpress.org',
+    'wordpress.com',
+    'w.org',
+  ],
+  payment: ['paypal.com', 'stripe.com', 'apple.com', 'google.com'],
+  shipping: ['ups.com', 'fedex.com', 'dhl.com', 'usps.com', 'shippo.com', 'shipstation.com'],
+  'review-platform': ['trustpilot.com', 'judge.me', 'yotpo.com'],
+  marketplace: ['amazon.com', 'etsy.com', 'ebay.com', 'walmart.com'],
+  'affiliate-tracking': ['klaviyo.com', 'mailchimp.com', 'sendgrid.net', 'shareasale.com'],
+  'external-editorial-reference': ['maps.google.com', 'recaptcha.net', 'hcaptcha.com'],
+  'possible-commerce-domain': [],
+};
+
+const COMPARISON_TERMS =
+  /\b(compare|comparison|versus|vs\.?|alternative|alternatives|similar to|competitor|competitors|other stores|also shop|featured in|stockists?)\b/i;
+const FOOTER_OR_LEGAL_TERMS =
+  /\b(privacy|terms|policy|refund|returns|shipping policy|accessibility|cookie|copyright|all rights reserved|legal)\b/i;
+const HIDDEN_ATTRS = /\b(hidden|aria-hidden=["']true["']|display\s*:\s*none|visibility\s*:\s*hidden)\b/i;
 
 function stripHtml(html: string): string {
   return html
@@ -105,6 +140,25 @@ function stripHtml(html: string): string {
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function stripNonVisibleHtml(html: string): string {
+  return html
+    .replace(/<head[\s\S]*?<\/head>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
+    .replace(/<template[\s\S]*?<\/template>/gi, ' ')
+    .replace(/<svg[\s\S]*?<\/svg>/gi, ' ');
+}
+
+function decodeHtml(value: string): string {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
 }
 
 function domainFromUrl(value: string): string | null {
@@ -120,6 +174,23 @@ function nameFromDomain(domain: string): string {
     .split('.')[0]
     .replace(/[-_]+/g, ' ')
     .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function domainMatches(domain: string, ruleDomain: string): boolean {
+  return domain === ruleDomain || domain.endsWith(`.${ruleDomain}`);
+}
+
+export function classifyExternalDomain(domain: string): DomainClassification {
+  const normalized = domain.replace(/^www\./, '').toLowerCase();
+
+  for (const [classification, domains] of Object.entries(DOMAIN_CLASSIFICATION_RULES)) {
+    if (classification === 'possible-commerce-domain') continue;
+    if (domains.some(ruleDomain => domainMatches(normalized, ruleDomain))) {
+      return classification as DomainClassification;
+    }
+  }
+
+  return 'possible-commerce-domain';
 }
 
 function getCategorySignal(html: string) {
@@ -160,30 +231,115 @@ function getCategorySignal(html: string) {
   };
 }
 
-function extractExternalDomains(html: string, mainUrl: string): string[] {
+interface ExternalLinkEvidence {
+  url: string;
+  domain: string;
+  anchorText: string;
+  context: string;
+  sourcePageSection: string;
+}
+
+function normalizeText(value: string): string {
+  return decodeHtml(stripHtml(value)).replace(/\s+/g, ' ').trim();
+}
+
+function sectionFromContext(context: string): string {
+  const headingMatch = context.match(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/i);
+  if (headingMatch) return normalizeText(headingMatch[1]).slice(0, 80) || 'visible content';
+  if (/<main\b/i.test(context)) return 'main content';
+  if (/<article\b/i.test(context)) return 'article content';
+  if (/<section\b/i.test(context)) return 'visible section';
+  return 'visible content';
+}
+
+function extractVisibleExternalLinks(html: string, mainUrl: string): ExternalLinkEvidence[] {
   const mainDomain = domainFromUrl(mainUrl);
-  const domains = new Map<string, number>();
-  const hrefRegex = /href=["'](https?:\/\/[^"']+)["']/gi;
+  const visibleHtml = stripNonVisibleHtml(html)
+    .replace(/<footer[\s\S]*?<\/footer>/gi, ' ')
+    .replace(/<nav[\s\S]*?<\/nav>/gi, ' ');
+  const links: ExternalLinkEvidence[] = [];
+  const anchorRegex = /<a\b([^>]*?)href=["'](https?:\/\/[^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi;
   let match: RegExpExecArray | null;
 
-  while ((match = hrefRegex.exec(html)) !== null) {
-    const domain = domainFromUrl(match[1]);
-    if (!domain || domain === mainDomain) continue;
-    if (
-      EXCLUDED_EXTERNAL_DOMAINS.some(
-        excluded => domain === excluded || domain.endsWith(`.${excluded}`)
-      )
-    ) {
-      continue;
-    }
+  while ((match = anchorRegex.exec(visibleHtml)) !== null) {
+    const attrs = `${match[1]} ${match[3]}`;
+    const rawUrl = decodeHtml(match[2]);
+    const domain = domainFromUrl(rawUrl);
+    if (!domain || domain === mainDomain || HIDDEN_ATTRS.test(attrs)) continue;
 
-    domains.set(domain, (domains.get(domain) || 0) + 1);
+    const anchorText = normalizeText(match[4]);
+    if (!anchorText) continue;
+
+    const contextStart = Math.max(0, match.index - 800);
+    const contextEnd = Math.min(visibleHtml.length, anchorRegex.lastIndex + 800);
+    const contextHtml = visibleHtml.slice(contextStart, contextEnd);
+    const context = normalizeText(contextHtml);
+    if (FOOTER_OR_LEGAL_TERMS.test(context) && !COMPARISON_TERMS.test(context)) continue;
+
+    links.push({
+      url: rawUrl,
+      domain,
+      anchorText,
+      context,
+      sourcePageSection: sectionFromContext(contextHtml),
+    });
   }
 
-  return [...domains.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([domain]) => domain);
+  return links;
+}
+
+function categoryOverlapForLink(
+  link: ExternalLinkEvidence,
+  category: string | null,
+  matchedKeywords: string[]
+): string[] {
+  if (!category) return [];
+
+  const text = `${link.anchorText} ${link.context} ${link.domain}`.toLowerCase();
+  const categoryKeywords = CATEGORY_KEYWORDS[category].keywords;
+  const overlaps = categoryKeywords.filter(keyword => text.includes(keyword.toLowerCase()));
+
+  return [...new Set([...overlaps, ...matchedKeywords.filter(keyword => text.includes(keyword))])].slice(
+    0,
+    6
+  );
+}
+
+function confidenceLabel(score: number): Competitor['confidence'] {
+  if (score >= 82) return 'high';
+  if (score >= 70) return 'medium';
+  return 'low';
+}
+
+function scoreCompetitorCandidate(
+  link: ExternalLinkEvidence,
+  overlap: string[]
+): { score: number; factors: string[] } {
+  let score = 0;
+  const factors: string[] = [];
+
+  score += 35;
+  factors.push('domain classified as possible commerce domain');
+
+  score += 20;
+  factors.push('link appears in visible user-facing content');
+
+  if (overlap.length > 0) {
+    score += Math.min(25, 14 + overlap.length * 3);
+    factors.push(`commerce/category overlap: ${overlap.join(', ')}`);
+  }
+
+  if (COMPARISON_TERMS.test(`${link.anchorText} ${link.context}`)) {
+    score += 18;
+    factors.push('comparison or alternative-shopping context');
+  }
+
+  if (/\b(shop|store|collection|product|buy|boutique)\b/i.test(`${link.anchorText} ${link.domain}`)) {
+    score += 5;
+    factors.push('commerce language in anchor or domain');
+  }
+
+  return { score: Math.min(100, score), factors };
 }
 
 export class CompetitorService {
@@ -191,32 +347,61 @@ export class CompetitorService {
     return getCategorySignal(html).category;
   }
 
+  static classifyDomain(domain: string): DomainClassification {
+    return classifyExternalDomain(domain);
+  }
+
   static async analyzeCompetitors(html: string, mainUrl: string): Promise<CompetitorAnalysis> {
     const categorySignal = getCategorySignal(html);
     const category = categorySignal.category || undefined;
     const categoryLabel = category ? CATEGORY_KEYWORDS[category].label : undefined;
-    const externalDomains = extractExternalDomains(html, mainUrl);
+    const links = extractVisibleExternalLinks(html, mainUrl);
+    const candidatesByDomain = new Map<string, Competitor>();
 
-    const competitors: Competitor[] = externalDomains.map((domain, index) => ({
-      name: nameFromDomain(domain),
-      url: `https://${domain}`,
-      similarityScore: Math.max(45, 72 - index * 7),
-      confidence: categorySignal.confidence === 'high' ? 'medium' : 'low',
-      source: 'detected-link',
-      overlapReasons: [
-        'This domain is referenced directly from the analyzed store.',
-        categoryLabel
-          ? `The page also shows ${categoryLabel.toLowerCase()} category signals.`
-          : 'No strong product category signal was available.',
-      ],
-    }));
+    for (const link of links) {
+      const domainClassification = classifyExternalDomain(link.domain);
+      if (domainClassification !== 'possible-commerce-domain') continue;
 
-    const marketPosition =
-      competitors.length >= 2 && categorySignal.confidence !== 'low'
-        ? 'challenger'
-        : categorySignal.confidence === 'high'
-          ? 'niche'
-          : 'niche';
+      const overlap = categoryOverlapForLink(
+        link,
+        categorySignal.category,
+        categorySignal.matchedKeywords
+      );
+      if (overlap.length === 0) continue;
+
+      const { score, factors } = scoreCompetitorCandidate(link, overlap);
+      // 70 is the documented minimum: visible commerce domain + category overlap is not enough
+      // unless comparison/shopping context or multiple evidence factors also agree.
+      if (score < 70) continue;
+
+      const existing = candidatesByDomain.get(link.domain);
+      if (existing && (existing.confidenceScore ?? 0) >= score) continue;
+
+      candidatesByDomain.set(link.domain, {
+        name: nameFromDomain(link.domain),
+        url: `https://${link.domain}`,
+        similarityScore: score,
+        confidence: confidenceLabel(score),
+        source: 'detected-link',
+        overlapReasons: [
+          `Visible anchor text: "${link.anchorText}"`,
+          `Source section: ${link.sourcePageSection}`,
+          categoryLabel
+            ? `Shared category evidence: ${categoryLabel.toLowerCase()} (${overlap.join(', ')})`
+            : 'Shared category evidence was limited.',
+        ],
+        domainClassification,
+        visibleAnchorText: [link.anchorText],
+        sourcePageSection: link.sourcePageSection,
+        commerceCategoryOverlap: overlap,
+        confidenceScore: score,
+        confidenceFactors: factors,
+      });
+    }
+
+    const competitors = [...candidatesByDomain.values()]
+      .sort((a, b) => (b.confidenceScore ?? 0) - (a.confidenceScore ?? 0))
+      .slice(0, 3);
 
     const evidence = [
       ...(categoryLabel
@@ -226,23 +411,34 @@ export class CompetitorService {
         ? [`Matched terms: ${categorySignal.matchedKeywords.join(', ')}`]
         : []),
       competitors.length
-        ? `${competitors.length} relevant external reference${competitors.length === 1 ? '' : 's'} found`
-        : 'No direct competitors were identified from homepage links',
+        ? `${competitors.length} evidence-backed possible competitor${competitors.length === 1 ? '' : 's'} found`
+        : 'No direct competitors could be identified confidently from the scanned page.',
     ];
 
     return {
       competitors,
-      marketPosition,
+      marketPosition: competitors.length > 0 && categorySignal.confidence !== 'low' ? 'niche' : 'unknown',
       category,
-      confidence: competitors.length > 0 ? categorySignal.confidence : 'low',
+      confidence:
+        competitors.length === 0
+          ? 'low'
+          : competitors.some(item => item.confidence === 'high')
+            ? 'medium'
+            : 'low',
       summary: competitors.length
-        ? 'Competitor candidates are based on real domains referenced by the analyzed page.'
-        : 'The analyzer found category signals, but not enough evidence to name direct competitors confidently.',
+        ? 'Possible competitors are based on visible comparison or shopping context plus shared category evidence.'
+        : 'No direct competitors could be identified confidently from the scanned page.',
       evidence,
       note:
-        competitors.length === 0 && category
-          ? `Use this as a ${categoryLabel} benchmark, not a definitive competitor list.`
+        competitors.length === 0
+          ? 'The analyzer suppressed external links that looked like messaging, standards, payment, social, tracking, or other non-competitor domains.'
           : undefined,
+      source: 'static_html',
+      analysisConfidence: competitors.length > 0 ? 'estimated' : 'insufficient_evidence',
+      scannedUrlScope: [mainUrl],
+      limitations: [
+        'Competitor detection uses visible scanned-page evidence only; it does not crawl the open web.',
+      ],
     };
   }
 }

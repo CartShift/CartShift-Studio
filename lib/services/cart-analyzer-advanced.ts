@@ -1,4 +1,10 @@
-import type { ProductAnalysis, Recommendation, SectionResult } from '@/lib/types/analyzer';
+import type {
+  AnalysisConfidence,
+  AnalysisSource,
+  ProductAnalysis,
+  Recommendation,
+  SectionResult,
+} from '@/lib/types/analyzer';
 
 type SignalState = 'present' | 'weak' | 'missing';
 
@@ -29,7 +35,10 @@ function createRecommendation(
   description: string,
   action: string,
   evidence: string,
-  effort: Recommendation['effort'] = impact === 'high' ? 'medium' : 'quick'
+  effort: Recommendation['effort'] = impact === 'high' ? 'medium' : 'quick',
+  source: AnalysisSource = 'static_html',
+  confidence: AnalysisConfidence = 'estimated',
+  limitation?: string
 ): Recommendation {
   return {
     code,
@@ -40,6 +49,10 @@ function createRecommendation(
     evidence,
     effort,
     serviceLink: '/contact',
+    source,
+    confidence,
+    exactEvidence: [evidence],
+    limitation,
   };
 }
 
@@ -62,6 +75,9 @@ export function analyzeCartExperience(
   options: CartAnalyzerOptions = {}
 ): SectionResult {
   const { productAnalysis, platform } = options;
+  const hasProductSample = Boolean(productAnalysis);
+  const staticCheckoutLimitation =
+    'Checkout quality was not tested; this is based on static HTML signals only.';
   const signals: CartSignal[] = [];
   const recommendations: Recommendation[] = [];
 
@@ -213,7 +229,10 @@ export function analyzeCartExperience(
         'Add a persistent cart entry point in the header with a clear icon, accessible label, and item count.',
         signals.find(item => item.key === 'cart-entry')?.evidence ??
           'Cart entry point was missing.',
-        'medium'
+        'medium',
+        'static_html',
+        'estimated',
+        staticCheckoutLimitation
       )
     );
   }
@@ -223,12 +242,15 @@ export function analyzeCartExperience(
       createRecommendation(
         'add-to-cart-missing',
         'Make the purchase action unmistakable',
-        'high',
+        hasProductSample ? 'high' : 'medium',
         'If shoppers cannot immediately identify how to add an item to cart, product intent leaks before checkout begins.',
         'Use a high-contrast add-to-cart or buy-now button on product cards and product pages, with disabled states reserved only for unavailable variants.',
         signals.find(item => item.key === 'purchase-action')?.evidence ??
           'Purchase action was missing.',
-        'medium'
+        'medium',
+        hasProductSample ? 'product_sample' : 'static_html',
+        hasProductSample ? 'verified' : 'insufficient_evidence',
+        hasProductSample ? undefined : staticCheckoutLimitation
       )
     );
   }
@@ -238,12 +260,15 @@ export function analyzeCartExperience(
       createRecommendation(
         'checkout-path-missing',
         'Expose a predictable checkout path',
-        cartEntryVisible ? 'medium' : 'high',
+        hasProductSample && !cartEntryVisible ? 'high' : 'medium',
         'A clear path from cart to checkout reduces hesitation and prevents dead-end shopping sessions.',
         'Ensure cart forms, mini-cart drawers, and checkout buttons use visible labels and link to a real cart or checkout route.',
         signals.find(item => item.key === 'checkout-path')?.evidence ??
           'Checkout path was missing.',
-        'medium'
+        'medium',
+        hasProductSample ? 'product_sample' : 'static_html',
+        hasProductSample ? 'estimated' : 'insufficient_evidence',
+        staticCheckoutLimitation
       )
     );
   }

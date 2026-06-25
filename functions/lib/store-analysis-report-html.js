@@ -53,6 +53,31 @@ function localizeRecommendation(rec, texts) {
   };
 }
 
+function confidenceLabel(rec, texts) {
+  const confidence = rec.confidence || 'estimated';
+  return texts.confidence?.[confidence] || confidence.replace(/_/g, ' ');
+}
+
+function sourceLabel(rec, texts) {
+  const source = rec.source || 'heuristic';
+  return texts.sources?.[source] || source.replace(/_/g, ' ');
+}
+
+function recommendationMetaHtml(rec, texts) {
+  const parts = [
+    `${texts.confidenceLabel || 'Confidence'}: ${confidenceLabel(rec, texts)}`,
+    `${texts.sourceLabel || 'Source'}: ${sourceLabel(rec, texts)}`,
+  ];
+  if (rec.scannedUrlScope?.length) {
+    parts.push(`${texts.scannedScopeLabel || 'Scope'}: ${rec.scannedUrlScope.join(', ')}`);
+  }
+  if (rec.limitation) {
+    parts.push(`${texts.limitationLabel || 'Limitation'}: ${rec.limitation}`);
+  }
+
+  return `<p style="margin: 0 0 8px; font-size: 10px; color: #64748b; line-height: 1.5;">${isolated(parts.join(' • '))}</p>`;
+}
+
 function localizeEvidence(evidence, texts) {
   if (!evidence) return '';
   const direct = texts.evidence?.[evidence];
@@ -212,7 +237,7 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
   Object.values(sections).forEach(section => {
     if (section.recommendations) {
       section.recommendations.forEach(rec => {
-        if (rec.impact === 'high') {
+        if (rec.impact === 'high' && rec.confidence === 'verified') {
           allRecs.push(rec);
         }
       });
@@ -226,7 +251,7 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
         <tr>
           <td style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 32px; text-align: center;">
             <p style="font-size: 18px; margin: 0 0 12px; font-weight: 800;">✓</p>
-            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${escapeHtml(texts.noCriticalIssuesFound)}</p>
+            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${escapeHtml(texts.noVerifiedCriticalIssuesFound || texts.noCriticalIssuesFound)}</p>
           </td>
         </tr>
       </table>
@@ -272,6 +297,7 @@ function buildRecommendationsHtml(sections, texts, isRtl) {
                     ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5; word-wrap: break-word;"><strong>${escapeHtml(texts.whatWeFound)}:</strong> ${isolated(evidenceText)}</p>`
                     : ''
                 }
+                ${recommendationMetaHtml(rec, texts)}
                 ${
                   actionStep
                     ? `
@@ -477,6 +503,7 @@ function buildFullRecommendationsHtml(sections, texts, isRtl) {
                       ? `<p style="margin: 0 0 8px; font-size: 11px; color: #6b7280; line-height: 1.5;"><strong>${escapeHtml(texts.whatWeFound)}:</strong> ${isolated(evidenceText)}</p>`
                       : ''
                   }
+                  ${recommendationMetaHtml(rec, texts)}
                   ${
                     actionStep
                       ? `

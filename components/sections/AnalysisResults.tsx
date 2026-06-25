@@ -36,6 +36,7 @@ import {
   Bot,
   Package,
   TrendingUp,
+  CircleDashed,
 } from 'lucide-react';
 import { trackAnalyzerQuoteClick } from '@/lib/analytics';
 import { getScheduleUrl } from '@/lib/schedule';
@@ -147,6 +148,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
   const {
     priorityRecs,
+    recommendationGroups,
     roadmapWeeks,
     headerTitle,
     headerDescription,
@@ -164,6 +166,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     })) as ExtendedRecommendation[];
 
     const priority = buildPriorityRecommendations(recommendations) as ExtendedRecommendation[];
+    const grouped = {
+      verified: recommendations.filter(rec => rec.confidence === 'verified'),
+      estimated: recommendations.filter(rec => rec.confidence === 'estimated'),
+      needsDeeperScan: recommendations.filter(
+        rec => rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable'
+      ),
+    };
     const highImpact = countHighImpact(recommendations);
     const roadmap = buildRoadmapWeeks(recommendations);
 
@@ -178,16 +187,16 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       description = t('results.readyToScale');
     } else if (highImpact === 1) {
       title = t('results.issuesFound_singular', { count: highImpact });
-      description = t('results.losingSales');
+      description = t('results.evidenceGroundedIssues');
     } else if (highImpact > 1) {
       title = t('results.issuesFound', { count: highImpact });
-      description = t('results.losingSales');
+      description = t('results.evidenceGroundedIssues');
     } else if (priority.length === 1) {
       title = t('results.needsImprovement');
-      description = t('results.losingSales');
+      description = t('results.estimatedOpportunitiesDesc');
     } else {
       title = t('results.needsImprovement');
-      description = t('results.losingSales');
+      description = t('results.estimatedOpportunitiesDesc');
     }
 
     const fixCount = highImpact > 0 ? highImpact : priority.length;
@@ -196,6 +205,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
     return {
       priorityRecs: priority,
+      recommendationGroups: grouped,
       roadmapWeeks: roadmap,
       headerTitle: title,
       headerDescription: description,
@@ -361,20 +371,28 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Position Card */}
             <div
               className={`p-4 rounded-xl border ${isDark ? 'bg-indigo-500/5 border-indigo-500/10' : 'bg-indigo-50 border-indigo-100'}`}
             >
-              <div className="text-sm font-medium text-indigo-500 mb-2">{t('market.position')}</div>
-              <div
-                className={`text-2xl font-bold capitalize ${isDark ? 'text-white' : 'text-surface-900'}`}
-              >
-                {t(`market.positions.${results.competitorAnalysis.marketPosition}` as any)}
+              <div className="text-sm font-medium text-indigo-500 mb-2">
+                {results.competitorAnalysis.competitors.length > 0 &&
+                results.competitorAnalysis.marketPosition !== 'unknown'
+                  ? t('market.position')
+                  : t('market.noVerifiedData')}
               </div>
+              {results.competitorAnalysis.competitors.length > 0 &&
+                results.competitorAnalysis.marketPosition !== 'unknown' && (
+                  <div
+                    className={`text-2xl font-bold capitalize ${isDark ? 'text-white' : 'text-surface-900'}`}
+                  >
+                    {t(`market.positions.${results.competitorAnalysis.marketPosition}` as any)}
+                  </div>
+                )}
               <p className={`text-xs mt-2 ${isDark ? 'text-white/50' : 'text-surface-600'}`}>
-                {results.competitorAnalysis.competitors.length > 0
-                  ? t('market.summaryWithCandidates')
-                  : t('market.summaryNoCandidates')}
+                {results.competitorAnalysis.summary ||
+                  (results.competitorAnalysis.competitors.length > 0
+                    ? t('market.summaryWithCandidates')
+                    : t('market.summaryNoCandidates'))}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-500">
@@ -416,39 +434,58 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               </div>
 
               <div className="pt-2 text-sm font-medium text-surface-500 dark:text-white/50">
-                {t('market.competitorCandidates')}
+                {results.competitorAnalysis.competitors.length > 0
+                  ? t('market.possibleCompetitors')
+                  : t('market.noVerifiedData')}
               </div>
               {results.competitorAnalysis.competitors.length > 0 ? (
                 results.competitorAnalysis.competitors.map(comp => (
                   <div
                     key={comp.url}
-                    className={`flex items-center justify-between gap-3 p-3 rounded-lg border ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
+                    className={`space-y-3 p-3 rounded-lg border ${isDark ? 'bg-surface-900/50 border-white/5' : 'bg-surface-50 border-surface-200'}`}
                   >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
-                        {comp.name.substring(0, 1).toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <div
-                          className={`truncate font-medium text-sm ${isDark ? 'text-white' : 'text-surface-900'}`}
-                        >
-                          {comp.name}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
+                          {comp.name.substring(0, 1).toUpperCase()}
                         </div>
-                        <div className="truncate text-xs text-primary-400">
-                          {comp.url.replace('https://', '')}
+                        <div className="min-w-0">
+                          <div
+                            className={`truncate font-medium text-sm ${isDark ? 'text-white' : 'text-surface-900'}`}
+                          >
+                            {comp.name}
+                          </div>
+                          <div className="truncate text-xs text-primary-400">
+                            {comp.url.replace('https://', '')}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-end">
+                        <div className="text-xs font-medium text-surface-500">
+                          {t('market.confidenceScore')}
+                        </div>
+                        <div className="text-sm font-bold text-primary-500">
+                          {comp.confidenceScore ?? comp.similarityScore}%
+                        </div>
+                        <div className="text-[10px] text-surface-400">
+                          {t(`market.confidence.${comp.confidence}` as any)}
                         </div>
                       </div>
                     </div>
-                    <div className="shrink-0 text-end">
-                      <div className="text-xs font-medium text-surface-500">
-                        {t('market.similarity')}
-                      </div>
-                      <div className="text-sm font-bold text-primary-500">
-                        {comp.similarityScore}%
-                      </div>
-                      <div className="text-[10px] text-surface-400">
-                        {t(`market.confidence.${comp.confidence}` as any)}
-                      </div>
+                    <div className="space-y-1 text-xs text-surface-500 dark:text-white/50">
+                      {comp.visibleAnchorText?.[0] && (
+                        <div>{t('market.visibleAnchor', { text: comp.visibleAnchorText[0] })}</div>
+                      )}
+                      {comp.sourcePageSection && (
+                        <div>{t('market.sourceSection', { section: comp.sourcePageSection })}</div>
+                      )}
+                      {comp.commerceCategoryOverlap?.length ? (
+                        <div>
+                          {t('market.categoryOverlap', {
+                            overlap: comp.commerceCategoryOverlap.join(', '),
+                          })}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 ))
@@ -622,9 +659,20 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               <div className="text-sm font-medium uppercase tracking-wide text-teal-600/70 mb-4">
                 {t(`ai.status.${results.aiAnalysis.aiReadinessStatus}` as any)}
               </div>
+              <div className="mb-3 inline-flex self-center rounded-full border border-teal-500/20 bg-teal-500/10 px-2 py-1 text-xs font-medium text-teal-600 dark:text-teal-300">
+                {t(`confidence.${results.aiAnalysis.confidence ?? 'insufficient_evidence'}` as any)}
+              </div>
               <p className={`text-xs ${isDark ? 'text-white/60' : 'text-surface-600'}`}>
                 {t('ai.scoreHelp')}
               </p>
+              {results.aiAnalysis.scannedScope && (
+                <p className={`mt-2 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                  {t('ai.productSchemaStatus', {
+                    status: results.aiAnalysis.scannedScope.productSchemaCoverageStatus,
+                    count: results.aiAnalysis.scannedScope.productPageCountSucceeded,
+                  })}
+                </p>
+              )}
             </div>
 
             {/* Details */}
@@ -677,6 +725,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   </div>
                 </div>
               </div>
+              {results.aiAnalysis.limitations?.length ? (
+                <div
+                  className={`rounded-lg border px-3 py-2 text-xs ${isDark ? 'border-amber-500/20 bg-amber-500/10 text-amber-100' : 'border-amber-200 bg-amber-50 text-amber-800'}`}
+                >
+                  {results.aiAnalysis.limitations[0]}
+                </div>
+              ) : null}
             </div>
           </div>
         </motion.div>
@@ -956,6 +1011,77 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         </motion.div>
       )}
 
+      {/* Confidence-grouped Recommendations */}
+      {(recommendationGroups.verified.length > 0 ||
+        recommendationGroups.estimated.length > 0 ||
+        recommendationGroups.needsDeeperScan.length > 0) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: PRIORITY_RECOMMENDATIONS_COUNT * ANIMATION_DELAY_STEP * 0.45 }}
+          className="space-y-5"
+        >
+          {[
+            {
+              key: 'verifiedFixes',
+              items: recommendationGroups.verified,
+              icon: CheckCircle,
+            },
+            {
+              key: 'estimatedOpportunities',
+              items: recommendationGroups.estimated,
+              icon: Info,
+            },
+            {
+              key: 'needsDeeperScan',
+              items: recommendationGroups.needsDeeperScan,
+              icon: CircleDashed,
+            },
+          ].map(group => {
+            if (group.items.length === 0) return null;
+            const GroupIcon = group.icon;
+            return (
+              <div key={group.key}>
+                <div className="flex items-center gap-2 mb-3">
+                  <GroupIcon className="w-5 h-5 text-primary-500" />
+                  <h3
+                    className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
+                  >
+                    {t(`recommendationGroups.${group.key}.title` as any)}
+                  </h3>
+                  <span className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                    {t('results.topIssues', { count: group.items.length })}
+                  </span>
+                </div>
+                <p className={`mb-4 text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                  {t(`recommendationGroups.${group.key}.subtitle` as any)}
+                </p>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {group.items.slice(0, 6).map((rec, index) => (
+                    <RecommendationCard
+                      key={getRecommendationKey(rec)}
+                      title={rec.title}
+                      description={rec.description}
+                      action={rec.action}
+                      evidence={
+                        rec.evidence ||
+                        rec.exactEvidence?.[0] ||
+                        rec.limitation ||
+                        t('recommendations.noEvidence')
+                      }
+                      effort={rec.effort}
+                      sectionName={rec.sectionName}
+                      impact={rec.impact}
+                      delay={index * ANIMATION_DELAY_STEP}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </motion.div>
+      )}
+
       {/* Priority Fixes */}
       {priorityRecs.length > 0 && (
         <motion.div
@@ -1005,7 +1131,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             <h3
               className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-surface-900'} mb-3`}
             >
-              {t('results.dontLetIssuesHurtSales')}
+              {t('results.planNextVerifiedFixes')}
             </h3>
             <p className={`text-base ${isDark ? 'text-white/70' : 'text-surface-600'} mb-6`}>
               {t(expertFixKey, { count: expertFixCount })}

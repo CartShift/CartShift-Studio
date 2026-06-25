@@ -45,7 +45,7 @@
     "test:analyzer": "node scripts/test-analyzer.js",
     "test:analyzer:live": "node scripts/test-analyzer.js --no-unit --live",
     "test:analyzer:all": "node scripts/test-analyzer.js --unit --live",
-    "test:analyzer:unit": "vitest run tests/services/analyzer.test.ts tests/api/analyze-store.route.test.ts tests/utils/safe-store-fetch.test.ts tests/utils/store-url.test.ts tests/lib/analyzer-progress.test.ts tests/hooks/use-analyzer-progress.test.tsx tests/services/analyzer-response.test.ts tests/services/ai-readiness.test.ts tests/services/analyzer-best-practices-fallback.test.ts tests/validation/analyze-store.test.ts tests/scripts/test-analyzer.test.ts"
+    "test:analyzer:unit": "vitest run tests/services/analyzer.test.ts tests/services/competitor-service.test.ts tests/api/analyze-store.route.test.ts tests/utils/safe-store-fetch.test.ts tests/utils/store-url.test.ts tests/lib/analyzer-progress.test.ts tests/hooks/use-analyzer-progress.test.tsx tests/services/analyzer-response.test.ts tests/services/ai-readiness.test.ts tests/services/analyzer-best-practices-fallback.test.ts tests/validation/analyze-store.test.ts tests/scripts/test-analyzer.test.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

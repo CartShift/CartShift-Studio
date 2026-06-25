@@ -1409,6 +1409,8 @@
       "issuesFound_singular": "{count} Critical Issue Detected",
       "readyToScale": "Your store is ready to scale.",
       "losingSales": "These issues are likely costing you conversions.",
+      "evidenceGroundedIssues": "These recommendations are based on verified findings or clearly marked estimates from this scan.",
+      "estimatedOpportunitiesDesc": "The scan found opportunities, with confidence labels showing what still needs deeper verification.",
       "needsImprovement": "Needs Improvement",
       "analyzedOn": "Analyzed on {platform}",
       "verifiedBenchmark": "Verified: better than {percentile}% of {count} similar stores",
@@ -1416,6 +1418,7 @@
       "impactLabel": "Impact: {impact} • {section}",
       "topIssues": "({count} priority items)",
       "dontLetIssuesHurtSales": "Don't Let These Issues Hurt Sales",
+      "planNextVerifiedFixes": "Plan the Next Verified Fixes",
       "expertsCanFix": "Our experts can fix these {count} critical errors for you. Book a free consultation to verify the plan.",
       "expertsCanFix_singular": "Our experts can fix this {count} critical error for you. Book a free consultation to verify the plan.",
       "trustedBy": "Trusted by 50+ stores",
@@ -1426,10 +1429,12 @@
       "title": "Market Intelligence",
       "subtitle": "Confidence-aware category and competitor signals",
       "position": "Market Position",
+      "noVerifiedData": "No verified competitor data",
       "positions": {
         "leader": "Leader",
         "challenger": "Challenger",
-        "niche": "Niche"
+        "niche": "Niche",
+        "unknown": "Unknown"
       },
       "confidence": {
         "high": "High confidence",
@@ -1444,18 +1449,24 @@
       "candidatesFound": "{count} competitor candidate(s) found from page references",
       "noDirectCompetitors": "No direct competitors found in homepage links",
       "competitorCandidates": "Competitor Candidates",
+      "possibleCompetitors": "Possible competitors",
       "similarity": "Similarity",
-      "noCompetitors": "No reliable direct competitors were detected from the homepage."
+      "confidenceScore": "Confidence",
+      "visibleAnchor": "Anchor text: {text}",
+      "sourceSection": "Section: {section}",
+      "categoryOverlap": "Overlap: {overlap}",
+      "noCompetitors": "No direct competitors could be identified confidently from the scanned page."
     },
     "ai": {
-      "title": "AI Search Readiness",
-      "subtitle": "Optimization for generative search, answer engines, and rich context",
+      "title": "Content & Structured-Data Readiness",
+      "subtitle": "Confidence-aware content, metadata, and structured-data checks",
       "status": {
         "ready": "Ready",
         "needs_improvement": "Needs improvement",
         "not_optimized": "Not optimized"
       },
-      "scoreHelp": "Higher scores mean the page gives AI systems clearer entities, product context, and answer-ready structure.",
+      "scoreHelp": "Higher scores mean the scanned pages expose clearer entities, content, and structured facts. It is not a verified AI-search ranking score.",
+      "productSchemaStatus": "Product schema: {status}; product pages scanned: {count}",
       "structuredData": "Structured Data (JSON-LD)",
       "noSchema": "No structured data found",
       "readability": "Readability",
@@ -1527,6 +1538,7 @@
       "getHelp": "Get expert help",
       "evidence": "Evidence",
       "nextAction": "Next action",
+      "noEvidence": "No additional evidence was recorded for this older report item.",
       "effort": {
         "quick": "Quick fix",
         "medium": "Moderate effort",
@@ -1699,6 +1711,26 @@
           "action": "Move newsletter, account, cart, and checkout form actions to HTTPS endpoints and verify redirects never downgrade to HTTP."
         }
       }
+    },
+    "recommendationGroups": {
+      "verifiedFixes": {
+        "title": "Verified fixes",
+        "subtitle": "Items backed by Lighthouse, rendered browser checks, or sampled product pages."
+      },
+      "estimatedOpportunities": {
+        "title": "Estimated opportunities",
+        "subtitle": "Useful signals from static HTML or heuristics that should be validated before major work."
+      },
+      "needsDeeperScan": {
+        "title": "Needs deeper scan",
+        "subtitle": "Areas where this run had insufficient evidence to make a firm recommendation."
+      }
+    },
+    "confidence": {
+      "verified": "Verified",
+      "estimated": "Estimated from static HTML",
+      "insufficient_evidence": "Insufficient evidence",
+      "unavailable": "Unavailable"
     },
     "cta": {
       "title": "Ready to Improve Your Store?",

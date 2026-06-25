@@ -4690,6 +4690,8 @@
       "issuesFound_singular": "{count} בעיה קריטית זוהתה",
       "readyToScale": "החנות שלכם מוכנה להתרחבות.",
       "losingSales": "הבעיות האלה כנראה עולות לכם בהמרות.",
+      "evidenceGroundedIssues": "ההמלצות האלה מבוססות על ממצאים מאומתים או על הערכות שמסומנות בבירור מהסריקה הזו.",
+      "estimatedOpportunitiesDesc": "הסריקה מצאה הזדמנויות, עם סימון ביטחון שמראה מה עדיין דורש אימות עמוק יותר.",
       "needsImprovement": "דורש שיפור",
       "analyzedOn": "נותח ב-{platform}",
       "verifiedBenchmark": "מאומת: טוב יותר מ-{percentile}% מתוך {count} חנויות דומות",
@@ -4697,6 +4699,7 @@
       "impactLabel": "השפעה: {impact} • {section}",
       "topIssues": "({count} פריטים בעדיפות)",
       "dontLetIssuesHurtSales": "אל תתנו לבעיות האלה לפגוע במכירות",
+      "planNextVerifiedFixes": "תכננו את התיקונים המאומתים הבאים",
       "expertsCanFix": "המומחים שלנו יכולים לתקן את {count} השגיאות הקריטיות האלה עבורכם. קבעו שיחת ייעוץ חינמית לאימות התוכנית.",
       "expertsCanFix_singular": "המומחים שלנו יכולים לתקן את {count} השגיאה הקריטית הזו עבורכם. קבעו שיחת ייעוץ חינמית לאימות התוכנית.",
       "trustedBy": "מהימן על ידי 50+ חנויות",
@@ -4707,10 +4710,12 @@
       "title": "מודיעין שוק",
       "subtitle": "קטגוריה ומתחרים עם רמת ביטחון, בלי ניחושים רנדומליים",
       "position": "מיקום בשוק",
+      "noVerifiedData": "אין נתוני מתחרים מאומתים",
       "positions": {
         "leader": "מוביל",
         "challenger": "מתחרה צומח",
-        "niche": "נישה"
+        "niche": "נישה",
+        "unknown": "לא ידוע"
       },
       "confidence": {
         "high": "ביטחון גבוה",
@@ -4725,18 +4730,24 @@
       "candidatesFound": "נמצאו {count} מועמדים למתחרים מתוך הפניות בעמוד",
       "noDirectCompetitors": "לא נמצאו מתחרים ישירים בקישורי דף הבית",
       "competitorCandidates": "מועמדים למתחרים",
+      "possibleCompetitors": "מתחרים אפשריים",
       "similarity": "דמיון",
-      "noCompetitors": "לא זוהו מתחרים ישירים אמינים מדף הבית."
+      "confidenceScore": "רמת ביטחון",
+      "visibleAnchor": "טקסט קישור: {text}",
+      "sourceSection": "מקטע: {section}",
+      "categoryOverlap": "חפיפה: {overlap}",
+      "noCompetitors": "לא ניתן היה לזהות מתחרים ישירים בביטחון מהעמוד שנסרק."
     },
     "ai": {
-      "title": "מוכנות לחיפוש AI",
-      "subtitle": "אופטימיזציה לחיפוש גנרטיבי, מנועי תשובות והקשר עשיר",
+      "title": "מוכנות תוכן ונתונים מובנים",
+      "subtitle": "בדיקות תוכן, מטא-דאטה ונתונים מובנים עם רמת ביטחון",
       "status": {
         "ready": "מוכן",
         "needs_improvement": "דורש שיפור",
         "not_optimized": "לא מותאם"
       },
-      "scoreHelp": "ציון גבוה יותר אומר שהעמוד מספק ל-AI ישויות, הקשר מוצרי ומבנה ברור יותר.",
+      "scoreHelp": "ציון גבוה יותר אומר שהעמודים שנסרקו מציגים ישויות, תוכן ועובדות מובנות ברורים יותר. זה לא ציון דירוג מאומת בחיפוש AI.",
+      "productSchemaStatus": "Product schema: {status}; עמודי מוצר שנסרקו: {count}",
       "structuredData": "נתונים מובנים (JSON-LD)",
       "noSchema": "לא נמצאו נתונים מובנים",
       "readability": "קריאות",
@@ -4808,6 +4819,7 @@
       "getHelp": "קבלו עזרה מומחית",
       "evidence": "ראיה",
       "nextAction": "פעולה מומלצת",
+      "noEvidence": "לא נשמרו ראיות נוספות לפריט ישן בדוח הזה.",
       "effort": {
         "quick": "תיקון מהיר",
         "medium": "מאמץ בינוני",
@@ -4980,6 +4992,26 @@
           "action": "העבירו פעולות טופס של ניוזלטר, חשבון, עגלה וצ׳קאאוט ל-HTTPS וודאו שהפניות לא יורדות אף פעם ל-HTTP."
         }
       }
+    },
+    "recommendationGroups": {
+      "verifiedFixes": {
+        "title": "תיקונים מאומתים",
+        "subtitle": "פריטים שמבוססים על Lighthouse, בדיקת דפדפן מרונדר או דגימת עמודי מוצר."
+      },
+      "estimatedOpportunities": {
+        "title": "הזדמנויות משוערות",
+        "subtitle": "סיגנלים שימושיים מ-HTML סטטי או היוריסטיקות שכדאי לאמת לפני עבודה משמעותית."
+      },
+      "needsDeeperScan": {
+        "title": "דורש סריקה עמוקה יותר",
+        "subtitle": "אזורים שבהם להרצה הזו לא היו מספיק ראיות כדי לתת המלצה חד-משמעית."
+      }
+    },
+    "confidence": {
+      "verified": "מאומת",
+      "estimated": "מוערך מ-HTML סטטי",
+      "insufficient_evidence": "אין מספיק ראיות",
+      "unavailable": "לא זמין"
     },
     "cta": {
       "title": "מוכנים לשפר את החנות?",

@@ -3,6 +3,11 @@ export interface Finding {
   title: string;
   description: string;
   example?: string;
+  source?: AnalysisSource;
+  confidence?: AnalysisConfidence;
+  scannedUrlScope?: string[];
+  exactEvidence?: string[];
+  limitation?: string;
 }
 
 export interface Recommendation {
@@ -14,6 +19,11 @@ export interface Recommendation {
   effort?: 'quick' | 'medium' | 'advanced';
   impact: 'high' | 'medium' | 'low';
   serviceLink?: string;
+  source?: AnalysisSource;
+  confidence?: AnalysisConfidence;
+  scannedUrlScope?: string[];
+  exactEvidence?: string[];
+  limitation?: string;
 }
 
 export interface SectionResult {
@@ -30,6 +40,30 @@ export interface CoreWebVitals {
   fid?: { value: number; rating: string };
 }
 
+export type AnalysisConfidence = 'verified' | 'estimated' | 'insufficient_evidence' | 'unavailable';
+
+export type AnalysisSource =
+  | 'lighthouse'
+  | 'rendered_browser'
+  | 'static_html'
+  | 'product_sample'
+  | 'heuristic';
+
+export type DomainClassification =
+  | 'social'
+  | 'messaging'
+  | 'analytics'
+  | 'tag-manager'
+  | 'cdn-asset-host'
+  | 'schema-standards'
+  | 'payment'
+  | 'shipping'
+  | 'review-platform'
+  | 'marketplace'
+  | 'affiliate-tracking'
+  | 'external-editorial-reference'
+  | 'possible-commerce-domain';
+
 export interface Competitor {
   url: string;
   name: string;
@@ -37,16 +71,62 @@ export interface Competitor {
   confidence: 'high' | 'medium' | 'low';
   source: 'detected-link' | 'category-reference';
   overlapReasons: string[];
+  domainClassification?: DomainClassification;
+  visibleAnchorText?: string[];
+  sourcePageSection?: string;
+  commerceCategoryOverlap?: string[];
+  confidenceScore?: number;
+  confidenceFactors?: string[];
 }
 
 export interface CompetitorAnalysis {
   competitors: Competitor[];
-  marketPosition: 'leader' | 'challenger' | 'niche';
+  marketPosition: 'leader' | 'challenger' | 'niche' | 'unknown';
   category?: string;
   confidence: 'high' | 'medium' | 'low';
   summary: string;
   evidence: string[];
   note?: string;
+  source?: AnalysisSource;
+  analysisConfidence?: AnalysisConfidence;
+  scannedUrlScope?: string[];
+  limitations?: string[];
+}
+
+export type ProductSchemaCoverageStatus =
+  | 'not_scanned'
+  | 'not_applicable'
+  | 'present'
+  | 'partial'
+  | 'missing'
+  | 'invalid';
+
+export interface ProductSchemaEntityEvidence {
+  url: string;
+  valid: boolean;
+  malformedJsonLd: boolean;
+  productCount: number;
+  fields: {
+    name: boolean;
+    image: boolean;
+    offers: boolean;
+    price: boolean;
+    priceCurrency: boolean;
+    availability: boolean;
+    sku: boolean;
+  };
+  issues: string[];
+}
+
+export interface ScanScope {
+  scannedUrls: string[];
+  homepageScanned: boolean;
+  productPagesScanned: boolean;
+  productPageCountAttempted: number;
+  productPageCountSucceeded: number;
+  productSchemaCoverageStatus: ProductSchemaCoverageStatus;
+  productSchemaEvidence?: ProductSchemaEntityEvidence[];
+  notes?: string[];
 }
 
 export interface Screenshot {
@@ -64,10 +144,19 @@ export interface VisualAnalysis {
 
 export interface AIAnalysis {
   score: number;
+  label?: 'Content & structured-data readiness';
+  confidence?: AnalysisConfidence;
+  evidence?: string[];
+  limitations?: string[];
+  scannedScope?: ScanScope;
   structuredDataTypes: string[];
   openGraphTags: boolean;
   readabilityScore: number; // 0-100
   aiReadinessStatus: 'ready' | 'needs_improvement' | 'not_optimized';
+  invalidJsonLdCount?: number;
+  canonicalUrlPresent?: boolean;
+  languageMetadataPresent?: boolean;
+  visibleWordCount?: number;
 }
 
 export interface ProductAnalysis {
@@ -97,6 +186,7 @@ export interface AnalysisMeta {
   screenshotsInEmailReport?: boolean;
   emailReportStatus?: 'pending' | 'sent' | 'failed' | 'unconfigured';
   leadCaptureStatus?: 'captured' | 'deduped' | 'failed' | 'unconfigured';
+  scanScope?: ScanScope;
 }
 
 export interface AnalysisResult {
@@ -116,6 +206,7 @@ export interface AnalysisResult {
   visualAnalysis?: VisualAnalysis;
   aiAnalysis?: AIAnalysis;
   productAnalysis?: ProductAnalysis;
+  scanScope?: ScanScope;
   percentile?: number;
   benchmark?: BenchmarkComparison;
   generatedAt: string;
