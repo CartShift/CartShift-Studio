@@ -58,6 +58,10 @@ export function AnalyzerCoverageStrip({ meta, isDark = false }: AnalyzerCoverage
       status: resolveStatus(meta.productAnalysisAvailable),
     },
     {
+      key: 'deeperScan',
+      status: resolveStatus(Boolean(meta.deeperScanAvailable)),
+    },
+    {
       key: 'competitors',
       status: resolveStatus(meta.competitorAnalysisAvailable),
     },

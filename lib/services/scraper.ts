@@ -1,14 +1,32 @@
-import { VisualAnalysis, ProductAnalysis } from '@/lib/types/analyzer';
+import {
+  CartInteractionSample,
+  CategoryPageSample,
+  DeeperScanAnalysis,
+  ProductAnalysis,
+  ProductPageSample,
+  VisualAnalysis,
+} from '@/lib/types/analyzer';
 import { Logger } from '@/lib/logger';
 import { launchAnalyzerBrowser, probeAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
 
 export interface ScraperResult {
   visualAnalysis: VisualAnalysis | null;
   productAnalysis: ProductAnalysis | undefined;
+  deeperScan?: DeeperScanAnalysis;
 }
 
 // Check if Puppeteer/Chrome is available
 let puppeteerAvailable: boolean | null = null;
+
+const CATEGORY_PATH_PATTERNS = [
+  /\/collections?\//i,
+  /\/categories?\//i,
+  /\/product-category\//i,
+  /\/shop\/?$/i,
+  /\/catalog/i,
+];
+
+const PRODUCT_PATH_PATTERNS = [/\/products?\//i, /\/product\//i, /\/item\//i, /\/p\//i];
 
 function isPuppeteerRuntimeEnabled(): boolean {
   if (process.env.ANALYZER_ENABLE_PUPPETEER === 'true') return true;
@@ -20,6 +38,243 @@ async function checkPuppeteerAvailability(): Promise<boolean> {
   if (puppeteerAvailable !== null) return puppeteerAvailable;
   puppeteerAvailable = await probeAnalyzerBrowser();
   return puppeteerAvailable;
+}
+
+function uniqueUrls(urls: string[]) {
+  return [...new Set(urls.map(url => url.split('#')[0]))];
+}
+
+async function discoverDeepScanUrls(page: any, homepageUrl: string) {
+  const urls = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('a[href]'))
+      .map((anchor: any) => anchor.href)
+      .filter((href: string) => {
+        try {
+          const url = new URL(href);
+          return url.hostname === window.location.hostname;
+        } catch {
+          return false;
+        }
+      });
+  });
+
+  const categoryUrls = uniqueUrls(
+    urls.filter((url: string) => CATEGORY_PATH_PATTERNS.some(pattern => pattern.test(new URL(url).pathname)))
+  ).slice(0, 2);
+
+  const productUrls = uniqueUrls(
+    urls.filter((url: string) => PRODUCT_PATH_PATTERNS.some(pattern => pattern.test(new URL(url).pathname)))
+  ).slice(0, 3);
+
+  const cartUrls = uniqueUrls(
+    urls.filter((url: string) => /\/cart|\/basket|\/bag/i.test(new URL(url).pathname))
+  ).slice(0, 1);
+
+  return {
+    categoryUrls,
+    productUrls,
+    cartUrl: cartUrls[0] || new URL('/cart', homepageUrl).toString(),
+  };
+}
+
+async function sampleCategoryPage(page: any, url: string): Promise<CategoryPageSample> {
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 12000 });
+
+  return page.evaluate((sampleUrl: string) => {
+    const productLinks = Array.from(document.querySelectorAll('a[href]')).filter((anchor: any) =>
+      /\/products?\//i.test(anchor.href) || /\/product\//i.test(anchor.href)
+    );
+    const visibleProductCards = Array.from(
+      document.querySelectorAll(
+        '.product, .product-card, .grid__item, [class*="product"], [data-product-id]'
+      )
+    ).filter((element: any) => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    const filterOrSortDetected = Boolean(
+      document.querySelector(
+        'select[name*="sort"], [class*="filter"], [class*="facet"], [aria-label*="filter" i], [aria-label*="sort" i]'
+      )
+    );
+    const addToCartInListDetected = /add\s*to\s*(cart|bag)|quick\s*add|quick\s*shop/i.test(
+      document.body.innerText || ''
+    );
+
+    return {
+      url: sampleUrl,
+      productLinkCount: productLinks.length,
+      visibleProductGrid: visibleProductCards.length > 0 || productLinks.length >= 4,
+      filterOrSortDetected,
+      addToCartInListDetected,
+      evidence: [
+        `${productLinks.length} product-like links`,
+        `${visibleProductCards.length} visible product-like cards`,
+        filterOrSortDetected ? 'filter/sort UI detected' : 'filter/sort UI not detected',
+        addToCartInListDetected ? 'list add-to-cart language detected' : 'list add-to-cart language not detected',
+      ],
+    };
+  }, url);
+}
+
+async function sampleProductPage(page: any, url: string): Promise<ProductPageSample> {
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 14000 });
+
+  const analysis = await page.evaluate((sampleUrl: string) => {
+    const buttonSelector =
+      'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart" i], form[action*="/cart"] button[type="submit"]';
+    const buyButton = document.querySelector(buttonSelector) as HTMLElement | null;
+    const images = document.querySelectorAll('img').length;
+    const reviews = document.querySelector('.stars, .reviews, .rating, [class*="review"], [class*="rating"]');
+    const desc =
+      document.querySelector('.description, #description, .product-description, [class*="description"]')
+        ?.textContent?.length || 0;
+    const text = document.body.innerText || '';
+    const priceDetected = /[$€£₪]\s?\d|\d+\s?(USD|EUR|ILS|NIS|GBP)/i.test(text);
+    const stockSignalDetected = /in stock|out of stock|available|sold out|אזל|זמין/i.test(text);
+    const variantSelectorDetected = Boolean(
+      document.querySelector('select[name*="option"], select[name*="variant"], [class*="variant"], [data-option]')
+    );
+
+    let aboveFold = false;
+    let addToCartSelectorFound = false;
+    if (buyButton) {
+      addToCartSelectorFound = true;
+      const rect = buyButton.getBoundingClientRect();
+      aboveFold = rect.top < window.innerHeight;
+    }
+
+    let score = 50;
+    if (aboveFold) score += 20;
+    if (images > 3) score += 10;
+    if (reviews) score += 10;
+    if (desc > 200) score += 10;
+
+    return {
+      url: sampleUrl,
+      productUrl: sampleUrl,
+      hasBuyButtonAboveFold: aboveFold,
+      imageCount: images,
+      hasReviews: Boolean(reviews),
+      descriptionLength: desc,
+      score: Math.min(100, score),
+      cartActionabilityStatus: addToCartSelectorFound ? ('detected' as const) : ('unknown' as const),
+      addToCartSelectorFound,
+      variantSelectorDetected,
+      priceDetected,
+      stockSignalDetected,
+      evidence: [
+        addToCartSelectorFound ? 'add-to-cart control detected' : 'add-to-cart control not detected',
+        aboveFold ? 'add-to-cart appears above fold' : 'add-to-cart not confirmed above fold',
+        priceDetected ? 'price text detected' : 'price text not detected',
+        stockSignalDetected ? 'stock/availability language detected' : 'stock/availability language not detected',
+      ],
+    };
+  }, url);
+
+  const btnSelector =
+    'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart" i], form[action*="/cart"] button[type="submit"]';
+  const addToCartBtn = await page.$(btnSelector);
+
+  if (!addToCartBtn) return analysis;
+
+  const isClickable = await page.evaluate((el: any) => {
+    const style = window.getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden' && !el.disabled;
+  }, addToCartBtn);
+
+  return {
+    ...analysis,
+    cartActionabilityStatus: isClickable ? 'clickable' : 'detected',
+    evidence: [
+      ...analysis.evidence,
+      isClickable ? 'add-to-cart control appears clickable' : 'add-to-cart control appears disabled or hidden',
+    ],
+  };
+}
+
+async function sampleCartInteraction(page: any, productUrl?: string): Promise<CartInteractionSample> {
+  const evidence: string[] = [];
+  const result: CartInteractionSample = {
+    attempted: Boolean(productUrl),
+    productUrl,
+    addToCartClicked: false,
+    cartCountChanged: false,
+    cartDrawerOrPageDetected: false,
+    checkoutLinkDetected: false,
+    evidence,
+  };
+
+  if (!productUrl) {
+    result.error = 'No sampled product URL was available for cart interaction.';
+    evidence.push(result.error);
+    return result;
+  }
+
+  try {
+    await page.goto(productUrl, { waitUntil: 'domcontentloaded', timeout: 14000 });
+    result.cartUrlBefore = page.url();
+    const beforeCount = await page.evaluate(() => {
+      const text = document.body.innerText || '';
+      const match = text.match(/\bCart\s*\(?(\d+)\)?|\bBag\s*\(?(\d+)\)?/i);
+      return match ? Number(match[1] || match[2] || 0) : null;
+    });
+
+    const btnSelector =
+      'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart" i], form[action*="/cart"] button[type="submit"]';
+    const addToCartBtn = await page.$(btnSelector);
+    if (!addToCartBtn) {
+      result.error = 'No clickable add-to-cart control was found for interaction.';
+      evidence.push(result.error);
+      return result;
+    }
+
+    await addToCartBtn.click().catch(() => undefined);
+    result.addToCartClicked = true;
+    evidence.push('add-to-cart click attempted');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    result.cartUrlAfter = page.url();
+
+    const afterSignals = await page.evaluate(() => {
+      const text = document.body.innerText || '';
+      const checkoutLink = Boolean(
+        document.querySelector('a[href*="checkout"], button[name*="checkout"], [class*="checkout"]')
+      );
+      const cartUi = Boolean(
+        document.querySelector('[class*="cart-drawer"], [id*="cart"], form[action*="/cart"]')
+      );
+      const match = text.match(/\bCart\s*\(?(\d+)\)?|\bBag\s*\(?(\d+)\)?/i);
+      return {
+        checkoutLink,
+        cartUi,
+        cartCount: match ? Number(match[1] || match[2] || 0) : null,
+        textMentionsCart: /cart|basket|bag|checkout/i.test(text),
+      };
+    });
+
+    result.cartCountChanged =
+      typeof beforeCount === 'number' &&
+      typeof afterSignals.cartCount === 'number' &&
+      afterSignals.cartCount > beforeCount;
+    result.cartDrawerOrPageDetected = afterSignals.cartUi || afterSignals.textMentionsCart;
+    result.checkoutLinkDetected = afterSignals.checkoutLink;
+    evidence.push(
+      result.cartDrawerOrPageDetected
+        ? 'cart UI or cart page detected after click'
+        : 'cart UI not detected after click'
+    );
+    evidence.push(
+      result.checkoutLinkDetected
+        ? 'checkout link/control detected after click'
+        : 'checkout link/control not detected after click'
+    );
+  } catch (error: any) {
+    const message = error?.message || 'Cart interaction failed.';
+    result.error = message;
+    evidence.push(message);
+  }
+
+  return result;
 }
 
 export class ScraperService {
@@ -203,88 +458,71 @@ export class ScraperService {
         dominantColors,
       };
 
-      // 2. PRODUCT ANALYSIS
-      // Find link
-      const productUrl = await page.evaluate(() => {
-        const anchors = Array.from(document.querySelectorAll('a'));
-        // Prioritize links that look like products and are internal
-        const productLink = anchors.find(
-          a =>
-            (a.href.includes('/product') || a.href.includes('/item/') || a.href.includes('/p/')) &&
-            !a.href.includes('cart') &&
-            !a.href.includes('search') &&
-            !a.href.includes('collection') &&
-            a.hostname === window.location.hostname
-        );
-        return productLink ? productLink.href : null;
-      });
-
+      // 2. DEEPER CATEGORY / PRODUCT / CART SAMPLING
+      const discoveredUrls = await discoverDeepScanUrls(page, url);
+      const categorySamples: CategoryPageSample[] = [];
+      const productSamples: ProductPageSample[] = [];
+      const limitations: string[] = [];
       let productAnalysis: ProductAnalysis | undefined = undefined;
 
-      if (productUrl) {
+      for (const categoryUrl of discoveredUrls.categoryUrls) {
         try {
-          // Use a shorter timeout and domcontentloaded for product page
-          await page.goto(productUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
-
-          const analysis = await page.evaluate(() => {
-            const buyButton = document.querySelector(
-              'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart'
-            );
-            const images = document.querySelectorAll('img').length;
-            const rvw = document.querySelector('.stars, .reviews, .rating');
-            const desc =
-              document.querySelector('.description, #description, .product-description')
-                ?.textContent?.length || 0;
-
-            let aboveFold = false;
-            if (buyButton) {
-              const rect = buyButton.getBoundingClientRect();
-              aboveFold = rect.top < window.innerHeight;
-            }
-
-            let score = 50;
-            if (aboveFold) score += 20;
-            if (images > 3) score += 10;
-            if (rvw) score += 10;
-            if (desc > 200) score += 10;
-
-            return {
-              hasBuyButtonAboveFold: aboveFold,
-              imageCount: images,
-              hasReviews: !!rvw,
-              descriptionLength: desc,
-              score: Math.min(100, score),
-            };
-          });
-
-          // Cart Simulation
-          let cartStatus: 'detected' | 'clickable' | 'redirected_to_cart' | 'unknown' = 'unknown';
-
-          const btnSelector =
-            'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart"]';
-          const addToCartBtn = await page.$(btnSelector);
-
-          if (addToCartBtn) {
-            cartStatus = 'detected';
-            const isClickable = await page.evaluate((el: any) => {
-              const style = window.getComputedStyle(el);
-              return style.display !== 'none' && style.visibility !== 'hidden' && !el.disabled;
-            }, addToCartBtn);
-            if (isClickable) cartStatus = 'clickable';
-          }
-
-          productAnalysis = {
-            ...analysis,
-            productUrl,
-            cartActionabilityStatus: cartStatus,
-          };
-        } catch (prodErr) {
-          Logger.warn('Product page visit failed', { error: prodErr });
+          categorySamples.push(await sampleCategoryPage(page, categoryUrl));
+        } catch (categoryErr) {
+          Logger.warn('Category page sample failed', { categoryUrl, error: categoryErr });
+          limitations.push(`Category page sample failed: ${categoryUrl}`);
         }
       }
 
+      for (const productUrl of discoveredUrls.productUrls) {
+        try {
+          productSamples.push(await sampleProductPage(page, productUrl));
+        } catch (prodErr) {
+          Logger.warn('Product page visit failed', { productUrl, error: prodErr });
+          limitations.push(`Product page sample failed: ${productUrl}`);
+        }
+      }
+
+      productAnalysis = productSamples[0]
+        ? {
+            productUrl: productSamples[0].url,
+            hasBuyButtonAboveFold: productSamples[0].hasBuyButtonAboveFold,
+            imageCount: productSamples[0].imageCount,
+            hasReviews: productSamples[0].hasReviews,
+            descriptionLength: productSamples[0].descriptionLength,
+            score: productSamples[0].score,
+            cartActionabilityStatus: productSamples[0].cartActionabilityStatus,
+          }
+        : undefined;
+
+      const cartInteraction = await sampleCartInteraction(page, productSamples[0]?.url);
+      if (cartInteraction.error) limitations.push(cartInteraction.error);
+
+      const deeperScan: DeeperScanAnalysis = {
+        attempted: true,
+        available: categorySamples.length > 0 || productSamples.length > 0 || cartInteraction.addToCartClicked,
+        categoryPagesAttempted: discoveredUrls.categoryUrls.length,
+        categoryPagesSucceeded: categorySamples.length,
+        productPagesAttempted: discoveredUrls.productUrls.length,
+        productPagesSucceeded: productSamples.length,
+        cartInteractionAttempted: cartInteraction.attempted,
+        cartInteractionSucceeded:
+          cartInteraction.addToCartClicked &&
+          (cartInteraction.cartDrawerOrPageDetected || cartInteraction.checkoutLinkDetected),
+        categorySamples,
+        productSamples,
+        cartInteraction,
+        confidence:
+          cartInteraction.addToCartClicked && productSamples.length > 0
+            ? 'verified'
+            : productSamples.length > 0 || categorySamples.length > 0
+              ? 'estimated'
+              : 'insufficient_evidence',
+        limitations,
+      };
+
       Logger.debug(`Scraper finished in ${Date.now() - startTime}ms`);
-      return { visualAnalysis, productAnalysis };
+      return { visualAnalysis, productAnalysis, deeperScan };
     } catch (error) {
       Logger.error('ScraperService failed', error);
       return { visualAnalysis: null, productAnalysis: undefined };

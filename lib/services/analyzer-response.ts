@@ -6,6 +6,7 @@ const defaultMeta: AnalysisResult['meta'] = {
   visualAnalysisAttempted: false,
   visualAnalysisAvailable: false,
   productAnalysisAvailable: false,
+  deeperScanAvailable: false,
   competitorAnalysisAvailable: false,
   cached: false,
   leadCaptureStatus: undefined,

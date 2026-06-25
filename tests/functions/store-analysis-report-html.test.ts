@@ -67,6 +67,18 @@ const heTexts = {
     medium: 'בינוני',
     low: 'נמוך',
   },
+  deeperScanTitle: 'ראיות מסריקה עמוקה',
+  deeperScanSubtitle: 'דגימות קטגוריה, מוצר ועגלה',
+  deeperScanCategoryPages: 'עמודי קטגוריה',
+  deeperScanProductPages: 'עמודי מוצר',
+  deeperScanCartInteraction: 'אינטראקציית עגלה',
+  deeperScanSucceeded: '{count} הצליחו',
+  deeperScanAttempted: '{count} נוסו',
+  deeperScanAvailable: 'זמין',
+  deeperScanNotVerified: 'לא אומת',
+  deeperScanUnavailableTitle: 'סריקה עמוקה לא זמינה',
+  deeperScanUnavailableText: 'דגימת דפדפן לא הייתה זמינה.',
+  deeperScanEvidence: 'ראיות',
   actionRoadmapTitle: 'מפת דרכים ל-30 יום',
   actionRoadmapSubtitle: 'צעדים מתועדפים',
   week1: 'שבוע 1: תיקונים קריטיים',
@@ -107,6 +119,20 @@ const heTexts = {
 
 const sampleResults = {
   overallScore: 85,
+  deeperScan: {
+    available: true,
+    categoryPagesAttempted: 1,
+    categoryPagesSucceeded: 1,
+    productPagesAttempted: 2,
+    productPagesSucceeded: 1,
+    cartInteractionSucceeded: true,
+    categorySamples: [{ evidence: ['זוהו 12 קישורי מוצר'] }],
+    productSamples: [{ evidence: ['כפתור הוספה לעגלה זוהה'] }],
+    cartInteraction: {
+      evidence: ['checkout link/control detected after click'],
+    },
+    limitations: [],
+  },
   sections: {
     performance: {
       name: 'Performance',
@@ -143,6 +169,9 @@ describe('buildStoreAnalysisReportHtml', () => {
     expect(html).toContain('כדאי להתחיל מכאן');
     expect(html).toContain('מה נבדק בכל קטגוריה');
     expect(html).toContain('רשימה מלאה עם צעדי פעולה');
+    expect(html).toContain('ראיות מסריקה עמוקה');
+    expect(html).toContain('עמודי קטגוריה');
+    expect(html).toContain('זוהו 12 קישורי מוצר');
     expect(html).toContain('צמצום JavaScript בחנות');
     expect(html).toContain('זוהו 60 תגיות סקריפט.');
     expect(html).not.toContain('Critical issues to address first');
@@ -203,6 +232,17 @@ describe('buildStoreAnalysisReportHtml', () => {
   it('escapes dynamic audit content rendered through raw HTML sections', () => {
     const unsafeResults = {
       overallScore: 60,
+      deeperScan: {
+        available: true,
+        categoryPagesAttempted: 1,
+        categoryPagesSucceeded: 1,
+        productPagesAttempted: 0,
+        productPagesSucceeded: 0,
+        cartInteractionSucceeded: false,
+        categorySamples: [{ evidence: ['<img src=x onerror=alert(2)>'] }],
+        productSamples: [],
+        limitations: ['<script>alert("deep")</script>'],
+      },
       sections: {
         performance: {
           name: 'Performance',
@@ -231,6 +271,8 @@ describe('buildStoreAnalysisReportHtml', () => {
 
     expect(html).toContain('&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;');
     expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    expect(html).toContain('&lt;img src=x onerror=alert(2)&gt;');
+    expect(html).toContain('&lt;script&gt;alert(&quot;deep&quot;)&lt;/script&gt;');
     expect(html).not.toContain('<script>alert("x")</script>');
     expect(html).not.toContain('<img src=x onerror=alert(1)>');
   });

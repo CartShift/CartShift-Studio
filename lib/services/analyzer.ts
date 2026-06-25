@@ -1228,7 +1228,7 @@ async function runHeavyAnalysisTasks(
     }),
     ScraperService.scrape(fetchedUrl).catch(err => {
       recordAnalyzerServiceFailure('puppeteer', err, true);
-      return { visualAnalysis: null, productAnalysis: undefined };
+      return { visualAnalysis: null, productAnalysis: undefined, deeperScan: undefined };
     }),
     Promise.resolve(AIReadinessService.analyze(html, scanScope)).catch(err => {
       recordAnalyzerServiceFailure('ai', err, true);
@@ -1278,6 +1278,7 @@ export class AnalyzerService {
             cached.meta?.visualAnalysisAvailable ?? Boolean(cached.visualAnalysis),
           productAnalysisAvailable:
             cached.meta?.productAnalysisAvailable ?? Boolean(cached.productAnalysis),
+          deeperScanAvailable: cached.meta?.deeperScanAvailable ?? Boolean(cached.deeperScan?.available),
           competitorAnalysisAvailable:
             suppressedLegacyCompetitors
               ? false
@@ -1449,10 +1450,15 @@ export class AnalyzerService {
     });
 
     // Destructure scraper results
-    const { visualAnalysis: visualData, productAnalysis: productData } = scraperData;
+    const {
+      visualAnalysis: visualData,
+      productAnalysis: productData,
+      deeperScan: deeperScanData,
+    } = scraperData;
     sections.cart = analyzeCartExperience(html, {
       platform,
       productAnalysis: productData,
+      deeperScan: deeperScanData,
     });
     enrichSectionsWithVisualSignals(sections, visualData || undefined);
     enrichSectionsWithAISignals(sections, aiData, scanScope);
@@ -1493,6 +1499,7 @@ export class AnalyzerService {
       visualAnalysisAttempted,
       visualAnalysisAvailable: Boolean(visualData),
       productAnalysisAvailable: Boolean(productData),
+      deeperScanAvailable: Boolean(deeperScanData?.available),
       competitorAnalysisAvailable: (competitorData.competitors?.length ?? 0) > 0,
       cached: false,
       scanScope,
@@ -1508,6 +1515,7 @@ export class AnalyzerService {
       visualAnalysis: visualData || undefined,
       aiAnalysis: aiData,
       productAnalysis: productData,
+      deeperScan: deeperScanData,
       scanScope,
       percentile: benchmark?.percentile,
       benchmark,

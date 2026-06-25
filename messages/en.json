@@ -4631,6 +4631,7 @@
       "emailDelayedTitle": "Report saved — email may be delayed",
       "emailDelayedDescription": "Your results are on screen. If the PDF does not arrive within a few minutes, check spam or run the analyzer again.",
       "partialDataNotice": "Some live performance data was unavailable, so parts of this report use HTML-based estimates. The emailed PDF reflects the same analysis run.",
+      "deeperScanUnavailableNotice": "Browser-based category, product, and cart interaction sampling was unavailable for this run, so checkout recommendations remain lower confidence unless explicitly verified.",
       "coverage": {
         "title": "What this report includes",
         "cachedNote": "Results loaded from a recent cached run for this URL.",
@@ -4651,6 +4652,10 @@
           "product": {
             "label": "Product page",
             "hint": "Sample product conversion signals from a live page visit."
+          },
+          "deeperScan": {
+            "label": "Deeper scan",
+            "hint": "Category page, product page, and cart interaction sampling when browser automation is available."
           },
           "competitors": {
             "label": "Market signals",
@@ -4776,6 +4781,20 @@
         "redirected_to_cart": "Redirected to cart",
         "unknown": "Unknown"
       }
+    },
+    "deeperScan": {
+      "title": "Deeper Scan Evidence",
+      "subtitle": "Category, product, and cart interaction samples used to qualify checkout recommendations",
+      "categoryPages": "Category pages",
+      "productPages": "Product pages",
+      "cartInteraction": "Cart interaction",
+      "succeeded": "{count} succeeded",
+      "attempted": "{count} attempted",
+      "available": "Available",
+      "notVerified": "Not verified",
+      "unavailableTitle": "Deeper scan unavailable",
+      "unavailableText": "Browser-based category, product, and cart interaction sampling was unavailable for this run, so checkout recommendations remain limited to lower-confidence evidence.",
+      "evidence": "Evidence"
     },
     "visualAnalysis": {
       "title": "Visual UX Analysis",

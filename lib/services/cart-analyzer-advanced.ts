@@ -1,6 +1,7 @@
 import type {
   AnalysisConfidence,
   AnalysisSource,
+  DeeperScanAnalysis,
   ProductAnalysis,
   Recommendation,
   SectionResult,
@@ -18,6 +19,7 @@ interface CartSignal {
 
 interface CartAnalyzerOptions {
   productAnalysis?: ProductAnalysis;
+  deeperScan?: DeeperScanAnalysis;
   platform?: string | null;
 }
 
@@ -74,8 +76,9 @@ export function analyzeCartExperience(
   html: string,
   options: CartAnalyzerOptions = {}
 ): SectionResult {
-  const { productAnalysis, platform } = options;
+  const { productAnalysis, deeperScan, platform } = options;
   const hasProductSample = Boolean(productAnalysis);
+  const hasCartInteraction = Boolean(deeperScan?.cartInteractionSucceeded);
   const staticCheckoutLimitation =
     'Checkout quality was not tested; this is based on static HTML signals only.';
   const signals: CartSignal[] = [];
@@ -130,7 +133,8 @@ export function analyzeCartExperience(
   const checkoutPath =
     hasPattern(html, /href=["'][^"']*(\/checkout|checkout)[^"']*["']/i) ||
     hasPattern(html, /action=["'][^"']*(\/cart|\/checkout|checkout)[^"']*["']/i) ||
-    productAnalysis?.cartActionabilityStatus === 'redirected_to_cart';
+    productAnalysis?.cartActionabilityStatus === 'redirected_to_cart' ||
+    Boolean(deeperScan?.cartInteraction?.checkoutLinkDetected);
 
   signals.push(
     signal(
@@ -138,7 +142,9 @@ export function analyzeCartExperience(
       'Checkout path',
       checkoutPath ? 'present' : cartEntryVisible ? 'weak' : 'missing',
       checkoutPath
-        ? 'A checkout or cart form path was detected.'
+        ? hasCartInteraction
+          ? 'A checkout path was detected after a sampled cart interaction.'
+          : 'A checkout or cart form path was detected.'
         : cartEntryVisible
           ? 'A cart entry exists, but no checkout form or direct checkout path was visible.'
           : 'No checkout path was detected from homepage or sampled product signals.',
@@ -213,6 +219,35 @@ export function analyzeCartExperience(
     );
   }
 
+  if (deeperScan?.categorySamples?.length) {
+    const categoryWithGrid = deeperScan.categorySamples.some(sample => sample.visibleProductGrid);
+    signals.push(
+      signal(
+        'category-sample',
+        'Category browsing sample',
+        categoryWithGrid ? 'present' : 'weak',
+        categoryWithGrid
+          ? `${deeperScan.categorySamples.length} sampled category page(s) exposed product-listing structure.`
+          : `${deeperScan.categorySamples.length} sampled category page(s) did not clearly expose product-listing structure.`,
+        6
+      )
+    );
+  }
+
+  if (deeperScan?.cartInteraction?.attempted) {
+    signals.push(
+      signal(
+        'cart-interaction',
+        'Cart interaction sample',
+        deeperScan.cartInteractionSucceeded ? 'present' : 'weak',
+        deeperScan.cartInteractionSucceeded
+          ? 'A sampled add-to-cart interaction exposed cart or checkout UI.'
+          : 'A sampled add-to-cart interaction did not confirm cart or checkout UI.',
+        12
+      )
+    );
+  }
+
   let score = 12;
   for (const item of signals) {
     if (item.state === 'present') score += item.weight;
@@ -249,7 +284,7 @@ export function analyzeCartExperience(
           'Purchase action was missing.',
         'medium',
         hasProductSample ? 'product_sample' : 'static_html',
-        hasProductSample ? 'verified' : 'insufficient_evidence',
+        hasProductSample && hasCartInteraction ? 'verified' : 'insufficient_evidence',
         hasProductSample ? undefined : staticCheckoutLimitation
       )
     );
@@ -260,15 +295,15 @@ export function analyzeCartExperience(
       createRecommendation(
         'checkout-path-missing',
         'Expose a predictable checkout path',
-        hasProductSample && !cartEntryVisible ? 'high' : 'medium',
+        hasCartInteraction && !checkoutPath ? 'high' : 'medium',
         'A clear path from cart to checkout reduces hesitation and prevents dead-end shopping sessions.',
         'Ensure cart forms, mini-cart drawers, and checkout buttons use visible labels and link to a real cart or checkout route.',
         signals.find(item => item.key === 'checkout-path')?.evidence ??
           'Checkout path was missing.',
         'medium',
-        hasProductSample ? 'product_sample' : 'static_html',
-        hasProductSample ? 'estimated' : 'insufficient_evidence',
-        staticCheckoutLimitation
+        hasCartInteraction ? 'rendered_browser' : hasProductSample ? 'product_sample' : 'static_html',
+        hasCartInteraction ? 'verified' : 'insufficient_evidence',
+        hasCartInteraction ? undefined : staticCheckoutLimitation
       )
     );
   }

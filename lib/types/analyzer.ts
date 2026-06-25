@@ -169,6 +169,53 @@ export interface ProductAnalysis {
   cartActionabilityStatus: 'detected' | 'clickable' | 'redirected_to_cart' | 'unknown';
 }
 
+export interface CategoryPageSample {
+  url: string;
+  productLinkCount: number;
+  visibleProductGrid: boolean;
+  filterOrSortDetected: boolean;
+  addToCartInListDetected: boolean;
+  evidence: string[];
+}
+
+export interface ProductPageSample extends ProductAnalysis {
+  url: string;
+  addToCartSelectorFound: boolean;
+  variantSelectorDetected: boolean;
+  priceDetected: boolean;
+  stockSignalDetected: boolean;
+  evidence: string[];
+}
+
+export interface CartInteractionSample {
+  attempted: boolean;
+  productUrl?: string;
+  cartUrlBefore?: string;
+  cartUrlAfter?: string;
+  addToCartClicked: boolean;
+  cartCountChanged: boolean;
+  cartDrawerOrPageDetected: boolean;
+  checkoutLinkDetected: boolean;
+  error?: string;
+  evidence: string[];
+}
+
+export interface DeeperScanAnalysis {
+  attempted: boolean;
+  available: boolean;
+  categoryPagesAttempted: number;
+  categoryPagesSucceeded: number;
+  productPagesAttempted: number;
+  productPagesSucceeded: number;
+  cartInteractionAttempted: boolean;
+  cartInteractionSucceeded: boolean;
+  categorySamples: CategoryPageSample[];
+  productSamples: ProductPageSample[];
+  cartInteraction?: CartInteractionSample;
+  confidence: AnalysisConfidence;
+  limitations: string[];
+}
+
 export interface BenchmarkComparison {
   percentile: number;
   sampleSize: number;
@@ -181,6 +228,7 @@ export interface AnalysisMeta {
   visualAnalysisAttempted: boolean;
   visualAnalysisAvailable: boolean;
   productAnalysisAvailable: boolean;
+  deeperScanAvailable?: boolean;
   competitorAnalysisAvailable: boolean;
   cached: boolean;
   screenshotsInEmailReport?: boolean;
@@ -206,6 +254,7 @@ export interface AnalysisResult {
   visualAnalysis?: VisualAnalysis;
   aiAnalysis?: AIAnalysis;
   productAnalysis?: ProductAnalysis;
+  deeperScan?: DeeperScanAnalysis;
   scanScope?: ScanScope;
   percentile?: number;
   benchmark?: BenchmarkComparison;

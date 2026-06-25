@@ -253,6 +253,21 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         </motion.div>
       )}
 
+      {!analysisMeta.deeperScanAvailable && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`flex items-start gap-3 rounded-xl border p-4 ${
+            isDark ? 'border-cyan-500/30 bg-cyan-500/10' : 'border-cyan-200 bg-cyan-50'
+          }`}
+        >
+          <Info className="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" />
+          <p className={`text-sm ${isDark ? 'text-white/80' : 'text-surface-700'}`}>
+            {t('results.deeperScanUnavailableNotice')}
+          </p>
+        </motion.div>
+      )}
+
       {/* Clean Status Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -858,6 +873,83 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 </span>
               </div>
             </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Deeper Scan Evidence Section */}
+      {results.deeperScan && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.19 }}
+          className={`border rounded-2xl p-6 md:p-8 ${isDark ? 'bg-surface-950/30 border-white/5' : 'bg-white border-surface-200 shadow-sm'}`}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+              <ShoppingCart className="w-5 h-5 text-cyan-500" />
+            </div>
+            <div>
+              <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
+                {t('deeperScan.title')}
+              </h3>
+              <p className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                {t('deeperScan.subtitle')}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              {
+                label: t('deeperScan.categoryPages'),
+                value: t('deeperScan.succeeded', {
+                  count: results.deeperScan.categoryPagesSucceeded,
+                }),
+                detail: t('deeperScan.attempted', {
+                  count: results.deeperScan.categoryPagesAttempted,
+                }),
+                active: results.deeperScan.categoryPagesSucceeded > 0,
+              },
+              {
+                label: t('deeperScan.productPages'),
+                value: t('deeperScan.succeeded', {
+                  count: results.deeperScan.productPagesSucceeded,
+                }),
+                detail: t('deeperScan.attempted', {
+                  count: results.deeperScan.productPagesAttempted,
+                }),
+                active: results.deeperScan.productPagesSucceeded > 0,
+              },
+              {
+                label: t('deeperScan.cartInteraction'),
+                value: results.deeperScan.cartInteractionSucceeded
+                  ? t('deeperScan.available')
+                  : t('deeperScan.notVerified'),
+                detail:
+                  results.deeperScan.cartInteraction?.evidence?.[0] ||
+                  results.deeperScan.limitations[0] ||
+                  '',
+                active: results.deeperScan.cartInteractionSucceeded,
+              },
+            ].map(item => (
+              <div
+                key={item.label}
+                className={`rounded-xl border p-4 ${item.active ? 'border-emerald-500/20 bg-emerald-500/10' : isDark ? 'border-white/5 bg-surface-900/50' : 'border-surface-200 bg-surface-50'}`}
+              >
+                <div className={`text-xs font-semibold uppercase mb-2 ${isDark ? 'text-white/40' : 'text-surface-500'}`}>
+                  {item.label}
+                </div>
+                <div className={`text-lg font-bold ${item.active ? 'text-emerald-600 dark:text-emerald-400' : isDark ? 'text-white' : 'text-surface-900'}`}>
+                  {item.value}
+                </div>
+                {item.detail && (
+                  <div className={`mt-1 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                    {item.detail}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </motion.div>
       )}

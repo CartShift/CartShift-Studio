@@ -693,6 +693,130 @@ function buildCoreWebVitalsHtml(coreWebVitals, texts, isRtl) {
   `;
 }
 
+function buildDeeperScanHtml(deeperScan, texts, isRtl) {
+  const labels = {
+    title: texts.deeperScanTitle || 'Deeper Scan Evidence',
+    subtitle:
+      texts.deeperScanSubtitle ||
+      'Category, product, and cart interaction samples used to qualify checkout recommendations.',
+    categoryPages: texts.deeperScanCategoryPages || 'Category pages',
+    productPages: texts.deeperScanProductPages || 'Product pages',
+    cartInteraction: texts.deeperScanCartInteraction || 'Cart interaction',
+    succeeded: texts.deeperScanSucceeded || '{count} succeeded',
+    attempted: texts.deeperScanAttempted || '{count} attempted',
+    available: texts.deeperScanAvailable || 'Available',
+    notVerified: texts.deeperScanNotVerified || 'Not verified',
+    unavailableTitle: texts.deeperScanUnavailableTitle || 'Deeper scan unavailable',
+    unavailableText:
+      texts.deeperScanUnavailableText ||
+      'Browser-based category, product, and cart interaction sampling was unavailable for this run, so checkout recommendations remain limited to lower-confidence evidence.',
+    evidence: texts.deeperScanEvidence || 'Evidence',
+  };
+
+  const formatCount = (template, count) => template.replace('{count}', String(count || 0));
+
+  if (!deeperScan?.available) {
+    return `
+      <table class="section-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
+        <tr>
+          <td style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 20px; ${isRtl ? 'text-align: right;' : ''}">
+            <p style="margin: 0 0 8px; color: #92400e; font-size: 16px; font-weight: 800;">${escapeHtml(labels.unavailableTitle)}</p>
+            <p style="margin: 0; color: #b45309; font-size: 13px; line-height: 1.6;">${escapeHtml(labels.unavailableText)}</p>
+          </td>
+        </tr>
+      </table>
+    `;
+  }
+
+  const cards = [
+    {
+      label: labels.categoryPages,
+      value: formatCount(labels.succeeded, deeperScan.categoryPagesSucceeded),
+      detail: formatCount(labels.attempted, deeperScan.categoryPagesAttempted),
+      active: deeperScan.categoryPagesSucceeded > 0,
+    },
+    {
+      label: labels.productPages,
+      value: formatCount(labels.succeeded, deeperScan.productPagesSucceeded),
+      detail: formatCount(labels.attempted, deeperScan.productPagesAttempted),
+      active: deeperScan.productPagesSucceeded > 0,
+    },
+    {
+      label: labels.cartInteraction,
+      value: deeperScan.cartInteractionSucceeded ? labels.available : labels.notVerified,
+      detail:
+        deeperScan.cartInteraction?.evidence?.[0] ||
+        deeperScan.limitations?.[0] ||
+        labels.notVerified,
+      active: deeperScan.cartInteractionSucceeded,
+    },
+  ];
+
+  const cardsHtml = cards
+    .map(card => {
+      const border = card.active ? '#a7f3d0' : '#e5e7eb';
+      const bg = card.active ? '#ecfdf5' : '#f8fafc';
+      const color = card.active ? '#047857' : '#475569';
+
+      return `
+        <td width="33.33%" style="padding: 0 6px 12px; vertical-align: top;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: ${bg}; border: 1px solid ${border}; border-radius: 10px;">
+            <tr>
+              <td style="padding: 14px; ${isRtl ? 'text-align: right;' : ''}">
+                <p style="margin: 0 0 6px; color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">${escapeHtml(card.label)}</p>
+                <p style="margin: 0 0 4px; color: ${color}; font-size: 15px; font-weight: 800;">${escapeHtml(card.value)}</p>
+                <p style="margin: 0; color: #64748b; font-size: 11px; line-height: 1.4;">${escapeHtml(card.detail)}</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      `;
+    })
+    .join('');
+
+  const evidenceItems = [
+    ...(deeperScan.categorySamples || []).flatMap(sample => sample.evidence || []),
+    ...(deeperScan.productSamples || []).flatMap(sample => sample.evidence || []),
+    ...(deeperScan.cartInteraction?.evidence || []),
+    ...(deeperScan.limitations || []),
+  ].slice(0, 6);
+
+  const evidenceHtml = evidenceItems.length
+    ? `
+      <tr>
+        <td style="padding-top: 8px;">
+          <p style="margin: 0 0 8px; color: #475569; font-size: 12px; font-weight: 800;">${escapeHtml(labels.evidence)}</p>
+          ${evidenceItems
+            .map(
+              item =>
+                `<p style="margin: 0 0 5px; color: #64748b; font-size: 11px; line-height: 1.45;">• ${escapeHtml(item)}</p>`
+            )
+            .join('')}
+        </td>
+      </tr>
+    `
+    : '';
+
+  return `
+    <table class="section-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
+      <tr>
+        <td style="padding-bottom: 20px; ${isRtl ? 'text-align: right;' : ''}">
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 8px;">${escapeHtml(labels.title)}</h2>
+          <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">${escapeHtml(labels.subtitle)}</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>${cardsHtml}</tr>
+            ${evidenceHtml}
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
 const {
   buildRoadmapWeeks,
   flattenRecommendations,
@@ -916,6 +1040,7 @@ function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
       scoresHtml: buildScoresHtml(sections, texts, isRtl),
       recommendationsHtml: buildRecommendationsHtml(sections, texts, isRtl),
       coreWebVitalsHtml: buildCoreWebVitalsHtml(results.coreWebVitals, texts, isRtl),
+      deeperScanHtml: buildDeeperScanHtml(results.deeperScan, texts, isRtl),
       actionRoadmapHtml: buildActionRoadmapHtml(sections, texts, isRtl),
       detailedFindingsHtml: buildDetailedFindingsHtml(sections, texts, isRtl),
       fullRecommendationsHtml: buildFullRecommendationsHtml(sections, texts, isRtl),
