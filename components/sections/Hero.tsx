@@ -9,18 +9,19 @@ import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
 import { getScheduleUrl } from '@/lib/schedule';
 import { trackBookCallClick } from '@/lib/analytics';
-import { ArrowRight, ArrowDown } from 'lucide-react';
+import { ArrowRight, ArrowDown, Code2, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { HeroIllustration } from './HeroIllustration';
 import { cn } from '@/lib/utils';
 
-const platformIcons = [
-  { name: 'Shopify', iconPath: '/icons/shopify.svg', color: '#96BF48' },
-  { name: 'WordPress', iconPath: '/icons/wordpress.svg', color: '#21759B' },
-  { name: 'Wix', iconPath: '/icons/wix.svg', color: '#0C6EFC' },
-  { name: 'Webflow', iconPath: '/icons/webflow.svg', color: '#4353FF' },
-  { name: 'BigCommerce', iconPath: '/icons/bigcommerce.svg', color: '#121118' },
-  { name: 'Squarespace', iconPath: '/icons/squarespace.svg', color: '#000000' },
+type PlatformIcon =
+  | { name: string; iconPath: string }
+  | { name: string; icon: LucideIcon };
+
+const platformIcons: PlatformIcon[] = [
+  { name: 'Shopify', iconPath: '/icons/shopify.svg' },
+  { name: 'WordPress', iconPath: '/icons/wordpress.svg' },
+  { name: 'Web Apps', icon: Code2 },
 ];
 
 const AmbientLight = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
@@ -132,12 +133,20 @@ export const Hero: React.FC = () => {
                   >
                     <div className="w-12 h-12 md:w-16 md:h-16 p-3 md:p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-surface-200/60 dark:border-white/10 backdrop-blur-md shadow-sm transition-all duration-300">
                       <div className="relative w-full h-full grayscale opacity-50 dark:invert dark:opacity-40 transition-all duration-500">
-                        <Image
-                          src={platform.iconPath}
-                          alt={platform.name}
-                          fill
-                          className="object-contain"
-                        />
+                        {'iconPath' in platform ? (
+                          <Image
+                            src={platform.iconPath}
+                            alt={platform.name}
+                            fill
+                            className="object-contain"
+                          />
+                        ) : (
+                          <platform.icon
+                            aria-label={platform.name}
+                            className="h-full w-full text-surface-900 dark:text-white"
+                            strokeWidth={2.5}
+                          />
+                        )}
                       </div>
                     </div>
                   </motion.div>

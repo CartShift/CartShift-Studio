@@ -142,6 +142,80 @@ function buildPageSpeedPayload() {
   };
 }
 
+function buildClusteredLighthousePayload() {
+  return {
+    lighthouseResult: {
+      categories: {
+        performance: { score: 0.66 },
+        seo: { score: 0.82 },
+        accessibility: { score: 0.9 },
+        'best-practices': { score: 0.92 },
+      },
+      audits: {
+        'first-contentful-paint': {
+          title: 'First Contentful Paint',
+          score: 0.4,
+          scoreDisplayMode: 'numeric',
+          displayValue: '3.4 s',
+          numericValue: 3400,
+        },
+        'largest-contentful-paint': {
+          title: 'Largest Contentful Paint',
+          score: 0.3,
+          scoreDisplayMode: 'numeric',
+          displayValue: '5.8 s',
+          numericValue: 5800,
+        },
+        'speed-index': {
+          title: 'Speed Index',
+          score: 0.5,
+          scoreDisplayMode: 'numeric',
+          displayValue: '4.7 s',
+          numericValue: 4700,
+        },
+        interactive: {
+          title: 'Time to Interactive',
+          score: 0.7,
+          scoreDisplayMode: 'numeric',
+          displayValue: '6.0 s',
+          numericValue: 6000,
+        },
+        'total-blocking-time': {
+          title: 'Total Blocking Time',
+          score: 0.45,
+          scoreDisplayMode: 'numeric',
+          displayValue: '620 ms',
+          numericValue: 620,
+          details: {
+            items: [{ url: 'https://shop.example.com/theme.js', total: 420 }],
+          },
+        },
+        'mainthread-work-breakdown': {
+          title: 'Main-thread work breakdown',
+          score: 0.6,
+          scoreDisplayMode: 'numeric',
+          displayValue: '4.2 s',
+          numericValue: 4200,
+          details: {
+            items: [{ group: 'scriptEvaluation', duration: 2400 }],
+          },
+        },
+        'cumulative-layout-shift': {
+          title: 'Cumulative Layout Shift',
+          score: 1,
+          scoreDisplayMode: 'numeric',
+          displayValue: '0',
+        },
+        'server-response-time': {
+          title: 'Initial server response time was short',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      },
+    },
+  };
+}
+
 function buildCachedResult(): AnalysisResult {
   return {
     storeUrl: 'https://shop.example.com',
@@ -350,7 +424,7 @@ describe('AnalyzerService.analyzeStore', () => {
       expect.arrayContaining([
         'cart-visible',
         'add-to-cart-missing',
-        'checkout-path-missing',
+        'checkout-flow-not-verified',
         'payment-cues-missing',
       ])
     );
@@ -449,5 +523,100 @@ describe('AnalyzerService.analyzeStore', () => {
         section.recommendations.map(rec => rec.source)
       )
     ).toContain('static_html');
+  });
+
+  it('marks Lighthouse recommendations as measured lab data and clusters correlated performance metrics', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url.includes('pagespeedonline')) {
+          return new Response(JSON.stringify(buildClusteredLighthousePayload()), { status: 200 });
+        }
+        throw new Error(`Unexpected fetch URL: ${url}`);
+      })
+    );
+
+    const result = await AnalyzerService.analyzeStore('https://shop.example.com');
+    const perfRecs = result.sections.performance.recommendations;
+
+    expect(perfRecs.map(rec => rec.code)).toEqual(
+      expect.arrayContaining(['lighthouse-initial-page-load', 'lighthouse-js-execution'])
+    );
+    expect(perfRecs.map(rec => rec.code)).not.toEqual(
+      expect.arrayContaining([
+        'first-contentful-paint',
+        'largest-contentful-paint',
+        'speed-index',
+        'interactive',
+        'total-blocking-time',
+        'mainthread-work-breakdown',
+      ])
+    );
+    expect(perfRecs.every(rec => rec.source === 'lighthouse')).toBe(true);
+    expect(perfRecs.every(rec => rec.confidence === 'measured')).toBe(true);
+    expect(perfRecs.every(rec => rec.limitation?.startsWith('Lab measurement.'))).toBe(true);
+    expect(perfRecs[0].scannedUrlScope).toEqual(['https://shop.example.com']);
+  });
+
+  it('rejects WooCommerce archive URLs and only counts confirmed product detail pages', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify(buildPageSpeedPayload()), { status: 200 }))
+    );
+    mockSafeFetch.mockImplementation(async (url: string) => {
+      if (url === 'https://woo.example.com') {
+        return {
+          finalUrl: 'https://woo.example.com',
+          html: `<!doctype html>
+          <html lang="en"><head><title>Woo</title>
+          <meta name="description" content="Hair care and beauty products for shoppers.">
+          <link rel="canonical" href="https://woo.example.com/">
+          <script src="/wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.js"></script>
+          </head><body>
+            <h1>Woo Store</h1>
+            <a href="/shop/">Shop archive</a>
+            <a href="/product-category/hair/">Hair category</a>
+            <a href="/product/confirmed/">Confirmed product</a>
+          </body></html>`,
+        };
+      }
+      if (url === 'https://woo.example.com/product/confirmed/') {
+        return {
+          finalUrl: 'https://woo.example.com/product/confirmed/',
+          html: `<!doctype html>
+          <html lang="en">
+            <body class="single-product">
+              <h1 class="product_title">Hair Serum</h1>
+              <p class="price"><span class="woocommerce-Price-amount">$29</span></p>
+              <form class="cart"><button name="add-to-cart" class="single_add_to_cart_button">Add to cart</button></form>
+              <div itemscope itemtype="https://schema.org/Product">
+                <span itemprop="name">Hair Serum</span>
+                <img itemprop="image" src="/serum.jpg" alt="Hair Serum">
+                <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                  <meta itemprop="priceCurrency" content="USD">
+                  <span itemprop="price">29.00</span>
+                  <link itemprop="availability" href="https://schema.org/InStock">
+                </div>
+              </div>
+              <script type="application/ld+json">{not valid json</script>
+            </body>
+          </html>`,
+        };
+      }
+      throw new Error(`Unexpected URL ${url}`);
+    });
+
+    const result = await AnalyzerService.analyzeStore('https://woo.example.com');
+
+    expect(result.scanScope?.productPageCountAttempted).toBe(1);
+    expect(result.scanScope?.productPageCountSucceeded).toBe(1);
+    expect(result.scanScope?.productSchemaCoverageStatus).toBe('not_verified');
+    expect(result.scanScope?.productSchemaEvidence?.[0].microdataProductCount).toBeGreaterThan(0);
+    expect(result.scanScope?.productSchemaEvidence?.[0].valid).toBe(true);
+    expect(result.scanScope?.productSchemaEvidence?.[0].malformedJsonLdUnrelated).toBe(true);
+    expect(result.sections.seo.recommendations.map(rec => rec.code)).not.toContain(
+      'ai-product-schema'
+    );
   });
 });

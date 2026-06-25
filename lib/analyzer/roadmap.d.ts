@@ -24,6 +24,10 @@ export declare function flattenRecommendations(
 
 export declare function buildRoadmapWeeks(allRecs: ExtendedRecommendation[]): RoadmapWeek[];
 
+export declare function dedupeRecommendations(
+  allRecs: ExtendedRecommendation[]
+): ExtendedRecommendation[];
+
 export declare function buildPriorityRecommendations(
   allRecs: ExtendedRecommendation[],
   maxCount?: number

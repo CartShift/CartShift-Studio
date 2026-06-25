@@ -1,9 +1,9 @@
 {
   "hero": {
-    "tag": "Shopify & WordPress experts, built to convert",
+    "tag": "Shopify, WordPress & web app experts, built to convert",
     "titleLine1": "Websites & Stores",
     "titleLine2": "Built to Convert",
-    "description": "No tech drama. We design and build fast, beautiful websites that guide visitors to buy, book, or reach out. And we keep improving after launch.",
+    "description": "No tech drama. We design and build Shopify stores, WordPress sites, and custom web apps that guide visitors to buy, book, or reach out. And we keep improving after launch.",
     "primaryCta": "Get a Free Consultation",
     "secondaryCta": "See Our Work",
     "analyzerCta": "Analyze My Store (Free)",
@@ -32,7 +32,7 @@
       ]
     },
     "platforms": {
-      "label": "We Build On"
+      "label": "Focused On"
     },
     "illustration": {
       "revenue": "Revenue",
@@ -1395,8 +1395,9 @@
       "checkInbox": "Check your inbox for the full in-depth analysis with actionable recommendations and a 30-day roadmap",
       "share": "Share Results",
       "copied": "Copied!",
-      "priorityFixes": "Priority Fixes",
-      "prioritySubtitle": "Focus on these high-impact items first to improve your score.",
+      "priorityFixes": "Priority fixes",
+      "nextActions": "Next actions",
+      "prioritySubtitle": "Focus on the highest-confidence root-cause actions first.",
       "status": {
         "excellent": "Excellent",
         "good": "Good",
@@ -1408,10 +1409,10 @@
         "criticalDesc": "Immediate action needed."
       },
       "greatJob": "Great Job! Your store is optimized.",
-      "strongScoreWithIssues": "Strong foundation, {count} high-impact fixes remain",
-      "strongScoreWithIssuesDesc": "The score is good, but the open issues are specific enough to prioritize before scaling traffic.",
-      "issuesFound": "{count} Critical Issues Detected",
-      "issuesFound_singular": "{count} Critical Issue Detected",
+      "strongScoreWithIssues": "Strong foundation, {count} priority improvement areas",
+      "strongScoreWithIssuesDesc": "The score is good, and the report now separates measured results from estimates and coverage gaps.",
+      "issuesFound": "{count} priority improvement areas found",
+      "issuesFound_singular": "{count} priority improvement area found",
       "readyToScale": "Your store is ready to scale.",
       "losingSales": "These issues are likely costing you conversions.",
       "evidenceGroundedIssues": "These recommendations are based on verified findings or clearly marked estimates from this scan.",
@@ -1422,10 +1423,10 @@
       "resultId": "Result ID: #{id}",
       "impactLabel": "Impact: {impact} • {section}",
       "topIssues": "({count} priority items)",
-      "dontLetIssuesHurtSales": "Don't Let These Issues Hurt Sales",
-      "planNextVerifiedFixes": "Plan the Next Verified Fixes",
-      "expertsCanFix": "Our experts can fix these {count} critical errors for you. Book a free consultation to verify the plan.",
-      "expertsCanFix_singular": "Our experts can fix this {count} critical error for you. Book a free consultation to verify the plan.",
+      "dontLetIssuesHurtSales": "Review the Findings",
+      "planNextVerifiedFixes": "Plan the Next Priority Improvements",
+      "expertsCanFix": "Review these {count} priority improvement areas with an expert before committing implementation time.",
+      "expertsCanFix_singular": "Review this {count} priority improvement area with an expert before committing implementation time.",
       "trustedBy": "Trusted by 50+ stores",
       "fullReportSent": "Your comprehensive report has been sent! It includes detailed findings, step-by-step fixes, Core Web Vitals analysis, and a prioritized 30-day action plan.",
       "analyzeDifferentUrl": "Analyze a different URL"
@@ -1446,6 +1447,18 @@
         "medium": "Medium confidence",
         "low": "Low confidence"
       },
+      "categories": {
+        "beauty": "Beauty & personal care",
+        "hair": "Hair care",
+        "fashion": "Fashion",
+        "home": "Home goods",
+        "electronics": "Electronics",
+        "food": "Food & beverage",
+        "health": "Health & wellness",
+        "jewelry": "Jewelry",
+        "sports": "Sports & outdoors",
+        "general": "General commerce"
+      },
       "summaryWithCandidates": "Candidates are based on real domains referenced by the analyzed store, not random category guesses.",
       "summaryNoCandidates": "The analyzer found category signals, but not enough evidence to name direct competitors confidently.",
       "evidence": "Evidence",
@@ -1453,7 +1466,7 @@
       "noCategory": "No strong product category detected",
       "candidatesFound": "{count} competitor candidate(s) found from page references",
       "noDirectCompetitors": "No direct competitors found in homepage links",
-      "competitorCandidates": "Competitor Candidates",
+      "competitorCandidates": "Possible competitors",
       "possibleCompetitors": "Possible competitors",
       "similarity": "Similarity",
       "confidenceScore": "Confidence",
@@ -1472,6 +1485,15 @@
       },
       "scoreHelp": "Higher scores mean the scanned pages expose clearer entities, content, and structured facts. It is not a verified AI-search ranking score.",
       "productSchemaStatus": "Product schema: {status}; product pages scanned: {count}",
+      "schemaStatus": {
+        "not_scanned": "not scanned",
+        "not_applicable": "not applicable",
+        "not_verified": "not verified",
+        "present": "present",
+        "partial": "partial",
+        "missing": "missing",
+        "invalid": "invalid"
+      },
       "structuredData": "Structured Data (JSON-LD)",
       "noSchema": "No structured data found",
       "readability": "Readability",
@@ -1558,6 +1580,9 @@
       "evidence": "Evidence",
       "nextAction": "Next action",
       "noEvidence": "No additional evidence was recorded for this older report item.",
+      "measuredEvidence": "Measured Lighthouse lab evidence from {count} affected audit(s).",
+      "productSampleEvidence": "Evidence from {count} confirmed sampled product page(s).",
+      "limitedEvidence": "This item needs a deeper scan before it should be treated as verified.",
       "effort": {
         "quick": "Quick fix",
         "medium": "Moderate effort",
@@ -1607,7 +1632,27 @@
         "largest_contentful_paint": {
           "title": "Speed up the largest visible element",
           "description": "A slow hero image or main content block delays the moment shoppers feel the page is usable.",
-          "action": "Preload the hero image, compress it, serve responsive sizes, and defer non-critical scripts competing for bandwidth."
+          "action": "Identify the actual LCP element and its loading path before applying preload or image changes."
+        },
+        "lighthouse_initial_page_load": {
+          "title": "Improve initial page-load performance",
+          "description": "Lighthouse measured slow early loading milestones in the tested lab run.",
+          "action": "Identify the actual LCP element and its loading path before applying preload or image changes."
+        },
+        "lighthouse_js_execution": {
+          "title": "Reduce JavaScript execution and main-thread work",
+          "description": "Lighthouse measured JavaScript or rendering work that can delay interaction in the tested lab run.",
+          "action": "Use the Lighthouse task breakdown to remove unused theme/app code, defer non-critical third-party tags, and split work before menus, filters, and product actions are usable."
+        },
+        "lighthouse_layout_stability": {
+          "title": "Stabilize layout during load",
+          "description": "Lighthouse measured layout movement above the passing threshold.",
+          "action": "Reserve dimensions for images, embeds, banners, and sticky bars identified by Lighthouse before they load."
+        },
+        "lighthouse_server_response": {
+          "title": "Reduce server response time",
+          "description": "Lighthouse measured slow initial server response for the tested page.",
+          "action": "Review full-page caching, hosting resources, CDN cache rules, and plugins/apps that run before the first HTML response."
         },
         "total_blocking_time": {
           "title": "Reduce JavaScript blocking time",
@@ -1684,6 +1729,11 @@
           "description": "A clear path from cart to checkout reduces hesitation and prevents dead-end shopping sessions.",
           "action": "Ensure cart forms, mini-cart drawers, and checkout buttons use visible labels and link to a real cart or checkout route."
         },
+        "checkout_flow_not_verified": {
+          "title": "Checkout flow not verified",
+          "description": "Checkout flow quality was not tested in this scan.",
+          "action": "Run a deeper scan that samples category pages, product pages, add-to-cart behavior, cart UI, and checkout entry points before making checkout recommendations."
+        },
         "payment_cues_missing": {
           "title": "Show accepted payment methods",
           "description": "Payment cues reduce risk perception before shoppers commit to checkout.",
@@ -1732,6 +1782,10 @@
       }
     },
     "recommendationGroups": {
+      "measuredFindings": {
+        "title": "Measured lab findings",
+        "subtitle": "Lighthouse lab results for the tested URL. They are reliable for the run, but not field data."
+      },
       "verifiedFixes": {
         "title": "Verified fixes",
         "subtitle": "Items backed by Lighthouse, rendered browser checks, or sampled product pages."
@@ -1746,6 +1800,7 @@
       }
     },
     "confidence": {
+      "measured": "Measured lab data",
       "verified": "Verified",
       "estimated": "Estimated from static HTML",
       "insufficient_evidence": "Insufficient evidence",

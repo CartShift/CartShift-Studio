@@ -12,10 +12,15 @@ export interface Finding {
 
 export interface Recommendation {
   code?: string;
+  rootCauseId?: string;
   title: string;
   description?: string;
   action?: string;
   evidence?: string;
+  measuredMetrics?: Record<string, string>;
+  affectedAuditIds?: string[];
+  diagnostics?: string[];
+  excludeFromActionPlan?: boolean;
   effort?: 'quick' | 'medium' | 'advanced';
   impact: 'high' | 'medium' | 'low';
   serviceLink?: string;
@@ -40,7 +45,12 @@ export interface CoreWebVitals {
   fid?: { value: number; rating: string };
 }
 
-export type AnalysisConfidence = 'verified' | 'estimated' | 'insufficient_evidence' | 'unavailable';
+export type AnalysisConfidence =
+  | 'measured'
+  | 'verified'
+  | 'estimated'
+  | 'insufficient_evidence'
+  | 'unavailable';
 
 export type AnalysisSource =
   | 'lighthouse'
@@ -96,6 +106,7 @@ export interface CompetitorAnalysis {
 export type ProductSchemaCoverageStatus =
   | 'not_scanned'
   | 'not_applicable'
+  | 'not_verified'
   | 'present'
   | 'partial'
   | 'missing'
@@ -105,7 +116,14 @@ export interface ProductSchemaEntityEvidence {
   url: string;
   valid: boolean;
   malformedJsonLd: boolean;
+  malformedJsonLdUnrelated?: boolean;
   productCount: number;
+  jsonLdProductCount?: number;
+  microdataProductCount?: number;
+  rdfaProductCount?: number;
+  markupFormats?: Array<'json_ld' | 'microdata' | 'rdfa'>;
+  confirmedProductPage?: boolean;
+  confirmationSignals?: string[];
   fields: {
     name: boolean;
     image: boolean;

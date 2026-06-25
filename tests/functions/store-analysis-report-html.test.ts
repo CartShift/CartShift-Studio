@@ -191,6 +191,26 @@ describe('buildStoreAnalysisReportHtml', () => {
     expect(html).not.toContain('&copy; 2025 CartShift Studio');
   });
 
+  it('maps an 82 score to good instead of excellent in PDF output', () => {
+    const html = buildStoreAnalysisReportHtml(
+      { ...sampleResults, overallScore: 82 },
+      'https://cart-shift.com',
+      {
+        ...heTexts,
+        scoreStatus: {
+          excellent: 'מצוין',
+          good: 'טוב',
+          warning: 'דורש שיפור',
+          critical: 'קריטי',
+        },
+      },
+      true
+    );
+
+    expect(html).toContain('טוב');
+    expect(html).not.toContain('מצוין</p>');
+  });
+
   it('localizes Lighthouse-derived recommendation strings and evidence patterns', () => {
     const lighthouseResults = {
       overallScore: 72,

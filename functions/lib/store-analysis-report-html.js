@@ -72,7 +72,7 @@ function recommendationMetaHtml(rec, texts) {
     parts.push(`${texts.scannedScopeLabel || 'Scope'}: ${rec.scannedUrlScope.join(', ')}`);
   }
   if (rec.limitation) {
-    parts.push(`${texts.limitationLabel || 'Limitation'}: ${rec.limitation}`);
+    parts.push(`${texts.limitationLabel || 'Limitation'}: ${localizeEvidence(rec.limitation, texts)}`);
   }
 
   return `<p style="margin: 0 0 8px; font-size: 10px; color: #64748b; line-height: 1.5;">${isolated(parts.join(' • '))}</p>`;
@@ -101,6 +101,10 @@ function localizeEvidence(evidence, texts) {
   const secondsMatch = String(evidence).match(/^([\d.]+)\s*s$/i);
   if (secondsMatch && texts.evidenceTemplates?.secondsMetric) {
     return texts.evidenceTemplates.secondsMetric.replace('{seconds}', secondsMatch[1]);
+  }
+
+  if (String(evidence).startsWith('Lab measurement.') && texts.labMeasurementLimitation) {
+    return texts.labMeasurementLimitation;
   }
 
   return evidence;
@@ -231,27 +235,27 @@ function buildScoresHtml(sections, texts, isRtl) {
   `;
 }
 
-// Build priority fixes - PROFESSIONAL VERSION
-function buildRecommendationsHtml(sections, texts, isRtl) {
-  const allRecs = [];
-  Object.values(sections).forEach(section => {
-    if (section.recommendations) {
-      section.recommendations.forEach(rec => {
-        if (rec.impact === 'high' && rec.confidence === 'verified') {
-          allRecs.push(rec);
-        }
-      });
-    }
-  });
+function getScoreStatus(score) {
+  if (score >= 90) return 'excellent';
+  if (score >= 80) return 'good';
+  if (score >= 50) return 'warning';
+  return 'critical';
+}
 
-  const topRecs = allRecs.slice(0, 5);
+function allRecommendations(sections, texts) {
+  return flattenRecommendations(sections, (key, section) => texts.sections?.[key] || section.name);
+}
+
+// Build next actions - evidence-safe version
+function buildRecommendationsHtml(sections, texts, isRtl) {
+  const topRecs = buildPriorityRecommendations(allRecommendations(sections, texts), 3);
   if (topRecs.length === 0) {
     return `
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 32px; text-align: center;">
             <p style="font-size: 18px; margin: 0 0 12px; font-weight: 800;">✓</p>
-            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${escapeHtml(texts.noVerifiedCriticalIssuesFound || texts.noCriticalIssuesFound)}</p>
+            <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 600;">${escapeHtml(texts.noPriorityActionsFound || texts.noVerifiedCriticalIssuesFound || texts.noCriticalIssuesFound)}</p>
           </td>
         </tr>
       </table>
@@ -819,15 +823,14 @@ function buildDeeperScanHtml(deeperScan, texts, isRtl) {
 
 const {
   buildRoadmapWeeks,
+  buildPriorityRecommendations,
   flattenRecommendations,
 } = require('../../lib/analyzer/roadmap.js');
 
 // Build 30-day action roadmap - PROFESSIONAL VERSION
 function buildActionRoadmapHtml(sections, texts, isRtl) {
-  const allRecs = flattenRecommendations(sections, (key, section) =>
-    texts.sections[key] || section.name
-  );
-  const roadmapWeeks = buildRoadmapWeeks(allRecs);
+  const priorityRecs = buildPriorityRecommendations(allRecommendations(sections, texts), 3);
+  const roadmapWeeks = buildRoadmapWeeks(priorityRecs);
   const itemsByWeekKey = Object.fromEntries(roadmapWeeks.map(week => [week.key, week.items]));
   const week1 = itemsByWeekKey.week1 || [];
   const week2 = itemsByWeekKey.week2 || [];
@@ -935,15 +938,13 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
 
 // Build revenue impact section - PROFESSIONAL VERSION (no CSS gradients for email)
 function buildRevenueImpactHtml(sections, texts, isRtl) {
-  const criticalIssues = Object.values(sections).reduce((count, section) => {
-    return count + (section.recommendations?.filter(r => r.impact === 'high').length || 0);
-  }, 0);
+  const priorityAreas = buildPriorityRecommendations(allRecommendations(sections, texts), 3).length;
 
-  if (criticalIssues === 0) return '';
+  if (priorityAreas === 0) return '';
 
   // Conservative directional range. The report should guide prioritization, not promise outcomes.
-  const lowEnd = Math.min(8 + criticalIssues * 4, 25);
-  const highEnd = Math.min(14 + criticalIssues * 6, 35);
+  const lowEnd = Math.min(8 + priorityAreas * 4, 25);
+  const highEnd = Math.min(14 + priorityAreas * 6, 35);
   const countLabels = getCountLabels(texts);
 
   return `
@@ -974,7 +975,7 @@ function buildRevenueImpactHtml(sections, texts, isRtl) {
                         </tr>
                         <tr>
                           <td style="padding-top: 8px; text-align: center;">
-                            <span style="color: #64748b; font-size: 13px;">${countText(criticalIssues, countLabels.issueSingular, countLabels.issuePlural, isRtl)}</span>
+                            <span style="color: #64748b; font-size: 13px;">${countText(priorityAreas, countLabels.issueSingular, countLabels.issuePlural, isRtl)}</span>
                           </td>
                         </tr>
                       </table>
@@ -992,14 +993,7 @@ function buildRevenueImpactHtml(sections, texts, isRtl) {
 
 function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
   const lang = isRtl ? 'he' : 'en';
-  const scoreStatus =
-    results.overallScore >= 80
-      ? 'excellent'
-      : results.overallScore >= 60
-        ? 'good'
-        : results.overallScore >= 40
-          ? 'warning'
-          : 'critical';
+  const scoreStatus = getScoreStatus(results.overallScore);
 
   const sections = results.sections || {};
 

@@ -22,6 +22,9 @@ import { ScraperService } from './scraper';
 import { safeFetchStoreHtml } from '@/lib/utils/safe-store-fetch';
 
 const PAGESPEED_API_KEY = process.env.PAGESPEED_API_KEY;
+const LIGHTHOUSE_LAB_LIMITATION =
+  'Lab measurement. Results can vary by test run, device profile, network, and cached state.';
+const PRODUCT_SAMPLE_TARGET_COUNT = 3;
 
 // Platform detection patterns
 const platformPatterns = [
@@ -168,13 +171,37 @@ const lighthouseRecommendationMap: Record<
       'Enable page caching, review hosting resources, move heavy plugins/apps off the critical path, and add CDN caching.',
     effort: 'advanced',
   },
+  'first-contentful-paint': {
+    title: 'Improve initial page-load performance',
+    description:
+      'Slow first paint delays the first visible confirmation that the storefront is loading.',
+    action:
+      'Review render-blocking CSS, theme/app scripts, font loading, and the first visible content path before changing product templates.',
+    effort: 'medium',
+  },
   'largest-contentful-paint': {
     title: 'Speed up the largest visible element',
     description:
       'A slow hero image or main content block delays the moment shoppers feel the page is usable.',
     action:
-      'Preload the hero image, compress it, serve responsive sizes, and defer non-critical scripts competing for bandwidth.',
+      'Identify the actual LCP element and its loading path before applying preload or image changes.',
     effort: 'medium',
+  },
+  'speed-index': {
+    title: 'Improve visual load progress',
+    description:
+      'A slow Speed Index means meaningful content fills in slowly even if the page eventually becomes usable.',
+    action:
+      'Prioritize above-the-fold HTML/CSS, reduce render-blocking resources, and lazy-load non-critical storefront media.',
+    effort: 'medium',
+  },
+  interactive: {
+    title: 'Reduce time to interactive',
+    description:
+      'A slow interactive milestone means the page appears visible before shoppers can reliably use it.',
+    action:
+      'Audit scripts required during startup, defer non-critical tags, and reduce work before menus, filters, and product actions are usable.',
+    effort: 'advanced',
   },
   'total-blocking-time': {
     title: 'Reduce JavaScript blocking time',
@@ -182,6 +209,14 @@ const lighthouseRecommendationMap: Record<
       'Heavy JavaScript blocks interaction and makes filters, menus, and add-to-cart actions feel laggy.',
     action:
       'Remove unused scripts, defer third-party tags, split large bundles, and audit apps/plugins loaded on every page.',
+    effort: 'advanced',
+  },
+  'mainthread-work-breakdown': {
+    title: 'Reduce main-thread work',
+    description:
+      'Excess main-thread work delays rendering and interaction on mobile devices.',
+    action:
+      'Identify the largest script, style, layout, and rendering tasks in Lighthouse and remove or defer work that is not needed for initial shopping.',
     effort: 'advanced',
   },
   'cumulative-layout-shift': {
@@ -238,12 +273,290 @@ async function fetchPageSpeedData(url: string): Promise<PageSpeedResult | null> 
   }
 }
 
-function extractLighthouseFindings(
+function lighthouseEvidenceBase(testedUrl: string) {
+  return {
+    source: 'lighthouse' as const,
+    confidence: 'measured' as const,
+    scannedUrlScope: [testedUrl],
+    limitation: LIGHTHOUSE_LAB_LIMITATION,
+  };
+}
+
+function textFromNode(node: any): string {
+  if (!node || typeof node !== 'object') return '';
+  return String(node.snippet || node.selector || node.nodeLabel || '').replace(/\s+/g, ' ').trim();
+}
+
+function classifyLighthouseElementContext(item: any): string {
+  const haystack = [
+    item?.href,
+    item?.url,
+    item?.node?.selector,
+    item?.node?.snippet,
+    item?.node?.nodeLabel,
+    item?.text,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  if (/checkout|cart|basket|bag|add-to-cart|single_add_to_cart|product-form/.test(haystack)) {
+    return 'cart/checkout or product UI';
+  }
+  if (/nav|menu|header|primary/.test(haystack)) return 'primary navigation';
+  if (/facebook|instagram|tiktok|youtube|pinterest|linkedin|twitter|x\.com|social/.test(haystack)) {
+    return 'social links';
+  }
+  if (/footer/.test(haystack)) return 'footer';
+  return 'page content';
+}
+
+function getAuditItems(audit: any): any[] {
+  return Array.isArray(audit?.details?.items) ? audit.details.items : [];
+}
+
+function formatAuditDiagnostics(audit: any, auditId: string, maxItems = 4): string[] {
+  const items = getAuditItems(audit).slice(0, maxItems);
+  if (!items.length) return [];
+
+  if (auditId === 'link-name') {
+    return items.map(item => {
+      const context = classifyLighthouseElementContext(item);
+      const href = item.href || item.url || item.node?.path || item.node?.selector || 'destination unavailable';
+      const snippet = textFromNode(item.node) || item.text || 'link snippet unavailable';
+      const name = item.node?.nodeLabel || item.text || item.accessibleName || 'missing or empty';
+      return `${context}: ${snippet} -> ${href}; accessible name: ${name}`;
+    });
+  }
+
+  return items.map(item => {
+    const nodeText = textFromNode(item.node);
+    const url = item.url || item.source || item.resourceType || item.label || '';
+    const value =
+      item.wastedMs ||
+      item.wastedBytes ||
+      item.total ||
+      item.duration ||
+      item.size ||
+      item.value ||
+      '';
+    return [nodeText || url || audit.title, value ? String(value) : ''].filter(Boolean).join(' - ');
+  });
+}
+
+function summarizeAuditEvidence(audit: any, auditId: string): { evidence: string; diagnostics: string[] } {
+  const diagnostics = formatAuditDiagnostics(audit, auditId);
+  const baseEvidence =
+    audit.displayValue ||
+    audit.description?.split('.')[0] ||
+    'The Lighthouse audit did not pass.';
+
+  if (auditId === 'link-name') {
+    const items = getAuditItems(audit);
+    const count = items.length || Number(audit.numericValue) || 1;
+    const contexts = new Set(items.map(classifyLighthouseElementContext));
+    return {
+      evidence: `${count} affected link${count === 1 ? '' : 's'} found. Contexts: ${
+        [...contexts].join(', ') || 'not provided'
+      }. ${diagnostics.slice(0, 5).join(' | ')}`,
+      diagnostics,
+    };
+  }
+
+  return {
+    evidence: diagnostics.length
+      ? `${baseEvidence}. Examples: ${diagnostics.slice(0, 3).join(' | ')}`
+      : baseEvidence,
+    diagnostics,
+  };
+}
+
+function linkNameImpact(audit: any): Recommendation['impact'] {
+  const items = getAuditItems(audit);
+  const contexts = items.map(classifyLighthouseElementContext);
+  const hasCriticalPath = contexts.some(context =>
+    /primary navigation|cart\/checkout|product UI/.test(context)
+  );
+  const affectedCount = items.length || Number(audit.numericValue) || 1;
+
+  if (hasCriticalPath || affectedCount >= 10) return 'high';
+  if (affectedCount >= 3) return 'medium';
+  return 'low';
+}
+
+function lcpElementIsImage(audits: Record<string, any>): boolean {
+  const items = getAuditItems(audits['largest-contentful-paint-element']);
+  return items.some(item => {
+    const text = [item?.node?.snippet, item?.node?.selector, item?.url].filter(Boolean).join(' ');
+    return /<img|\.(avif|webp|jpe?g|png)(\?|#|$)/i.test(text);
+  });
+}
+
+function createMeasuredRecommendation(
+  auditId: string,
+  title: string,
+  impact: Recommendation['impact'],
+  description: string,
+  action: string,
+  evidence: string,
+  testedUrl: string,
+  effort: Recommendation['effort'] = impact === 'high' ? 'medium' : 'quick',
+  extras: Partial<Recommendation> = {}
+): Recommendation {
+  return {
+    ...createRecommendation(
+      auditId,
+      title,
+      impact,
+      description,
+      action,
+      evidence,
+      effort,
+      'lighthouse',
+      'measured',
+      [testedUrl],
+      LIGHTHOUSE_LAB_LIMITATION
+    ),
+    ...extras,
+    source: 'lighthouse',
+    confidence: 'measured',
+    scannedUrlScope: [testedUrl],
+    limitation: LIGHTHOUSE_LAB_LIMITATION,
+  };
+}
+
+function extractPerformanceLighthouseFindings(
   audits: Record<string, any>,
-  category: string
+  testedUrl: string
 ): { findings: Finding[]; recommendations: Recommendation[] } {
   const findings: Finding[] = [];
   const recommendations: Recommendation[] = [];
+  const evidenceBase = lighthouseEvidenceBase(testedUrl);
+
+  const clusters = [
+    {
+      id: 'perf-initial-page-load',
+      code: 'lighthouse-initial-page-load',
+      title: 'Improve initial page-load performance',
+      description:
+        'Lighthouse measured slow early loading milestones in the tested lab run.',
+      auditIds: [
+        'first-contentful-paint',
+        'largest-contentful-paint',
+        'speed-index',
+        'interactive',
+      ],
+      action: lcpElementIsImage(audits)
+        ? 'Optimize the LCP image/resource identified by Lighthouse, then reduce render-blocking CSS, fonts, and scripts competing with first paint.'
+        : 'Identify the actual LCP element and its loading path before applying preload or image changes.',
+      effort: 'medium' as Recommendation['effort'],
+    },
+    {
+      id: 'perf-js-execution',
+      code: 'lighthouse-js-execution',
+      title: 'Reduce JavaScript execution and main-thread work',
+      description:
+        'Lighthouse measured JavaScript or rendering work that can delay interaction in the tested lab run.',
+      auditIds: ['total-blocking-time', 'mainthread-work-breakdown'],
+      action:
+        'Use the Lighthouse task breakdown to remove unused theme/app code, defer non-critical third-party tags, and split work that runs before menus, filters, and add-to-cart controls are usable.',
+      effort: 'advanced' as Recommendation['effort'],
+    },
+    {
+      id: 'perf-layout-stability',
+      code: 'lighthouse-layout-stability',
+      title: 'Stabilize layout during load',
+      description: 'Lighthouse measured layout movement above the passing threshold.',
+      auditIds: ['cumulative-layout-shift'],
+      action:
+        'Reserve dimensions for images, embeds, banners, and sticky bars identified by Lighthouse before they load.',
+      effort: 'medium' as Recommendation['effort'],
+    },
+    {
+      id: 'perf-server-response',
+      code: 'lighthouse-server-response',
+      title: 'Reduce server response time',
+      description: 'Lighthouse measured slow initial server response for the tested page.',
+      auditIds: ['server-response-time'],
+      action:
+        'Review full-page caching, hosting resources, CDN cache rules, and plugins/apps that run before the first HTML response.',
+      effort: 'advanced' as Recommendation['effort'],
+    },
+  ];
+
+  for (const cluster of clusters) {
+    const failedAudits = cluster.auditIds
+      .map(auditId => [auditId, audits[auditId]] as const)
+      .filter(([, audit]) => audit && audit.score !== null && audit.score < 0.9);
+
+    for (const audit of cluster.auditIds.map(auditId => audits[auditId])) {
+      if (!audit || audit.scoreDisplayMode === 'notApplicable' || audit.scoreDisplayMode === 'informative') {
+        continue;
+      }
+
+      findings.push({
+        type: audit.score === 1 ? 'positive' : audit.score !== null && audit.score < 0.9 ? 'issue' : 'positive',
+        title: audit.title,
+        description: audit.score === 1 ? 'Passed' : audit.displayValue || 'Measured by Lighthouse.',
+        ...evidenceBase,
+        exactEvidence: [audit.displayValue || audit.description || audit.title],
+      });
+    }
+
+    if (!failedAudits.length) continue;
+
+    const measuredMetrics = Object.fromEntries(
+      failedAudits.map(([auditId, audit]) => [
+        auditId,
+        audit.displayValue || (typeof audit.numericValue === 'number' ? String(audit.numericValue) : 'failed'),
+      ])
+    );
+    const diagnostics = failedAudits.flatMap(([auditId, audit]) =>
+      formatAuditDiagnostics(audit, auditId, 2)
+    );
+    const evidence = `Measured metrics: ${Object.entries(measuredMetrics)
+      .map(([auditId, value]) => `${audits[auditId]?.title || auditId}: ${value}`)
+      .join('; ')}. Affected audits: ${failedAudits.map(([auditId]) => auditId).join(', ')}.${
+      diagnostics.length ? ` Diagnostics: ${diagnostics.slice(0, 4).join(' | ')}` : ''
+    }`;
+    const impact = failedAudits.some(([, audit]) => audit.score < 0.5) ? 'high' : 'medium';
+
+    recommendations.push(
+      createMeasuredRecommendation(
+        cluster.code,
+        cluster.title,
+        impact,
+        cluster.description,
+        cluster.action,
+        evidence,
+        testedUrl,
+        cluster.effort,
+        {
+          rootCauseId: cluster.id,
+          measuredMetrics,
+          affectedAuditIds: failedAudits.map(([auditId]) => auditId),
+          diagnostics,
+          exactEvidence: [evidence],
+        }
+      )
+    );
+  }
+
+  return { findings, recommendations };
+}
+
+function extractLighthouseFindings(
+  audits: Record<string, any>,
+  category: string,
+  testedUrl: string
+): { findings: Finding[]; recommendations: Recommendation[] } {
+  if (category === 'performance') {
+    return extractPerformanceLighthouseFindings(audits, testedUrl);
+  }
+
+  const findings: Finding[] = [];
+  const recommendations: Recommendation[] = [];
+  const evidenceBase = lighthouseEvidenceBase(testedUrl);
 
   const categoryAudits: Record<string, string[]> = {
     performance: [
@@ -299,32 +612,40 @@ function extractLighthouseFindings(
         type: 'positive',
         title: audit.title,
         description: 'Passed',
+        ...evidenceBase,
+        exactEvidence: [audit.displayValue || audit.title],
       });
     } else if (audit.score !== null && audit.score < 0.9) {
       const recommendation = lighthouseRecommendationMap[auditId];
-      const impact = audit.score < 0.5 ? 'high' : 'medium';
-      const evidence =
-        audit.displayValue ||
-        audit.description?.split('.')[0] ||
-        'The Lighthouse audit did not pass.';
+      const impact = auditId === 'link-name' ? linkNameImpact(audit) : audit.score < 0.5 ? 'high' : 'medium';
+      const { evidence, diagnostics } = summarizeAuditEvidence(audit, auditId);
 
       findings.push({
         type: 'issue',
         title: audit.title,
         description: evidence,
+        ...evidenceBase,
+        exactEvidence: [evidence],
       });
       recommendations.push(
         recommendation
-          ? createRecommendation(
+          ? createMeasuredRecommendation(
               auditId,
               recommendation.title,
               impact,
               recommendation.description,
               recommendation.action,
               evidence,
-              recommendation.effort
+              testedUrl,
+              recommendation.effort,
+              {
+                rootCauseId: `lighthouse-${auditId}`,
+                affectedAuditIds: [auditId],
+                diagnostics,
+                exactEvidence: [evidence],
+              }
             )
-          : createRecommendation(
+          : createMeasuredRecommendation(
               auditId,
               audit.title
                 .replace('Ensure', 'Fix')
@@ -332,8 +653,16 @@ function extractLighthouseFindings(
                 .replace('Eliminate', 'Fix'),
               impact,
               audit.description?.split('.')[0] || 'This audit did not meet Lighthouse standards.',
-              'Review the failing Lighthouse audit details and fix the affected templates or theme code.',
-              evidence
+              'Review the specific Lighthouse audit examples above and update the affected storefront template, theme asset, or component.',
+              evidence,
+              testedUrl,
+              'medium',
+              {
+                rootCauseId: `lighthouse-${auditId}`,
+                affectedAuditIds: [auditId],
+                diagnostics,
+                exactEvidence: [evidence],
+              }
             )
       );
     }
@@ -835,21 +1164,32 @@ function detectProductPageCandidates(html: string, baseUrl: string, platform: st
   const candidates = new Set<string>();
   const anchorRegex = /<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi;
   let match: RegExpExecArray | null;
+  const origin = new URL(baseUrl).origin;
 
   while ((match = anchorRegex.exec(html)) !== null) {
     const href = match[1];
     const url = absoluteUrl(href, baseUrl);
     if (!url) continue;
-    const path = new URL(url).pathname.toLowerCase();
+    const parsed = new URL(url);
+    if (parsed.origin !== origin) continue;
+    const path = parsed.pathname.toLowerCase().replace(/\/+$/, '/');
+    const query = parsed.search.toLowerCase();
+    const archiveOrUtility =
+      /^\/(shop|cart|checkout|account|my-account|search)\/?$/.test(path) ||
+      /\/product-category\/|\/collections\/?$|\/collections\/[^/]+\/?$|\/category\//i.test(path) ||
+      /(^|[?&])(s|search|add-to-cart)=/i.test(query);
+    if (archiveOrUtility) continue;
+
     const looksLikeProduct =
       /\/products?\//i.test(path) ||
       /\/product\//i.test(path) ||
-      /\/shop\/[^/?#]+/i.test(path) ||
-      /add-to-cart=\d+/i.test(href) ||
-      (platform === 'WooCommerce' && /\/product-category\/|\/shop\//i.test(path)) ||
+      (platform === 'WooCommerce' && /\/shop\/[^/?#]+\/?$/i.test(path)) ||
       (platform === 'Shopify' && /\/products\//i.test(path));
 
-    if (looksLikeProduct) candidates.add(url.split('#')[0]);
+    if (looksLikeProduct) {
+      parsed.hash = '';
+      candidates.add(parsed.toString());
+    }
   }
 
   if (/<script[^>]+type=["']application\/ld\+json["'][^>]*>[\s\S]*?"@type"\s*:\s*"?Product/i.test(html)) {
@@ -895,6 +1235,73 @@ function hasOfferField(product: Record<string, any>, field: string): boolean {
   });
 }
 
+function detectMicrodataProductFields(html: string) {
+  const productScopes = [
+    ...html.matchAll(
+      /<[^>]+(?:itemscope|typeof=["'][^"']*Product[^"']*["'])[^>]*(?:itemtype=["'][^"']*schema\.org\/Product[^"']*["'])?[\s\S]*?(?=<[^>]+(?:itemscope|typeof=)|<\/body>|$)/gi
+    ),
+  ].map(match => match[0]);
+  const microdataProductCount = (html.match(/itemtype=["'][^"']*schema\.org\/Product[^"']*["']/gi) || [])
+    .length;
+  const rdfaProductCount = (html.match(/typeof=["'][^"']*Product[^"']*["']/gi) || []).length;
+  const scopeText = productScopes.join('\n') || html;
+
+  return {
+    microdataProductCount,
+    rdfaProductCount,
+    fields: {
+      name: /itemprop=["']name["']|property=["']name["']/i.test(scopeText),
+      image: /itemprop=["']image["']|property=["']image["']/i.test(scopeText),
+      offers: /itemprop=["']offers["']|property=["']offers["']|schema\.org\/Offer/i.test(scopeText),
+      price: /itemprop=["']price["']|property=["']price["']/i.test(scopeText),
+      priceCurrency:
+        /itemprop=["']priceCurrency["']|property=["']priceCurrency["']|content=["'][A-Z]{3}["']/i.test(
+          scopeText
+        ),
+      availability: /itemprop=["']availability["']|property=["']availability["']/i.test(scopeText),
+      sku: /itemprop=["']sku["']|property=["']sku["']|itemprop=["']mpn["']|gtin/i.test(scopeText),
+    },
+  };
+}
+
+function confirmProductDetailPage(html: string, url: string, platform: string | null): {
+  confirmed: boolean;
+  signals: string[];
+} {
+  const path = new URL(url).pathname.toLowerCase().replace(/\/+$/, '/');
+  const blocked =
+    /^\/(shop|cart|checkout|account|my-account|search)\/?$/.test(path) ||
+    /\/product-category\/|\/collections\/?$|\/category\//i.test(path);
+  if (blocked) {
+    return { confirmed: false, signals: ['URL is an archive, category, search, cart, checkout, or account page.'] };
+  }
+
+  const signals: string[] = [];
+  if (/<body[^>]+class=["'][^"']*single-product[^"']*["']/i.test(html)) {
+    signals.push('WooCommerce single-product body class');
+  }
+  if (/class=["'][^"']*(product_title|entry-title)[^"']*["']/i.test(html)) {
+    signals.push('Product title marker');
+  }
+  if (/class=["'][^"']*(cart|single_add_to_cart_button)[^"']*["']|name=["']add-to-cart["']/i.test(html)) {
+    signals.push('Add-to-cart form or button');
+  }
+  if (/woocommerce-Price-amount|itemprop=["']price["']|class=["'][^"']*price[^"']*["']/i.test(html)) {
+    signals.push('Price marker');
+  }
+  if (/<script[^>]+type=["']application\/ld\+json["'][^>]*>[\s\S]*?"@type"\s*:\s*"?Product/i.test(html)) {
+    signals.push('Product JSON-LD');
+  }
+  if (/itemtype=["'][^"']*schema\.org\/Product[^"']*["']|typeof=["'][^"']*Product[^"']*["']/i.test(html)) {
+    signals.push('Product Microdata/RDFa');
+  }
+  if (platform === 'Shopify' && /\/products\//i.test(path) && /product-form|name=["']id["']|add-to-cart/i.test(html)) {
+    signals.push('Shopify product form markers');
+  }
+
+  return { confirmed: signals.length >= 2, signals };
+}
+
 function validateProductSchema(html: string, url: string): ProductSchemaEntityEvidence {
   const blocks = extractJsonLdBlocks(html);
   const products: Record<string, any>[] = [];
@@ -907,21 +1314,28 @@ function validateProductSchema(html: string, url: string): ProductSchemaEntityEv
       malformedJsonLd = true;
     }
   }
+  const microdata = detectMicrodataProductFields(html);
+  const hasProductMarkup =
+    products.length > 0 || microdata.microdataProductCount > 0 || microdata.rdfaProductCount > 0;
 
   const fields = {
-    name: products.some(product => Boolean(product.name)),
-    image: products.some(product => Boolean(product.image)),
-    offers: products.some(product => Boolean(product.offers)),
-    price: products.some(product => hasOfferField(product, 'price')),
-    priceCurrency: products.some(product => hasOfferField(product, 'priceCurrency')),
-    availability: products.some(product => hasOfferField(product, 'availability')),
-    sku: products.some(product => Boolean(product.sku || product.mpn || product.gtin)),
+    name: products.some(product => Boolean(product.name)) || microdata.fields.name,
+    image: products.some(product => Boolean(product.image)) || microdata.fields.image,
+    offers: products.some(product => Boolean(product.offers)) || microdata.fields.offers,
+    price: products.some(product => hasOfferField(product, 'price')) || microdata.fields.price,
+    priceCurrency:
+      products.some(product => hasOfferField(product, 'priceCurrency')) ||
+      microdata.fields.priceCurrency,
+    availability:
+      products.some(product => hasOfferField(product, 'availability')) ||
+      microdata.fields.availability,
+    sku: products.some(product => Boolean(product.sku || product.mpn || product.gtin)) || microdata.fields.sku,
   };
 
   const issues: string[] = [];
-  if (malformedJsonLd) issues.push('Malformed JSON-LD was detected.');
-  if (products.length === 0) issues.push('No Product JSON-LD entity was found.');
-  if (products.length > 0) {
+  if (malformedJsonLd) issues.push('Malformed JSON-LD was detected outside confirmed Product markup.');
+  if (products.length === 0) issues.push('No Product JSON-LD entity was found in source HTML.');
+  if (hasProductMarkup) {
     if (!fields.name) issues.push('Product schema is missing name.');
     if (!fields.image) issues.push('Product schema is missing image.');
     if (!fields.offers) issues.push('Product schema is missing offers.');
@@ -932,15 +1346,23 @@ function validateProductSchema(html: string, url: string): ProductSchemaEntityEv
   return {
     url,
     valid:
-      products.length > 0 &&
-      !malformedJsonLd &&
+      hasProductMarkup &&
       fields.name &&
       fields.image &&
       fields.offers &&
       fields.price &&
       fields.priceCurrency,
     malformedJsonLd,
-    productCount: products.length,
+    malformedJsonLdUnrelated: malformedJsonLd && hasProductMarkup,
+    productCount: products.length + microdata.microdataProductCount + microdata.rdfaProductCount,
+    jsonLdProductCount: products.length,
+    microdataProductCount: microdata.microdataProductCount,
+    rdfaProductCount: microdata.rdfaProductCount,
+    markupFormats: [
+      ...(products.length ? (['json_ld'] as const) : []),
+      ...(microdata.microdataProductCount ? (['microdata'] as const) : []),
+      ...(microdata.rdfaProductCount ? (['rdfa'] as const) : []),
+    ],
     fields,
     issues,
   };
@@ -962,7 +1384,7 @@ async function buildScanScope(
 ): Promise<ScanScope> {
   const productCandidates = detectProductPageCandidates(homepageHtml, homepageUrl, platform).slice(
     0,
-    3
+    PRODUCT_SAMPLE_TARGET_COUNT
   );
   const scannedUrls = [homepageUrl];
 
@@ -986,8 +1408,21 @@ async function buildScanScope(
     try {
       const fetched = await fetchWithSingleRetry(productUrl, 8000);
       scannedUrls.push(fetched.finalUrl);
+      const confirmation = confirmProductDetailPage(fetched.html, fetched.finalUrl, platform);
+      if (!confirmation.confirmed) {
+        Logger.info('Product page candidate rejected after fetch', {
+          productUrl,
+          finalUrl: fetched.finalUrl,
+          signals: confirmation.signals,
+        });
+        continue;
+      }
       succeeded += 1;
-      evidence.push(validateProductSchema(fetched.html, fetched.finalUrl));
+      evidence.push({
+        ...validateProductSchema(fetched.html, fetched.finalUrl),
+        confirmedProductPage: true,
+        confirmationSignals: confirmation.signals,
+      });
     } catch (error) {
       Logger.warn('Product page sample failed', { productUrl, error });
     }
@@ -995,12 +1430,17 @@ async function buildScanScope(
 
   let status: ScanScope['productSchemaCoverageStatus'] = 'not_scanned';
   if (succeeded === 0) {
-    status = 'not_scanned';
-  } else if (evidence.some(item => item.malformedJsonLd)) {
+    status = 'not_verified';
+  } else if (succeeded < PRODUCT_SAMPLE_TARGET_COUNT) {
+    status = 'not_verified';
+  } else if (evidence.some(item => item.jsonLdProductCount && !item.valid && !item.malformedJsonLdUnrelated)) {
     status = 'invalid';
   } else if (evidence.every(item => item.valid)) {
     status = 'present';
-  } else if (evidence.some(item => item.valid || item.productCount > 0)) {
+  } else if (
+    evidence.some(item => item.valid || item.productCount > 0) &&
+    evidence.some(item => item.productCount === 0)
+  ) {
     status = 'partial';
   } else {
     status = 'missing';
@@ -1016,8 +1456,13 @@ async function buildScanScope(
     productSchemaEvidence: evidence,
     notes:
       succeeded > 0
-        ? [`Sampled ${succeeded} of ${productCandidates.length} product page candidate(s).`]
-        : ['Product page candidates were found, but none could be fetched successfully.'],
+        ? [
+            `Confirmed ${succeeded} of ${PRODUCT_SAMPLE_TARGET_COUNT} requested product page sample(s).`,
+            ...(succeeded < PRODUCT_SAMPLE_TARGET_COUNT
+              ? ['Product schema coverage is not verified because fewer than the requested sample count could be confirmed.']
+              : []),
+          ]
+        : ['Product page candidates were found, but none could be confirmed as product detail pages.'],
   };
 }
 
@@ -1133,7 +1578,20 @@ function enrichSectionsWithAISignals(
     scanScope.productPagesScanned &&
     ['missing', 'partial', 'invalid'].includes(scanScope.productSchemaCoverageStatus)
   ) {
-    const evidence = `Product schema coverage on sampled product pages: ${scanScope.productSchemaCoverageStatus}.`;
+    const sampledUrls = scanScope.productSchemaEvidence?.map(item => item.url) ?? [];
+    const fieldMatrix = scanScope.productSchemaEvidence
+      ?.map(item => {
+        const fields = Object.entries(item.fields)
+          .map(([field, present]) => `${field}:${present ? 'yes' : 'no'}`)
+          .join(', ');
+        const formats = item.markupFormats?.length ? item.markupFormats.join('/') : 'none';
+        return `${item.url} (${formats}) ${fields}`;
+      })
+      .join(' | ');
+    const evidence =
+      scanScope.productSchemaCoverageStatus === 'missing'
+        ? `Product JSON-LD was not found in the source HTML of ${scanScope.productPageCountSucceeded} confirmed sampled product pages. Sampled URLs: ${sampledUrls.join(', ')}. Field matrix: ${fieldMatrix || 'not available'}.`
+        : `Product structured-data coverage on confirmed sampled product pages: ${scanScope.productSchemaCoverageStatus}. Sampled URLs: ${sampledUrls.join(', ')}. Field matrix: ${fieldMatrix || 'not available'}.`;
     addFindingOnce(seo, 'Product schema could not be fully verified', evidence);
     addRecommendationOnce(
       seo,
@@ -1144,15 +1602,31 @@ function enrichSectionsWithAISignals(
           : 'Fix Product schema on sampled product pages',
         scanScope.productSchemaCoverageStatus === 'missing' ? 'high' : 'medium',
         'Product schema helps search, shopping, and AI answer surfaces understand price, availability, reviews, images, and product identity.',
-        'Add Product JSON-LD to product templates with name, image, description, SKU, offers, availability, priceCurrency, price, and aggregateRating when reviews exist.',
+        'Add Product JSON-LD to confirmed product detail templates with name, image, description, SKU, offers, availability, priceCurrency, price, and aggregateRating when reviews exist.',
         evidence,
         'medium',
         'product_sample',
         'verified',
-        scanScope.scannedUrls
+        sampledUrls
       )
     );
     lowerSectionScore(seo, Math.max(60, seo.score - 6));
+  } else if (scanScope.productSchemaCoverageStatus === 'not_verified') {
+    const evidence =
+      scanScope.notes?.[1] ||
+      'Product schema coverage is not verified because fewer than the requested product-page samples could be confirmed.';
+    if (!seo.findings.some(finding => finding.title === 'Product schema not verified')) {
+      seo.findings.push({
+        type: 'issue',
+        title: 'Product schema not verified',
+        description: evidence,
+        source: 'product_sample',
+        confidence: 'insufficient_evidence',
+        scannedUrlScope: scanScope.scannedUrls,
+        exactEvidence: [evidence, ...(scanScope.productSchemaEvidence?.map(item => item.url) ?? [])],
+        limitation: 'Confirmed product-page sample count was below the requested sample size.',
+      });
+    }
   } else if (!scanScope.productPagesScanned) {
     const evidence = 'Product pages were not scanned, so product schema coverage could not be verified.';
     if (!seo.findings.some(finding => finding.title === 'Product schema not verified')) {
@@ -1365,25 +1839,25 @@ export class AnalyzerService {
           name: 'Performance',
           score: perfScore,
           status: getScoreStatus(perfScore),
-          ...extractLighthouseFindings(audits, 'performance'),
+          ...extractLighthouseFindings(audits, 'performance', normalizedUrl),
         },
         seo: {
           name: 'SEO',
           score: seoScore,
           status: getScoreStatus(seoScore),
-          ...extractLighthouseFindings(audits, 'seo'),
+          ...extractLighthouseFindings(audits, 'seo', normalizedUrl),
         },
         accessibility: {
           name: 'Accessibility',
           score: a11yScore,
           status: getScoreStatus(a11yScore),
-          ...extractLighthouseFindings(audits, 'accessibility'),
+          ...extractLighthouseFindings(audits, 'accessibility', normalizedUrl),
         },
         bestPractices: {
           name: 'Best Practices',
           score: bpScore,
           status: getScoreStatus(bpScore),
-          ...extractLighthouseFindings(audits, 'best-practices'),
+          ...extractLighthouseFindings(audits, 'best-practices', normalizedUrl),
         },
         cart: analyzeCartExperience(html, { platform }),
         trust: analyzeTrust(html),

@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { motion } from '@/lib/motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/Button';
 import { ScoreGauge } from '@/components/ui/ScoreGauge';
@@ -12,6 +12,7 @@ import {
   buildPriorityRecommendations,
   buildRoadmapWeeks,
   countHighImpact,
+  dedupeRecommendations,
   flattenRecommendations,
   getRecommendationKey,
 } from '@/lib/analyzer/roadmap.js';
@@ -62,11 +63,19 @@ const sectionIcons: Record<string, React.ElementType> = {
 
 export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onReset }) => {
   const t = useTranslations('analyzer');
+  const locale = useLocale();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
   const getStatusLabel = (status: SectionResult['status']) => {
     return t(`results.status.${status}`);
+  };
+
+  const getScoreStatus = (score: number): SectionResult['status'] => {
+    if (score >= 90) return 'excellent';
+    if (score >= 80) return 'good';
+    if (score >= 50) return 'warning';
+    return 'critical';
   };
 
   const getStatusColor = (score: number) => {
@@ -130,6 +139,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
   const translateOptional = (key: string, fallback: string) =>
     t.has(key as any) ? t(key as any) : fallback;
 
+  const getMarketCategoryLabel = (category?: string) => {
+    if (!category) return '';
+    const normalized = category.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+    return translateOptional(`market.categories.${normalized}`, category);
+  };
+
   const getRecommendationCopy = (rec: Recommendation): Recommendation => {
     if (!rec.code) return rec;
     const translationKey = rec.code.replace(/-/g, '_');
@@ -144,6 +159,30 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         ? translateOptional(`recommendations.items.${translationKey}.action`, rec.action)
         : undefined,
     };
+  };
+
+  const getEvidenceCopy = (rec: Recommendation) => {
+    if (locale !== 'he') {
+      return rec.evidence || rec.exactEvidence?.[0] || rec.limitation || t('recommendations.noEvidence');
+    }
+
+    if (rec.confidence === 'measured') {
+      return t('recommendations.measuredEvidence', {
+        count: rec.affectedAuditIds?.length ?? 1,
+      });
+    }
+
+    if (rec.source === 'product_sample') {
+      return t('recommendations.productSampleEvidence', {
+        count: rec.scannedUrlScope?.length ?? 0,
+      });
+    }
+
+    if (rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable') {
+      return rec.limitation ? t('recommendations.limitedEvidence') : t('recommendations.noEvidence');
+    }
+
+    return rec.evidence || rec.exactEvidence?.[0] || t('recommendations.noEvidence');
   };
 
   const {
@@ -165,22 +204,24 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       sectionName: rec.sectionName,
     })) as ExtendedRecommendation[];
 
-    const priority = buildPriorityRecommendations(recommendations) as ExtendedRecommendation[];
+    const uniqueRecommendations = dedupeRecommendations(recommendations) as ExtendedRecommendation[];
+    const priority = buildPriorityRecommendations(uniqueRecommendations, 3) as ExtendedRecommendation[];
     const grouped = {
-      verified: recommendations.filter(rec => rec.confidence === 'verified'),
-      estimated: recommendations.filter(rec => rec.confidence === 'estimated'),
-      needsDeeperScan: recommendations.filter(
+      measured: uniqueRecommendations.filter(rec => rec.confidence === 'measured'),
+      verified: uniqueRecommendations.filter(rec => rec.confidence === 'verified'),
+      estimated: uniqueRecommendations.filter(rec => rec.confidence === 'estimated'),
+      needsDeeperScan: uniqueRecommendations.filter(
         rec => rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable'
       ),
     };
-    const highImpact = countHighImpact(recommendations);
-    const roadmap = buildRoadmapWeeks(recommendations);
+    const highImpact = countHighImpact(uniqueRecommendations);
+    const roadmap = buildRoadmapWeeks(priority);
 
     let title: string;
     let description: string;
 
-    if (results.overallScore >= 80 && highImpact > 0) {
-      title = t('results.strongScoreWithIssues', { count: highImpact });
+    if (priority.length > 0) {
+      title = t('results.strongScoreWithIssues', { count: priority.length });
       description = t('results.strongScoreWithIssuesDesc');
     } else if (results.overallScore >= 80) {
       title = t('results.greatJob');
@@ -199,7 +240,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       description = t('results.estimatedOpportunitiesDesc');
     }
 
-    const fixCount = highImpact > 0 ? highImpact : priority.length;
+    const fixCount = priority.length;
     const fixKey =
       fixCount === 1 ? ('results.expertsCanFix_singular' as const) : ('results.expertsCanFix' as const);
 
@@ -221,6 +262,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
   }, [results.overallScore, results.sections, results.storeUrl, t]);
 
   const overallStatus = getStatusColor(results.overallScore);
+  const marketCategoryLabel = getMarketCategoryLabel(results.competitorAnalysis?.category);
 
   const showPartialDataNotice = results.meta?.usedHtmlFallback;
   const screenshotsInEmail = Boolean(results.meta?.screenshotsInEmailReport);
@@ -331,13 +373,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               <div
                 className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${overallStatus.bg} ${overallStatus.border} ${overallStatus.text}`}
               >
-                {getStatusLabel(
-                  results.overallScore >= 80
-                    ? 'excellent'
-                    : results.overallScore >= 50
-                      ? 'warning'
-                      : 'critical'
-                )}
+                {getStatusLabel(getScoreStatus(results.overallScore))}
               </div>
               {results.platform && (
                 <p className={`text-xs mt-2 ${isDark ? 'text-white/40' : 'text-surface-400'}`}>
@@ -415,7 +451,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 </span>
                 {results.competitorAnalysis.category && (
                   <span className="rounded-full border border-surface-500/20 bg-surface-500/10 px-2 py-1 text-xs text-surface-500 dark:text-white/60">
-                    {results.competitorAnalysis.category}
+                    {marketCategoryLabel}
                   </span>
                 )}
               </div>
@@ -430,7 +466,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 {[
                   results.competitorAnalysis.category
                     ? t('market.detectedCategory', {
-                        category: results.competitorAnalysis.category,
+                        category: marketCategoryLabel,
                       })
                     : t('market.noCategory'),
                   results.competitorAnalysis.competitors.length > 0
@@ -683,7 +719,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               {results.aiAnalysis.scannedScope && (
                 <p className={`mt-2 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
                   {t('ai.productSchemaStatus', {
-                    status: results.aiAnalysis.scannedScope.productSchemaCoverageStatus,
+                    status: t(
+                      `ai.schemaStatus.${results.aiAnalysis.scannedScope.productSchemaCoverageStatus}` as any
+                    ),
                     count: results.aiAnalysis.scannedScope.productPageCountSucceeded,
                   })}
                 </p>
@@ -1103,8 +1141,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         </motion.div>
       )}
 
-      {/* Confidence-grouped Recommendations */}
-      {(recommendationGroups.verified.length > 0 ||
+      {/* All Findings */}
+      {(recommendationGroups.measured.length > 0 ||
+        recommendationGroups.verified.length > 0 ||
         recommendationGroups.estimated.length > 0 ||
         recommendationGroups.needsDeeperScan.length > 0) && (
         <motion.div
@@ -1114,6 +1153,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
           className="space-y-5"
         >
           {[
+            {
+              key: 'measuredFindings',
+              items: recommendationGroups.measured,
+              icon: CheckCircle,
+            },
             {
               key: 'verifiedFixes',
               items: recommendationGroups.verified,
@@ -1148,24 +1192,28 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 <p className={`mb-4 text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
                   {t(`recommendationGroups.${group.key}.subtitle` as any)}
                 </p>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {group.items.slice(0, 6).map((rec, index) => (
-                    <RecommendationCard
+                <div className="grid md:grid-cols-2 gap-3">
+                  {group.items.slice(0, 8).map(rec => (
+                    <div
                       key={getRecommendationKey(rec)}
-                      title={rec.title}
-                      description={rec.description}
-                      action={rec.action}
-                      evidence={
-                        rec.evidence ||
-                        rec.exactEvidence?.[0] ||
-                        rec.limitation ||
-                        t('recommendations.noEvidence')
-                      }
-                      effort={rec.effort}
-                      sectionName={rec.sectionName}
-                      impact={rec.impact}
-                      delay={index * ANIMATION_DELAY_STEP}
-                    />
+                      className={`rounded-xl border px-4 py-3 ${isDark ? 'bg-surface-950/30 border-white/5' : 'bg-white border-surface-200'}`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div
+                            className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
+                          >
+                            {rec.title}
+                          </div>
+                          <div className={`mt-1 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                            {rec.sectionName}
+                          </div>
+                        </div>
+                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${isDark ? 'bg-white/5 text-white/60' : 'bg-surface-100 text-surface-600'}`}>
+                          {t(`confidence.${rec.confidence ?? 'estimated'}` as any)}
+                        </span>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -1174,7 +1222,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         </motion.div>
       )}
 
-      {/* Priority Fixes */}
+      {/* Next Actions */}
       {priorityRecs.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1184,7 +1232,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
           <div className="flex items-center gap-2 mb-4">
             <XCircle className="w-5 h-5 text-amber-500" />
             <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
-              {t('results.priorityFixes')}
+              {t('results.nextActions')}
             </h3>
             <span className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
               {t('results.topIssues', { count: priorityRecs.length })}
@@ -1197,7 +1245,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 title={rec.title}
                 description={rec.description}
                 action={rec.action}
-                evidence={rec.evidence}
+                evidence={getEvidenceCopy(rec)}
                 effort={rec.effort}
                 sectionName={rec.sectionName}
                 impact={rec.impact}

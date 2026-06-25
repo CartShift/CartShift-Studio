@@ -44,6 +44,7 @@ function createRecommendation(
 ): Recommendation {
   return {
     code,
+    rootCauseId: code,
     title,
     impact,
     description,
@@ -291,21 +292,25 @@ export function analyzeCartExperience(
   }
 
   if (!checkoutPath) {
-    recommendations.push(
-      createRecommendation(
-        'checkout-path-missing',
-        'Expose a predictable checkout path',
-        hasCartInteraction && !checkoutPath ? 'high' : 'medium',
-        'A clear path from cart to checkout reduces hesitation and prevents dead-end shopping sessions.',
-        'Ensure cart forms, mini-cart drawers, and checkout buttons use visible labels and link to a real cart or checkout route.',
-        signals.find(item => item.key === 'checkout-path')?.evidence ??
-          'Checkout path was missing.',
-        'medium',
-        hasCartInteraction ? 'rendered_browser' : hasProductSample ? 'product_sample' : 'static_html',
-        hasCartInteraction ? 'verified' : 'insufficient_evidence',
-        hasCartInteraction ? undefined : staticCheckoutLimitation
-      )
+    const checkoutRecommendation = createRecommendation(
+      'checkout-flow-not-verified',
+      hasCartInteraction ? 'Expose a predictable checkout path' : 'Checkout flow not verified',
+      hasCartInteraction && !checkoutPath ? 'high' : 'low',
+      hasCartInteraction
+        ? 'A sampled cart interaction did not expose a clear next step to checkout.'
+        : 'Checkout flow quality was not tested in this scan.',
+      hasCartInteraction
+        ? 'Ensure cart forms, mini-cart drawers, and checkout buttons use visible labels and link to a real cart or checkout route.'
+        : 'Run a deeper scan that samples category pages, product pages, add-to-cart behavior, cart UI, and checkout entry points before making checkout recommendations.',
+      signals.find(item => item.key === 'checkout-path')?.evidence ?? 'Checkout flow was not verified.',
+      'medium',
+      hasCartInteraction ? 'rendered_browser' : hasProductSample ? 'product_sample' : 'static_html',
+      hasCartInteraction ? 'verified' : 'insufficient_evidence',
+      hasCartInteraction ? undefined : staticCheckoutLimitation
     );
+    checkoutRecommendation.rootCauseId = 'checkout-flow-coverage-gap';
+    checkoutRecommendation.excludeFromActionPlan = !hasCartInteraction;
+    recommendations.push(checkoutRecommendation);
   }
 
   if (!paymentCues) {

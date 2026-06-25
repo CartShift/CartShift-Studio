@@ -146,6 +146,11 @@ export class AIReadinessService {
     if (!scanScope.productPagesScanned) {
       score = Math.min(score, 78);
       limitations.push('Product pages were not scanned, so product data coverage is not fully verified.');
+    } else if (scanScope.productSchemaCoverageStatus === 'not_verified') {
+      score = Math.min(score, 80);
+      limitations.push(
+        'Fewer than the requested product-page samples were confirmed, so product data coverage is not fully verified.'
+      );
     } else if (scanScope.productSchemaCoverageStatus === 'missing') {
       score = Math.min(score - 12, 74);
       limitations.push('Sampled product pages were missing Product structured data.');
@@ -165,7 +170,7 @@ export class AIReadinessService {
     const confidence =
       invalidJsonLdCount > 0
         ? 'estimated'
-        : scanScope.productPagesScanned
+        : scanScope.productPagesScanned && scanScope.productSchemaCoverageStatus !== 'not_verified'
           ? 'verified'
           : 'insufficient_evidence';
 

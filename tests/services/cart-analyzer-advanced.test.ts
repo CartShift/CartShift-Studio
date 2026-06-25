@@ -36,6 +36,25 @@ function buildDeeperScan(overrides: Partial<DeeperScanAnalysis> = {}): DeeperSca
 }
 
 describe('analyzeCartExperience deeper scan gating', () => {
+  it('treats untested checkout as a coverage gap instead of a high-impact fix', () => {
+    const result = analyzeCartExperience(homepageWithoutPurchase, {
+      productAnalysis,
+      deeperScan: buildDeeperScan({
+        attempted: true,
+        available: false,
+        cartInteractionAttempted: false,
+        cartInteractionSucceeded: false,
+      }),
+    });
+
+    const checkoutRec = result.recommendations.find(rec => rec.code === 'checkout-flow-not-verified');
+
+    expect(checkoutRec?.title).toBe('Checkout flow not verified');
+    expect(checkoutRec?.confidence).toBe('insufficient_evidence');
+    expect(checkoutRec?.impact).toBe('low');
+    expect(checkoutRec?.excludeFromActionPlan).toBe(true);
+  });
+
   it('keeps purchase recommendations insufficient when product sampling lacks cart interaction', () => {
     const result = analyzeCartExperience(homepageWithoutPurchase, {
       productAnalysis,
@@ -70,7 +89,7 @@ describe('analyzeCartExperience deeper scan gating', () => {
     });
 
     const checkoutFinding = result.findings.find(finding => finding.title === 'Checkout path');
-    const checkoutRec = result.recommendations.find(rec => rec.code === 'checkout-path-missing');
+    const checkoutRec = result.recommendations.find(rec => rec.code === 'checkout-flow-not-verified');
 
     expect(checkoutFinding?.description).toMatch(/sampled cart interaction/i);
     expect(checkoutRec).toBeUndefined();
