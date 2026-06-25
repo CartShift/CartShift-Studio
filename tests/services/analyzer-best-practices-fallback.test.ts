@@ -17,4 +17,25 @@ describe('analyzeBestPracticesFallback', () => {
     expect(result.findings.some(finding => finding.title === 'HTTPS not detected')).toBe(true);
     expect(result.recommendations.some(rec => rec.code === 'is-on-https')).toBe(true);
   });
+
+  it('flags mixed content and insecure form actions when fallback HTML is available', () => {
+    const result = analyzeBestPracticesFallback(
+      'https://shop.example.com',
+      `
+      <html>
+        <body>
+          <img src="http://cdn.example.com/product.jpg" alt="Product">
+          <form action="http://payments.example.com/checkout">
+            <input name="email">
+          </form>
+        </body>
+      </html>`
+    );
+
+    expect(result.score).toBeLessThan(75);
+    expect(result.recommendations.map(rec => rec.code)).toEqual(
+      expect.arrayContaining(['mixed-content', 'insecure-form-action'])
+    );
+    expect(result.recommendations.every(rec => rec.evidence)).toBe(true);
+  });
 });

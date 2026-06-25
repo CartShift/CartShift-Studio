@@ -3,6 +3,7 @@ import type { Recommendation, SectionResult } from '@/lib/types/analyzer';
 export type ExtendedRecommendation = Recommendation & {
   sectionKey: string;
   sectionName: string;
+  sectionScore?: number;
 };
 
 export type RoadmapWeek = {

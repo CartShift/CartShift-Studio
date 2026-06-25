@@ -118,6 +118,17 @@ describe('analyzer roadmap', () => {
     expect(priority.filter((rec: ExtendedRecommendation) => rec.impact === 'high')).toHaveLength(3);
   });
 
+  it('orders priority cards by impact and fastest useful fix first', () => {
+    const recs = flattenRecommendations(sampleSections) as ExtendedRecommendation[];
+    const priority = buildPriorityRecommendations(recs, 3);
+
+    expect(priority.map((rec: ExtendedRecommendation) => rec.code)).toEqual([
+      'meta_description',
+      'guest_checkout',
+      'reduce_js',
+    ]);
+  });
+
   it('counts high-impact issues separately from display cards', () => {
     const recs = flattenRecommendations(sampleSections) as ExtendedRecommendation[];
 

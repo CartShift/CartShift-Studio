@@ -4879,6 +4879,26 @@
           "description": "A clear H1 helps shoppers, search engines, and assistive technologies understand the page topic.",
           "action": "Add one visible H1 near the top of the homepage that describes the store or primary collection."
         },
+        "ai_structured_data": {
+          "title": "Add AI-readable structured data",
+          "description": "AI answer engines, search rich results, and shopping surfaces need structured facts to understand products, organization details, breadcrumbs, and FAQs.",
+          "action": "Add valid JSON-LD for Product, Organization, BreadcrumbList, WebSite, and FAQPage where relevant, then validate it with Rich Results and schema validators."
+        },
+        "ai_product_schema": {
+          "title": "Add Product schema to sellable pages",
+          "description": "Product schema helps search, shopping, and AI answer surfaces understand price, availability, reviews, images, and product identity.",
+          "action": "Add Product JSON-LD to product templates with name, image, description, SKU, offers, availability, priceCurrency, price, and aggregateRating when reviews exist."
+        },
+        "ai_social_metadata": {
+          "title": "Add share and preview metadata",
+          "description": "Open Graph and Twitter card metadata improve how products and collections are summarized when shared, crawled, or cited by assistant-style surfaces.",
+          "action": "Add og:title, og:description, og:image, og:url, twitter:card, and product-specific preview metadata to key storefront templates."
+        },
+        "ai_content_clarity": {
+          "title": "Make pages easier for AI to summarize",
+          "description": "Thin or poorly structured content gives search engines and AI answer systems fewer reliable facts to cite about your products, policies, and differentiators.",
+          "action": "Add clear H2 sections, concise product/category explanations, FAQ blocks, policy summaries, and bullet lists that answer buying questions directly."
+        },
         "script_count": {
           "title": "Reduce storefront JavaScript",
           "description": "Too many scripts slow down rendering and can delay menus, filters, and add-to-cart interactions.",
@@ -4948,6 +4968,16 @@
           "title": "Run a full accessibility audit",
           "description": "The fallback analyzer could not gather enough accessibility detail to verify WCAG risks.",
           "action": "Run a browser-based accessibility audit and fix keyboard, label, alt text, and contrast failures."
+        },
+        "mixed_content": {
+          "title": "Remove mixed content from secure pages",
+          "description": "HTTP assets on an HTTPS storefront can be blocked by browsers, break product media, and weaken shopper trust.",
+          "action": "Replace every http:// asset, stylesheet, script, image, and canonical storefront link with HTTPS or protocol-relative URLs from trusted hosts."
+        },
+        "insecure_form_action": {
+          "title": "Secure every form submission",
+          "description": "Forms that submit to HTTP can expose emails, account details, or checkout handoff data in transit.",
+          "action": "Move newsletter, account, cart, and checkout form actions to HTTPS endpoints and verify redirects never downgrade to HTTP."
         }
       }
     },

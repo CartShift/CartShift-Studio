@@ -28,8 +28,14 @@ The store analyzer was failing due to Puppeteer/Chrome not being available or ti
 # Check if Puppeteer works
 pnpm diagnose:puppeteer
 
-# Test the analyzer (requires dev server running)
+# Run analyzer unit tests and write markdown/JSON output
 pnpm test:analyzer
+
+# Live API smoke test (requires dev server running)
+pnpm test:analyzer:live
+
+# Unit suite + live API smoke test
+pnpm test:analyzer:all
 
 # Start dev server
 pnpm dev
@@ -68,7 +74,7 @@ pnpm dev
 1. **lib/services/scraper.ts** - Added availability check and graceful fallback
 2. **lib/services/analyzer.ts** - Added individual error handlers for all services
 3. **scripts/diagnose-puppeteer.js** - New diagnostic tool
-4. **scripts/test-analyzer.js** - New integration test
+4. **scripts/test-analyzer.js** - Repeatable analyzer test runner with markdown/JSON reports
 5. **docs/STORE_ANALYZER_SETUP.md** - Setup guide
 6. **docs/STORE_ANALYZER_FIX.md** - Detailed fix summary
 7. **package.json** - Added new scripts
@@ -90,13 +96,22 @@ pnpm dev
 ### Testing
 
 ```bash
-# Unit + integration tests (Vitest)
+# Unit suite only (Vitest)
 pnpm test:analyzer:unit
 
-# Live API smoke test (requires dev server running)
-pnpm dev
+# Unit suite + report output
 pnpm test:analyzer
+
+# Live API smoke test + response-shape assertions (requires dev server running)
+pnpm dev
+pnpm test:analyzer:live
+
+# Full local confidence pass
+pnpm test:analyzer:all
 ```
+
+Default reports are written to `.test-results/analyzer/latest.md` and `.test-results/analyzer/latest.json`.
+Override with `--output`, `--json-output`, `ANALYZER_TEST_REPORT`, or `ANALYZER_TEST_JSON`.
 
 Coverage map:
 
@@ -107,6 +122,8 @@ Coverage map:
 - **Client progress UX** — `tests/lib/analyzer-progress.test.ts`, `tests/hooks/use-analyzer-progress.test.tsx`
 - **Response shaping** — `tests/services/analyzer-response.test.ts`
 - **AI readiness slice** — `tests/services/ai-readiness.test.ts`
+- **Fallback best practices** — `tests/services/analyzer-best-practices-fallback.test.ts`
+- **Test runner output** — `tests/scripts/test-analyzer.test.ts`
 
 ## Common Issues
 
@@ -162,5 +179,5 @@ For detailed information:
 ---
 
 **Status**: ✅ Working with graceful degradation
-**Last Updated**: May 25, 2026
-**Version**: 1.0.1
+**Last Updated**: June 25, 2026
+**Version**: 1.1.0

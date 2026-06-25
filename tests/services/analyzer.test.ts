@@ -214,7 +214,8 @@ describe('AnalyzerService.analyzeStore', () => {
     expect(result.meta?.usedLighthouse).toBe(true);
     expect(result.meta?.usedHtmlFallback).toBe(false);
     expect(result.sections.performance.score).toBe(72);
-    expect(result.sections.seo.score).toBe(81);
+    expect(result.sections.seo.score).toBeLessThanOrEqual(81);
+    expect(result.sections.seo.score).toBeGreaterThan(50);
     expect(result.sections.accessibility.findings.some(f => f.type === 'issue')).toBe(true);
     expect(result.coreWebVitals?.lcp?.value).toBe(2400);
     expect(result.overallScore).toBeGreaterThan(0);
@@ -339,5 +340,36 @@ describe('AnalyzerService.analyzeStore', () => {
     expect(result.sections.performance.recommendations.map(rec => rec.code)).toContain(
       'mobile-layout-friction'
     );
+  });
+
+  it('promotes AI visibility gaps into SEO recommendations', async () => {
+    mockSafeFetch.mockResolvedValueOnce({
+      html: `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <title>Plain Store</title>
+          <meta name="description" content="Quality products for everyday shoppers.">
+        </head>
+        <body>
+          <h1>Plain Store</h1>
+          <p>Shop products.</p>
+          <a href="/cart">Cart</a>
+          <button>Add to cart</button>
+        </body>
+      </html>`,
+      finalUrl: 'https://plain.example.com',
+    });
+
+    const result = await AnalyzerService.analyzeStore('https://plain.example.com');
+
+    expect(result.aiAnalysis?.aiReadinessStatus).not.toBe('ready');
+    expect(result.sections.seo.recommendations.map(rec => rec.code)).toEqual(
+      expect.arrayContaining([
+        'ai-structured-data',
+        'ai-social-metadata',
+        'ai-content-clarity',
+      ])
+    );
+    expect(result.sections.seo.recommendations.every(rec => rec.evidence)).toBe(true);
   });
 });

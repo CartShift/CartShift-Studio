@@ -704,6 +704,85 @@ function enrichSectionsWithVisualSignals(
   }
 }
 
+function enrichSectionsWithAISignals(
+  sections: AnalysisResult['sections'],
+  aiData: NonNullable<AnalysisResult['aiAnalysis']>
+) {
+  const seo = sections.seo;
+
+  if (aiData.structuredDataTypes.length === 0) {
+    const evidence = 'No JSON-LD structured data types were detected in the analyzed HTML.';
+    addFindingOnce(seo, 'AI-readable structured data missing', evidence);
+    addRecommendationOnce(
+      seo,
+      createRecommendation(
+        'ai-structured-data',
+        'Add AI-readable structured data',
+        'high',
+        'AI answer engines, search rich results, and shopping surfaces need structured facts to understand products, organization details, breadcrumbs, and FAQs.',
+        'Add valid JSON-LD for Product, Organization, BreadcrumbList, WebSite, and FAQPage where relevant, then validate it with Rich Results and schema validators.',
+        evidence,
+        'medium'
+      )
+    );
+    lowerSectionScore(seo, Math.max(55, seo.score - 8));
+  } else if (!aiData.structuredDataTypes.includes('Product')) {
+    const evidence = `Structured data was detected (${aiData.structuredDataTypes.join(
+      ', '
+    )}), but Product schema was not present.`;
+    addFindingOnce(seo, 'Product schema missing', evidence);
+    addRecommendationOnce(
+      seo,
+      createRecommendation(
+        'ai-product-schema',
+        'Add Product schema to sellable pages',
+        'high',
+        'Product schema helps search, shopping, and AI answer surfaces understand price, availability, reviews, images, and product identity.',
+        'Add Product JSON-LD to product templates with name, image, description, SKU, offers, availability, priceCurrency, price, and aggregateRating when reviews exist.',
+        evidence,
+        'medium'
+      )
+    );
+    lowerSectionScore(seo, Math.max(60, seo.score - 6));
+  }
+
+  if (!aiData.openGraphTags) {
+    const evidence = 'No Open Graph or Twitter card metadata was detected.';
+    addFindingOnce(seo, 'Social and AI preview metadata missing', evidence);
+    addRecommendationOnce(
+      seo,
+      createRecommendation(
+        'ai-social-metadata',
+        'Add share and preview metadata',
+        'medium',
+        'Open Graph and Twitter card metadata improve how products and collections are summarized when shared, crawled, or cited by assistant-style surfaces.',
+        'Add og:title, og:description, og:image, og:url, twitter:card, and product-specific preview metadata to key storefront templates.',
+        evidence,
+        'quick'
+      )
+    );
+    lowerSectionScore(seo, Math.max(65, seo.score - 4));
+  }
+
+  if (aiData.readabilityScore < 60) {
+    const evidence = `AI readability score was ${aiData.readabilityScore}/100 from heading, paragraph, list, and FAQ-style content signals.`;
+    addFindingOnce(seo, 'Store content is hard for AI systems to summarize', evidence);
+    addRecommendationOnce(
+      seo,
+      createRecommendation(
+        'ai-content-clarity',
+        'Make pages easier for AI to summarize',
+        'medium',
+        'Thin or poorly structured content gives search engines and AI answer systems fewer reliable facts to cite about your products, policies, and differentiators.',
+        'Add clear H2 sections, concise product/category explanations, FAQ blocks, policy summaries, and bullet lists that answer buying questions directly.',
+        evidence,
+        'medium'
+      )
+    );
+    lowerSectionScore(seo, Math.max(60, seo.score - 5));
+  }
+}
+
 async function runHeavyAnalysisTasks(html: string, normalizedUrl: string, fetchedUrl: string) {
   return Promise.all([
     CompetitorService.analyzeCompetitors(html, normalizedUrl).catch(err => {
@@ -881,7 +960,7 @@ export class AnalyzerService {
         performance: analyzePerformanceFallback(html),
         seo: analyzeSEOFallback(html),
         accessibility: analyzeAccessibilityFallback(html),
-        bestPractices: analyzeBestPracticesFallback(fetchedUrl),
+        bestPractices: analyzeBestPracticesFallback(fetchedUrl, html),
         cart: analyzeCartExperience(html, { platform }),
         trust: analyzeTrust(html),
       };
@@ -922,6 +1001,7 @@ export class AnalyzerService {
       productAnalysis: productData,
     });
     enrichSectionsWithVisualSignals(sections, visualData || undefined);
+    enrichSectionsWithAISignals(sections, aiData);
 
     // 8. Calculate Overall Score
     const weights = {

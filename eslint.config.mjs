@@ -41,6 +41,7 @@ export default [
       '.cursor/**',
       '.agent/**',
       '.gemini/**',
+      '.github/skills/**',
       '.husky/**',
       '.vscode/**',
 
