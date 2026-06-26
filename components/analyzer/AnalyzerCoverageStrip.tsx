@@ -6,6 +6,16 @@ import type { AnalysisMeta, AnalyzerFeatureAvailability } from '@/lib/types/anal
 
 type CoverageStatus = 'active' | 'partial' | 'unavailable';
 
+const UNAVAILABLE_REASON_CODES = new Set([
+  'browser_disabled',
+  'browser_launch_failed',
+  'browser_sampling_failed',
+  'pagespeed_unavailable',
+  'competitor_failed',
+  'email_unconfigured',
+  'lead_unconfigured',
+]);
+
 function resolveStatus(active: boolean, partial?: boolean): CoverageStatus {
   if (active) return 'active';
   if (partial) return 'partial';
@@ -18,6 +28,13 @@ function statusFromAvailability(
   fallbackPartial?: boolean
 ): CoverageStatus {
   if (!availability) return resolveStatus(fallbackActive, fallbackPartial);
+  if (
+    !availability.available &&
+    availability.reasonCode &&
+    UNAVAILABLE_REASON_CODES.has(availability.reasonCode)
+  ) {
+    return 'unavailable';
+  }
   return resolveStatus(availability.available, availability.attempted && !availability.available);
 }
 

@@ -1523,6 +1523,14 @@ function buildFeatureAvailability(params: {
   const deepScanReason = firstLimitation(deeperScanData);
   const browserPathAttempted = visualAnalysisAttempted || Boolean(deeperScanData?.attempted);
   const productAttempted = Boolean(deeperScanData?.productPagesAttempted);
+  const browserFailureCode =
+    !browserPathAttempted
+      ? 'browser_disabled'
+      : deepScanReason?.toLowerCase().includes('launch')
+        ? 'browser_launch_failed'
+        : deepScanReason?.toLowerCase().includes('automation')
+          ? 'browser_sampling_failed'
+          : undefined;
   const productReason =
     productData
       ? undefined
@@ -1566,11 +1574,10 @@ function buildFeatureAvailability(params: {
       available: Boolean(productData),
       reasonCode: productData
         ? undefined
-        : !browserPathAttempted
-          ? 'browser_disabled'
-          : productAttempted
+        : browserFailureCode ||
+          (productAttempted
             ? 'product_sampling_failed'
-            : 'no_product_urls',
+            : 'no_product_urls'),
       reason: productReason,
     },
     deeperScan: {

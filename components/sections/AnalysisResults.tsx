@@ -315,6 +315,24 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     competitorAnalysisAvailable: false,
     cached: false,
   };
+  const hasDeepScanReason = Boolean(analysisMeta.featureAvailability?.deeperScan?.reasonCode);
+  const showDeepScanUnavailableNotice =
+    !analysisMeta.deeperScanAvailable && !hasDeepScanReason;
+  const showDeeperScanEvidencePanel = Boolean(
+    results.deeperScan &&
+      (results.deeperScan.available ||
+        results.deeperScan.categoryPagesAttempted > 0 ||
+        results.deeperScan.productPagesAttempted > 0 ||
+        results.deeperScan.cartInteractionAttempted)
+  );
+  const footerReportMessage =
+    analysisMeta.emailReportStatus === 'sent'
+      ? t('results.fullReportSent')
+      : analysisMeta.emailReportStatus === 'pending'
+        ? t('results.emailPendingDescription')
+        : analysisMeta.emailReportStatus === 'failed'
+          ? t('results.emailDelayedDescription')
+          : t('results.emailUnavailableDescription');
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
@@ -335,7 +353,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         </motion.div>
       )}
 
-      {!analysisMeta.deeperScanAvailable && (
+      {showDeepScanUnavailableNotice && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -955,7 +973,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
       )}
 
       {/* Deeper Scan Evidence Section */}
-      {results.deeperScan && (
+      {showDeeperScanEvidencePanel && results.deeperScan && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1384,7 +1402,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
           <div className="flex items-center gap-2 text-sm">
             <Info className={`w-4 h-4 ${isDark ? 'text-white/40' : 'text-surface-400'}`} />
             <span className={isDark ? 'text-white/50' : 'text-surface-500'}>
-              {t('results.fullReportSent')}
+              {footerReportMessage}
             </span>
           </div>
           <Button
