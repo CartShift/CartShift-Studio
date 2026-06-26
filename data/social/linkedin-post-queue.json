@@ -1,3 +1,13 @@
 {
-  "items": []
+  "items": [
+    {
+      "slug": "woocommerce-performance-optimization",
+      "title": "WooCommerce Performance Optimization: The Store Owner's Field Guide",
+      "url": "https://cart-shift.com/en/blog/woocommerce-performance-optimization",
+      "cycle": 1,
+      "queuedAt": "2026-06-26T21:59:11.1586612Z",
+      "text": "WooCommerce speed problems usually do not start on the homepage.\n\nThey show up where revenue is trying to happen: variable product pages, filtered categories, cart updates, shipping calculations, payment scripts, and checkout steps that cannot simply be cached away.\n\nThat is why \"install a speed plugin\" is often the wrong first move.\n\nA better audit starts with the buying path:\n\n1. Which templates make money?\n2. Which ones are slow on real mobile sessions?\n3. Which plugins, scripts, queries, or checkout rules are adding weight there?\n4. What can be removed, deferred, cached, or rebuilt without damaging the purchase flow?\n\nFor WooCommerce stores, performance is not only a Core Web Vitals project. It is product UX, database pressure, extension discipline, hosting, HPOS readiness, image rules, and checkout reliability all working together.\n\nA fast store is not the one with the prettiest Lighthouse screenshot. It is the one where customers can find a product, choose the right option, add it to cart, and pay without feeling the platform underneath.\n\nRead the full field guide here: https://cart-shift.com/en/blog/woocommerce-performance-optimization\n\n#WooCommerce #EcommerceOptimization #WordPress #ConversionOptimization"
+    }
+  ]
 }
+
