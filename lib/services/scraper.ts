@@ -34,6 +34,23 @@ function isPuppeteerRuntimeEnabled(): boolean {
   return true;
 }
 
+function unavailableDeeperScan(reason: string, attempted = false): DeeperScanAnalysis {
+  return {
+    attempted,
+    available: false,
+    categoryPagesAttempted: 0,
+    categoryPagesSucceeded: 0,
+    productPagesAttempted: 0,
+    productPagesSucceeded: 0,
+    cartInteractionAttempted: false,
+    cartInteractionSucceeded: false,
+    categorySamples: [],
+    productSamples: [],
+    confidence: 'unavailable',
+    limitations: [reason],
+  };
+}
+
 async function checkPuppeteerAvailability(): Promise<boolean> {
   if (puppeteerAvailable !== null) return puppeteerAvailable;
   puppeteerAvailable = await probeAnalyzerBrowser();
@@ -285,13 +302,21 @@ export class ScraperService {
   static async scrape(url: string): Promise<ScraperResult> {
     if (!isPuppeteerRuntimeEnabled()) {
       Logger.debug('Skipping visual/product analysis — Puppeteer disabled for this runtime');
-      return { visualAnalysis: null, productAnalysis: undefined };
+      return {
+        visualAnalysis: null,
+        productAnalysis: undefined,
+        deeperScan: unavailableDeeperScan('Browser automation is disabled for this runtime.', false),
+      };
     }
 
     const isAvailable = await checkPuppeteerAvailability();
     if (!isAvailable) {
       Logger.warn('Skipping visual/product analysis - Puppeteer unavailable');
-      return { visualAnalysis: null, productAnalysis: undefined };
+      return {
+        visualAnalysis: null,
+        productAnalysis: undefined,
+        deeperScan: unavailableDeeperScan('Browser automation could not launch in this runtime.', true),
+      };
     }
 
     let browser = null;
@@ -305,7 +330,11 @@ export class ScraperService {
       } catch (launchError) {
         Logger.error('Puppeteer launch failed', launchError);
         // Return graceful fallback instead of crashing
-        return { visualAnalysis: null, productAnalysis: undefined };
+        return {
+          visualAnalysis: null,
+          productAnalysis: undefined,
+          deeperScan: unavailableDeeperScan('Browser launch failed before visual or deep-scan sampling.', true),
+        };
       }
 
       const page = await browser.newPage();
@@ -465,6 +494,14 @@ export class ScraperService {
       const limitations: string[] = [];
       let productAnalysis: ProductAnalysis | undefined = undefined;
 
+      if (discoveredUrls.categoryUrls.length === 0) {
+        limitations.push('No same-origin category URLs were discovered from visible homepage links.');
+      }
+
+      if (discoveredUrls.productUrls.length === 0) {
+        limitations.push('No same-origin product URLs were discovered from visible homepage links.');
+      }
+
       for (const categoryUrl of discoveredUrls.categoryUrls) {
         try {
           categorySamples.push(await sampleCategoryPage(page, categoryUrl));
@@ -525,7 +562,11 @@ export class ScraperService {
       return { visualAnalysis, productAnalysis, deeperScan };
     } catch (error) {
       Logger.error('ScraperService failed', error);
-      return { visualAnalysis: null, productAnalysis: undefined };
+      return {
+        visualAnalysis: null,
+        productAnalysis: undefined,
+        deeperScan: unavailableDeeperScan('Browser automation failed during visual or deep-scan sampling.', true),
+      };
     } finally {
       if (browser) await browser.close();
     }

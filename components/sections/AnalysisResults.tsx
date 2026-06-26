@@ -185,6 +185,42 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     return rec.evidence || rec.exactEvidence?.[0] || t('recommendations.noEvidence');
   };
 
+  const getAiLimitationCopy = (limitation: string) => {
+    if (limitation === 'Product pages were not scanned, so product data coverage is not fully verified.') {
+      return t('ai.limitations.productPagesNotScanned');
+    }
+    if (
+      limitation ===
+      'Fewer than the requested product-page samples were confirmed, so product data coverage is not fully verified.'
+    ) {
+      return t('ai.limitations.productPagesNotVerified');
+    }
+    return locale === 'he' ? t('ai.limitations.generic') : limitation;
+  };
+
+  const getDeepScanLimitationCopy = (limitation?: string) => {
+    if (!limitation) return '';
+    const normalized = limitation.toLowerCase();
+    const reason =
+      normalized.includes('disabled')
+        ? 'browser_disabled'
+        : normalized.includes('launch')
+          ? 'browser_launch_failed'
+          : normalized.includes('no same-origin product')
+            ? 'no_product_urls'
+            : normalized.includes('no usable') || normalized.includes('no same-origin category')
+              ? 'deep_scan_no_samples'
+              : normalized.includes('automation')
+                ? 'browser_sampling_failed'
+                : undefined;
+
+    if (reason) {
+      return t(`results.coverage.reasons.${reason}` as any);
+    }
+
+    return locale === 'he' ? t('results.coverage.reasons.browser_sampling_failed') : limitation;
+  };
+
   const {
     priorityRecs,
     recommendationGroups,
@@ -206,11 +242,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
     const uniqueRecommendations = dedupeRecommendations(recommendations) as ExtendedRecommendation[];
     const priority = buildPriorityRecommendations(uniqueRecommendations, 3) as ExtendedRecommendation[];
+    const priorityKeys = new Set(priority.map(rec => getRecommendationKey(rec)));
+    const nonPriorityRecommendations = uniqueRecommendations.filter(
+      rec => !priorityKeys.has(getRecommendationKey(rec))
+    );
     const grouped = {
-      measured: uniqueRecommendations.filter(rec => rec.confidence === 'measured'),
-      verified: uniqueRecommendations.filter(rec => rec.confidence === 'verified'),
-      estimated: uniqueRecommendations.filter(rec => rec.confidence === 'estimated'),
-      needsDeeperScan: uniqueRecommendations.filter(
+      measured: nonPriorityRecommendations.filter(rec => rec.confidence === 'measured'),
+      verified: nonPriorityRecommendations.filter(rec => rec.confidence === 'verified'),
+      estimated: nonPriorityRecommendations.filter(rec => rec.confidence === 'estimated'),
+      needsDeeperScan: nonPriorityRecommendations.filter(
         rec => rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable'
       ),
     };
@@ -440,10 +480,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                   </div>
                 )}
               <p className={`text-xs mt-2 ${isDark ? 'text-white/50' : 'text-surface-600'}`}>
-                {results.competitorAnalysis.summary ||
-                  (results.competitorAnalysis.competitors.length > 0
-                    ? t('market.summaryWithCandidates')
-                    : t('market.summaryNoCandidates'))}
+                {results.competitorAnalysis.competitors.length > 0
+                  ? results.competitorAnalysis.summary || t('market.summaryWithCandidates')
+                  : t('market.summaryNoCandidates')}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-500">
@@ -782,7 +821,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 <div
                   className={`rounded-lg border px-3 py-2 text-xs ${isDark ? 'border-amber-500/20 bg-amber-500/10 text-amber-100' : 'border-amber-200 bg-amber-50 text-amber-800'}`}
                 >
-                  {results.aiAnalysis.limitations[0]}
+                  {getAiLimitationCopy(results.aiAnalysis.limitations[0])}
                 </div>
               ) : null}
             </div>
@@ -964,10 +1003,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 value: results.deeperScan.cartInteractionSucceeded
                   ? t('deeperScan.available')
                   : t('deeperScan.notVerified'),
-                detail:
-                  results.deeperScan.cartInteraction?.evidence?.[0] ||
-                  results.deeperScan.limitations[0] ||
-                  '',
+                detail: results.deeperScan.cartInteractionSucceeded
+                  ? t('deeperScan.cartVerified')
+                  : getDeepScanLimitationCopy(
+                      results.deeperScan.limitations[0] || results.deeperScan.cartInteraction?.error
+                    ),
                 active: results.deeperScan.cartInteractionSucceeded,
               },
             ].map(item => (

@@ -234,6 +234,28 @@ export interface DeeperScanAnalysis {
   limitations: string[];
 }
 
+export interface AnalyzerFeatureAvailability {
+  attempted: boolean;
+  available: boolean;
+  reasonCode?:
+    | 'browser_disabled'
+    | 'browser_launch_failed'
+    | 'browser_sampling_failed'
+    | 'pagespeed_unavailable'
+    | 'no_product_urls'
+    | 'product_sampling_failed'
+    | 'deep_scan_no_samples'
+    | 'competitor_no_verified_data'
+    | 'competitor_failed'
+    | 'email_pending'
+    | 'email_failed'
+    | 'email_unconfigured'
+    | 'lead_failed'
+    | 'lead_unconfigured';
+  reason?: string;
+  limitations?: string[];
+}
+
 export interface BenchmarkComparison {
   percentile: number;
   sampleSize: number;
@@ -245,9 +267,21 @@ export interface AnalysisMeta {
   usedHtmlFallback: boolean;
   visualAnalysisAttempted: boolean;
   visualAnalysisAvailable: boolean;
+  productAnalysisAttempted?: boolean;
   productAnalysisAvailable: boolean;
+  deeperScanAttempted?: boolean;
   deeperScanAvailable?: boolean;
+  competitorAnalysisAttempted?: boolean;
   competitorAnalysisAvailable: boolean;
+  featureAvailability?: {
+    lighthouse?: AnalyzerFeatureAvailability;
+    visual?: AnalyzerFeatureAvailability;
+    product?: AnalyzerFeatureAvailability;
+    deeperScan?: AnalyzerFeatureAvailability;
+    competitors?: AnalyzerFeatureAvailability;
+    email?: AnalyzerFeatureAvailability;
+    lead?: AnalyzerFeatureAvailability;
+  };
   cached: boolean;
   screenshotsInEmailReport?: boolean;
   emailReportStatus?: 'pending' | 'sent' | 'failed' | 'unconfigured';

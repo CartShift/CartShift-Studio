@@ -397,6 +397,9 @@ describe('AnalyzerService.analyzeStore', () => {
     const result = await AnalyzerService.analyzeStore('https://shop.example.com');
 
     expect(result.meta?.visualAnalysisAvailable).toBe(false);
+    expect(result.meta?.deeperScanAttempted).toBe(true);
+    expect(result.meta?.featureAvailability?.deeperScan?.available).toBe(false);
+    expect(result.meta?.featureAvailability?.deeperScan?.reasonCode).toBe('browser_sampling_failed');
     expect(result.overallScore).toBeGreaterThan(0);
   });
 
@@ -497,6 +500,11 @@ describe('AnalyzerService.analyzeStore', () => {
 
     expect(result.competitorAnalysis?.competitors).toEqual([]);
     expect(result.competitorAnalysis?.marketPosition).toBe('unknown');
+    expect(result.meta?.competitorAnalysisAttempted).toBe(true);
+    expect(result.meta?.competitorAnalysisAvailable).toBe(true);
+    expect(result.meta?.featureAvailability?.competitors?.reasonCode).toBe(
+      'competitor_no_verified_data'
+    );
     expect(result.sections.seo.recommendations.map(rec => rec.code)).not.toContain(
       'ai-product-schema'
     );

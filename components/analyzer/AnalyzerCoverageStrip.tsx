@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, CircleDashed, XCircle } from 'lucide-react';
-import type { AnalysisMeta } from '@/lib/types/analyzer';
+import type { AnalysisMeta, AnalyzerFeatureAvailability } from '@/lib/types/analyzer';
 
 type CoverageStatus = 'active' | 'partial' | 'unavailable';
 
@@ -10,6 +10,15 @@ function resolveStatus(active: boolean, partial?: boolean): CoverageStatus {
   if (active) return 'active';
   if (partial) return 'partial';
   return 'unavailable';
+}
+
+function statusFromAvailability(
+  availability: AnalyzerFeatureAvailability | undefined,
+  fallbackActive: boolean,
+  fallbackPartial?: boolean
+): CoverageStatus {
+  if (!availability) return resolveStatus(fallbackActive, fallbackPartial);
+  return resolveStatus(availability.available, availability.attempted && !availability.available);
 }
 
 const statusStyles: Record<
@@ -41,45 +50,108 @@ interface AnalyzerCoverageStripProps {
 export function AnalyzerCoverageStrip({ meta, isDark = false }: AnalyzerCoverageStripProps) {
   const t = useTranslations('analyzer.results.coverage');
 
-  const items: { key: string; status: CoverageStatus }[] = [
+  const reasonText = (
+    availability: AnalyzerFeatureAvailability | undefined
+  ) => {
+    if (!availability?.reasonCode) return '';
+    const key = `reasons.${availability.reasonCode}` as const;
+    return t.has(key as any) ? t(key as any) : availability.reason || '';
+  };
+
+  const emailAvailability = meta.featureAvailability?.email ?? {
+    attempted: meta.emailReportStatus !== 'unconfigured',
+    available: meta.emailReportStatus === 'sent',
+    reasonCode:
+      meta.emailReportStatus === 'pending'
+        ? 'email_pending'
+      : meta.emailReportStatus === 'failed'
+          ? 'email_failed'
+          : meta.emailReportStatus === 'unconfigured'
+            ? 'email_unconfigured'
+            : undefined,
+  };
+
+  const leadAvailability = meta.featureAvailability?.lead ?? {
+    attempted: meta.leadCaptureStatus !== 'unconfigured',
+    available: meta.leadCaptureStatus === 'captured' || meta.leadCaptureStatus === 'deduped',
+    reasonCode:
+      meta.leadCaptureStatus === 'failed'
+        ? 'lead_failed'
+        : meta.leadCaptureStatus === 'unconfigured'
+          ? 'lead_unconfigured'
+          : undefined,
+  };
+
+  const items: {
+    key: string;
+    status: CoverageStatus;
+    reason?: string;
+  }[] = [
     {
       key: 'lighthouse',
-      status: resolveStatus(meta.usedLighthouse, !meta.usedLighthouse && meta.usedHtmlFallback),
+      status: statusFromAvailability(
+        meta.featureAvailability?.lighthouse,
+        meta.usedLighthouse,
+        !meta.usedLighthouse && meta.usedHtmlFallback
+      ),
+      reason: reasonText(meta.featureAvailability?.lighthouse),
     },
     {
       key: 'visual',
-      status: resolveStatus(
+      status: statusFromAvailability(
+        meta.featureAvailability?.visual,
         meta.visualAnalysisAvailable,
         meta.visualAnalysisAttempted && !meta.visualAnalysisAvailable
       ),
+      reason: reasonText(meta.featureAvailability?.visual),
     },
     {
       key: 'product',
-      status: resolveStatus(meta.productAnalysisAvailable),
+      status: statusFromAvailability(
+        meta.featureAvailability?.product,
+        meta.productAnalysisAvailable,
+        meta.productAnalysisAttempted && !meta.productAnalysisAvailable
+      ),
+      reason: reasonText(meta.featureAvailability?.product),
     },
     {
       key: 'deeperScan',
-      status: resolveStatus(Boolean(meta.deeperScanAvailable)),
+      status: statusFromAvailability(
+        meta.featureAvailability?.deeperScan,
+        Boolean(meta.deeperScanAvailable),
+        meta.deeperScanAttempted && !meta.deeperScanAvailable
+      ),
+      reason: reasonText(meta.featureAvailability?.deeperScan),
     },
     {
       key: 'competitors',
-      status: resolveStatus(meta.competitorAnalysisAvailable),
+      status: statusFromAvailability(
+        meta.featureAvailability?.competitors,
+        meta.competitorAnalysisAvailable,
+        meta.competitorAnalysisAttempted && !meta.competitorAnalysisAvailable
+      ),
+      reason: reasonText(meta.featureAvailability?.competitors),
     },
     {
       key: 'email',
-      status: resolveStatus(
+      status: statusFromAvailability(
+        emailAvailability,
         meta.emailReportStatus === 'sent',
         meta.emailReportStatus === 'pending' || meta.emailReportStatus === 'failed'
       ),
+      reason: reasonText(emailAvailability),
     },
     {
       key: 'lead',
-      status: resolveStatus(
+      status: statusFromAvailability(
+        leadAvailability,
         meta.leadCaptureStatus === 'captured' || meta.leadCaptureStatus === 'deduped',
         meta.leadCaptureStatus === 'failed'
       ),
+      reason: reasonText(leadAvailability),
     },
   ];
+  const visibleReasons = items.filter(item => item.reason && item.status !== 'active');
 
   return (
     <div
@@ -109,6 +181,16 @@ export function AnalyzerCoverageStrip({ meta, isDark = false }: AnalyzerCoverage
           );
         })}
       </div>
+      {visibleReasons.length > 0 && (
+        <div className={`mt-3 space-y-1 text-xs ${isDark ? 'text-white/55' : 'text-surface-500'}`}>
+          {visibleReasons.map(item => (
+            <p key={item.key}>
+              <span className="font-medium">{t(`items.${item.key}.label` as 'items.lighthouse.label')}:</span>{' '}
+              {item.reason}
+            </p>
+          ))}
+        </div>
+      )}
       {meta.cached && (
         <p className={`mt-3 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
           {t('cachedNote')}

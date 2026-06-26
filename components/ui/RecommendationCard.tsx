@@ -130,7 +130,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
         {effortLabel && (
           <div
             className={cn(
-              'inline-flex items-center gap-1.5 text-xs',
+              'flex w-fit items-center gap-1.5 text-xs',
               isDark ? 'text-white/50' : 'text-surface-500'
             )}
           >
@@ -140,7 +140,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
         )}
         <Link
           href="/contact"
-          className={`inline-flex items-center gap-1.5 text-xs font-semibold ${config.text} hover:opacity-80 transition-opacity`}
+          className={`flex w-fit items-center gap-1.5 text-xs font-semibold ${config.text} hover:opacity-80 transition-opacity`}
         >
           {t('recommendations.getHelp')}
           <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />

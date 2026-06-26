@@ -1481,6 +1481,133 @@ function defaultScanScope(url: string, existing?: Partial<ScanScope>): ScanScope
   };
 }
 
+function unavailableDeeperScan(reason: string): AnalysisResult['deeperScan'] {
+  return {
+    attempted: true,
+    available: false,
+    categoryPagesAttempted: 0,
+    categoryPagesSucceeded: 0,
+    productPagesAttempted: 0,
+    productPagesSucceeded: 0,
+    cartInteractionAttempted: false,
+    cartInteractionSucceeded: false,
+    categorySamples: [],
+    productSamples: [],
+    confidence: 'unavailable',
+    limitations: [reason],
+  };
+}
+
+function firstLimitation(deeperScan?: AnalysisResult['deeperScan']) {
+  return deeperScan?.limitations?.find(Boolean);
+}
+
+function buildFeatureAvailability(params: {
+  usedLighthouse: boolean;
+  usedHtmlFallback: boolean;
+  visualAnalysisAttempted: boolean;
+  visualData?: AnalysisResult['visualAnalysis'] | null;
+  productData?: AnalysisResult['productAnalysis'];
+  deeperScanData?: AnalysisResult['deeperScan'];
+  competitorData: NonNullable<AnalysisResult['competitorAnalysis']>;
+}): NonNullable<AnalysisMeta['featureAvailability']> {
+  const {
+    usedLighthouse,
+    usedHtmlFallback,
+    visualAnalysisAttempted,
+    visualData,
+    productData,
+    deeperScanData,
+    competitorData,
+  } = params;
+  const deepScanReason = firstLimitation(deeperScanData);
+  const browserPathAttempted = visualAnalysisAttempted || Boolean(deeperScanData?.attempted);
+  const productAttempted = Boolean(deeperScanData?.productPagesAttempted);
+  const productReason =
+    productData
+      ? undefined
+      : !browserPathAttempted
+        ? 'Browser automation is disabled for this runtime.'
+        : deepScanReason ||
+          (productAttempted
+            ? 'Product page candidates were discovered, but product sampling did not complete.'
+            : 'No same-origin product URLs were discovered from visible homepage links.');
+  const competitorsAvailable = competitorData.analysisConfidence !== 'unavailable';
+
+  return {
+    lighthouse: {
+      attempted: true,
+      available: usedLighthouse,
+      reasonCode: usedLighthouse ? undefined : 'pagespeed_unavailable',
+      reason: usedLighthouse
+        ? undefined
+        : usedHtmlFallback
+          ? 'Lighthouse/PageSpeed was unavailable, so static HTML fallback checks were used.'
+          : 'Lighthouse/PageSpeed did not return usable data.',
+    },
+    visual: {
+      attempted: visualAnalysisAttempted,
+      available: Boolean(visualData),
+      reasonCode: visualData
+        ? undefined
+        : !browserPathAttempted
+          ? 'browser_disabled'
+          : deepScanReason?.toLowerCase().includes('launch')
+            ? 'browser_launch_failed'
+            : 'browser_sampling_failed',
+      reason: visualData
+        ? undefined
+        : !browserPathAttempted
+          ? 'Browser automation is disabled for this runtime.'
+          : deepScanReason || 'Browser automation did not return usable visual capture data.',
+    },
+    product: {
+      attempted: visualAnalysisAttempted || productAttempted,
+      available: Boolean(productData),
+      reasonCode: productData
+        ? undefined
+        : !browserPathAttempted
+          ? 'browser_disabled'
+          : productAttempted
+            ? 'product_sampling_failed'
+            : 'no_product_urls',
+      reason: productReason,
+    },
+    deeperScan: {
+      attempted: deeperScanData?.attempted ?? visualAnalysisAttempted,
+      available: Boolean(deeperScanData?.available),
+      reasonCode: deeperScanData?.available
+        ? undefined
+        : !browserPathAttempted
+          ? 'browser_disabled'
+          : deepScanReason?.toLowerCase().includes('launch')
+            ? 'browser_launch_failed'
+            : deepScanReason?.toLowerCase().includes('automation')
+              ? 'browser_sampling_failed'
+              : 'deep_scan_no_samples',
+      reason: deeperScanData?.available
+        ? undefined
+        : deepScanReason || 'Deep scan did not collect usable category, product, or cart samples.',
+      limitations: deeperScanData?.limitations,
+    },
+    competitors: {
+      attempted: true,
+      available: competitorsAvailable,
+      reasonCode: competitorsAvailable
+        ? competitorData.competitors.length > 0
+          ? undefined
+          : 'competitor_no_verified_data'
+        : 'competitor_failed',
+      reason: competitorsAvailable
+        ? competitorData.competitors.length > 0
+          ? undefined
+          : 'Competitor analysis ran, but no direct competitors could be identified confidently.'
+        : 'Competitor analysis failed before producing usable evidence.',
+      limitations: competitorData.limitations,
+    },
+  };
+}
+
 function suppressLegacyCompetitors(result: AnalysisResult, scanScope: ScanScope) {
   if (
     !result.competitorAnalysis?.competitors?.some(comp => !comp.domainClassification)
@@ -1702,7 +1829,11 @@ async function runHeavyAnalysisTasks(
     }),
     ScraperService.scrape(fetchedUrl).catch(err => {
       recordAnalyzerServiceFailure('puppeteer', err, true);
-      return { visualAnalysis: null, productAnalysis: undefined, deeperScan: undefined };
+      return {
+        visualAnalysis: null,
+        productAnalysis: undefined,
+        deeperScan: unavailableDeeperScan('Browser automation failed before sampling.'),
+      };
     }),
     Promise.resolve(AIReadinessService.analyze(html, scanScope)).catch(err => {
       recordAnalyzerServiceFailure('ai', err, true);
@@ -1750,14 +1881,20 @@ export class AnalyzerService {
           visualAnalysisAttempted: cached.meta?.visualAnalysisAttempted ?? false,
           visualAnalysisAvailable:
             cached.meta?.visualAnalysisAvailable ?? Boolean(cached.visualAnalysis),
+          productAnalysisAttempted:
+            cached.meta?.productAnalysisAttempted ?? Boolean(cached.deeperScan?.productPagesAttempted),
           productAnalysisAvailable:
             cached.meta?.productAnalysisAvailable ?? Boolean(cached.productAnalysis),
+          deeperScanAttempted:
+            cached.meta?.deeperScanAttempted ?? Boolean(cached.deeperScan?.attempted),
           deeperScanAvailable: cached.meta?.deeperScanAvailable ?? Boolean(cached.deeperScan?.available),
+          competitorAnalysisAttempted: cached.meta?.competitorAnalysisAttempted ?? Boolean(cached.competitorAnalysis),
           competitorAnalysisAvailable:
             suppressedLegacyCompetitors
               ? false
               : (cached.meta?.competitorAnalysisAvailable ??
-                Boolean(competitorAnalysis?.competitors?.length)),
+                competitorAnalysis?.analysisConfidence !== 'unavailable'),
+          featureAvailability: cached.meta?.featureAvailability,
           cached: true,
           scanScope: cachedScanScope,
         },
@@ -1929,6 +2066,15 @@ export class AnalyzerService {
       productAnalysis: productData,
       deeperScan: deeperScanData,
     } = scraperData;
+    const featureAvailability = buildFeatureAvailability({
+      usedLighthouse,
+      usedHtmlFallback,
+      visualAnalysisAttempted,
+      visualData,
+      productData,
+      deeperScanData,
+      competitorData,
+    });
     sections.cart = analyzeCartExperience(html, {
       platform,
       productAnalysis: productData,
@@ -1972,9 +2118,13 @@ export class AnalyzerService {
       usedHtmlFallback,
       visualAnalysisAttempted,
       visualAnalysisAvailable: Boolean(visualData),
+      productAnalysisAttempted: featureAvailability.product?.attempted,
       productAnalysisAvailable: Boolean(productData),
+      deeperScanAttempted: featureAvailability.deeperScan?.attempted,
       deeperScanAvailable: Boolean(deeperScanData?.available),
-      competitorAnalysisAvailable: (competitorData.competitors?.length ?? 0) > 0,
+      competitorAnalysisAttempted: true,
+      competitorAnalysisAvailable: featureAvailability.competitors?.available ?? false,
+      featureAvailability,
       cached: false,
       scanScope,
     };

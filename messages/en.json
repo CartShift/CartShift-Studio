@@ -4640,6 +4640,22 @@
           "partial": "estimated",
           "unavailable": "skipped"
         },
+        "reasons": {
+          "browser_disabled": "Browser automation is disabled for this runtime.",
+          "browser_launch_failed": "Browser automation could not launch in the live runtime.",
+          "browser_sampling_failed": "Browser automation started but did not finish sampling.",
+          "pagespeed_unavailable": "PageSpeed data was unavailable, so static fallback checks were used.",
+          "no_product_urls": "No same-origin product URLs were discovered from visible homepage links.",
+          "product_sampling_failed": "Product URLs were found, but product-page sampling did not complete.",
+          "deep_scan_no_samples": "No usable category, product, or cart samples were collected.",
+          "competitor_no_verified_data": "Market analysis ran, but no direct competitors were verified.",
+          "competitor_failed": "Market analysis failed before producing usable evidence.",
+          "email_pending": "PDF delivery is queued and may arrive shortly.",
+          "email_failed": "PDF delivery failed for this run.",
+          "email_unconfigured": "PDF email delivery is not configured.",
+          "lead_failed": "Lead capture failed for this run.",
+          "lead_unconfigured": "Lead capture is not configured."
+        },
         "items": {
           "lighthouse": {
             "label": "Lighthouse",
@@ -4775,6 +4791,11 @@
         "missing": "missing",
         "invalid": "invalid"
       },
+      "limitations": {
+        "productPagesNotScanned": "Product pages were not scanned, so product data coverage is not fully verified.",
+        "productPagesNotVerified": "Fewer than the requested product-page samples were confirmed, so product data coverage is not fully verified.",
+        "generic": "This limitation needs a deeper scan before it should be treated as verified."
+      },
       "structuredData": "Structured Data (JSON-LD)",
       "noSchema": "No structured data found",
       "readability": "Readability",
@@ -4814,6 +4835,7 @@
       "attempted": "{count} attempted",
       "available": "Available",
       "notVerified": "Not verified",
+      "cartVerified": "Cart or checkout UI was verified after an add-to-cart attempt.",
       "unavailableTitle": "Deeper scan unavailable",
       "unavailableText": "Browser-based category, product, and cart interaction sampling was unavailable for this run, so checkout recommendations remain limited to lower-confidence evidence.",
       "evidence": "Evidence"
@@ -5093,7 +5115,7 @@
       "bookCall": "Book Free Strategy Call",
       "bookStrategyCall": "Book Strategy Call",
       "getQuote": "Get a quote for top fixes",
-      "fixIssues": "Fix These Issues",
+      "fixIssues": "Review Findings",
       "analyzeAnother": "Analyze Another Store",
       "analyzeNow": "Analyze My Store Now"
     }
