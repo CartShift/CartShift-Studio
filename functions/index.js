@@ -1404,7 +1404,7 @@ async function sendMarketingJob(jobDoc) {
   try {
     const result = await resend.emails.send(
       {
-        from: 'CartShift Studio <nurture@cart-shift.com>',
+      from: `CartShift Studio <${DEFAULT_CONTACT_EMAIL}>`,
         to: lead.email,
         subject: copy.subject,
         html,
