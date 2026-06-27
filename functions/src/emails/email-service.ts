@@ -476,7 +476,12 @@ export async function addToAudience(apiKey: string, contactData: any) {
 
     if (error) {
       if (error.message?.includes('already exists')) {
-        return { success: true, exists: true };
+        const updateResult = await client.contacts.update(contactPayload);
+        if (updateResult.error) {
+          throw { message: updateResult.error.message };
+        }
+        console.log(`[Audience] ✅ Updated existing contact: ${email}`);
+        return { success: true, exists: true, updated: true, id: updateResult.data?.id };
       }
       if (error.name === 'restricted_api_key' || error.message?.includes('restricted')) {
         return { success: false, reason: 'restricted_api_key', skipped: true };

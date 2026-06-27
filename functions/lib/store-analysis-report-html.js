@@ -825,7 +825,7 @@ const {
   buildRoadmapWeeks,
   buildPriorityRecommendations,
   flattenRecommendations,
-} = require('../../lib/analyzer/roadmap.js');
+} = require('./analyzer/roadmap.js');
 
 // Build 30-day action roadmap - PROFESSIONAL VERSION
 function buildActionRoadmapHtml(sections, texts, isRtl) {

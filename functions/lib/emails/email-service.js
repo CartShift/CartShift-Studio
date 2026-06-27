@@ -398,7 +398,7 @@ async function handleWebhookEvent(admin, event) {
 // Audience
 // ----------------------------------------------------------------------------
 async function addToAudience(apiKey, contactData) {
-    var _a, _b;
+    var _a, _b, _c;
     const client = getResendClient(apiKey);
     if (!client)
         return { success: false, reason: 'no_api_key' };
@@ -418,9 +418,14 @@ async function addToAudience(apiKey, contactData) {
         const { data, error } = await client.contacts.create(contactPayload);
         if (error) {
             if ((_a = error.message) === null || _a === void 0 ? void 0 : _a.includes('already exists')) {
-                return { success: true, exists: true };
+                const updateResult = await client.contacts.update(contactPayload);
+                if (updateResult.error) {
+                    throw { message: updateResult.error.message };
+                }
+                console.log(`[Audience] ✅ Updated existing contact: ${email}`);
+                return { success: true, exists: true, updated: true, id: (_b = updateResult.data) === null || _b === void 0 ? void 0 : _b.id };
             }
-            if (error.name === 'restricted_api_key' || ((_b = error.message) === null || _b === void 0 ? void 0 : _b.includes('restricted'))) {
+            if (error.name === 'restricted_api_key' || ((_c = error.message) === null || _c === void 0 ? void 0 : _c.includes('restricted'))) {
                 return { success: false, reason: 'restricted_api_key', skipped: true };
             }
             throw { message: error.message };
