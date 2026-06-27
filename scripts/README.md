@@ -86,3 +86,29 @@ pnpm run social:linkedin:publish:dry-run -- --text-file path/to/post.txt
 ```
 
 Requires `LINKEDIN_ACCESS_TOKEN` and `LINKEDIN_AUTHOR_URN` in `.env.local`.
+
+Rebuild semantic editorial memory from confirmed ledger entries:
+
+```bash
+npm run social:linkedin:memory:rebuild
+```
+
+Collect member post analytics when the token includes `r_member_postAnalytics`:
+
+```bash
+npm run social:linkedin:performance:collect
+```
+
+The analytics app uses only `LINKEDIN_ANALYTICS_CLIENT_ID`, `LINKEDIN_ANALYTICS_CLIENT_SECRET`, and `LINKEDIN_ANALYTICS_ACCESS_TOKEN`. After LinkedIn approves the analytics permission, generate its isolated token with:
+
+```bash
+npm run social:linkedin:analytics:oauth
+```
+
+Without that scope, record metrics copied from LinkedIn manually:
+
+```bash
+npm run social:linkedin:performance:record -- --slug my-post --impressions 1000 --profile-views 8 --saves 4 --sends 2 --followers-gained 1
+```
+
+Performance scoring emphasizes profile views, follower gains, saves, sends, and link clicks over reactions or raw impressions.

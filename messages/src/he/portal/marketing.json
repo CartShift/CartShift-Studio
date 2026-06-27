@@ -14,7 +14,9 @@
         "leads7d": "לידים חדשים (7 ימים)",
         "leads30d": "לידים חדשים (30 יום)",
         "needsFollowUp": "דורש מעקב",
-        "converted": "הומרו"
+        "converted": "הומרו",
+        "emailClickRate": "שיעור הקלקה",
+        "conversionRate": "המרת לידים"
       },
       "funnel": {
         "title": "תמונת משפך",

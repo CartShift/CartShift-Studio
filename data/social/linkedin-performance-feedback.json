@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "collection": {
+    "mode": "api-when-authorized-with-manual-fallback",
+    "requiredScope": "r_member_postAnalytics",
+    "scopeAvailable": false,
+    "credentialProfile": "analytics-only",
+    "status": "awaiting-analytics-access-token",
+    "lastAttemptAt": "2026-06-27T00:06:28.481Z",
+    "lastSuccessfulCollectionAt": null,
+    "metricPriority": [
+      "followersGained",
+      "profileViews",
+      "saves",
+      "sends",
+      "linkClicks",
+      "comments",
+      "reshares",
+      "reactions",
+      "impressions"
+    ]
+  },
+  "posts": {},
+  "topicPerformance": {}
+}

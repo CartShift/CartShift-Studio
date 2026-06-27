@@ -1,9 +1,6 @@
 import { logError } from '@/lib/error-handler';
 import { CacheService } from '@/lib/services/cache-service';
-import {
-  captureMarketingLead,
-  normalizeMarketingEmail,
-} from '@/lib/services/marketing';
+import { captureMarketingLead, normalizeMarketingEmail } from '@/lib/services/marketing';
 import { env } from '@/lib/env';
 
 export type StoreAnalysisLeadStatus = 'captured' | 'deduped' | 'failed' | 'unconfigured';
@@ -26,6 +23,9 @@ export async function captureStoreAnalysisLead(params: {
   locale: string;
   platform?: string | null;
   overallScore: number;
+  focusArea?: 'performance' | 'seo' | 'accessibility' | 'bestPractices' | 'cart' | 'trust';
+  focusScore?: number;
+  primaryRecommendation?: string;
   subscribeNewsletter: boolean;
 }): Promise<StoreAnalysisLeadStatus> {
   if (!isMarketingCaptureConfigured()) {
@@ -43,6 +43,9 @@ export async function captureStoreAnalysisLead(params: {
         source: 'store_analyzer',
         platform: params.platform || undefined,
         overallScore: params.overallScore,
+        focusArea: params.focusArea,
+        focusScore: params.focusScore,
+        primaryRecommendation: params.primaryRecommendation,
         subscribeNewsletter: true,
         consent: true,
         skipWelcome: true,
@@ -58,6 +61,9 @@ export async function captureStoreAnalysisLead(params: {
     source: 'store_analyzer',
     platform: params.platform || undefined,
     overallScore: params.overallScore,
+    focusArea: params.focusArea,
+    focusScore: params.focusScore,
+    primaryRecommendation: params.primaryRecommendation,
     subscribeNewsletter: params.subscribeNewsletter,
     consent: params.subscribeNewsletter,
     skipWelcome: true,

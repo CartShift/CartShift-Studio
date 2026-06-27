@@ -29,6 +29,11 @@ const marketingCaptureSchema = z.object({
   storeUrl: z.string().max(2048).optional(),
   platform: z.string().max(80).optional(),
   overallScore: z.number().min(0).max(100).optional(),
+  focusArea: z
+    .enum(['performance', 'seo', 'accessibility', 'bestPractices', 'cart', 'trust'])
+    .optional(),
+  focusScore: z.number().min(0).max(100).optional(),
+  primaryRecommendation: z.string().max(240).optional(),
   subscribeNewsletter: z.boolean().optional(),
   consent: z.boolean().optional(),
   skipWelcome: z.boolean().optional(),
@@ -104,6 +109,9 @@ export async function captureMarketingLead(
     message: validation.data.message ? sanitizeString(validation.data.message) : undefined,
     storeUrl: validation.data.storeUrl ? sanitizeString(validation.data.storeUrl) : undefined,
     platform: validation.data.platform ? sanitizeString(validation.data.platform) : undefined,
+    primaryRecommendation: validation.data.primaryRecommendation
+      ? sanitizeString(validation.data.primaryRecommendation)
+      : undefined,
   };
 
   const functionUrl = getMarketingFunctionUrl('marketingCapture');

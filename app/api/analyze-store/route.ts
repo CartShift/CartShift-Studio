@@ -145,6 +145,29 @@ export async function POST(request: NextRequest) {
       locale: locale || 'en',
       platform: result.platform,
       overallScore: result.overallScore,
+      ...(() => {
+        const [focusArea, focusSection] = Object.entries(result.sections).sort(
+          ([, a], [, b]) => a.score - b.score
+        )[0];
+        const primaryRecommendation = focusSection.recommendations
+          .filter(recommendation => !recommendation.excludeFromActionPlan)
+          .sort((a, b) => {
+            const priority = { high: 0, medium: 1, low: 2 } as const;
+            return priority[a.impact] - priority[b.impact];
+          })[0];
+
+        return {
+          focusArea: focusArea as
+            | 'performance'
+            | 'seo'
+            | 'accessibility'
+            | 'bestPractices'
+            | 'cart'
+            | 'trust',
+          focusScore: focusSection.score,
+          primaryRecommendation: primaryRecommendation?.title,
+        };
+      })(),
       subscribeNewsletter: subscribeNewsletter ?? false,
     });
 

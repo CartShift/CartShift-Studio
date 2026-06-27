@@ -1,4 +1,26 @@
 {
+  "marketing": {
+    "contactPrefill": {
+      "message": "My store{store} scored {score}/100 in the store analyzer.{focus} I'd like to understand the right-sized scope for improving it.",
+      "focusClause": " The first focus identified was {focus}.",
+      "focusAreas": {
+        "performance": "speed and performance",
+        "seo": "search visibility",
+        "accessibility": "accessibility",
+        "bestPractices": "technical quality",
+        "cart": "cart and checkout",
+        "trust": "buyer trust"
+      }
+    },
+    "unsubscribe": {
+      "successTitle": "You’re unsubscribed",
+      "successMessage": "The store-audit follow-ups have stopped. Your original report is still yours to keep.",
+      "errorTitle": "We couldn’t unsubscribe you",
+      "errorMessage": "The link may have expired. Reply to the email and we’ll remove you manually.",
+      "invalidTitle": "This unsubscribe link is incomplete",
+      "invalidMessage": "Open the unsubscribe link from the original CartShift email or contact us directly."
+    }
+  },
   "hero": {
     "tag": "Shopify, WordPress & web app experts, built to convert",
     "titleLine1": "Websites & Stores",

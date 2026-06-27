@@ -1861,7 +1861,9 @@
         "leads7d": "לידים חדשים (7 ימים)",
         "leads30d": "לידים חדשים (30 יום)",
         "needsFollowUp": "דורש מעקב",
-        "converted": "הומרו"
+        "converted": "הומרו",
+        "emailClickRate": "שיעור הקלקה",
+        "conversionRate": "המרת לידים"
       },
       "funnel": {
         "title": "תמונת משפך",
@@ -3273,6 +3275,28 @@
       "complete": "התשלום הושלם",
       "amount": "סכום לתשלום: {amount}",
       "unavailable": "התשלום המקוון אינו זמין כרגע. יש ליצור קשר עם הסוכנות לקבלת סיוע."
+    }
+  },
+  "marketing": {
+    "contactPrefill": {
+      "message": "החנות שלי{store} קיבלה ציון {score}/100 בניתוח החנות.{focus} אשמח להבין מה הסקופ הנכון לשיפור.",
+      "focusClause": " המוקד הראשון שזוהה הוא {focus}.",
+      "focusAreas": {
+        "performance": "מהירות וביצועים",
+        "seo": "נראות בחיפוש",
+        "accessibility": "נגישות",
+        "bestPractices": "איכות טכנית",
+        "cart": "עגלה וצ׳קאאוט",
+        "trust": "אמון קונים"
+      }
+    },
+    "unsubscribe": {
+      "successTitle": "הוסרתם מרשימת התפוצה",
+      "successMessage": "הודעות ההמשך על אבחון החנות הופסקו. הדוח המקורי נשאר אצלכם.",
+      "errorTitle": "לא הצלחנו להסיר אתכם",
+      "errorMessage": "ייתכן שתוקף הקישור פג. השיבו לאימייל ונסיר אתכם ידנית.",
+      "invalidTitle": "קישור ההסרה אינו מלא",
+      "invalidMessage": "פתחו את קישור ההסרה מהאימייל המקורי של CartShift או צרו איתנו קשר ישירות."
     }
   },
   "hero": {
@@ -4709,7 +4733,7 @@
       "strongScoreWithIssues": "בסיס חזק, עם {count} אזורי שיפור בעדיפות",
       "strongScoreWithIssuesDesc": "הציון טוב, והדוח מפריד בין מדידות, ממצאים מאומתים, הערכות ופערי כיסוי.",
       "issuesFound": "נמצאו {count} אזורי שיפור בעדיפות",
-      "issuesFound_singular": "נמצא אזור שיפור אחד בעדיפות",
+      "issuesFound_singular": "נמצא {count} אזור שיפור בעדיפות",
       "readyToScale": "החנות שלכם מוכנה להתרחבות.",
       "losingSales": "הבעיות האלה כנראה עולות לכם בהמרות.",
       "evidenceGroundedIssues": "ההמלצות האלה מבוססות על ממצאים מאומתים או על הערכות שמסומנות בבירור מהסריקה הזו.",
@@ -4723,7 +4747,7 @@
       "dontLetIssuesHurtSales": "סקירת הממצאים",
       "planNextVerifiedFixes": "תכנון השיפורים הבאים בעדיפות",
       "expertsCanFix": "כדאי לסקור את {count} אזורי השיפור בעדיפות עם מומחה לפני שמשקיעים זמן יישום.",
-      "expertsCanFix_singular": "כדאי לסקור את אזור השיפור הזה עם מומחה לפני שמשקיעים זמן יישום.",
+      "expertsCanFix_singular": "כדאי לסקור את אזור השיפור הזה ({count}) עם מומחה לפני שמשקיעים זמן יישום.",
       "trustedBy": "מהימן על ידי 50+ חנויות",
       "fullReportSent": "הדוח המקיף שלכם נשלח! הוא כולל ממצאים מפורטים, צעדי תיקון מדויקים, ניתוח Core Web Vitals, ותוכנית פעולה מתועדפת ל-30 יום.",
       "analyzeDifferentUrl": "נתחו כתובת אחרת"

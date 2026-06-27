@@ -11,6 +11,7 @@ const {
   handleWebhookEvent,
   generateIdempotencyKey,
   addToAudience,
+  removeFromAudience,
   SUPPORTED_EMAIL_TEMPLATES,
 } = require('./lib/emails/email-service');
 
@@ -24,6 +25,7 @@ const NEWSLETTER_RATE_LIMIT_MAX_REQUESTS = 3;
 
 // Default company contact email from environment or fallback
 const DEFAULT_CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'hello@cart-shift.com';
+const MARKETING_POSTAL_ADDRESS = process.env.MARKETING_POSTAL_ADDRESS || 'Tel Aviv, Israel';
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
@@ -152,7 +154,27 @@ async function sendPortalEmail(to, subject, templateName, data, options = {}) {
 // ============================================
 
 const MARKETING_SEQUENCE_ID = 'cartshift_project_inquiry_v1';
+const ANALYZER_SEQUENCE_ID = 'store_analyzer_conversion_v2';
 const MARKETING_JOB_BATCH_SIZE = 25;
+const MARKETING_MAX_SEND_ATTEMPTS = 3;
+const MARKETING_SOURCES = new Set([
+  'store_analyzer',
+  'newsletter',
+  'newsletter_footer',
+  'contact_form',
+  'blog_cta',
+  'service_page_cta',
+  'blog_sidebar',
+  'website',
+]);
+const MARKETING_FOCUS_AREAS = new Set([
+  'performance',
+  'seo',
+  'accessibility',
+  'bestPractices',
+  'cart',
+  'trust',
+]);
 
 const MARKETING_SEQUENCE_STEPS = [
   {
@@ -419,10 +441,253 @@ const MARKETING_SEQUENCE_STEPS = [
   },
 ];
 
+const ANALYZER_SEQUENCE_STEPS = [
+  {
+    stepId: 'score-debrief',
+    delayDays: 1,
+    kind: 'diagnosis',
+    en: {
+      subject: 'The most expensive gap in your store audit',
+      eyebrow: 'Your audit · 2-minute debrief',
+      title: 'Your score is useful. The order of operations is what makes it valuable.',
+      intro:
+        'Trying to fix every audit item at once usually creates activity, not conversion. Start with the weakest buying signal, verify the change, and only then move to the next constraint.',
+      bullets: [
+        'Protect the purchase path before polishing secondary pages.',
+        'Fix high-confidence issues before acting on generic best practices.',
+        'Measure one commercial outcome for every meaningful change.',
+      ],
+      cta: 'Ask us what to fix first',
+      ctaNote:
+        'Send the audit context. We will tell you whether this needs a focused sprint or a broader rebuild.',
+      preheader: 'A practical read on what your store score should change first.',
+    },
+    he: {
+      subject: 'הפער היקר ביותר באבחון החנות שלכם',
+      eyebrow: 'האבחון שלכם · סיכום של 2 דקות',
+      title: 'הציון שימושי. סדר הפעולות הוא מה שהופך אותו לבעל ערך.',
+      intro:
+        'ניסיון לתקן את כל סעיפי האבחון יחד בדרך כלל מייצר פעילות, לא המרה. מתחילים באות הקנייה החלש ביותר, מאמתים את השינוי ורק אז עוברים לחסם הבא.',
+      bullets: [
+        'מגנים קודם על מסלול הרכישה ורק אחר כך מלטשים עמודים משניים.',
+        'מטפלים בממצאים עם ודאות גבוהה לפני עצות כלליות.',
+        'מצמידים תוצאה עסקית אחת לכל שינוי משמעותי.',
+      ],
+      cta: 'שאלו אותנו מה לתקן קודם',
+      ctaNote: 'שלחו את הקשר האבחון ונאמר אם צריך ספרינט ממוקד או בנייה רחבה יותר.',
+      preheader: 'קריאה פרקטית של הדבר הראשון שציון החנות צריך לשנות.',
+    },
+  },
+  {
+    stepId: 'quick-win',
+    delayDays: 3,
+    kind: 'education',
+    en: {
+      subject: 'One conversion fix you can ship this week',
+      eyebrow: 'One change · one signal',
+      title: 'Make the next buying decision easier before you add more traffic.',
+      intro:
+        'Choose one high-intent page and remove the biggest unanswered question. That usually beats adding another banner, app, or campaign to a journey that is already leaking intent.',
+      bullets: [
+        'On mobile, the product promise should be clear before the first scroll.',
+        'Delivery, returns, and payment confidence should appear near the decision.',
+        'The primary action should win the visual hierarchy without competition.',
+      ],
+      cta: 'Get a focused recommendation',
+      ctaNote: 'A useful first reply can be as simple as: “Which page should we start with?”',
+      preheader: 'A small, testable store improvement with a clear conversion signal.',
+    },
+    he: {
+      subject: 'תיקון המרה אחד שאפשר להעלות השבוע',
+      eyebrow: 'שינוי אחד · אות אחד',
+      title: 'הקלו על החלטת הקנייה הבאה לפני שמוסיפים עוד טראפיק.',
+      intro:
+        'בחרו עמוד אחד עם כוונת רכישה גבוהה והסירו את השאלה הגדולה ביותר שנשארה ללא תשובה. זה לרוב יעיל יותר מעוד באנר, אפליקציה או קמפיין למסע שכבר מאבד כוונה.',
+      bullets: [
+        'במובייל, הבטחת המוצר צריכה להיות ברורה לפני הגלילה הראשונה.',
+        'ביטחון במשלוח, החזרות ותשלום צריך להופיע ליד רגע ההחלטה.',
+        'הפעולה הראשית צריכה לנצח בהיררכיה בלי תחרות.',
+      ],
+      cta: 'קבלת המלצה ממוקדת',
+      ctaNote: 'אפשר להתחיל בתשובה פשוטה: ״מאיזה עמוד כדאי להתחיל?״',
+      preheader: 'שיפור קטן ומדיד בחנות עם אות המרה ברור.',
+    },
+  },
+  {
+    stepId: 'right-sized-plan',
+    delayDays: 6,
+    kind: 'plan',
+    en: {
+      subject: 'Sprint, optimization, or rebuild?',
+      eyebrow: 'Right-size the work',
+      title: 'The best scope is the smallest one that solves the commercial constraint.',
+      intro:
+        'Not every weak score needs a rebuild, and not every strong score means the store is finished. Scope should follow the evidence, the revenue goal, and the team’s ability to maintain the result.',
+      bullets: [
+        'Focused sprint: one bottleneck, a tight release, a measurable outcome.',
+        'Optimization track: several connected leaks across the buying journey.',
+        'Rebuild: structural limits are slowing campaigns, merchandising, or growth.',
+      ],
+      cta: 'Find the right scope',
+      ctaNote:
+        'We will recommend the leanest credible path—even when that means a smaller project.',
+      preheader: 'A simple way to choose between a sprint, optimization track, and rebuild.',
+    },
+    he: {
+      subject: 'ספרינט, אופטימיזציה או בנייה מחדש?',
+      eyebrow: 'מתאימים את הסקופ',
+      title: 'הסקופ הטוב ביותר הוא הקטן ביותר שפותר את החסם העסקי.',
+      intro:
+        'לא כל ציון חלש דורש ריבילד, ולא כל ציון חזק אומר שהחנות גמורה. הסקופ צריך לנבוע מהראיות, מיעד ההכנסה ומהיכולת של הצוות לתחזק את התוצאה.',
+      bullets: [
+        'ספרינט ממוקד: חסם אחד, השקה הדוקה ותוצאה מדידה.',
+        'מסלול אופטימיזציה: כמה דליפות מחוברות לאורך מסע הקנייה.',
+        'ריבילד: מגבלות מבניות מאטות קמפיינים, מרצ׳נדייזינג או צמיחה.',
+      ],
+      cta: 'מציאת הסקופ הנכון',
+      ctaNote: 'נמליץ על הדרך הרזה והאמינה ביותר—גם כשהמשמעות היא פרויקט קטן יותר.',
+      preheader: 'דרך פשוטה לבחור בין ספרינט, אופטימיזציה וריבילד.',
+    },
+  },
+  {
+    stepId: 'delivery-proof',
+    delayDays: 10,
+    kind: 'process',
+    en: {
+      subject: 'What happens after you send us the store',
+      eyebrow: 'No black box',
+      title: 'A serious ecommerce project should make decisions easier, not create a new fog.',
+      intro:
+        'We turn the audit into a prioritized scope, define what success means, and make the tradeoffs visible before implementation starts. You should know what is changing and why.',
+      bullets: [
+        'Evidence-led priorities tied to buyer behavior and business impact.',
+        'A staged plan that protects the live store and keeps scope legible.',
+        'QA across mobile, performance, analytics, accessibility, and RTL where needed.',
+      ],
+      cta: 'Talk through your audit',
+      ctaNote: 'No pitch-deck theatre. Bring the URL, the goal, and the constraint.',
+      preheader: 'The practical steps between an analyzer result and a production release.',
+    },
+    he: {
+      subject: 'מה קורה אחרי ששולחים לנו את החנות',
+      eyebrow: 'בלי קופסה שחורה',
+      title: 'פרויקט איקומרס רציני צריך להקל על החלטות, לא ליצור ערפל חדש.',
+      intro:
+        'אנחנו הופכים את האבחון לסקופ מתועדף, מגדירים הצלחה ומציגים את הפשרות לפני שמתחיל הפיתוח. צריך להיות ברור מה משתנה ולמה.',
+      bullets: [
+        'תיעדוף מבוסס ראיות שמחובר להתנהגות קונים ולהשפעה עסקית.',
+        'תכנית מדורגת שמגנה על החנות הפעילה ושומרת על סקופ ברור.',
+        'QA במובייל, ביצועים, אנליטיקה, נגישות ו-RTL לפי הצורך.',
+      ],
+      cta: 'לדבר על תוצאות האבחון',
+      ctaNote: 'בלי הצגת מכירה. הביאו URL, מטרה וחסם.',
+      preheader: 'השלבים הפרקטיים בין תוצאת האבחון להשקה בפרודקשן.',
+    },
+  },
+  {
+    stepId: 'risk-reversal',
+    delayDays: 15,
+    kind: 'objection',
+    en: {
+      subject: '“We are not ready for a full rebuild”',
+      eyebrow: 'A smaller first step is valid',
+      title: 'You do not need to approve a large project to get a useful answer.',
+      intro:
+        'Timing, budget, internal capacity, and launch risk are real constraints. The first conversation is for deciding what is worth doing—not for forcing the largest possible scope.',
+      bullets: [
+        'Keep what is already working.',
+        'Separate revenue-critical work from desirable polish.',
+        'Leave with a clear next move, even if the move is not “start now.”',
+      ],
+      cta: 'Share your constraints',
+      ctaNote: 'A store URL and one sentence about the goal are enough to begin.',
+      preheader: 'How to get clarity without committing to a full ecommerce rebuild.',
+    },
+    he: {
+      subject: '״אנחנו לא מוכנים לריבילד מלא״',
+      eyebrow: 'צעד ראשון קטן הוא לגיטימי',
+      title: 'לא צריך לאשר פרויקט גדול כדי לקבל תשובה שימושית.',
+      intro:
+        'תזמון, תקציב, קיבולת פנימית וסיכון השקה הם אילוצים אמיתיים. השיחה הראשונה נועדה להחליט מה שווה לעשות—לא לדחוף לסקופ הגדול ביותר.',
+      bullets: [
+        'שומרים על מה שכבר עובד.',
+        'מפרידים עבודה קריטית להכנסה מפוליש רצוי.',
+        'יוצאים עם צעד הבא ברור, גם אם הוא לא ״מתחילים עכשיו״.',
+      ],
+      cta: 'שתפו את האילוצים שלכם',
+      ctaNote: 'URL של החנות ומשפט אחד על המטרה מספיקים כדי להתחיל.',
+      preheader: 'איך לקבל בהירות בלי להתחייב לריבילד איקומרס מלא.',
+    },
+  },
+  {
+    stepId: 'close-the-loop',
+    delayDays: 24,
+    kind: 'breakup',
+    en: {
+      subject: 'Should we close your store audit?',
+      eyebrow: 'Last note on this audit',
+      title: 'If the store is a priority this quarter, now is a good time to choose the next move.',
+      intro:
+        'We will stop the audit follow-ups after this. If you want a human read before you decide, send the goal and the issue that feels most expensive. We will point you toward the right-sized option.',
+      bullets: [
+        'A focused fix if one bottleneck dominates.',
+        'A staged optimization plan if the issues are connected.',
+        'A rebuild only when the existing system is the constraint.',
+      ],
+      cta: 'Get a human recommendation',
+      ctaNote:
+        'No urgency theatre—just a clean way to close the gap between the report and a decision.',
+      preheader: 'One last offer to turn your store audit into a practical next step.',
+    },
+    he: {
+      subject: 'לסגור את אבחון החנות שלכם?',
+      eyebrow: 'הודעה אחרונה על האבחון',
+      title: 'אם החנות בעדיפות הרבעון, זה זמן טוב לבחור את הצעד הבא.',
+      intro:
+        'אחרי ההודעה הזו נפסיק את המעקב על האבחון. אם תרצו קריאה אנושית לפני החלטה, שלחו את המטרה ואת הבעיה שמרגישה הכי יקרה. נכוון לאפשרות בגודל הנכון.',
+      bullets: [
+        'תיקון ממוקד אם חסם אחד דומיננטי.',
+        'תכנית אופטימיזציה מדורגת אם הבעיות מחוברות.',
+        'ריבילד רק כשהמערכת הקיימת היא החסם.',
+      ],
+      cta: 'קבלת המלצה אנושית',
+      ctaNote: 'בלי לחץ מלאכותי—רק דרך נקייה לעבור מהדוח להחלטה.',
+      preheader: 'הצעה אחרונה להפוך את אבחון החנות לצעד הבא פרקטי.',
+    },
+  },
+];
+
 function normalizeMarketingEmail(email) {
   return String(email || '')
     .trim()
     .toLowerCase();
+}
+
+function sanitizeMarketingText(value, maxLength) {
+  if (typeof value !== 'string') return null;
+  const sanitized = Array.from(value, character => {
+    const codePoint = character.codePointAt(0);
+    return typeof codePoint === 'number' && (codePoint < 32 || codePoint === 127) ? ' ' : character;
+  })
+    .join('')
+    .trim();
+  return sanitized ? sanitized.slice(0, maxLength) : null;
+}
+
+function sanitizeMarketingMetadata(metadata) {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
+
+  return Object.fromEntries(
+    Object.entries(metadata)
+      .slice(0, 20)
+      .map(([key, value]) => [
+        key.slice(0, 60),
+        typeof value === 'string' ? value.slice(0, 300) : value,
+      ])
+      .filter(
+        ([, value]) => ['string', 'number', 'boolean'].includes(typeof value) || value === null
+      )
+  );
 }
 
 function getMarketingLeadId(email) {
@@ -466,6 +731,56 @@ function isStoreAnalyzerLead(lead) {
   return sources.includes('store_analyzer');
 }
 
+function getMarketingSequenceForLead(lead) {
+  if (isStoreAnalyzerLead(lead)) {
+    return { id: ANALYZER_SEQUENCE_ID, steps: ANALYZER_SEQUENCE_STEPS };
+  }
+
+  return { id: MARKETING_SEQUENCE_ID, steps: MARKETING_SEQUENCE_STEPS };
+}
+
+function getMarketingSequenceById(sequenceId, lead) {
+  if (sequenceId === ANALYZER_SEQUENCE_ID) {
+    return { id: ANALYZER_SEQUENCE_ID, steps: ANALYZER_SEQUENCE_STEPS };
+  }
+  if (sequenceId === MARKETING_SEQUENCE_ID) {
+    return { id: MARKETING_SEQUENCE_ID, steps: MARKETING_SEQUENCE_STEPS };
+  }
+
+  return getMarketingSequenceForLead(lead);
+}
+
+function getStoreDomain(storeUrl, locale) {
+  try {
+    return new URL(storeUrl).hostname.replace(/^www\./, '');
+  } catch (_error) {
+    return locale === 'he' ? 'החנות שלכם' : 'your store';
+  }
+}
+
+function getFocusAreaLabel(focusArea, locale) {
+  const labels = {
+    en: {
+      performance: 'speed & performance',
+      seo: 'search visibility',
+      accessibility: 'accessibility',
+      bestPractices: 'technical quality',
+      cart: 'cart & checkout',
+      trust: 'buyer trust',
+    },
+    he: {
+      performance: 'מהירות וביצועים',
+      seo: 'נראות בחיפוש',
+      accessibility: 'נגישות',
+      bestPractices: 'איכות טכנית',
+      cart: 'עגלה וצ׳קאאוט',
+      trust: 'אמון קונים',
+    },
+  };
+
+  return labels[getMarketingLocale(locale)][focusArea] || null;
+}
+
 function getSequenceStepDelayDays(step, lead) {
   const score = lead?.overallScore;
   if (!isStoreAnalyzerLead(lead) || typeof score !== 'number') {
@@ -473,9 +788,18 @@ function getSequenceStepDelayDays(step, lead) {
   }
 
   if (score < 50) {
+    if (step.stepId === 'risk-reversal') return 12;
+    if (step.stepId === 'close-the-loop') return 20;
     if (step.stepId === 'project-inquiry') return Math.max(1, step.delayDays - 6);
     if (step.stepId === 'breakup') return Math.max(3, step.delayDays - 10);
     if (step.stepId === 'objections') return Math.max(2, step.delayDays - 4);
+  }
+
+  if (score >= 85) {
+    if (step.stepId === 'right-sized-plan') return 7;
+    if (step.stepId === 'delivery-proof') return 12;
+    if (step.stepId === 'risk-reversal') return 18;
+    if (step.stepId === 'close-the-loop') return 28;
   }
 
   return step.delayDays;
@@ -492,6 +816,39 @@ function resolveMarketingStepCopy(step, lead) {
     en: { ...step.en },
     he: { ...step.he },
   };
+
+  if (step.stepId === 'score-debrief') {
+    const domain = getStoreDomain(lead.storeUrl, 'en');
+    const focusEn = getFocusAreaLabel(lead.focusArea, 'en');
+    const focusHe = getFocusAreaLabel(lead.focusArea, 'he');
+    resolved.en.subject = `${domain}: ${focusEn || 'where to focus'} after a ${score}/100 audit`;
+    resolved.he.subject = `${getStoreDomain(lead.storeUrl, 'he')}: ${focusHe || 'במה להתמקד'} אחרי ציון ${score}/100`;
+  }
+
+  if (score < 50 && step.stepId === 'score-debrief') {
+    resolved.en.title = 'Stabilize the buying journey before you spend more to feed it.';
+    resolved.en.intro =
+      'The score points to material friction, but the answer is not a panic rebuild. Isolate the weakest commercial path, repair it in order, and verify the result before widening scope.';
+    resolved.he.title = 'מייצבים את מסע הקנייה לפני שמשקיעים יותר כדי להזרים אליו תנועה.';
+    resolved.he.intro =
+      'הציון מצביע על חיכוך משמעותי, אבל התשובה אינה ריבילד מתוך לחץ. מבודדים את המסלול העסקי החלש, מתקנים לפי סדר ומאמתים את התוצאה לפני שמרחיבים סקופ.';
+  }
+
+  if (score >= 85 && step.stepId === 'score-debrief') {
+    resolved.en.title = 'The fundamentals are healthy. The next gains should be selective.';
+    resolved.en.intro =
+      'A strong audit result changes the brief: preserve what already works and focus on the few improvements that can raise merchandising velocity, confidence, or average order value.';
+    resolved.he.title = 'היסודות בריאים. השיפורים הבאים צריכים להיות סלקטיביים.';
+    resolved.he.intro =
+      'תוצאת אבחון חזקה משנה את הבריף: שומרים על מה שכבר עובד ומתמקדים בשיפורים הבודדים שיכולים להעלות מהירות מרצ׳נדייזינג, ביטחון או ערך הזמנה ממוצע.';
+  }
+
+  if (score >= 85 && step.stepId === 'right-sized-plan') {
+    resolved.en.subject = 'Optimize the strong store. Do not rebuild it by reflex.';
+    resolved.en.title = 'Protect the system that works and target the next revenue constraint.';
+    resolved.he.subject = 'מאופטמים את החנות החזקה. לא בונים מחדש מתוך הרגל.';
+    resolved.he.title = 'מגנים על המערכת שעובדת ומכוונים לחסם ההכנסה הבא.';
+  }
 
   if (score < 50 && step.stepId === 'leaking-revenue') {
     resolved.en.subject = 'Critical store issues are costing you sales';
@@ -535,13 +892,22 @@ function resolveMarketingStepCopy(step, lead) {
   return resolved;
 }
 
-function getMarketingContactUrl(locale, leadId) {
+function getMarketingContactUrl(locale, stepId, lead) {
   const lang = getMarketingLocale(locale);
   const url = new URL(`/${lang}/contact`, MARKETING_SITE_URL);
   url.searchParams.set('utm_source', 'email');
   url.searchParams.set('utm_medium', 'nurture');
-  url.searchParams.set('utm_campaign', MARKETING_SEQUENCE_ID);
-  url.searchParams.set('lead', leadId);
+  url.searchParams.set(
+    'utm_campaign',
+    isStoreAnalyzerLead(lead) ? ANALYZER_SEQUENCE_ID : MARKETING_SEQUENCE_ID
+  );
+  if (stepId) url.searchParams.set('utm_content', stepId);
+  if (lead?.storeUrl) url.searchParams.set('storeUrl', lead.storeUrl);
+  if (typeof lead?.overallScore === 'number') {
+    url.searchParams.set('score', String(lead.overallScore));
+  }
+  if (lead?.focusArea) url.searchParams.set('focus', lead.focusArea);
+  url.searchParams.set('projectType', 'consultation');
   return url.toString();
 }
 
@@ -579,15 +945,16 @@ function renderMarketingEmail({ lead, job, step }) {
   const dir = isRtl ? 'rtl' : 'ltr';
   const textAlign = isRtl ? 'right' : 'left';
   const scoreBand = lead.scoreBand && lead.scoreBand !== 'unknown' ? lead.scoreBand : null;
-  const platform = lead.platform || (locale === 'he' ? 'החנות' : 'your store');
-  const contactUrl = getMarketingContactUrl(locale, lead.leadId);
+  const storeDomain = getStoreDomain(lead.storeUrl, locale);
+  const focusArea = getFocusAreaLabel(lead.focusArea, locale);
+  const contactUrl = getMarketingContactUrl(locale, step.stepId, lead);
   const ctaUrl = getClickUrl(lead, job, contactUrl);
   const unsubscribeUrl = getUnsubscribeUrl(lead, locale);
   const scoreLine =
     scoreBand && typeof lead.overallScore === 'number'
       ? locale === 'he'
-        ? `בהתבסס על ציון ${lead.overallScore}/100, החנות מסומנת כ-${scoreBand}.`
-        : `Based on a ${lead.overallScore}/100 score, ${platform} is currently in the ${scoreBand} band.`
+        ? `${storeDomain} קיבלה ציון ${lead.overallScore}/100. זהו קו בסיס—לא פסק דין.`
+        : `${storeDomain} scored ${lead.overallScore}/100. Use that as a baseline—not a verdict.`
       : locale === 'he'
         ? 'המסר הבא מבוסס על דפוסי איקומרס שאנחנו רואים שוב ושוב.'
         : 'This note is based on ecommerce patterns we see repeatedly.';
@@ -601,51 +968,110 @@ function renderMarketingEmail({ lead, job, step }) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light">
     <title>${escapeHtml(copy.subject)}</title>
+    <style>
+      html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+      table, td { border-collapse: collapse !important; mso-table-lspace: 0 !important; mso-table-rspace: 0 !important; }
+      a { text-decoration: none; }
+      img { border: 0; display: block; line-height: 100%; }
+      @media only screen and (max-width: 680px) {
+        .email-shell { padding: 12px 8px !important; }
+        .email-card { border-radius: 18px !important; }
+        .email-pad { padding-inline-start: 24px !important; padding-inline-end: 24px !important; }
+        .email-header { padding-top: 28px !important; }
+        .email-title { font-size: 28px !important; line-height: 1.18 !important; }
+        .email-cta, .email-cta td, .email-cta a { width: 100% !important; box-sizing: border-box !important; text-align: center !important; }
+      }
+    </style>
   </head>
-  <body style="margin:0;padding:0;background:#eef3f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#172033;">
-    <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(copy.preheader)}</div>
+  <body style="margin:0;padding:0;width:100%;background:#e8eef5;font-family:Aptos,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#172033;-webkit-font-smoothing:antialiased;">
+    <div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;color:transparent;mso-hide:all;">${escapeHtml(copy.preheader)}&#847; &zwnj;&nbsp;&#847; &zwnj;&nbsp;&#847; &zwnj;&nbsp;&#847;</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef3f8;">
       <tr>
-        <td align="center" style="padding:32px 16px;">
-          <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;background:#ffffff;border:1px solid #dbe4ef;border-radius:22px;overflow:hidden;direction:${dir};box-shadow:0 18px 45px rgba(15,23,42,.12);">
-            <tr><td style="height:5px;line-height:5px;background:#38bdf8;">&nbsp;</td></tr>
+        <td class="email-shell" align="center" style="padding:36px 16px;">
+          <table class="email-card" role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;background:#ffffff;border:1px solid #cbd7e6;border-radius:24px;overflow:hidden;direction:${dir};box-shadow:0 24px 70px rgba(15,35,60,.14);">
+            <tr><td style="height:4px;line-height:4px;background:#38bdf8;font-size:0;">&nbsp;</td></tr>
             <tr>
-              <td style="padding:34px 34px 22px;text-align:${textAlign};background:#07111f;">
-                <p style="margin:0 0 18px;color:#ffffff;font-size:22px;line-height:1;font-weight:800;letter-spacing:4px;">CARTSHIFT <span style="color:#38bdf8;font-size:11px;letter-spacing:5px;">STUDIO</span></p>
-                <div style="display:inline-block;padding:7px 13px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(copy.eyebrow)}</div>
-                <h1 style="margin:18px 0 12px;color:#ffffff;font-size:32px;line-height:1.15;font-weight:900;">${escapeHtml(copy.title)}</h1>
-                <p style="margin:0;color:#b8c5d6;font-size:15px;line-height:1.75;">${escapeHtml(copy.intro)}</p>
+              <td class="email-pad email-header" style="padding:36px 38px 24px;text-align:${textAlign};background:#07111f;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="text-align:${textAlign};">
+                      <p style="margin:0;color:#ffffff;font-size:20px;line-height:1;font-weight:850;letter-spacing:3.2px;">CARTSHIFT <span style="color:#7dd3fc;font-size:9px;letter-spacing:3.8px;">STUDIO</span></p>
+                    </td>
+                    <td dir="ltr" style="text-align:${isRtl ? 'left' : 'right'};color:#8798ad;font-size:11px;line-height:1.3;">${escapeHtml(storeDomain)}</td>
+                  </tr>
+                </table>
+                <div style="display:inline-block;margin-top:26px;padding:7px 12px;border:1px solid #275273;border-radius:999px;background:#10243a;color:#7dd3fc;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">${escapeHtml(copy.eyebrow)}</div>
+                <h1 class="email-title" style="margin:18px 0 14px;color:#ffffff;font-size:34px;line-height:1.14;font-weight:850;letter-spacing:-.025em;">${escapeHtml(copy.title)}</h1>
+                <p style="margin:0;color:#b8c5d6;font-size:16px;line-height:1.72;">${escapeHtml(copy.intro)}</p>
               </td>
             </tr>
             <tr>
-              <td style="padding:0 34px 30px;text-align:${textAlign};background:#07111f;">
-                <div style="border:1px solid #263a56;background:#132238;border-radius:16px;padding:18px;color:#dbeafe;font-size:14px;line-height:1.7;">${escapeHtml(scoreLine)}</div>
+              <td class="email-pad" style="padding:2px 38px 32px;text-align:${textAlign};background:#07111f;">
+                <div style="padding:5px;border:1px solid #263a56;background:#0a1626;border-radius:20px;">
+                  <div style="border:1px solid #29415f;background:#132238;border-radius:15px;padding:18px 19px;color:#dbeafe;font-size:14px;line-height:1.65;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);">${escapeHtml(scoreLine)}</div>
+                </div>
+                ${
+                  focusArea
+                    ? `<div style="margin-top:12px;border-inline-start:3px solid #38bdf8;background:#0d1a2c;border-radius:4px 14px 14px 4px;padding:15px 17px;color:#e0f2fe;font-size:14px;line-height:1.65;">
+                  <strong style="display:block;margin-bottom:5px;color:#7dd3fc;font-size:10px;letter-spacing:.12em;text-transform:uppercase;">${
+                    locale === 'he' ? 'המוקד הראשון' : 'First focus'
+                  }</strong>
+                  ${escapeHtml(focusArea)}${
+                    typeof lead.focusScore === 'number'
+                      ? ` · ${escapeHtml(String(lead.focusScore))}/100`
+                      : ''
+                  }${
+                    lead.primaryRecommendation && locale === 'en'
+                      ? `<br><span style="color:#b8c5d6;">${escapeHtml(lead.primaryRecommendation)}</span>`
+                      : ''
+                  }
+                </div>`
+                    : ''
+                }
               </td>
             </tr>
             <tr>
-              <td style="padding:34px;text-align:${textAlign};background:#ffffff;color:#172033;">
+              <td class="email-pad" style="padding:36px 38px 38px;text-align:${textAlign};background:#ffffff;color:#172033;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   ${copy.bullets
                     .map(
                       item =>
-                        `<tr><td style="padding:0 0 14px;color:#334155;font-size:15px;line-height:1.7;"><span style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#2563eb;margin-${isRtl ? 'left' : 'right'}:10px;"></span>${escapeHtml(item)}</td></tr>`
+                        `<tr>
+                          <td valign="top" style="width:18px;padding:3px 0 16px;"><span style="display:block;width:7px;height:7px;border-radius:2px;background:#2563eb;"></span></td>
+                          <td valign="top" style="padding:0 0 16px;color:#334155;font-size:15px;line-height:1.68;">${escapeHtml(item)}</td>
+                        </tr>`
                     )
                     .join('')}
                 </table>
-                <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+                <table class="email-cta" role="presentation" cellpadding="0" cellspacing="0" style="margin-top:20px;">
                   <tr>
-                    <td style="border-radius:12px;background:#2563eb;border:1px solid #1d4ed8;box-shadow:0 14px 26px rgba(37,99,235,.24);">
-                      <a href="${ctaUrl}" style="display:inline-block;padding:15px 28px;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;">${escapeHtml(copy.cta)}</a>
+                    <td style="border-radius:999px;background:#2563eb;box-shadow:0 12px 28px rgba(37,99,235,.22);">
+                      <a href="${escapeHtml(ctaUrl)}" style="display:inline-block;padding:8px 9px 8px 22px;color:#ffffff;font-size:15px;line-height:32px;font-weight:800;text-decoration:none;white-space:nowrap;">${escapeHtml(copy.cta)} <span style="display:inline-block;width:32px;height:32px;margin-inline-start:12px;border-radius:999px;background:#ffffff;color:#1d4ed8;text-align:center;line-height:32px;font-size:17px;">${isRtl ? '←' : '→'}</span></a>
                     </td>
                   </tr>
                 </table>
+                ${
+                  copy.ctaNote
+                    ? `<p style="margin:16px 0 0;color:#64748b;font-size:13px;line-height:1.65;">${escapeHtml(copy.ctaNote)}</p>`
+                    : ''
+                }
+                <p style="margin:24px 0 0;padding-top:20px;border-top:1px solid #e2e8f0;color:#64748b;font-size:12px;line-height:1.65;">${
+                  locale === 'he'
+                    ? `מעדיפים תשובה קצרה? פשוט השיבו לאימייל הזה ונחזור אליכם מ-${escapeHtml(DEFAULT_CONTACT_EMAIL)}.`
+                    : `Prefer a short answer? Reply to this email and it will reach us at ${escapeHtml(DEFAULT_CONTACT_EMAIL)}.`
+                }</p>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px 34px;text-align:center;background:#07111f;color:#b8c5d6;font-size:12px;line-height:1.7;">
+              <td class="email-pad" style="padding:27px 38px;text-align:center;background:#07111f;color:#9fb0c4;font-size:11px;line-height:1.75;">
                 ${escapeHtml(footerText)}<br>
-                <a href="${unsubscribeUrl}" style="color:#38bdf8;text-decoration:none;">${locale === 'he' ? 'הסרה מרשימת התפוצה' : 'Unsubscribe'}</a>
+                ${escapeHtml(MARKETING_POSTAL_ADDRESS)}<br>
+                <a href="${escapeHtml(unsubscribeUrl)}" style="color:#7dd3fc;text-decoration:underline;text-underline-offset:2px;">${locale === 'he' ? 'הסרה מרשימת התפוצה' : 'Unsubscribe'}</a>
               </td>
             </tr>
           </table>
@@ -661,14 +1087,15 @@ function renderMarketingEmailText({ lead, step }) {
   const locale = getMarketingLocale(lead.locale);
   const copy = resolvedStep[locale] || resolvedStep.en;
   const scoreBand = lead.scoreBand && lead.scoreBand !== 'unknown' ? lead.scoreBand : null;
-  const platform = lead.platform || (locale === 'he' ? 'החנות' : 'your store');
-  const contactUrl = getMarketingContactUrl(locale, lead.leadId);
+  const storeDomain = getStoreDomain(lead.storeUrl, locale);
+  const focusArea = getFocusAreaLabel(lead.focusArea, locale);
+  const contactUrl = getMarketingContactUrl(locale, step.stepId, lead);
   const unsubscribeUrl = getUnsubscribeUrl(lead, locale);
   const scoreLine =
     scoreBand && typeof lead.overallScore === 'number'
       ? locale === 'he'
-        ? `בהתבסס על ציון ${lead.overallScore}/100, החנות מסומנת כ-${scoreBand}.`
-        : `Based on a ${lead.overallScore}/100 score, ${platform} is currently in the ${scoreBand} band.`
+        ? `${storeDomain} קיבלה ציון ${lead.overallScore}/100. זהו קו בסיס—לא פסק דין.`
+        : `${storeDomain} scored ${lead.overallScore}/100. Use that as a baseline—not a verdict.`
       : locale === 'he'
         ? 'המסר הבא מבוסס על דפוסי איקומרס שאנחנו רואים שוב ושוב.'
         : 'This note is based on ecommerce patterns we see repeatedly.';
@@ -684,11 +1111,22 @@ function renderMarketingEmailText({ lead, step }) {
     '',
     scoreLine,
     '',
+    ...(focusArea
+      ? [
+          `${locale === 'he' ? 'המוקד הראשון' : 'First focus'}: ${focusArea}${
+            typeof lead.focusScore === 'number' ? ` (${lead.focusScore}/100)` : ''
+          }`,
+          ...(lead.primaryRecommendation && locale === 'en' ? [lead.primaryRecommendation] : []),
+          '',
+        ]
+      : []),
     ...copy.bullets.map(item => `- ${item}`),
     '',
     `${copy.cta}: ${contactUrl}`,
+    ...(copy.ctaNote ? ['', copy.ctaNote] : []),
     '',
-    `${footerText} ${locale === 'he' ? 'הסרה:' : 'Unsubscribe:'} ${unsubscribeUrl}`,
+    `${footerText} ${MARKETING_POSTAL_ADDRESS}`,
+    `${locale === 'he' ? 'הסרה:' : 'Unsubscribe:'} ${unsubscribeUrl}`,
   ].join('\n');
 }
 
@@ -711,27 +1149,32 @@ async function isMarketingLeadUnsubscribed(leadId) {
 
 async function upsertMarketingLead(data) {
   const email = normalizeMarketingEmail(data.email);
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new Error('Valid email is required');
   }
 
   const leadId = getMarketingLeadId(email);
   const ref = admin.firestore().collection('marketing_leads').doc(leadId);
-  const source = data.source || 'website';
+  const unsubscribeRef = admin.firestore().collection('marketing_unsubscribes').doc(leadId);
+  const source = MARKETING_SOURCES.has(data.source) ? data.source : 'website';
   const locale = getMarketingLocale(data.locale);
   const scoreDelta = getLeadScoreDelta({ ...data, source });
   const now = admin.firestore.FieldValue.serverTimestamp();
+  const overallScore =
+    typeof data.overallScore === 'number' && data.overallScore >= 0 && data.overallScore <= 100
+      ? data.overallScore
+      : null;
+  const focusScore =
+    typeof data.focusScore === 'number' && data.focusScore >= 0 && data.focusScore <= 100
+      ? data.focusScore
+      : null;
 
   await admin.firestore().runTransaction(async tx => {
     const snap = await tx.get(ref);
     const existing = snap.exists ? snap.data() : {};
     const unsubscribeToken = existing.unsubscribeToken || crypto.randomBytes(24).toString('hex');
-    const marketingConsent =
-      typeof data.consent === 'boolean'
-        ? data.consent
-        : source === 'contact_form'
-          ? false
-          : data.subscribeNewsletter !== false;
+    const explicitOptIn = data.consent === true || data.subscribeNewsletter === true;
+    const marketingConsent = explicitOptIn || existing.marketingConsent === true;
     const isConverted = source === 'contact_form';
 
     tx.set(
@@ -741,18 +1184,23 @@ async function upsertMarketingLead(data) {
         email,
         normalizedEmail: email,
         locale,
-        name: data.name || existing.name || null,
-        company: data.company || existing.company || null,
-        interest: data.interest || existing.interest || null,
-        projectType: data.projectType || existing.projectType || null,
-        storeUrl: data.storeUrl || existing.storeUrl || null,
-        platform: data.platform || existing.platform || null,
-        overallScore:
-          typeof data.overallScore === 'number' ? data.overallScore : existing.overallScore || null,
+        name: sanitizeMarketingText(data.name, 120) || existing.name || null,
+        company: sanitizeMarketingText(data.company, 200) || existing.company || null,
+        interest: sanitizeMarketingText(data.interest, 120) || existing.interest || null,
+        projectType: sanitizeMarketingText(data.projectType, 120) || existing.projectType || null,
+        storeUrl: sanitizeMarketingText(data.storeUrl, 2048) || existing.storeUrl || null,
+        platform: sanitizeMarketingText(data.platform, 80) || existing.platform || null,
+        focusArea: MARKETING_FOCUS_AREAS.has(data.focusArea)
+          ? data.focusArea
+          : existing.focusArea || null,
+        focusScore: focusScore ?? existing.focusScore ?? null,
+        primaryRecommendation:
+          sanitizeMarketingText(data.primaryRecommendation, 240) ||
+          existing.primaryRecommendation ||
+          null,
+        overallScore: overallScore ?? existing.overallScore ?? null,
         scoreBand:
-          typeof data.overallScore === 'number'
-            ? getScoreBand(data.overallScore)
-            : existing.scoreBand || 'unknown',
+          overallScore !== null ? getScoreBand(overallScore) : existing.scoreBand || 'unknown',
         primarySource: existing.primarySource || source,
         latestSource: source,
         sources: admin.firestore.FieldValue.arrayUnion(source),
@@ -769,6 +1217,8 @@ async function upsertMarketingLead(data) {
       },
       { merge: true }
     );
+
+    if (explicitOptIn) tx.delete(unsubscribeRef);
   });
 
   await recordMarketingEvent(
@@ -777,7 +1227,7 @@ async function upsertMarketingLead(data) {
     {
       source,
       locale,
-      metadata: data.metadata || null,
+      metadata: sanitizeMarketingMetadata(data.metadata),
     }
   );
 
@@ -789,14 +1239,35 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
   if (!lead?.marketingConsent || lead.conversionStatus === 'project_inquiry') return false;
   if (await isMarketingLeadUnsubscribed(leadId)) return false;
 
+  const sequence = getMarketingSequenceForLead(lead);
+  if (lead.sequenceId === sequence.id) return false;
+
   const batch = admin.firestore().batch();
   const now = Date.now();
+  const previousJobs = await admin
+    .firestore()
+    .collection('marketing_email_jobs')
+    .where('leadId', '==', leadId)
+    .limit(100)
+    .get();
+
+  previousJobs.docs.forEach(doc => {
+    const job = doc.data();
+    if (job.status === 'pending' && job.sequenceId !== sequence.id) {
+      batch.update(doc.ref, {
+        status: 'canceled',
+        cancelReason: 'sequence_upgraded',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+  });
+
   const steps = options.skipWelcome
-    ? MARKETING_SEQUENCE_STEPS.filter(step => step.stepId !== 'welcome')
-    : MARKETING_SEQUENCE_STEPS;
+    ? sequence.steps.filter(step => step.stepId !== 'welcome')
+    : sequence.steps;
 
   steps.forEach(step => {
-    const jobId = `${leadId}_${MARKETING_SEQUENCE_ID}_${step.stepId}`;
+    const jobId = `${leadId}_${sequence.id}_${step.stepId}`;
     const jobRef = admin.firestore().collection('marketing_email_jobs').doc(jobId);
     const delayDays = getSequenceStepDelayDays(step, lead);
     batch.set(
@@ -806,7 +1277,7 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
         leadId,
         email: lead.email,
         locale: getMarketingLocale(lead.locale),
-        sequenceId: MARKETING_SEQUENCE_ID,
+        sequenceId: sequence.id,
         stepId: step.stepId,
         status: 'pending',
         dueAt: admin.firestore.Timestamp.fromDate(new Date(now + delayDays * 24 * 60 * 60 * 1000)),
@@ -821,14 +1292,14 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
   await batch.commit();
   await admin.firestore().collection('marketing_leads').doc(leadId).set(
     {
-      sequenceId: MARKETING_SEQUENCE_ID,
+      sequenceId: sequence.id,
       sequenceEnrolledAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     },
     { merge: true }
   );
   await recordMarketingEvent(leadId, 'marketing_sequence_enrolled', {
-    sequenceId: MARKETING_SEQUENCE_ID,
+    sequenceId: sequence.id,
     skipWelcome: !!options.skipWelcome,
   });
   return true;
@@ -836,6 +1307,31 @@ async function enrollMarketingSequence(leadId, lead, options = {}) {
 
 async function captureAndEnrollMarketingLead(data, options = {}) {
   const { leadId, lead } = await upsertMarketingLead(data);
+  if (lead?.conversionStatus === 'project_inquiry') {
+    const pendingJobs = await admin
+      .firestore()
+      .collection('marketing_email_jobs')
+      .where('leadId', '==', leadId)
+      .limit(100)
+      .get();
+    const batch = admin.firestore().batch();
+    let canceledJobs = 0;
+
+    pendingJobs.docs.forEach(doc => {
+      if (doc.data().status === 'pending') {
+        batch.update(doc.ref, {
+          status: 'canceled',
+          cancelReason: 'converted',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        canceledJobs += 1;
+      }
+    });
+
+    if (canceledJobs > 0) await batch.commit();
+    return { leadId, lead };
+  }
+
   if (lead?.marketingConsent || data.subscribeNewsletter === true) {
     await addToAudience(resendApiKey.value(), {
       email: lead.email,
@@ -877,7 +1373,8 @@ async function sendMarketingJob(jobDoc) {
     return;
   }
 
-  const step = MARKETING_SEQUENCE_STEPS.find(item => item.stepId === job.stepId);
+  const sequence = getMarketingSequenceById(job.sequenceId, lead);
+  const step = sequence.steps.find(item => item.stepId === job.stepId);
   if (!step) {
     await jobRef.update({ status: 'canceled', cancelReason: 'unknown_step' });
     return;
@@ -889,31 +1386,49 @@ async function sendMarketingJob(jobDoc) {
   const resend = new Resend(resendApiKey.value());
   const html = renderMarketingEmail({ lead, job, step: resolvedStep });
   const unsubscribeUrl = getUnsubscribeUrl(lead, getMarketingLocale(lead.locale));
+  const attemptNumber = (job.attempts || 0) + 1;
 
-  await jobRef.update({
-    status: 'sending',
-    attempts: admin.firestore.FieldValue.increment(1),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  const claimed = await admin.firestore().runTransaction(async tx => {
+    const freshJob = await tx.get(jobRef);
+    if (!freshJob.exists || freshJob.data().status !== 'pending') return false;
+    tx.update(jobRef, {
+      status: 'sending',
+      attempts: attemptNumber,
+      sendingStartedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    return true;
   });
+  if (!claimed) return;
 
   try {
-    const result = await resend.emails.send({
-      from: 'CartShift Studio <nurture@cart-shift.com>',
-      to: lead.email,
-      subject: copy.subject,
-      html,
-      text: renderMarketingEmailText({ lead, step: resolvedStep }),
-      reply_to: DEFAULT_CONTACT_EMAIL,
-      headers: {
-        'List-Unsubscribe': `<${unsubscribeUrl}>`,
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    const result = await resend.emails.send(
+      {
+        from: 'CartShift Studio <nurture@cart-shift.com>',
+        to: lead.email,
+        subject: copy.subject,
+        html,
+        text: renderMarketingEmailText({ lead, step: resolvedStep }),
+        reply_to: DEFAULT_CONTACT_EMAIL,
+        headers: {
+          'List-Unsubscribe': `<${unsubscribeUrl}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          'List-ID': 'CartShift Store Analyzer <analyzer.cart-shift.com>',
+          Precedence: 'bulk',
+          'X-Entity-Ref-ID': job.id,
+        },
+        tags: [
+          { name: 'type', value: 'marketing_nurture' },
+          { name: 'sequence', value: sequence.id },
+          { name: 'step', value: step.stepId },
+        ],
       },
-      tags: [
-        { name: 'type', value: 'marketing_nurture' },
-        { name: 'sequence', value: MARKETING_SEQUENCE_ID },
-        { name: 'step', value: step.stepId },
-      ],
-    });
+      { idempotencyKey: job.id }
+    );
+
+    if (result?.error) {
+      throw new Error(result.error.message || 'Resend rejected the marketing email');
+    }
 
     await jobRef.update({
       status: 'sent',
@@ -925,6 +1440,7 @@ async function sendMarketingJob(jobDoc) {
       {
         lastEmailSentAt: admin.firestore.FieldValue.serverTimestamp(),
         lastEmailStepId: step.stepId,
+        lastEmailSequenceId: sequence.id,
         funnelStage: step.kind === 'conversion' ? 'conversion_push' : 'nurture',
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
@@ -933,15 +1449,34 @@ async function sendMarketingJob(jobDoc) {
     await recordMarketingEvent(job.leadId, 'marketing_email_sent', {
       jobId: job.id,
       stepId: step.stepId,
-      sequenceId: MARKETING_SEQUENCE_ID,
+      sequenceId: sequence.id,
     });
   } catch (error) {
     console.error('[Marketing] Failed to send job', job.id, error);
+    const shouldRetry = attemptNumber < MARKETING_MAX_SEND_ATTEMPTS;
+    const retryDelayMinutes = 15 * Math.pow(2, attemptNumber - 1);
     await jobRef.update({
-      status: 'failed',
+      status: shouldRetry ? 'pending' : 'failed',
       error: error.message || 'Unknown send failure',
+      ...(shouldRetry
+        ? {
+            dueAt: admin.firestore.Timestamp.fromDate(
+              new Date(Date.now() + retryDelayMinutes * 60 * 1000)
+            ),
+          }
+        : { failedAt: admin.firestore.FieldValue.serverTimestamp() }),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+    await recordMarketingEvent(
+      job.leadId,
+      shouldRetry ? 'marketing_email_retrying' : 'marketing_email_failed',
+      {
+        jobId: job.id,
+        stepId: step.stepId,
+        sequenceId: sequence.id,
+        attempt: attemptNumber,
+      }
+    );
   }
 }
 
@@ -957,6 +1492,16 @@ exports.marketingCapture = onRequest(
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
+      const rateLimitKey = `marketing_capture_${getRateLimitKey(req)}`;
+      const allowed = await checkFirestoreRateLimit(rateLimitKey, 10, 60 * 60 * 1000);
+      if (!allowed) {
+        res.set('Retry-After', '3600');
+        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+      }
+      if (req.body?.source === 'contact_form') {
+        return res.status(400).json({ error: 'Contact inquiries must use the contact form.' });
+      }
+
       const { leadId } = await captureAndEnrollMarketingLead(req.body, {
         skipWelcome: !!req.body.skipWelcome,
       });
@@ -972,6 +1517,7 @@ exports.marketingUnsubscribe = onRequest(
   {
     cors: true,
     maxInstances: 10,
+    secrets: [resendApiKey],
   },
   async (req, res) => {
     if (!applyCors(req, res)) return;
@@ -1022,6 +1568,11 @@ exports.marketingUnsubscribe = onRequest(
       });
 
       await batch.commit();
+      try {
+        await removeFromAudience(resendApiKey.value(), leadSnap.data().email);
+      } catch (audienceError) {
+        console.error('[Marketing] Resend audience removal failed:', audienceError);
+      }
       await recordMarketingEvent(leadId, 'marketing_unsubscribed');
       return res.status(200).json({ success: true });
     } catch (error) {
@@ -1142,6 +1693,32 @@ exports.processMarketingEmailJobs = onSchedule(
   },
   async () => {
     const now = admin.firestore.Timestamp.now();
+    const staleSendingCutoff = now.toMillis() - 30 * 60 * 1000;
+    const sendingSnapshot = await admin
+      .firestore()
+      .collection('marketing_email_jobs')
+      .where('status', '==', 'sending')
+      .limit(MARKETING_JOB_BATCH_SIZE)
+      .get();
+
+    const recoveryBatch = admin.firestore().batch();
+    let recoveredJobs = 0;
+    sendingSnapshot.docs.forEach(doc => {
+      const staleJob = doc.data();
+      const sendingStartedAt = staleJob.sendingStartedAt?.toMillis?.();
+      if (typeof sendingStartedAt === 'number' && sendingStartedAt <= staleSendingCutoff) {
+        const exhausted = (staleJob.attempts || 0) >= MARKETING_MAX_SEND_ATTEMPTS;
+        recoveryBatch.update(doc.ref, {
+          status: exhausted ? 'failed' : 'pending',
+          ...(exhausted ? { failedAt: now } : { dueAt: now }),
+          error: 'Recovered after an interrupted send attempt',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        recoveredJobs += 1;
+      }
+    });
+    if (recoveredJobs > 0) await recoveryBatch.commit();
+
     const snapshot = await admin
       .firestore()
       .collection('marketing_email_jobs')
@@ -2827,8 +3404,7 @@ const ANALYSIS_TEXTS = {
     coreWebVitalsTitle: 'ניתוח Core Web Vitals',
     coreWebVitalsSubtitle: 'המדדים המרכזיים של גוגל לחוויית משתמש',
     deeperScanTitle: 'ראיות מסריקה עמוקה',
-    deeperScanSubtitle:
-      'דגימות קטגוריה, מוצר ואינטראקציית עגלה שמשמשות לאימות המלצות צ׳קאאוט',
+    deeperScanSubtitle: 'דגימות קטגוריה, מוצר ואינטראקציית עגלה שמשמשות לאימות המלצות צ׳קאאוט',
     deeperScanCategoryPages: 'עמודי קטגוריה',
     deeperScanProductPages: 'עמודי מוצר',
     deeperScanCartInteraction: 'אינטראקציית עגלה',

@@ -27,8 +27,10 @@ function loadDotEnv(filePath) {
 
 function parseArgs(argv) {
   const args = {
+    analytics: false,
     port: Number(process.env.LINKEDIN_OAUTH_PORT || 3457),
     scope: process.env.LINKEDIN_SCOPE || 'w_organization_social',
+    scopeProvided: false,
     writeEnv: false,
   };
 
@@ -37,7 +39,13 @@ function parseArgs(argv) {
 
     if (arg === '--scope') {
       args.scope = argv[index + 1] || args.scope;
+      args.scopeProvided = true;
       index += 1;
+      continue;
+    }
+
+    if (arg === '--analytics') {
+      args.analytics = true;
       continue;
     }
 
@@ -50,6 +58,10 @@ function parseArgs(argv) {
     if (arg === '--write-env') {
       args.writeEnv = true;
     }
+  }
+
+  if (args.analytics && !args.scopeProvided) {
+    args.scope = 'r_member_postAnalytics';
   }
 
   return args;
@@ -68,12 +80,21 @@ function upsertEnvValue(filePath, key, value) {
 loadDotEnv(path.join(process.cwd(), '.env.local'));
 
 const args = parseArgs(process.argv.slice(2));
-const clientId = process.env.LINKEDIN_CLIENT_ID;
-const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
+const clientId = args.analytics
+  ? process.env.LINKEDIN_ANALYTICS_CLIENT_ID
+  : process.env.LINKEDIN_CLIENT_ID;
+const clientSecret = args.analytics
+  ? process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET
+  : process.env.LINKEDIN_CLIENT_SECRET;
+const tokenEnvKey = args.analytics ? 'LINKEDIN_ANALYTICS_ACCESS_TOKEN' : 'LINKEDIN_ACCESS_TOKEN';
 const redirectUri = `http://localhost:${args.port}/callback`;
 
 if (!clientId || !clientSecret) {
-  console.error('Missing LINKEDIN_CLIENT_ID or LINKEDIN_CLIENT_SECRET.');
+  console.error(
+    args.analytics
+      ? 'Missing LINKEDIN_ANALYTICS_CLIENT_ID or LINKEDIN_ANALYTICS_CLIENT_SECRET.'
+      : 'Missing LINKEDIN_CLIENT_ID or LINKEDIN_CLIENT_SECRET.',
+  );
   process.exit(1);
 }
 
@@ -150,7 +171,7 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (args.writeEnv) {
-    upsertEnvValue(path.join(process.cwd(), '.env.local'), 'LINKEDIN_ACCESS_TOKEN', tokenJson.access_token);
+    upsertEnvValue(path.join(process.cwd(), '.env.local'), tokenEnvKey, tokenJson.access_token);
   }
 
   response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -160,10 +181,10 @@ const server = http.createServer(async (request, response) => {
     JSON.stringify(
       {
         ok: true,
+        credentialProfile: args.analytics ? 'analytics-only' : 'publishing',
         scope: args.scope,
         expiresInSeconds: tokenJson.expires_in,
         wroteEnv: args.writeEnv,
-        tokenPreview: `${tokenJson.access_token.slice(0, 8)}...`,
       },
       null,
       2,

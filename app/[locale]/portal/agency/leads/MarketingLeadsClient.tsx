@@ -202,7 +202,7 @@ export default function MarketingLeadsClient() {
         </Button>
       </div>
 
-      <div className="grid gap-3.5 sm:grid-cols-2 min-[920px]:grid-cols-4">
+      <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {[
           {
             label: t('metrics.totalLeads'),
@@ -223,6 +223,16 @@ export default function MarketingLeadsClient() {
             label: t('metrics.needsFollowUp'),
             value: dashboard?.metrics.needsFollowUp || 0,
             icon: Clock,
+          },
+          {
+            label: t('metrics.emailClickRate'),
+            value: `${dashboard?.metrics.emailClickRate || 0}%`,
+            icon: MousePointerClick,
+          },
+          {
+            label: t('metrics.conversionRate'),
+            value: `${dashboard?.metrics.conversionRate || 0}%`,
+            icon: Check,
           },
         ].map(metric => (
           <Card key={metric.label} className="min-h-[96px]" padding="sm">

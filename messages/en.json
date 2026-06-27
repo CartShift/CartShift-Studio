@@ -1861,7 +1861,9 @@
         "leads7d": "New leads (7d)",
         "leads30d": "New leads (30d)",
         "needsFollowUp": "Needs follow-up",
-        "converted": "Converted"
+        "converted": "Converted",
+        "emailClickRate": "Email click rate",
+        "conversionRate": "Lead conversion"
       },
       "funnel": {
         "title": "Funnel snapshot",
@@ -3273,6 +3275,28 @@
       "complete": "Payment complete",
       "amount": "Amount due: {amount}",
       "unavailable": "Online payment is temporarily unavailable. Please contact the agency for assistance."
+    }
+  },
+  "marketing": {
+    "contactPrefill": {
+      "message": "My store{store} scored {score}/100 in the store analyzer.{focus} I'd like to understand the right-sized scope for improving it.",
+      "focusClause": " The first focus identified was {focus}.",
+      "focusAreas": {
+        "performance": "speed and performance",
+        "seo": "search visibility",
+        "accessibility": "accessibility",
+        "bestPractices": "technical quality",
+        "cart": "cart and checkout",
+        "trust": "buyer trust"
+      }
+    },
+    "unsubscribe": {
+      "successTitle": "You’re unsubscribed",
+      "successMessage": "The store-audit follow-ups have stopped. Your original report is still yours to keep.",
+      "errorTitle": "We couldn’t unsubscribe you",
+      "errorMessage": "The link may have expired. Reply to the email and we’ll remove you manually.",
+      "invalidTitle": "This unsubscribe link is incomplete",
+      "invalidMessage": "Open the unsubscribe link from the original CartShift email or contact us directly."
     }
   },
   "hero": {

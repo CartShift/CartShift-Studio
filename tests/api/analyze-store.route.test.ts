@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/analyze-store/route';
 import { AnalyzerService } from '@/lib/services/analyzer';
-import { deliverStoreAnalysisReport, resolveInitialEmailReportStatus } from '@/lib/services/analyzer-report-delivery';
+import {
+  deliverStoreAnalysisReport,
+  resolveInitialEmailReportStatus,
+} from '@/lib/services/analyzer-report-delivery';
 import { checkRateLimit } from '@/lib/services/rate-limiter';
 import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
@@ -88,7 +91,12 @@ function buildAnalysisResult(): AnalysisResult {
         score: 65,
         status: 'warning',
         findings: [],
-        recommendations: [],
+        recommendations: [
+          {
+            title: 'Make delivery costs visible before checkout',
+            impact: 'high',
+          },
+        ],
       },
       trust: {
         name: 'Trust',
@@ -271,6 +279,9 @@ describe('POST /api/analyze-store', () => {
       expect.objectContaining({
         email: 'owner@example.com',
         storeUrl: 'https://shop.example.com',
+        focusArea: 'cart',
+        focusScore: 65,
+        primaryRecommendation: 'Make delivery costs visible before checkout',
       })
     );
     expect(deliverStoreAnalysisReport).not.toHaveBeenCalled();

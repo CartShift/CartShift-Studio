@@ -1,4 +1,14 @@
-import { collection, doc, getDocs, limit, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb, waitForAuth } from '@/lib/firebase';
 import { getPortalUser } from '@/lib/services/portal-users';
 
@@ -16,6 +26,9 @@ export interface MarketingLead {
   platform?: string | null;
   overallScore?: number | null;
   scoreBand?: 'critical' | 'warning' | 'good' | 'excellent' | 'unknown';
+  focusArea?: 'performance' | 'seo' | 'accessibility' | 'bestPractices' | 'cart' | 'trust';
+  focusScore?: number | null;
+  primaryRecommendation?: string | null;
   primarySource?: string;
   latestSource?: string;
   funnelStage?: string;
@@ -66,7 +79,10 @@ export interface MarketingDashboardData {
     unsubscribedLeads: number;
     pendingEmails: number;
     sentEmails: number;
+    clickedEmails: number;
+    emailClickRate: number;
     failedEmails: number;
+    conversionRate: number;
     averageLeadScore: number;
     leadsLast7Days: number;
     leadsLast30Days: number;
@@ -117,6 +133,9 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
   })) as MarketingEvent[];
 
   const totalLeadScore = leads.reduce((sum, lead) => sum + (lead.leadScore || 0), 0);
+  const sentEmails = jobs.filter(job => job.status === 'sent').length;
+  const clickedEmails = jobs.filter(job => job.status === 'sent' && job.clickedAt).length;
+  const convertedLeads = leads.filter(lead => lead.conversionStatus === 'project_inquiry').length;
   const now = Date.now();
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
   const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
@@ -157,11 +176,15 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
     metrics: {
       totalLeads: leads.length,
       hotLeads: leads.filter(lead => (lead.leadScore || 0) >= 50).length,
-      convertedLeads: leads.filter(lead => lead.conversionStatus === 'project_inquiry').length,
+      convertedLeads,
       unsubscribedLeads: leads.filter(lead => lead.funnelStage === 'unsubscribed').length,
       pendingEmails: jobs.filter(job => job.status === 'pending').length,
-      sentEmails: jobs.filter(job => job.status === 'sent').length,
+      sentEmails,
+      clickedEmails,
+      emailClickRate: sentEmails > 0 ? Math.round((clickedEmails / sentEmails) * 1000) / 10 : 0,
       failedEmails: jobs.filter(job => job.status === 'failed').length,
+      conversionRate:
+        leads.length > 0 ? Math.round((convertedLeads / leads.length) * 1000) / 10 : 0,
       averageLeadScore: leads.length > 0 ? Math.round(totalLeadScore / leads.length) : 0,
       leadsLast7Days,
       leadsLast30Days,

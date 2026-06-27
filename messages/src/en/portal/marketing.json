@@ -14,7 +14,9 @@
         "leads7d": "New leads (7d)",
         "leads30d": "New leads (30d)",
         "needsFollowUp": "Needs follow-up",
-        "converted": "Converted"
+        "converted": "Converted",
+        "emailClickRate": "Email click rate",
+        "conversionRate": "Lead conversion"
       },
       "funnel": {
         "title": "Funnel snapshot",

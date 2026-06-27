@@ -21,34 +21,50 @@ interface ContactFormData {
   message: string;
 }
 
+const FOCUS_TRANSLATION_KEYS = {
+  performance: 'marketing.contactPrefill.focusAreas.performance',
+  seo: 'marketing.contactPrefill.focusAreas.seo',
+  accessibility: 'marketing.contactPrefill.focusAreas.accessibility',
+  bestPractices: 'marketing.contactPrefill.focusAreas.bestPractices',
+  cart: 'marketing.contactPrefill.focusAreas.cart',
+  trust: 'marketing.contactPrefill.focusAreas.trust',
+} as const;
+
 export const ContactPageContent: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const locale = useLocale() as 'en' | 'he';
+  const t = useTranslations();
 
   const prefill = useMemo(() => {
     const projectType = searchParams.get('projectType') || '';
     const storeUrl = searchParams.get('storeUrl') || '';
     const score = searchParams.get('score');
-    const fixes = searchParams.get('fixes');
+    const focus = searchParams.get('focus');
 
     if (!score && !storeUrl) {
       return { projectType: projectType || '', message: '' };
     }
 
-    const isHe = locale === 'he';
-    const message = isHe
-      ? `החנות שלי ${storeUrl ? `(${storeUrl}) ` : ''}קיבלה ציון ${score || '—'}/100 בניתוח החנות. אשמח לקבל הצעת מחיר לתיקון ${fixes || 'ה'} בעיות העדיפות הגבוהות מהדוח.`
-      : `My store${storeUrl ? ` (${storeUrl})` : ''} scored ${score || '—'}/100 in the store analyzer. I'd like a quote to fix the top ${fixes || ''} priority issues from my report.`;
+    const focusKey =
+      focus && focus in FOCUS_TRANSLATION_KEYS
+        ? FOCUS_TRANSLATION_KEYS[focus as keyof typeof FOCUS_TRANSLATION_KEYS]
+        : null;
+    const focusLabel = focusKey ? t(focusKey) : '';
+    const message = t('marketing.contactPrefill.message', {
+      store: storeUrl ? ` (${storeUrl})` : '',
+      score: score || '—',
+      focus: focusLabel ? t('marketing.contactPrefill.focusClause', { focus: focusLabel }) : '',
+    });
 
     return {
       projectType: projectType || 'consultation',
       message,
       company: storeUrl || undefined,
     };
-  }, [locale, searchParams]);
+  }, [searchParams, t]);
 
   const {
     register,
@@ -71,7 +87,6 @@ export const ContactPageContent: React.FC = () => {
     });
   }, [prefill, reset]);
 
-  const t = useTranslations();
   const direction = useDirection();
 
   const onSubmit = async (data: ContactFormData) => {

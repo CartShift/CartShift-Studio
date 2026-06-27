@@ -15,7 +15,15 @@ Options:
   --ledger-file <path>     JSON ledger for idempotent publish tracking
   --slug <slug>            Required with --ledger-file
   --title <title>          Required with --ledger-file
-  --url <url>              Required with --ledger-file
+  --content-type <type>    blog or original (default: blog)
+  --editorial-pillar <id>  Editorial pillar recorded in the ledger
+  --topic-key <key>        Stable topic taxonomy key
+  --audience <audience>    Primary audience for the post
+  --post-format <format>   Editorial format used by the post
+  --angle <summary>        Short description of the post's distinct angle
+  --semantic-signature <json> Semantic thesis, concepts, mechanism, consequence, and hook pattern
+  --critic <json>          Pre-publication critic scores and validation result
+  --url <url>              Required for blog posts; optional for original posts
   --cycle <number>         Optional campaign cycle number (default: 1)
   --dry-run                Validate payload without posting
   --force                  Post even if slug already exists in the ledger
@@ -53,16 +61,24 @@ function loadDotEnv(filePath) {
 function parseArgs(argv) {
   const args = {
     api: process.env.LINKEDIN_API || 'posts',
+    angle: '',
+    audience: '',
+    contentType: 'blog',
+    critic: '',
     cycle: '',
     dryRun: false,
     force: false,
     help: false,
     ledgerFile: '',
+    editorialPillar: '',
     probe: false,
+    postFormat: '',
     slug: '',
+    semanticSignature: '',
     textFile: '',
     textStdin: false,
     title: '',
+    topicKey: '',
     url: '',
   };
 
@@ -120,6 +136,54 @@ function parseArgs(argv) {
 
     if (arg === '--title') {
       args.title = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--content-type') {
+      args.contentType = argv[index + 1] || 'blog';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--editorial-pillar') {
+      args.editorialPillar = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--topic-key') {
+      args.topicKey = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--audience') {
+      args.audience = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--post-format') {
+      args.postFormat = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--angle') {
+      args.angle = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--semantic-signature') {
+      args.semanticSignature = argv[index + 1] || '';
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--critic') {
+      args.critic = argv[index + 1] || '';
       index += 1;
       continue;
     }
@@ -288,13 +352,17 @@ function writeLedgerAtomic(ledgerFile, ledger) {
   fs.renameSync(tempFile, ledgerFile);
 }
 
-function updateLedger({ args, commentary, linkedinPostId }) {
+function updateLedger({ args, commentary, critic, linkedinPostId, semanticSignature }) {
   if (!args.ledgerFile) {
     return false;
   }
 
-  if (!args.slug || !args.title || !args.url) {
-    throw new Error('Ledger updates require --slug, --title, and --url.');
+  if (!args.slug || !args.title) {
+    throw new Error('Ledger updates require --slug and --title.');
+  }
+
+  if (args.contentType === 'blog' && !args.url) {
+    throw new Error('Blog ledger updates require --url.');
   }
 
   const ledgerFile = path.resolve(args.ledgerFile);
@@ -305,6 +373,14 @@ function updateLedger({ args, commentary, linkedinPostId }) {
     slug: args.slug,
     title: args.title,
     url: args.url,
+    contentType: args.contentType,
+    editorialPillar: args.editorialPillar,
+    topicKey: args.topicKey || args.slug,
+    audience: args.audience,
+    format: args.postFormat,
+    angle: args.angle,
+    semanticSignature,
+    critic,
     postedAt: new Date().toISOString(),
     linkedinPostId,
     cycle: Number.isNaN(cycle) ? 1 : cycle,
@@ -339,6 +415,16 @@ function assertLedgerReadyForPublish(args) {
 loadDotEnv(path.join(process.cwd(), '.env.local'));
 
 const args = parseArgs(process.argv.slice(2));
+let semanticSignature;
+let critic;
+let metadataJsonValid = true;
+
+try {
+  semanticSignature = args.semanticSignature ? JSON.parse(args.semanticSignature) : undefined;
+  critic = args.critic ? JSON.parse(args.critic) : undefined;
+} catch {
+  metadataJsonValid = false;
+}
 
 if (args.help) {
   console.log(USAGE);
@@ -348,7 +434,9 @@ if (args.help) {
 const token = process.env.LINKEDIN_ACCESS_TOKEN?.trim();
 const author = process.env.LINKEDIN_AUTHOR_URN?.trim();
 
-if (args.probe) {
+if (!metadataJsonValid) {
+  fail('Invalid JSON in --semantic-signature or --critic.');
+} else if (args.probe) {
   try {
     const result = await probeLinkedInApi();
 
@@ -382,6 +470,8 @@ if (args.probe) {
   fail('UGC API mode requires LINKEDIN_AUTHOR_URN to be a legacy member or company URN.');
 } else if (!['posts', 'ugc'].includes(args.api)) {
   fail('Unsupported --api value. Use posts or ugc.');
+} else if (!['blog', 'original'].includes(args.contentType)) {
+  fail('Unsupported --content-type value. Use blog or original.');
 } else if (!args.textFile && !args.textStdin) {
   fail('Missing --text-file path or --text-stdin.');
 } else if (args.textFile && !fs.existsSync(args.textFile)) {
@@ -436,6 +526,14 @@ if (args.probe) {
             linkedinVersion: LINKEDIN_VERSION,
             commentaryCharacters: commentary.length,
             slug: args.slug || undefined,
+            contentType: args.contentType,
+            editorialPillar: args.editorialPillar || undefined,
+            topicKey: args.topicKey || undefined,
+            audience: args.audience || undefined,
+            format: args.postFormat || undefined,
+            angle: args.angle || undefined,
+            semanticSignature,
+            critic,
             ledgerFile: args.ledgerFile ? path.resolve(args.ledgerFile) : undefined,
           },
           null,
@@ -458,7 +556,9 @@ if (args.probe) {
           const ledgerUpdated = updateLedger({
             args,
             commentary,
+            critic,
             linkedinPostId: result.linkedinPostId,
+            semanticSignature,
           });
 
           console.log(
