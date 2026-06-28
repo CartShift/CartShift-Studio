@@ -18,6 +18,7 @@ export function useOrganization(orgId: string | undefined, options?: { enabled?:
     data: organization = null,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: queryKeys.organizations.detail(safeOrgId),
     queryFn: () => getOrganization(safeOrgId),
@@ -42,5 +43,6 @@ export function useOrganization(orgId: string | undefined, options?: { enabled?:
     organization,
     loading: auth || (shouldFetch && isLoading),
     error: error instanceof Error ? error.message : error ? String(error) : null,
+    refetch,
   };
 }

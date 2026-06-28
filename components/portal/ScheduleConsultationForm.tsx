@@ -7,10 +7,13 @@ import { ConsultationType, CONSULTATION_TYPE, CONSULTATION_TYPE_CONFIG } from '@
 import { AnimatePresence, motion } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
+import { PortalFormField, PortalFormGrid } from '@/components/portal/ui/PortalFormField';
 import {
   CheckCircle2,
   Calendar,
-  Clock,
   ExternalLink,
   LinkIcon,
   Loader2,
@@ -36,6 +39,7 @@ import {
   ModalBody,
   ModalFooter,
 } from '@/components/ui/ModalBackdrop';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 // Type icons mapping
 const typeIcons: Record<
@@ -66,8 +70,9 @@ export default function ScheduleConsultationForm({
   onSuccess,
 }: ScheduleConsultationFormProps) {
   // ... (hook logic remains the same)
-  const t = useTranslations();
+  const t = useTranslations('portal');
   const { userData } = usePortalAuth();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState<ConsultationType>(CONSULTATION_TYPE.ONBOARDING);
@@ -75,7 +80,7 @@ export default function ScheduleConsultationForm({
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   const [duration, setDuration] = useState(30);
-  const [loading, set] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [calendarUrl, setCalendarUrl] = useState<string | null>(null);
   const [autoCreated, setAutoCreated] = useState(false);
@@ -124,11 +129,18 @@ export default function ScheduleConsultationForm({
     e.preventDefault();
     if (!userData || !title || !scheduledDate || !scheduledTime) return;
 
-    if (hasConflict && !window.confirm(t('portal.consultations.calendarConflict' as any))) {
-      return;
+    if (hasConflict) {
+      const ok = await confirm({
+        title: t('common.confirm'),
+        description: t('consultations.form.calendarConflict'),
+        confirmText: t('common.submit'),
+        cancelText: t('common.cancel'),
+        variant: 'warning',
+      });
+      if (!ok) return;
     }
 
-    set(true);
+    setLoading(true);
 
     try {
       const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`);
@@ -157,7 +169,7 @@ export default function ScheduleConsultationForm({
 
       await createConsultation(
         userData.id,
-        userData.name || t('portal.common.agencyFallback'),
+        userData.name || t('common.agencyFallback'),
         consultationData
       );
 
@@ -169,7 +181,7 @@ export default function ScheduleConsultationForm({
     } catch (error) {
       console.error('Failed to create consultation:', error);
     } finally {
-      set(false);
+      setLoading(false);
     }
   };
 
@@ -188,7 +200,7 @@ export default function ScheduleConsultationForm({
     <ModalBackdrop isOpen={true} onClick={onClose}>
       <ModalContent maxWidth="lg" onClick={e => e.stopPropagation()}>
         <ModalHeader
-          title={t('portal.consultations.schedule')}
+          title={t('consultations.schedule')}
           description={orgName}
           onClose={onClose}
         />
@@ -273,7 +285,7 @@ export default function ScheduleConsultationForm({
                   {/* Consultation Type */}
                   <div>
                     <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                      {t('portal.consultations.form.type')}
+                      {t('consultations.form.type')}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {Object.values(CONSULTATION_TYPE).map(typeOption => {
@@ -293,7 +305,7 @@ export default function ScheduleConsultationForm({
                           >
                             <Icon className={cn('w-4 h-4', config.color)} />
                             <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                              {t(`portal.consultations.types.${typeOption}`)}
+                              {t(`consultations.types.${typeOption}`)}
                             </span>
                           </button>
                         );
@@ -302,54 +314,41 @@ export default function ScheduleConsultationForm({
                   </div>
 
                   {/* Title */}
-                  <div>
-                    <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                      {t('portal.consultations.form.title')}
-                    </label>
-                    <input
+                  <PortalFormField label={t('consultations.form.title')}>
+                    <Input
                       type="text"
                       value={title}
                       onChange={e => setTitle(e.target.value)}
-                      placeholder={t('portal.consultations.form.titlePlaceholder')}
-                      className="portal-input w-full"
+                      placeholder={t('consultations.form.titlePlaceholder')}
                       required
                     />
-                  </div>
+                  </PortalFormField>
 
                   {/* Date & Time */}
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                          <Calendar size={14} className="inline me-1" />
-                          {t('portal.consultations.form.date')}
-                        </label>
-                        <input
+                    <PortalFormGrid>
+                      <PortalFormField label={t('consultations.form.date')}>
+                        <Input
                           type="date"
                           value={scheduledDate}
                           onChange={e => setScheduledDate(e.target.value)}
                           min={new Date().toISOString().split('T')[0]}
-                          className="portal-input w-full"
                           required
                         />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                          <Clock size={14} className="inline me-1" />
-                          {t('portal.consultations.form.time')}
-                        </label>
-                        <input
+                      </PortalFormField>
+                      <PortalFormField
+                        label={t('consultations.form.time')}
+                        error={hasConflict ? 'Conflict detected with your calendar' : undefined}
+                      >
+                        <Input
                           type="time"
                           value={scheduledTime}
                           onChange={e => setScheduledTime(e.target.value)}
-                          className={cn(
-                            'portal-input w-full',
-                            hasConflict && 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                          )}
+                          error={hasConflict ? 'Conflict detected with your calendar' : undefined}
                           required
                         />
-                      </div>
-                    </div>
+                      </PortalFormField>
+                    </PortalFormGrid>
 
                     {/* Availability Status */}
                     {scheduledDate && isConnected && (
@@ -379,39 +378,31 @@ export default function ScheduleConsultationForm({
                   </div>
 
                   {/* Duration */}
-                  <div>
-                    <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                      <Clock size={14} className="inline me-1" />
-                      {t('portal.consultations.form.duration')}
-                    </label>
-                    <select
+                  <PortalFormField label={t('consultations.form.duration')}>
+                    <Select
                       value={duration}
                       onChange={e => setDuration(Number(e.target.value))}
-                      className="portal-input w-full"
-                    >
-                      <option value={15}>15 minutes</option>
-                      <option value={30}>30 minutes</option>
-                      <option value={45}>45 minutes</option>
-                      <option value={60}>1 hour</option>
-                      <option value={90}>1.5 hours</option>
-                      <option value={120}>2 hours</option>
-                    </select>
-                  </div>
+                      options={[
+                        { value: 15, label: '15 minutes' },
+                        { value: 30, label: '30 minutes' },
+                        { value: 45, label: '45 minutes' },
+                        { value: 60, label: '1 hour' },
+                        { value: 90, label: '1.5 hours' },
+                        { value: 120, label: '2 hours' },
+                      ]}
+                    />
+                  </PortalFormField>
 
                   {/* Description */}
-                  <div>
-                    <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                      <FileText size={14} className="inline me-1" />
-                      {t('portal.consultations.form.notes')}
-                    </label>
-                    <textarea
+                  <PortalFormField label={t('consultations.form.notes')}>
+                    <Textarea
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      placeholder={t('portal.consultations.form.notesPlaceholder')}
+                      placeholder={t('consultations.form.notesPlaceholder')}
                       rows={3}
-                      className="portal-input w-full resize-none"
+                      className="resize-none"
                     />
-                  </div>
+                  </PortalFormField>
 
                   <p className="text-xs text-center text-surface-500 pt-2">
                     {!isConnected
@@ -428,7 +419,7 @@ export default function ScheduleConsultationForm({
                     className="flex-1"
                     disabled={loading}
                   >
-                    {t('portal.common.cancel')}
+                    {t('common.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -454,6 +445,7 @@ export default function ScheduleConsultationForm({
           )}
         </AnimatePresence>
       </ModalContent>
+      {ConfirmDialog}
     </ModalBackdrop>
   );
 }

@@ -40,6 +40,8 @@
       "manual": {
         "title": "Record manual payment",
         "max": "Outstanding balance: {amount}",
+        "methodLabel": "Payment method",
+        "paidAtLabel": "Payment date",
         "action": "Record payment",
         "recorded": "Payment recorded",
         "failed": "Failed to record payment"

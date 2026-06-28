@@ -433,5 +433,63 @@ If using Framer Motion heavily, consider:
 
 ---
 
-**Last Updated:** 2026-01-15
-**Status:** Ready for implementation
+---
+
+## Portal UI Primitives (June 2026)
+
+Portal wrapper components (`PortalButton`, `PortalInput`, etc.) were **removed**. Use shared primitives from `@/components/ui/` plus these portal composites:
+
+| Component | Import | Use for |
+|-----------|--------|---------|
+| `PortalFormField` | `@/components/portal/ui` | Label + error + hint wrapper (especially textareas and RHF fields) |
+| `PortalFormGrid` | `@/components/portal/ui` | Two-column form layouts |
+| `PortalFormSection` | `@/components/portal/ui` | Section title + description |
+| `PortalTable` | `@/components/portal/ui` | Data tables with `.portal-card` styling |
+| `PortalPageHeader` | `@/components/portal/ui` | Page title scaffold |
+| `PortalSettingsSection` | `@/components/portal/ui/PortalSettingsSection` | Collapsible settings panels |
+
+| `PortalSearchField` | `@/components/portal/ui` | List page search bars with icon |
+| `PortalFilterSelect` | `@/components/portal/ui` | Filter dropdowns (uses `Select`) |
+| `PortalNavItem` | `@/components/portal/ui` | Settings sidebar navigation |
+| `portalToast` | `@/lib/utils/portal-toast` | Title + description toast helper |
+
+**Page scaffold pattern:**
+
+```tsx
+<PortalPageHeader title={...} description={...} />
+<div className="portal-card p-6">{/* content */}</div>
+```
+
+**Form pattern:**
+
+```tsx
+<PortalFormSection title={...} description={...}>
+  <PortalFormGrid>
+    <Input label={...} {...register('field')} error={errors.field?.message} />
+    <PortalFormField label={...} error={errors.notes?.message}>
+      <Textarea {...register('notes')} />
+    </PortalFormField>
+  </PortalFormGrid>
+</PortalFormSection>
+```
+
+**Table pattern:** See `components/portal/clients/ClientList.tsx`.
+
+**Migration status (June 2026 — complete):**
+- ✅ All inline portal tables → `PortalTable` (7 list pages + team table + profit splits)
+- ✅ Toast: `portalToast` / sonner across portal hooks and clients
+- ✅ Forms: all portal forms use `Input` / `Select` / `Textarea` + `PortalFormField` / `PortalFormGrid`
+- ✅ Zero raw `portal-input` in components (SSOT: `lib/utils/portal-interactive.ts` for edge cases)
+- ✅ Search bars → `PortalSearchField`; filter selects → `PortalFilterSelect`
+- ✅ Monolith splits: `TestimonialForm`, `AgencyBrandingSettings`, `SettingsClient` (workspace tabs)
+- ✅ Extracted: `RequestFormCoreFields`, `RequestPricingFormPanel`, `RequestRevisionModal`, `StarRatingDisplay`
+- ✅ Hooks: `useAgencySettingsMutations`, `useWorkspaceSettingsMutations`, `useFileMutations`
+- ✅ Agency settings user profile reuses `ProfileSettingsTab`
+- ✅ `AgencySettingsClient` split into tab components in `components/portal/settings/agency/`
+- ✅ `SettingsClient` uses `ClientSettingsNav` + `useWorkspaceSettings` mutation pending states
+- ✅ `RequestDetailClient` decomposed into header, tab bar, overview, and sidebar components
+
+---
+
+**Last Updated:** 2026-06-27
+**Status:** Portal primitives active; wrapper removal complete

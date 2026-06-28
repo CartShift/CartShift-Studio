@@ -27,6 +27,16 @@ import { useMarketingDashboard } from '@/lib/hooks/useMarketingDashboard';
 import { useUpdateMarketingLead } from '@/lib/hooks/useUpdateMarketingLead';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { LeadInviteModal } from '@/components/portal/marketing/LeadInviteModal';
+import {
+  PortalTable,
+  PortalTableBody,
+  PortalTableCell,
+  PortalTableElement,
+  PortalTableHead,
+  PortalTableHeader,
+  PortalTableRow,
+  PortalTableScroll,
+} from '@/components/portal/ui/PortalTable';
 import { generateGoogleCalendarEventLink } from '@/lib/schedule';
 import { getScheduleUrl } from '@/lib/schedule';
 import type { MarketingLead } from '@/lib/services/portal-marketing';
@@ -188,13 +198,9 @@ export default function MarketingLeadsClient() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/20">
               <Mail className="h-5 w-5" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
-              {t('title')}
-            </h1>
+            <h1 className="portal-page-title">{t('title')}</h1>
           </div>
-          <p className="ms-[52px] text-sm text-surface-500 dark:text-surface-400">
-            {t('subtitle')}
-          </p>
+          <p className="portal-page-subtitle ms-[52px]">{t('subtitle')}</p>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
           <RefreshCw className="me-2 h-4 w-4" />
@@ -315,108 +321,109 @@ export default function MarketingLeadsClient() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-start">
-              <thead>
-                <tr className="border-b border-surface-200 text-xs uppercase tracking-widest text-surface-500 dark:border-white/10">
-                  <th className="px-5 py-3 text-start">{t('leads.lead')}</th>
-                  <th className="px-5 py-3 text-start">{t('leads.source')}</th>
-                  <th className="px-5 py-3 text-start">{t('leads.stage')}</th>
-                  <th className="px-5 py-3 text-start">{t('leads.score')}</th>
-                  <th className="px-5 py-3 text-start">{t('leads.updated')}</th>
-                  <th className="px-5 py-3 text-start">{t('leads.actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredLeads.map(lead => (
-                  <tr
-                    key={lead.leadId}
-                    className="border-b border-surface-100 text-sm last:border-0 dark:border-white/5"
-                  >
-                    <td className="px-5 py-4">
-                      <div className="font-bold text-surface-900 dark:text-white">{lead.email}</div>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-surface-500">
-                        {lead.contactStatus === 'contacted' && (
-                          <Badge variant="green">{t('leads.contacted')}</Badge>
-                        )}
-                        {lead.platform && <span>{lead.platform}</span>}
-                        {lead.overallScore != null && <span>{lead.overallScore}/100</span>}
-                        {lead.storeUrl && (
-                          <a
-                            href={lead.storeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-primary-600 hover:underline"
-                          >
-                            {t('leads.openStore')}
-                            <ArrowUpRight className="h-3 w-3" />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 capitalize">{formatSource(lead.latestSource)}</td>
-                    <td className="px-5 py-4">
-                      <Badge variant="gray">{formatSource(lead.funnelStage)}</Badge>
-                    </td>
-                    <td className="px-5 py-4">
-                      <Badge variant={getScoreTone(lead.leadScore)}>{lead.leadScore || 0}</Badge>
-                    </td>
-                    <td className="px-5 py-4">{formatDate(lead.updatedAt)}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          title={t('actions.copyEmail')}
-                          onClick={() => handleCopyEmail(lead.email)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                        <a
-                          href={buildMailto(lead)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-white/10"
-                          title={t('actions.emailLead')}
-                        >
-                          <Mail className="h-4 w-4" />
-                        </a>
-                        <a
-                          href={buildCalendarUrl(lead)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-white/10"
-                          title={t('actions.openCalendar')}
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </a>
-                        {lead.contactStatus !== 'contacted' && (
+          <PortalTable className="rounded-none border-0 bg-transparent shadow-none">
+            <PortalTableScroll>
+              <PortalTableElement className="min-w-[980px]">
+                <PortalTableHeader>
+                  <PortalTableRow>
+                    <PortalTableHead>{t('leads.lead')}</PortalTableHead>
+                    <PortalTableHead>{t('leads.source')}</PortalTableHead>
+                    <PortalTableHead>{t('leads.stage')}</PortalTableHead>
+                    <PortalTableHead>{t('leads.score')}</PortalTableHead>
+                    <PortalTableHead>{t('leads.updated')}</PortalTableHead>
+                    <PortalTableHead>{t('leads.actions')}</PortalTableHead>
+                  </PortalTableRow>
+                </PortalTableHeader>
+                <PortalTableBody>
+                  {filteredLeads.map(lead => (
+                    <PortalTableRow key={lead.leadId}>
+                      <PortalTableCell>
+                        <div className="font-bold text-surface-900 dark:text-white">{lead.email}</div>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-surface-500">
+                          {lead.contactStatus === 'contacted' && (
+                            <Badge variant="green">{t('leads.contacted')}</Badge>
+                          )}
+                          {lead.platform && <span>{lead.platform}</span>}
+                          {lead.overallScore != null && <span>{lead.overallScore}/100</span>}
+                          {lead.storeUrl && (
+                            <a
+                              href={lead.storeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-primary-600 hover:underline"
+                            >
+                              {t('leads.openStore')}
+                              <ArrowUpRight className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
+                      </PortalTableCell>
+                      <PortalTableCell className="capitalize">
+                        {formatSource(lead.latestSource)}
+                      </PortalTableCell>
+                      <PortalTableCell>
+                        <Badge variant="gray">{formatSource(lead.funnelStage)}</Badge>
+                      </PortalTableCell>
+                      <PortalTableCell>
+                        <Badge variant={getScoreTone(lead.leadScore)}>{lead.leadScore || 0}</Badge>
+                      </PortalTableCell>
+                      <PortalTableCell>{formatDate(lead.updatedAt)}</PortalTableCell>
+                      <PortalTableCell>
+                        <div className="flex flex-wrap gap-1">
                           <Button
                             size="sm"
                             variant="ghost"
-                            title={t('actions.markContacted')}
-                            disabled={updateLead.isPending}
-                            onClick={() => handleMarkContacted(lead.leadId)}
+                            title={t('actions.copyEmail')}
+                            onClick={() => handleCopyEmail(lead.email)}
                           >
-                            <Check className="h-4 w-4" />
+                            <Copy className="h-4 w-4" />
                           </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          title={t('actions.invite')}
-                          onClick={() => setInviteLead(lead)}
-                        >
-                          <UserPlus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          <a
+                            href={buildMailto(lead)}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-white/10"
+                            title={t('actions.emailLead')}
+                          >
+                            <Mail className="h-4 w-4" />
+                          </a>
+                          <a
+                            href={buildCalendarUrl(lead)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-white/10"
+                            title={t('actions.openCalendar')}
+                          >
+                            <Calendar className="h-4 w-4" />
+                          </a>
+                          {lead.contactStatus !== 'contacted' && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              title={t('actions.markContacted')}
+                              disabled={updateLead.isPending}
+                              onClick={() => handleMarkContacted(lead.leadId)}
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            title={t('actions.invite')}
+                            onClick={() => setInviteLead(lead)}
+                          >
+                            <UserPlus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </PortalTableCell>
+                    </PortalTableRow>
+                  ))}
+                </PortalTableBody>
+              </PortalTableElement>
+            </PortalTableScroll>
             {filteredLeads.length === 0 && (
               <div className="py-14 text-center text-sm text-surface-500">{t('leads.empty')}</div>
             )}
-          </div>
+          </PortalTable>
         </Card>
 
         <div className="space-y-6">

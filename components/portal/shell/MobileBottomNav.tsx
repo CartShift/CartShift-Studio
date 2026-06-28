@@ -32,12 +32,14 @@ const NavItem = ({ href, icon: Icon, label, isActive, badge }: NavItemProps) => 
   <Link
     href={href}
     className={cn(
-      'portal-focus-ring relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-colors active:opacity-70 min-h-[44px] rounded-lg',
+      'portal-focus-ring relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-[color,transform] active:scale-[0.97] min-h-[44px] rounded-xl',
       isActive ? 'text-primary-600 dark:text-primary-400' : 'text-surface-400 dark:text-surface-500'
     )}
     aria-current={isActive ? 'page' : undefined}
   >
-    {isActive && <span className="absolute top-0 inset-x-4 h-0.5 bg-primary-500 rounded-full" />}
+    {isActive && (
+      <span className="absolute -top-1 inset-x-2 h-1 bg-primary-500 rounded-b-full shadow-[0_4px_14px_rgb(var(--color-primary-500)/0.55)]" />
+    )}
     <span className="relative flex items-center justify-center">
       <Icon size={22} strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
       {badge !== undefined && badge > 0 && (
@@ -46,7 +48,12 @@ const NavItem = ({ href, icon: Icon, label, isActive, badge }: NavItemProps) => 
         </span>
       )}
     </span>
-    <span className={cn('text-[10px] font-medium leading-tight', isActive && 'font-semibold')}>
+    <span
+      className={cn(
+        'max-w-full truncate text-[9px] font-medium leading-tight',
+        isActive && 'font-semibold'
+      )}
+    >
       {label}
     </span>
   </Link>
@@ -64,7 +71,11 @@ interface MobileBottomNavProps {
   };
 }
 
-export function MobileBottomNav({ isAgency = false, navGroups, badges = {} }: MobileBottomNavProps) {
+export function MobileBottomNav({
+  isAgency = false,
+  navGroups,
+  badges = {},
+}: MobileBottomNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
@@ -201,10 +212,10 @@ export function MobileBottomNav({ isAgency = false, navGroups, badges = {} }: Mo
     <>
       <nav
         ref={navRef}
-        className="fixed bottom-0 start-0 end-0 z-50 bg-white dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 md:hidden pb-safe"
+        className="portal-mobile-nav fixed bottom-0 start-0 end-0 z-50 md:hidden pb-safe"
         aria-label={tA11y('mainNavigation')}
       >
-        <div className="flex items-center justify-around h-16 px-1">
+        <div className="flex items-center justify-around h-[4.25rem] px-1.5">
           {navItems.map(({ href, icon, labelKey, badgeKey }) => (
             <NavItem
               key={href}
@@ -219,7 +230,7 @@ export function MobileBottomNav({ isAgency = false, navGroups, badges = {} }: Mo
             type="button"
             onClick={() => setMoreOpen(true)}
             className={cn(
-              'portal-focus-ring relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-colors min-h-[44px] rounded-lg',
+              'portal-focus-ring relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 transition-[color,transform] active:scale-[0.97] min-h-[44px] rounded-xl',
               isMoreActive || moreOpen
                 ? 'text-primary-600 dark:text-primary-400'
                 : 'text-surface-400 dark:text-surface-500'
@@ -228,12 +239,16 @@ export function MobileBottomNav({ isAgency = false, navGroups, badges = {} }: Mo
             aria-expanded={moreOpen}
           >
             {(isMoreActive || moreOpen) && (
-              <span className="absolute top-0 inset-x-4 h-0.5 bg-primary-500 rounded-full" />
+              <span className="absolute -top-1 inset-x-2 h-1 bg-primary-500 rounded-b-full shadow-[0_4px_14px_rgb(var(--color-primary-500)/0.55)]" />
             )}
-            <LayoutGrid size={22} strokeWidth={isMoreActive || moreOpen ? 2.25 : 1.75} aria-hidden />
+            <LayoutGrid
+              size={22}
+              strokeWidth={isMoreActive || moreOpen ? 2.25 : 1.75}
+              aria-hidden
+            />
             <span
               className={cn(
-                'text-[10px] font-medium leading-tight',
+                'max-w-full truncate text-[9px] font-medium leading-tight',
                 (isMoreActive || moreOpen) && 'font-semibold'
               )}
             >

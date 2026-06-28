@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 interface CVDownloadButtonProps {
   label: string;
@@ -26,6 +27,7 @@ const languageKeys = ['hebrew', 'english', 'german'] as const;
 
 export function CVDownloadButton({ label }: CVDownloadButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const t = useTranslations('portal');
 
   const handleDownload = async () => {
     setIsGenerating(true);
@@ -73,9 +75,9 @@ export function CVDownloadButton({ label }: CVDownloadButtonProps) {
       link.download = 'yotam-faraggi-cv.pdf';
       link.click();
       URL.revokeObjectURL(url);
-      toast.success('CV PDF ready');
+      toast.success(t('toast.cvPdfReady'));
     } catch {
-      toast.error('Failed to generate CV PDF');
+      toast.error(t('toast.cvPdfFailed'));
     } finally {
       setIsGenerating(false);
     }

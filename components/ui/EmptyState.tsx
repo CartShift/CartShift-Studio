@@ -9,11 +9,11 @@ import { Button } from '@/components/ui/Button';
 import { EmptyStateIllustration } from '@/components/ui/EmptyStateIllustration';
 import { useTranslations } from 'next-intl';
 
-const emptyStateVariants = cva('flex flex-col items-center justify-center text-center p-8', {
+const emptyStateVariants = cva('flex flex-col items-center justify-center text-center px-6 py-10', {
   variants: {
     variant: {
       default:
-        'bg-surface-50/50 dark:bg-surface-900/20 border border-dashed border-surface-200 dark:border-surface-800 rounded-2xl',
+        'bg-surface-50/55 dark:bg-white/[0.018] border border-dashed border-surface-200/80 dark:border-white/[0.09] rounded-2xl',
       plain: '',
     },
   },
@@ -57,16 +57,16 @@ export const EmptyState = ({
       {illustration ? (
         <EmptyStateIllustration variant={illustration} className="mb-4" />
       ) : (
-        <div className="mb-5 w-14 h-14 bg-surface-100 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex items-center justify-center">
-          <Icon className="w-7 h-7 text-surface-500 dark:text-surface-400" aria-hidden />
+        <div className="mb-5 w-14 h-14 bg-primary-50 dark:bg-primary-500/10 rounded-2xl border border-primary-100/80 dark:border-primary-400/15 flex items-center justify-center shadow-inner">
+          <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" aria-hidden />
         </div>
       )}
 
-      <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-2">
+      <h3 className="text-lg font-semibold tracking-tight text-surface-900 dark:text-white font-outfit mb-1.5">
         {title}
       </h3>
 
-      <p className="text-surface-500 dark:text-surface-400 text-sm font-medium max-w-sm leading-relaxed mb-6">
+      <p className="text-surface-500 dark:text-surface-400 text-sm max-w-[44ch] leading-relaxed text-pretty mb-6">
         {description}
       </p>
 

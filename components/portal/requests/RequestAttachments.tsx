@@ -26,6 +26,7 @@ import { FileImage } from '@/components/ui/FileImage';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 interface RequestAttachmentsProps {
   request: Request;
@@ -34,7 +35,8 @@ interface RequestAttachmentsProps {
 }
 
 export function RequestAttachments({ request, isAgency, orgId }: RequestAttachmentsProps) {
-  const t = useTranslations();
+  const t = useTranslations('portal');
+  const { confirm, ConfirmDialog } = useConfirmDialog();
   const [files, setFiles] = useState<FileAttachment[]>([]);
   const [loading, set] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
@@ -75,7 +77,14 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
   });
 
   const handleDelete = async (file: FileAttachment) => {
-    if (!confirm(t('portal.files.actions.deleteConfirm'))) return;
+    const ok = await confirm({
+      title: t('common.deleteConfirmTitle'),
+      description: t('files.actions.deleteConfirm'),
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       await deleteFile(file.id, file.storagePath);
     } catch (error) {
@@ -104,10 +113,10 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-            {t('portal.requests.detail.assetsTitle')}
+            {t('requests.detail.assetsTitle')}
           </h3>
           <p className="portal-label-sm text-[10px] mt-1">
-            {t('portal.requests.detail.assetsSubtitle')}
+            {t('requests.detail.assetsSubtitle')}
           </p>
         </div>
       </div>
@@ -140,7 +149,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                             storagePath: latest.storagePath,
                           })
                         }
-                        aria-label={t('portal.accessibility.previewFile')}
+                        aria-label={t('accessibility.previewFile')}
                         className="portal-focus-ring w-12 h-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800 flex-shrink-0 group-hover:border-primary-100 dark:group-hover:border-primary-900/30 transition-all hover:scale-105 cursor-pointer outline-none"
                       >
                         <FileImage
@@ -171,7 +180,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                         <span className="w-0.5 h-0.5 rounded-full bg-surface-300" />
                         {latest.uploadedAt?.toDate
                           ? format(latest.uploadedAt.toDate(), 'MMM d, h:mm a')
-                          : t('portal.common.recently')}
+                          : t('common.recently')}
                       </p>
                     </div>
                   </div>
@@ -182,7 +191,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                         type="button"
                         onClick={() => setExpandedFileId(isExpanded ? null : fileName)}
                         aria-expanded={isExpanded}
-                        aria-label={t('portal.accessibility.showVersionHistory')}
+                        aria-label={t('accessibility.showVersionHistory')}
                         className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                       >
                         {isExpanded ? <ChevronUp size={16} /> : <History size={16} />}
@@ -192,7 +201,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                       href={latest.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={t('portal.accessibility.downloadFile')}
+                      aria-label={t('accessibility.downloadFile')}
                       className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                     >
                       <Download size={16} />
@@ -201,7 +210,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                       <button
                         type="button"
                         onClick={() => handleDelete(latest)}
-                        aria-label={t('portal.files.actions.delete')}
+                        aria-label={t('files.actions.delete')}
                         className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
                       >
                         <Trash2 size={16} />
@@ -213,7 +222,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                 {isExpanded && (
                   <div className="bg-surface-50/50 dark:bg-surface-900/30 border-t border-surface-100 dark:border-surface-800 p-2 space-y-1">
                     <p className="px-2 py-1 text-[9px] font-black text-surface-400 uppercase tracking-widest">
-                      {t('portal.requests.detail.versionHistory')}
+                      {t('requests.detail.versionHistory')}
                     </p>
                     {versions.slice(1).map(v => (
                       <div
@@ -227,7 +236,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                           <span className="text-[10px] font-bold text-surface-500 uppercase tracking-tighter">
                             {v.uploadedAt?.toDate
                               ? format(v.uploadedAt.toDate(), 'MMM d, yyyy')
-                              : t('portal.common.recently')}
+                              : t('common.recently')}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover/v:opacity-100 transition-opacity">
@@ -235,7 +244,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                             href={v.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label={t('portal.accessibility.downloadFile')}
+                            aria-label={t('accessibility.downloadFile')}
                             className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-500 rounded-lg transition-all"
                           >
                             <Download size={14} />
@@ -244,7 +253,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
                             <button
                               type="button"
                               onClick={() => handleDelete(v)}
-                              aria-label={t('portal.files.actions.delete')}
+                              aria-label={t('files.actions.delete')}
                               className="portal-focus-ring p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-500 rounded-lg transition-all"
                             >
                               <Trash2 size={14} />
@@ -263,10 +272,10 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
         <div className="py-12 text-center bg-surface-50/50 dark:bg-surface-900/30 rounded-3xl border-2 border-dashed border-surface-200 dark:border-surface-800">
           <Paperclip className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-3 opacity-20" />
           <h4 className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
-            {t('portal.requests.detail.noAttachments')}
+            {t('requests.detail.noAttachments')}
           </h4>
           <p className="text-xs text-surface-500 dark:text-surface-400">
-            {t('portal.requests.detail.noAttachmentsDesc')}
+            {t('requests.detail.noAttachmentsDesc')}
           </p>
         </div>
       )}
@@ -279,6 +288,8 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
         isOpen={!!previewImage}
         onClose={() => setPreviewImage(null)}
       />
+
+      {ConfirmDialog}
     </Card>
   );
 }

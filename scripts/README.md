@@ -65,7 +65,7 @@ If you still encounter issues:
 
 ## Regular Development
 
-For normal development (when no other instances are running), use:
+`pnpm run dev` automatically frees known dev ports (3000, and emulator ports when using `--full`) before starting. If a port is still blocked after that, use `pnpm run dev:force` for a deeper cleanup.
 
 ```bash
 pnpm run dev

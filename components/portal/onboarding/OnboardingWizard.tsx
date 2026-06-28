@@ -6,7 +6,9 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { OnboardingStep } from './OnboardingStep';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { ArrowRight, ArrowLeft, Building2, Sparkles, Check, Users, Briefcase } from 'lucide-react';
+import { Select } from '@/components/ui/Select';
+import { PortalFormField } from '@/components/portal/ui/PortalFormField';
+import { ArrowRight, ArrowLeft, Building2, Sparkles, Check } from 'lucide-react';
 import { createOrganization, updateOrganization } from '@/lib/services/portal-organizations';
 import { useRouter } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -173,57 +175,29 @@ export function OnboardingWizard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                      {t('onboarding.form.industryLabel' as any)}
-                    </label>
-                    <div className="relative">
-                      <Briefcase
-                        className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"
-                        size={18}
-                      />
-                      <select
-                        value={formData.industry}
-                        onChange={e => setFormData({ ...formData, industry: e.target.value })}
-                        className="portal-input w-full ps-10 h-11 bg-white dark:bg-surface-900 appearance-none cursor-pointer"
-                      >
-                        <option value="">
-                          {t('onboarding.form.industrySelectPlaceholder' as any)}
-                        </option>
-                        {industries.map(ind => (
-                          <option key={ind} value={ind}>
-                            {t(`industries.${ind}` as any)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+                  <PortalFormField label={t('onboarding.form.industryLabel' as any)}>
+                    <Select
+                      value={formData.industry}
+                      onChange={e => setFormData({ ...formData, industry: e.target.value })}
+                      placeholder={t('onboarding.form.industrySelectPlaceholder' as any)}
+                      options={industries.map(ind => ({
+                        value: ind,
+                        label: t(`industries.${ind}` as any),
+                      }))}
+                    />
+                  </PortalFormField>
 
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                      {t('onboarding.form.sizeLabel' as any)}
-                    </label>
-                    <div className="relative">
-                      <Users
-                        className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"
-                        size={18}
-                      />
-                      <select
-                        value={formData.size}
-                        onChange={e => setFormData({ ...formData, size: e.target.value })}
-                        className="portal-input w-full ps-10 h-11 bg-white dark:bg-surface-900 appearance-none cursor-pointer"
-                      >
-                        <option value="">
-                          {t('onboarding.form.sizeSelectPlaceholder' as any)}
-                        </option>
-                        {sizes.map(s => (
-                          <option key={s} value={s}>
-                            {s} {t('onboarding.form.employeesLabel' as any)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+                  <PortalFormField label={t('onboarding.form.sizeLabel' as any)}>
+                    <Select
+                      value={formData.size}
+                      onChange={e => setFormData({ ...formData, size: e.target.value })}
+                      placeholder={t('onboarding.form.sizeSelectPlaceholder' as any)}
+                      options={sizes.map(s => ({
+                        value: s,
+                        label: `${s} ${t('onboarding.form.employeesLabel' as any)}`,
+                      }))}
+                    />
+                  </PortalFormField>
                 </div>
 
                 {error && (

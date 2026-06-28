@@ -3,32 +3,18 @@
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { FileText, ChevronRight, Search, Clock, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { Request, CLIENT_STATUS_MAP } from '@/lib/types/portal';
 import { useRequests } from '@/lib/hooks/useRequests';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { Badge } from '@/components/ui/Badge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
-import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { CardSectionTitle } from '@/components/ui/Card';
 
-const searchInputVariants = cva(
-  'portal-input h-10 ps-12 pe-12 rounded-xl transition-all group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50 text-sm font-medium',
-  {
-    variants: {
-      isFocused: {
-        true: '',
-        false: '',
-      },
-    },
-    defaultVariants: {
-      isFocused: false,
-    },
-  }
-);
+import { Input } from '@/components/ui/Input';
 
 const searchItemVariants = cva(
   'w-full text-start flex items-center gap-3 p-2.5 rounded-lg transition-colors group/item relative',
@@ -67,7 +53,7 @@ interface GlobalSearchProps {
 }
 
 export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps) {
-  const router = useRouter();
+  const { openRequest } = useOpenRequest();
   const t = useTranslations();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -122,13 +108,12 @@ export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps)
   }, []);
 
   const handleSelect = (req: Request) => {
-    // Save search term to history
     if (query.trim()) {
       addSearch(query.trim());
     }
     setIsOpen(false);
     setQuery('');
-    router.push(getPortalPath(`/requests/${req.id}/`));
+    openRequest(req.id, { orgId: req.orgId });
   };
 
   const handleHistorySearch = (historyQuery: string) => {
@@ -160,34 +145,34 @@ export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps)
 
   return (
     <div ref={containerRef} className={cn('relative group', className)}>
-      <Search
+      <Input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={e => {
+          const next = e.target.value;
+          setQuery(next);
+          if (next.trim()) setIsOpen(true);
+        }}
+        onFocus={() => {
+          setIsFocused(true);
+          setIsOpen(true);
+        }}
+        onBlur={() => setIsFocused(false)}
+        onKeyDown={handleKeyDown}
+        placeholder={t('portal.header.search')}
+        leftIcon={
+          <Search
+            size={18}
+            className={cn('transition-colors', isFocused ? 'text-primary-500' : 'text-surface-400')}
+          />
+        }
         className={cn(
-          'absolute start-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none',
-          isFocused ? 'text-primary-500' : 'text-surface-400'
+          'h-10 ps-12 pe-12 rounded-xl text-sm font-medium transition-all',
+          'group-hover:bg-surface-100/50 dark:group-hover:bg-surface-800/50'
         )}
-        size={18}
+        aria-label="Search"
       />
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={e => {
-            const next = e.target.value;
-            setQuery(next);
-            if (next.trim()) setIsOpen(true);
-          }}
-          onFocus={() => {
-            setIsFocused(true);
-            setIsOpen(true);
-          }}
-          onBlur={() => setIsFocused(false)}
-          onKeyDown={handleKeyDown}
-          placeholder={t('portal.header.search')}
-          className={cn(searchInputVariants({ isFocused }))}
-          aria-label="Search"
-        />
-      </div>
 
       <AnimatePresence>
         {/* Search History - show when focused with empty query */}

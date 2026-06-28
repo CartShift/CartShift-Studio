@@ -5,7 +5,6 @@ import { useOrgPricingRequests } from '@/lib/hooks/usePricingRequests';
 import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
 import {
   Plus,
-  Search,
   MoreVertical,
   Loader2,
   Filter,
@@ -30,13 +29,31 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 // Centralized utilities
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
+import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
+import {
+  PortalTable,
+  PortalTableScroll,
+  PortalTableElement,
+  PortalTableHeader,
+  PortalTableBody,
+  PortalTableRow,
+  PortalTableHead,
+  PortalTableCell,
+} from '@/components/portal/ui/PortalTable';
+import { IconButton } from '@/components/ui/IconButton';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 // mapStatusColor moved to lib/utils/portal-helpers.ts
 
 export default function PricingListClient() {
   const router = useRouter();
   const { isAgency } = usePortalAuth();
-  const { requests, loading, error: requestsError } = useOrgPricingRequests({
+  const {
+    requests,
+    loading,
+    error: requestsError,
+  } = useOrgPricingRequests({
     excludeDrafts: !isAgency,
   });
   const { sendPricingRequest, deletePricingRequest } = usePricingMutations();
@@ -46,6 +63,7 @@ export default function PricingListClient() {
   const itemsPerPage = 8;
   const t = useTranslations('portal');
   const locale = useLocale();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
   const error = requestsError;
 
   const filters = [
@@ -62,12 +80,26 @@ export default function PricingListClient() {
   }, [activeFilter, searchQuery]);
 
   const handleSend = async (requestId: string) => {
-    if (!confirm(t('pricing.form.sendConfirm'))) return;
+    const ok = await confirm({
+      title: t('common.confirm'),
+      description: t('pricing.form.sendConfirm'),
+      confirmText: t('pricing.form.sendToClient'),
+      cancelText: t('common.cancel'),
+      variant: 'warning',
+    });
+    if (!ok) return;
     await sendPricingRequest(requestId);
   };
 
   const handleDelete = async (requestId: string) => {
-    if (!confirm(t('pricing.form.deleteConfirm'))) return;
+    const ok = await confirm({
+      title: t('common.deleteConfirmTitle'),
+      description: t('pricing.form.deleteConfirm'),
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
     await deletePricingRequest(requestId);
   };
 
@@ -103,24 +135,18 @@ export default function PricingListClient() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('pricing.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('pricing.subtitle')}
-          </p>
-        </div>
-        {isAgency && (
-          <Link href={getPortalPath('/pricing/new/')}>
-            <Button className="flex items-center gap-2 shadow-lg shadow-primary-500/20 font-outfit">
-              <Plus size={18} />
-              {t('pricing.newOffer')}
-            </Button>
-          </Link>
-        )}
-      </div>
+      <PortalPageHeader
+        title={t('pricing.title')}
+        description={t('pricing.subtitle')}
+        className="mb-0"
+        action={
+          isAgency ? (
+            <Link href={getPortalPath('/pricing/new/')}>
+              <Button leftIcon={<Plus size={18} />}>{t('pricing.newOffer')}</Button>
+            </Link>
+          ) : undefined
+        }
+      />
 
       <Card
         noPadding
@@ -128,19 +154,12 @@ export default function PricingListClient() {
       >
         {/* Toolbar */}
         <div className="p-4 border-b border-surface-100 dark:border-surface-800 flex flex-col lg:flex-row lg:items-center gap-4 bg-surface-50/50 dark:bg-surface-900/50">
-          <div className="relative w-full lg:w-96">
-            <Search
-              className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-              size={16}
-            />
-            <input
-              type="text"
-              placeholder={t('header.searchPlaceholder')}
-              className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full font-outfit"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </div>
+          <PortalSearchField
+            className="w-full lg:w-96"
+            placeholder={t('header.searchPlaceholder')}
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
             <div className="flex items-center gap-1.5 px-3 py-1.5 portal-label-sm shrink-0">
               <Filter size={12} /> {t('common.filter')}:
@@ -219,9 +238,7 @@ export default function PricingListClient() {
                         </span>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="portal-label-sm text-[10px]">
-                          {t('common.date')}
-                        </span>
+                        <span className="portal-label-sm text-[10px]">{t('common.date')}</span>
                         <span className="text-xs font-bold text-surface-600 dark:text-surface-300 font-outfit">
                           {req.createdAt?.toDate
                             ? format(req.createdAt.toDate(), 'MMM d, yyyy')
@@ -234,181 +251,200 @@ export default function PricingListClient() {
               </div>
 
               {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-start border-collapse">
-                  <thead>
-                    <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                      <th className="px-6 py-4 portal-label-sm">
-                        {t('pricing.form.titleLabel')}
-                      </th>
-                      <th className="px-6 py-4 portal-label-sm text-center">
-                        {t('common.status')}
-                      </th>
-                      <th className="px-6 py-4 portal-label-sm text-center">
-                        {t('pricing.form.total')}
-                      </th>
-                      <th className="px-6 py-4 portal-label-sm text-center">
-                        {t('common.date')}
-                      </th>
-                      <th className="px-6 py-4 portal-label-sm text-end">
-                        {t('common.actions')}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-                    {paginatedRequests.map(req => (
-                      <tr
-                        key={req.id}
-                        className="hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-all group"
-                      >
-                        <td className="px-6 py-4">
-                          <Link
-                            href={getPortalPath(`/pricing/${req.id}/`)}
-                            className="flex flex-col max-w-md"
-                          >
-                            <span className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit">
-                              {req.title}
-                            </span>
-                            <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
-                              {req.clientName && (
-                                <>
-                                  <span className="truncate">{req.clientName}</span>
-                                  <span className="w-1 h-1 rounded-full bg-surface-300" />
-                                </>
-                              )}
-                              <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
-                                {req.id.slice(0, 8)}
-                              </span>
-                            </span>
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex justify-center">
-                            <Badge
-                              variant={getPricingStatusBadgeVariant(
-                                PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
-                              )}
-                            >
-                              {t(`pricing.status.${req.status.toLowerCase()}` as never)}
-                            </Badge>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-center gap-2">
-                            <DollarSign size={14} className="text-green-500 opacity-70" />
-                            <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
-                              {formatCurrency(req.totalAmount, req.currency)}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col items-center">
-                            <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
-                              {req.createdAt?.toDate
-                                ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
-                                    locale: getDateLocale(locale),
-                                  })
-                                : t('common.recently')}
-                            </span>
-                            <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
-                              {req.status === PRICING_STATUS.DRAFT
-                                ? t('pricing.status.draft')
-                                : req.sentAt?.toDate
-                                  ? format(req.sentAt.toDate(), 'MMM d', {
-                                      locale: getDateLocale(locale),
-                                    })
-                                  : ''}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-end">
-                          <div className="flex items-center justify-end gap-1">
-                            <Link href={getPortalPath(`/pricing/${req.id}/`)}>
-                              <button type="button" className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20">
-                                <Eye size={16} />
-                              </button>
-                            </Link>
-                            {isAgency &&
-                              (req.status === PRICING_STATUS.DRAFT ||
-                                req.status === PRICING_STATUS.SENT) && (
-                                <Link href={getPortalPath(`/pricing/${req.id}/edit`)}>
-                                  <button type="button" className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-amber-600 dark:hover:text-amber-400 transition-all rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
-                                    <Pencil size={16} />
-                                  </button>
-                                </Link>
-                              )}
-                            {isAgency &&
-                              (req.status === PRICING_STATUS.DRAFT ||
-                                req.status === PRICING_STATUS.SENT) && (
-                              <button
-                                onClick={() => handleSend(req.id)}
-                                title={
-                                  req.status === PRICING_STATUS.SENT
-                                    ? t('pricing.form.resendToClient')
-                                    : t('pricing.form.sendToClient')
-                                }
-                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
+              <div className="hidden md:block">
+                <PortalTable className="border-0 shadow-none bg-transparent overflow-visible">
+                  <PortalTableScroll>
+                    <PortalTableElement>
+                      <PortalTableHeader>
+                        <PortalTableRow className="cursor-default">
+                          <PortalTableHead headStyle="label">
+                            {t('pricing.form.titleLabel')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="center">
+                            {t('common.status')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="center">
+                            {t('pricing.form.total')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="center">
+                            {t('common.date')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="end">
+                            {t('common.actions')}
+                          </PortalTableHead>
+                        </PortalTableRow>
+                      </PortalTableHeader>
+                      <PortalTableBody>
+                        {paginatedRequests.map(req => (
+                          <PortalTableRow key={req.id} hover>
+                            <PortalTableCell>
+                              <Link
+                                href={getPortalPath(`/pricing/${req.id}/`)}
+                                className="flex flex-col max-w-md"
                               >
-                                <Send size={16} />
-                              </button>
-                            )}
-                            <Dropdown
-                              trigger={
-                                <button type="button" className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800">
-                                  <MoreVertical size={16} />
-                                </button>
-                              }
-                              items={[
-                                {
-                                  label: t('common.view'),
-                                  icon: <Eye size={14} />,
-                                  onClick: () => router.push(getPortalPath(`/pricing/${req.id}`)),
-                                },
-                                ...(isAgency &&
-                                (req.status === PRICING_STATUS.DRAFT ||
-                                  req.status === PRICING_STATUS.SENT)
-                                  ? [
-                                      {
-                                        label: t('common.edit'),
-                                        icon: <Pencil size={14} />,
-                                        onClick: () =>
-                                          router.push(getPortalPath(`/pricing/${req.id}/edit`)),
-                                      },
-                                    ]
-                                  : []),
-                                ...(isAgency &&
-                                (req.status === PRICING_STATUS.DRAFT ||
-                                  req.status === PRICING_STATUS.SENT)
-                                  ? [
-                                      {
-                                        label:
-                                          req.status === PRICING_STATUS.SENT
-                                            ? t('pricing.form.resendToClient')
-                                            : t('pricing.form.sendToClient'),
-                                        icon: <Send size={14} />,
-                                        onClick: () => handleSend(req.id),
-                                      },
-                                    ]
-                                  : []),
-                                ...(isAgency
-                                  ? [
-                                      {
-                                        label: t('common.delete'),
-                                        icon: <Trash2 size={14} />,
-                                        variant: 'danger' as const,
-                                        onClick: () => handleDelete(req.id),
-                                      },
-                                    ]
-                                  : []),
-                              ]}
-                              align="right"
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                                <span className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit">
+                                  {req.title}
+                                </span>
+                                <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
+                                  {req.clientName && (
+                                    <>
+                                      <span className="truncate">{req.clientName}</span>
+                                      <span className="w-1 h-1 rounded-full bg-surface-300" />
+                                    </>
+                                  )}
+                                  <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
+                                    {req.id.slice(0, 8)}
+                                  </span>
+                                </span>
+                              </Link>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="center">
+                              <Badge
+                                variant={getPricingStatusBadgeVariant(
+                                  PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
+                                )}
+                              >
+                                {t(`pricing.status.${req.status.toLowerCase()}` as never)}
+                              </Badge>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="center">
+                              <div className="flex items-center justify-center gap-2">
+                                <DollarSign size={14} className="text-green-500 opacity-70" />
+                                <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
+                                  {formatCurrency(req.totalAmount, req.currency)}
+                                </span>
+                              </div>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="center">
+                              <div className="flex flex-col items-center">
+                                <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                                  {req.createdAt?.toDate
+                                    ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
+                                        locale: getDateLocale(locale),
+                                      })
+                                    : t('common.recently')}
+                                </span>
+                                <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                                  {req.status === PRICING_STATUS.DRAFT
+                                    ? t('pricing.status.draft')
+                                    : req.sentAt?.toDate
+                                      ? format(req.sentAt.toDate(), 'MMM d', {
+                                          locale: getDateLocale(locale),
+                                        })
+                                      : ''}
+                                </span>
+                              </div>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="end">
+                              <div className="flex items-center justify-end gap-1">
+                                <Link href={getPortalPath(`/pricing/${req.id}/`)}>
+                                  <IconButton
+                                    icon={Eye}
+                                    label={t('common.view')}
+                                    variant="ghost"
+                                    size="sm"
+                                    iconSize={16}
+                                    className="min-w-[44px] min-h-[44px] hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                                  />
+                                </Link>
+                                {isAgency &&
+                                  (req.status === PRICING_STATUS.DRAFT ||
+                                    req.status === PRICING_STATUS.SENT) && (
+                                    <Link href={getPortalPath(`/pricing/${req.id}/edit`)}>
+                                      <IconButton
+                                        icon={Pencil}
+                                        label={t('common.edit')}
+                                        variant="warning"
+                                        size="sm"
+                                        iconSize={16}
+                                        className="min-w-[44px] min-h-[44px]"
+                                      />
+                                    </Link>
+                                  )}
+                                {isAgency &&
+                                  (req.status === PRICING_STATUS.DRAFT ||
+                                    req.status === PRICING_STATUS.SENT) && (
+                                    <IconButton
+                                      icon={Send}
+                                      label={
+                                        req.status === PRICING_STATUS.SENT
+                                          ? t('pricing.form.resendToClient')
+                                          : t('pricing.form.sendToClient')
+                                      }
+                                      variant="success"
+                                      size="sm"
+                                      iconSize={16}
+                                      className="min-w-[44px] min-h-[44px]"
+                                      onClick={() => handleSend(req.id)}
+                                    />
+                                  )}
+                                <Dropdown
+                                  trigger={
+                                    <IconButton
+                                      icon={MoreVertical}
+                                      label={t('common.actions')}
+                                      variant="ghost"
+                                      size="sm"
+                                      iconSize={16}
+                                      className="min-w-[44px] min-h-[44px]"
+                                    />
+                                  }
+                                  items={[
+                                    {
+                                      label: t('common.view'),
+                                      icon: <Eye size={14} />,
+                                      onClick: () =>
+                                        router.push(getPortalPath(`/pricing/${req.id}`)),
+                                    },
+                                    ...(isAgency &&
+                                    (req.status === PRICING_STATUS.DRAFT ||
+                                      req.status === PRICING_STATUS.SENT)
+                                      ? [
+                                          {
+                                            label: t('common.edit'),
+                                            icon: <Pencil size={14} />,
+                                            onClick: () =>
+                                              router.push(
+                                                getPortalPath(`/pricing/${req.id}/edit`)
+                                              ),
+                                          },
+                                        ]
+                                      : []),
+                                    ...(isAgency &&
+                                    (req.status === PRICING_STATUS.DRAFT ||
+                                      req.status === PRICING_STATUS.SENT)
+                                      ? [
+                                          {
+                                            label:
+                                              req.status === PRICING_STATUS.SENT
+                                                ? t('pricing.form.resendToClient')
+                                                : t('pricing.form.sendToClient'),
+                                            icon: <Send size={14} />,
+                                            onClick: () => handleSend(req.id),
+                                          },
+                                        ]
+                                      : []),
+                                    ...(isAgency
+                                      ? [
+                                          {
+                                            label: t('common.delete'),
+                                            icon: <Trash2 size={14} />,
+                                            variant: 'danger' as const,
+                                            onClick: () => handleDelete(req.id),
+                                          },
+                                        ]
+                                      : []),
+                                  ]}
+                                  align="right"
+                                />
+                              </div>
+                            </PortalTableCell>
+                          </PortalTableRow>
+                        ))}
+                      </PortalTableBody>
+                    </PortalTableElement>
+                  </PortalTableScroll>
+                </PortalTable>
               </div>
             </>
           ) : (
@@ -466,6 +502,8 @@ export default function PricingListClient() {
           </div>
         )}
       </Card>
+
+      {ConfirmDialog}
     </div>
   );
 }

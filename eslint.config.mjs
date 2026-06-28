@@ -117,11 +117,11 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-expressions': 'off',
 
       // React rules
-      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/exhaustive-deps': 'warn',
       'react/react-in-jsx-scope': 'off',
 
       // Next.js rules
@@ -157,6 +157,16 @@ export default [
               name: 'firebase/storage',
               message:
                 'Direct storage imports are not allowed in components. Use service functions from @/lib/services instead.',
+            },
+            {
+              name: '@/lib/services/portal-requests',
+              importNames: ['deleteRequest', 'updateRequestStatus', 'createRequest'],
+              message: 'Use hooks from @/lib/hooks instead of calling portal-requests directly in UI.',
+            },
+            {
+              name: '@/lib/services/portal-files',
+              importNames: ['getFilesByOrg', 'deleteFile'],
+              message: 'Use useOrgFiles / useFileMutations hooks instead.',
             },
           ],
         },

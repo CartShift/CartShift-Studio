@@ -2,7 +2,33 @@
   "portal": {
     "toast": {
       "dismiss": "Dismiss",
-      "undo": "Undo"
+      "undo": "Undo",
+      "fileDeleted": "File deleted",
+      "fileDeletedDesc": "The file has been removed from your organization.",
+      "fileDeleteFailed": "Delete failed",
+      "fileDeleteFailedDesc": "Could not delete the file. Please try again.",
+      "statusUpdateFailed": "Failed to update status",
+      "settingsSaveFailed": "Failed to save settings",
+      "profileUpdated": "Profile updated",
+      "profileUpdateFailed": "Failed to update profile",
+      "avatarUpdated": "Profile photo updated",
+      "avatarRemoved": "Profile photo removed",
+      "avatarUpdateFailed": "Failed to update profile photo",
+      "logoUpdated": "Logo updated",
+      "logoRemoved": "Logo removed",
+      "logoUpdateFailed": "Failed to update logo",
+      "passwordResetFailed": "Failed to send password reset email",
+      "brandingUpdateFailed": "Failed to update global branding",
+      "serviceDeleted": "Service deleted",
+      "serviceDeleteFailed": "Failed to delete service",
+      "inviteResent": "Previous invitation cancelled. Please send a new one.",
+      "inviteResendFailed": "Failed to resend invitation",
+      "permissionDenied": "Permission denied",
+      "permissionDeniedDesc": "You do not have permission to perform this action.",
+      "pinUpdateFailed": "Failed to update pin status",
+      "cvPdfReady": "CV PDF ready",
+      "cvPdfFailed": "Failed to generate CV PDF",
+      "pricingUpdateFailed": "Failed to update pricing offer. Please try again."
     }
   }
 }

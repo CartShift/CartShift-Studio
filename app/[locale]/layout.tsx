@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { RadixProvider } from '@/components/providers/RadixProvider';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
 const rubik = Rubik({ subsets: ['hebrew', 'latin'], variable: '--font-rubik', display: 'swap' });
@@ -128,7 +129,7 @@ export default async function LocaleLayout({
         )}
       </head>
       <body className={`font-sans ${isRtl ? 'lang-he' : ''}`} suppressHydrationWarning>
-        {children}
+        <RadixProvider dir={direction}>{children}</RadixProvider>
       </body>
     </html>
   );

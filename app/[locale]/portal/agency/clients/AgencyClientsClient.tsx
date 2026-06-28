@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import {
   Plus,
-  Search,
   Users,
   ArrowUpRight,
   MoreVertical,
@@ -20,11 +19,10 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
-import { deleteOrganization } from '@/lib/services/portal-organizations';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidation';
 import { queryKeys } from '@/lib/utils/query-keys';
-import { repairAgencyAccount } from '@/lib/services/portal-users';
+import { useAgencyClientMutations } from '@/lib/hooks/useAgencyClientMutations';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -40,6 +38,10 @@ import {
   type ClientStatus,
   type ClientPlan,
 } from '@/components/portal/clients/ClientMultiFilter';
+import { ClientList } from '@/components/portal/clients/ClientList';
+import { PortalMetricCard } from '@/components/portal/ui/PortalMetricCard';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
+import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
 
 // Format currency with abbreviations for large numbers
 function formatRevenue(amountInCents: number, currency: Currency = 'USD'): string {
@@ -63,7 +65,9 @@ export default function AgencyClientsClient() {
   const { organizations, loading: clients, userData } = useAgencyClients();
   const { viewAsClient } = useImpersonation();
 
-  const [loading, set] = useState(true);
+  const { deleteClient, repairAccount } = useAgencyClientMutations();
+
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyClientsOnly, setShowMyClientsOnly] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ClientStatus[]>([]);
@@ -76,7 +80,7 @@ export default function AgencyClientsClient() {
   useEffect(() => {
     // Sync loading state or use derived state
     if (!auth && !clients) {
-      set(false);
+      setLoading(false);
     }
   }, [auth, clients]);
 
@@ -91,15 +95,15 @@ export default function AgencyClientsClient() {
     if (!user) return;
     setIsRepairing(true);
     try {
-      await repairAgencyAccount({
+      await repairAccount({
         userId: user.uid,
         email: user.email ?? null,
-        nameFallback: t('common.agencyAdmin' as any),
+        nameFallback: t('common.agencyAdmin'),
       });
       window.location.reload();
     } catch (err) {
       console.error('Repair failed:', err);
-      toast.error(t('agency.repairFailed' as any));
+      toast.error(t('agency.repairFailed'));
     } finally {
       setIsRepairing(false);
     }
@@ -162,11 +166,13 @@ export default function AgencyClientsClient() {
     const deletedOrgId = orgToDelete.id;
     const deletedOrgName = orgToDelete.name;
     try {
-      await deleteOrganization(deletedOrgId);
-      queryClient.setQueryData(queryKeys.agencyClients, (currentOrgs: typeof organizations | undefined) =>
-        currentOrgs?.map(org =>
-          org.id === deletedOrgId ? { ...org, status: 'inactive' as const } : org
-        )
+      await deleteClient(deletedOrgId);
+      queryClient.setQueryData(
+        queryKeys.agencyClients,
+        (currentOrgs: typeof organizations | undefined) =>
+          currentOrgs?.map(org =>
+            org.id === deletedOrgId ? { ...org, status: 'inactive' as const } : org
+          )
       );
       setOrgToDelete(null);
       invalidatePortalRequestData(queryClient, { orgId: deletedOrgId });
@@ -239,108 +245,76 @@ export default function AgencyClientsClient() {
         variant="danger"
         isLoading={isDeleting}
       />
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white leading-tight">
-            {t('agency.clients.title' as any)}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('agency.clients.subtitle' as any)}
-          </p>
-        </div>
-        <Link href={getPortalPath('/agency/clients/new/')}>
-          <Button className="flex items-center gap-2 shadow-lg shadow-primary-500/20">
-            <Plus size={18} />
-            {t('agency.clients.onboard' as any)}
-          </Button>
-        </Link>
-      </div>
+      <PortalPageHeader
+        title={t('agency.clients.title' as any)}
+        description={t('agency.clients.subtitle' as any)}
+        className="mb-0"
+        action={
+          <Link href={getPortalPath('/agency/clients/new/')}>
+            <Button leftIcon={<Plus size={18} />}>{t('agency.clients.onboard' as any)}</Button>
+          </Link>
+        }
+      />
 
       {/* Revenue Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
-        <Link
-          href={getPortalPath('/agency/sales')}
-          className="min-h-[118px] p-3.5 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <DollarSign className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
-              {t('sales.metrics.totalRevenue' as any)}
-            </span>
-          </div>
-          <p className="text-xl font-black leading-none">{formatRevenue(totals.totalRevenue)}</p>
+        <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
+          <PortalMetricCard
+            icon={DollarSign}
+            label={t('sales.metrics.totalRevenue' as any)}
+            value={formatRevenue(totals.totalRevenue)}
+            tone="success"
+            interactive
+          />
         </Link>
 
-        <Link
-          href={getPortalPath('/agency/sales')}
-          className="min-h-[118px] p-3.5 rounded-xl bg-amber-600 dark:bg-amber-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Clock className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
-              {t('sales.metrics.pendingRevenue' as any)}
-            </span>
-          </div>
-          <p className="text-xl font-black leading-none">{formatRevenue(totals.pendingRevenue)}</p>
+        <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
+          <PortalMetricCard
+            icon={Clock}
+            label={t('sales.metrics.pendingRevenue' as any)}
+            value={formatRevenue(totals.pendingRevenue)}
+            tone="warning"
+            interactive
+          />
         </Link>
 
-        <div className="min-h-[118px] p-3.5 rounded-xl bg-accent-600 dark:bg-accent-500 text-white shadow-lg shadow-purple-500/25">
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
-              <Users className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
-              {t('sales.metrics.activeClients' as any)}
-            </span>
-          </div>
-          <p className="text-xl font-black leading-none">{filteredOrgs.length}</p>
-        </div>
+        <PortalMetricCard
+          icon={Users}
+          label={t('sales.metrics.activeClients' as any)}
+          value={filteredOrgs.length}
+          tone="neutral"
+        />
 
-        <Link
-          href={getPortalPath('/agency/sales')}
-          className="min-h-[118px] p-3.5 rounded-xl bg-primary-600 dark:bg-primary-500 text-white shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/35 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
-              {t('sales.metrics.avgDealSize' as any)}
-            </span>
-          </div>
-          <p className="text-xl font-black leading-none">
-            {organizations.filter(o => o.paidCount && o.paidCount > 0).length > 0
-              ? formatRevenue(
-                  Math.round(
-                    totals.totalRevenue /
-                      organizations.reduce((sum, o) => sum + (o.paidCount || 0), 0) || 0
+        <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
+          <PortalMetricCard
+            icon={TrendingUp}
+            label={t('sales.metrics.avgDealSize' as any)}
+            value={
+              organizations.filter(o => o.paidCount && o.paidCount > 0).length > 0
+                ? formatRevenue(
+                    Math.round(
+                      totals.totalRevenue /
+                        organizations.reduce((sum, o) => sum + (o.paidCount || 0), 0) || 0
+                    )
                   )
-                )
-              : '-'}
-          </p>
+                : '—'
+            }
+            tone="primary"
+            interactive
+          />
         </Link>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center gap-4 bg-white dark:bg-surface-900/50 p-4 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-sm">
-        <div className="relative flex-1">
-          <Search
-            className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder={t('agency.clients.searchPlaceholder' as any)}
-            className="portal-input ps-11 h-11 border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900/50"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center gap-4 bg-white/70 dark:bg-surface-900/50 p-4 rounded-2xl border border-surface-200/70 dark:border-white/[0.08] shadow-sm backdrop-blur-xl">
+        <PortalSearchField
+          className="flex-1"
+          placeholder={t('agency.clients.searchPlaceholder' as any)}
+          value={searchQuery}
+          onChange={setSearchQuery}
+          inputClassName="h-11 bg-surface-50 dark:bg-surface-900/50"
+        />
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="text-xs font-bold text-surface-400 uppercase tracking-widest px-2">
+          <div className="text-xs font-medium text-surface-500 dark:text-surface-400 px-2 tabular-nums">
             {filteredOrgs.length} {t('agency.clients.activeAccounts' as any)}
           </div>
 
@@ -388,9 +362,19 @@ export default function AgencyClientsClient() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 min-[1120px]:grid-cols-3 gap-5">
-        {filteredOrgs.length > 0 ? (
-          filteredOrgs.map(org => (
+      {filteredOrgs.length > 0 ? (
+        <>
+          <div className="hidden lg:block">
+            <ClientList
+              clients={filteredOrgs}
+              currentUserId={user?.uid}
+              onViewAsClient={viewAsClient}
+              onDelete={(id, name) => setOrgToDelete({ id, name })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 min-[1120px]:grid-cols-3 gap-5 lg:hidden">
+            {filteredOrgs.map(org => (
             <Card
               key={org.id}
               noPadding
@@ -552,9 +536,11 @@ export default function AgencyClientsClient() {
                 </Link>
               </div>
             </Card>
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center bg-white dark:bg-surface-950 rounded-3xl border border-surface-200 dark:border-surface-800">
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="py-20 text-center bg-white dark:bg-surface-950 rounded-3xl border border-surface-200 dark:border-surface-800">
             <Users className="w-16 h-16 text-surface-100 dark:text-surface-800 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-surface-900 dark:text-white">
               {t('agency.clients.emptyTitle' as any)}
@@ -562,10 +548,9 @@ export default function AgencyClientsClient() {
             <p className="text-surface-500 dark:text-surface-400 text-sm mt-1 max-w-sm mx-auto">
               {t('agency.clients.emptyDesc' as any)}
             </p>
-            <Button className="mt-8 h-11 px-8">{t('agency.clients.onboard' as any)}</Button>
-          </div>
-        )}
-      </div>
+          <Button className="mt-8 h-11 px-8">{t('agency.clients.onboard' as any)}</Button>
+        </div>
+      )}
     </div>
   );
 }

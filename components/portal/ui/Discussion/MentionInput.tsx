@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { PortalUser } from '@/lib/types/portal';
+import { portalTextareaClassName } from '@/lib/utils/portal-interactive';
 import { cn } from '@/lib/utils';
 import { User } from 'lucide-react';
 
@@ -119,7 +120,10 @@ export const MentionInput = ({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
-        className="portal-input min-h-[80px] py-4 resize-none bg-surface-50 dark:bg-surface-900 border-surface-200 dark:border-surface-800 focus:bg-white dark:focus:bg-surface-950 transition-all font-medium w-full"
+        className={cn(
+          portalTextareaClassName,
+          'min-h-[80px] w-full bg-surface-50 dark:bg-surface-900 border-surface-200 dark:border-surface-800 focus:bg-white dark:focus:bg-surface-950 transition-all font-medium'
+        )}
       />
 
       {showSuggestions && filteredUsers.length > 0 && (

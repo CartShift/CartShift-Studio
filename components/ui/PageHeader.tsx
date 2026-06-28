@@ -41,16 +41,12 @@ export const PageHeader = ({
   <div className={cn(headerVariants({ align, compact }), className)}>
     <div className={cn('flex items-center justify-between gap-3', align === 'center' && 'w-full')}>
       <div className={cn('flex items-center gap-2', align === 'center' && 'justify-center w-full')}>
-        <h1 className="text-2xl font-bold text-surface-900 dark:text-white">{title}</h1>
+        <h1 className="portal-page-title">{title}</h1>
         {badge}
       </div>
       {action && <div className="flex-shrink-0">{action}</div>}
     </div>
-    {(description || subtitle) && (
-      <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 max-w-2xl">
-        {description || subtitle}
-      </p>
-    )}
+    {(description || subtitle) && <p className="portal-page-subtitle">{description || subtitle}</p>}
   </div>
 );
 

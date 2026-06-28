@@ -1,7 +1,8 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { OrgProvider } from '@/lib/context/OrgContext';
+import { RequestPreviewProvider } from '@/lib/context/RequestPreviewContext';
 import { ImpersonationProvider } from '@/lib/context/ImpersonationContext';
 import { UserPreferencesProvider } from '@/components/providers/UserPreferencesProvider';
 
@@ -13,7 +14,11 @@ export function PortalProviders({ children }: PortalProvidersProps) {
   return (
     <ImpersonationProvider>
       <OrgProvider>
-        <UserPreferencesProvider>{children}</UserPreferencesProvider>
+        <Suspense fallback={null}>
+          <RequestPreviewProvider>
+            <UserPreferencesProvider>{children}</UserPreferencesProvider>
+          </RequestPreviewProvider>
+        </Suspense>
       </OrgProvider>
     </ImpersonationProvider>
   );

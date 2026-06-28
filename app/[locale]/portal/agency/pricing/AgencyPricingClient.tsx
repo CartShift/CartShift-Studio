@@ -5,7 +5,6 @@ import { useAllPricingRequests } from '@/lib/hooks/usePricingRequests';
 import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import {
-  Search,
   MoreVertical,
   Loader2,
   Filter,
@@ -40,9 +39,21 @@ import { useOrg } from '@/lib/context/OrgContext';
 import { getPricingStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { DateDisplay, OrgDisplay, filterAndPaginatePricingRequests } from '@/lib/utils/portal-ui';
+import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
 import { ITEMS_PER_PAGE } from '@/lib/constants/pricing';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
+import {
+  PortalTable,
+  PortalTableScroll,
+  PortalTableElement,
+  PortalTableHeader,
+  PortalTableBody,
+  PortalTableRow,
+  PortalTableHead,
+  PortalTableCell,
+} from '@/components/portal/ui/PortalTable';
+import { IconButton } from '@/components/ui/IconButton';
 
 export default function AgencyPricingClient() {
   const { requests, loading: isLoading, error: requestsError } = useAllPricingRequests();
@@ -156,10 +167,8 @@ export default function AgencyPricingClient() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('pricing.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
+          <h1 className="portal-page-title">{t('pricing.title')}</h1>
+          <p className="portal-page-subtitle">
             {t('agency.pricing.subtitle') || 'Manage pricing offers across all clients'}
           </p>
         </div>
@@ -252,19 +261,12 @@ export default function AgencyPricingClient() {
       >
         {/* Toolbar */}
         <div className="p-4 border-b border-surface-100 dark:border-surface-800 flex flex-col lg:flex-row lg:items-center gap-4 bg-surface-50/50 dark:bg-surface-900/50">
-          <div className="relative w-full lg:w-96">
-            <Search
-              className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-              size={16}
-            />
-            <input
-              type="text"
-              placeholder={t('header.searchPlaceholder')}
-              className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full font-outfit"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </div>
+          <PortalSearchField
+            className="w-full lg:w-96"
+            placeholder={t('header.searchPlaceholder')}
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
             <div className="flex items-center gap-1.5 px-3 py-1.5 portal-label-sm shrink-0">
               <Filter size={12} /> {t('common.filter')}:
@@ -417,161 +419,175 @@ export default function AgencyPricingClient() {
               </div>
 
               {/* Desktop View: Table */}
-              <table className="hidden md:table w-full text-start border-collapse">
-                <thead>
-                  <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                    <th className="px-6 py-4 portal-label-sm">{t('pricing.form.titleLabel')}</th>
-                    <th className="px-6 py-4 portal-label-sm">{t('agency.clientOrg')}</th>
-                    <th className="px-6 py-4 portal-label-sm text-center">{t('common.status')}</th>
-                    <th className="px-6 py-4 portal-label-sm text-center">
-                      {t('pricing.form.total')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-center">{t('common.date')}</th>
-                    <th className="px-6 py-4 portal-label-sm text-end">{t('common.actions')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-                  {paginatedRequests.map(req => (
-                    <tr
-                      key={req.id}
-                      className="hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-all group"
-                    >
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => {
-                            switchOrg(req.orgId);
-                            router.push(getPortalPath(`/pricing/${req.id}/`));
-                          }}
-                          className="flex flex-col max-w-md text-start"
-                        >
-                          <span className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit">
-                            {req.title}
-                          </span>
-                          <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
-                            <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
-                              {req.id.slice(0, 8)}
-                            </span>
-                            {req.requestIds && req.requestIds.length > 0 && (
-                              <>
-                                <span className="w-1 h-1 rounded-full bg-surface-300" />
-                                <span>{req.requestIds.length} requests</span>
-                              </>
-                            )}
-                          </span>
-                        </button>
-                      </td>
-                      <td className="px-6 py-4">
-                        <OrgDisplay
-                          orgId={req.orgId}
-                          orgName={organizations[req.orgId]?.name || ''}
-                          size="md"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex justify-center">
-                          <Badge
-                            variant={getPricingStatusBadgeVariant(
-                              PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
-                            )}
-                          >
-                            {t(`pricing.status.${req.status.toLowerCase() as PricingStatusKey}`)}
-                          </Badge>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <DollarSign size={14} className="text-green-500 opacity-70" />
-                          <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
-                            {formatCurrency(req.totalAmount, req.currency)}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col items-center">
-                          <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
-                            <DateDisplay
-                              timestamp={req.createdAt}
-                              locale={locale}
-                              formatStr="MMM d, yyyy"
-                            />
-                          </span>
-                          <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
-                            {req.status === PRICING_STATUS.DRAFT
-                              ? t('pricing.status.draft')
-                              : req.sentAt?.toDate
-                                ? format(req.sentAt.toDate(), 'MMM d', {
-                                    locale: getDateLocale(locale),
-                                  })
-                                : ''}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-end">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => openPricingOffer(req)}
-                            aria-label={t('common.view')}
-                            className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20"
-                          >
-                            <Eye size={16} />
-                          </button>
-                          {(req.status === PRICING_STATUS.DRAFT ||
-                            req.status === PRICING_STATUS.SENT) && (
-                            <button
-                              onClick={() => handleSend(req.id)}
-                              title={
-                                req.status === PRICING_STATUS.SENT
-                                  ? t('pricing.form.resendToClient')
-                                  : t('pricing.form.sendToClient')
-                              }
-                              className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-green-600 dark:hover:text-green-400 transition-all rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20"
-                            >
-                              <Send size={16} />
-                            </button>
-                          )}
-                          <Dropdown
-                            trigger={
+              <div className="hidden md:block">
+                <PortalTable className="border-0 shadow-none bg-transparent rounded-none overflow-visible">
+                  <PortalTableScroll>
+                    <PortalTableElement>
+                      <PortalTableHeader className="bg-surface-50/50 dark:bg-surface-900/50">
+                        <PortalTableRow className="cursor-default">
+                          <PortalTableHead headStyle="label">
+                            {t('pricing.form.titleLabel')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label">{t('agency.clientOrg')}</PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="center">
+                            {t('common.status')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="center">
+                            {t('pricing.form.total')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="center">
+                            {t('common.date')}
+                          </PortalTableHead>
+                          <PortalTableHead headStyle="label" cellAlign="end">
+                            {t('common.actions')}
+                          </PortalTableHead>
+                        </PortalTableRow>
+                      </PortalTableHeader>
+                      <PortalTableBody>
+                        {paginatedRequests.map(req => (
+                          <PortalTableRow key={req.id} hover>
+                            <PortalTableCell>
                               <button
-                                type="button"
-                                aria-label={t('common.actions')}
-                                className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800"
+                                onClick={() => {
+                                  switchOrg(req.orgId);
+                                  router.push(getPortalPath(`/pricing/${req.id}/`));
+                                }}
+                                className="flex flex-col max-w-md text-start"
                               >
-                                <MoreVertical size={16} />
+                                <span className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit">
+                                  {req.title}
+                                </span>
+                                <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit">
+                                  <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
+                                    {req.id.slice(0, 8)}
+                                  </span>
+                                  {req.requestIds && req.requestIds.length > 0 && (
+                                    <>
+                                      <span className="w-1 h-1 rounded-full bg-surface-300" />
+                                      <span>{req.requestIds.length} requests</span>
+                                    </>
+                                  )}
+                                </span>
                               </button>
-                            }
-                            items={[
-                              {
-                                label: t('common.view'),
-                                icon: <Eye size={14} />,
-                                onClick: () => openPricingOffer(req),
-                              },
-                              ...(req.status === PRICING_STATUS.DRAFT ||
-                              req.status === PRICING_STATUS.SENT
-                                ? [
+                            </PortalTableCell>
+                            <PortalTableCell>
+                              <OrgDisplay
+                                orgId={req.orgId}
+                                orgName={organizations[req.orgId]?.name || ''}
+                                size="md"
+                              />
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="center">
+                              <Badge
+                                variant={getPricingStatusBadgeVariant(
+                                  PRICING_STATUS_CONFIG[req.status]?.color || 'gray'
+                                )}
+                              >
+                                {t(`pricing.status.${req.status.toLowerCase() as PricingStatusKey}`)}
+                              </Badge>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="center">
+                              <div className="flex items-center justify-center gap-2">
+                                <DollarSign size={14} className="text-green-500 opacity-70" />
+                                <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit">
+                                  {formatCurrency(req.totalAmount, req.currency)}
+                                </span>
+                              </div>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="center">
+                              <div className="flex flex-col items-center">
+                                <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                                  <DateDisplay
+                                    timestamp={req.createdAt}
+                                    locale={locale}
+                                    formatStr="MMM d, yyyy"
+                                  />
+                                </span>
+                                <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                                  {req.status === PRICING_STATUS.DRAFT
+                                    ? t('pricing.status.draft')
+                                    : req.sentAt?.toDate
+                                      ? format(req.sentAt.toDate(), 'MMM d', {
+                                          locale: getDateLocale(locale),
+                                        })
+                                      : ''}
+                                </span>
+                              </div>
+                            </PortalTableCell>
+                            <PortalTableCell cellAlign="end">
+                              <div className="flex items-center justify-end gap-1">
+                                <IconButton
+                                  icon={Eye}
+                                  label={t('common.view')}
+                                  variant="ghost"
+                                  size="sm"
+                                  iconSize={16}
+                                  className="min-w-[44px] min-h-[44px] hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                                  onClick={() => openPricingOffer(req)}
+                                />
+                                {(req.status === PRICING_STATUS.DRAFT ||
+                                  req.status === PRICING_STATUS.SENT) && (
+                                  <IconButton
+                                    icon={Send}
+                                    label={
+                                      req.status === PRICING_STATUS.SENT
+                                        ? t('pricing.form.resendToClient')
+                                        : t('pricing.form.sendToClient')
+                                    }
+                                    variant="success"
+                                    size="sm"
+                                    iconSize={16}
+                                    className="min-w-[44px] min-h-[44px]"
+                                    onClick={() => handleSend(req.id)}
+                                  />
+                                )}
+                                <Dropdown
+                                  trigger={
+                                    <IconButton
+                                      icon={MoreVertical}
+                                      label={t('common.actions')}
+                                      variant="ghost"
+                                      size="sm"
+                                      iconSize={16}
+                                      className="min-w-[44px] min-h-[44px]"
+                                    />
+                                  }
+                                  items={[
                                     {
-                                      label: t('common.edit'),
-                                      icon: <Pencil size={14} />,
-                                      onClick: () => openPricingOffer(req, 'edit'),
+                                      label: t('common.view'),
+                                      icon: <Eye size={14} />,
+                                      onClick: () => openPricingOffer(req),
                                     },
-                                    {
-                                      label:
-                                        req.status === PRICING_STATUS.SENT
-                                          ? t('pricing.form.resendToClient')
-                                          : t('pricing.form.sendToClient'),
-                                      icon: <Send size={14} />,
-                                      onClick: () => handleSend(req.id),
-                                    },
-                                  ]
-                                : []),
-                            ]}
-                            align="right"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                                    ...(req.status === PRICING_STATUS.DRAFT ||
+                                    req.status === PRICING_STATUS.SENT
+                                      ? [
+                                          {
+                                            label: t('common.edit'),
+                                            icon: <Pencil size={14} />,
+                                            onClick: () => openPricingOffer(req, 'edit'),
+                                          },
+                                          {
+                                            label:
+                                              req.status === PRICING_STATUS.SENT
+                                                ? t('pricing.form.resendToClient')
+                                                : t('pricing.form.sendToClient'),
+                                            icon: <Send size={14} />,
+                                            onClick: () => handleSend(req.id),
+                                          },
+                                        ]
+                                      : []),
+                                  ]}
+                                  align="right"
+                                />
+                              </div>
+                            </PortalTableCell>
+                          </PortalTableRow>
+                        ))}
+                      </PortalTableBody>
+                    </PortalTableElement>
+                  </PortalTableScroll>
+                </PortalTable>
+              </div>
             </>
           ) : (
             <div className="py-20 flex flex-col items-center justify-center text-center px-4 space-y-4">
@@ -647,20 +663,12 @@ export default function AgencyPricingClient() {
             </div>
 
             <div className="p-4 border-b border-surface-100 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-900/50">
-              <div className="relative">
-                <Search
-                  className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-                  size={16}
-                />
-                <input
-                  type="text"
-                  placeholder={t('header.searchPlaceholder')}
-                  className="portal-input ps-10 h-10 w-full"
-                  value={orgSearchQuery}
-                  onChange={e => setOrgSearchQuery(e.target.value)}
-                  autoFocus
-                />
-              </div>
+              <PortalSearchField
+                placeholder={t('header.searchPlaceholder')}
+                value={orgSearchQuery}
+                onChange={setOrgSearchQuery}
+                inputClassName="h-10"
+              />
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">

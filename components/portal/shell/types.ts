@@ -56,6 +56,7 @@ export interface PortalShellProps {
 export interface PortalSidebarProps {
   isExpanded: boolean;
   isMobileMenuOpen: boolean;
+  onMobileMenuOpenChange: (open: boolean) => void;
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchEnd: (e: React.TouchEvent) => void;
   children: React.ReactNode;

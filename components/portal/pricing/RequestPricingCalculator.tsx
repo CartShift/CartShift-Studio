@@ -4,34 +4,22 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
-import { Request, RequestType, Currency } from '@/lib/types/portal';
+import { Request, Currency } from '@/lib/types/portal';
 import { EffortLevel, EFFORT_LEVEL } from '@/lib/types/pricing-calculator';
 import { calculatePricing, formatCalculatorPrice } from '@/lib/services/pricing-calculator';
 
 // Constants
-import { PRICING_COLORS } from '@/lib/constants/pricing';
+import {
+  TYPE_ICONS,
+  TYPE_COLORS,
+} from '@/lib/constants/request-type-ui';
 
-// Custom Hooks
+export { TYPE_ICONS, TYPE_COLORS };
+
 import { useUpdatePricingConfig, useApplyGlobalModifiers } from '@/lib/hooks/usePricingConfig';
-
-// Sub-components
 import { GlobalModifiers } from './GlobalModifiers';
 import { RequestSelector } from './RequestSelector';
 import { RequestConfigurator } from './RequestConfigurator';
-
-// Icon mapping for request types
-const TYPE_ICONS: Record<RequestType, React.ElementType> = {
-  feature: () => <span>✨</span>,
-  bug: () => <span>🐛</span>,
-  optimization: () => <span>⚡</span>,
-  content: () => <span>📄</span>,
-  design: () => <span>🎨</span>,
-  other: () => <span>❓</span>,
-};
-
-// Export for use in sub-components
-export { TYPE_ICONS };
-export const TYPE_COLORS = PRICING_COLORS;
 
 export interface RequestPricingConfig {
   requestId: string;

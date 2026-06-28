@@ -77,12 +77,8 @@ export default function CalculatorClient() {
             <ArrowLeft size={18} className={cn(isRTL && 'rotate-180')} />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-              {t('pricing.calculatorTitle')}
-            </h1>
-            <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-              {t('pricing.calculatorSubtitle')}
-            </p>
+            <h1 className="portal-page-title">{t('pricing.calculatorTitle')}</h1>
+            <p className="portal-page-subtitle">{t('pricing.calculatorSubtitle')}</p>
           </div>
         </div>
       </div>

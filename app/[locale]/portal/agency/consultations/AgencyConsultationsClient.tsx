@@ -11,7 +11,6 @@ import {
   Users,
   Video,
   Plus,
-  Search,
   CheckCircle2,
   XCircle,
   UserPlus,
@@ -36,6 +35,8 @@ import { useConsultations } from '@/lib/hooks/useConsultations';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { useConsultationMutations } from '@/lib/hooks/useConsultationMutations';
 import ScheduleConsultationForm from '@/components/portal/ScheduleConsultationForm';
+import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 const typeIcons: Record<ConsultationType, React.ElementType> = {
   onboarding: UserPlus,
@@ -59,6 +60,7 @@ export default function AgencyConsultationsClient() {
   });
   const { cancelMutation, completeMutation, isCanceling, isCompleting } =
     useConsultationMutations();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
 
   const loading = consultations || clients;
   const dateLocale = getDateLocale(locale);
@@ -98,7 +100,14 @@ export default function AgencyConsultationsClient() {
 
   const handleCancel = async (consultation: Consultation) => {
     if (!userData) return;
-    if (!confirm(t('consultations.form.cancelConfirm'))) return;
+    const ok = await confirm({
+      title: t('consultations.cancel'),
+      description: t('consultations.form.cancelConfirm'),
+      confirmText: t('consultations.cancel'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     try {
       await cancelMutation.mutateAsync({
@@ -124,12 +133,8 @@ export default function AgencyConsultationsClient() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-black text-surface-900 dark:text-white font-outfit tracking-tight">
-            {t('consultations.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('consultations.subtitle')}
-          </p>
+          <h1 className="portal-page-title">{t('consultations.title')}</h1>
+          <p className="portal-page-subtitle">{t('consultations.subtitle')}</p>
         </div>
         <Button variant="primary" className="gap-2" onClick={() => setShowScheduleModal(true)}>
           <Plus size={18} />
@@ -266,19 +271,12 @@ export default function AgencyConsultationsClient() {
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search
-            className="absolute start-4 top-1/2 -translate-y-1/2 text-surface-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder={t('consultations.searchPlaceholder')}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="portal-input ps-12 w-full"
-          />
-        </div>
+        <PortalSearchField
+          className="flex-1"
+          placeholder={t('consultations.searchPlaceholder')}
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
           {['all', 'scheduled', 'completed', 'canceled'].map(status => (
             <button
@@ -449,6 +447,7 @@ export default function AgencyConsultationsClient() {
           </AnimatePresence>
         </div>
       )}
+      {ConfirmDialog}
     </div>
   );
 }

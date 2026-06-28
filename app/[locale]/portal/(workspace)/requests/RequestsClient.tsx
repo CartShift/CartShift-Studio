@@ -36,6 +36,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 // Centralized utilities - no more duplicate mapStatusColor!
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { PinButton } from '@/components/portal/PinnedRequests';
@@ -43,12 +44,26 @@ import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
-import { deleteRequest, updateRequestStatus } from '@/lib/services/portal-requests';
-import { useQueryClient } from '@tanstack/react-query';
-import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidation';
+import { useRequestListMutations } from '@/lib/hooks/useRequestListMutations';
 import { toast } from 'sonner';
 import { Request } from '@/lib/types/portal'; // Explicit import to avoid DOM Request conflict
 import { EditRequestModal } from '@/components/portal/requests/EditRequestModal';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
+import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
+import { Select } from '@/components/ui/Select';
+import {
+  PortalTable,
+  PortalTableScroll,
+  PortalTableElement,
+  PortalTableHeader,
+  PortalTableBody,
+  PortalTableRow,
+  PortalTableHead,
+  PortalTableCell,
+} from '@/components/portal/ui/PortalTable';
+import { IconButton } from '@/components/ui/IconButton';
+
+const MotionPortalTableRow = motion(PortalTableRow);
 
 const getStatusTranslationKey = (status: string | undefined): string => {
   const statusMap: Record<string, string> = {
@@ -100,28 +115,27 @@ const getPriorityTranslationKey = (priority: string | undefined): string => {
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const t = useTranslations('portal');
   const { loading: auth, isAgency } = usePortalAuth();
   const safeOrgId = typeof orgId === 'string' ? orgId : undefined;
+  const { deleteRequest, updateStatus, isDeleting: isDeletingRequest } =
+    useRequestListMutations(safeOrgId);
 
   // Edit & Archive logic
   const [requestToEdit, setRequestToEdit] = useState<Request | null>(null);
 
   const handleArchiveClick = async (req: Request) => {
-    // "Archive" means CLOSED in this context
     try {
-      await updateRequestStatus(req.id, 'CLOSED');
-      invalidatePortalRequestData(queryClient, { orgId: req.orgId ?? safeOrgId, requestId: req.id });
+      await updateStatus({ requestId: req.id, status: 'CLOSED' });
       toast.success(t('requests.toast.statusUpdated'));
     } catch (e) {
       console.error(e);
-      toast.error(t('common.error'));
     }
   };
   const { requests, loading: _requests, error: requestsError } = useRequests();
   const { pinnedIds } = usePinnedRequests(orgId as string);
   const { switchOrg } = useOrg();
+  const { openRequest: openRequestPreview } = useOpenRequest();
   const prevPinnedIdsRef = useRef<string[]>([]);
   const [newlyPinnedIds, setNewlyPinnedIds] = useState<Set<string>>(new Set());
 
@@ -160,6 +174,7 @@ export default function RequestsClient() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const isDeletingCombined = isDeleting || isDeletingRequest;
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED'];
   const filters = isAgency
@@ -238,17 +253,14 @@ export default function RequestsClient() {
 
     setIsDeleting(true);
     try {
-      await deleteRequest(requestToDelete);
-      invalidatePortalRequestData(queryClient, {
-        orgId: deleted?.orgId ?? safeOrgId,
+      await deleteRequest({
         requestId: requestToDelete,
+        orgId: deleted?.orgId ?? safeOrgId,
       });
-      toast.success(t('common.deleteSuccess'));
       setDeleteModalOpen(false);
       setRequestToDelete(null);
     } catch (error) {
       console.error('Failed to delete request:', error);
-      toast.error(t('common.deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -319,10 +331,7 @@ export default function RequestsClient() {
 
   const openRequest = (req: Request) => {
     if (isSelectionMode) return;
-    if (isAgency && req.orgId) {
-      switchOrg(req.orgId);
-    }
-    router.push(getPortalPath(`/requests/${req.id}/`));
+    openRequestPreview(req.id, { orgId: req.orgId });
   };
 
   // Navigate to dedicated pricing form with selected request IDs
@@ -396,7 +405,7 @@ export default function RequestsClient() {
         confirmText={t('common.delete')}
         cancelText={t('common.cancel')}
         variant="danger"
-        isLoading={isDeleting}
+        isLoading={isDeletingCombined}
       />
 
       {/* Edit Modal */}
@@ -410,47 +419,37 @@ export default function RequestsClient() {
       )}
 
       {/* ... rest of the UI ... */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit truncate">
-            {t('requests.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium truncate font-outfit">
-            {t('dashboard.subtitle')}
-          </p>
-        </div>
-        <Link
-          href={getPortalPath('/requests/new/')}
-          className="portal-focus-ring flex-shrink-0 rounded-xl"
-        >
-          <Button
-            as="div"
-            variant="primary"
-            leftIcon={<Plus size={18} />}
-            className="font-outfit whitespace-nowrap"
+      <PortalPageHeader
+        title={t('requests.title')}
+        description={t('dashboard.subtitle')}
+        className="mb-0"
+        action={
+          <Link
+            href={getPortalPath('/requests/new/')}
+            className="portal-focus-ring flex-shrink-0 rounded-xl"
           >
-            {t('requests.newRequest')}
-          </Button>
-        </Link>
-      </div>
+            <Button
+              as="div"
+              variant="primary"
+              leftIcon={<Plus size={18} />}
+              className="font-outfit whitespace-nowrap"
+            >
+              {t('requests.newRequest')}
+            </Button>
+          </Link>
+        }
+      />
 
       <Card variant="glass" noPadding className="overflow-hidden w-full min-w-0">
         {/* Toolbar */}
         <div className="p-4 border-b border-surface-100 dark:border-surface-800 flex flex-col lg:flex-row lg:items-center gap-4 bg-surface-50/50 dark:bg-surface-900/50 min-w-0">
           {/* ... Existing toolbar content ... */}
-          <div className="relative w-full lg:w-96 min-w-0 flex-shrink-0">
-            <Search
-              className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-              size={16}
-            />
-            <input
-              type="text"
-              placeholder={t('header.searchPlaceholder')}
-              className="portal-input ps-10 h-10 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-950 font-medium w-full min-w-0 font-outfit"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
+          <PortalSearchField
+            className="w-full lg:w-96 min-w-0 flex-shrink-0"
+            placeholder={t('header.searchPlaceholder')}
+            value={searchTerm}
+            onChange={setSearchTerm}
+          />
           <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide min-w-0 flex-1">
             <div className="flex items-center gap-1.5 px-3 py-1.5 portal-label-sm shrink-0">
               <Filter size={12} /> {t('common.filter')}:
@@ -478,20 +477,22 @@ export default function RequestsClient() {
             {isAgency && organizationsList && organizationsList.length > 0 && (
               <div className="shrink-0 flex items-center gap-1.5">
                 <Building2 size={14} className="text-surface-400" />
-                <select
+                <Select
                   value={selectedOrgFilter}
                   onChange={e => setSelectedOrgFilter(e.target.value)}
-                  className="portal-input h-10 px-3 pe-8 text-sm font-bold bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-700 min-w-[140px] max-w-[200px] truncate"
-                >
-                  <option value="all">
-                    {t('common.all')} ({organizationsList.length})
-                  </option>
-                  {organizationsList.map(org => (
-                    <option key={org.id} value={org.id}>
-                      {org.name}
-                    </option>
-                  ))}
-                </select>
+                  aria-label={t('accessibility.switchOrganization')}
+                  className="min-w-[140px] max-w-[200px] truncate text-sm font-bold"
+                  options={[
+                    {
+                      value: 'all',
+                      label: `${t('common.all')} (${organizationsList.length})`,
+                    },
+                    ...organizationsList.map(org => ({
+                      value: org.id,
+                      label: org.name,
+                    })),
+                  ]}
+                />
               </div>
             )}
             {/* Selection Mode Toggle - Agency Only */}
@@ -628,223 +629,249 @@ export default function RequestsClient() {
 
                 {/* Desktop Table View */}
                 <LayoutGroup>
-                  <table className="hidden md:table w-full text-start border-collapse min-w-[600px]">
-                    <thead>
-                      <tr className="bg-surface-50/50 dark:bg-surface-900/50 cursor-default">
-                        {isAgency && isSelectionMode && (
-                          <th className="px-3 py-4 w-12">{/* Selection column */}</th>
-                        )}
-                        <th className="px-3 md:px-6 py-4 portal-label-sm min-w-[200px]">
-                          {t('requests.table.title')}
-                        </th>
-                        <th className="px-3 md:px-6 py-4 portal-label-sm text-center whitespace-nowrap">
-                          {t('requests.table.status')}
-                        </th>
-                        <th className="px-3 md:px-6 py-4 portal-label-sm text-center whitespace-nowrap">
-                          {t('requests.table.priority')}
-                        </th>
-                        <th className="px-3 md:px-6 py-4 portal-label-sm text-center whitespace-nowrap hidden md:table-cell">
-                          {t('requests.table.created')}
-                        </th>
-                        <th className="px-3 md:px-6 py-4 portal-label-sm text-end whitespace-nowrap">
-                          {t('common.actions')}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-                      {paginatedRequests.map(req => {
-                        const isSelected = selectedRequestIds.includes(req.id);
-                        const isNewlyPinned = newlyPinnedIds.has(req.id);
-                        const isPinned = pinnedIds.includes(req.id);
-                        const canSelect =
-                          isAgency &&
-                          !req.pricingOfferId &&
-                          req.status !== 'PAID' &&
-                          req.status !== 'CLOSED';
-                        return (
-                          <motion.tr
-                            layout
-                            layoutId={`request-container-${req.id}`}
-                            key={req.id}
-                            initial="normal"
-                            animate={isNewlyPinned ? 'pinned' : 'normal'}
-                            variants={pinnedItemHighlight}
-                            transition={{
-                              layout: {
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 35,
-                                mass: 0.8,
-                              },
-                            }}
-                            role="link"
-                            tabIndex={isSelectionMode ? -1 : 0}
-                            onClick={() => openRequest(req)}
-                            onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
-                            className={cn(
-                              'portal-focus-ring hover:bg-surface-50/50 dark:hover:bg-surface-800/30 group cursor-pointer relative outline-none',
-                              isSelected && 'bg-primary-50 dark:bg-primary-900/10',
-                              isNewlyPinned &&
-                                'bg-amber-50/40 dark:bg-amber-500/10 ring-2 ring-amber-400/40 dark:ring-amber-500/30',
-                              isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
-                            )}
-                          >
-                            {/* ... Columns ... */}
-                            {/* Checkbox */}
-                            {isAgency && isSelectionMode && (
-                              <td className="px-3 py-4">
-                                {canSelect ? (
-                                  <button
-                                    type="button"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      toggleRequestSelection(req.id);
-                                    }}
-                                    aria-pressed={isSelected}
-                                    aria-label={`${t('common.select')}: ${req.title}`}
-                                    className={cn(
-                                      'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
-                                      isSelected
-                                        ? 'bg-primary-600 border-primary-600 text-white'
-                                        : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'
-                                    )}
-                                  >
-                                    {isSelected && <Check size={12} />}
-                                  </button>
-                                ) : req.pricingOfferId ? (
-                                  <Badge variant="green" className="text-[9px]">
-                                    {t('requests.hasPricing')}
-                                  </Badge>
-                                ) : null}
-                              </td>
-                            )}
-
-                            <td className="px-3 md:px-6 py-4 min-w-0">
-                              <div className="flex flex-col min-w-0">
-                                {isAgency && req.orgId && (
-                                  <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider truncate mb-0.5">
-                                    {organizations[req.orgId]?.name || t('common.unknown')}
-                                  </span>
-                                )}
-                                <motion.span
-                                  layoutId={!isMobile ? `request-title-${req.id}` : undefined}
-                                  className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit"
-                                >
-                                  {req.title}
-                                </motion.span>
-                                {/* ... */}
-                                {/* Helper meta */}
-                                <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit flex-wrap">
-                                  {/* ... */}
-                                </span>
-                              </div>
-                            </td>
-
-                            {/* Status */}
-                            <td className="px-3 md:px-6 py-4">
-                              <div className="flex justify-center">
-                                {/* ... Status Badge ... */}
-                                <motion.div>
-                                  {isAgency ? (
-                                    <Badge variant={getStatusBadgeVariant(req.status)}>
-                                      {t(getStatusTranslationKey(req.status) as any)}
-                                    </Badge>
-                                  ) : (
-                                    <Badge variant={getClientStatusBadgeVariant(req.status)}>
-                                      {t(getClientStatusTranslationKey(req.status, true) as any)}
-                                    </Badge>
-                                  )}
-                                </motion.div>
-                                {req.isFree && (
-                                  <Badge variant="green" className="ms-2">
-                                    {t('common.free')}
-                                  </Badge>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Priority */}
-                            <td className="px-3 md:px-6 py-4">
-                              <div className="flex items-center justify-center gap-2">
-                                <div
-                                  className={cn(
-                                    'w-2 h-2 rounded-full shrink-0',
-                                    req.priority === 'HIGH' || req.priority === 'URGENT'
-                                      ? 'bg-rose-500 shadow-sm shadow-rose-500/50'
-                                      : req.priority === 'NORMAL'
-                                        ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                                        : 'bg-primary-500 shadow-sm shadow-primary-500/50'
-                                  )}
-                                />
-                                <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
-                                  {t(getPriorityTranslationKey(req.priority) as any)}
-                                </span>
-                              </div>
-                            </td>
-
-                            {/* Date */}
-                            <td className="px-3 md:px-6 py-4 hidden md:table-cell">
-                              <div className="flex flex-col items-center">
-                                <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
-                                  {req.createdAt?.toDate
-                                    ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
-                                        locale: getDateLocale(locale),
-                                      })
-                                    : t('common.recently')}
-                                </span>
-                                <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
-                                  {t('requests.table.created')}
-                                </span>
-                              </div>
-                            </td>
-
-                            {/* Actions */}
-                            <td className="px-3 md:px-6 py-4 text-end">
-                              <div className="flex items-center justify-end gap-1">
-                                <PinButton requestId={req.id} orgId={orgId as string} />
-                                <button
-                                  type="button"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    router.push(getPortalPath(`/requests/${req.id}/`));
+                  <div className="hidden md:block">
+                    <PortalTable className="border-0 shadow-none bg-transparent rounded-none overflow-visible">
+                      <PortalTableScroll>
+                        <PortalTableElement className="min-w-[600px]">
+                          <PortalTableHeader className="bg-surface-50/50 dark:bg-surface-900/50">
+                            <PortalTableRow className="cursor-default">
+                              {isAgency && isSelectionMode && (
+                                <PortalTableHead headStyle="label" className="px-3 w-12" />
+                              )}
+                              <PortalTableHead headStyle="label" className="px-3 md:px-6 min-w-[200px]">
+                                {t('requests.table.title')}
+                              </PortalTableHead>
+                              <PortalTableHead
+                                headStyle="label"
+                                cellAlign="center"
+                                className="px-3 md:px-6 whitespace-nowrap"
+                              >
+                                {t('requests.table.status')}
+                              </PortalTableHead>
+                              <PortalTableHead
+                                headStyle="label"
+                                cellAlign="center"
+                                className="px-3 md:px-6 whitespace-nowrap"
+                              >
+                                {t('requests.table.priority')}
+                              </PortalTableHead>
+                              <PortalTableHead
+                                headStyle="label"
+                                cellAlign="center"
+                                className="px-3 md:px-6 whitespace-nowrap hidden md:table-cell"
+                              >
+                                {t('requests.table.created')}
+                              </PortalTableHead>
+                              <PortalTableHead
+                                headStyle="label"
+                                cellAlign="end"
+                                className="px-3 md:px-6 whitespace-nowrap"
+                              >
+                                {t('common.actions')}
+                              </PortalTableHead>
+                            </PortalTableRow>
+                          </PortalTableHeader>
+                          <PortalTableBody>
+                            {paginatedRequests.map(req => {
+                              const isSelected = selectedRequestIds.includes(req.id);
+                              const isNewlyPinned = newlyPinnedIds.has(req.id);
+                              const isPinned = pinnedIds.includes(req.id);
+                              const canSelect =
+                                isAgency &&
+                                !req.pricingOfferId &&
+                                req.status !== 'PAID' &&
+                                req.status !== 'CLOSED';
+                              return (
+                                <MotionPortalTableRow
+                                  layout
+                                  layoutId={`request-container-${req.id}`}
+                                  key={req.id}
+                                  initial="normal"
+                                  animate={isNewlyPinned ? 'pinned' : 'normal'}
+                                  variants={pinnedItemHighlight}
+                                  transition={{
+                                    layout: {
+                                      type: 'spring',
+                                      stiffness: 400,
+                                      damping: 35,
+                                      mass: 0.8,
+                                    },
                                   }}
-                                  className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20"
-                                  aria-label={req.title}
+                                  role="link"
+                                  tabIndex={isSelectionMode ? -1 : 0}
+                                  onClick={() => openRequest(req)}
+                                  onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
+                                  hover
+                                  className={cn(
+                                    'portal-focus-ring group cursor-pointer relative outline-none',
+                                    isSelected && 'bg-primary-50 dark:bg-primary-900/10',
+                                    isNewlyPinned &&
+                                      'bg-amber-50/40 dark:bg-amber-500/10 ring-2 ring-amber-400/40 dark:ring-amber-500/30',
+                                    isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
+                                  )}
                                 >
-                                  <MessageSquare size={16} />
-                                </button>
-                                <Dropdown
-                                  trigger={
-                                    <span className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 inline-flex items-center justify-center">
-                                      <MoreVertical size={16} />
-                                    </span>
-                                  }
-                                  items={[
-                                    {
-                                      label: t('common.edit'),
-                                      onClick: () => setRequestToEdit(req),
-                                      icon: <Edit size={16} />,
-                                    },
-                                    {
-                                      label: t('common.archive'),
-                                      onClick: () => handleArchiveClick(req),
-                                      icon: <Archive size={16} />,
-                                    },
-                                    {
-                                      label: t('common.delete'),
-                                      onClick: () => handleDeleteClick(req.id),
-                                      icon: <Trash2 size={16} />,
-                                      variant: 'danger',
-                                    },
-                                  ]}
-                                />
-                              </div>
-                            </td>
-                          </motion.tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                                  {isAgency && isSelectionMode && (
+                                    <PortalTableCell className="px-3 py-4">
+                                      {canSelect ? (
+                                        <button
+                                          type="button"
+                                          onClick={e => {
+                                            e.stopPropagation();
+                                            toggleRequestSelection(req.id);
+                                          }}
+                                          aria-pressed={isSelected}
+                                          aria-label={`${t('common.select')}: ${req.title}`}
+                                          className={cn(
+                                            'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
+                                            isSelected
+                                              ? 'bg-primary-600 border-primary-600 text-white'
+                                              : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'
+                                          )}
+                                        >
+                                          {isSelected && <Check size={12} />}
+                                        </button>
+                                      ) : req.pricingOfferId ? (
+                                        <Badge variant="green" className="text-[9px]">
+                                          {t('requests.hasPricing')}
+                                        </Badge>
+                                      ) : null}
+                                    </PortalTableCell>
+                                  )}
+
+                                  <PortalTableCell className="px-3 md:px-6 min-w-0">
+                                    <div className="flex flex-col min-w-0">
+                                      {isAgency && req.orgId && (
+                                        <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider truncate mb-0.5">
+                                          {organizations[req.orgId]?.name || t('common.unknown')}
+                                        </span>
+                                      )}
+                                      <motion.span
+                                        layoutId={!isMobile ? `request-title-${req.id}` : undefined}
+                                        className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit"
+                                      >
+                                        {req.title}
+                                      </motion.span>
+                                      <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit flex-wrap">
+                                        {/* ... */}
+                                      </span>
+                                    </div>
+                                  </PortalTableCell>
+
+                                  <PortalTableCell cellAlign="center" className="px-3 md:px-6">
+                                    <div className="flex justify-center">
+                                      <motion.div>
+                                        {isAgency ? (
+                                          <Badge variant={getStatusBadgeVariant(req.status)}>
+                                            {t(getStatusTranslationKey(req.status) as any)}
+                                          </Badge>
+                                        ) : (
+                                          <Badge variant={getClientStatusBadgeVariant(req.status)}>
+                                            {t(
+                                              getClientStatusTranslationKey(req.status, true) as any
+                                            )}
+                                          </Badge>
+                                        )}
+                                      </motion.div>
+                                      {req.isFree && (
+                                        <Badge variant="green" className="ms-2">
+                                          {t('common.free')}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </PortalTableCell>
+
+                                  <PortalTableCell cellAlign="center" className="px-3 md:px-6">
+                                    <div className="flex items-center justify-center gap-2">
+                                      <div
+                                        className={cn(
+                                          'w-2 h-2 rounded-full shrink-0',
+                                          req.priority === 'HIGH' || req.priority === 'URGENT'
+                                            ? 'bg-rose-500 shadow-sm shadow-rose-500/50'
+                                            : req.priority === 'NORMAL'
+                                              ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
+                                              : 'bg-primary-500 shadow-sm shadow-primary-500/50'
+                                        )}
+                                      />
+                                      <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
+                                        {t(getPriorityTranslationKey(req.priority) as any)}
+                                      </span>
+                                    </div>
+                                  </PortalTableCell>
+
+                                  <PortalTableCell
+                                    cellAlign="center"
+                                    className="px-3 md:px-6 hidden md:table-cell"
+                                  >
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                                        {req.createdAt?.toDate
+                                          ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
+                                              locale: getDateLocale(locale),
+                                            })
+                                          : t('common.recently')}
+                                      </span>
+                                      <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                                        {t('requests.table.created')}
+                                      </span>
+                                    </div>
+                                  </PortalTableCell>
+
+                                  <PortalTableCell cellAlign="end" className="px-3 md:px-6">
+                                    <div className="flex items-center justify-end gap-1">
+                                      <PinButton requestId={req.id} orgId={orgId as string} />
+                                      <IconButton
+                                        icon={MessageSquare}
+                                        label={req.title}
+                                        variant="ghost"
+                                        size="sm"
+                                        iconSize={16}
+                                        className="min-w-[44px] min-h-[44px] hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          openRequest(req);
+                                        }}
+                                      />
+                                      <Dropdown
+                                        trigger={
+                                          <IconButton
+                                            icon={MoreVertical}
+                                            label={t('common.actions')}
+                                            variant="ghost"
+                                            size="sm"
+                                            iconSize={16}
+                                            className="min-w-[44px] min-h-[44px]"
+                                            onClick={e => e.stopPropagation()}
+                                          />
+                                        }
+                                        items={[
+                                          {
+                                            label: t('common.edit'),
+                                            onClick: () => setRequestToEdit(req),
+                                            icon: <Edit size={16} />,
+                                          },
+                                          {
+                                            label: t('common.archive'),
+                                            onClick: () => handleArchiveClick(req),
+                                            icon: <Archive size={16} />,
+                                          },
+                                          {
+                                            label: t('common.delete'),
+                                            onClick: () => handleDeleteClick(req.id),
+                                            icon: <Trash2 size={16} />,
+                                            variant: 'danger',
+                                          },
+                                        ]}
+                                      />
+                                    </div>
+                                  </PortalTableCell>
+                                </MotionPortalTableRow>
+                              );
+                            })}
+                          </PortalTableBody>
+                        </PortalTableElement>
+                      </PortalTableScroll>
+                    </PortalTable>
+                  </div>
                 </LayoutGroup>
               </motion.div>
             ) : (

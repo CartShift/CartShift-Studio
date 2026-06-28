@@ -1,6 +1,19 @@
 // Portal UI Component Exports
-// Only exports that are actually imported from this index file
 
-// Toast - Used by hooks and providers
-export { useToast, ToastProvider } from '@/components/ui/Toast';
-export type { Toast, ToastType } from '@/components/ui/Toast';
+export { PortalMetricCard, portalMetricCardVariants } from './PortalMetricCard';
+export { PortalPageHeader, portalPageHeaderVariants } from './PortalPageHeader';
+export { PortalFormField, PortalFormGrid, PortalFormSection } from './PortalFormField';
+export { PortalNavItem, portalNavItemVariants } from './PortalNavItem';
+export {
+  PortalTable,
+  PortalTableBody,
+  PortalTableCell,
+  PortalTableElement,
+  PortalTableHead,
+  PortalTableHeader,
+  PortalTableRow,
+  PortalTableScroll,
+  tableCellVariants,
+  tableHeadVariants,
+} from './PortalTable';
+export { PortalSearchField, PortalFilterSelect } from './PortalSearchField';

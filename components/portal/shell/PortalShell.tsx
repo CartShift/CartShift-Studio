@@ -29,7 +29,6 @@ import { Breadcrumbs } from '../ui/Breadcrumbs';
 import { PortalHeader, type HeaderUserData } from '@/components/portal/ui/PortalHeader';
 import { MobileBottomNav } from '@/components/portal/shell/MobileBottomNav';
 import { ImpersonationBanner } from '../ui/ImpersonationBanner';
-import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 const CommandPalette = dynamic(
   () => import('@/components/portal/CommandPalette').then(module => module.CommandPalette),
@@ -48,6 +47,13 @@ const NotificationDropdown = dynamic(
 );
 const OnboardingTour = dynamic(
   () => import('../OnboardingTour').then(module => module.OnboardingTour),
+  { ssr: false }
+);
+const RequestPreviewModal = dynamic(
+  () =>
+    import('@/components/portal/requests/RequestPreviewModal').then(
+      module => module.RequestPreviewModal
+    ),
   { ssr: false }
 );
 
@@ -122,7 +128,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
   return (
     <div
       className={cn(
-        'portal-shell min-h-screen bg-white dark:bg-surface-950 text-surface-900 dark:text-surface-50 antialiased overflow-x-hidden selection:bg-primary-500/20',
+        'portal-shell min-h-screen text-surface-900 dark:text-surface-50 antialiased overflow-x-hidden selection:bg-primary-500/20',
         getLocaleFontFamily(locale)
       )}
       dir={getLocaleDirection(locale)}
@@ -152,20 +158,11 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
             {/* Screen reader announcements are injected here dynamically */}
           </div>
 
-          {/* Mobile Sidebar Backdrop */}
-          <ModalBackdrop
-            isOpen={state.isMobileMenuOpen}
-            onClick={() => state.setIsMobileMenuOpen(false)}
-            variant="light"
-            blur="md"
-            zIndex="65"
-            preventScroll={false}
-          />
-
           {/* Sidebar - Persistent element excluded from page transitions */}
           <PortalSidebar
             isExpanded={state.isExpanded}
             isMobileMenuOpen={state.isMobileMenuOpen}
+            onMobileMenuOpenChange={state.setIsMobileMenuOpen}
             onTouchStart={state.handleTouchStart}
             onTouchEnd={state.handleTouchEnd}
             viewTransitionName="sidebar"
@@ -296,6 +293,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               }}
             />
           )}
+
+          <RequestPreviewModal />
         </>
       )}
     </div>

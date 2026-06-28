@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { AlertCircle, Check } from 'lucide-react';
@@ -20,7 +20,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const state = propState || (error ? 'error' : success ? 'success' : 'default');
 
     // Generate unique IDs for accessibility
-    const textareaId = id || `textarea-${Math.random().toString(36).substring(2, 9)}`;
+    const generatedId = useId();
+    const textareaId = id || `textarea-${generatedId}`;
     const errorId = `${textareaId}-error`;
     const hintId = `${textareaId}-hint`;
     const describedBy = error ? errorId : hint ? hintId : undefined;

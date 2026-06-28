@@ -5,14 +5,13 @@ import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { Pin, ExternalLink, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
 import { Request } from '@/lib/types/portal';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
-import { getPortalPath } from '@/lib/utils/portal-paths';
 
 interface PinnedRequestsProps {
   requests: Request[];
@@ -31,6 +30,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
 }) => {
   const t = useTranslations();
   const { pinnedIds, unpinRequest } = usePinnedRequests(orgId);
+  const { openRequest } = useOpenRequest();
 
   // Filter to only show pinned requests that still exist
   const pinnedRequests = requests.filter(r => pinnedIds.includes(r.id));
@@ -69,9 +69,16 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
           >
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
-                <Link
-                  href={getPortalPath(`/requests/${request.id}`)}
-                  className="portal-focus-ring group/link flex items-center gap-2 rounded-md"
+                <button
+                  type="button"
+                  onClick={event => {
+                    if (event.metaKey || event.ctrlKey) {
+                      openRequest(request.id, { orgId: request.orgId, fullPage: true });
+                      return;
+                    }
+                    openRequest(request.id, { orgId: request.orgId });
+                  }}
+                  className="portal-focus-ring group/link flex items-center gap-2 rounded-md text-start w-full"
                 >
                   <span className="text-sm font-medium text-surface-900 dark:text-white truncate group-hover/link:text-primary-600 dark:group-hover/link:text-primary-400 transition-colors">
                     {request.title}
@@ -80,7 +87,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
                     size={12}
                     className="flex-shrink-0 opacity-0 group-hover/link:opacity-100 text-primary-500 transition-opacity"
                   />
-                </Link>
+                </button>
                 <div className="mt-1 flex items-center gap-2">
                   <Badge
                     variant={

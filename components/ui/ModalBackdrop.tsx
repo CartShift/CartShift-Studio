@@ -1,25 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from '@/lib/motion';
+import React, { createContext, useContext, useRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { Dialog as DialogPrimitive } from 'radix-ui';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/**
- * ModalBackdrop - A reusable modal backdrop component
- *
- * This component standardizes modal behavior across the app:
- * - Uses createPortal to render at document.body level (covers entire viewport)
- * - Prevents body scroll when open
- * - Consistent z-index and backdrop blur
- * - Supports different visual variants
- * - Smooth animations with Framer Motion
- * - Click-to-close behavior
- */
-
 export const modalBackdropVariants = cva(
-  'fixed inset-0 backdrop-blur-sm transition-colors duration-300',
+  'fixed inset-0 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 motion-reduce:animate-none',
   {
     variants: {
       variant: {
@@ -29,128 +17,93 @@ export const modalBackdropVariants = cva(
         surface: 'bg-surface-900/60',
       },
       blur: {
-        none: '',
+        none: 'backdrop-blur-none',
         sm: 'backdrop-blur-sm',
         md: 'backdrop-blur-md',
         lg: 'backdrop-blur-lg',
       },
     },
-    defaultVariants: {
-      variant: 'default',
-      blur: 'sm',
-    },
+    defaultVariants: { variant: 'default', blur: 'sm' },
   }
 );
 
+interface ModalLayerContextValue {
+  zIndex: string | number;
+  captureReturnFocus: () => void;
+  restoreFocus: (event: Event) => void;
+}
+
+const ModalLayerContext = createContext<ModalLayerContextValue>({
+  zIndex: 51,
+  captureReturnFocus: () => undefined,
+  restoreFocus: () => undefined,
+});
+
 export interface ModalBackdropProps extends VariantProps<typeof modalBackdropVariants> {
-  /** Whether the backdrop is visible */
   isOpen: boolean;
-  /** Callback when backdrop is clicked */
   onClick?: () => void;
-  /** Optional z-index value (defaults to modal z-index) */
   zIndex?: string | number;
-  /** Whether to prevent body scrolling when open (default: true) */
   preventScroll?: boolean;
-  /** Custom className for additional styling */
   className?: string;
-  /** Children to render alongside the backdrop */
   children?: React.ReactNode;
 }
 
 export const ModalBackdrop = ({
   isOpen,
   onClick,
-  zIndex = '50', // z-modal from tailwind config
+  zIndex = 50,
   preventScroll = true,
   className,
   children,
   variant,
   blur,
 }: ModalBackdropProps) => {
-  // Check if we're in browser environment
-  if (typeof document === 'undefined' || !document.body) {
-    return null;
-  }
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const contentZIndex =
+    typeof zIndex === 'number' || !Number.isNaN(Number(zIndex)) ? Number(zIndex) + 1 : `calc(${zIndex} + 1)`;
+  const layerContext: ModalLayerContextValue = {
+    zIndex: contentZIndex,
+    captureReturnFocus: () => {
+      returnFocusRef.current = document.activeElement as HTMLElement | null;
+    },
+    restoreFocus: event => {
+      if (!returnFocusRef.current) return;
+      event.preventDefault();
+      returnFocusRef.current.focus();
+      returnFocusRef.current = null;
+    },
+  };
 
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (!preventScroll) return;
-
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none'; // Prevent scroll on mobile
-    } else {
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = '';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = '';
-    };
-  }, [isOpen, preventScroll]);
-
-  // Render to document.body to ensure backdrop covers entire viewport
-  return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={cn(modalBackdropVariants({ variant, blur }), className)}
-            style={{ zIndex }}
-            onClick={onClick}
-            aria-hidden="true"
-          />
-
-          {/* Children (typically the modal content) */}
-          {children && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{
-                type: 'spring',
-                damping: 25,
-                stiffness: 300,
-              }}
-              style={{
-                zIndex:
-                  typeof zIndex === 'number'
-                    ? zIndex + 1
-                    : typeof zIndex === 'string' && !isNaN(Number(zIndex))
-                      ? Number(zIndex) + 1
-                      : `calc(${zIndex} + 1)`,
-                position: 'relative', // Ensure proper stacking context
-              }}
-            >
-              {children}
-            </motion.div>
-          )}
-        </>
-      )}
-    </AnimatePresence>,
-    document.body
+  return (
+    <DialogPrimitive.Root open={isOpen} onOpenChange={open => !open && onClick?.()} modal={preventScroll}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          className={cn(modalBackdropVariants({ variant, blur }), className)}
+          style={{ zIndex }}
+        />
+        <ModalLayerContext.Provider value={layerContext}>{children}</ModalLayerContext.Provider>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 };
 
-/**
- * ModalContent - A container for modal content with consistent styling
- */
-export interface ModalContentProps {
-  children: React.ReactNode;
-  className?: string;
+export interface ModalContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
   position?: 'center' | 'top';
-  onClick?: (e: React.MouseEvent) => void;
+  /** Accessible fallback used when a consumer does not render ModalHeader. */
+  accessibleTitle?: string;
+}
+
+function getModalTitle(children: React.ReactNode, fallback?: string) {
+  if (fallback) return fallback;
+  const header = React.Children.toArray(children).find(
+    child => React.isValidElement(child) && child.type === ModalHeader
+  );
+  return React.isValidElement<ModalHeaderProps>(header) ? header.props.title : 'Dialog';
 }
 
 export const modalContentVariants = cva(
-  'bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden',
+  'fixed overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl outline-none dark:border-surface-800 dark:bg-surface-900 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none',
   {
     variants: {
       maxWidth: {
@@ -162,43 +115,43 @@ export const modalContentVariants = cva(
         full: 'max-w-full',
       },
       position: {
-        center: 'fixed top-1/2 inset-inline-start-1/2 -translate-x-1/2 -translate-y-1/2 p-4',
-        top: 'fixed top-0 inset-x-0 p-4',
+        center: 'top-1/2 start-1/2 w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rtl:translate-x-1/2',
+        top: 'top-4 inset-inline-4 mx-auto w-[calc(100%-2rem)]',
       },
     },
-    defaultVariants: {
-      maxWidth: 'lg',
-      position: 'center',
-    },
+    defaultVariants: { maxWidth: 'lg', position: 'center' },
   }
 );
 
-export const ModalContent = ({
-  children,
-  className,
-  maxWidth = 'lg',
-  position = 'center',
-  onClick,
-}: ModalContentProps) => {
+export const ModalContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  ModalContentProps
+>(({ children, className, maxWidth = 'lg', position = 'center', accessibleTitle, onOpenAutoFocus, onCloseAutoFocus, ...props }, ref) => {
+  const layer = useContext(ModalLayerContext);
+  const title = getModalTitle(children, accessibleTitle);
   return (
-    <div
+    <DialogPrimitive.Content
+      ref={ref}
+      aria-describedby={props['aria-describedby'] ?? undefined}
       className={cn(modalContentVariants({ maxWidth, position }), className)}
-      onClick={onClick}
-      style={{
-        // Ensure modal content is always above backdrop
-        // Using a high z-index relative to typical modal backdrops (z-200)
-        // This ensures content is always visible above the backdrop blur
-        zIndex: 201, // Above typical backdrop z-index of 200
+      {...props}
+      style={{ ...props.style, zIndex: layer.zIndex }}
+      onOpenAutoFocus={event => {
+        layer.captureReturnFocus();
+        onOpenAutoFocus?.(event);
+      }}
+      onCloseAutoFocus={event => {
+        onCloseAutoFocus?.(event);
+        if (!event.defaultPrevented) layer.restoreFocus(event);
       }}
     >
+      <DialogPrimitive.Title className="sr-only">{title}</DialogPrimitive.Title>
       {children}
-    </div>
+    </DialogPrimitive.Content>
   );
-};
+});
+ModalContent.displayName = 'ModalContent';
 
-/**
- * ModalHeader - Consistent modal header with optional close button
- */
 export interface ModalHeaderProps {
   title: string;
   description?: string;
@@ -206,92 +159,59 @@ export interface ModalHeaderProps {
   className?: string;
 }
 
-export const ModalHeader = ({ title, description, onClose, className }: ModalHeaderProps) => {
-  return (
-    <div
-      className={cn(
-        'flex items-start justify-between p-5 border-b border-surface-200 dark:border-surface-800',
-        className
-      )}
-    >
-      <div className="flex-1">
-        {title && (
-          <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-            {title}
-          </h3>
-        )}
-        {description && (
-          <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 font-medium font-outfit">
-            {description}
-          </p>
-        )}
-      </div>
-      {onClose && (
-        <button
-          onClick={onClose}
-          className="p-2 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
-          aria-label="Close"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-surface-500"
-          >
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
+export const ModalHeader = ({ title, description, onClose, className }: ModalHeaderProps) => (
+  <div className={cn('flex items-start justify-between border-b border-surface-200 p-5 dark:border-surface-800', className)}>
+    <div className="flex-1">
+      <h3 className="font-outfit text-lg font-bold text-surface-900 dark:text-white">
+        {title}
+      </h3>
+      {description && (
+        <DialogPrimitive.Description className="mt-1 font-outfit text-sm font-medium text-surface-500 dark:text-surface-400">
+          {description}
+        </DialogPrimitive.Description>
       )}
     </div>
-  );
-};
+    {onClose && (
+      <DialogPrimitive.Close asChild>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg p-2 transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
+          aria-label="Close"
+        >
+          <X size={20} className="text-surface-500" />
+        </button>
+      </DialogPrimitive.Close>
+    )}
+  </div>
+);
 
-/**
- * ModalBody - Container for modal body content
- */
 export interface ModalBodyProps {
   children: React.ReactNode;
   className?: string;
   scrollable?: boolean;
 }
 
-export const ModalBody = ({ children, className, scrollable }: ModalBodyProps) => {
-  const baseClasses = 'p-5';
-  const scrollableClasses = scrollable ? 'overflow-y-auto max-h-[70vh]' : '';
+export const ModalBody = ({ children, className, scrollable }: ModalBodyProps) => (
+  <div className={cn('p-5', scrollable && 'max-h-[70vh] overflow-y-auto', className)}>{children}</div>
+);
 
-  return <div className={cn(baseClasses, scrollableClasses, className)}>{children}</div>;
-};
-
-/**
- * ModalFooter - Consistent footer with action buttons
- */
 export interface ModalFooterProps {
   children: React.ReactNode;
   className?: string;
   align?: 'start' | 'center' | 'end';
 }
 
-export const ModalFooter = ({ children, className, align = 'end' }: ModalFooterProps) => {
-  const alignClasses = {
-    start: 'justify-start',
-    center: 'justify-center',
-    end: 'justify-end',
-  };
-
-  return (
-    <div
-      className={cn(
-        'flex gap-3 p-5 border-t border-surface-200 dark:border-surface-800',
-        alignClasses[align],
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-};
+export const ModalFooter = ({ children, className, align = 'end' }: ModalFooterProps) => (
+  <div
+    className={cn(
+      'flex gap-3 border-t border-surface-200 p-5 dark:border-surface-800',
+      align === 'start' && 'justify-start',
+      align === 'center' && 'justify-center',
+      align === 'end' && 'justify-end',
+      className
+    )}
+  >
+    {children}
+  </div>
+);

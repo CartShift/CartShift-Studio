@@ -27,6 +27,7 @@ import {
   REQUEST_TYPE,
 } from '@/lib/types/portal';
 import type { EnhancedOrganization } from '@/lib/hooks/useAgencyClients';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 /**
  * Column definition used by the workboard.
@@ -70,6 +71,7 @@ export function useWorkboardState({
   showError,
 }: UseWorkboardStateParams) {
   const queryClient = useQueryClient();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
   const { requests: subscribedRequests, loading: requestsQueryLoading } = useRequests();
 
   // ── Data State (synced with TanStack + Firestore subscription) ──
@@ -234,7 +236,14 @@ export function useWorkboardState({
   // ── Bulk Delete ─────────────────────────────────────────────
   const handleBulkDelete = async () => {
     if (selectedRequests.size === 0) return;
-    if (!confirm(t('common.deleteConfirm', { name: `${selectedRequests.size} items` }))) return;
+    const ok = await confirm({
+      title: t('common.deleteConfirmTitle'),
+      description: t('common.deleteConfirm', { name: `${selectedRequests.size} items` }),
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     setIsDeleting(true);
     try {
@@ -414,5 +423,6 @@ export function useWorkboardState({
     handleBulkMove,
     handleCreateRequest,
     handleDeleteRequest,
+    confirmDialog: ConfirmDialog,
   };
 }

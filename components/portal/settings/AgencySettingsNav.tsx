@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { PortalNavItem } from '@/components/portal/ui/PortalNavItem';
 import type { LucideIcon } from 'lucide-react';
 
 export const AGENCY_SETTINGS_TAB_IDS = [
@@ -60,21 +60,14 @@ export function AgencySettingsNav({
             <p className="portal-label-sm text-[10px] px-3 mb-1.5">{group.label}</p>
             <div className="space-y-1">
               {groupTabs.map(tab => (
-                <button
+                <PortalNavItem
                   key={tab.id}
-                  type="button"
-                  onClick={() => onSelect(tab.id)}
+                  label={tab.label}
+                  icon={tab.icon}
+                  active={activeTab === tab.id}
                   aria-current={activeTab === tab.id ? 'page' : undefined}
-                  className={cn(
-                    'portal-focus-ring w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-colors font-outfit',
-                    activeTab === tab.id
-                      ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-sm'
-                      : 'text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'
-                  )}
-                >
-                  <tab.icon size={18} aria-hidden />
-                  {tab.label}
-                </button>
+                  onClick={() => onSelect(tab.id)}
+                />
               ))}
             </div>
           </div>

@@ -75,6 +75,19 @@ vi.mock('@/lib/hooks/usePinnedRequests', () => ({
   usePinnedRequests: () => mockUsePinnedRequests(),
 }));
 
+vi.mock('@/lib/hooks/useOpenRequest', () => ({
+  useOpenRequest: () => ({ openRequest: vi.fn(), openRequestPreview: vi.fn() }),
+}));
+
+vi.mock('@/lib/hooks/useRequestListMutations', () => ({
+  useRequestListMutations: () => ({
+    deleteRequest: vi.fn().mockResolvedValue(undefined),
+    isDeleting: false,
+    updateStatus: vi.fn().mockResolvedValue(undefined),
+    isUpdatingStatus: false,
+  }),
+}));
+
 vi.mock('@/lib/context/OrgContext', () => ({
   useOrg: () => ({
     orgId: 'org-1',

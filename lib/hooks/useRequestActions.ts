@@ -17,7 +17,7 @@ import {
 import { logActivity } from '@/lib/services/portal-activities';
 import { uploadFile } from '@/lib/services/portal-files';
 import { createComment } from '@/lib/services/portal-comments';
-import { useToast } from '@/components/portal/ui';
+import { portalToast as toast } from '@/lib/utils/portal-toast';
 import {
   Request,
   PortalUser,
@@ -108,8 +108,8 @@ export function useRequestActions({
   isAgency,
   onCommentsUpdate,
 }: UseRequestActionsParams): UseRequestActionsResult {
-  const toast = useToast();
   const t = useTranslations('portal.requests.toast');
+  const tPortal = useTranslations('portal');
   const queryClient = useQueryClient();
 
   //  states
@@ -599,7 +599,7 @@ export function useRequestActions({
     const isCreator = _request?.createdBy === userData?.id;
 
     if (!isAgency && !isCreator) {
-      toast.error('Permission denied', 'You do not have permission to delete this request');
+      toast.error(tPortal('toast.permissionDenied'), tPortal('toast.permissionDeniedDesc'));
       return false;
     }
 
@@ -615,7 +615,7 @@ export function useRequestActions({
     } finally {
       setIsDeleting(false);
     }
-  }, [canPerformAction, requestId, isAgency, toast]);
+  }, [canPerformAction, requestId, isAgency, _request?.createdBy, userData?.id, toast, tPortal]);
 
   return {
     handleAddPricing,

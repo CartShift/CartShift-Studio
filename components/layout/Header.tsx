@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { motion, AnimatePresence } from '@/lib/motion';
+import { motion } from '@/lib/motion';
+import { DropdownMenu } from 'radix-ui';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -125,24 +126,22 @@ export const Header: React.FC = () => {
                     const dropdownRefs = getDropdownRefs(item.dropdownType);
 
                     return (
-                      <div
+                      <DropdownMenu.Root
                         key={item.name}
-                        className="relative group/nav"
-                        onMouseEnter={() => actions.openDropdown(item.dropdownType!)}
-                        onMouseLeave={() => actions.closeDropdown()}
-                        ref={dropdownRefs.container}
+                        open={isOpen}
+                        onOpenChange={open =>
+                          open ? actions.openDropdown(item.dropdownType!) : actions.closeDropdown()
+                        }
                       >
-                        <button
-                          ref={dropdownRefs.button}
+                        <DropdownMenu.Trigger asChild>
+                          <button
+                            ref={dropdownRefs.button}
                           className={cn(
                             'flex items-center gap-1.5 py-2 text-sm font-semibold tracking-tight transition-colors duration-200 focus:outline-none',
                             isOpen
                               ? 'text-primary-600 dark:text-primary-400'
                               : 'text-surface-600 dark:text-white hover:text-surface-900 dark:hover:text-white'
                           )}
-                          aria-expanded={isOpen}
-                          aria-haspopup="true"
-                          onClick={() => actions.toggleDropdown(item.dropdownType!)}
                         >
                           {item.name}
                           <motion.span
@@ -151,35 +150,32 @@ export const Header: React.FC = () => {
                           >
                             <Icon name="chevron-down" size={14} />
                           </motion.span>
-                        </button>
-                        <AnimatePresence>
-                          {isOpen && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                              transition={{ duration: 0.15, ease: 'easeOut' }}
-                              className="absolute top-full start-0 mt-3 w-64 z-[60] p-1.5 rounded-2xl bg-white dark:bg-surface-900 backdrop-blur-xl border border-surface-200 dark:border-surface-700/60 shadow-xl shadow-surface-900/10 dark:shadow-black/30 overflow-hidden"
-                              role="menu"
-                            >
+                          </button>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Portal>
+                          <DropdownMenu.Content
+                            align="start"
+                            sideOffset={12}
+                            collisionPadding={12}
+                            className="z-[60] w-64 overflow-hidden rounded-2xl border border-surface-200 bg-white p-1.5 shadow-xl shadow-surface-900/10 outline-none backdrop-blur-xl dark:border-surface-700/60 dark:bg-surface-900 dark:shadow-black/30 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none"
+                          >
                               {/* Accent gradient line */}
                               <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-primary-500 to-accent-500 opacity-60" />
                               <div className="grid gap-0.5 pt-1">
                                 {item.submenu.map(subItem => (
-                                  <Link
-                                    key={subItem.name}
-                                    href={subItem.href}
-                                    className="flex items-center px-3.5 py-2.5 rounded-xl text-sm font-semibold text-surface-700 dark:text-white hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-white transition-colors duration-150"
-                                    role="menuitem"
-                                  >
-                                    {subItem.name}
-                                  </Link>
+                                  <DropdownMenu.Item key={subItem.name} asChild>
+                                    <Link
+                                      href={subItem.href}
+                                      className="flex items-center rounded-xl px-3.5 py-2.5 text-sm font-semibold text-surface-700 outline-none transition-colors duration-150 hover:bg-surface-100 hover:text-surface-900 data-[highlighted]:bg-surface-100 dark:text-white dark:hover:bg-surface-800/60 dark:hover:text-white dark:data-[highlighted]:bg-surface-800/60"
+                                    >
+                                      {subItem.name}
+                                    </Link>
+                                  </DropdownMenu.Item>
                                 ))}
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Portal>
+                      </DropdownMenu.Root>
                     );
                   }
                   return (

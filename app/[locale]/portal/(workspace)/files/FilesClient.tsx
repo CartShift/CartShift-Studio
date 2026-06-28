@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   FileText,
   Image as ImageIcon,
-  Search,
   Upload,
   Download,
   Share2,
@@ -14,31 +13,47 @@ import {
   FileCode,
   File,
   AlertCircle,
+  Eye,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { SkeletonTable } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { getFilesByOrg, formatFileSize, deleteFile } from '@/lib/services/portal-files';
-import { FileAttachment } from '@/lib/types/portal';
+import { formatFileSize } from '@/lib/services/portal-files';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { UploadFileForm } from '@/components/portal/forms/UploadFileForm';
 import { useTranslations, useLocale } from 'next-intl';
-import { toast } from 'sonner';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
+import { useOrgFiles } from '@/lib/hooks/useOrgFiles';
+import { useFileMutations } from '@/lib/hooks/useFileMutations';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import { FileImage as PortalFileImage } from '@/components/ui/FileImage';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
+import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
+import {
+  PortalTable,
+  PortalTableBody,
+  PortalTableCell,
+  PortalTableElement,
+  PortalTableHead,
+  PortalTableHeader,
+  PortalTableRow,
+  PortalTableScroll,
+} from '@/components/portal/ui/PortalTable';
+import { IconButton } from '@/components/ui/IconButton';
 
 export default function FilesClient() {
   const orgId = useResolvedOrgId();
-  const [files, setFiles] = useState<FileAttachment[]>([]);
-  const [loading, set] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const safeOrgId = typeof orgId === 'string' ? orgId : undefined;
+  const { files, loading, error, refetch } = useOrgFiles(safeOrgId);
+  const { deleteFile, isDeleting: isDeletingFile } = useFileMutations(safeOrgId);
+  const { confirm, ConfirmDialog } = useConfirmDialog();
   const [searchQuery, setSearchQuery] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [deletingFile, setFile] = useState<string | null>(null);
+  const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<{
     url: string;
     name: string;
@@ -46,26 +61,6 @@ export default function FilesClient() {
   } | null>(null);
   const t = useTranslations('portal');
   const locale = useLocale();
-
-  useEffect(() => {
-    async function fetchFiles() {
-      if (!orgId || typeof orgId !== 'string') return;
-
-      set(true);
-      setError(null);
-      try {
-        const data = await getFilesByOrg(orgId);
-        setFiles(data);
-      } catch (err) {
-        console.error('Error fetching files:', err);
-        setError(t('common.error'));
-      } finally {
-        set(false);
-      }
-    }
-
-    fetchFiles();
-  }, [orgId]);
 
   const filteredFiles = files.filter(file =>
     file.originalName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -82,27 +77,26 @@ export default function FilesClient() {
 
   const handleUploadSuccess = async () => {
     setShowUploadModal(false);
-    if (orgId && typeof orgId === 'string') {
-      const data = await getFilesByOrg(orgId);
-      setFiles(data);
-    }
+    await refetch();
   };
 
   const handleDeleteFile = async (fileId: string, storagePath: string) => {
-    if (!confirm(t('files.actions.deleteConfirm'))) return;
+    const confirmed = await confirm({
+      title: t('common.deleteConfirmTitle'),
+      description: t('files.actions.deleteConfirm'),
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!confirmed) return;
 
-    setFile(fileId);
+    setDeletingFileId(fileId);
     try {
-      await deleteFile(fileId, storagePath);
-      if (orgId && typeof orgId === 'string') {
-        const data = await getFilesByOrg(orgId);
-        setFiles(data);
-      }
+      await deleteFile({ fileId, storagePath });
     } catch (error) {
       console.error('Error deleting file:', error);
-      toast.error(t('files.actions.deleteFailed'));
     } finally {
-      setFile(null);
+      setDeletingFileId(null);
     }
   };
 
@@ -145,42 +139,31 @@ export default function FilesClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('files.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('files.subtitle')}
-          </p>
-        </div>
-        <Button
-          onClick={() => setShowUploadModal(true)}
-          className="flex items-center gap-2 shadow-lg shadow-primary-500/20 font-outfit"
-        >
-          <Upload size={18} />
-          {t('files.upload')}
-        </Button>
-      </div>
+      {ConfirmDialog}
+
+      <PortalPageHeader
+        title={t('files.title')}
+        description={t('files.subtitle')}
+        className="mb-0"
+        action={
+          <Button onClick={() => setShowUploadModal(true)} leftIcon={<Upload size={18} />}>
+            {t('files.upload')}
+          </Button>
+        }
+      />
 
       <Card
         noPadding
         className="border-surface-200 dark:border-surface-800 shadow-sm overflow-hidden bg-white dark:bg-surface-950"
       >
         <div className="p-5 border-b border-surface-100 dark:border-surface-800 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-50/30 dark:bg-surface-900/30">
-          <div className="relative w-full md:w-96">
-            <Search
-              size={18}
-              className="absolute start-4 top-1/2 -translate-y-1/2 text-surface-400"
-            />
-            <input
-              type="text"
-              placeholder={t('files.searchPlaceholder')}
-              className="portal-input ps-11 pe-4 py-2.5 rounded-2xl text-sm font-medium"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </div>
+          <PortalSearchField
+            className="w-full md:w-96"
+            placeholder={t('files.searchPlaceholder')}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            inputClassName="rounded-2xl py-2.5"
+          />
           <div className="flex items-center gap-3">
             <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-[10px] font-black text-surface-500 uppercase tracking-widest">
               {files.length}{' '}
@@ -269,10 +252,10 @@ export default function FilesClient() {
                         </button>
                         <button
                           onClick={() => handleDeleteFile(file.id, file.storagePath)}
-                          disabled={deletingFile === file.id}
+                          disabled={deletingFileId === file.id || isDeletingFile}
                           className="w-8 h-8 flex items-center justify-center text-surface-400 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 disabled:opacity-50"
                         >
-                          {deletingFile === file.id ? (
+                          {deletingFileId === file.id ? (
                             <Loader2 size={16} className="animate-spin" />
                           ) : (
                             <Trash2 size={16} />
@@ -285,126 +268,138 @@ export default function FilesClient() {
               </div>
 
               {/* Desktop View: Table */}
-              <table className="hidden md:table w-full text-start">
-                <thead>
-                  <tr className="bg-surface-50/50 dark:bg-surface-900/50">
-                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
-                      {t('files.table.identity')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
-                      {t('files.table.metadata')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
-                      {t('files.table.format')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit">
-                      {t('files.table.transmission')}
-                    </th>
-                    <th className="px-6 py-4 portal-label-sm text-[10px] font-outfit text-end">
-                      {t('files.table.actions')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-                  {filteredFiles.map(file => (
-                    <tr
-                      key={file.id}
-                      className="hover:bg-surface-50/50 dark:hover:bg-surface-900/30 transition-all group"
-                    >
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-4">
-                          {file.mimeType.startsWith('image/') ? (
-                            <button
-                              onClick={() =>
-                                setPreviewImage({
-                                  url: file.url,
-                                  name: file.originalName,
-                                  storagePath: file.storagePath,
-                                })
-                              }
-                              className="w-12 h-12 rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex-shrink-0 shadow-sm hover:scale-105 transition-all cursor-pointer"
-                              title="Click to preview"
-                            >
-                              <PortalFileImage
-                                src={file.url}
-                                storagePath={file.storagePath}
-                                alt={file.originalName}
-                                className="w-full h-full object-cover"
-                              />
-                            </button>
-                          ) : (
-                            <div className="w-12 h-12 rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex items-center justify-center text-surface-400 transition-all shadow-sm">
-                              {getIcon(file.mimeType)}
+              <PortalTable className="hidden md:block border-0 shadow-none bg-transparent rounded-none">
+                <PortalTableScroll>
+                  <PortalTableElement>
+                    <PortalTableHeader>
+                      <PortalTableRow>
+                        <PortalTableHead headStyle="label">
+                          {t('files.table.identity')}
+                        </PortalTableHead>
+                        <PortalTableHead headStyle="label">
+                          {t('files.table.metadata')}
+                        </PortalTableHead>
+                        <PortalTableHead headStyle="label">
+                          {t('files.table.format')}
+                        </PortalTableHead>
+                        <PortalTableHead headStyle="label">
+                          {t('files.table.transmission')}
+                        </PortalTableHead>
+                        <PortalTableHead headStyle="label" cellAlign="end">
+                          {t('files.table.actions')}
+                        </PortalTableHead>
+                      </PortalTableRow>
+                    </PortalTableHeader>
+                    <PortalTableBody>
+                      {filteredFiles.map(file => (
+                        <PortalTableRow key={file.id} hover={true}>
+                          <PortalTableCell className="py-5">
+                            <div className="flex items-center gap-4">
+                              {file.mimeType.startsWith('image/') ? (
+                                <button
+                                  onClick={() =>
+                                    setPreviewImage({
+                                      url: file.url,
+                                      name: file.originalName,
+                                      storagePath: file.storagePath,
+                                    })
+                                  }
+                                  className="w-12 h-12 rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex-shrink-0 shadow-sm hover:scale-105 transition-all cursor-pointer"
+                                  title={t('common.view')}
+                                >
+                                  <PortalFileImage
+                                    src={file.url}
+                                    storagePath={file.storagePath}
+                                    alt={file.originalName}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </button>
+                              ) : (
+                                <div className="w-12 h-12 rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex items-center justify-center text-surface-400 transition-all shadow-sm">
+                                  {getIcon(file.mimeType)}
+                                </div>
+                              )}
+                              <div className="flex flex-col min-w-0">
+                                <span className="font-bold text-surface-900 dark:text-white transition-colors truncate max-w-[200px] md:max-w-xs font-outfit leading-tight">
+                                  {file.originalName}
+                                </span>
+                                <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter mt-1">
+                                  {t('files.table.addedBy')}{' '}
+                                  {file.uploadedByName || t('files.table.system')}
+                                </span>
+                              </div>
                             </div>
-                          )}
-                          <div className="flex flex-col min-w-0">
-                            <span className="font-bold text-surface-900 dark:text-white transition-colors truncate max-w-[200px] md:max-w-xs font-outfit leading-tight">
-                              {file.originalName}
+                          </PortalTableCell>
+                          <PortalTableCell className="py-5">
+                            <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit">
+                              {formatFileSize(file.size)}
                             </span>
-                            <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter mt-1">
-                              {t('files.table.addedBy')}{' '}
-                              {file.uploadedByName || t('files.table.system')}
+                          </PortalTableCell>
+                          <PortalTableCell className="py-5">
+                            <Badge
+                              variant="gray"
+                              className="text-[9px] font-black border-surface-200 dark:border-surface-800"
+                            >
+                              {file.mimeType.split('/').pop()?.toUpperCase() || t('common.file')}
+                            </Badge>
+                          </PortalTableCell>
+                          <PortalTableCell className="py-5">
+                            <span className="text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-tight">
+                              {file.uploadedAt?.toDate
+                                ? format(file.uploadedAt.toDate(), 'MMM d, yyyy', {
+                                    locale: getDateLocale(locale),
+                                  })
+                                : t('common.recently')}
                             </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit">
-                          {formatFileSize(file.size)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-5">
-                        <Badge
-                          variant="gray"
-                          className="text-[9px] font-black border-surface-200 dark:border-surface-800"
-                        >
-                          {file.mimeType.split('/').pop()?.toUpperCase() || t('common.file')}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-tight">
-                          {file.uploadedAt?.toDate
-                            ? format(file.uploadedAt.toDate(), 'MMM d, yyyy', {
-                                locale: getDateLocale(locale),
-                              })
-                            : t('common.recently')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-5 text-end">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="portal-focus-ring w-11 h-11 flex items-center justify-center text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 border border-transparent hover:border-primary-100 dark:hover:border-primary-900/30"
-                            title="Download"
-                          >
-                            <Download size={16} />
-                          </a>
-                          <button
-                            className="w-9 h-9 flex items-center justify-center text-surface-400 hover:text-emerald-500 transition-colors rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/30"
-                            title="Share"
-                          >
-                            <Share2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteFile(file.id, file.storagePath)}
-                            disabled={deletingFile === file.id}
-                            className="w-9 h-9 flex items-center justify-center text-surface-400 hover:text-rose-500 transition-colors rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-transparent hover:border-rose-100 dark:hover:border-rose-900/30 disabled:opacity-50"
-                            title={t('files.actions.delete')}
-                          >
-                            {deletingFile === file.id ? (
-                              <Loader2 size={16} className="animate-spin" />
-                            ) : (
-                              <Trash2 size={16} />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </PortalTableCell>
+                          <PortalTableCell cellAlign="end" className="py-5">
+                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                              {file.mimeType.startsWith('image/') ? (
+                                <IconButton
+                                  icon={Eye}
+                                  label={t('common.view')}
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    setPreviewImage({
+                                      url: file.url,
+                                      name: file.originalName,
+                                      storagePath: file.storagePath,
+                                    })
+                                  }
+                                />
+                              ) : null}
+                              <a
+                                href={file.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="portal-focus-ring w-8 h-8 flex items-center justify-center text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                                title={t('files.actions.download')}
+                              >
+                                <Download size={16} />
+                              </a>
+                              <IconButton
+                                icon={Share2}
+                                label={t('files.actions.share')}
+                                variant="success"
+                                size="sm"
+                              />
+                              <IconButton
+                                icon={Trash2}
+                                label={t('files.actions.delete')}
+                                variant="danger"
+                                size="sm"
+                                loading={deletingFileId === file.id}
+                                onClick={() => handleDeleteFile(file.id, file.storagePath)}
+                              />
+                            </div>
+                          </PortalTableCell>
+                        </PortalTableRow>
+                      ))}
+                    </PortalTableBody>
+                  </PortalTableElement>
+                </PortalTableScroll>
+              </PortalTable>
             </>
           ) : (
             <EmptyState
@@ -429,15 +424,14 @@ export default function FilesClient() {
         </div>
       </Card>
 
-      {showUploadModal && orgId && typeof orgId === 'string' && (
+      {showUploadModal && safeOrgId && (
         <UploadFileForm
-          orgId={orgId}
+          orgId={safeOrgId}
           onSuccess={handleUploadSuccess}
           onCancel={() => setShowUploadModal(false)}
         />
       )}
 
-      {/* Image Preview Modal */}
       <ImagePreviewModal
         imageUrl={previewImage?.url || ''}
         imageName={previewImage?.name || ''}

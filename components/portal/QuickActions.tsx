@@ -115,7 +115,7 @@ export function QuickActions() {
                 </div>
                 <ArrowRight
                   size={14}
-                  className="text-surface-300 dark:text-surface-600 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 shrink-0"
+                  className="text-surface-300 dark:text-surface-600 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 rtl:translate-x-2 rtl:group-hover:translate-x-0 rtl:rotate-180 shrink-0"
                 />
               </div>
             </Card>

@@ -31,6 +31,8 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTeam } from '@/lib/hooks/useTeam';
 import { useTeamMutations } from '@/lib/hooks/useTeamMutations';
 import { OrganizationMember, UserRole, Invite } from '@/lib/types/portal';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 export default function TeamClient() {
   const orgId = useResolvedOrgId();
@@ -43,21 +45,36 @@ export default function TeamClient() {
   const [copiedInviteId, setCopiedInviteId] = useState<string | null>(null);
   const t = useTranslations('portal');
   const locale = useLocale();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
 
   const handleInviteSuccess = () => {
     setShowInviteModal(false);
   };
 
-  const handleCancelInvite = (inviteId: string) => {
-    if (!confirm(t('team.confirmCancel'))) return;
+  const handleCancelInvite = async (inviteId: string) => {
+    const ok = await confirm({
+      title: t('common.confirm'),
+      description: t('team.confirmCancel'),
+      confirmText: t('team.cancel'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
     setCancellingInviteId(inviteId);
     cancelInvite(inviteId, {
       onSettled: () => setCancellingInviteId(null),
     });
   };
 
-  const handleRemoveMember = (member: OrganizationMember) => {
-    if (!confirm(t('team.removeMemberConfirm', { name: member.name || member.email }))) return;
+  const handleRemoveMember = async (member: OrganizationMember) => {
+    const ok = await confirm({
+      title: t('team.removeMember'),
+      description: t('team.removeMemberConfirm', { name: member.name || member.email }),
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
     if (!safeOrgId) return;
     removeMember({ memberId: member.id, orgId: safeOrgId, userId: member.userId });
   };
@@ -124,23 +141,16 @@ export default function TeamClient() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('team.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
-            {t('team.subtitle')}
-          </p>
-        </div>
-        <Button
-          onClick={() => setShowInviteModal(true)}
-          className="flex items-center gap-2 shadow-lg shadow-primary-500/20 font-outfit"
-        >
-          <UserPlus size={18} />
-          {t('team.invite')}
-        </Button>
-      </div>
+      <PortalPageHeader
+        title={t('team.title')}
+        description={t('team.subtitle')}
+        className="mb-0"
+        action={
+          <Button onClick={() => setShowInviteModal(true)} leftIcon={<UserPlus size={18} />}>
+            {t('team.invite')}
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 min-[1040px]:grid-cols-[minmax(0,1fr)_300px] gap-5">
         <div className="min-w-0">
@@ -341,6 +351,8 @@ export default function TeamClient() {
           onCancel={() => setShowInviteModal(false)}
         />
       )}
+
+      {ConfirmDialog}
     </div>
   );
 }

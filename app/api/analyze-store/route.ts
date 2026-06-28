@@ -1,6 +1,6 @@
 import { after, NextRequest, NextResponse } from 'next/server';
 import { logError, createErrorResponse } from '@/lib/error-handler';
-import { checkRateLimit as checkFirestoreRateLimit } from '@/lib/services/rate-limiter';
+import { enforceApiRateLimit, rateLimitHeaders } from '@/lib/utils/api-rate-limit';
 import { AnalyzerService } from '@/lib/services/analyzer';
 import {
   deliverStoreAnalysisReport,
@@ -17,63 +17,22 @@ export const maxDuration = 120;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const RATE_LIMIT_WINDOW = 60 * 1000;
 
-function getRateLimitKey(request: NextRequest): string | null {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIp = request.headers.get('x-real-ip');
-  const ip = forwarded ? forwarded.split(',')[0].trim() : realIp;
-  if (ip && ip !== 'unknown') {
-    return `analyze-store:${ip}`;
-  }
-  if (process.env.NODE_ENV === 'production') {
-    return null;
-  }
-  const userAgent = request.headers.get('user-agent') || 'unknown';
-  return `analyze-store:dev:${userAgent.slice(0, 120)}`;
-}
-
 function formatZodErrors(error: { issues: { message: string }[] }): string {
   return error.issues.map(issue => issue.message).join(' ');
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const rateLimitKey = getRateLimitKey(request);
-    if (!rateLimitKey) {
-      return NextResponse.json(
-        createErrorResponse(
-          'Could not verify your request origin. Please try again from a standard network connection.',
-          400
-        ),
-        { status: 400 }
-      );
-    }
+    const rateLimit = await enforceApiRateLimit(request, 'analyze-store', {
+      maxRequests: RATE_LIMIT_MAX_REQUESTS,
+      windowMs: RATE_LIMIT_WINDOW,
+      allowUserAgentFallback: process.env.NODE_ENV !== 'production',
+      tooManyRequestsMessage:
+        'Too many analysis requests. Please wait a minute before trying again.',
+    });
 
-    const rateLimitResult = await checkFirestoreRateLimit(
-      rateLimitKey,
-      RATE_LIMIT_MAX_REQUESTS,
-      RATE_LIMIT_WINDOW
-    );
-
-    if (!rateLimitResult.allowed) {
-      const retryAfter = rateLimitResult.resetAt
-        ? Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
-        : 60;
-      return NextResponse.json(
-        createErrorResponse(
-          'Too many analysis requests. Please wait a minute before trying again.',
-          429
-        ),
-        {
-          status: 429,
-          headers: {
-            'Retry-After': retryAfter.toString(),
-            'Content-Type': 'application/json',
-            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetAt?.toString() || '',
-          },
-        }
-      );
+    if ('response' in rateLimit) {
+      return rateLimit.response;
     }
 
     let body: unknown;
@@ -205,10 +164,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(clientResult, {
-      headers: {
-        'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
-        'X-RateLimit-Remaining': rateLimitResult.remaining?.toString() || '0',
-      },
+      headers: rateLimitHeaders(RATE_LIMIT_MAX_REQUESTS, rateLimit.result.remaining),
     });
   } catch (error: unknown) {
     logError('Analysis route error', error);

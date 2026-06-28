@@ -14,13 +14,31 @@ import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
 import { queryKeys } from '@/lib/utils/query-keys';
 import { Request } from '@/lib/types/portal';
 
-export function useRequests() {
-  const orgId = useResolvedOrgId();
-  const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
-  const safeOrgId = typeof orgId === 'string' ? orgId : '';
+export interface UseRequestsOptions {
+  /** Explicit org scope — skips agency-wide mode */
+  orgId?: string;
+  enabled?: boolean;
+}
 
-  const shouldFetch = isAuthenticated && !auth && (isAgency || Boolean(safeOrgId));
-  const qKey = isAgency ? queryKeys.requests.all : queryKeys.requests.byOrg(safeOrgId);
+export function useRequests(options?: UseRequestsOptions) {
+  const resolvedOrgId = useResolvedOrgId();
+  const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
+
+  const explicitOrgId = options?.orgId;
+  const orgScoped = explicitOrgId !== undefined;
+  const safeOrgId =
+    typeof explicitOrgId === 'string'
+      ? explicitOrgId
+      : typeof resolvedOrgId === 'string'
+        ? resolvedOrgId
+        : '';
+
+  const enabled = options?.enabled ?? true;
+  const agencyMode = isAgency && !orgScoped;
+  const shouldFetch =
+    isAuthenticated && !auth && enabled && (agencyMode || Boolean(safeOrgId));
+
+  const qKey = agencyMode ? queryKeys.requests.all : queryKeys.requests.byOrg(safeOrgId);
 
   const {
     data: requests = [],
@@ -29,25 +47,24 @@ export function useRequests() {
     refetch,
   } = useQuery({
     queryKey: qKey,
-    queryFn: () => (isAgency ? getAllRequests() : getRequestsByOrg(safeOrgId)),
+    queryFn: () => (agencyMode ? getAllRequests() : getRequestsByOrg(safeOrgId)),
     enabled: Boolean(shouldFetch),
     staleTime: Infinity,
   });
 
-  // Real-time subscription replaces polling
   const subscribe = useMemo(() => {
     if (!shouldFetch) return null;
-    return isAgency
+    return agencyMode
       ? (cb: (data: Request[]) => void) => subscribeToAllRequests(cb)
       : (cb: (data: Request[]) => void) => subscribeToOrgRequests(safeOrgId, cb);
-  }, [shouldFetch, isAgency, safeOrgId]);
+  }, [shouldFetch, agencyMode, safeOrgId]);
 
   useFirestoreSubscription(qKey, subscribe, Boolean(shouldFetch));
 
   return {
     requests,
     loading: auth || (shouldFetch && isLoading),
-    error: error instanceof Error ? error.message : (error as string | null),
+    error: error instanceof Error ? error.message : error ? String(error) : null,
     refetch,
   };
 }

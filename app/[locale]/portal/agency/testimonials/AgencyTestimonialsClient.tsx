@@ -23,10 +23,13 @@ import {
   Code2,
   Building2,
 } from 'lucide-react';
+import { StarRatingDisplay } from '@/components/portal/testimonial/StarRatingDisplay';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { Textarea } from '@/components/ui/Textarea';
+import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 import {
   getAllTestimonials,
   updateTestimonialStatus,
@@ -78,30 +81,6 @@ function StatsCard({
         <p className="text-xl font-bold leading-none">{value}</p>
         <p className="text-xs opacity-80">{label}</p>
       </div>
-    </div>
-  );
-}
-
-// ============================================
-// Star Rating Display
-// ============================================
-
-function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' }) {
-  const sizeClasses = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
-
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map(star => (
-        <Star
-          key={star}
-          className={cn(
-            sizeClasses,
-            star <= rating
-              ? 'text-amber-400 fill-amber-400'
-              : 'text-surface-300 dark:text-surface-600'
-          )}
-        />
-      ))}
     </div>
   );
 }
@@ -171,7 +150,7 @@ function TestimonialCard({
 
         {/* Rating */}
         <div className="flex items-center gap-3 mb-3">
-          <StarRating rating={testimonial.rating} />
+          <StarRatingDisplay rating={testimonial.rating} />
           <span className="text-sm font-medium text-surface-600 dark:text-surface-400">
             {testimonial.rating}/5
           </span>
@@ -310,7 +289,7 @@ function TestimonialDetailModal({
           <div className="p-4 rounded-xl bg-surface-50 dark:bg-surface-800/50">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <StarRating rating={testimonial.rating} size="md" />
+                <StarRatingDisplay rating={testimonial.rating} size="md" />
                 <span className="text-lg font-bold text-surface-900 dark:text-white">
                   {testimonial.rating}/5
                 </span>
@@ -337,7 +316,7 @@ function TestimonialDetailModal({
                           <span className="text-sm text-surface-600 dark:text-surface-400">
                             {aspectLabels[key] || key}
                           </span>
-                          <StarRating rating={value} size="sm" />
+                          <StarRatingDisplay rating={value} size="sm" />
                         </div>
                       )
                   )}
@@ -368,19 +347,16 @@ function TestimonialDetailModal({
           </div>
 
           {/* Admin Notes */}
-          <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              {t('agency.testimonials.modal.adminNotes')}
-            </label>
-            <textarea
+          <PortalFormField label={t('agency.testimonials.modal.adminNotes')}>
+            <Textarea
               value={adminNotes}
               onChange={e => setAdminNotes(e.target.value)}
               placeholder={t('agency.testimonials.modal.adminNotesPlaceholder')}
-              className="portal-input rounded-xl py-3 resize-none"
+              className="resize-none"
               rows={3}
               dir={dir}
             />
-          </div>
+          </PortalFormField>
 
           {/* Actions */}
           {testimonial.status === 'pending' && (
@@ -624,13 +600,11 @@ export type Testimonial = typeof testimonials[number];
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900 dark:text-white flex items-center gap-3">
+          <h1 className="portal-page-title flex items-center gap-3">
             <MessageSquareHeart className="w-7 h-7 text-primary-500" />
             {t('agency.testimonials.title')}
           </h1>
-          <p className="text-surface-600 dark:text-surface-400 mt-1">
-            {t('agency.testimonials.subtitle')}
-          </p>
+          <p className="portal-page-subtitle">{t('agency.testimonials.subtitle')}</p>
         </div>
 
         {/* Export Button */}

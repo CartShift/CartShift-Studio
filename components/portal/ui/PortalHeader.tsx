@@ -131,7 +131,7 @@ export function PortalHeader({
   return (
     <header
       {...(viewTransitionName && { 'view-transition-name': viewTransitionName })}
-      className="portal-header flex items-center justify-between px-3 md:px-4 bg-white dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 sticky top-0 z-header h-[var(--portal-header-height)]"
+      className="portal-header flex items-center justify-between px-3 md:px-5 sticky top-0 z-header h-[var(--portal-header-height)]"
     >
       <div className="flex items-center gap-3 md:gap-4">
         <button
@@ -172,7 +172,7 @@ export function PortalHeader({
       <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
         <div className="flex items-center gap-2">
           {/* Controls wrapper - Language & Theme */}
-          <div className="hidden sm:flex items-center gap-1.5 p-1.5 bg-surface-100/80 dark:bg-surface-800/60 rounded-2xl border border-surface-200/60 dark:border-surface-700/40">
+          <div className="hidden sm:flex items-center gap-1.5 p-1 bg-surface-100/70 dark:bg-white/[0.045] rounded-xl border border-surface-200/60 dark:border-white/[0.07] shadow-inner">
             <LanguageSwitcher />
             <div className="w-[1px] h-5 bg-surface-300/60 dark:bg-surface-600/50" />
             <ThemeToggle />

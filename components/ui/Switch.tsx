@@ -1,6 +1,8 @@
 'use client';
 
+import { useId } from 'react';
 import { cva } from 'class-variance-authority';
+import { Switch as SwitchPrimitive } from 'radix-ui';
 import { cn } from '@/lib/utils';
 
 const switchTrackVariants = cva(
@@ -24,7 +26,7 @@ const switchTrackVariants = cva(
 );
 
 const switchThumbVariants = cva(
-  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+  'pointer-events-none block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform duration-200 ease-in-out will-change-transform',
   {
     variants: {
       checked: {
@@ -67,8 +69,8 @@ export const Switch = ({
   id,
   'aria-label': ariaLabel,
 }: SwitchProps) => {
-  // Generate unique ID for accessibility linking
-  const switchId = id || `switch-${Math.random().toString(36).substring(2, 9)}`;
+  const generatedId = useId();
+  const switchId = id || `switch-${generatedId}`;
   const descriptionId = description ? `${switchId}-description` : undefined;
 
   return (
@@ -91,19 +93,17 @@ export const Switch = ({
           </p>
         )}
       </div>
-      <button
+      <SwitchPrimitive.Root
         id={switchId}
-        type="button"
-        role="switch"
-        aria-checked={checked}
+        checked={checked}
+        onCheckedChange={onChange}
         aria-label={ariaLabel}
         aria-describedby={descriptionId}
-        onClick={() => !disabled && onChange(!checked)}
         className={cn(switchTrackVariants({ checked, disabled }))}
         disabled={disabled}
       >
-        <span className={cn(switchThumbVariants({ checked }))} />
-      </button>
+        <SwitchPrimitive.Thumb className={cn(switchThumbVariants({ checked }))} />
+      </SwitchPrimitive.Root>
     </div>
   );
 };

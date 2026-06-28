@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { POST } from '@/app/api/analyze-store/route';
 import { AnalyzerService } from '@/lib/services/analyzer';
 import {
   deliverStoreAnalysisReport,
   resolveInitialEmailReportStatus,
 } from '@/lib/services/analyzer-report-delivery';
-import { checkRateLimit } from '@/lib/services/rate-limiter';
+import { enforceApiRateLimit } from '@/lib/utils/api-rate-limit';
 import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
 import type { AnalysisResult } from '@/lib/types/analyzer';
@@ -23,8 +23,12 @@ vi.mock('next/server', async () => {
   };
 });
 
-vi.mock('@/lib/services/rate-limiter', () => ({
-  checkRateLimit: vi.fn(),
+vi.mock('@/lib/utils/api-rate-limit', () => ({
+  enforceApiRateLimit: vi.fn(),
+  rateLimitHeaders: vi.fn((max: number, remaining: number) => ({
+    'X-RateLimit-Limit': max.toString(),
+    'X-RateLimit-Remaining': remaining.toString(),
+  })),
 }));
 
 vi.mock('@/lib/services/analyzer', () => ({
@@ -136,10 +140,13 @@ describe('POST /api/analyze-store', () => {
 
   beforeEach(() => {
     delete process.env.RECAPTCHA_SECRET_KEY;
-    vi.mocked(checkRateLimit).mockResolvedValue({
-      allowed: true,
-      remaining: 4,
-      resetAt: Date.now() + 60_000,
+    vi.mocked(enforceApiRateLimit).mockResolvedValue({
+      result: {
+        allowed: true,
+        remaining: 4,
+        resetAt: Date.now() + 60_000,
+      },
+      key: 'analyze-store:203.0.113.10',
     });
     vi.mocked(validateStoreUrlForAnalysis).mockResolvedValue({
       ok: true,
@@ -170,10 +177,17 @@ describe('POST /api/analyze-store', () => {
   }
 
   it('returns 429 when rate limited', async () => {
-    vi.mocked(checkRateLimit).mockResolvedValueOnce({
-      allowed: false,
-      remaining: 0,
-      resetAt: Date.now() + 30_000,
+    vi.mocked(enforceApiRateLimit).mockResolvedValueOnce({
+      response: NextResponse.json(
+        { error: 'Too many analysis requests. Please wait a minute before trying again.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': '30',
+            'Content-Type': 'application/json',
+          },
+        }
+      ),
     });
 
     const response = await POST(
@@ -318,6 +332,15 @@ describe('POST /api/analyze-store', () => {
 
   it('returns 400 when client IP cannot be determined in production', async () => {
     vi.stubEnv('NODE_ENV', 'production');
+    vi.mocked(enforceApiRateLimit).mockResolvedValueOnce({
+      response: NextResponse.json(
+        {
+          error:
+            'Could not verify your request origin. Please try again from a standard network connection.',
+        },
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      ),
+    });
 
     const request = new NextRequest('http://localhost/api/analyze-store', {
       method: 'POST',

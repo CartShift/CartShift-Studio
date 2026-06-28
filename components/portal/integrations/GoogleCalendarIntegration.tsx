@@ -11,16 +11,17 @@ import {
   X,
   RefreshCw,
   AlertCircle,
-  ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 import {
   CalendarInfo,
   listCalendars,
   updateCalendars,
 } from '@/lib/services/portal-google-calendar';
 import { Logger } from '@/lib/logger';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 export interface CalendarConnection {
   connected: boolean;
@@ -45,6 +46,7 @@ export default function GoogleCalendarIntegration({
   onSync,
 }: GoogleCalendarIntegrationProps) {
   const t = useTranslations('portal');
+  const { confirm, ConfirmDialog } = useConfirmDialog();
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -93,9 +95,14 @@ export default function GoogleCalendarIntegration({
   };
 
   const handleDisconnect = async () => {
-    if (!confirm(t('googleCalendar.disconnectConfirm'))) {
-      return;
-    }
+    const ok = await confirm({
+      title: t('googleCalendar.disconnect'),
+      description: t('googleCalendar.disconnectConfirm'),
+      confirmText: t('googleCalendar.disconnect'),
+      cancelText: t('common.cancel'),
+      variant: 'warning',
+    });
+    if (!ok) return;
     setDisconnecting(true);
     try {
       await onDisconnect();
@@ -200,30 +207,21 @@ export default function GoogleCalendarIntegration({
                     calendars...
                   </div>
                 ) : (
-                  <div className="relative">
-                    <select
-                      value={selectedCalendarId || 'primary'}
-                      onChange={e => handleCalendarChange(e.target.value)}
-                      disabled={updating}
-                      className={cn(
-                        'w-full appearance-none bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg py-2 ps-3 pe-8 text-sm text-surface-700 dark:text-surface-300 focus:outline-none',
-                        updating && 'opacity-50 cursor-wait'
-                      )}
-                    >
-                      <option value="primary">Primary Calendar</option>
-                      {calendars
-                        .filter(cal => cal.id !== 'primary' && cal.id !== connection.email) // Avoid duplicates if primary is same as email
-                        .map(cal => (
-                          <option key={cal.id} value={cal.id}>
-                            {cal.summary} {cal.primary ? '(Primary)' : ''}
-                          </option>
-                        ))}
-                    </select>
-                    <ChevronDown
-                      size={14}
-                      className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"
-                    />
-                  </div>
+                  <Select
+                    value={selectedCalendarId || 'primary'}
+                    onChange={e => handleCalendarChange(e.target.value)}
+                    disabled={updating}
+                    className={cn(updating && 'opacity-50 cursor-wait')}
+                    options={[
+                      { value: 'primary', label: 'Primary Calendar' },
+                      ...calendars
+                        .filter(cal => cal.id !== 'primary' && cal.id !== connection.email)
+                        .map(cal => ({
+                          value: cal.id,
+                          label: `${cal.summary}${cal.primary ? ' (Primary)' : ''}`,
+                        })),
+                    ]}
+                  />
                 )}
                 <p className="text-[10px] text-surface-400 mt-1">
                   {t('googleCalendar.targetCalendarDescription')}
@@ -323,6 +321,7 @@ export default function GoogleCalendarIntegration({
           </Button>
         )}
       </div>
+      {ConfirmDialog}
     </motion.div>
   );
 }

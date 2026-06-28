@@ -13,6 +13,7 @@ import { PinnedRequests } from '@/components/portal/PinnedRequests';
 import { motion } from '@/lib/motion';
 import { useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
 
 const ActivityTimeline = lazy(() =>
   import('@/components/portal/ActivityTimeline').then(mod => ({
@@ -97,22 +98,20 @@ function DashboardClientContent() {
   return (
     <div className="space-y-5">
       <motion.div
-        className="flex flex-col md:flex-row md:items-end justify-between gap-4"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {greeting}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 text-sm font-medium">
-            {t('dashboard.subtitle')}
-          </p>
-        </div>
-        <div className="hidden md:block md:max-w-md lg:max-w-lg w-full">
-          <QuickActions />
-        </div>
+        <PortalPageHeader
+          title={greeting}
+          description={t('dashboard.subtitle')}
+          className="mb-0"
+          action={
+            <div className="hidden w-full md:block md:max-w-md lg:max-w-lg">
+              <QuickActions />
+            </div>
+          }
+        />
       </motion.div>
 
       <PinnedRequests

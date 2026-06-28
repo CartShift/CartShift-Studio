@@ -14,13 +14,11 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { useWorkboardState, type Column } from '@/lib/hooks/useWorkboardState';
 
-import { useRouter } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useOrg } from '@/lib/context/OrgContext';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { WorkboardSkeleton } from '@/components/portal/skeletons/WorkboardSkeleton';
 
-import { useToast } from '@/components/portal/ui';
-import { getPortalPath } from '@/lib/utils/portal-paths';
+import { portalToast } from '@/lib/utils/portal-toast';
 import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { cn } from '@/lib/utils';
 
@@ -29,11 +27,9 @@ import { BulkActionsBar } from '@/components/portal/workboard/BulkActionsBar';
 export default function AgencyWorkboardClient() {
   const t = useTranslations('portal');
   const locale = useLocale();
-  const router = useRouter();
+  const { openRequest: openRequestPreview } = useOpenRequest();
   const { loading: auth, isAuthenticated, user, isAgency } = usePortalAuth();
   const { organizations } = useAgencyClients();
-  const { switchOrg } = useOrg();
-  const { success, error: showError } = useToast();
 
   const {
     // Data
@@ -77,6 +73,7 @@ export default function AgencyWorkboardClient() {
     handleBulkMove,
     handleCreateRequest,
     handleDeleteRequest,
+    confirmDialog,
   } = useWorkboardState({
     t: t as (key: string, params?: Record<string, unknown>) => string,
     authLoading: auth,
@@ -84,14 +81,13 @@ export default function AgencyWorkboardClient() {
     user,
     isAgency,
     organizations,
-    success,
-    showError,
+    success: portalToast.success,
+    showError: portalToast.error,
   });
 
   const openRequest = (req: { id: string; orgId: string }) => {
     if (isSelectionMode) return;
-    switchOrg(req.orgId);
-    router.push(getPortalPath(`/requests/${req.id}/`));
+    openRequestPreview(req.id, { orgId: req.orgId });
   };
 
   // ── Column Rendering Helper ──────────────────────────────────
@@ -283,6 +279,8 @@ export default function AgencyWorkboardClient() {
           description={t('common.deleteConfirm', { name: requestToDelete.title })}
         />
       )}
+
+      {confirmDialog}
     </DndContext>
   );
 }

@@ -32,12 +32,12 @@ export function ClientsFilterBar({
   return (
     <div className="bg-white dark:bg-surface-900/50 p-4 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-sm space-y-4 md:space-y-0 md:flex md:items-center md:gap-4">
       {/* Search Input */}
-      <div className="relative flex-1">
-        <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400" size={18} />
+      <div className="flex-1">
         <Input
           type="text"
           placeholder={t('agency.clients.searchPlaceholder')}
-          className="portal-input ps-10 h-10"
+          className="h-10"
+          leftIcon={<Search size={18} className="text-surface-400" />}
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
         />

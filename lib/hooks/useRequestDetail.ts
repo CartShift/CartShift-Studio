@@ -37,9 +37,10 @@ export interface UseRequestDetailResult {
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
 }
 
-export function useRequestDetail(): UseRequestDetailResult {
+export function useRequestDetail(options?: { requestId?: string }): UseRequestDetailResult {
   const orgId = useResolvedOrgId();
-  const requestId = useResolvedRequestId();
+  const urlRequestId = useResolvedRequestId();
+  const requestId = options?.requestId ?? urlRequestId;
   const { userData, isAgency, loading: auth, isAuthenticated } = usePortalAuth();
   const queryClient = useQueryClient();
 

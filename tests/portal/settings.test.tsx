@@ -7,24 +7,15 @@ vi.mock('@/lib/hooks/useResolvedOrgId', () => ({
   useResolvedOrgId: () => 'org-1',
 }));
 
-vi.mock('@/lib/services/portal-organizations', () => ({
-  getOrganization: vi.fn().mockResolvedValue({
-    id: 'org-1',
-    name: 'Test Org',
-    slug: 'test-org',
-  }),
-  updateOrganization: vi.fn().mockResolvedValue(undefined),
-  getMemberByUserId: vi.fn().mockResolvedValue({
-    id: 'member-1',
-    userId: 'test-user-id',
-    role: 'OWNER',
-  }),
-}));
-
 const mockUsePortalAuth = vi.fn();
+const mockUseWorkspaceSettings = vi.fn();
 
 vi.mock('@/lib/hooks/usePortalAuth', () => ({
   usePortalAuth: () => mockUsePortalAuth(),
+}));
+
+vi.mock('@/lib/hooks/useWorkspaceSettings', () => ({
+  useWorkspaceSettings: () => mockUseWorkspaceSettings(),
 }));
 
 vi.mock('@/lib/context/OrgContext', () => ({
@@ -36,25 +27,54 @@ vi.mock('@/lib/context/OrgContext', () => ({
   }),
 }));
 
-vi.mock('@/lib/services/portal-uploads', () => ({
-  uploadUserProfilePicture: vi.fn(),
-  deleteUserProfilePicture: vi.fn(),
-  uploadOrganizationLogo: vi.fn(),
-  deleteOrganizationLogo: vi.fn(),
-  regenerateOrganizationLogoUrl: vi.fn(),
-  validateStorageRules: vi.fn().mockResolvedValue(true),
-}));
+const defaultWorkspaceSettings = {
+  organization: { id: 'org-1', name: 'Test Org', slug: 'test-org' },
+  loading: false,
+  error: null,
+  orgToFormData: (org: { name?: string }) => ({
+    name: org.name || '',
+    website: '',
+    industry: '',
+    bio: '',
+    billingName: '',
+    billingEmail: '',
+    billingTaxId: '',
+    billingAddressLine1: '',
+    billingAddressLine2: '',
+    billingCity: '',
+    billingCountry: '',
+    billingPostalCode: '',
+  }),
+  refetchOrganization: vi.fn(),
+  updateOrganization: vi.fn(),
+  isSavingOrg: false,
+  updateUser: vi.fn(),
+  uploadAvatar: vi.fn(),
+  deleteAvatar: vi.fn(),
+  uploadLogo: vi.fn(),
+  deleteLogo: vi.fn(),
+  regenerateLogo: vi.fn(),
+  resetPassword: vi.fn(),
+  isResettingPassword: false,
+};
 
 describe('Settings Page', () => {
   beforeEach(() => {
     setupFirebaseMocks();
     vi.clearAllMocks();
+    mockUseWorkspaceSettings.mockReturnValue(defaultWorkspaceSettings);
   });
 
   it('shows loading state initially', () => {
+    mockUseWorkspaceSettings.mockReturnValue({
+      ...defaultWorkspaceSettings,
+      organization: null,
+      loading: true,
+    });
     mockUsePortalAuth.mockReturnValue({
       userData: mockUserData(),
-      loading: true,
+      user: { uid: 'test-user-id', email: 'test@example.com', providerData: [] },
+      loading: false,
       isAuthenticated: true,
     });
 
@@ -65,6 +85,7 @@ describe('Settings Page', () => {
   it('renders settings form when loaded', async () => {
     mockUsePortalAuth.mockReturnValue({
       userData: mockUserData(),
+      user: { uid: 'test-user-id', email: 'test@example.com', providerData: [] },
       loading: false,
       isAuthenticated: true,
     });
@@ -72,8 +93,6 @@ describe('Settings Page', () => {
     render(<SettingsClient />);
 
     await waitFor(() => {
-      // Since translations are missing for settings, it renders the keys.
-      // There are multiple keys containing "settings", so we check for the title key specifically
       expect(screen.getByText('portal.settings.title')).toBeInTheDocument();
     });
   });

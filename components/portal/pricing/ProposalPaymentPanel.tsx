@@ -6,8 +6,21 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { PortalFormGrid } from '@/components/portal/ui/PortalFormField';
 import { useProposalPayments } from '@/lib/hooks/useProposalPayments';
 import { formatCurrency, ManualPaymentMethod, PricingRequest } from '@/lib/types/pricing';
+
+const MANUAL_METHODS = [
+  'bank_transfer',
+  'cash',
+  'bit',
+  'paybox',
+  'check',
+  'credit_card_manual',
+  'other',
+] as const;
 
 export function ProposalPaymentPanel({
   proposal,
@@ -182,27 +195,30 @@ export function ProposalPaymentPanel({
       </div>
 
       {isAccepted && available > 0 && (
-        <form onSubmit={submitInstallment} className="mt-6 grid gap-3 border-t border-surface-200 pt-5 dark:border-surface-800 sm:grid-cols-3">
-          <input
-            className="portal-input"
-            placeholder={t('labelPlaceholder')}
-            value={label}
-            onChange={event => setLabel(event.target.value)}
-            required
-          />
-          <input
-            className="portal-input"
-            type="number"
-            min={0.01}
-            max={available / 100}
-            step={0.01}
-            placeholder={t('amountPlaceholder')}
-            value={amount}
-            onChange={event => setAmount(event.target.value)}
-            required
-          />
-          <input className="portal-input" type="date" value={dueAt} onChange={event => setDueAt(event.target.value)} />
-          <Button className="sm:col-span-3" type="submit" loading={createInstallment.isPending}>
+        <form
+          onSubmit={submitInstallment}
+          className="mt-6 space-y-3 border-t border-surface-200 pt-5 dark:border-surface-800"
+        >
+          <PortalFormGrid className="md:grid-cols-3">
+            <Input
+              placeholder={t('labelPlaceholder')}
+              value={label}
+              onChange={event => setLabel(event.target.value)}
+              required
+            />
+            <Input
+              type="number"
+              min={0.01}
+              max={available / 100}
+              step={0.01}
+              placeholder={t('amountPlaceholder')}
+              value={amount}
+              onChange={event => setAmount(event.target.value)}
+              required
+            />
+            <Input type="date" value={dueAt} onChange={event => setDueAt(event.target.value)} />
+          </PortalFormGrid>
+          <Button type="submit" loading={createInstallment.isPending}>
             <Plus size={15} />
             {t('create')}
           </Button>
@@ -212,49 +228,45 @@ export function ProposalPaymentPanel({
       {isAccepted && (proposal.balanceDue ?? proposal.totalAmount) > 0 && (
         <form
           onSubmit={submitManualPayment}
-          className="mt-6 grid gap-3 border-t border-surface-200 pt-5 dark:border-surface-800 sm:grid-cols-2"
+          className="mt-6 space-y-3 border-t border-surface-200 pt-5 dark:border-surface-800"
         >
-          <div className="sm:col-span-2">
+          <div>
             <h3 className="font-outfit text-sm font-black text-surface-900 dark:text-white">
               {t('recordManual')}
             </h3>
             <p className="mt-1 text-xs text-surface-500">{t('recordManualDescription')}</p>
           </div>
-          <input
-            className="portal-input"
-            type="number"
-            min={0.01}
-            max={(proposal.balanceDue ?? proposal.totalAmount) / 100}
-            step={0.01}
-            placeholder={t('amountPlaceholder')}
-            value={manualAmount}
-            onChange={event => setManualAmount(event.target.value)}
-            required
-          />
-          <select
-            className="portal-input"
-            value={manualMethod}
-            onChange={event => setManualMethod(event.target.value as ManualPaymentMethod)}
-          >
-            {(['bank_transfer', 'cash', 'bit', 'paybox', 'check', 'credit_card_manual', 'other'] as const).map(method => (
-              <option key={method} value={method}>
-                {t(`manualMethods.${method}`)}
-              </option>
-            ))}
-          </select>
-          <input
-            className="portal-input"
-            placeholder={t('referencePlaceholder')}
-            value={manualReference}
-            onChange={event => setManualReference(event.target.value)}
-          />
-          <input
-            className="portal-input"
-            placeholder={t('notePlaceholder')}
-            value={manualNote}
-            onChange={event => setManualNote(event.target.value)}
-          />
-          <Button className="sm:col-span-2" type="submit" loading={recordManualPayment.isPending}>
+          <PortalFormGrid>
+            <Input
+              type="number"
+              min={0.01}
+              max={(proposal.balanceDue ?? proposal.totalAmount) / 100}
+              step={0.01}
+              placeholder={t('amountPlaceholder')}
+              value={manualAmount}
+              onChange={event => setManualAmount(event.target.value)}
+              required
+            />
+            <Select
+              value={manualMethod}
+              onChange={event => setManualMethod(event.target.value as ManualPaymentMethod)}
+              options={MANUAL_METHODS.map(method => ({
+                value: method,
+                label: t(`manualMethods.${method}`),
+              }))}
+            />
+            <Input
+              placeholder={t('referencePlaceholder')}
+              value={manualReference}
+              onChange={event => setManualReference(event.target.value)}
+            />
+            <Input
+              placeholder={t('notePlaceholder')}
+              value={manualNote}
+              onChange={event => setManualNote(event.target.value)}
+            />
+          </PortalFormGrid>
+          <Button type="submit" loading={recordManualPayment.isPending}>
             {t('recordManual')}
           </Button>
         </form>

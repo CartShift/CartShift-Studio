@@ -1,27 +1,15 @@
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode, useState } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactNode } from 'react';
+import { getAppQueryClient } from '@/lib/query/query-client-config';
 
 interface QueryProviderProps {
   children: ReactNode;
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            // With SSR, we usually want to set some default staleTime
-            // above 0 to avoid refetching immediately on the client
-            staleTime: 60 * 1000,
-            // Refetch on window focus is true by default, which is what the user wants
-            refetchOnWindowFocus: true,
-          },
-        },
-      })
-  );
+  const queryClient = getAppQueryClient();
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

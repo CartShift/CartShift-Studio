@@ -19,8 +19,7 @@ import {
 import { EmptyState } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils';
 import { ActivityLog, Timestamp } from '@/lib/types/portal';
-import { Link } from '@/i18n/navigation';
-import { getPortalPath } from '@/lib/utils/portal-paths';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale, isRTLLocale } from '@/lib/locale-config';
 
@@ -77,7 +76,8 @@ const activityIconVariants = cva(
   {
     variants: {
       action: {
-        CREATED_REQUEST: 'text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30',
+        CREATED_REQUEST:
+          'text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30',
         ASSIGNED_REQUEST:
           'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30',
         ADDED_PRICING:
@@ -119,6 +119,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   const locale = useLocale();
   const t = useTranslations('portal.activity.actions');
   const tActivity = useTranslations('portal.activity');
+  const { openRequest } = useOpenRequest();
   const isHe = isRTLLocale(locale);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
@@ -147,7 +148,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
         description={tActivity('noActivityDescription')}
         variant="plain"
         illustration="activity"
-        className={cn('bg-transparent border-0 py-8', className)}
+        className={cn('bg-transparent border-0 py-6', className)}
       />
     );
   }
@@ -210,44 +211,61 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                 />
               )}
 
-              <Link
-                href={activity.requestId ? getPortalPath(`/requests/${activity.requestId}`) : '#'}
-                className={cn(
-                  'flex items-start gap-4 px-6 py-4 hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-all cursor-pointer group',
+              {(() => {
+                const rowClassName = cn(
+                  'flex items-start gap-4 px-6 py-4 transition-all group w-full text-start',
+                  activity.requestId &&
+                    'hover:bg-surface-50 dark:hover:bg-surface-900/50 cursor-pointer',
                   isHe && 'flex-row-reverse text-end'
-                )}
-              >
-                {/* Icon Container */}
-                <div className={cn(activityIconVariants({ action: activity.action as any }))}>
-                  <Icon size={18} />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0 py-0.5">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-sm font-bold text-surface-900 dark:text-white truncate font-outfit">
-                      {t(activity.action.toLowerCase() as any) ||
-                        String(activity.action).replace(/_/g, ' ')}
-                    </span>
-                    <span className="text-[10px] font-black text-surface-400 uppercase tracking-tight whitespace-nowrap">
-                      {formatTimeAgo(activity.createdAt, locale)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-surface-500 font-medium">
-                      {String(activity.userName)}
-                    </span>
-                    {activity.details?.title ? (
-                      <>
-                        <span className="w-1 h-1 rounded-full bg-surface-300" />
-                        <span className="text-xs text-primary-600 dark:text-primary-400 font-bold truncate">
-                          {String(activity.details.title)}
+                );
+                const rowContent = (
+                  <>
+                    <div className={cn(activityIconVariants({ action: activity.action as any }))}>
+                      <Icon size={18} />
+                    </div>
+                    <div className="flex-1 min-w-0 py-0.5">
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-sm font-bold text-surface-900 dark:text-white truncate font-outfit">
+                          {t(activity.action.toLowerCase() as any) ||
+                            String(activity.action).replace(/_/g, ' ')}
                         </span>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-              </Link>
+                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-tight whitespace-nowrap">
+                          {formatTimeAgo(activity.createdAt, locale)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-surface-500 font-medium">
+                          {String(activity.userName)}
+                        </span>
+                        {activity.details?.title ? (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-surface-300" />
+                            <span className="text-xs text-primary-600 dark:text-primary-400 font-bold truncate">
+                              {String(activity.details.title)}
+                            </span>
+                          </>
+                        ) : null}
+                      </div>
+                    </div>
+                  </>
+                );
+
+                if (activity.requestId) {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openRequest(activity.requestId!, { orgId: activity.orgId })
+                      }
+                      className={rowClassName}
+                    >
+                      {rowContent}
+                    </button>
+                  );
+                }
+
+                return <div className={rowClassName}>{rowContent}</div>;
+              })()}
             </motion.div>
           );
         })}

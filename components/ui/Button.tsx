@@ -27,7 +27,7 @@ export const buttonVariants = cva(
     // Shape
     'rounded-xl',
     // Transitions - only target what changes for better performance
-    'transition-[transform,box-shadow,background,border-color] duration-300 will-change-transform',
+    'transition-[transform,box-shadow,background-color,border-color,color] duration-200',
     // Focus states (accessibility)
     'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-surface-950',
     // Disabled states
@@ -39,12 +39,11 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          'bg-gradient-to-b from-primary-500 to-primary-600 text-white',
+          'bg-primary-600 text-white border border-primary-500/80',
           'shadow-btn-primary',
-          'hover:from-primary-400 hover:to-primary-600',
+          'hover:bg-primary-500',
           'hover:shadow-btn-primary-hover',
           'active:shadow-btn-primary-active',
-          'shine-sweep',
         ],
         secondary: [
           'bg-surface-100 dark:bg-white/[0.08] text-surface-700 dark:text-white',
@@ -94,7 +93,7 @@ export const buttonVariants = cva(
       size: {
         xs: 'h-7 px-2.5 text-xs gap-1',
         sm: 'h-8 px-3 text-xs gap-1.5',
-        md: 'h-10 px-5 text-sm gap-2',
+        md: 'h-10 px-4 text-sm gap-2',
         lg: 'h-12 px-6 text-base gap-2.5',
         icon: 'h-9 w-9 p-0',
         'icon-sm': 'h-8 w-8 p-0',
@@ -172,9 +171,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         disabled={isDisabled}
       >
-        {variant === 'primary' && currentState === 'idle' && (
-          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rtl:bg-gradient-to-l translate-x-[-100%] group-hover:translate-x-[100%] rtl:translate-x-[100%] rtl:group-hover:translate-x-[-100%] transition-transform duration-700 pointer-events-none"></span>
-        )}
         <span className="relative z-dropdown flex items-center justify-center gap-2">
           <AnimatePresence>
             {currentState === 'loading' && (
@@ -224,15 +220,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {children}
             {rightIcon}
           </span>
-
-          {/* For success/error states, we might want to show different text or just the icon.
-              The original component showed "Success!" or "Error", but keeping just the icon + original text
-              or swapping content is a design choice. Let's keep it simple: show Success!/Error text if provided,
-              or just the icon if that's preferred. The original reused children for idle/loading.
-              Let's show children only if idle. If success/error, standard text.
-          */}
-          {currentState === 'success' && <span className="ms-1">Success!</span>}
-          {currentState === 'error' && <span className="ms-1">Error</span>}
         </span>
       </Component>
     );

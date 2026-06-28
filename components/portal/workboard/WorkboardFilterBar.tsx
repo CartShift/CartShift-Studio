@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Search, Filter, SortAsc, CheckSquare, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { cn } from '@/lib/utils';
 
@@ -34,14 +35,14 @@ export function WorkboardFilterBar({
   return (
     <div className="flex flex-col sm:flex-row items-center gap-3 w-full bg-white dark:bg-surface-900 p-1 rounded-2xl border border-surface-100 dark:border-surface-800 shadow-sm transition-all">
       {/* Search */}
-      <div className="relative flex-1 w-full sm:min-w-[200px]">
-        <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 w-4 h-4" />
-        <input
+      <div className="flex-1 w-full sm:min-w-[200px]">
+        <Input
           type="text"
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
           placeholder={t('common.search')}
-          className="portal-input w-full ps-9 pe-4 py-2 bg-transparent border-none text-sm text-surface-900 dark:text-white placeholder:text-surface-400"
+          leftIcon={<Search className="text-surface-400 w-4 h-4" />}
+          className="bg-transparent border-none shadow-none focus:ring-0 dark:shadow-none"
         />
       </div>
 

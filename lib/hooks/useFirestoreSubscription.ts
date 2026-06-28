@@ -5,11 +5,6 @@ import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Bridges Firestore onSnapshot listeners with TanStack Query cache.
- * Sets up a real-time subscription that automatically updates the query cache.
- *
- * @param queryKey - The TanStack Query key to update
- * @param subscribe - A function that takes a callback and returns an unsubscribe function
- * @param enabled - Whether the subscription should be active
  */
 export function useFirestoreSubscription<T>(
   queryKey: readonly unknown[],
@@ -19,23 +14,24 @@ export function useFirestoreSubscription<T>(
   const queryClient = useQueryClient();
   const unsubRef = useRef<(() => void) | null>(null);
   const keyRef = useRef(JSON.stringify(queryKey));
+  const subscribeRef = useRef(subscribe);
+  subscribeRef.current = subscribe;
+
+  const serializedKey = JSON.stringify(queryKey);
 
   useEffect(() => {
-    const currentKey = JSON.stringify(queryKey);
-
-    if (!enabled || !subscribe) {
+    if (!enabled || !subscribeRef.current) {
       unsubRef.current?.();
       unsubRef.current = null;
       return;
     }
 
-    // Only resubscribe if the key actually changed
-    if (unsubRef.current && keyRef.current === currentKey) return;
+    if (unsubRef.current && keyRef.current === serializedKey) return;
 
     unsubRef.current?.();
-    keyRef.current = currentKey;
+    keyRef.current = serializedKey;
 
-    unsubRef.current = subscribe((data: T) => {
+    unsubRef.current = subscribeRef.current((data: T) => {
       queryClient.setQueryData(queryKey, data);
     });
 
@@ -43,5 +39,5 @@ export function useFirestoreSubscription<T>(
       unsubRef.current?.();
       unsubRef.current = null;
     };
-  }, [JSON.stringify(queryKey), enabled, subscribe]);
+  }, [serializedKey, enabled, queryClient, queryKey]);
 }

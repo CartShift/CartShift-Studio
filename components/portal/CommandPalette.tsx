@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRequests } from '@/lib/hooks/useRequests';
-import { createPortal } from 'react-dom';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { useRouter } from '@/i18n/navigation';
-import { motion, AnimatePresence } from '@/lib/motion';
+import { Dialog } from 'radix-ui';
 import {
   LayoutDashboard,
   LayoutList,
@@ -85,6 +85,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   const orgId = useResolvedOrgId();
   const { isAgency } = usePortalAuth();
   const { requests } = useRequests();
+  const { openRequest } = useOpenRequest();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Toggle on Ctrl+K / Cmd+K
@@ -196,6 +197,8 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
           icon: FileText,
           label: req.title,
           path: getPortalPath(`/requests/${req.id}`),
+          requestId: req.id,
+          orgId: req.orgId,
           keywords: [req.id, req.status, ...(req.description ? [req.description] : [])],
         })),
       },
@@ -221,9 +224,13 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   // Flatten for keyboard nav
   const flatItems = useMemo(() => filteredCommands.flatMap(g => g.items), [filteredCommands]);
 
-  const navigateTo = (path: string) => {
+  const navigateTo = (item: { path: string; requestId?: string; orgId?: string }) => {
     handleOpenChange(false);
-    router.push(path);
+    if (item.requestId) {
+      openRequest(item.requestId, { orgId: item.orgId });
+      return;
+    }
+    router.push(item.path);
   };
 
   useEffect(() => {
@@ -239,7 +246,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (flatItems[activeIndex]) {
-          navigateTo(flatItems[activeIndex].path);
+          navigateTo(flatItems[activeIndex]);
         }
       }
     };
@@ -251,28 +258,12 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   // Reset index when query changes
   useEffect(() => setActiveIndex(0), [query]);
 
-  if (!isOpen || typeof document === 'undefined') return null;
-
-  return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-modal flex items-start justify-center pt-[5vh] md:pt-[15vh] px-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-surface-950/40 backdrop-blur-sm"
-            onClick={() => handleOpenChange(false)}
-          />
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ duration: 0.15 }}
-            className="relative w-full max-w-2xl bg-white dark:bg-surface-900 rounded-xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden flex flex-col max-h-[90vh] md:max-h-[70vh]"
-            onClick={e => e.stopPropagation()}
-          >
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-modal bg-surface-950/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+        <Dialog.Content className="fixed start-1/2 top-[5vh] z-[51] flex max-h-[90vh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col overflow-hidden rounded-xl border border-surface-200 bg-white shadow-2xl outline-none rtl:translate-x-1/2 dark:border-surface-800 dark:bg-surface-900 md:top-[15vh] md:max-h-[70vh] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none">
+            <Dialog.Title className="sr-only">{t('portal.header.searchPlaceholder')}</Dialog.Title>
             {/* Search Input */}
             <div className="flex items-center gap-3 p-4 border-b border-surface-100 dark:border-surface-800">
               <Command size={18} className="text-surface-400" />
@@ -323,7 +314,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
                             key={item.label}
                             {...item}
                             active={globalIndex === activeIndex}
-                            onSelect={() => navigateTo(item.path)}
+                            onSelect={() => navigateTo(item)}
                           />
                         );
                       })}
@@ -350,10 +341,8 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
                 {t('portal.commandPalette.footer.toClose')}
               </span>
             </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>,
-    document.body
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

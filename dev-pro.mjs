@@ -204,22 +204,62 @@ async function cleanupNextLock() {
 
 }
 
-function isPortInUse(port) {
+function getPortPids(port) {
   const isWin = process.platform === 'win32';
   try {
     if (isWin) {
       const result = execSync('netstat -ano -p tcp', { encoding: 'utf-8', stdio: 'pipe' });
-      return result.split('\n').some((line) => {
+      const pids = new Set();
+      for (const line of result.split('\n')) {
         const parts = line.trim().split(/\s+/);
-        return parts[0] === 'TCP' && parts[3] === 'LISTENING' && parts[1].endsWith(`:${port}`);
-      });
-    } else {
-      execSync(`lsof -tiTCP:${port} -sTCP:LISTEN`, { stdio: 'pipe' });
-      return true;
+        if (parts[0] === 'TCP' && parts[3] === 'LISTENING' && parts[1].endsWith(`:${port}`)) {
+          const pid = parseInt(parts[4], 10);
+          if (pid > 0) pids.add(pid);
+        }
+      }
+      return [...pids];
     }
+
+    const result = execSync(`lsof -tiTCP:${port} -sTCP:LISTEN`, { encoding: 'utf-8', stdio: 'pipe' });
+    return result
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .map((pid) => parseInt(pid, 10))
+      .filter((pid) => pid > 0);
   } catch {
-    return false;
+    return [];
   }
+}
+
+function isPortInUse(port) {
+  return getPortPids(port).length > 0;
+}
+
+function killPort(port) {
+  const ownPid = process.pid;
+  let stopped = false;
+
+  for (const pid of getPortPids(port)) {
+    if (pid === ownPid) continue;
+
+    try {
+      if (process.platform === 'win32') {
+        execSync(
+          `powershell -NoProfile -Command "Stop-Process -Id ${pid} -Force -ErrorAction Stop"`,
+          { stdio: 'ignore' },
+        );
+      } else {
+        execSync(`kill -9 ${pid}`, { stdio: 'ignore' });
+      }
+      console.log(`${c.yellow}   Freed port ${port} (stopped PID ${pid})${c.reset}`);
+      stopped = true;
+    } catch {
+      console.log(`${c.yellow}   Could not stop PID ${pid} on port ${port}${c.reset}`);
+    }
+  }
+
+  return stopped;
 }
 
 async function prepareEnvironment() {
@@ -227,9 +267,23 @@ async function prepareEnvironment() {
 
   const ports = includeFunctions ? [3000, 4000, 5001, 4400, 4500] : [3000];
 
+  let freedAny = false;
   for (const port of ports) {
     if (isPortInUse(port)) {
-      throw new Error(`Port ${port} is already in use. Stop the existing service or run pnpm dev:force.`);
+      console.log(`${c.yellow}   Port ${port} in use — stopping existing process...${c.reset}`);
+      if (killPort(port)) freedAny = true;
+    }
+  }
+
+  if (freedAny) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
+  for (const port of ports) {
+    if (isPortInUse(port)) {
+      throw new Error(
+        `Port ${port} is still in use after attempting to free it. Close the other process manually or run pnpm dev:force.`,
+      );
     }
   }
 
@@ -388,8 +442,15 @@ function stopAllServices() {
     if (proc && !proc.killed) {
       if (process.platform === 'win32') {
         try {
-          execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'ignore' });
-        } catch(e) { /* ignore */ }
+          execSync(
+            `powershell -NoProfile -Command "Stop-Process -Id ${proc.pid} -Force -ErrorAction Stop"`,
+            { stdio: 'ignore' },
+          );
+        } catch {
+          try {
+            execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'ignore' });
+          } catch { /* ignore */ }
+        }
       } else {
         proc.kill('SIGTERM');
       }
@@ -404,6 +465,7 @@ function stopAllServices() {
 async function restartAllServices() {
   stopAllServices();
   await new Promise(r => setTimeout(r, 2000));
+  await prepareEnvironment();
   showBanner();
   showServiceInfo();
   await startAllServices();

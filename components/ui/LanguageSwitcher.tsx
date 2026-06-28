@@ -2,9 +2,8 @@
 
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from '@/lib/motion';
+import { useState } from 'react';
+import { DropdownMenu } from 'radix-ui';
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { ChevronDown } from 'lucide-react';
@@ -108,63 +107,9 @@ export const LanguageSwitcher = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ top: 0, right: 0 });
-  const [mounted, setMounted] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Sync language preference to Firestore for authenticated portal users
   useLanguageSync();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const updatePosition = () => {
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setPosition({
-          top: rect.bottom + 8,
-          right: window.innerWidth - rect.right,
-        });
-      }
-    };
-
-    if (isOpen) {
-      updatePosition();
-      window.addEventListener('scroll', updatePosition, true);
-      window.addEventListener('resize', updatePosition);
-    }
-
-    return () => {
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node) &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleLanguageChange = (lang: 'en' | 'he') => {
     setUserLocalePreference(lang);
@@ -174,68 +119,46 @@ export const LanguageSwitcher = () => {
   };
 
   const currentLanguage = locale as 'en' | 'he';
-  const isRtl = currentLanguage === 'he';
-
-  const dropdownContent = (
-    <AnimatePresence>
-      {isOpen && mounted && (
-        <motion.div
-          ref={dropdownRef}
-          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-          transition={{ duration: 0.2 }}
-          className="fixed w-36 bg-white dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-white/10 overflow-hidden z-always-on-top"
-          style={{
-            top: `${position.top}px`,
-            ...(isRtl
-              ? {
-                  left: `${window.innerWidth - position.right - (buttonRef.current?.getBoundingClientRect().width || 0)}px`,
-                }
-              : { right: `${position.right}px` }),
-          }}
-        >
-          <div className="p-1">
-            <button
-              onClick={() => handleLanguageChange('en')}
-              className={cn(langItemVariants({ active: currentLanguage === 'en' }))}
-            >
-              <USFlag />
-              English
-            </button>
-            <button
-              onClick={() => handleLanguageChange('he')}
-              className={cn(langItemVariants({ active: currentLanguage === 'he' }))}
-            >
-              <ILFlag />
-              עברית
-            </button>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
 
   return (
-    <>
-      <button
-        ref={buttonRef}
-        onClick={toggleDropdown}
-        className={cn(triggerVariants({ isOpen }))}
-        aria-label="Select Language"
-      >
-        {currentLanguage === 'en' ? <USFlag /> : <ILFlag />}
-        <span className="text-sm font-medium text-surface-700 dark:text-surface-200">
-          {currentLanguage === 'en' ? 'EN' : 'עב'}
-        </span>
-        <ChevronDown
-          className={cn(
-            'w-3 h-3 text-surface-500 transition-transform duration-200',
-            isOpen && 'rotate-180'
-          )}
-        />
-      </button>
-      {mounted && createPortal(dropdownContent, document.body)}
-    </>
+    <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenu.Trigger asChild>
+        <button className={cn(triggerVariants({ isOpen }))} aria-label="Select Language">
+          {currentLanguage === 'en' ? <USFlag /> : <ILFlag />}
+          <span className="text-sm font-medium text-surface-700 dark:text-surface-200">
+            {currentLanguage === 'en' ? 'EN' : 'עב'}
+          </span>
+          <ChevronDown
+            className={cn(
+              'h-3 w-3 text-surface-500 transition-transform duration-200',
+              isOpen && 'rotate-180'
+            )}
+          />
+        </button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          collisionPadding={12}
+          className="z-always-on-top w-36 overflow-hidden rounded-xl border border-surface-200 bg-white p-1 shadow-lg outline-none dark:border-white/10 dark:bg-surface-800 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none"
+        >
+          <DropdownMenu.Item
+            onSelect={() => handleLanguageChange('en')}
+            className={cn(langItemVariants({ active: currentLanguage === 'en' }), 'cursor-default outline-none data-[highlighted]:bg-surface-50 dark:data-[highlighted]:bg-white/5')}
+          >
+            <USFlag />
+            English
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onSelect={() => handleLanguageChange('he')}
+            className={cn(langItemVariants({ active: currentLanguage === 'he' }), 'cursor-default outline-none data-[highlighted]:bg-surface-50 dark:data-[highlighted]:bg-white/5')}
+          >
+            <ILFlag />
+            עברית
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 };

@@ -54,6 +54,10 @@ vi.mock('@/lib/hooks/useDashboardData', () => ({
   useDashboardData: () => mockUseDashboardData(),
 }));
 
+vi.mock('@/lib/hooks/useOpenRequest', () => ({
+  useOpenRequest: () => ({ openRequest: vi.fn(), openRequestPreview: vi.fn() }),
+}));
+
 // Mock child components to isolate DashboardClient test
 vi.mock('@/components/portal/ClientAnalytics', () => ({
   ClientAnalytics: () => <div data-testid="client-analytics">Client Analytics</div>,
@@ -140,7 +144,7 @@ describe('Dashboard Page', () => {
     });
   });
 
-  it('displays new request button', async () => {
+  it('displays dashboard action panels when loaded', async () => {
     mockUseDashboardData.mockReturnValue({
       loading: false,
       requests: [],
@@ -153,8 +157,7 @@ describe('Dashboard Page', () => {
     render(<DashboardClient messages={{}} locale="en" />);
 
     await waitFor(() => {
-      // QuickActions is mocked, so we check if it is rendered
-      expect(screen.getByTestId('quick-actions')).toBeInTheDocument();
+      expect(screen.getByTestId('pinned-requests')).toBeInTheDocument();
     });
   });
 });

@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import { getRequestsByOrg, subscribeToOrgRequests } from '@/lib/services/portal-requests';
 import { getOrgActivities, subscribeToOrgActivities } from '@/lib/services/portal-activities';
 import { getMemberByUserId, ensureMembership } from '@/lib/services/portal-organizations';
-import { useToast } from '@/components/portal/ui';
+import { portalToast } from '@/lib/utils/portal-toast';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
 import { queryKeys } from '@/lib/utils/query-keys';
@@ -20,7 +20,6 @@ export function useDashboardData() {
   const orgId = useResolvedOrgId();
   const { userData, loading: auth, isAuthenticated } = usePortalAuth();
   const router = useRouter();
-  const toast = useToast();
   const t = useTranslations('portal.dashboard.toast');
   const mountedRef = useRef(false);
 
@@ -78,7 +77,7 @@ export function useDashboardData() {
     staleTime: Infinity,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message.includes('Permission denied')) {
-        toast.error(t('accessDenied'), t('accessDeniedDesc'));
+        portalToast.error(t('accessDenied'), t('accessDeniedDesc'));
         setTimeout(() => router.push(getPortalPath('/dashboard/')), 2000);
         return false;
       }

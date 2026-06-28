@@ -1,7 +1,6 @@
 'use client';
 
-import { createPortal } from 'react-dom';
-import { useEffect } from 'react';
+import { Dialog } from 'radix-ui';
 import { Link } from '@/i18n/navigation';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,56 +25,36 @@ export function MobileNavMoreSheet({
   const t = useTranslations('portal.accessibility');
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen || typeof document === 'undefined') return null;
-
   const primarySet = new Set(primaryHrefs);
   const overflowItems = navGroups.flatMap(group =>
     group.items.filter(item => !primarySet.has(item.href))
   );
 
-  return createPortal(
-    <>
-      <button
-        type="button"
-        className="fixed inset-0 z-[60] bg-surface-950/50 md:hidden"
-        aria-label={t('closeMenu')}
-        onClick={onClose}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={t('moreNavigation')}
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={open => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-[60] bg-surface-950/50 md:hidden data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+        <Dialog.Content
         className={cn(
           'fixed inset-x-0 bottom-0 z-[61] md:hidden',
           'rounded-t-2xl border-t border-surface-200 dark:border-surface-800',
-          'bg-white dark:bg-surface-950 pb-safe max-h-[70vh] overflow-y-auto'
+          'bg-white dark:bg-surface-950 pb-safe max-h-[70vh] overflow-y-auto outline-none',
+          'data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full motion-reduce:animate-none'
         )}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-surface-200 dark:border-surface-800">
-          <h2 className="text-sm font-semibold text-surface-900 dark:text-white">
+          <Dialog.Title className="text-sm font-semibold text-surface-900 dark:text-white">
             {t('moreNavigation')}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800"
-            aria-label={t('closeMenu')}
-          >
-            <X size={20} />
-          </button>
+          </Dialog.Title>
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800"
+              aria-label={t('closeMenu')}
+            >
+              <X size={20} />
+            </button>
+          </Dialog.Close>
         </div>
         <nav className="p-2 space-y-0.5" aria-label={t('moreNavigation')}>
           {overflowItems.map(item => {
@@ -100,8 +79,8 @@ export function MobileNavMoreSheet({
             );
           })}
         </nav>
-      </div>
-    </>,
-    document.body
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

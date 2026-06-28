@@ -18,7 +18,7 @@ export function EmptyStateIllustration({
     files: <FilesIllustration />,
   };
 
-  return <div className={cn('w-48 h-48', className)}>{illustrations[variant]}</div>;
+  return <div className={cn('w-36 h-36', className)}>{illustrations[variant]}</div>;
 }
 
 function ActivityIllustration() {
@@ -56,7 +56,7 @@ function ActivityIllustration() {
             cx="70"
             cy={y}
             r="6"
-            className="fill-blue-500"
+            className="fill-primary-500"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.4, delay: 0.5 + i * 0.15 }}
@@ -143,7 +143,7 @@ function RequestsIllustration() {
         width="40"
         height="12"
         rx="4"
-        className="fill-blue-500"
+        className="fill-primary-500"
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.5 }}

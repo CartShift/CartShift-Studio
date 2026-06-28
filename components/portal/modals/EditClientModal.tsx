@@ -17,7 +17,8 @@ import { updateOrganization } from '@/lib/services/portal-organizations';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser, Organization } from '@/lib/types/portal';
 import { useTranslations } from 'next-intl';
-import { portalSelectClassName } from '@/lib/utils/portal-interactive';
+import { Select } from '@/components/ui/Select';
+import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
@@ -205,36 +206,29 @@ export const EditClientModal = ({
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                {t('agency.clients.detail.info.responsibleAgent' as any)}
-              </label>
-              <select
-                className={portalSelectClassName}
+            <PortalFormField label={t('agency.clients.detail.info.responsibleAgent' as any)}>
+              <Select
+                options={[
+                  { value: '', label: t('agency.clients.detail.info.unassigned' as any) },
+                  ...agencyMembers.map(member => ({
+                    value: member.id,
+                    label: member.name || member.email,
+                  })),
+                ]}
                 {...register('responsibleAgencyUserId')}
-              >
-                <option value="">{t('agency.clients.detail.info.unassigned' as any)}</option>
-                {agencyMembers.map(member => (
-                  <option key={member.id} value={member.id}>
-                    {member.name || member.email}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </PortalFormField>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                {t('agency.clients.detail.info.status' as any)}
-              </label>
-              <select
-                className={portalSelectClassName}
+            <PortalFormField label={t('agency.clients.detail.info.status' as any)}>
+              <Select
+                options={[
+                  { value: 'active', label: t('agency.clients.badge.active' as any) },
+                  { value: 'inactive', label: t('agency.clients.badge.inactive' as any) },
+                  { value: 'suspended', label: t('agency.clients.badge.suspended' as any) },
+                ]}
                 {...register('status')}
-              >
-                <option value="active">{t('agency.clients.badge.active' as any)}</option>
-                <option value="inactive">{t('agency.clients.badge.inactive' as any)}</option>
-                <option value="suspended">{t('agency.clients.badge.suspended' as any)}</option>
-              </select>
-            </div>
+              />
+            </PortalFormField>
 
             {error && (
               <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">

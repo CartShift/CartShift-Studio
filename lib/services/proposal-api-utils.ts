@@ -2,13 +2,10 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/error-handler';
 import { checkServerRateLimit } from '@/lib/services/server-rate-limiter';
+import { getClientIpFromRequest } from '@/lib/utils/api-rate-limit';
 
 export function getClientIp(request: NextRequest): string {
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  return getClientIpFromRequest(request) ?? 'unknown';
 }
 
 export async function enforceProposalRateLimit(

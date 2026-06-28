@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Filter, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
@@ -199,32 +200,32 @@ export function ClientMultiFilter({
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <input
+                    <Input
                       type="number"
                       placeholder="Min"
                       value={revenueRange.min || ''}
                       onChange={e =>
                         onRevenueRangeChange({
-                          min: parseInt(e.target.value) || 0,
+                          min: parseInt(e.target.value, 10) || 0,
                           max: revenueRange.max,
                         })
                       }
-                      className="portal-input flex-1 rounded-lg h-10"
                       aria-label={t('common.filters.minRevenue')}
+                      className="flex-1"
                     />
                     <span className="text-surface-400">-</span>
-                    <input
+                    <Input
                       type="number"
                       placeholder="Max"
                       value={revenueRange.max === 10000000 ? '' : revenueRange.max || ''}
                       onChange={e =>
                         onRevenueRangeChange({
                           min: revenueRange.min,
-                          max: parseInt(e.target.value) || 10000000,
+                          max: parseInt(e.target.value, 10) || 10000000,
                         })
                       }
-                      className="portal-input flex-1 rounded-lg h-10"
                       aria-label={t('common.filters.maxRevenue')}
+                      className="flex-1"
                     />
                   </div>
                 </div>

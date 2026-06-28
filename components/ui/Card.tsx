@@ -4,27 +4,26 @@ import React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-// GPU-optimized card variants - uses will-change for smooth hover animations
 const cardVariants = cva(
-  'relative rounded-2xl overflow-hidden transition-[transform,box-shadow,border-color] duration-300 will-change-transform transform-gpu [backface-visibility:hidden]',
+  'relative rounded-2xl overflow-hidden transition-[transform,box-shadow,border-color,background-color] duration-300 transform-gpu [backface-visibility:hidden]',
   {
     variants: {
       variant: {
         default: [
-          'bg-white dark:bg-surface-900/80',
-          'border border-surface-200/80 dark:border-white/[0.08]',
-          'shadow-card-default',
-          'dark:shadow-card-dark',
+          'bg-white/90 dark:bg-surface-900/70 backdrop-blur-xl',
+          'border border-surface-200/70 dark:border-white/[0.085]',
+          'shadow-[0_1px_1px_rgba(25,45,70,0.03),0_16px_40px_-30px_rgba(25,45,70,0.28),inset_0_1px_0_rgba(255,255,255,0.65)]',
+          'dark:shadow-[0_20px_50px_-34px_rgba(0,5,15,0.8),inset_0_1px_0_rgba(255,255,255,0.04)]',
         ],
         glass: [
-          'bg-white/70 dark:bg-white/[0.03]',
+          'bg-white/72 dark:bg-white/[0.035]',
           'backdrop-blur-xl backdrop-saturate-150',
           'border border-white/50 dark:border-white/[0.08]',
           'shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]',
           'dark:shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]',
         ],
         elevated: [
-          'bg-white dark:bg-surface-900',
+          'bg-white/95 dark:bg-surface-900/90',
           'border border-surface-100 dark:border-surface-800',
           'shadow-card-hover-light',
           'dark:shadow-card-hover-dark',
@@ -49,9 +48,9 @@ const cardVariants = cva(
       },
       padding: {
         none: '',
-        sm: 'p-3',
-        default: 'p-3.5 md:p-4',
-        lg: 'p-4 md:p-5',
+        sm: 'p-3.5',
+        default: 'p-4 md:p-5',
+        lg: 'p-5 md:p-6',
       },
       hover: {
         true: '',
@@ -97,7 +96,7 @@ const cardVariants = cva(
       {
         hover: 'lift',
         className: [
-          'hover:-translate-y-1',
+          'hover:-translate-y-0.5',
           'hover:border-surface-300 dark:hover:border-white/15',
           'hover:shadow-card-lift-light',
           'dark:hover:shadow-card-lift-dark',
@@ -300,7 +299,7 @@ export const CardSectionTitle = ({
   return (
     <Component
       className={cn(
-        'text-[10px] font-black text-surface-400 dark:text-surface-500 uppercase tracking-widest flex items-center gap-2',
+        'text-xs font-semibold text-surface-500 dark:text-surface-400 tracking-wide flex items-center gap-2',
         className
       )}
       {...props}

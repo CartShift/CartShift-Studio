@@ -5,6 +5,7 @@ import { Clock, RotateCcw, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator';
 import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
 import { formatCalculatorPrice } from '@/lib/services/pricing-calculator';
@@ -129,10 +130,7 @@ export function RequestConfigurator({
                       {t('portal.pricing.customPrice' as never) || 'Custom Price'}
                     </label>
                     <div className="relative">
-                      <span className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm font-medium">
-                        {CURRENCY_CONFIG[currency as Currency]?.symbol || '$'}
-                      </span>
-                      <input
+                      <Input
                         type="number"
                         min={PRICING_UI.MIN_CUSTOM_PRICE}
                         max={PRICING_UI.MAX_CUSTOM_PRICE}
@@ -145,8 +143,13 @@ export function RequestConfigurator({
                         onChange={e => handleCustomPriceChange(e.target.value)}
                         aria-label={t('portal.pricing.customPrice')}
                         aria-describedby="custom-price-hint"
+                        leftIcon={
+                          <span className="text-surface-400 text-sm font-medium">
+                            {CURRENCY_CONFIG[currency as Currency]?.symbol || '$'}
+                          </span>
+                        }
                         className={cn(
-                          'portal-input w-full ps-8 text-lg font-bold',
+                          'text-lg font-bold',
                           config.customPrice !== undefined &&
                             'border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-900/20'
                         )}

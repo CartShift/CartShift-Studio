@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { togglePinRequest, isRequestPinnedByUser } from '@/lib/services/portal-requests';
 import { usePortalAuth } from './usePortalAuth';
 import { useRequests } from './useRequests';
@@ -25,6 +26,7 @@ function notifyStateChange() {
  * The pinnedBy field is stored on each Request document as an array of user IDs.
  */
 export function usePinnedRequests(_orgId?: string) {
+  const t = useTranslations('portal');
   const { userData, isAgency } = usePortalAuth();
   const { requests } = useRequests();
   const resolvedOrgId = useResolvedOrgId();
@@ -139,14 +141,14 @@ export function usePinnedRequests(_orgId?: string) {
           });
         });
 
-        toast.error('Failed to update pin status');
+        toast.error(t('toast.pinUpdateFailed'));
       } finally {
         // Clear loading state (shared across all instances)
         globalRequestIds.delete(requestId);
         notifyStateChange();
       }
     },
-    [userId, isAgency, queryClient, requests, orgId]
+    [userId, isAgency, queryClient, requests, orgId, t]
   );
 
   const isPinned = useCallback(

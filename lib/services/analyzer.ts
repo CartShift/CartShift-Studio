@@ -20,53 +20,12 @@ import { AIReadinessService } from './ai-readiness';
 import { BenchmarkService } from './benchmark';
 import { ScraperService } from './scraper';
 import { safeFetchStoreHtml } from '@/lib/utils/safe-store-fetch';
+import { detectPlatform, getScoreStatus } from './analyzer-platform';
 
 const PAGESPEED_API_KEY = process.env.PAGESPEED_API_KEY;
 const LIGHTHOUSE_LAB_LIMITATION =
   'Lab measurement. Results can vary by test run, device profile, network, and cached state.';
 const PRODUCT_SAMPLE_TARGET_COUNT = 3;
-
-// Platform detection patterns
-const platformPatterns = [
-  {
-    name: 'Shopify',
-    patterns: [
-      /cdn\.shopify\.com/i,
-      /myshopify\.com/i,
-      /shopify-features/i,
-      /shopify-payment-button/i,
-      /shopify\.theme/i,
-    ],
-  },
-  {
-    name: 'WooCommerce',
-    patterns: [/wp-content\/plugins\/woocommerce/i, /wc-ajax/i, /wp-json\/wc/i],
-  },
-  { name: 'Magento', patterns: [/static\/_requirejs/i, /magento/i] },
-  { name: 'BigCommerce', patterns: [/cdn\.bigcommerce\.com/i, /mybigcommerce\.com/i] },
-  { name: 'Wix', patterns: [/wix-image/i, /wix-code/i, /wix\.com\/_partials/i] },
-  { name: 'Squarespace', patterns: [/squarespace-cdn/i, /sqsp\.net/i] },
-  { name: 'PrestaShop', patterns: [/prestashop/i] },
-];
-
-function detectPlatform(html: string, url: string): string | null {
-  const combined = html + ' ' + url;
-  for (const platform of platformPatterns) {
-    for (const pattern of platform.patterns) {
-      if (pattern.test(combined)) {
-        return platform.name;
-      }
-    }
-  }
-  return null;
-}
-
-function getScoreStatus(score: number): 'critical' | 'warning' | 'good' | 'excellent' {
-  if (score >= 90) return 'excellent';
-  if (score >= 80) return 'good';
-  if (score >= 50) return 'warning';
-  return 'critical';
-}
 
 function createRecommendation(
   code: string,

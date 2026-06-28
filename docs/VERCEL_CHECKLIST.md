@@ -20,7 +20,7 @@
 
 - [x] **Contact API Route** - Migrated from in-memory to Firestore-based rate limiting
   - File: `app/api/contact/route.ts`
-  - Now uses: `@/lib/services/rate-limiter.ts` (distributed rate limiting)
+  - Now uses: `@/lib/utils/api-rate-limit.ts` + `@/lib/services/server-rate-limiter.ts` (Firebase Admin distributed rate limiting)
   - Added: Proper rate limit headers (`X-RateLimit-*`)
 
 ### 3. Documentation

@@ -31,6 +31,7 @@ import { OrganizationMember } from '@/lib/types/portal';
 import { getPortalUser } from '@/lib/services/portal-users';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useOrg } from '@/lib/context/OrgContext';
+import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedClientId } from '@/lib/hooks/useResolvedClientId';
 import { useOrganization } from '@/lib/hooks/useOrganization';
@@ -57,6 +58,7 @@ export default function AgencyClientDetailClient({
   const { userData, loading: auth } = usePortalAuth();
   const { switchOrg } = useOrg();
   const router = useRouter();
+  const { openRequest } = useOpenRequest();
 
   const canView = Boolean(clientId && userData?.isAgency && !auth);
   const dataEnabled = canView;
@@ -185,11 +187,11 @@ export default function AgencyClientDetailClient({
     cancelInvite(inviteId, {
       onSuccess: () => {
         setIsInviteModalOpen(true);
-        toast.success('Previous invitation cancelled. Please send a new one.');
+        toast.success(t('toast.inviteResent'));
         setResendingInvite(null);
       },
       onError: () => {
-        toast.error('Failed to resend invitation');
+        toast.error(t('toast.inviteResendFailed'));
         setResendingInvite(null);
       },
     });
@@ -503,10 +505,7 @@ export default function AgencyClientDetailClient({
                   {recentRequests.map(request => (
                     <button
                       key={request.id}
-                      onClick={() => {
-                        switchOrg(clientId);
-                        router.push(getPortalPath(`/requests/${request.id}/`));
-                      }}
+                      onClick={() => openRequest(request.id, { orgId: clientId })}
                       className="w-full text-start block p-5 hover:bg-primary-50/30 dark:hover:bg-primary-950/20 transition-colors group"
                     >
                       <div className="flex items-start justify-between gap-4">
@@ -582,37 +581,59 @@ export default function AgencyClientDetailClient({
             </CardSectionTitle>
             {recentActivities.length > 0 ? (
               <div className="divide-y divide-surface-50 dark:divide-surface-800">
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className="p-4 flex items-start gap-3.5 transition-colors">
-                    <div className="w-10 h-10 bg-primary-50 dark:bg-primary-950/30 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform">
-                      <Activity size={18} className="text-primary-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                        {t(`activity.actions.${activity.action?.toLowerCase() || ''}` as any) ||
-                          (activity.action ? activity.action.replace(/_/g, ' ') : 'Activity')}
-                      </p>
-                      {activity.details && typeof activity.details.requestTitle === 'string' && (
-                        <p className="text-xs text-surface-500 truncate">
-                          {activity.details.requestTitle}
-                        </p>
-                      )}
-                    </div>
-                    {activity.createdAt?.toDate && (
-                      <div className="flex items-center gap-1.5 text-surface-400 flex-shrink-0">
-                        <Clock size={12} />
-                        <span className="text-[10px] font-bold uppercase tracking-tighter">
-                          {isMounted
-                            ? formatDistanceToNow(activity.createdAt.toDate(), {
-                                addSuffix: true,
-                                locale: getDateLocale(locale),
-                              })
-                            : '—'}
-                        </span>
+                {recentActivities.map((activity, index) => {
+                  const activityRowClassName =
+                    'p-4 flex items-start gap-3.5 transition-colors w-full text-start';
+                  const activityContent = (
+                    <>
+                      <div className="w-10 h-10 bg-primary-50 dark:bg-primary-950/30 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform">
+                        <Activity size={18} className="text-primary-600" />
                       </div>
-                    )}
-                  </div>
-                ))}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-surface-900 dark:text-white mb-1">
+                          {t(`activity.actions.${activity.action?.toLowerCase() || ''}` as any) ||
+                            (activity.action ? activity.action.replace(/_/g, ' ') : 'Activity')}
+                        </p>
+                        {activity.details && typeof activity.details.requestTitle === 'string' && (
+                          <p className="text-xs text-surface-500 truncate">
+                            {activity.details.requestTitle}
+                          </p>
+                        )}
+                      </div>
+                      {activity.createdAt?.toDate && (
+                        <div className="flex items-center gap-1.5 text-surface-400 flex-shrink-0">
+                          <Clock size={12} />
+                          <span className="text-[10px] font-bold uppercase tracking-tighter">
+                            {isMounted
+                              ? formatDistanceToNow(activity.createdAt.toDate(), {
+                                  addSuffix: true,
+                                  locale: getDateLocale(locale),
+                                })
+                              : '—'}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  );
+
+                  return activity.requestId ? (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => openRequest(activity.requestId!, { orgId: clientId })}
+                      className={cn(
+                        activityRowClassName,
+                        'hover:bg-primary-50/30 dark:hover:bg-primary-950/20 group'
+                      )}
+                    >
+                      {activityContent}
+                    </button>
+                  ) : (
+                    <div key={index} className={activityRowClassName}>
+                      {activityContent}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="py-16 text-center">

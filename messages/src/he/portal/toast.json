@@ -2,7 +2,33 @@
   "portal": {
     "toast": {
       "dismiss": "סגור",
-      "undo": "בטל"
+      "undo": "בטל",
+      "fileDeleted": "הקובץ נמחק",
+      "fileDeletedDesc": "הקובץ הוסר מהארגון שלך.",
+      "fileDeleteFailed": "המחיקה נכשלה",
+      "fileDeleteFailedDesc": "לא ניתן למחוק את הקובץ. נסה שוב.",
+      "statusUpdateFailed": "עדכון הסטטוס נכשל",
+      "settingsSaveFailed": "שמירת ההגדרות נכשלה",
+      "profileUpdated": "הפרופיל עודכן",
+      "profileUpdateFailed": "עדכון הפרופיל נכשל",
+      "avatarUpdated": "תמונת הפרופיל עודכנה",
+      "avatarRemoved": "תמונת הפרופיל הוסרה",
+      "avatarUpdateFailed": "עדכון תמונת הפרופיל נכשל",
+      "logoUpdated": "הלוגו עודכן",
+      "logoRemoved": "הלוגו הוסר",
+      "logoUpdateFailed": "עדכון הלוגו נכשל",
+      "passwordResetFailed": "שליחת אימייל לאיפוס סיסמה נכשלה",
+      "brandingUpdateFailed": "עדכון המיתוג הגלובלי נכשל",
+      "serviceDeleted": "השירות נמחק",
+      "serviceDeleteFailed": "מחיקת השירות נכשלה",
+      "inviteResent": "ההזמנה הקודמת בוטלה. שלח הזמנה חדשה.",
+      "inviteResendFailed": "שליחת ההזמנה מחדש נכשלה",
+      "permissionDenied": "אין הרשאה",
+      "permissionDeniedDesc": "אין לך הרשאה לבצע פעולה זו.",
+      "pinUpdateFailed": "עדכון סטטוס ההצמדה נכשל",
+      "cvPdfReady": "קובץ ה-CV מוכן",
+      "cvPdfFailed": "יצירת קובץ ה-CV נכשלה",
+      "pricingUpdateFailed": "עדכון הצעת המחיר נכשל. נסה שוב."
     }
   }
 }

@@ -8,6 +8,14 @@ import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
+import {
+  PortalFormField,
+  PortalFormGrid,
+  PortalFormSection,
+} from '@/components/portal/ui/PortalFormField';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
@@ -28,7 +36,6 @@ import {
   LineItemOutput,
 } from '@/components/portal/pricing/RequestPricingCalculator';
 import { EmbeddedCalculator } from '@/components/portal/pricing/EmbeddedCalculator';
-import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import {
   CURRENCY,
@@ -257,6 +264,33 @@ export default function CreatePricingForm() {
   const watchedLineItems = watch('lineItems');
   const watchedCurrency = watch('currency');
 
+  const currencyOptions = useMemo(
+    () =>
+      Object.entries(CURRENCY).map(([, value]) => ({
+        value,
+        label: `${CURRENCY_CONFIG[value].symbol} ${CURRENCY_CONFIG[value].name}`,
+      })),
+    []
+  );
+
+  const developerOptions = useMemo(
+    () =>
+      (agencyTeam.data || []).map(member => ({
+        value: member.id,
+        label: member.name || member.email || '',
+      })),
+    [agencyTeam.data]
+  );
+
+  const pricingTypeOptions = useMemo(
+    () => [
+      { value: 'fixed', label: t('portal.pricing.form.pricingType.fixed') },
+      { value: 'hourly', label: t('portal.pricing.form.pricingType.hourly') },
+      { value: 'estimate', label: t('portal.pricing.form.pricingType.estimate') },
+    ],
+    [t]
+  );
+
   // Handle line items generated from calculator
   const handleCalculatorLineItems = useCallback(
     (items: LineItemOutput[]) => {
@@ -267,7 +301,7 @@ export default function CreatePricingForm() {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           notes: item.notes,
-        requestId: item.requestId,
+          requestId: item.requestId,
           pricingType: 'fixed' as const,
         }));
 
@@ -431,10 +465,8 @@ export default function CreatePricingForm() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white font-outfit">
-            {t('portal.pricing.newOffer')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1 font-medium">
+          <h1 className="portal-page-title">{t('portal.pricing.newOffer')}</h1>
+          <p className="portal-page-subtitle">
             {t('portal.pricing.form.createNewDescription' as never) ||
               'Create a new pricing proposal for your client.'}
           </p>
@@ -445,57 +477,34 @@ export default function CreatePricingForm() {
         {/* Main form */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6">
-            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.offerDetails' as never) || 'Offer Details'}
-            </h3>
+            <PortalFormSection
+              title={t('portal.pricing.form.offerDetails' as never) || 'Offer Details'}
+            >
+              <Input
+                label={t('portal.pricing.form.titleLabel')}
+                required
+                placeholder={t('portal.pricing.form.titlePlaceholder')}
+                error={errors.title?.message}
+                {...register('title')}
+              />
 
-            <div className="space-y-4">
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.titleLabel')} *
-                </label>
-                <input
-                  {...register('title')}
-                  type="text"
-                  placeholder={t('portal.pricing.form.titlePlaceholder')}
-                  className={cn(
-                    'portal-input w-full',
-                    errors.title && 'border-red-500 focus:ring-red-500'
-                  )}
-                />
-                {errors.title && (
-                  <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle size={14} />
-                    {errors.title.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.descriptionLabel')}
-                </label>
-                <textarea
+              <PortalFormField label={t('portal.pricing.form.descriptionLabel')}>
+                <Textarea
                   {...register('description')}
                   rows={3}
                   placeholder={t('portal.pricing.form.descriptionPlaceholder')}
-                  className="portal-input w-full resize-none"
+                  className="resize-none"
                 />
-              </div>
+              </PortalFormField>
 
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.terms')}
-                </label>
-                <textarea
+              <PortalFormField label={t('portal.pricing.form.terms')}>
+                <Textarea
                   {...register('terms')}
                   rows={10}
-                  className="portal-input w-full resize-y text-sm leading-6"
+                  className="resize-y text-sm leading-6"
                 />
-              </div>
-            </div>
+              </PortalFormField>
+            </PortalFormSection>
           </Card>
 
           {/* Request Selection & Pricing Calculator */}
@@ -584,26 +593,21 @@ export default function CreatePricingForm() {
                       <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
                         {t('portal.pricing.form.itemDescription')}
                       </label>
-                      <input
+                      <Input
                         {...register(`lineItems.${index}.description`)}
                         type="text"
                         placeholder={
                           t('portal.pricing.form.itemDescriptionPlaceholder' as never) ||
                           'Service or product...'
                         }
-                        className={cn(
-                          'portal-input w-full text-sm',
-                          errors.lineItems?.[index]?.description && 'border-red-500'
-                        )}
+                        error={errors.lineItems?.[index]?.description?.message}
+                        className="text-sm"
                       />
-                      <select
+                      <Select
                         {...register(`lineItems.${index}.pricingType`)}
-                        className="portal-input mt-2 w-full text-xs"
-                      >
-                        <option value="fixed">{t('portal.pricing.form.pricingType.fixed')}</option>
-                        <option value="hourly">{t('portal.pricing.form.pricingType.hourly')}</option>
-                        <option value="estimate">{t('portal.pricing.form.pricingType.estimate')}</option>
-                      </select>
+                        options={pricingTypeOptions}
+                        className="mt-2 text-xs"
+                      />
                     </div>
                     {/* Quantity and Price row on mobile */}
                     <div className="flex gap-3 w-full sm:contents">
@@ -611,34 +615,34 @@ export default function CreatePricingForm() {
                         <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
                           {t('portal.pricing.form.quantity')}
                         </label>
-                        <input
+                        <Input
                           {...register(`lineItems.${index}.quantity`, {
                             valueAsNumber: true,
                           })}
                           type="number"
                           min={1}
-                          className="portal-input w-full text-sm text-center"
+                          className="text-sm text-center"
                         />
                       </div>
                       <div className="flex-1 sm:col-span-3 md:col-span-2">
                         <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
                           {t('portal.pricing.form.unitPrice')}
                         </label>
-                        <div className="relative">
-                          <span className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm">
-                            {CURRENCY_CONFIG[watchedCurrency]?.symbol || '$'}
-                          </span>
-                          <input
-                            {...register(`lineItems.${index}.unitPrice`, {
-                              valueAsNumber: true,
-                            })}
-                            type="number"
-                            min={0}
-                            step={0.01}
-                            className="portal-input w-full text-sm ps-7"
-                            placeholder="0.00"
-                          />
-                        </div>
+                        <Input
+                          {...register(`lineItems.${index}.unitPrice`, {
+                            valueAsNumber: true,
+                          })}
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          placeholder="0.00"
+                          leftIcon={
+                            <span className="text-sm">
+                              {CURRENCY_CONFIG[watchedCurrency]?.symbol || '$'}
+                            </span>
+                          }
+                          className="text-sm"
+                        />
                       </div>
                       {/* Delete button */}
                       <div className="sm:col-span-2 flex items-end sm:items-start justify-end">
@@ -706,154 +710,96 @@ export default function CreatePricingForm() {
         <div className="space-y-6">
           {/* Currency & Validity */}
           <Card className="p-6">
-            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.settings' as never) || 's'}
-            </h3>
+            <PortalFormSection title={t('portal.pricing.form.settings' as never) || 'Settings'}>
+              <Select
+                label={t('portal.pricing.form.currency')}
+                options={currencyOptions}
+                {...register('currency')}
+              />
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.currency')}
-                </label>
-                <select {...register('currency')} className="portal-input w-full">
-                  {Object.entries(CURRENCY).map(([key, value]) => (
-                    <option key={key} value={value}>
-                      {CURRENCY_CONFIG[value].symbol} {CURRENCY_CONFIG[value].name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Input
+                label={t('portal.pricing.form.validUntil')}
+                type="date"
+                leftIcon={<CalendarIcon size={16} />}
+                {...register('validUntil')}
+              />
 
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.validUntil')}
-                </label>
-                <div className="relative">
-                  <CalendarIcon
-                    size={16}
-                    className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-                  />
-                  <input
-                    {...register('validUntil')}
-                    type="date"
-                    className="portal-input w-full ps-10"
-                  />
-                </div>
-              </div>
+              <Input
+                label={t('portal.pricing.form.timeframe')}
+                required
+                placeholder={t('portal.pricing.form.timeframePlaceholder')}
+                error={errors.timeframe?.message}
+                {...register('timeframe')}
+              />
 
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.timeframe')} *
-                </label>
-                <input
-                  {...register('timeframe')}
-                  className="portal-input w-full"
-                  placeholder={t('portal.pricing.form.timeframePlaceholder')}
-                />
-              </div>
+              <Input
+                label={t('portal.pricing.form.workDeadline')}
+                type="date"
+                leftIcon={<CalendarIcon size={16} />}
+                {...register('workDeadline')}
+              />
 
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.workDeadline')}
-                </label>
-                <div className="relative">
-                  <CalendarIcon
-                    size={16}
-                    className="absolute start-3 top-1/2 -translate-y-1/2 text-surface-400"
-                  />
-                  <input
-                    {...register('workDeadline')}
-                    type="date"
-                    className="portal-input w-full ps-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.assignedDeveloper')} *
-                </label>
-                <select {...register('assignedTo')} className="portal-input w-full">
-                  <option value="">{t('portal.pricing.form.selectDeveloper')}</option>
-                  {(agencyTeam.data || []).map(member => (
-                    <option key={member.id} value={member.id}>
-                      {member.name || member.email}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+              <Select
+                label={t('portal.pricing.form.assignedDeveloper')}
+                placeholder={t('portal.pricing.form.selectDeveloper')}
+                options={developerOptions}
+                error={errors.assignedTo?.message}
+                {...register('assignedTo')}
+              />
+            </PortalFormSection>
           </Card>
 
           {/* Client Info */}
           <Card className="p-6">
-            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.clientInfo' as never) || 'Client Info'}
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.clientName')}
-                </label>
-                <input
-                  {...register('clientName')}
+            <PortalFormSection
+              title={t('portal.pricing.form.clientInfo' as never) || 'Client Info'}
+            >
+              <PortalFormGrid className="md:grid-cols-1">
+                <Input
+                  label={t('portal.pricing.form.clientName')}
                   type="text"
                   placeholder={t('portal.common.namePlaceholder')}
-                  className="portal-input w-full"
+                  {...register('clientName')}
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.clientEmail')}
-                </label>
-                <input
-                  {...register('clientEmail')}
+                <Input
+                  label={t('portal.pricing.form.clientEmail')}
                   type="email"
                   placeholder="client@company.com"
-                  className="portal-input w-full"
+                  error={errors.clientEmail?.message}
+                  {...register('clientEmail')}
                 />
-              </div>
-            </div>
+              </PortalFormGrid>
+            </PortalFormSection>
           </Card>
 
           {/* Agency Notes */}
           <Card className="p-6">
-            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.payment')}
-            </h3>
-            <label className="flex items-start gap-3 text-sm text-surface-600 dark:text-surface-300">
-              <input type="checkbox" className="mt-1" {...register('paymentRequired')} />
-              <span>{t('portal.pricing.form.requireDeposit')}</span>
-            </label>
-            {watchedPaymentRequired && (
-              <div className="mt-4">
-                <label className="block text-sm font-bold text-surface-700 dark:text-surface-300 mb-2">
-                  {t('portal.pricing.form.depositAmount')}
-                </label>
-                <input
-                  {...register('depositAmount', { valueAsNumber: true })}
+            <PortalFormSection title={t('portal.pricing.form.payment')}>
+              <label className="flex items-start gap-3 text-sm text-surface-600 dark:text-surface-300">
+                <input type="checkbox" className="mt-1" {...register('paymentRequired')} />
+                <span>{t('portal.pricing.form.requireDeposit')}</span>
+              </label>
+              {watchedPaymentRequired && (
+                <Input
+                  label={t('portal.pricing.form.depositAmount')}
                   type="number"
                   min={0.01}
                   step={0.01}
-                  className="portal-input w-full"
+                  {...register('depositAmount', { valueAsNumber: true })}
                 />
-              </div>
-            )}
+              )}
+            </PortalFormSection>
           </Card>
 
-          {/* Agency Notes */}
           <Card className="p-6">
-            <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">
-              {t('portal.pricing.form.agencyNotes')}
-            </h3>
-            <textarea
-              {...register('agencyNotes')}
-              rows={4}
-              placeholder={t('portal.pricing.form.agencyNotesPlaceholder')}
-              className="portal-input w-full resize-none text-sm"
-            />
+            <PortalFormSection title={t('portal.pricing.form.agencyNotes')}>
+              <Textarea
+                {...register('agencyNotes')}
+                rows={4}
+                placeholder={t('portal.pricing.form.agencyNotesPlaceholder')}
+                className="resize-none text-sm"
+              />
+            </PortalFormSection>
           </Card>
 
           {/* Error */}

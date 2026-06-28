@@ -26,12 +26,8 @@ export default function NewRequestClient() {
           <ArrowLeft size={20} className="text-surface-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-            {t('requests.new.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('requests.new.subtitle')}
-          </p>
+          <h1 className="portal-page-title">{t('requests.new.title')}</h1>
+          <p className="portal-page-subtitle">{t('requests.new.subtitle')}</p>
         </div>
       </div>
 

@@ -7,6 +7,9 @@ import { Milestone, MILESTONE_STATUS, Request, MilestoneStatus } from '@/lib/typ
 import { updateRequestMilestones, updateMilestoneStatus } from '@/lib/services/portal-requests';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { PortalFormGrid } from '@/components/portal/ui/PortalFormField';
 import { cn } from '@/lib/utils';
 import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { format } from 'date-fns';
@@ -212,23 +215,24 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                 className="p-4 rounded-2xl bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-800 flex items-center gap-4 group"
               >
                 <GripVertical size={18} className="text-surface-300 cursor-move" />
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
-                    className="portal-input bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-2 text-sm font-bold font-outfit"
-                    value={ms.title}
-                    onChange={e => handleUpdateMilestone(ms.id, { title: e.target.value })}
-                    placeholder={t('portal.milestones.milestoneTitle')}
-                  />
-                  <select
-                    className="portal-input bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-2 text-sm font-bold font-outfit"
-                    value={ms.status}
-                    onChange={e => handleUpdateMilestone(ms.id, { status: e.target.value as any })}
-                  >
-                    <option value="pending">{t('portal.milestones.status.pending')}</option>
-                    <option value="in_progress">{t('portal.milestones.status.inProgress')}</option>
-                    <option value="completed">{t('portal.milestones.status.completed')}</option>
-                    <option value="blocked">{t('portal.milestones.status.blocked')}</option>
-                  </select>
+                <div className="flex-1">
+                  <PortalFormGrid className="md:grid-cols-2">
+                    <Input
+                      value={ms.title}
+                      onChange={e => handleUpdateMilestone(ms.id, { title: e.target.value })}
+                      placeholder={t('portal.milestones.milestoneTitle')}
+                    />
+                    <Select
+                      value={ms.status}
+                      onChange={e => handleUpdateMilestone(ms.id, { status: e.target.value as MilestoneStatus })}
+                      options={[
+                        { value: 'pending', label: t('portal.milestones.status.pending') },
+                        { value: 'in_progress', label: t('portal.milestones.status.inProgress') },
+                        { value: 'completed', label: t('portal.milestones.status.completed') },
+                        { value: 'blocked', label: t('portal.milestones.status.blocked') },
+                      ]}
+                    />
+                  </PortalFormGrid>
                 </div>
                 <button
                   type="button"

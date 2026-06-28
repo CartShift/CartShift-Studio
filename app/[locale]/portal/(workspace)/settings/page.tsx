@@ -1,5 +1,7 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import SettingsClient from './SettingsClient';
+import { PortalQueryHydration } from '@/components/providers/PortalQueryHydration';
+import { prefetchPortalPageData } from '@/lib/server/prefetch-portal-queries';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -18,5 +20,11 @@ export async function generateMetadata({
 export default async function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  return <SettingsClient />;
+  const dehydratedState = await prefetchPortalPageData('settings');
+
+  return (
+    <PortalQueryHydration state={dehydratedState}>
+      <SettingsClient />
+    </PortalQueryHydration>
+  );
 }

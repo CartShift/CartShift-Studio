@@ -19,7 +19,8 @@ import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser } from '@/lib/types/portal';
 
 import { useTranslations } from 'next-intl';
-import { portalSelectClassName } from '@/lib/utils/portal-interactive';
+import { Select } from '@/components/ui/Select';
+import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
@@ -162,24 +163,22 @@ export const CreateOrganizationForm = ({
               disabled={isSubmitting}
             />
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-surface-700 dark:text-surface-300">
-                {t('organization.createForm.responsibleAgentLabel' as any)}
-              </label>
-              <select
-                className={portalSelectClassName}
+            <PortalFormField label={t('organization.createForm.responsibleAgentLabel' as any)}>
+              <Select
+                disabled={isSubmitting}
+                options={[
+                  {
+                    value: '',
+                    label: t('organization.createForm.responsibleAgentPlaceholder' as any),
+                  },
+                  ...agencyMembers.map(member => ({
+                    value: member.id,
+                    label: member.name || member.email,
+                  })),
+                ]}
                 {...register('responsibleAgencyUserId')}
-              >
-                <option value="">
-                  {t('organization.createForm.responsibleAgentPlaceholder' as any)}
-                </option>
-                {agencyMembers.map(member => (
-                  <option key={member.id} value={member.id}>
-                    {member.name || member.email}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </PortalFormField>
 
             <div className="bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-900/20 rounded-xl p-4">
               <p className="text-xs text-primary-800 dark:text-primary-300 leading-relaxed font-medium">

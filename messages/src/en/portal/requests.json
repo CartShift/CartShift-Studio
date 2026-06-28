@@ -191,6 +191,11 @@
         "workflowHint": "Click to change the request status",
         "notDesc": "No description provided"
       },
+      "preview": {
+        "title": "Request preview",
+        "openFullPage": "Open full page",
+        "close": "Close preview"
+      },
       "toast": {
         "invalidPricing": "Invalid pricing",
         "pinUpdateFailed": "Failed to update pin status",

@@ -1,15 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  BookOpen,
-  Keyboard,
-  LifeBuoy,
-  Mail,
-  Search,
-  Sparkles,
-  ArrowRight,
-} from 'lucide-react';
+import { BookOpen, Keyboard, LifeBuoy, Mail, Search, Sparkles, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { ViewTransitionLink } from '@/components/ui/ViewTransitionLink';
@@ -60,12 +52,8 @@ export function PortalHelpClient() {
           <LifeBuoy size={14} aria-hidden />
           {t('eyebrow')}
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('title')}
-        </h1>
-        <p className="text-sm md:text-base text-surface-500 dark:text-surface-400 max-w-2xl">
-          {t('subtitle')}
-        </p>
+        <h1 className="portal-page-title">{t('title')}</h1>
+        <p className="portal-page-subtitle md:text-base">{t('subtitle')}</p>
       </header>
 
       <div className="relative">
@@ -97,28 +85,31 @@ export function PortalHelpClient() {
               const topicHref = getHelpTopicHref(topic.id, isAgency);
 
               return (
-              <Card key={topic.id} className="p-4 md:p-5 border-surface-200/80 dark:border-surface-800/60">
-                <h2 className="text-sm font-bold text-surface-900 dark:text-white mb-1.5">
-                  {topic.title}
-                </h2>
-                <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
-                  {topic.body}
-                </p>
-                {topicHref && (
-                  <ViewTransitionLink
-                    href={topicHref}
-                    preset="slide"
-                    className={cn(
-                      'portal-focus-ring mt-3 inline-flex items-center gap-1.5 text-sm font-semibold',
-                      'text-primary-600 dark:text-primary-400 hover:underline'
-                    )}
-                  >
-                    {t('openTopic')}
-                    <ArrowRight size={14} className="rtl:rotate-180" aria-hidden />
-                  </ViewTransitionLink>
-                )}
-              </Card>
-            );
+                <Card
+                  key={topic.id}
+                  className="p-4 md:p-5 border-surface-200/80 dark:border-surface-800/60"
+                >
+                  <h2 className="text-sm font-bold text-surface-900 dark:text-white mb-1.5">
+                    {topic.title}
+                  </h2>
+                  <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+                    {topic.body}
+                  </p>
+                  {topicHref && (
+                    <ViewTransitionLink
+                      href={topicHref}
+                      preset="slide"
+                      className={cn(
+                        'portal-focus-ring mt-3 inline-flex items-center gap-1.5 text-sm font-semibold',
+                        'text-primary-600 dark:text-primary-400 hover:underline'
+                      )}
+                    >
+                      {t('openTopic')}
+                      <ArrowRight size={14} className="rtl:rotate-180" aria-hidden />
+                    </ViewTransitionLink>
+                  )}
+                </Card>
+              );
             })}
           </div>
         )}

@@ -8,22 +8,24 @@ import {
   ModalBody,
   ModalFooter,
 } from '@/components/ui/ModalBackdrop';
-
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
+import { PortalFormField, PortalFormGrid } from '@/components/portal/ui/PortalFormField';
 import { Service, Currency, CURRENCY_CONFIG } from '@/lib/types/portal';
 import { createService, updateService } from '@/lib/services/portal-services';
 import { Save, AlertCircle } from 'lucide-react';
 
 interface ManageServiceFormProps {
-  service?: Service; // If provided, we are editing
+  service?: Service;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
 export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServiceFormProps) {
-  const [loading, set] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations('portal.agency.settings.services.form');
 
@@ -45,7 +47,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
       return;
     }
 
-    set(true);
+    setLoading(true);
     try {
       const serviceData = {
         name: formData.name,
@@ -62,18 +64,22 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
         await createService(serviceData);
       }
       onSuccess();
-    } catch (error: unknown) {
-      console.error('Error saving service:', error);
-      setError(error instanceof Error ? error.message : t('errors.failed'));
+    } catch (err: unknown) {
+      console.error('Error saving service:', err);
+      setError(err instanceof Error ? err.message : t('errors.failed'));
     } finally {
-      set(false);
+      setLoading(false);
     }
   };
 
-  // Don't render if document.body is not available
   if (typeof document === 'undefined' || !document.body) {
     return null;
   }
+
+  const currencyOptions = Object.entries(CURRENCY_CONFIG).map(([code, config]) => ({
+    value: code,
+    label: `${code} (${config.symbol})`,
+  }));
 
   return (
     <ModalBackdrop isOpen={true} onClick={onCancel}>
@@ -86,12 +92,12 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
 
         <form onSubmit={handleSubmit}>
           <ModalBody className="space-y-6">
-            {error && (
+            {error ? (
               <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl flex items-center gap-3 text-rose-600 dark:text-rose-400 text-sm font-bold font-outfit">
                 <AlertCircle size={18} />
                 {error}
               </div>
-            )}
+            ) : null}
 
             <Input
               label={t('fields.name')}
@@ -101,7 +107,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
               required
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <PortalFormGrid>
               <Input
                 label={t('fields.basePrice')}
                 type="number"
@@ -111,23 +117,15 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
                 placeholder="0.00"
                 required
               />
-              <div>
-                <label className="block portal-label-sm mb-2.5 font-outfit">
-                  {t('fields.currency')}
-                </label>
-                <select
-                  value={formData.currency}
-                  onChange={e => setFormData({ ...formData, currency: e.target.value as Currency })}
-                  className="portal-input h-11 rounded-xl text-sm font-bold font-outfit"
-                >
-                  {Object.entries(CURRENCY_CONFIG).map(([code, config]) => (
-                    <option key={code} value={code}>
-                      {code} ({config.symbol})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+              <Select
+                label={t('fields.currency')}
+                value={formData.currency}
+                onChange={e =>
+                  setFormData({ ...formData, currency: e.target.value as Currency })
+                }
+                options={currencyOptions}
+              />
+            </PortalFormGrid>
 
             <Input
               label={t('fields.category')}
@@ -136,18 +134,14 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
               placeholder={t('fields.categoryPlaceholder')}
             />
 
-            <div>
-              <label className="block portal-label-sm mb-2.5 font-outfit">
-                {t('fields.description')}
-              </label>
-              <textarea
+            <PortalFormField label={t('fields.description')}>
+              <Textarea
                 value={formData.description}
                 onChange={e => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="portal-input rounded-2xl py-3 resize-none text-sm font-medium leading-relaxed font-outfit"
                 placeholder={t('fields.descriptionPlaceholder')}
               />
-            </div>
+            </PortalFormField>
 
             <div className="flex items-center gap-3 py-2">
               <input
@@ -167,12 +161,7 @@ export function ManageServiceForm({ service, onSuccess, onCancel }: ManageServic
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              className="flex-1 font-outfit"
-            >
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1 font-outfit">
               {t('actions.cancel')}
             </Button>
             <Button

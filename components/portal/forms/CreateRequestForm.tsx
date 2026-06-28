@@ -6,8 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { CreateRequestData, PRIORITY_CONFIG } from '@/lib/types/portal';
+import { Select } from '@/components/ui/Select';
+import { RequestFormCoreFields } from '@/components/portal/forms/RequestFormCoreFields';
+import { CreateRequestData } from '@/lib/types/portal';
 import { createRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { trackPortalRequestCreate } from '@/lib/analytics';
@@ -27,7 +28,6 @@ import {
   File,
   Plus,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { uploadMultipleFiles, formatFileSize } from '@/lib/services/portal-files';
 import { updateRequest } from '@/lib/services/portal-requests';
@@ -199,96 +199,22 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-6">
         {isAgency && clients.length > 0 && (
-          <div className="space-y-2">
-            <label className="block portal-label-sm text-[10px] px-1">
-              {t('portal.requests.form.clientLabel')}
-            </label>
-            <select
-              value={selectedClientId}
-              onChange={e => setSelectedClientId(e.target.value)}
-              className="portal-input rounded-2xl py-3 text-sm font-bold font-outfit"
-            >
-              <option value="">{t('portal.requests.form.clientSelect')}</option>
-              {clients.map(client => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        <Input
-          label={t('portal.requests.form.titleLabel')}
-          placeholder={t('portal.requests.form.titlePlaceholder')}
-          error={errors.title?.message}
-          {...register('title')}
-          className="text-lg font-bold font-outfit"
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block portal-label-sm text-[10px] px-1">
-              {t('portal.requests.form.categoryLabel')}
-            </label>
-            <select
-              {...register('type')}
-              className={cn(
-                'portal-input rounded-2xl py-3 text-sm font-bold font-outfit',
-                errors.type && 'border-red-500 focus:ring-red-500/20 focus:border-red-500'
-              )}
-            >
-              <option value="" disabled>
-                {t('portal.requests.form.categorySelect')}
-              </option>
-              {typeOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label as string}
-                </option>
-              ))}
-            </select>
-            {errors.type && (
-              <p className="px-1 text-[10px] font-bold text-red-500 uppercase tracking-widest">
-                {errors.type.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="block portal-label-sm text-[10px] px-1">
-              {t('portal.requests.form.priorityLabel')}
-            </label>
-            <select
-              {...register('priority')}
-              className="portal-input rounded-2xl py-3 text-sm font-bold font-outfit"
-            >
-              {Object.keys(PRIORITY_CONFIG).map(p => (
-                <option key={p} value={p}>
-                  {t(`portal.requests.priority.${p.toLowerCase()}` as any)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block portal-label-sm text-[10px] px-1">
-            {t('portal.requests.form.detailsLabel')}
-          </label>
-          <textarea
-            {...register('description')}
-            rows={6}
-            className={cn(
-              'portal-input rounded-3xl py-4 resize-none text-sm font-medium leading-relaxed',
-              errors.description && 'border-red-500 focus:ring-red-500/20 focus:border-red-500'
-            )}
-            placeholder={t('portal.requests.form.detailsPlaceholder')}
+          <Select
+            label={t('portal.requests.form.clientLabel')}
+            value={selectedClientId}
+            onChange={e => setSelectedClientId(e.target.value)}
+            options={[
+              { value: '', label: t('portal.requests.form.clientSelect') },
+              ...clients.map(client => ({ value: client.id, label: client.name })),
+            ]}
           />
-          {errors.description && (
-            <p className="px-1 text-[10px] font-bold text-red-500 uppercase tracking-widest">
-              {errors.description.message}
-            </p>
-          )}
-        </div>
+        )}
+        <RequestFormCoreFields
+          register={register}
+          errors={errors}
+          typeOptions={typeOptions.map(opt => ({ value: opt.value, label: String(opt.label) }))}
+          titleClassName="text-lg font-bold font-outfit"
+        />
 
         {/* Attachments Section */}
         <div className="space-y-4 pt-4 border-t border-surface-100 dark:border-surface-800">

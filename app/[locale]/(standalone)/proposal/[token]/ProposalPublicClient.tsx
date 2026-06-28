@@ -10,6 +10,9 @@ import {
   getPricingRequestByPublicToken,
 } from '@/lib/services/pricing-requests';
 import { PublicPricingProposal } from '@/lib/types/pricing';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { PortalFormField, PortalFormGrid } from '@/components/portal/ui/PortalFormField';
 
 export default function ProposalPublicClient({ token }: { token: string }) {
   const t = useTranslations('proposal');
@@ -76,7 +79,9 @@ export default function ProposalPublicClient({ token }: { token: string }) {
     );
   }
 
-  const deposit = proposal.payments.find(payment => payment.type === 'deposit' && payment.status !== 'canceled');
+  const deposit = proposal.payments.find(
+    payment => payment.type === 'deposit' && payment.status !== 'canceled'
+  );
   const isAccepted = proposal.status === 'ACCEPTED' || proposal.status === 'PAID';
 
   return (
@@ -99,11 +104,7 @@ export default function ProposalPublicClient({ token }: { token: string }) {
               <p className="mt-1 text-sm text-emerald-100/80">{t('accepted.description')}</p>
             </div>
             {deposit && deposit.status !== 'paid' && (
-              <ProposalPaymentCheckout
-                payment={deposit}
-                proposalToken={token}
-                onPaid={load}
-              />
+              <ProposalPaymentCheckout payment={deposit} proposalToken={token} onPaid={load} />
             )}
           </div>
         ) : proposal.canAccept ? (
@@ -116,28 +117,53 @@ export default function ProposalPublicClient({ token }: { token: string }) {
               <h2 className="font-outfit text-xl font-black">{t('approve.title')}</h2>
             </div>
             <p className="mt-2 text-sm text-surface-300">{t('approve.description')}</p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <label className="text-sm font-bold text-surface-200">
-                {t('approve.fullName')}
-                <input className="portal-input mt-2 w-full" required value={acceptedByName} onChange={event => setAcceptedByName(event.target.value)} />
-              </label>
-              <label className="text-sm font-bold text-surface-200">
-                {t('approve.email')}
-                <input className="portal-input mt-2 w-full" type="email" value={acceptedByEmail} onChange={event => setAcceptedByEmail(event.target.value)} />
-              </label>
-            </div>
-            <label className="mt-4 block text-sm font-bold text-surface-200">
-              {t('approve.signature')}
-              <input className="portal-input mt-2 w-full font-outfit text-lg" required value={signatureText} onChange={event => setSignatureText(event.target.value)} />
-            </label>
+
+            <PortalFormGrid className="mt-6 sm:grid-cols-2">
+              <PortalFormField label={t('approve.fullName')} required>
+                <Input
+                  required
+                  value={acceptedByName}
+                  onChange={event => setAcceptedByName(event.target.value)}
+                />
+              </PortalFormField>
+              <PortalFormField label={t('approve.email')}>
+                <Input
+                  type="email"
+                  value={acceptedByEmail}
+                  onChange={event => setAcceptedByEmail(event.target.value)}
+                />
+              </PortalFormField>
+            </PortalFormGrid>
+
+            <PortalFormField label={t('approve.signature')} required className="mt-4">
+              <Input
+                required
+                value={signatureText}
+                onChange={event => setSignatureText(event.target.value)}
+                className="font-outfit text-lg"
+              />
+            </PortalFormField>
+
             <label className="mt-5 flex items-start gap-3 text-sm text-surface-300">
-              <input className="mt-1 h-4 w-4 rounded border-white/20" type="checkbox" checked={termsAccepted} onChange={event => setTermsAccepted(event.target.checked)} required />
+              <input
+                className="mt-1 h-4 w-4 rounded border-white/20"
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={event => setTermsAccepted(event.target.checked)}
+                required
+              />
               <span>{t('approve.checkbox')}</span>
             </label>
+
             {error && <p className="mt-4 text-sm text-rose-300">{error}</p>}
-            <button className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-primary-500 px-5 py-3 font-outfit font-black text-white transition-colors hover:bg-primary-400 disabled:opacity-50" disabled={submitting} type="submit">
-              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : t('approve.submit')}
-            </button>
+
+            <Button
+              type="submit"
+              className="mt-6 min-h-12 w-full font-outfit font-black"
+              loading={submitting}
+            >
+              {t('approve.submit')}
+            </Button>
           </form>
         ) : (
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-surface-300">

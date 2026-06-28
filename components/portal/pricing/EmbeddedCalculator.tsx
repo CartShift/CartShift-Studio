@@ -3,12 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import {
-  Sparkles,
-  Bug,
-  Zap,
-  FileText,
-  Palette,
-  HelpCircle,
   Clock,
   Calculator,
   ChevronDown,
@@ -20,50 +14,12 @@ import { Button } from '@/components/ui/Button';
 import { usePricingCalculator } from '@/lib/hooks/usePricingCalculator';
 import { RequestType, REQUEST_TYPE, Currency } from '@/lib/types/portal';
 import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator';
+import {
+  CALCULATOR_TYPE_ICONS as TYPE_ICONS,
+  CALCULATOR_TYPE_COLORS as TYPE_COLORS,
+} from '@/lib/constants/request-type-ui';
 
 // Icon mapping for request types
-const TYPE_ICONS: Record<RequestType, React.ElementType> = {
-  feature: Sparkles,
-  bug: Bug,
-  optimization: Zap,
-  content: FileText,
-  design: Palette,
-  other: HelpCircle,
-};
-
-// Colors for request type pills
-const TYPE_COLORS: Record<RequestType, { bg: string; text: string; border: string }> = {
-  feature: {
-    bg: 'bg-violet-100 dark:bg-violet-900/30',
-    text: 'text-violet-700 dark:text-violet-300',
-    border: 'border-violet-200 dark:border-violet-800',
-  },
-  bug: {
-    bg: 'bg-red-100 dark:bg-red-900/30',
-    text: 'text-red-700 dark:text-red-300',
-    border: 'border-red-200 dark:border-red-800',
-  },
-  optimization: {
-    bg: 'bg-amber-100 dark:bg-amber-900/30',
-    text: 'text-amber-700 dark:text-amber-300',
-    border: 'border-amber-200 dark:border-amber-800',
-  },
-  content: {
-    bg: 'bg-primary-100 dark:bg-primary-900/30',
-    text: 'text-primary-700 dark:text-primary-300',
-    border: 'border-primary-200 dark:border-primary-800',
-  },
-  design: {
-    bg: 'bg-pink-100 dark:bg-pink-900/30',
-    text: 'text-pink-700 dark:text-pink-300',
-    border: 'border-pink-200 dark:border-pink-800',
-  },
-  other: {
-    bg: 'bg-surface-100 dark:bg-surface-800',
-    text: 'text-surface-700 dark:text-surface-300',
-    border: 'border-surface-200 dark:border-surface-700',
-  },
-};
 
 interface LineItem {
   description: string;

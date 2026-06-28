@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 import { useTranslations } from 'next-intl';
 import { X, Check, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
@@ -66,18 +68,18 @@ export function InlineRequestForm({
           />
 
           {organizations.length > 0 && (
-            <select
-              value={selectedOrgId}
-              onChange={e => setSelectedOrgId(e.target.value)}
-              className="portal-input w-full text-xs p-1.5 rounded-lg border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-600 dark:text-surface-300"
-              disabled={isSubmitting}
-            >
-              {organizations.map(org => (
-                <option key={org.id} value={org.id}>
-                  {org.name}
-                </option>
-              ))}
-            </select>
+            <PortalFormField label={t('requests.form.clientLabel')}>
+              <Select
+                value={selectedOrgId}
+                onChange={e => setSelectedOrgId(e.target.value)}
+                disabled={isSubmitting}
+                className="h-9 text-xs"
+                options={organizations.map(org => ({
+                  value: org.id,
+                  label: org.name,
+                }))}
+              />
+            </PortalFormField>
           )}
         </div>
 

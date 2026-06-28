@@ -59,10 +59,8 @@ export function EmailPreviewClient({ locale, previewsByLocale }: EmailPreviewCli
               <Mail className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white">
-                Email previews
-              </h1>
-              <p className="text-sm text-surface-500 dark:text-surface-400">
+              <h1 className="portal-page-title">Email previews</h1>
+              <p className="portal-page-subtitle">
                 Source-rendered React Email templates for QA before deploy.
               </p>
             </div>

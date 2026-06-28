@@ -3,8 +3,7 @@
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from '@/lib/motion';
+import { Dialog } from 'radix-ui';
 import { Search, X, Clock, ArrowRight, Trash2 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
@@ -121,33 +120,18 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
     },
   ];
 
-  // Don't render if not open or if document.body is not available
-  if (!isOpen || typeof document === 'undefined' || !document.body) {
-    return null;
-  }
-
-  return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-surface-950/60 backdrop-blur-md z-always-on-top"
-            onClick={onClose}
-          />
-
-          {/* Search Modal */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className={cn('fixed top-0 inset-x-0 z-always-on-top p-4', className)}
-          >
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={open => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-always-on-top bg-surface-950/60 backdrop-blur-md data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+        <Dialog.Content
+          className={cn(
+            'fixed inset-x-0 top-0 z-always-on-top p-4 outline-none',
+            'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 motion-reduce:animate-none',
+            className
+          )}
+        >
+            <Dialog.Title className="sr-only">{t('portal.header.searchPlaceholder')}</Dialog.Title>
             <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden max-w-lg mx-auto">
               {/* Search Input */}
               <div className="flex items-center gap-3 p-4 border-b border-surface-100 dark:border-surface-800">
@@ -285,10 +269,8 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                 )}
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

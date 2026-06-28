@@ -33,6 +33,7 @@ import { trackBookCallClick } from '@/lib/analytics';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useConsultations } from '@/lib/hooks/useConsultations';
 import { useConsultationMutations } from '@/lib/hooks/useConsultationMutations';
+import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 const typeIcons: Record<ConsultationType, React.ElementType> = {
   onboarding: UserPlus,
@@ -48,6 +49,7 @@ export default function ConsultationsClient() {
   const { consultations: consultationsData, loading: consultations } = useConsultations();
 
   const { cancelMutation, isCanceling } = useConsultationMutations();
+  const { confirm, ConfirmDialog } = useConfirmDialog();
   const dateLocale = getDateLocale(locale);
 
   const now = new Date();
@@ -70,9 +72,14 @@ export default function ConsultationsClient() {
   };
 
   const handleCancel = async (consultation: Consultation) => {
-    if (!confirm(t('consultations.form.cancelConfirm'))) {
-      return;
-    }
+    const ok = await confirm({
+      title: t('consultations.cancel'),
+      description: t('consultations.form.cancelConfirm'),
+      confirmText: t('consultations.cancel'),
+      cancelText: t('common.cancel'),
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     try {
       await cancelMutation.mutateAsync({
@@ -97,12 +104,8 @@ export default function ConsultationsClient() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-black text-surface-900 dark:text-white font-outfit tracking-tight">
-            {t('consultations.title')}
-          </h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">
-            {t('consultations.clientSubtitle')}
-          </p>
+          <h1 className="portal-page-title">{t('consultations.title')}</h1>
+          <p className="portal-page-subtitle">{t('consultations.clientSubtitle')}</p>
         </div>
         <Button variant="primary" className="gap-2" onClick={handleScheduleClick}>
           <Calendar size={18} />
@@ -335,6 +338,7 @@ export default function ConsultationsClient() {
           </div>
         </section>
       )}
+      {ConfirmDialog}
     </div>
   );
 }

@@ -1,8 +1,9 @@
 'use client';
 
+import { AlertDialog } from 'radix-ui';
+import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from './Button';
-import { Icon } from './Icon';
-import { ModalBackdrop, ModalContent } from './ModalBackdrop';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -16,6 +17,27 @@ interface ConfirmationModalProps {
   isLoading?: boolean;
 }
 
+const variantStyles = {
+  danger: {
+    Icon: AlertTriangle,
+    iconColor: 'text-red-500',
+    bg: 'bg-red-50 dark:bg-red-900/10',
+    button: 'border-transparent bg-red-600 text-white hover:bg-red-700',
+  },
+  warning: {
+    Icon: AlertCircle,
+    iconColor: 'text-amber-500',
+    bg: 'bg-amber-50 dark:bg-amber-900/10',
+    button: '',
+  },
+  info: {
+    Icon: Info,
+    iconColor: 'text-blue-500',
+    bg: 'bg-blue-50 dark:bg-blue-900/10',
+    button: '',
+  },
+} as const;
+
 export function ConfirmationModal({
   isOpen,
   onClose,
@@ -27,84 +49,56 @@ export function ConfirmationModal({
   variant = 'warning',
   isLoading = false,
 }: ConfirmationModalProps) {
-  const variantStyles = {
-    danger: {
-      icon: 'alert-triangle',
-      iconColor: 'text-red-500',
-      buttonVariant: 'danger' as const,
-      bg: 'bg-red-50 dark:bg-red-900/10',
-    },
-    warning: {
-      icon: 'alert-circle',
-      iconColor: 'text-amber-500',
-      buttonVariant: 'secondary' as const,
-      bg: 'bg-amber-50 dark:bg-amber-900/10',
-    },
-    info: {
-      icon: 'info',
-      iconColor: 'text-blue-500',
-      buttonVariant: 'primary' as const,
-      bg: 'bg-blue-50 dark:bg-blue-900/10',
-    },
-  };
-
-  const currentVariant = variantStyles[variant];
-
-  // Map variant to Button variant roughly
-  const confirmButtonVariant =
-    variant === 'danger'
-      ? 'outline' // Using outline for danger usually, or custom class for red
-      : variant === 'info'
-        ? 'primary'
-        : 'secondary';
-
-  const confirmButtonClass =
-    variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white border-transparent' : '';
+  const current = variantStyles[variant];
+  const { Icon } = current;
 
   return (
-    <ModalBackdrop isOpen={isOpen} onClick={isLoading ? undefined : onClose} zIndex="200">
-      <ModalContent maxWidth="md" onClick={e => e.stopPropagation()}>
-        <div className="bg-white dark:bg-surface-800 rounded-2xl shadow-xl overflow-hidden border border-surface-200 dark:border-surface-700">
+    <AlertDialog.Root open={isOpen} onOpenChange={open => !open && !isLoading && onClose()}>
+      <AlertDialog.Portal>
+        <AlertDialog.Overlay className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+        <AlertDialog.Content className="fixed start-1/2 top-1/2 z-[201] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl outline-none rtl:translate-x-1/2 dark:border-surface-700 dark:bg-surface-800 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none">
           <div className="p-6">
             <div className="flex items-start gap-4">
-              <div className={`p-3 rounded-full shrink-0 ${currentVariant.bg}`}>
-                <Icon
-                  name={currentVariant.icon as any}
-                  size={24}
-                  className={currentVariant.iconColor}
-                />
+              <div className={cn('shrink-0 rounded-full p-3', current.bg)}>
+                <Icon size={24} className={current.iconColor} aria-hidden="true" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
+                <AlertDialog.Title className="mb-2 text-lg font-semibold text-surface-900 dark:text-surface-100">
                   {title}
-                </h3>
-                <p className="text-surface-600 dark:text-surface-400 text-sm leading-relaxed">
+                </AlertDialog.Title>
+                <AlertDialog.Description className="text-sm leading-relaxed text-surface-600 dark:text-surface-400">
                   {description}
-                </p>
+                </AlertDialog.Description>
               </div>
             </div>
 
             <div className="mt-8 flex justify-end gap-3">
-              <Button
-                variant="ghost"
-                onClick={onClose}
-                disabled={isLoading}
-                className="hover:bg-surface-100 dark:hover:bg-surface-700"
-              >
-                {cancelText}
-              </Button>
-              <Button
-                variant={confirmButtonVariant}
-                onClick={onConfirm}
-                loading={isLoading}
-                className={confirmButtonClass}
-              >
-                {confirmText}
-              </Button>
+              <AlertDialog.Cancel asChild>
+                <Button
+                  variant="ghost"
+                  disabled={isLoading}
+                  className="hover:bg-surface-100 dark:hover:bg-surface-700"
+                >
+                  {cancelText}
+                </Button>
+              </AlertDialog.Cancel>
+              <AlertDialog.Action asChild>
+                <Button
+                  variant={variant === 'info' ? 'primary' : variant === 'warning' ? 'secondary' : 'outline'}
+                  onClick={event => {
+                    event.preventDefault();
+                    onConfirm();
+                  }}
+                  loading={isLoading}
+                  className={current.button}
+                >
+                  {confirmText}
+                </Button>
+              </AlertDialog.Action>
             </div>
           </div>
-        </div>
-      </ModalContent>
-    </ModalBackdrop>
+        </AlertDialog.Content>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
   );
 }

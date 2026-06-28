@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
-import { portalSelectClassName } from '@/lib/utils/portal-interactive';
+import { Select } from '@/components/ui/Select';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { inviteTeamMember, inviteAgencyMember } from '@/lib/services/portal-organizations';
 import { Button } from '@/components/ui/Button';
@@ -125,22 +125,12 @@ export const InviteTeamMemberForm = ({
               {...register('email')}
             />
 
-            <div>
-              <label className="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
-                {t('portal.team.inviteForm.roleLabel')}
-              </label>
-              <select
-                {...register('role')}
-                className={portalSelectClassName}
-              >
-                {roleOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              {errors.role && <p className="mt-1.5 text-xs text-red-500">{errors.role.message}</p>}
-            </div>
+            <Select
+              label={t('portal.team.inviteForm.roleLabel')}
+              error={errors.role?.message}
+              options={roleOptions}
+              {...register('role')}
+            />
 
             {error && (
               <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">

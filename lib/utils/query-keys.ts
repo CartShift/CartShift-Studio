@@ -23,12 +23,23 @@ export const queryKeys = {
   },
   organizations: {
     detail: (orgId: string) => ['organization', orgId] as const,
+    byUser: (userId: string) => ['user-organizations', userId] as const,
+  },
+  files: {
+    byOrg: (orgId: string) => ['org-files', orgId] as const,
+  },
+  agency: {
+    profile: (agencyId: string) => ['agency-profile', agencyId] as const,
+  },
+  services: {
+    agency: ['agency-services'] as const,
   },
   members: {
     byOrg: (orgId: string) => ['org-members', orgId] as const,
   },
   invites: {
     byOrg: (orgId: string) => ['org-invites', orgId] as const,
+    agency: ['agency-invites'] as const,
   },
   consultations: {
     byOrg: (orgId?: string, status?: string) =>

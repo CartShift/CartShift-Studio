@@ -19,6 +19,7 @@ import { InsightsPanel } from '@/components/portal/sales/InsightsPanel';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useState } from 'react';
 import { Select } from '@/components/ui/Select';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
 
 export default function SalesDashboardClient() {
   const t = useTranslations('portal');
@@ -27,7 +28,8 @@ export default function SalesDashboardClient() {
   const { metrics, loading, refetch } = useSalesAnalytics(parseInt(period));
 
   // Check if there's any sales data
-  const hasData = metrics && (metrics.totalRevenue > 0 || metrics.totalProposals > 0);
+  const hasData =
+    metrics && (metrics.totalRevenue > 0 || metrics.totalProposals > 0 || metrics.pendingRevenue > 0);
 
   if (auth) {
     return (
@@ -69,50 +71,37 @@ export default function SalesDashboardClient() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-              <TrendingUp className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-surface-900 dark:text-white leading-tight">
-              {t('sales.dashboard.title')}
-            </h1>
-          </div>
-          <p className="text-surface-500 dark:text-surface-400 ms-[52px]">
-            {t('sales.dashboard.subtitle')}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Select
-            value={period}
-            onChange={e => setPeriod(e.target.value)}
-            className="w-[160px]"
-            options={[
-              { value: '1', label: t('sales.chart.lastMonth') },
-              { value: '6', label: t('sales.chart.last6Months') },
-              { value: '12', label: t('sales.chart.lastYear') },
-            ]}
-          />
-
-          <Button
-            variant="outline"
-            onClick={() => refetch()}
-            disabled={loading}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            {t('sales.dashboard.refresh')}
-          </Button>
-
-          <Button variant="outline" className="flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            {t('sales.dashboard.exportReport')}
-          </Button>
-        </div>
-      </div>
+      <PortalPageHeader
+        title={t('sales.dashboard.title')}
+        description={t('sales.dashboard.subtitle')}
+        icon={TrendingUp}
+        className="mb-0"
+        action={
+          <>
+            <Select
+              value={period}
+              onChange={e => setPeriod(e.target.value)}
+              className="w-[160px]"
+              options={[
+                { value: '1', label: t('sales.chart.lastMonth') },
+                { value: '6', label: t('sales.chart.last6Months') },
+                { value: '12', label: t('sales.chart.lastYear') },
+              ]}
+            />
+            <Button
+              variant="outline"
+              onClick={() => refetch()}
+              disabled={loading}
+              leftIcon={<RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />}
+            >
+              {t('sales.dashboard.refresh')}
+            </Button>
+            <Button variant="outline" leftIcon={<Download className="w-4 h-4" />}>
+              {t('sales.dashboard.exportReport')}
+            </Button>
+          </>
+        }
+      />
 
       {/* Empty State or Main Performance Dashboard */}
       {!loading && !hasData ? (

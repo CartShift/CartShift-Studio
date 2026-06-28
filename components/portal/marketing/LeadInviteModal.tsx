@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { InviteClientForm } from '@/components/portal/forms/InviteClientForm';
+import { Select } from '@/components/ui/Select';
+import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 import {
   ModalBackdrop,
   ModalContent,
@@ -43,20 +45,16 @@ export function LeadInviteModal({ lead, organizations, onClose }: LeadInviteModa
         <ModalBody>
           {organizations.length > 1 && (
             <div className="mb-4">
-              <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-surface-500">
-                {t('actions.selectOrg')}
-              </label>
-              <select
-                value={orgId}
-                onChange={e => setOrgId(e.target.value)}
-                className="w-full rounded-xl border border-surface-200 bg-white px-4 py-3 text-sm dark:border-white/10 dark:bg-surface-950"
-              >
-                {organizations.map(org => (
-                  <option key={org.id} value={org.id}>
-                    {org.name}
-                  </option>
-                ))}
-              </select>
+              <PortalFormField label={t('actions.selectOrg')}>
+                <Select
+                  value={orgId}
+                  onChange={e => setOrgId(e.target.value)}
+                  options={organizations.map(org => ({
+                    value: org.id,
+                    label: org.name,
+                  }))}
+                />
+              </PortalFormField>
             </div>
           )}
           <InviteClientForm

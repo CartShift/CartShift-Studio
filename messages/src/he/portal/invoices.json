@@ -40,6 +40,8 @@
       "manual": {
         "title": "רישום תשלום ידני",
         "max": "יתרה לתשלום: {amount}",
+        "methodLabel": "אמצעי תשלום",
+        "paidAtLabel": "תאריך תשלום",
         "action": "רשום תשלום",
         "recorded": "התשלום נרשם",
         "failed": "רישום התשלום נכשל"
