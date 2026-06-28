@@ -3,6 +3,7 @@ import { env } from '@/lib/env';
 import { logError } from '@/lib/error-handler';
 import { sanitizeString } from '@/lib/sanitize';
 import { buildFirebaseFunctionUrl } from '@/lib/services/firebase';
+import { ANALYZER_INTENTS, PRIMARY_ISSUES } from '@/lib/analyzer/funnel';
 
 const localeSchema = z.enum(['en', 'he']).default('en');
 
@@ -18,6 +19,7 @@ const marketingCaptureSchema = z.object({
       'service_page_cta',
       'blog_sidebar',
       'website',
+      'human_review',
     ])
     .default('website'),
   locale: localeSchema.optional(),
@@ -38,6 +40,17 @@ const marketingCaptureSchema = z.object({
   consent: z.boolean().optional(),
   skipWelcome: z.boolean().optional(),
   metadata: z.record(z.string(), z.string().or(z.number()).or(z.boolean()).nullable()).optional(),
+  intent: z.enum(ANALYZER_INTENTS).optional(),
+  primaryIssue: z.enum(PRIMARY_ISSUES).optional(),
+  ctaType: z.string().max(80).optional(),
+  analyzerSubmittedAt: z.string().datetime().optional(),
+  reportCompletedAt: z.string().datetime().optional(),
+  attribution: z
+    .object({
+      firstTouch: z.record(z.string(), z.string().optional()),
+      lastTouch: z.record(z.string(), z.string().optional()),
+    })
+    .optional(),
 });
 
 export type MarketingCaptureData = z.infer<typeof marketingCaptureSchema>;
@@ -63,6 +76,7 @@ export function getMarketingLeadScoreDelta(
 
   if (data.source === 'contact_form') score += 60;
   if (data.source === 'store_analyzer') score += 20;
+  if (data.source === 'human_review') score += 45;
   if (data.source === 'newsletter' || data.source === 'newsletter_footer') score += 5;
   if (data.source === 'blog_sidebar') score += 5;
   if (data.source === 'blog_cta' || data.source === 'service_page_cta') score += 10;

@@ -43,6 +43,10 @@ export function invalidatePortalPricingData(
 
   if (options.pricingId) {
     queryClient.invalidateQueries({ queryKey: queryKeys.pricing.detail(options.pricingId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(options.pricingId) });
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.requests.commercialPayments(options.pricingId),
+    });
   }
 
   invalidatePortalRequestData(queryClient, options);

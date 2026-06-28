@@ -287,6 +287,11 @@ export interface AnalysisMeta {
   emailReportStatus?: 'pending' | 'sent' | 'failed' | 'unconfigured';
   leadCaptureStatus?: 'captured' | 'deduped' | 'failed' | 'unconfigured';
   scanScope?: ScanScope;
+  primaryIssue?: import('@/lib/analyzer/funnel').PrimaryIssue;
+  primaryIssueReasons?: string[];
+  analyzerIntent?: import('@/lib/analyzer/funnel').AnalyzerIntent;
+  reportCompletedAt?: string;
+  reportPath?: string;
 }
 
 export interface AnalysisResult {

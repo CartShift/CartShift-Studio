@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from '@/lib/motion';
-import { AlertCircle, Clock } from 'lucide-react';
+import { AlertCircle, Clock, Send } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -23,10 +23,16 @@ import { useRequestActions } from '@/lib/hooks/useRequestActions';
 import { usePricingForm } from '@/lib/hooks/usePricingForm';
 import { useBillingProfile } from '@/lib/hooks/useBillingProfile';
 import { useRequestPayments } from '@/lib/hooks/useRequestPayments';
+import { useCanManageProfitSplits } from '@/lib/hooks/useProfitSplits';
 import { PortalUser, CLIENT_STATUS_MAP } from '@/lib/types/portal';
+import type { PricingRequest } from '@/lib/types/pricing';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { useSearchParams } from 'next/navigation';
+import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
+import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
+import EditPricingForm from '../../pricing/[pricingId]/edit/EditPricingForm';
 
 // ============================================
 // SUBCOMPONENTS (Extracted for clarity)
@@ -120,6 +126,7 @@ export default function RequestDetailClient({
   const t = useTranslations('portal');
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const isPreview = variant === 'preview';
   const animateLayout = !isPreview;
 
@@ -194,8 +201,13 @@ export default function RequestDetailClient({
     isValid: isPricingValid,
     taxRate: pricingTaxRate,
     setTaxRate: setPricingTaxRate,
-  } = usePricingForm(request?.currency || billingProfile?.defaultCurrency || 'USD', billingProfile?.defaultTaxRate ?? 0);
+  } = usePricingForm(
+    request?.currency || billingProfile?.defaultCurrency || 'USD',
+    billingProfile?.defaultTaxRate ?? 0
+  );
   const requestPayments = useRequestPayments(request?.id || '', Boolean(request?.isBillable));
+  const { canManage: canManageProfitSplits } = useCanManageProfitSplits();
+  const { sendPricingRequest, isSending } = useRequestCommercialMutations();
 
   // ========== LOCAL UI STATE ==========
   const [activeTab, setActiveTab] = useState<RequestDetailTab>('overview');
@@ -212,6 +224,10 @@ export default function RequestDetailClient({
 
   if (error || !request) {
     return <ErrorState error={error} t={t} />;
+  }
+
+  if (searchParams.get('editQuote') === 'true' && isAgency) {
+    return <EditPricingForm />;
   }
 
   const handlePricingSubmit = async () => {
@@ -281,16 +297,18 @@ export default function RequestDetailClient({
     waitingForAssignment: t('requests.detail.waitingForAssignment'),
   };
 
+  const clientStatus = CLIENT_STATUS_MAP[request.status] ?? 'SUBMITTED';
   const statusLabel = isAgency
     ? t(`requests.status.${request.status.toLowerCase()}` as any)
-    : t(`requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any);
+    : t(`requests.clientStatus.${clientStatus.toLowerCase()}` as any);
 
   const typeLabel = request.type
     ? t(`requests.type.${request.type.toLowerCase()}` as any)
     : t('requests.type.design');
 
   const priorityLabel =
-    t(`requests.priority.${request.priority.toLowerCase()}` as any) || t('requests.priority.normal');
+    t(`requests.priority.${request.priority.toLowerCase()}` as any) ||
+    t('requests.priority.normal');
 
   return (
     <div className="space-y-6">
@@ -318,6 +336,18 @@ export default function RequestDetailClient({
             onStatusChange={handleStatusChange}
             className="w-full"
           />
+          {(request.status === 'DRAFT' || request.status === 'QUOTED') && request.isBillable && (
+            <Button
+              className="mt-4"
+              leftIcon={<Send size={16} />}
+              loading={isSending}
+              onClick={() => sendPricingRequest(request.id)}
+            >
+              {request.status === 'DRAFT'
+                ? t('pricing.form.sendToClient')
+                : t('pricing.form.resendToClient')}
+            </Button>
+          )}
         </Card>
       )}
 
@@ -333,19 +363,24 @@ export default function RequestDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {activeTab === 'overview' ? (
-            <RequestDetailOverviewTab
-              request={request}
-              isAgency={isAgency}
-              orgId={orgId as string}
-              clientOrganization={clientOrganization}
-              locale={locale}
-              detailsLabel={t('requests.detail.details')}
-              clientLabel={t('common.client')}
-              submissionDateLabel={t('requests.detail.submissionDate')}
-              priorityStatusLabel={t('requests.detail.priorityStatus')}
-              priorityLabel={priorityLabel}
-              recentlyLabel={t('common.recently')}
-            />
+            <>
+              <RequestDetailOverviewTab
+                request={request}
+                isAgency={isAgency}
+                orgId={orgId as string}
+                clientOrganization={clientOrganization}
+                locale={locale}
+                detailsLabel={t('requests.detail.details')}
+                clientLabel={t('common.client')}
+                submissionDateLabel={t('requests.detail.submissionDate')}
+                priorityStatusLabel={t('requests.detail.priorityStatus')}
+                priorityLabel={priorityLabel}
+                recentlyLabel={t('common.recently')}
+              />
+              {isAgency && request.isBillable && request.totalAmount !== undefined && (
+                <ProposalPaymentPanel proposal={request as PricingRequest} locale={locale} />
+              )}
+            </>
           ) : activeTab === 'discussion' ? (
             <RequestDiscussion
               comments={comments}
@@ -373,6 +408,7 @@ export default function RequestDetailClient({
           userData={userData as PortalUser | null}
           showAgencyActions={showAgencyActions}
           showClientActions={showClientActions}
+          canManageProfitSplits={canManageProfitSplits}
           requestPayments={requestPayments}
           showPricingForm={showPricingForm}
           pricingLineItems={pricingLineItems}

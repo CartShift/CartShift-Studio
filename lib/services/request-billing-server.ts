@@ -35,6 +35,10 @@ type PaymentDoc = {
   amount: number;
   currency: Currency;
   method: PaymentMethod;
+  type?: 'payment';
+  label?: string;
+  status?: 'paid';
+  provider?: 'paypal' | 'manual';
   reference?: string;
   notes?: string;
   paidAt: admin.firestore.Timestamp;
@@ -176,7 +180,13 @@ export async function listRequestPayments(requestId: string): Promise<PaymentRec
   const request = (await requestSnapshot(requestId)).data() as RequestDoc;
   await assertRequestAccess(session.uid, request);
   const snapshot = await db().collection(PAYMENTS).where('requestId', '==', requestId).get();
-  const payments = snapshot.docs.map(serializePayment).sort((a, b) => b.paidAt.toMillis() - a.paidAt.toMillis());
+  const payments = snapshot.docs
+    .filter(doc => {
+      const payment = doc.data() as PaymentDoc;
+      return (!payment.type || payment.type === 'payment') && Boolean(payment.paidAt);
+    })
+    .map(serializePayment)
+    .sort((a, b) => b.paidAt.toMillis() - a.paidAt.toMillis());
   const legacy = payments.length === 0 ? legacyPayment(requestId, request) : null;
   return legacy ? [legacy] : payments;
 }
@@ -204,7 +214,7 @@ async function createPayment(input: {
     if (existingPayment.exists) return;
     const request = requestSnap.data() as RequestDoc | undefined;
     if (!request) throw new Error('NOT_FOUND');
-    if (request.pricingOfferId) throw new Error('PROPOSAL_MANAGED');
+    if (request.publicToken && request.paymentRequired) throw new Error('PROPOSAL_MANAGED');
     if (!request.isBillable) throw new Error('NOT_BILLABLE');
     const existing = await transaction.get(database.collection(PAYMENTS).where('requestId', '==', input.requestId));
     const payments = existing.docs.map(serializePayment);
@@ -217,6 +227,10 @@ async function createPayment(input: {
       amount: input.amount,
       currency: request.currency ?? 'USD',
       method: input.method,
+      type: 'payment',
+      label: input.notes?.trim() || 'Request payment',
+      status: 'paid',
+      provider: input.method === 'paypal' ? 'paypal' : 'manual',
       paidAt,
       recordedBy: input.recordedBy,
       createdAt: admin.firestore.Timestamp.now(),
@@ -248,7 +262,10 @@ async function createPayment(input: {
     activity('RECORDED_PAYMENT', { paymentId: paymentRef.id, amount: input.amount, method: input.method });
     activity('PAYMENT_STATUS_UPDATED', { paymentStatus: next.paymentStatus, balanceDue: next.balanceDue });
   });
-  return serializePayment(await paymentRef.get());
+  const payment = serializePayment(await paymentRef.get());
+  const { syncProfitSplitForRequest } = await import('@/lib/services/profit-split-sync-server');
+  await syncProfitSplitForRequest(input.requestId);
+  return payment;
 }
 
 export async function recordManualRequestPayment(

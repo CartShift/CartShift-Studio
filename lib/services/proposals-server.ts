@@ -17,18 +17,22 @@ import {
   allocateLineItemTotals,
   formatCurrency,
 } from '@/lib/types/pricing';
+import { getRequestRole } from '@/lib/domain/request-commercial';
 
-const PROPOSALS_COLLECTION = 'portal_pricing_requests';
-const PAYMENTS_COLLECTION = 'portal_proposal_payments';
+const PROPOSALS_COLLECTION = 'portal_requests';
+const LEGACY_PROPOSALS_COLLECTION = 'portal_pricing_requests';
+const PAYMENTS_COLLECTION = 'portal_payments';
+const LEGACY_PAYMENTS_COLLECTION = 'portal_proposal_payments';
+const REQUEST_ALIASES_COLLECTION = 'portal_request_aliases';
 const REQUESTS_COLLECTION = 'portal_requests';
-const PROFIT_SPLITS_COLLECTION = 'portal_profit_splits';
 
 type ProposalDocument = Omit<PricingRequest, 'id'> & {
   pendingAmount?: number;
 };
 
 type PaymentDocument = {
-  proposalId: string;
+  requestId: string;
+  orgId: string;
   paymentToken: string;
   type: ProposalPaymentType;
   label: string;
@@ -66,19 +70,55 @@ function toIso(value: unknown): string | undefined {
 }
 
 async function findProposalByToken(token: string) {
-  const snapshot = await getDb()
+  const db = getDb();
+  const snapshot = await db
     .collection(PROPOSALS_COLLECTION)
     .where('publicToken', '==', token)
     .limit(1)
     .get();
-  return snapshot.docs[0] || null;
+  if (snapshot.docs[0]) return snapshot.docs[0];
+
+  // Compatibility for links sent before the request migration is applied.
+  const legacy = await db
+    .collection(LEGACY_PROPOSALS_COLLECTION)
+    .where('publicToken', '==', token)
+    .limit(1)
+    .get();
+  const legacyDoc = legacy.docs[0];
+  if (!legacyDoc) return null;
+  const migratedRequestId = legacyDoc.data().migratedRequestId as string | undefined;
+  if (!migratedRequestId) return legacyDoc;
+  const migrated = await db.collection(PROPOSALS_COLLECTION).doc(migratedRequestId).get();
+  return migrated.exists ? migrated : legacyDoc;
 }
 
-async function listPaymentDocs(proposalId: string) {
-  const snapshot = await getDb()
-    .collection(PAYMENTS_COLLECTION)
-    .where('proposalId', '==', proposalId)
+async function resolveRequestRef(requestOrLegacyProposalId: string) {
+  const db = getDb();
+  const direct = db.collection(PROPOSALS_COLLECTION).doc(requestOrLegacyProposalId);
+  if ((await direct.get()).exists) return direct;
+  const alias = await db
+    .collection(REQUEST_ALIASES_COLLECTION)
+    .doc(requestOrLegacyProposalId)
     .get();
+  const requestId = alias.data()?.requestId as string | undefined;
+  if (requestId) return db.collection(PROPOSALS_COLLECTION).doc(requestId);
+  const legacy = await db
+    .collection(LEGACY_PROPOSALS_COLLECTION)
+    .doc(requestOrLegacyProposalId)
+    .get();
+  const migratedRequestId = legacy.data()?.migratedRequestId as string | undefined;
+  return migratedRequestId ? db.collection(PROPOSALS_COLLECTION).doc(migratedRequestId) : direct;
+}
+
+async function listPaymentDocs(requestId: string) {
+  const db = getDb();
+  let snapshot = await db.collection(PAYMENTS_COLLECTION).where('requestId', '==', requestId).get();
+  if (snapshot.empty) {
+    snapshot = await db
+      .collection(LEGACY_PAYMENTS_COLLECTION)
+      .where('proposalId', '==', requestId)
+      .get();
+  }
   return snapshot.docs.sort((a, b) => {
     const aTime = (a.data() as PaymentDocument).createdAt;
     const bTime = (b.data() as PaymentDocument).createdAt;
@@ -130,12 +170,14 @@ async function sanitizeProposal(
     id: snapshot.id,
     title: data.title,
     description: data.description,
-    lineItems: (data.lineItems || []).map(({ requestId: _requestId, ...item }: PricingLineItem) => item),
+    lineItems: (data.lineItems || []).map(
+      ({ requestId: _requestId, ...item }: PricingLineItem) => item
+    ),
     totalAmount: data.totalAmount,
     taxRate: data.taxRate ?? 0,
     currency: data.currency,
     status,
-    proposalType: data.proposalType ?? 'pricing_offer',
+    proposalType: 'work_proposal',
     terms: data.terms,
     clientName: data.clientName,
     validUntil,
@@ -149,13 +191,14 @@ async function sanitizeProposal(
     balanceDue: data.balanceDue ?? data.totalAmount,
     paymentStatus: data.paymentStatus ?? (data.paymentRequired ? 'pending' : 'not_required'),
     payments: payments.map(sanitizePayment),
-    canAccept: status === 'SENT' && !isExpired,
+    canAccept: status === 'QUOTED' && !isExpired,
     isPreview: status === 'DRAFT',
   };
 }
 
 function createPaymentDocument(input: {
-  proposalId: string;
+  requestId: string;
+  orgId: string;
   type: ProposalPaymentType;
   label: string;
   amount: number;
@@ -168,7 +211,8 @@ function createPaymentDocument(input: {
   note?: string;
 }): PaymentDocument {
   return {
-    proposalId: input.proposalId,
+    requestId: input.requestId,
+    orgId: input.orgId,
     paymentToken: randomUUID(),
     type: input.type,
     label: input.label.trim(),
@@ -202,10 +246,14 @@ async function materializeProposalRequests(proposalId: string): Promise<string[]
   const proposalSnapshot = await proposalRef.get();
   const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
   if (!proposal || !canMaterializeRequests(proposal)) return [];
+  if (getRequestRole(proposal) !== 'bundle') return [];
 
   const allocatedItems = allocateLineItemTotals(proposal.lineItems || [], proposal.totalAmount);
-  const requestIds = allocatedItems.map(({ item }, index) =>
-    getMaterializedRequestId(proposalId, item, index)
+  const requestIds = allocatedItems.map(
+    ({ item }, index) =>
+      item.requestId ||
+      proposal.childRequestIds?.[index] ||
+      getMaterializedRequestId(proposalId, item, index)
   );
   const requestRefs = requestIds.map(id => db.collection(REQUESTS_COLLECTION).doc(id));
   const existingRequests = requestRefs.length > 0 ? await db.getAll(...requestRefs) : [];
@@ -216,8 +264,8 @@ async function materializeProposalRequests(proposalId: string): Promise<string[]
     const requestRef = requestRefs[index];
     const existing = existingRequests[index];
     const baseData = {
-      pricingOfferId: proposalId,
-      proposalLineItemId: item.id,
+      requestRole: 'bundle_item',
+      parentRequestId: proposalId,
       assignedTo: proposal.assignedTo ?? null,
       assignedToName: proposal.assignedToName ?? null,
       timeframe: proposal.timeframe ?? null,
@@ -260,9 +308,8 @@ async function materializeProposalRequests(proposalId: string): Promise<string[]
   batch.set(
     proposalRef,
     {
-      requestIds,
-      materializedRequestIds: requestIds,
-      requestsMaterializedAt: proposal.requestsMaterializedAt ?? now,
+      requestRole: 'bundle',
+      childRequestIds: requestIds,
       updatedAt: now,
     },
     { merge: true }
@@ -275,7 +322,7 @@ async function syncMaterializedRequestPayments(proposalId: string): Promise<void
   const db = getDb();
   const proposalSnapshot = await db.collection(PROPOSALS_COLLECTION).doc(proposalId).get();
   const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
-  const requestIds = proposal?.materializedRequestIds ?? [];
+  const requestIds = proposal?.childRequestIds ?? [];
   if (!proposal || requestIds.length === 0) return;
 
   const requestRefs = requestIds.map(id => db.collection(REQUESTS_COLLECTION).doc(id));
@@ -287,11 +334,14 @@ async function syncMaterializedRequestPayments(proposalId: string): Promise<void
     const data = snapshot.data() as { totalAmount?: number } | undefined;
     return data?.totalAmount ?? 0;
   });
-  const allocations = requestIds.map(() => [] as Array<{
-    paymentId: string;
-    amount: number;
-    method: ProposalPaymentProvider;
-  }>);
+  const allocations = requestIds.map(
+    () =>
+      [] as Array<{
+        paymentId: string;
+        amount: number;
+        method: ProposalPaymentProvider;
+      }>
+  );
   const paidByRequest = requestIds.map(() => 0);
   let requestIndex = 0;
 
@@ -329,13 +379,12 @@ async function syncMaterializedRequestPayments(proposalId: string): Promise<void
       {
         amountPaid,
         balanceDue,
-        paymentStatus:
-          balanceDue === 0 ? 'paid' : amountPaid > 0 ? 'partially_paid' : 'unpaid',
+        paymentStatus: balanceDue === 0 ? 'paid' : amountPaid > 0 ? 'partially_paid' : 'unpaid',
         paymentIds: allocations[index].map(allocation => allocation.paymentId),
         paymentAllocations: allocations[index],
         paymentId: latestAllocation?.paymentId ?? null,
         paymentMethod: latestAllocation?.method ?? null,
-        paidAt: balanceDue === 0 && amountPaid > 0 ? latestPayment?.data.paidAt ?? now : null,
+        paidAt: balanceDue === 0 && amountPaid > 0 ? (latestPayment?.data.paidAt ?? now) : null,
         updatedAt: now,
       },
       { merge: true }
@@ -344,104 +393,9 @@ async function syncMaterializedRequestPayments(proposalId: string): Promise<void
   await batch.commit();
 }
 
-function calculateInspectionSplit(grossRevenue: number, existing?: Record<string, unknown>) {
-  const directExpenses = (existing?.directExpenses as Array<{ amount: number }> | undefined) ?? [];
-  const participants =
-    (existing?.participants as Array<{
-      id: string;
-      userId: string;
-      userName: string;
-      role: string;
-      percentage: number;
-      notes?: string;
-    }> | undefined) ??
-    [
-      { id: 'auto_lead', userId: '', userName: '', role: 'lead', percentage: 15 },
-      { id: 'auto_sales', userId: '', userName: '', role: 'sales', percentage: 10 },
-      { id: 'auto_management', userId: '', userName: '', role: 'management', percentage: 25 },
-      { id: 'auto_delivery', userId: '', userName: '', role: 'delivery', percentage: 50 },
-    ];
-  const totalExpenses = directExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const netProfit = grossRevenue - totalExpenses;
-  const calculatedParticipants = participants.map(participant => ({
-    ...participant,
-    amount: Math.round(netProfit * (participant.percentage / 100)),
-  }));
-  const totalAllocatedPercentage = Number(
-    calculatedParticipants.reduce((sum, participant) => sum + participant.percentage, 0).toFixed(2)
-  );
-  const totalAllocatedAmount = calculatedParticipants.reduce(
-    (sum, participant) => sum + participant.amount,
-    0
-  );
-  return {
-    directExpenses,
-    totalExpenses,
-    netProfit,
-    participants: calculatedParticipants,
-    totalAllocatedPercentage,
-    totalAllocatedAmount,
-    unallocatedPercentage: Number((100 - totalAllocatedPercentage).toFixed(2)),
-    unallocatedAmount: netProfit - totalAllocatedAmount,
-  };
-}
-
 async function syncProfitSplitInspection(proposalId: string): Promise<void> {
-  const db = getDb();
-  const proposalSnapshot = await db.collection(PROPOSALS_COLLECTION).doc(proposalId).get();
-  const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
-  if (!proposal) return;
-
-  const existingSnapshot = await db
-    .collection(PROFIT_SPLITS_COLLECTION)
-    .where('pricingRequestId', '==', proposalId)
-    .limit(1)
-    .get();
-  const splitRef =
-    existingSnapshot.docs[0]?.ref ?? db.collection(PROFIT_SPLITS_COLLECTION).doc(`proposal_${proposalId}`);
-  const existing = existingSnapshot.docs[0]?.data() as Record<string, unknown> | undefined;
-
-  const paidPayments = (await listPaymentDocs(proposalId)).filter(
-    snapshot => (snapshot.data() as PaymentDocument).status === 'paid'
-  );
-  const now = admin.firestore.FieldValue.serverTimestamp();
-  const amountPaid = proposal.amountPaid ?? 0;
-  const inspectedPaymentIds = paidPayments.map(payment => payment.id);
-  if (amountPaid <= 0 && !existing) return;
-
-  if (existing?.status === 'finalized') {
-    await splitRef.set(
-      {
-        reconciliationRequired: true,
-        proposalPaymentStatus: proposal.paymentStatus ?? 'pending',
-        inspectedPaymentIds,
-        updatedAt: now,
-      },
-      { merge: true }
-    );
-    return;
-  }
-
-  await splitRef.set(
-    {
-      pricingRequestId: proposalId,
-      orgId: proposal.orgId,
-      clientName: proposal.clientName ?? null,
-      clientEmail: proposal.clientEmail ?? null,
-      projectTitle: proposal.title,
-      currency: proposal.currency,
-      grossRevenue: amountPaid,
-      ...calculateInspectionSplit(amountPaid, existing),
-      status: 'draft',
-      createdBy: (existing?.createdBy as string | undefined) ?? 'server',
-      createdByName: (existing?.createdByName as string | undefined) ?? 'Payment reconciliation',
-      createdAt: existing?.createdAt ?? now,
-      updatedAt: now,
-      proposalPaymentStatus: proposal.paymentStatus ?? 'pending',
-      inspectedPaymentIds,
-    },
-    { merge: true }
-  );
+  const { syncProfitSplitForRequest } = await import('@/lib/services/profit-split-sync-server');
+  await syncProfitSplitForRequest(proposalId);
 }
 
 async function syncProposalDerivedState(proposalId: string): Promise<void> {
@@ -452,7 +406,7 @@ async function syncProposalDerivedState(proposalId: string): Promise<void> {
 
 export async function getPublicProposal(token: string): Promise<PublicPricingProposal | null> {
   const proposal = await findProposalByToken(token);
-  if (!proposal || proposal.data().publicAccessEnabled !== true) {
+  if (!proposal || proposal.data()?.publicAccessEnabled !== true) {
     return null;
   }
   return sanitizeProposal(proposal);
@@ -465,7 +419,7 @@ export async function acceptPublicProposal(
 ): Promise<PublicPricingProposal> {
   const db = getDb();
   const proposalSnapshot = await findProposalByToken(token);
-  if (!proposalSnapshot || proposalSnapshot.data().publicAccessEnabled !== true) {
+  if (!proposalSnapshot || proposalSnapshot.data()?.publicAccessEnabled !== true) {
     throw new Error('NOT_FOUND');
   }
 
@@ -477,17 +431,13 @@ export async function acceptPublicProposal(
     if (proposal.status === 'ACCEPTED' || proposal.status === 'PAID') {
       return;
     }
-    if (proposal.status !== 'SENT') {
+    if (proposal.status !== 'QUOTED') {
       throw new Error('NOT_SIGNABLE');
     }
     if (proposal.validUntil?.toDate && proposal.validUntil.toDate().getTime() < Date.now()) {
       throw new Error('EXPIRED');
     }
-    if (
-      !payload.termsAccepted ||
-      !payload.acceptedByName.trim() ||
-      !payload.signatureText.trim()
-    ) {
+    if (!payload.termsAccepted || !payload.acceptedByName.trim() || !payload.signatureText.trim()) {
       throw new Error('INVALID_SIGNATURE');
     }
 
@@ -505,13 +455,14 @@ export async function acceptPublicProposal(
       updatedAt: now,
     };
 
-    const depositAmount = proposal.paymentRequired ? proposal.depositAmount ?? 0 : 0;
+    const depositAmount = proposal.paymentRequired ? (proposal.depositAmount ?? 0) : 0;
     if (depositAmount > 0) {
       const paymentRef = db.collection(PAYMENTS_COLLECTION).doc(`deposit_${fresh.id}`);
       transaction.set(
         paymentRef,
         createPaymentDocument({
-          proposalId: fresh.id,
+          requestId: fresh.id,
+          orgId: proposal.orgId,
           type: 'deposit',
           label: 'Contract deposit',
           amount: depositAmount,
@@ -534,7 +485,7 @@ export async function acceptPublicProposal(
 
 export async function ensureProposalPublicToken(proposalId: string): Promise<string> {
   const db = getDb();
-  const ref = db.collection(PROPOSALS_COLLECTION).doc(proposalId);
+  const ref = await resolveRequestRef(proposalId);
   return db.runTransaction(async transaction => {
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists) throw new Error('NOT_FOUND');
@@ -568,14 +519,14 @@ export async function queueProposalOfferEmail(
   locale: 'en' | 'he'
 ): Promise<{ queueId: string }> {
   const db = getDb();
-  const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(proposalId);
+  const proposalRef = await resolveRequestRef(proposalId);
   const queueRef = db.collection('email_queue').doc();
 
   await db.runTransaction(async transaction => {
     const snapshot = await transaction.get(proposalRef);
     const proposal = snapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
-    if (proposal.status !== 'DRAFT' && proposal.status !== 'SENT') {
+    if (proposal.status !== 'DRAFT' && proposal.status !== 'QUOTED') {
       throw new Error('NOT_SENDABLE');
     }
 
@@ -608,7 +559,7 @@ export async function queueProposalOfferEmail(
           ? proposal.validUntil.toDate().toLocaleDateString(locale === 'he' ? 'he-IL' : 'en-US')
           : null,
         timeframe: proposal.timeframe ?? null,
-        proposalId,
+        proposalId: proposalRef.id,
         orgId: proposal.orgId,
       },
       tags: [
@@ -618,13 +569,13 @@ export async function queueProposalOfferEmail(
       createdAt: now,
     });
     transaction.update(proposalRef, {
-      status: 'SENT',
+      status: 'QUOTED',
       publicToken,
       publicAccessEnabled: true,
       sentAt: proposal.sentAt ?? now,
       lastSentAt: now,
-      offerEmailQueueId: queueRef.id,
-      offerEmailRecipient: recipient,
+      quoteEmailQueueId: queueRef.id,
+      quoteEmailRecipient: recipient,
       updatedAt: now,
     });
   });
@@ -632,7 +583,8 @@ export async function queueProposalOfferEmail(
 }
 
 export async function listProposalPayments(proposalId: string): Promise<AgencyProposalPayment[]> {
-  return (await listPaymentDocs(proposalId)).map(sanitizeAgencyPayment);
+  const requestRef = await resolveRequestRef(proposalId);
+  return (await listPaymentDocs(requestRef.id)).map(sanitizeAgencyPayment);
 }
 
 export async function createProposalInstallment(
@@ -641,7 +593,7 @@ export async function createProposalInstallment(
   createdBy: string
 ): Promise<AgencyProposalPayment> {
   const db = getDb();
-  const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(proposalId);
+  const proposalRef = await resolveRequestRef(proposalId);
   const paymentRef = db.collection(PAYMENTS_COLLECTION).doc();
 
   await db.runTransaction(async transaction => {
@@ -659,7 +611,8 @@ export async function createProposalInstallment(
     transaction.set(
       paymentRef,
       createPaymentDocument({
-        proposalId,
+        requestId: proposalRef.id,
+        orgId: proposal.orgId,
         type: input.type ?? (input.amount === available ? 'final' : 'installment'),
         label: input.label,
         amount: input.amount,
@@ -690,7 +643,7 @@ export async function recordManualProposalPayment(
   createdBy: string
 ): Promise<PublicProposalPayment> {
   const db = getDb();
-  const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(proposalId);
+  const proposalRef = await resolveRequestRef(proposalId);
   const paymentRef = db.collection(PAYMENTS_COLLECTION).doc();
 
   await db.runTransaction(async transaction => {
@@ -709,7 +662,8 @@ export async function recordManualProposalPayment(
     transaction.set(
       paymentRef,
       createPaymentDocument({
-        proposalId,
+        requestId: proposalRef.id,
+        orgId: proposal.orgId,
         type:
           proposal.paymentRequired && (proposal.amountPaid ?? 0) < (proposal.depositAmount ?? 0)
             ? 'deposit'
@@ -734,7 +688,7 @@ export async function recordManualProposalPayment(
 
 export async function cancelProposalPayment(proposalId: string, paymentId: string): Promise<void> {
   const db = getDb();
-  const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(proposalId);
+  const proposalRef = await resolveRequestRef(proposalId);
   const paymentRef = db.collection(PAYMENTS_COLLECTION).doc(paymentId);
 
   await db.runTransaction(async transaction => {
@@ -744,8 +698,9 @@ export async function cancelProposalPayment(proposalId: string, paymentId: strin
     ]);
     const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
     const payment = paymentSnapshot.data() as PaymentDocument | undefined;
-    if (!proposal || !payment || payment.proposalId !== proposalId) throw new Error('NOT_FOUND');
-    if (payment.status !== 'pending' && payment.status !== 'failed') throw new Error('NOT_CANCELABLE');
+    if (!proposal || !payment || payment.requestId !== proposalRef.id) throw new Error('NOT_FOUND');
+    if (payment.status !== 'pending' && payment.status !== 'failed')
+      throw new Error('NOT_CANCELABLE');
 
     transaction.update(paymentRef, {
       status: 'canceled',
@@ -756,7 +711,7 @@ export async function cancelProposalPayment(proposalId: string, paymentId: strin
       pendingAmount:
         payment.status === 'pending'
           ? Math.max(0, (proposal.pendingAmount ?? 0) - payment.amount)
-          : proposal.pendingAmount ?? 0,
+          : (proposal.pendingAmount ?? 0),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
@@ -764,10 +719,10 @@ export async function cancelProposalPayment(proposalId: string, paymentId: strin
 
 export async function getPublicProposalPayment(proposalToken: string, paymentToken: string) {
   const proposal = await findProposalByToken(proposalToken);
-  if (!proposal || proposal.data().publicAccessEnabled !== true) return null;
+  if (!proposal || proposal.data()?.publicAccessEnabled !== true) return null;
   const paymentSnapshot = await getDb()
     .collection(PAYMENTS_COLLECTION)
-    .where('proposalId', '==', proposal.id)
+    .where('requestId', '==', proposal.id)
     .where('paymentToken', '==', paymentToken)
     .limit(1)
     .get();
@@ -797,7 +752,7 @@ export async function savePayPalOrder(paymentToken: string, orderId: string): Pr
     const now = admin.firestore.FieldValue.serverTimestamp();
     const proposalRef =
       freshPayment.status === 'failed'
-        ? db.collection(PROPOSALS_COLLECTION).doc(freshPayment.proposalId)
+        ? db.collection(PROPOSALS_COLLECTION).doc(freshPayment.requestId)
         : null;
     const proposal = proposalRef
       ? ((await transaction.get(proposalRef)).data() as ProposalDocument | undefined)
@@ -825,10 +780,10 @@ export async function assertPayPalOrderForPayment(
   orderId: string
 ): Promise<void> {
   const proposal = await findProposalByToken(proposalToken);
-  if (!proposal || proposal.data().publicAccessEnabled !== true) throw new Error('NOT_FOUND');
+  if (!proposal || proposal.data()?.publicAccessEnabled !== true) throw new Error('NOT_FOUND');
   const snapshot = await getDb()
     .collection(PAYMENTS_COLLECTION)
-    .where('proposalId', '==', proposal.id)
+    .where('requestId', '==', proposal.id)
     .where('paymentToken', '==', paymentToken)
     .where('paypalOrderId', '==', orderId)
     .limit(1)
@@ -846,13 +801,14 @@ export async function reconcileProposalPayment(input: {
   const paymentRef = input.paymentId
     ? db.collection(PAYMENTS_COLLECTION).doc(input.paymentId)
     : (
-        await (input.orderId
-          ? db.collection(PAYMENTS_COLLECTION).where('paypalOrderId', '==', input.orderId)
-          : input.captureId
-            ? db.collection(PAYMENTS_COLLECTION).where('paypalCaptureId', '==', input.captureId)
-            : (() => {
-                throw new Error('PAYMENT_REFERENCE_REQUIRED');
-              })()
+        await (
+          input.orderId
+            ? db.collection(PAYMENTS_COLLECTION).where('paypalOrderId', '==', input.orderId)
+            : input.captureId
+              ? db.collection(PAYMENTS_COLLECTION).where('paypalCaptureId', '==', input.captureId)
+              : (() => {
+                  throw new Error('PAYMENT_REFERENCE_REQUIRED');
+                })()
         )
           .limit(1)
           .get()
@@ -863,7 +819,7 @@ export async function reconcileProposalPayment(input: {
     const paymentSnapshot = await transaction.get(paymentRef);
     const payment = paymentSnapshot.data() as PaymentDocument | undefined;
     if (!payment) throw new Error('NOT_FOUND');
-    const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(payment.proposalId);
+    const proposalRef = db.collection(PROPOSALS_COLLECTION).doc(payment.requestId);
     const proposalSnapshot = await transaction.get(proposalRef);
     const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
@@ -931,7 +887,7 @@ export async function reconcileProposalPayment(input: {
     transaction.update(proposalRef, proposalUpdates);
   });
   const payment = (await paymentRef.get()).data() as PaymentDocument | undefined;
-  if (payment) await syncProposalDerivedState(payment.proposalId);
+  if (payment) await syncProposalDerivedState(payment.requestId);
 }
 
 export async function findPaymentByPayPalReference(orderId?: string, captureId?: string) {

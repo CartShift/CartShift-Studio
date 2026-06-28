@@ -21,11 +21,21 @@ $processIds = @(
 ) | Sort-Object -Unique
 
 foreach ($processId in $processIds) {
+    $stopped = $false
     try {
         Stop-Process -Id $processId -Force -ErrorAction Stop
-        Write-Host "  Stopped PID $processId" -ForegroundColor Yellow
+        $stopped = $true
     } catch {
-        Write-Host "  Could not stop PID $processId`: $($_.Exception.Message)" -ForegroundColor Yellow
+        $taskkill = Start-Process -FilePath "taskkill.exe" -ArgumentList "/PID", $processId, "/F" -Wait -PassThru -NoNewWindow
+        if ($taskkill.ExitCode -eq 0) {
+            $stopped = $true
+        }
+    }
+
+    if ($stopped) {
+        Write-Host "  Stopped PID $processId" -ForegroundColor Yellow
+    } else {
+        Write-Host "  Could not stop PID $processId (try Task Manager or an elevated terminal)" -ForegroundColor Yellow
     }
 }
 

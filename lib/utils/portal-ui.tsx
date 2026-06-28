@@ -138,7 +138,7 @@ export interface StatusBadgeProps {
  * Renders a status badge with proper styling.
  */
 export function StatusBadge({ status, compact = false }: StatusBadgeProps) {
-  const color = status === 'DRAFT' ? 'gray' : status === 'SENT' ? 'blue' : 'gray';
+  const color = status === 'DRAFT' ? 'gray' : status === 'QUOTED' ? 'blue' : 'gray';
   const sizeClass = compact ? 'h-6 px-2 text-[10px]' : 'h-7 px-3 text-xs';
 
   return (
@@ -179,10 +179,10 @@ export function RequestDisplay({ request, organizations }: RequestDisplayProps) 
             <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
               {request.id?.slice(0, 8)}
             </span>
-            {((request as PricingRequest).requestIds?.length ?? 0) > 0 && (
+            {((request as PricingRequest).childRequestIds?.length ?? 0) > 0 && (
               <>
                 <span className="w-1 h-1 rounded-full bg-surface-300" />
-                <span>{(request as PricingRequest).requestIds?.length} requests</span>
+                <span>{(request as PricingRequest).childRequestIds?.length} requests</span>
               </>
             )}
           </span>

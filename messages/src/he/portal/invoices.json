@@ -14,7 +14,7 @@
       "reference": "אסמכתת תשלום",
       "notes": "הערות פנימיות",
       "clientBilling": "פרטי חיוב לקוח",
-      "proposalManaged": "החיוב עבור בקשה זו מנוהל דרך ההצעה המקושרת. יש לנהל תשלומים במסך ההצעה.",
+      "proposalManaged": "לבקשה זו יש לוח תשלומים. יש לנהל את התשלומים באזור הצעת המחיר.",
       "download": {
         "payment_request": "הורד דרישת תשלום",
         "invoice": "הורד חשבונית מעודכנת",
@@ -22,9 +22,12 @@
         "payment_receipt": "הורד אישור תשלום"
       },
       "statuses": {
+        "not_required": "לא נדרש",
         "unpaid": "טרם שולם",
+        "pending": "ממתין",
         "partially_paid": "שולם חלקית",
-        "paid": "שולם"
+        "paid": "שולם",
+        "failed": "נכשל"
       },
       "methods": {
         "paypal": "PayPal",

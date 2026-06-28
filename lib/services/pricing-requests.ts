@@ -29,7 +29,12 @@ import {
   generateLineItemId,
 } from '@/lib/types/pricing';
 
-const PRICING_REQUESTS_COLLECTION = 'portal_pricing_requests';
+// Transitional module name; all new commercial records are canonical requests.
+const PRICING_REQUESTS_COLLECTION = 'portal_requests';
+
+function isCommercialRequest(request: PricingRequest): boolean {
+  return Boolean(request.isBillable || request.publicToken || request.requestRole === 'bundle');
+}
 
 function generatePublicToken(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -68,6 +73,8 @@ export async function createPricingRequest(
     throw new Error('Deposit amount must be between one cent and the proposal total');
   }
 
+  const linkedRequestIds = [...new Set(data.requestIds || [])];
+  const requestRole = linkedRequestIds.length > 1 ? 'bundle' : 'standalone';
   const requestData = {
     orgId,
     title: data.title.trim(),
@@ -77,7 +84,14 @@ export async function createPricingRequest(
     taxRate,
     currency: data.currency,
     status: PRICING_STATUS.DRAFT as PricingStatus,
-    proposalType: data.proposalType ?? 'work_proposal',
+    type: 'other' as const,
+    priority: 'NORMAL' as const,
+    requestRole,
+    childRequestIds: requestRole === 'bundle' ? linkedRequestIds : [],
+    tags: ['quote'],
+    attachmentIds: [],
+    commentCount: 0,
+    isBillable: true,
     terms: data.terms?.trim() || null,
     publicToken: generatePublicToken(),
     publicAccessEnabled: data.publicAccessEnabled ?? true,
@@ -89,7 +103,6 @@ export async function createPricingRequest(
     workDeadline: data.workDeadline ? Timestamp.fromDate(data.workDeadline) : null,
     assignedTo: data.assignedTo?.trim() || null,
     assignedToName: data.assignedToName?.trim() || null,
-    requestIds: data.requestIds || [], // Store linked request IDs
     paymentRequired,
     depositAmount,
     amountPaid: 0,
@@ -105,15 +118,41 @@ export async function createPricingRequest(
 
   await waitForAuth();
   const db = getFirestoreDb();
-  const docRef = await addDoc(collection(db, PRICING_REQUESTS_COLLECTION), requestData);
+  const existingRequestId = linkedRequestIds.length === 1 ? linkedRequestIds[0] : null;
+  const existingSnapshot = existingRequestId
+    ? await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, existingRequestId))
+    : null;
+  if (existingRequestId && !existingSnapshot?.exists()) {
+    throw new Error('Linked request not found');
+  }
 
-  // Update linked requests with the pricing offer ID
-  if (data.requestIds && data.requestIds.length > 0) {
-    const REQUESTS_COLLECTION = 'portal_requests';
-    for (const requestId of data.requestIds) {
-      const requestDocRef = doc(db, REQUESTS_COLLECTION, requestId);
+  const docRef = existingRequestId
+    ? doc(db, PRICING_REQUESTS_COLLECTION, existingRequestId)
+    : await addDoc(collection(db, PRICING_REQUESTS_COLLECTION), requestData);
+
+  if (existingRequestId) {
+    const {
+      createdAt: _createdAt,
+      amountPaid: _amountPaid,
+      createdBy: _createdBy,
+      createdByName: _createdByName,
+      type: _type,
+      priority: _priority,
+      tags: _tags,
+      attachmentIds: _attachmentIds,
+      commentCount: _commentCount,
+      ...commercialData
+    } = requestData;
+    await updateDoc(docRef, commercialData);
+  }
+
+  // Bundle children remain normal requests, grouped under their commercial parent.
+  if (requestRole === 'bundle') {
+    for (const requestId of linkedRequestIds) {
+      const requestDocRef = doc(db, PRICING_REQUESTS_COLLECTION, requestId);
       await updateDoc(requestDocRef, {
-        pricingOfferId: docRef.id,
+        requestRole: 'bundle_item',
+        parentRequestId: docRef.id,
         updatedAt: serverTimestamp(),
       });
     }
@@ -121,8 +160,9 @@ export async function createPricingRequest(
 
   return {
     id: docRef.id,
+    ...(existingSnapshot?.data() || {}),
     ...requestData,
-    createdAt: Timestamp.now(),
+    createdAt: (existingSnapshot?.data()?.createdAt as Timestamp | undefined) ?? Timestamp.now(),
     updatedAt: Timestamp.now(),
   } as PricingRequest;
 }
@@ -187,10 +227,12 @@ export async function getPricingRequestsByOrg(
 
   try {
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as PricingRequest[];
+    return (
+      snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as PricingRequest[]
+    ).filter(isCommercialRequest);
   } catch (error: unknown) {
     const firebaseError = error as { code?: string };
     if (firebaseError.code === 'permission-denied') {
@@ -250,11 +292,17 @@ export async function updatePricingRequest(
   if (data.description !== undefined) updateData.description = data.description?.trim() || null;
   if (data.lineItems !== undefined) {
     updateData.lineItems = data.lineItems;
-    updateData.totalAmount = calculateTotalAmount(data.lineItems, data.taxRate ?? existing.taxRate ?? 0);
+    updateData.totalAmount = calculateTotalAmount(
+      data.lineItems,
+      data.taxRate ?? existing.taxRate ?? 0
+    );
   }
   if (data.taxRate !== undefined) {
     updateData.taxRate = data.taxRate;
-    updateData.totalAmount = calculateTotalAmount(data.lineItems ?? existing.lineItems, data.taxRate);
+    updateData.totalAmount = calculateTotalAmount(
+      data.lineItems ?? existing.lineItems,
+      data.taxRate
+    );
   }
   if (data.currency !== undefined) updateData.currency = data.currency;
   if (data.validUntil !== undefined) {
@@ -275,8 +323,11 @@ export async function updatePricingRequest(
   if (data.clientNotes !== undefined) updateData.clientNotes = data.clientNotes?.trim() || null;
   if (data.agencyNotes !== undefined) updateData.agencyNotes = data.agencyNotes?.trim() || null;
   if (data.status !== undefined) updateData.status = data.status;
-  if (data.requestIds !== undefined) updateData.requestIds = data.requestIds;
-  if (data.proposalType !== undefined) updateData.proposalType = data.proposalType;
+  if (data.requestIds !== undefined) {
+    updateData.childRequestIds = data.requestIds;
+    updateData.requestRole =
+      data.requestIds.length > 1 ? 'bundle' : (existing.requestRole ?? 'standalone');
+  }
   if (data.terms !== undefined) updateData.terms = data.terms?.trim() || null;
   if (data.publicAccessEnabled !== undefined) {
     updateData.publicAccessEnabled = data.publicAccessEnabled;
@@ -293,7 +344,9 @@ export async function updatePricingRequest(
   }
   updateData.depositAmount = nextPaymentRequired ? nextDepositAmount : 0;
   updateData.balanceDue = nextTotal - (existing.amountPaid ?? 0);
-  updateData.paymentStatus = nextPaymentRequired ? (existing.paymentStatus ?? 'pending') : 'not_required';
+  updateData.paymentStatus = nextPaymentRequired
+    ? (existing.paymentStatus ?? 'pending')
+    : 'not_required';
   updateData.paymentProvider = nextPaymentRequired ? 'paypal' : null;
 
   // Recursively clean the data to remove any undefined values (especially in nested lineItems)
@@ -308,7 +361,7 @@ export async function sendPricingRequest(requestId: string): Promise<void> {
   if (!token) throw new Error('Unauthenticated');
   const locale =
     typeof document !== 'undefined' && document.documentElement.lang === 'he' ? 'he' : 'en';
-  const response = await fetch(`/api/portal/proposals/${encodeURIComponent(requestId)}/send`, {
+  const response = await fetch(`/api/portal/requests/${encodeURIComponent(requestId)}/send`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ locale }),
@@ -336,7 +389,9 @@ export async function acceptPricingRequest(requestId: string, clientNotes?: stri
   await updateDoc(docRef, updateData);
 }
 
-export async function getPricingRequestByPublicToken(token: string): Promise<PublicPricingProposal> {
+export async function getPricingRequestByPublicToken(
+  token: string
+): Promise<PublicPricingProposal> {
   const response = await fetch(`/api/proposals/${encodeURIComponent(token)}`);
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
@@ -427,9 +482,9 @@ export async function markPricingRequestPaid(
   });
 
   // Update all linked requests to PAID status
-  if (pricingData?.requestIds && pricingData.requestIds.length > 0) {
+  if (pricingData?.childRequestIds && pricingData.childRequestIds.length > 0) {
     const REQUESTS_COLLECTION = 'portal_requests';
-    for (const requestId of pricingData.requestIds) {
+    for (const requestId of pricingData.childRequestIds) {
       const requestDocRef = doc(db, REQUESTS_COLLECTION, requestId);
       await updateDoc(requestDocRef, {
         status: 'PAID',
@@ -545,10 +600,12 @@ export function subscribeToOrgPricingRequests(
       unsubscribe = onSnapshot(
         q,
         snapshot => {
-          let requests = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as PricingRequest[];
+          let requests = (
+            snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            })) as PricingRequest[]
+          ).filter(isCommercialRequest);
 
           // Client-side filtering for status if needed
           if (options?.status && options.status.length > 0) {
@@ -637,10 +694,12 @@ export async function getAllPricingRequests(options?: {
 
   try {
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as PricingRequest[];
+    return (
+      snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as PricingRequest[]
+    ).filter(isCommercialRequest);
   } catch (error: unknown) {
     const firebaseError = error as { code?: string };
     if (firebaseError.code === 'permission-denied') {
@@ -679,10 +738,12 @@ export function subscribeToAllPricingRequests(
       unsubscribe = onSnapshot(
         q,
         snapshot => {
-          let requests = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as PricingRequest[];
+          let requests = (
+            snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            })) as PricingRequest[]
+          ).filter(isCommercialRequest);
 
           // Client-side filtering for status if needed
           if (options?.status && options.status.length > 0) {
@@ -723,12 +784,17 @@ export async function getPricingOfferForRequest(requestId: string): Promise<Pric
   await waitForAuth();
   const db = getFirestoreDb();
   try {
+    const direct = await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, requestId));
+    if (direct.exists()) {
+      const request = { id: direct.id, ...direct.data() } as PricingRequest;
+      if (isCommercialRequest(request)) return request;
+    }
     // Query for pricing requests that contain this requestId
     // Note: Firestore doesn't support 'array-contains' with composite indexes well,
     // so we fetch all non-canceled/non-paid for the org and filter client-side
     const q = query(
       collection(db, PRICING_REQUESTS_COLLECTION),
-      where('requestIds', 'array-contains', requestId)
+      where('childRequestIds', 'array-contains', requestId)
     );
 
     const snapshot = await getDocs(q);
@@ -737,10 +803,10 @@ export async function getPricingOfferForRequest(requestId: string): Promise<Pric
     }
 
     // Return the first match (should only be one active offer per request)
-    const doc = snapshot.docs[0];
+    const resultDoc = snapshot.docs[0];
     return {
-      id: doc.id,
-      ...doc.data(),
+      id: resultDoc.id,
+      ...resultDoc.data(),
     } as PricingRequest;
   } catch (error) {
     console.error('Error getting pricing offer for request:', error);

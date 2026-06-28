@@ -7,10 +7,19 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { useSearchParams } from 'next/navigation';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import CreatePricingForm from '../../pricing/new/CreatePricingForm';
 
 export default function NewRequestClient() {
   const orgId = useResolvedOrgId();
   const t = useTranslations('portal');
+  const searchParams = useSearchParams();
+  const { isAgency } = usePortalAuth();
+
+  if (searchParams.get('mode') === 'quote' && isAgency) {
+    return <CreatePricingForm />;
+  }
 
   if (!orgId || typeof orgId !== 'string') {
     return <div className="text-center py-20 text-surface-500">Invalid organization ID</div>;

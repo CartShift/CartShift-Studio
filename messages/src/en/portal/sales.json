@@ -20,8 +20,13 @@
         "loading": "Loading sales data...",
         "title": "Sales Dashboard",
         "subtitle": "Track revenue, performance metrics, and client insights",
+        "profitSplitsSubtitle": "Review automatic profit splits and finalize team payouts",
         "refresh": "Refresh",
-        "exportReport": "Export Report"
+        "exportReport": "Export Report",
+        "tabs": {
+          "overview": "Revenue overview",
+          "profitSplits": "Profit splits"
+        }
       },
       "empty": {
         "title": "No Sales Data Yet",

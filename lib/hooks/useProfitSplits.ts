@@ -12,8 +12,9 @@ import {
   getPaidPricingRequestsForProfitSplits,
   getProfitSplits,
   updateProfitSplit,
+  updateRequestProfitSplitResponsibilities,
 } from '@/lib/services/profit-splits';
-import { ProfitSplit, UpdateProfitSplitData } from '@/lib/types/profit-split';
+import { ProfitSplit, RequestProfitSplitResponsibility, UpdateProfitSplitData } from '@/lib/types/profit-split';
 import { USER_ROLE } from '@/lib/types/portal';
 import { queryKeys } from '@/lib/utils/query-keys';
 import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
@@ -135,15 +136,32 @@ export function useProfitSplitMutations() {
     onError: error => toast.error(getErrorMessage(error)),
   });
 
+  const updateResponsibilities = useMutation({
+    mutationFn: ({
+      requestId,
+      responsibilities,
+    }: {
+      requestId: string;
+      responsibilities: RequestProfitSplitResponsibility[];
+    }) => updateRequestProfitSplitResponsibilities(requestId, responsibilities),
+    onSuccess: async () => {
+      await invalidateProfitSplits();
+      toast.success(t('responsibilitiesSaved'));
+    },
+    onError: error => toast.error(getErrorMessage(error)),
+  });
+
   return {
     createFromPricingRequest,
     saveDraft,
     finalize,
     remove,
+    updateResponsibilities,
     isMutating:
       createFromPricingRequest.isPending ||
       saveDraft.isPending ||
       finalize.isPending ||
-      remove.isPending,
+      remove.isPending ||
+      updateResponsibilities.isPending,
   };
 }

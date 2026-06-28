@@ -23,6 +23,15 @@ export const DEFAULT_PROFIT_SPLIT_PERCENTAGES: Record<ProfitSplitRole, number> =
 export type ProfitSplitRole = (typeof PROFIT_SPLIT_ROLE)[keyof typeof PROFIT_SPLIT_ROLE];
 export type ProfitSplitStatus = (typeof PROFIT_SPLIT_STATUS)[keyof typeof PROFIT_SPLIT_STATUS];
 
+/** Canonical profit-split assignments stored on the request entity. */
+export interface RequestProfitSplitResponsibility {
+  role: ProfitSplitRole;
+  userId: string;
+  userName: string;
+  percentage: number;
+  notes?: string;
+}
+
 export interface ProfitSplitParticipant {
   id: string;
   userId: string;
@@ -41,6 +50,8 @@ export interface ProfitSplitExpense {
 
 export interface ProfitSplit {
   id: string;
+  requestId?: string;
+  /** @deprecated Use requestId. */
   pricingRequestId: string;
   orgId: string;
   clientName?: string;
@@ -85,12 +96,7 @@ export interface ProfitSplitCalculationResult {
 }
 
 export interface UpdateProfitSplitData {
-  clientName?: string;
-  clientEmail?: string;
-  projectTitle?: string;
-  grossRevenue?: number;
   directExpenses?: ProfitSplitExpense[];
-  participants?: Omit<ProfitSplitParticipant, 'amount'>[];
 }
 
 export interface ProfitSplitEmployeeSummary {

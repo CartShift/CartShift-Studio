@@ -2,7 +2,7 @@
   "portal": {
     "profitSplits": {
       "title": "Profit Splits",
-      "subtitle": "Inspect every received payment and calculate net-profit payouts for agency projects.",
+      "subtitle": "Review automatic profit splits created when payments are received.",
       "accessDenied": "Only agency owners, admins, and sales managers can view internal profit split data.",
       "create": "Create split from received payment",
       "createTitle": "Create profit split",
@@ -24,6 +24,8 @@
       "netProfit": "Net profit",
       "participants": "Participants",
       "participantsHint": "Percentages are global percentages of net profit, not percentages inside a role.",
+      "participantsFromRequestHint": "Lead and delivery are derived from the client and assigned specialist. Edit roles on the request.",
+      "editResponsibilitiesOnRequest": "Edit responsibilities on request",
       "addParticipant": "Add participant",
       "removeParticipant": "Remove participant",
       "unassigned": "Unassigned",
@@ -40,7 +42,7 @@
       "updated": "Updated",
       "unknownClient": "Unknown client",
       "emptyTitle": "No profit splits yet",
-      "emptySubtitle": "Payment reconciliation creates inspection drafts automatically. You can also create one from a proposal with received revenue.",
+      "emptySubtitle": "Draft splits appear automatically when a payment is recorded. Assign responsibilities on the request before finalizing.",
       "employeeSummary": "Employee payout summary",
       "employeeSummaryHint": "Aggregated payout by agency user, role, and project count.",
       "employee": "Employee",
@@ -68,7 +70,8 @@
         "created": "Profit split draft created",
         "saved": "Profit split draft saved",
         "finalized": "Profit split finalized",
-        "deleted": "Profit split deleted"
+        "deleted": "Profit split deleted",
+        "responsibilitiesSaved": "Profit split settings saved"
       }
     }
   }

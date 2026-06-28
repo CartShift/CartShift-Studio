@@ -1,4 +1,5 @@
 import type { AnalysisResult } from '@/lib/types/analyzer';
+import type { AnalyzerAttribution, AnalyzerIntent } from '@/lib/analyzer/funnel';
 
 export type StoreAnalysisInput = {
   storeUrl: string;
@@ -6,6 +7,8 @@ export type StoreAnalysisInput = {
   subscribeNewsletter: boolean;
   captchaToken: string;
   locale: string;
+  intent?: AnalyzerIntent;
+  attribution?: AnalyzerAttribution;
 };
 
 export async function submitStoreAnalysis(input: StoreAnalysisInput): Promise<AnalysisResult> {

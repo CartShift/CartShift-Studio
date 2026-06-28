@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from '@/lib/motion';
 import { skeletonToContent, pinnedItemHighlight } from '@/lib/animation-variants';
 import {
@@ -18,6 +18,7 @@ import {
   Archive,
   MousePointer2,
   Building2,
+  ChevronDown,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -67,9 +68,11 @@ const MotionPortalTableRow = motion(PortalTableRow);
 
 const getStatusTranslationKey = (status: string | undefined): string => {
   const statusMap: Record<string, string> = {
+    draft: 'requests.status.draft',
     new: 'requests.status.new',
     needs_info: 'requests.status.needs_info',
     quoted: 'requests.status.quoted',
+    changes_requested: 'requests.status.changes_requested',
     accepted: 'requests.status.accepted',
     declined: 'requests.status.declined',
     queued: 'requests.status.queued',
@@ -79,6 +82,7 @@ const getStatusTranslationKey = (status: string | undefined): string => {
     paid: 'requests.status.paid',
     closed: 'requests.status.closed',
     canceled: 'requests.status.canceled',
+    expired: 'requests.status.expired',
   };
   return statusMap[status?.toLowerCase() || 'new'] || 'requests.status.new';
 };
@@ -118,8 +122,11 @@ export default function RequestsClient() {
   const t = useTranslations('portal');
   const { loading: auth, isAgency } = usePortalAuth();
   const safeOrgId = typeof orgId === 'string' ? orgId : undefined;
-  const { deleteRequest, updateStatus, isDeleting: isDeletingRequest } =
-    useRequestListMutations(safeOrgId);
+  const {
+    deleteRequest,
+    updateStatus,
+    isDeleting: isDeletingRequest,
+  } = useRequestListMutations(safeOrgId);
 
   // Edit & Archive logic
   const [requestToEdit, setRequestToEdit] = useState<Request | null>(null);
@@ -160,6 +167,7 @@ export default function RequestsClient() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedBundleIds, setExpandedBundleIds] = useState<Set<string>>(new Set());
   const itemsPerPage = 8;
   const locale = useLocale();
 
@@ -178,7 +186,19 @@ export default function RequestsClient() {
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED'];
   const filters = isAgency
-    ? ['All', 'NEW', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED']
+    ? [
+        'All',
+        'DRAFT',
+        'NEW',
+        'QUOTED',
+        'CHANGES_REQUESTED',
+        'ACCEPTED',
+        'IN_PROGRESS',
+        'IN_REVIEW',
+        'DELIVERED',
+        'PAID',
+        'CLOSED',
+      ]
     : ['All', ...clientFilters];
 
   useEffect(() => {
@@ -269,6 +289,14 @@ export default function RequestsClient() {
   // Filter and sort requests - pinned items appear at the top
   const filteredRequests = requests
     .filter(req => {
+      // Bundle items are rendered beneath their parent instead of as duplicate top-level rows.
+      if (
+        req.requestRole === 'bundle_item' &&
+        req.parentRequestId &&
+        requests.some(parent => parent.id === req.parentRequestId)
+      ) {
+        return false;
+      }
       // Organization filter (agency only)
       if (isAgency && selectedOrgFilter !== 'all' && req.orgId !== selectedOrgFilter) {
         return false;
@@ -303,6 +331,25 @@ export default function RequestsClient() {
       if (!aPinned && bPinned) return 1;
       return 0; // Maintain original order within pinned/unpinned groups
     });
+
+  const requestsById = useMemo(
+    () => new Map(requests.map(request => [request.id, request])),
+    [requests]
+  );
+
+  const getBundleChildren = (request: Request) =>
+    (request.childRequestIds || [])
+      .map(id => requestsById.get(id))
+      .filter((child): child is Request => Boolean(child));
+
+  const toggleBundle = (requestId: string) => {
+    setExpandedBundleIds(current => {
+      const next = new Set(current);
+      if (next.has(requestId)) next.delete(requestId);
+      else next.add(requestId);
+      return next;
+    });
+  };
 
   const paginatedRequests = filteredRequests.slice(
     (currentPage - 1) * itemsPerPage,
@@ -358,7 +405,9 @@ export default function RequestsClient() {
     if (isAgency) {
       switchOrg(targetOrgId);
     }
-    router.push(getPortalPath(`/pricing/new?requestIds=${selectedRequestIds.join(',')}`));
+    router.push(
+      getPortalPath(`/requests/new?mode=quote&requestIds=${selectedRequestIds.join(',')}`)
+    );
   };
 
   if (loading) {
@@ -424,19 +473,36 @@ export default function RequestsClient() {
         description={t('dashboard.subtitle')}
         className="mb-0"
         action={
-          <Link
-            href={getPortalPath('/requests/new/')}
-            className="portal-focus-ring flex-shrink-0 rounded-xl"
-          >
-            <Button
-              as="div"
-              variant="primary"
-              leftIcon={<Plus size={18} />}
-              className="font-outfit whitespace-nowrap"
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {isAgency && (
+              <Link
+                href={getPortalPath('/requests/new?mode=quote')}
+                className="portal-focus-ring flex-shrink-0 rounded-xl"
+              >
+                <Button
+                  as="div"
+                  variant="outline"
+                  leftIcon={<DollarSign size={18} />}
+                  className="font-outfit whitespace-nowrap"
+                >
+                  {t('requests.createPricingOffer')}
+                </Button>
+              </Link>
+            )}
+            <Link
+              href={getPortalPath('/requests/new/')}
+              className="portal-focus-ring flex-shrink-0 rounded-xl"
             >
-              {t('requests.newRequest')}
-            </Button>
-          </Link>
+              <Button
+                as="div"
+                variant="primary"
+                leftIcon={<Plus size={18} />}
+                className="font-outfit whitespace-nowrap"
+              >
+                {t('requests.newRequest')}
+              </Button>
+            </Link>
+          </div>
         }
       />
 
@@ -620,7 +686,52 @@ export default function RequestsClient() {
                             </div>
                             {/* ... */}
                           </div>
-                          {/* ... */}
+                          {getBundleChildren(req).length > 0 && (
+                            <div className="mt-3 border-t border-surface-200 pt-3 dark:border-surface-800">
+                              <button
+                                type="button"
+                                className="portal-focus-ring flex min-h-[44px] w-full items-center justify-between rounded-lg px-2 text-start text-xs font-bold text-surface-600 dark:text-surface-300"
+                                aria-expanded={expandedBundleIds.has(req.id)}
+                                onClick={event => {
+                                  event.stopPropagation();
+                                  toggleBundle(req.id);
+                                }}
+                              >
+                                {t('requests.bundleItems', {
+                                  count: getBundleChildren(req).length,
+                                })}
+                                <ChevronDown
+                                  size={16}
+                                  className={cn(
+                                    'transition-transform',
+                                    expandedBundleIds.has(req.id) && 'rotate-180'
+                                  )}
+                                />
+                              </button>
+                              {expandedBundleIds.has(req.id) && (
+                                <div className="mt-1 space-y-1 ps-2">
+                                  {getBundleChildren(req).map(child => (
+                                    <button
+                                      key={child.id}
+                                      type="button"
+                                      className="portal-focus-ring flex min-h-[44px] w-full items-center justify-between rounded-lg px-3 text-start hover:bg-surface-100 dark:hover:bg-surface-800"
+                                      onClick={event => {
+                                        event.stopPropagation();
+                                        openRequest(child);
+                                      }}
+                                    >
+                                      <span className="truncate text-xs font-bold">
+                                        {child.title}
+                                      </span>
+                                      <Badge variant={getStatusBadgeVariant(child.status)}>
+                                        {t(getStatusTranslationKey(child.status) as any)}
+                                      </Badge>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </motion.div>
                       );
                     })}
@@ -638,7 +749,10 @@ export default function RequestsClient() {
                               {isAgency && isSelectionMode && (
                                 <PortalTableHead headStyle="label" className="px-3 w-12" />
                               )}
-                              <PortalTableHead headStyle="label" className="px-3 md:px-6 min-w-[200px]">
+                              <PortalTableHead
+                                headStyle="label"
+                                className="px-3 md:px-6 min-w-[200px]"
+                              >
                                 {t('requests.table.title')}
                               </PortalTableHead>
                               <PortalTableHead
@@ -678,193 +792,250 @@ export default function RequestsClient() {
                               const isPinned = pinnedIds.includes(req.id);
                               const canSelect =
                                 isAgency &&
-                                !req.pricingOfferId &&
+                                req.requestRole !== 'bundle' &&
+                                !req.parentRequestId &&
                                 req.status !== 'PAID' &&
                                 req.status !== 'CLOSED';
+                              const bundleChildren = getBundleChildren(req);
                               return (
-                                <MotionPortalTableRow
-                                  layout
-                                  layoutId={`request-container-${req.id}`}
-                                  key={req.id}
-                                  initial="normal"
-                                  animate={isNewlyPinned ? 'pinned' : 'normal'}
-                                  variants={pinnedItemHighlight}
-                                  transition={{
-                                    layout: {
-                                      type: 'spring',
-                                      stiffness: 400,
-                                      damping: 35,
-                                      mass: 0.8,
-                                    },
-                                  }}
-                                  role="link"
-                                  tabIndex={isSelectionMode ? -1 : 0}
-                                  onClick={() => openRequest(req)}
-                                  onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
-                                  hover
-                                  className={cn(
-                                    'portal-focus-ring group cursor-pointer relative outline-none',
-                                    isSelected && 'bg-primary-50 dark:bg-primary-900/10',
-                                    isNewlyPinned &&
-                                      'bg-amber-50/40 dark:bg-amber-500/10 ring-2 ring-amber-400/40 dark:ring-amber-500/30',
-                                    isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
-                                  )}
-                                >
-                                  {isAgency && isSelectionMode && (
-                                    <PortalTableCell className="px-3 py-4">
-                                      {canSelect ? (
-                                        <button
-                                          type="button"
+                                <Fragment key={req.id}>
+                                  <MotionPortalTableRow
+                                    layout
+                                    layoutId={`request-container-${req.id}`}
+                                    initial="normal"
+                                    animate={isNewlyPinned ? 'pinned' : 'normal'}
+                                    variants={pinnedItemHighlight}
+                                    transition={{
+                                      layout: {
+                                        type: 'spring',
+                                        stiffness: 400,
+                                        damping: 35,
+                                        mass: 0.8,
+                                      },
+                                    }}
+                                    role="link"
+                                    tabIndex={isSelectionMode ? -1 : 0}
+                                    onClick={() => openRequest(req)}
+                                    onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
+                                    hover
+                                    className={cn(
+                                      'portal-focus-ring group cursor-pointer relative outline-none',
+                                      isSelected && 'bg-primary-50 dark:bg-primary-900/10',
+                                      isNewlyPinned &&
+                                        'bg-amber-50/40 dark:bg-amber-500/10 ring-2 ring-amber-400/40 dark:ring-amber-500/30',
+                                      isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
+                                    )}
+                                  >
+                                    {isAgency && isSelectionMode && (
+                                      <PortalTableCell className="px-3 py-4">
+                                        {canSelect ? (
+                                          <button
+                                            type="button"
+                                            onClick={e => {
+                                              e.stopPropagation();
+                                              toggleRequestSelection(req.id);
+                                            }}
+                                            aria-pressed={isSelected}
+                                            aria-label={`${t('common.select')}: ${req.title}`}
+                                            className={cn(
+                                              'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
+                                              isSelected
+                                                ? 'bg-primary-600 border-primary-600 text-white'
+                                                : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'
+                                            )}
+                                          >
+                                            {isSelected && <Check size={12} />}
+                                          </button>
+                                        ) : req.parentRequestId ? (
+                                          <Badge variant="green" className="text-[9px]">
+                                            {t('requests.hasPricing')}
+                                          </Badge>
+                                        ) : null}
+                                      </PortalTableCell>
+                                    )}
+
+                                    <PortalTableCell className="px-3 md:px-6 min-w-0">
+                                      <div className="flex flex-col min-w-0">
+                                        {isAgency && req.orgId && (
+                                          <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider truncate mb-0.5">
+                                            {organizations[req.orgId]?.name || t('common.unknown')}
+                                          </span>
+                                        )}
+                                        <motion.span
+                                          layoutId={
+                                            !isMobile ? `request-title-${req.id}` : undefined
+                                          }
+                                          className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit"
+                                        >
+                                          {req.title}
+                                        </motion.span>
+                                        <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit flex-wrap">
+                                          {/* ... */}
+                                        </span>
+                                      </div>
+                                    </PortalTableCell>
+
+                                    <PortalTableCell cellAlign="center" className="px-3 md:px-6">
+                                      <div className="flex justify-center">
+                                        <motion.div>
+                                          {isAgency ? (
+                                            <Badge variant={getStatusBadgeVariant(req.status)}>
+                                              {t(getStatusTranslationKey(req.status) as any)}
+                                            </Badge>
+                                          ) : (
+                                            <Badge
+                                              variant={getClientStatusBadgeVariant(req.status)}
+                                            >
+                                              {t(
+                                                getClientStatusTranslationKey(
+                                                  req.status,
+                                                  true
+                                                ) as any
+                                              )}
+                                            </Badge>
+                                          )}
+                                        </motion.div>
+                                        {req.isFree && (
+                                          <Badge variant="green" className="ms-2">
+                                            {t('common.free')}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </PortalTableCell>
+
+                                    <PortalTableCell cellAlign="center" className="px-3 md:px-6">
+                                      <div className="flex items-center justify-center gap-2">
+                                        <div
+                                          className={cn(
+                                            'w-2 h-2 rounded-full shrink-0',
+                                            req.priority === 'HIGH' || req.priority === 'URGENT'
+                                              ? 'bg-rose-500 shadow-sm shadow-rose-500/50'
+                                              : req.priority === 'NORMAL'
+                                                ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
+                                                : 'bg-primary-500 shadow-sm shadow-primary-500/50'
+                                          )}
+                                        />
+                                        <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
+                                          {t(getPriorityTranslationKey(req.priority) as any)}
+                                        </span>
+                                      </div>
+                                    </PortalTableCell>
+
+                                    <PortalTableCell
+                                      cellAlign="center"
+                                      className="px-3 md:px-6 hidden md:table-cell"
+                                    >
+                                      <div className="flex flex-col items-center">
+                                        <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
+                                          {req.createdAt?.toDate
+                                            ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
+                                                locale: getDateLocale(locale),
+                                              })
+                                            : t('common.recently')}
+                                        </span>
+                                        <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
+                                          {t('requests.table.created')}
+                                        </span>
+                                      </div>
+                                    </PortalTableCell>
+
+                                    <PortalTableCell cellAlign="end" className="px-3 md:px-6">
+                                      <div className="flex items-center justify-end gap-1">
+                                        <PinButton requestId={req.id} orgId={orgId as string} />
+                                        <IconButton
+                                          icon={MessageSquare}
+                                          label={req.title}
+                                          variant="ghost"
+                                          size="sm"
+                                          iconSize={16}
+                                          className="min-w-[44px] min-h-[44px] hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20"
                                           onClick={e => {
                                             e.stopPropagation();
-                                            toggleRequestSelection(req.id);
+                                            openRequest(req);
                                           }}
-                                          aria-pressed={isSelected}
-                                          aria-label={`${t('common.select')}: ${req.title}`}
-                                          className={cn(
-                                            'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
-                                            isSelected
-                                              ? 'bg-primary-600 border-primary-600 text-white'
-                                              : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'
-                                          )}
-                                        >
-                                          {isSelected && <Check size={12} />}
-                                        </button>
-                                      ) : req.pricingOfferId ? (
-                                        <Badge variant="green" className="text-[9px]">
-                                          {t('requests.hasPricing')}
-                                        </Badge>
-                                      ) : null}
+                                        />
+                                        <Dropdown
+                                          trigger={
+                                            <IconButton
+                                              icon={MoreVertical}
+                                              label={t('common.actions')}
+                                              variant="ghost"
+                                              size="sm"
+                                              iconSize={16}
+                                              className="min-w-[44px] min-h-[44px]"
+                                              onClick={e => e.stopPropagation()}
+                                            />
+                                          }
+                                          items={[
+                                            {
+                                              label: t('common.edit'),
+                                              onClick: () => setRequestToEdit(req),
+                                              icon: <Edit size={16} />,
+                                            },
+                                            {
+                                              label: t('common.archive'),
+                                              onClick: () => handleArchiveClick(req),
+                                              icon: <Archive size={16} />,
+                                            },
+                                            {
+                                              label: t('common.delete'),
+                                              onClick: () => handleDeleteClick(req.id),
+                                              icon: <Trash2 size={16} />,
+                                              variant: 'danger',
+                                            },
+                                          ]}
+                                        />
+                                      </div>
                                     </PortalTableCell>
-                                  )}
-
-                                  <PortalTableCell className="px-3 md:px-6 min-w-0">
-                                    <div className="flex flex-col min-w-0">
-                                      {isAgency && req.orgId && (
-                                        <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider truncate mb-0.5">
-                                          {organizations[req.orgId]?.name || t('common.unknown')}
-                                        </span>
-                                      )}
-                                      <motion.span
-                                        layoutId={!isMobile ? `request-title-${req.id}` : undefined}
-                                        className="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate font-outfit"
+                                  </MotionPortalTableRow>
+                                  {bundleChildren.length > 0 && (
+                                    <PortalTableRow className="bg-surface-50/70 dark:bg-surface-900/40">
+                                      <PortalTableCell
+                                        colSpan={isAgency && isSelectionMode ? 6 : 5}
+                                        className="px-6 py-2"
                                       >
-                                        {req.title}
-                                      </motion.span>
-                                      <span className="text-xs font-bold text-surface-400 flex items-center gap-1.5 mt-1 font-outfit flex-wrap">
-                                        {/* ... */}
-                                      </span>
-                                    </div>
-                                  </PortalTableCell>
-
-                                  <PortalTableCell cellAlign="center" className="px-3 md:px-6">
-                                    <div className="flex justify-center">
-                                      <motion.div>
-                                        {isAgency ? (
-                                          <Badge variant={getStatusBadgeVariant(req.status)}>
-                                            {t(getStatusTranslationKey(req.status) as any)}
-                                          </Badge>
-                                        ) : (
-                                          <Badge variant={getClientStatusBadgeVariant(req.status)}>
-                                            {t(
-                                              getClientStatusTranslationKey(req.status, true) as any
+                                        <button
+                                          type="button"
+                                          className="portal-focus-ring flex min-h-[40px] w-full items-center gap-2 rounded-lg text-start text-xs font-bold text-surface-600 dark:text-surface-300"
+                                          aria-expanded={expandedBundleIds.has(req.id)}
+                                          onClick={() => toggleBundle(req.id)}
+                                        >
+                                          <ChevronDown
+                                            size={15}
+                                            className={cn(
+                                              'transition-transform',
+                                              expandedBundleIds.has(req.id) && 'rotate-180'
                                             )}
-                                          </Badge>
-                                        )}
-                                      </motion.div>
-                                      {req.isFree && (
-                                        <Badge variant="green" className="ms-2">
-                                          {t('common.free')}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  </PortalTableCell>
-
-                                  <PortalTableCell cellAlign="center" className="px-3 md:px-6">
-                                    <div className="flex items-center justify-center gap-2">
-                                      <div
-                                        className={cn(
-                                          'w-2 h-2 rounded-full shrink-0',
-                                          req.priority === 'HIGH' || req.priority === 'URGENT'
-                                            ? 'bg-rose-500 shadow-sm shadow-rose-500/50'
-                                            : req.priority === 'NORMAL'
-                                              ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                                              : 'bg-primary-500 shadow-sm shadow-primary-500/50'
-                                        )}
-                                      />
-                                      <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
-                                        {t(getPriorityTranslationKey(req.priority) as any)}
-                                      </span>
-                                    </div>
-                                  </PortalTableCell>
-
-                                  <PortalTableCell
-                                    cellAlign="center"
-                                    className="px-3 md:px-6 hidden md:table-cell"
-                                  >
-                                    <div className="flex flex-col items-center">
-                                      <span className="text-sm font-bold text-surface-800 dark:text-surface-200 font-outfit whitespace-nowrap">
-                                        {req.createdAt?.toDate
-                                          ? format(req.createdAt.toDate(), 'MMM d, yyyy', {
-                                              locale: getDateLocale(locale),
-                                            })
-                                          : t('common.recently')}
-                                      </span>
-                                      <span className="text-[10px] font-black text-surface-400 uppercase tracking-tighter">
-                                        {t('requests.table.created')}
-                                      </span>
-                                    </div>
-                                  </PortalTableCell>
-
-                                  <PortalTableCell cellAlign="end" className="px-3 md:px-6">
-                                    <div className="flex items-center justify-end gap-1">
-                                      <PinButton requestId={req.id} orgId={orgId as string} />
-                                      <IconButton
-                                        icon={MessageSquare}
-                                        label={req.title}
-                                        variant="ghost"
-                                        size="sm"
-                                        iconSize={16}
-                                        className="min-w-[44px] min-h-[44px] hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20"
-                                        onClick={e => {
-                                          e.stopPropagation();
-                                          openRequest(req);
-                                        }}
-                                      />
-                                      <Dropdown
-                                        trigger={
-                                          <IconButton
-                                            icon={MoreVertical}
-                                            label={t('common.actions')}
-                                            variant="ghost"
-                                            size="sm"
-                                            iconSize={16}
-                                            className="min-w-[44px] min-h-[44px]"
-                                            onClick={e => e.stopPropagation()}
                                           />
-                                        }
-                                        items={[
-                                          {
-                                            label: t('common.edit'),
-                                            onClick: () => setRequestToEdit(req),
-                                            icon: <Edit size={16} />,
-                                          },
-                                          {
-                                            label: t('common.archive'),
-                                            onClick: () => handleArchiveClick(req),
-                                            icon: <Archive size={16} />,
-                                          },
-                                          {
-                                            label: t('common.delete'),
-                                            onClick: () => handleDeleteClick(req.id),
-                                            icon: <Trash2 size={16} />,
-                                            variant: 'danger',
-                                          },
-                                        ]}
-                                      />
-                                    </div>
-                                  </PortalTableCell>
-                                </MotionPortalTableRow>
+                                          {t('requests.bundleItems', {
+                                            count: bundleChildren.length,
+                                          })}
+                                        </button>
+                                        {expandedBundleIds.has(req.id) && (
+                                          <div className="grid gap-1 pb-2 ps-6">
+                                            {bundleChildren.map(child => (
+                                              <button
+                                                key={child.id}
+                                                type="button"
+                                                className="portal-focus-ring flex min-h-[40px] items-center justify-between rounded-lg px-3 text-start hover:bg-white dark:hover:bg-surface-800"
+                                                onClick={() => openRequest(child)}
+                                              >
+                                                <span className="truncate text-sm font-bold">
+                                                  {child.title}
+                                                </span>
+                                                <Badge
+                                                  variant={getStatusBadgeVariant(child.status)}
+                                                >
+                                                  {t(getStatusTranslationKey(child.status) as any)}
+                                                </Badge>
+                                              </button>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </PortalTableCell>
+                                    </PortalTableRow>
+                                  )}
+                                </Fragment>
                               );
                             })}
                           </PortalTableBody>

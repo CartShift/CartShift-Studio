@@ -55,7 +55,6 @@ const portalPathnames = [
   '/portal/agency/consultations',
   '/portal/agency/pricing',
   '/portal/agency/testimonials',
-  '/portal/agency/profit-splits',
   '/portal/agency/settings',
   '/portal/agency/help',
   '/portal/agency/email-preview',

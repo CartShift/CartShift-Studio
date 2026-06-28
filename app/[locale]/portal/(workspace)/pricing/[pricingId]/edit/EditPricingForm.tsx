@@ -18,8 +18,10 @@ import {
 } from '@/components/portal/ui/PortalFormField';
 import { getRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
-import { usePricingRequest } from '@/lib/hooks/usePricingRequest';
+import {
+  useCommercialRequest,
+  useRequestCommercialMutations,
+} from '@/lib/hooks/useRequestCommercial';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedPricingId } from '@/lib/hooks/useResolvedPricingId';
@@ -86,9 +88,9 @@ export default function EditPricingForm() {
   const pricingId = useResolvedPricingId();
   const router = useRouter();
   const { userData, isAgency } = usePortalAuth();
-  const { updatePricingRequest, sendPricingRequest } = usePricingMutations();
+  const { updatePricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const t = useTranslations('portal');
-  const pricingQuery = usePricingRequest(typeof pricingId === 'string' ? pricingId : null);
+  const pricingQuery = useCommercialRequest(typeof pricingId === 'string' ? pricingId : null);
   const agencyTeam = useAgencyTeam();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -231,8 +233,8 @@ export default function EditPricingForm() {
         }
 
         // Fetch linked requests
-        if (request.requestIds && request.requestIds.length > 0) {
-          const requestPromises = request.requestIds.map(id => getRequest(id));
+        if (request.childRequestIds && request.childRequestIds.length > 0) {
+          const requestPromises = request.childRequestIds.map(id => getRequest(id));
           const requests = await Promise.all(requestPromises);
           const validRequests = requests.filter((r): r is Request => r !== null);
           setLinkedRequests(validRequests);
@@ -382,7 +384,7 @@ export default function EditPricingForm() {
       setSubmitStatus('success');
 
       setTimeout(() => {
-        router.push(getPortalPath(`/pricing/${pricingId}/`));
+        router.push(getPortalPath(`/requests/${pricingId}/`));
       }, REDIRECT_DELAY);
     } catch (error) {
       console.error('Failed to update pricing request:', error);
@@ -411,7 +413,7 @@ export default function EditPricingForm() {
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">{t('common.error')}</h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{errorMessage}</p>
-        <Link href={getPortalPath('/pricing/')}>
+        <Link href={getPortalPath('/requests/')}>
           <Button>{t('common.back')}</Button>
         </Link>
       </div>
@@ -426,7 +428,7 @@ export default function EditPricingForm() {
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">
           Only agency members can edit pricing offers.
         </p>
-        <Link href={getPortalPath('/pricing/')}>
+        <Link href={getPortalPath('/requests/')}>
           <Button>{t('common.back')}</Button>
         </Link>
       </div>
@@ -446,7 +448,7 @@ export default function EditPricingForm() {
         <p className="mx-auto mt-2 max-w-lg text-surface-500 dark:text-surface-400">
           {t('pricing.form.lockedDescription')}
         </p>
-        <Link href={getPortalPath(`/pricing/${pricingId}/`)}>
+        <Link href={getPortalPath(`/requests/${pricingId}/`)}>
           <Button className="mt-6">{t('common.back')}</Button>
         </Link>
       </Card>
@@ -476,7 +478,7 @@ export default function EditPricingForm() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-4">
-        <Link href={getPortalPath(`/pricing/${pricingId}/`)}>
+        <Link href={getPortalPath(`/requests/${pricingId}/`)}>
           <Button variant="ghost" className="flex items-center gap-2">
             <ArrowLeft size={18} />
             {t('common.back')}

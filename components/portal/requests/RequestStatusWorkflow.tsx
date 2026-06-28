@@ -32,6 +32,13 @@ const WORKFLOW_STAGES: {
   allowedFrom: RequestStatus[];
 }[] = [
   {
+    status: REQUEST_STATUS.DRAFT,
+    icon: FileText,
+    color: 'text-surface-600 dark:text-surface-300',
+    bgColor: 'bg-surface-100 dark:bg-surface-800',
+    allowedFrom: [],
+  },
+  {
     status: REQUEST_STATUS.NEW,
     icon: FileText,
     color: 'text-primary-600 dark:text-primary-400',
@@ -50,7 +57,19 @@ const WORKFLOW_STAGES: {
     icon: DollarSign,
     color: 'text-accent-600 dark:text-accent-400',
     bgColor: 'bg-purple-100 dark:bg-purple-900/30',
-    allowedFrom: [REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO],
+    allowedFrom: [
+      REQUEST_STATUS.DRAFT,
+      REQUEST_STATUS.NEW,
+      REQUEST_STATUS.NEEDS_INFO,
+      REQUEST_STATUS.CHANGES_REQUESTED,
+    ],
+  },
+  {
+    status: REQUEST_STATUS.CHANGES_REQUESTED,
+    icon: AlertCircle,
+    color: 'text-amber-600 dark:text-amber-400',
+    bgColor: 'bg-amber-100 dark:bg-amber-900/30',
+    allowedFrom: [REQUEST_STATUS.QUOTED],
   },
   {
     status: REQUEST_STATUS.ACCEPTED,
@@ -118,7 +137,19 @@ const WORKFLOW_STAGES: {
     icon: Ban,
     color: 'text-red-600 dark:text-red-400',
     bgColor: 'bg-red-100 dark:bg-red-900/30',
-    allowedFrom: [REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO, REQUEST_STATUS.QUEUED],
+    allowedFrom: [
+      REQUEST_STATUS.DRAFT,
+      REQUEST_STATUS.NEW,
+      REQUEST_STATUS.NEEDS_INFO,
+      REQUEST_STATUS.QUEUED,
+    ],
+  },
+  {
+    status: REQUEST_STATUS.EXPIRED,
+    icon: Clock,
+    color: 'text-surface-500 dark:text-surface-400',
+    bgColor: 'bg-surface-100 dark:bg-surface-800',
+    allowedFrom: [REQUEST_STATUS.QUOTED],
   },
 ];
 
@@ -148,6 +179,7 @@ function getStatusState(
     currentStatus === REQUEST_STATUS.CLOSED ||
     currentStatus === REQUEST_STATUS.CANCELED ||
     currentStatus === REQUEST_STATUS.DECLINED ||
+    currentStatus === REQUEST_STATUS.EXPIRED ||
     currentStatus === REQUEST_STATUS.PAID
   ) {
     if (status === currentStatus) return 'current';
@@ -326,10 +358,9 @@ export function RequestStatusWorkflow({
                     position: 'fixed',
                     top: dropdownPosition.top,
                     left: dropdownPosition.left,
-                    minWidth: '220px', // Ensure it's not too narrow
-                    zIndex: 50,
+                    minWidth: '220px',
                   }}
-                  className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 shadow-xl overflow-hidden p-1"
+                  className="z-tooltip bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 shadow-xl overflow-hidden p-1"
                 >
                   <p className="px-3 py-2 portal-label-sm text-[10px]">
                     {t('requests.detail.moveTo')}

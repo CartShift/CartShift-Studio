@@ -40,6 +40,7 @@ import {
 import { generateGoogleCalendarEventLink } from '@/lib/schedule';
 import { getScheduleUrl } from '@/lib/schedule';
 import type { MarketingLead } from '@/lib/services/portal-marketing';
+import { useUpdateHumanReview } from '@/lib/hooks/useUpdateHumanReview';
 
 type LeadFilter = 'all' | 'hot' | 'needsFollowUp';
 
@@ -115,8 +116,10 @@ export default function MarketingLeadsClient() {
   const { dashboard, loading, error, refetch } = useMarketingDashboard();
   const { organizations } = useAgencyClients();
   const updateLead = useUpdateMarketingLead();
+  const updateReview = useUpdateHumanReview();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<LeadFilter>('all');
+  const [funnelDays, setFunnelDays] = useState<7 | 30 | 0>(30);
   const [inviteLead, setInviteLead] = useState<MarketingLead | null>(null);
 
   const orgOptions = useMemo(
@@ -143,6 +146,14 @@ export default function MarketingLeadsClient() {
   const recentJobs = dashboard?.jobs.slice(0, 8) || [];
   const sourceCounts = dashboard?.metrics.sourceCounts || {};
   const stageCounts = dashboard?.metrics.stageCounts || {};
+  const filteredFunnelCounts = useMemo(() => {
+    const cutoff = funnelDays ? Date.now() - funnelDays * 86_400_000 : 0;
+    return (dashboard?.funnelEvents || []).reduce<Record<string, number>>((counts, event) => {
+      if (cutoff && new Date(event.occurredAt).getTime() < cutoff) return counts;
+      counts[event.name] = (counts[event.name] || 0) + 1;
+      return counts;
+    }, {});
+  }, [dashboard?.funnelEvents, funnelDays]);
 
   const handleCopyEmail = async (email: string) => {
     await navigator.clipboard.writeText(email);
@@ -338,7 +349,9 @@ export default function MarketingLeadsClient() {
                   {filteredLeads.map(lead => (
                     <PortalTableRow key={lead.leadId}>
                       <PortalTableCell>
-                        <div className="font-bold text-surface-900 dark:text-white">{lead.email}</div>
+                        <div className="font-bold text-surface-900 dark:text-white">
+                          {lead.email}
+                        </div>
                         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-surface-500">
                           {lead.contactStatus === 'contacted' && (
                             <Badge variant="green">{t('leads.contacted')}</Badge>
@@ -473,6 +486,125 @@ export default function MarketingLeadsClient() {
           </Card>
         </div>
       </div>
+
+      <Card padding="default">
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-surface-900 dark:text-white">
+              {t('analyzerFunnel.title')}
+            </h2>
+            <p className="text-sm text-surface-500">{t('analyzerFunnel.description')}</p>
+          </div>
+          <select
+            aria-label={t('analyzerFunnel.dateRange')}
+            value={funnelDays}
+            onChange={event => setFunnelDays(Number(event.target.value) as 7 | 30 | 0)}
+            className="min-h-10 rounded-lg border border-surface-300 bg-transparent px-3 text-sm dark:border-white/15"
+          >
+            <option value={7}>{t('analyzerFunnel.last7')}</option>
+            <option value={30}>{t('analyzerFunnel.last30')}</option>
+            <option value={0}>{t('analyzerFunnel.allTime')}</option>
+          </select>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            [t('analyzerFunnel.visits'), 'store_analyzer_viewed'],
+            [t('analyzerFunnel.starts'), 'store_analyzer_started'],
+            [t('analyzerFunnel.completed'), 'store_analyzer_completed'],
+            [t('analyzerFunnel.ctaClicks'), 'store_analyzer_cta_clicked'],
+            [t('analyzerFunnel.reviews'), 'human_review_submitted'],
+            [t('analyzerFunnel.bookings'), 'booking_completed'],
+          ].map(([label, key]) => (
+            <div
+              key={key}
+              className="rounded-xl border border-surface-200 p-4 dark:border-white/10"
+            >
+              <p className="text-xs text-surface-500">{label}</p>
+              <p className="mt-1 text-2xl font-bold">{filteredFunnelCounts[key] || 0}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-5 lg:grid-cols-3">
+          {[
+            [t('analyzerFunnel.intent'), dashboard?.metrics.intentCounts],
+            [t('analyzerFunnel.primaryIssue'), dashboard?.metrics.issueCounts],
+            [t('analyzerFunnel.partner'), dashboard?.metrics.partnerCounts],
+          ].map(([label, values]) => (
+            <div key={String(label)}>
+              <h3 className="mb-2 text-sm font-bold">
+                {t('analyzerFunnel.breakdown', { name: String(label) })}
+              </h3>
+              <div className="space-y-2 text-sm">
+                {Object.entries(values || {}).map(([key, value]) => (
+                  <div key={key} className="flex justify-between gap-3">
+                    <span>{formatSource(key)}</span>
+                    <span className="font-bold">
+                      {typeof value === 'number' ? value : value.reviews}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card padding="default">
+        <h2 className="mb-4 text-lg font-bold text-surface-900 dark:text-white">
+          {t('humanReviews.title')}
+        </h2>
+        <div className="space-y-3">
+          {(dashboard?.reviews || []).map(review => (
+            <div
+              key={review.requestId}
+              className="grid gap-3 rounded-xl border border-surface-200 p-4 dark:border-white/10 md:grid-cols-[1fr,auto,auto] md:items-center"
+            >
+              <div>
+                <p className="font-bold">{review.email}</p>
+                <p className="text-xs text-surface-500">
+                  {review.storeUrl} · {formatSource(review.primaryIssue)} ·{' '}
+                  {review.partner || t('humanReviews.direct')}
+                </p>
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={Boolean(review.qualified)}
+                  onChange={event =>
+                    updateReview.mutate({
+                      requestId: review.requestId,
+                      qualified: event.target.checked,
+                    })
+                  }
+                />{' '}
+                {t('humanReviews.qualified')}
+              </label>
+              <select
+                aria-label={t('humanReviews.visibility')}
+                value={review.reviewVisibility}
+                onChange={event =>
+                  updateReview.mutate({
+                    requestId: review.requestId,
+                    reviewVisibility: event.target.value as typeof review.reviewVisibility,
+                  })
+                }
+                className="min-h-10 rounded-lg border border-surface-300 bg-transparent px-3 text-sm dark:border-white/15"
+              >
+                <option value="private">{t('humanReviews.private')}</option>
+                <option value="anonymous_educational" disabled={!review.anonymousInsightConsent}>
+                  {t('humanReviews.anonymous')}
+                </option>
+                <option value="approved_public_case_study" disabled={!review.namedStoreConsent}>
+                  {t('humanReviews.public')}
+                </option>
+              </select>
+            </div>
+          ))}
+          {!dashboard?.reviews.length ? (
+            <p className="text-sm text-surface-500">{t('humanReviews.empty')}</p>
+          ) : null}
+        </div>
+      </Card>
 
       {inviteLead && (
         <LeadInviteModal

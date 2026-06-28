@@ -10,6 +10,8 @@ import { Link } from '@/i18n/navigation';
 import { logError } from '@/lib/logger';
 import { isRTLLocale, getDateLocaleString } from '@/lib/locale-config';
 import { trackHighIntentCta } from '@/lib/marketing-cta';
+import { mapArticleToAnalyzerIntent } from '@/lib/analyzer/funnel';
+import { ContextualAnalyzerCta } from '@/components/blog/ContextualAnalyzerCta';
 
 interface RelatedPost {
   slug: string;
@@ -34,6 +36,8 @@ interface BlogPostContentProps {
   date: string;
   category: string;
   readingTime?: number;
+  tags?: string[];
+  analyzerIntent?: string;
 }
 
 export const BlogPostContent: React.FC<BlogPostContentProps> = ({
@@ -44,10 +48,13 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   date,
   category,
   readingTime,
+  tags,
+  analyzerIntent,
 }) => {
   const t = useTranslations();
   const locale = useLocale();
   const isHe = isRTLLocale(locale);
+  const contextualIntent = mapArticleToAnalyzerIntent({ analyzerIntent, category, tags, title });
   const [readingProgress, setReadingProgress] = useState(0);
   const [headings, setHeadings] = useState<Array<{ id: string; text: string; level: number }>>([]);
   const [mobileTocOpen, setMobileTocOpen] = useState(false);
@@ -781,13 +788,10 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                             {t('blogPost.storeAnalyzerCta.badge')}
                           </span>
                           <h3 className="text-lg md:text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
-                            {t('blogPost.storeAnalyzerCta.title')}
-                            <span className="text-primary-600 dark:text-primary-400">
-                              {t('blogPost.storeAnalyzerCta.titleSpan')}
-                            </span>
+                            {t(`blogPost.contextualAnalyzer.${contextualIntent}.title`)}
                           </h3>
                           <p className="text-surface-600 dark:text-surface-300 text-sm md:text-base mb-4 leading-relaxed">
-                            {t('blogPost.storeAnalyzerCta.description')}
+                            {t(`blogPost.contextualAnalyzer.${contextualIntent}.description`)}
                           </p>
 
                           {/* Stats */}
@@ -835,30 +839,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
 
                         {/* CTA Button */}
                         <div className="flex-shrink-0">
-                          <Link href="/tools/store-analyzer">
-                            <Button
-                              variant="secondary"
-                              size="lg"
-                              className="w-full md:w-auto font-semibold shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-shadow group/btn"
-                            >
-                              <span className="flex items-center gap-2">
-                                {t('blogPost.storeAnalyzerCta.button')}
-                                <svg
-                                  className="w-4 h-4 rtl:rotate-180 group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1 transition-transform"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                  />
-                                </svg>
-                              </span>
-                            </Button>
-                          </Link>
+                          <ContextualAnalyzerCta intent={contextualIntent} articleSlug={slug} />
                         </div>
                       </div>
                     </div>
@@ -1223,40 +1204,40 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                             </div>
                           )}
                           <div className="p-6">
-                          <CardHeader>
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
-                                {postCategory}
+                            <CardHeader>
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
+                                  {postCategory}
+                                </span>
+                                <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">
+                                  {formattedDate}
+                                </span>
+                              </div>
+                              <CardTitle className="text-base font-semibold text-surface-900 dark:text-white line-clamp-2 leading-snug mb-2">
+                                {postTitle}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="mb-4 text-sm text-surface-600 dark:text-surface-300 leading-relaxed line-clamp-4">
+                                {postExcerpt}
+                              </p>
+                              <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold text-sm">
+                                {t('blog.readMore')}
+                                <svg
+                                  className="w-4 h-4 rtl:rotate-180"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                  />
+                                </svg>
                               </span>
-                              <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">
-                                {formattedDate}
-                              </span>
-                            </div>
-                            <CardTitle className="text-base font-semibold text-surface-900 dark:text-white line-clamp-2 leading-snug mb-2">
-                              {postTitle}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="mb-4 text-sm text-surface-600 dark:text-surface-300 leading-relaxed line-clamp-4">
-                              {postExcerpt}
-                            </p>
-                            <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold text-sm">
-                              {t('blog.readMore')}
-                              <svg
-                                className="w-4 h-4 rtl:rotate-180"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                />
-                              </svg>
-                            </span>
-                          </CardContent>
+                            </CardContent>
                           </div>
                         </Card>
                       </Link>

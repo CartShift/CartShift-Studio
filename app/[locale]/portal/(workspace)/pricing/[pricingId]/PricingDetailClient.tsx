@@ -55,8 +55,8 @@ export default function PricingDetailClient() {
     const fetchLinkedRequests = async () => {
       try {
         // Fetch linked requests if any
-        if (pricingRequest.requestIds && pricingRequest.requestIds.length > 0) {
-          const requestPromises = pricingRequest.requestIds.map(id => getRequest(id));
+        if (pricingRequest.childRequestIds && pricingRequest.childRequestIds.length > 0) {
+          const requestPromises = pricingRequest.childRequestIds.map(id => getRequest(id));
           const requests = await Promise.all(requestPromises);
           setLinkedRequests(requests.filter((r): r is Request => r !== null));
         } else {

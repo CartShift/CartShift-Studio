@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { PortalFormGrid } from '@/components/portal/ui/PortalFormField';
-import { useProposalPayments } from '@/lib/hooks/useProposalPayments';
+import { useCommercialRequestPayments } from '@/lib/hooks/useRequestCommercial';
 import { formatCurrency, ManualPaymentMethod, PricingRequest } from '@/lib/types/pricing';
 
 const MANUAL_METHODS = [
@@ -40,7 +40,7 @@ export function ProposalPaymentPanel({
   const [manualNote, setManualNote] = useState('');
   const isAccepted = proposal.status === 'ACCEPTED';
   const { payments, loading, issueLink, createInstallment, cancelInstallment, recordManualPayment } =
-    useProposalPayments(proposal.id, true);
+    useCommercialRequestPayments(proposal.id, true);
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||

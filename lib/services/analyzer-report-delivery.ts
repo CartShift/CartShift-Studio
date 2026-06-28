@@ -2,6 +2,7 @@ import { logError, logWarn } from '@/lib/error-handler';
 import { env } from '@/lib/env';
 import { buildFirebaseFunctionUrl } from '@/lib/services/firebase';
 import type { AnalysisResult } from '@/lib/types/analyzer';
+import type { AnalyzerAttribution, AnalyzerIntent, PrimaryIssue } from '@/lib/analyzer/funnel';
 
 /** PDF generation on Cloud Functions can take up to ~90s; runs after the API response is sent. */
 const REPORT_DELIVERY_TIMEOUT_MS = 90_000;
@@ -23,6 +24,10 @@ export async function deliverStoreAnalysisReport(params: {
   results: AnalysisResult;
   subscribeNewsletter: boolean;
   skipLeadCapture?: boolean;
+  intent?: AnalyzerIntent;
+  attribution?: AnalyzerAttribution;
+  primaryIssue?: PrimaryIssue;
+  reportUrl?: string;
 }): Promise<ReportDeliveryStatus> {
   const reportUrl = buildFirebaseFunctionUrl(
     env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL,

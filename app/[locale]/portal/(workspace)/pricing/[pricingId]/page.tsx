@@ -1,6 +1,5 @@
-import { setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import PricingDetailClient from './PricingDetailClient';
+import { redirect } from 'next/navigation';
+import { resolveCanonicalRequestId } from '@/lib/services/request-aliases-server';
 
 export default async function PricingDetailPage({
   params,
@@ -8,7 +7,6 @@ export default async function PricingDetailPage({
   params: Promise<{ locale: string; pricingId: string }>;
 }) {
   const { locale, pricingId } = await params;
-  setRequestLocale(locale as 'en' | 'he');
-  if (!pricingId || pricingId.length < 10) notFound();
-  return <PricingDetailClient />;
+  const requestId = await resolveCanonicalRequestId(pricingId);
+  redirect(`/${locale}/portal/requests/${requestId}`);
 }

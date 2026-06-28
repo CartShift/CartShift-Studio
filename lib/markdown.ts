@@ -19,6 +19,8 @@ export interface BlogPost {
   image?: string;
   imageAlt?: string;
   socialImage?: string;
+  tags?: string[];
+  analyzerIntent?: string;
   content: string;
   readingTime?: number;
   wordCount?: number;
@@ -228,6 +230,8 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       image: data.image || '',
       imageAlt: data.imageAlt || data.title || '',
       socialImage: data.socialImage || data.image || '',
+      tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+      analyzerIntent: typeof data.analyzerIntent === 'string' ? data.analyzerIntent : undefined,
       content: contentHtmlEn,
       readingTime,
       wordCount,

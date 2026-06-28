@@ -25,7 +25,7 @@ export default function CalculatorClient() {
   }) => {
     // Store the line item in session storage for the pricing form to pick up
     sessionStorage.setItem('calculatorLineItems', JSON.stringify([lineItem]));
-    router.push(getPortalPath('/pricing/new/'));
+    router.push(getPortalPath('/requests/new?mode=quote'));
   };
 
   const handleCreateMultipleOffers = (
@@ -33,7 +33,7 @@ export default function CalculatorClient() {
   ) => {
     // Store all items in session storage
     sessionStorage.setItem('calculatorLineItems', JSON.stringify(lineItems));
-    router.push(getPortalPath('/pricing/new/'));
+    router.push(getPortalPath('/requests/new?mode=quote'));
   };
 
   // Show loading state
@@ -71,7 +71,7 @@ export default function CalculatorClient() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push(getPortalPath('/agency/pricing/'))}
+            onClick={() => router.push(getPortalPath('/requests/'))}
             className="text-surface-500 hover:text-surface-700"
           >
             <ArrowLeft size={18} className={cn(isRTL && 'rotate-180')} />

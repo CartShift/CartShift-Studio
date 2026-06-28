@@ -6,7 +6,7 @@ import { queryKeys } from '@/lib/utils/query-keys';
 
 export function usePricingRequest(pricingId: string | null) {
   return useQuery({
-    queryKey: queryKeys.pricing.detail(pricingId || ''),
+    queryKey: queryKeys.requests.detail(pricingId || ''),
     queryFn: () => getPricingRequest(pricingId!),
     enabled: Boolean(pricingId),
   });

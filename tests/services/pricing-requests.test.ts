@@ -135,7 +135,7 @@ describe('pricing proposal totals', () => {
 
     await sendPricingRequest('proposal/1');
 
-    expect(fetch).toHaveBeenCalledWith('/api/portal/proposals/proposal%2F1/send', {
+    expect(fetch).toHaveBeenCalledWith('/api/portal/requests/proposal%2F1/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { logError } from '@/lib/error-handler';
 import { CacheService } from '@/lib/services/cache-service';
 import { captureMarketingLead, normalizeMarketingEmail } from '@/lib/services/marketing';
 import { env } from '@/lib/env';
+import type { AnalyzerAttribution, AnalyzerIntent, PrimaryIssue } from '@/lib/analyzer/funnel';
 
 export type StoreAnalysisLeadStatus = 'captured' | 'deduped' | 'failed' | 'unconfigured';
 
@@ -27,6 +28,11 @@ export async function captureStoreAnalysisLead(params: {
   focusScore?: number;
   primaryRecommendation?: string;
   subscribeNewsletter: boolean;
+  intent?: AnalyzerIntent;
+  attribution?: AnalyzerAttribution;
+  primaryIssue?: PrimaryIssue;
+  analyzerSubmittedAt?: string;
+  reportCompletedAt?: string;
 }): Promise<StoreAnalysisLeadStatus> {
   if (!isMarketingCaptureConfigured()) {
     return 'unconfigured';
@@ -49,6 +55,12 @@ export async function captureStoreAnalysisLead(params: {
         subscribeNewsletter: true,
         consent: true,
         skipWelcome: true,
+        intent: params.intent,
+        attribution: params.attribution,
+        primaryIssue: params.primaryIssue,
+        ctaType: params.primaryIssue ? `human_review_${params.primaryIssue}` : undefined,
+        analyzerSubmittedAt: params.analyzerSubmittedAt,
+        reportCompletedAt: params.reportCompletedAt,
       });
     }
     return 'deduped';
@@ -67,6 +79,12 @@ export async function captureStoreAnalysisLead(params: {
     subscribeNewsletter: params.subscribeNewsletter,
     consent: params.subscribeNewsletter,
     skipWelcome: true,
+    intent: params.intent,
+    attribution: params.attribution,
+    primaryIssue: params.primaryIssue,
+    ctaType: params.primaryIssue ? `human_review_${params.primaryIssue}` : undefined,
+    analyzerSubmittedAt: params.analyzerSubmittedAt,
+    reportCompletedAt: params.reportCompletedAt,
   });
 
   if (!result.success) {

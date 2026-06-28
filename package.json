@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "scripts": {
     "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
@@ -38,6 +38,8 @@
     "social:linkedin:performance:record": "node scripts/record-linkedin-performance.mjs",
     "social:linkedin:analytics:oauth": "node scripts/linkedin-oauth-token.mjs --analytics --write-env",
     "normalize-db": "tsx scripts/normalize-db.ts",
+    "migrate:proposals": "tsx scripts/migrate-proposals-to-requests.ts",
+    "migrate:proposals:apply": "tsx scripts/migrate-proposals-to-requests.ts --apply",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
@@ -102,7 +104,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.0.0",
     "@types/puppeteer": "^5.4.7",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

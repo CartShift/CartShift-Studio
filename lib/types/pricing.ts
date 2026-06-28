@@ -1,4 +1,21 @@
 import { Timestamp } from 'firebase/firestore';
+import type {
+  Currency,
+  PricingLineItem,
+  Request,
+  RequestPaymentProvider,
+  RequestPaymentRecordStatus,
+  RequestPaymentStatus,
+  RequestPaymentType,
+  ManualPaymentMethod,
+} from './portal';
+
+export type {
+  Currency,
+  PricingLineItem,
+  PricingType,
+  ManualPaymentMethod,
+} from './portal';
 
 // ============================================
 // ENUMS & CONSTANTS
@@ -6,8 +23,10 @@ import { Timestamp } from 'firebase/firestore';
 
 export const PRICING_STATUS = {
   DRAFT: 'DRAFT',
-  SENT: 'SENT',
-  CLIENT_EDITED: 'CLIENT_EDITED',
+  /** @deprecated Canonical request status is QUOTED. */
+  SENT: 'QUOTED',
+  /** @deprecated Canonical request status is CHANGES_REQUESTED. */
+  CLIENT_EDITED: 'CHANGES_REQUESTED',
   ACCEPTED: 'ACCEPTED',
   PAID: 'PAID',
   DECLINED: 'DECLINED',
@@ -22,115 +41,43 @@ export const CURRENCY = {
 } as const;
 
 export type PricingStatus = (typeof PRICING_STATUS)[keyof typeof PRICING_STATUS];
-export type Currency = (typeof CURRENCY)[keyof typeof CURRENCY];
-export type PricingType = 'fixed' | 'hourly' | 'estimate';
 export type ProposalType = 'pricing_offer' | 'work_proposal';
-export type ProposalPaymentStatus =
-  | 'not_required'
-  | 'pending'
-  | 'partially_paid'
-  | 'paid'
-  | 'failed';
-export type ProposalPaymentType = 'deposit' | 'installment' | 'final';
-export type ProposalPaymentRecordStatus = 'pending' | 'paid' | 'failed' | 'canceled' | 'refunded';
-export type ProposalPaymentProvider = 'paypal' | 'manual';
-export type ManualPaymentMethod =
-  | 'bank_transfer'
-  | 'cash'
-  | 'bit'
-  | 'paybox'
-  | 'check'
-  | 'credit_card_manual'
-  | 'other';
+export type ProposalPaymentStatus = RequestPaymentStatus;
+export type ProposalPaymentType = Exclude<RequestPaymentType, 'payment'>;
+export type ProposalPaymentRecordStatus = RequestPaymentRecordStatus;
+export type ProposalPaymentProvider = RequestPaymentProvider;
 
 // ============================================
 // CORE TYPES
 // ============================================
 
-export interface PricingLineItem {
-  id: string;
-  title?: string;
-  description: string;
-  quantity: number;
-  unitPrice: number; // in cents/smallest currency unit
-  notes?: string;
-  pricingType?: PricingType;
-  sortOrder?: number;
-  requestId?: string;
-}
-
-export interface PricingRequest {
-  id: string;
-  orgId: string;
-  title: string;
+/** @deprecated Import Request from lib/types/portal. This is a narrowed commercial view. */
+export type PricingRequest = Omit<
+  Request,
+  | 'description'
+  | 'lineItems'
+  | 'totalAmount'
+  | 'currency'
+  | 'paymentStatus'
+  | 'status'
+  | 'type'
+  | 'priority'
+  | 'tags'
+  | 'attachmentIds'
+  | 'commentCount'
+> & {
   description?: string;
   lineItems: PricingLineItem[];
-  totalAmount: number; // calculated sum in cents/smallest currency unit
-  taxRate?: number; // Tax rate as decimal (e.g. 0.17 for 17%)
+  totalAmount: number;
   currency: Currency;
-  status: PricingStatus;
-  proposalType?: ProposalType;
-  terms?: string;
-  publicToken?: string;
-  publicAccessEnabled?: boolean;
-
-  // Linked requests - allows bundling multiple requests into one pricing offer
-  requestIds?: string[]; // Array of linked Request IDs
-
-  // Client info
-  clientName?: string;
-  clientEmail?: string;
-  clientNotes?: string; // Notes from client
-
-  // Agency info
-  createdBy: string; // Agency user ID
-  createdByName: string;
-  agencyNotes?: string; // Internal notes
-
-  // Validity
-  validUntil?: Timestamp;
-  timeframe?: string;
-  workDeadline?: Timestamp;
-  assignedTo?: string;
-  assignedToName?: string;
-
-  // Payment info
-  paymentId?: string; // PayPal transaction ID
-  paidAt?: Timestamp;
-  firstPaymentAt?: Timestamp;
-  lastPaymentAt?: Timestamp;
-  paymentMethod?: 'paypal' | 'manual';
-  paymentRequired?: boolean;
-  depositAmount?: number;
-  amountPaid?: number;
-  balanceDue?: number;
-  pendingAmount?: number;
-  billingMode?: 'manual_installments';
   paymentStatus?: ProposalPaymentStatus;
-  paymentProvider?: 'paypal';
-  paymentReference?: string;
-  materializedRequestIds?: string[];
-  requestsMaterializedAt?: Timestamp;
-
-  // Signature audit trail
-  acceptedByName?: string;
-  acceptedByEmail?: string;
-  signatureText?: string;
-  termsAcceptedAt?: Timestamp;
-  acceptedIp?: string;
-  acceptedUserAgent?: string;
-  lockedAt?: Timestamp;
-
-  // Timestamps
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-  sentAt?: Timestamp;
-  lastSentAt?: Timestamp;
-  offerEmailQueueId?: string;
-  offerEmailRecipient?: string;
-  acceptedAt?: Timestamp;
-  declinedAt?: Timestamp;
-}
+  status: PricingStatus;
+  type?: Request['type'];
+  priority?: Request['priority'];
+  tags?: string[];
+  attachmentIds?: string[];
+  commentCount?: number;
+};
 
 // ============================================
 // FORM DATA TYPES
@@ -278,13 +225,13 @@ export const PRICING_STATUS_CONFIG: Record<PricingStatus, PricingStatusConfig> =
     bgClass: 'bg-surface-100 dark:bg-surface-500/20',
     textClass: 'text-surface-700 dark:text-surface-300',
   },
-  SENT: {
+  QUOTED: {
     label: 'Sent',
     color: 'blue',
     bgClass: 'bg-blue-100 dark:bg-blue-500/20',
     textClass: 'text-blue-700 dark:text-blue-300',
   },
-  CLIENT_EDITED: {
+  CHANGES_REQUESTED: {
     label: 'Client Edited',
     color: 'orange',
     bgClass: 'bg-orange-100 dark:bg-orange-500/20',

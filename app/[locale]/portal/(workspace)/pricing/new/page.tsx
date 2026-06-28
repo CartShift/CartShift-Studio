@@ -1,8 +1,14 @@
-import { setRequestLocale } from 'next-intl/server';
-import CreatePricingForm from './CreatePricingForm';
+import { redirect } from 'next/navigation';
 
-export default async function NewPricingPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function NewPricingPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
-  return <CreatePricingForm />;
+  const query = await searchParams;
+  const requestIds = typeof query.requestIds === 'string' ? `&requestIds=${encodeURIComponent(query.requestIds)}` : '';
+  redirect(`/${locale}/portal/requests/new?mode=quote${requestIds}`);
 }

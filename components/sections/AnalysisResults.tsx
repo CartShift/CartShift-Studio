@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { motion } from '@/lib/motion';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
@@ -27,7 +27,6 @@ import {
   Calendar,
   CheckCircle,
   AlertTriangle,
-  ArrowRight,
   XCircle,
   Info,
   Target,
@@ -39,16 +38,15 @@ import {
   TrendingUp,
   CircleDashed,
 } from 'lucide-react';
-import { trackAnalyzerQuoteClick } from '@/lib/analytics';
-import { getScheduleUrl } from '@/lib/schedule';
-import { Link } from '@/i18n/navigation';
-import { trackHighIntentCta } from '@/lib/marketing-cta';
 import { PRIORITY_RECOMMENDATIONS_COUNT } from '@/lib/constants/pricing';
 import { AnalyzerCoverageStrip } from '@/components/analyzer/AnalyzerCoverageStrip';
 import { ANIMATION_DELAY_STEP, ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/constants/ui';
+import { HumanReviewForm } from '@/components/analyzer/HumanReviewForm';
+import { trackFunnelEvent } from '@/lib/services/analyzer-events';
 
 interface AnalysisResultsProps {
   results: AnalysisResult;
+  initialEmail?: string;
   onReset: () => void;
 }
 
@@ -61,7 +59,11 @@ const sectionIcons: Record<string, React.ElementType> = {
   trust: Shield,
 };
 
-export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onReset }) => {
+export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
+  results,
+  initialEmail,
+  onReset,
+}) => {
   const t = useTranslations('analyzer');
   const locale = useLocale();
   const { theme } = useTheme();
@@ -141,7 +143,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
   const getMarketCategoryLabel = (category?: string) => {
     if (!category) return '';
-    const normalized = category.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+    const normalized = category
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_|_$/g, '');
     return translateOptional(`market.categories.${normalized}`, category);
   };
 
@@ -163,7 +168,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
   const getEvidenceCopy = (rec: Recommendation) => {
     if (locale !== 'he') {
-      return rec.evidence || rec.exactEvidence?.[0] || rec.limitation || t('recommendations.noEvidence');
+      return (
+        rec.evidence || rec.exactEvidence?.[0] || rec.limitation || t('recommendations.noEvidence')
+      );
     }
 
     if (rec.confidence === 'measured') {
@@ -179,14 +186,19 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     }
 
     if (rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable') {
-      return rec.limitation ? t('recommendations.limitedEvidence') : t('recommendations.noEvidence');
+      return rec.limitation
+        ? t('recommendations.limitedEvidence')
+        : t('recommendations.noEvidence');
     }
 
     return rec.evidence || rec.exactEvidence?.[0] || t('recommendations.noEvidence');
   };
 
   const getAiLimitationCopy = (limitation: string) => {
-    if (limitation === 'Product pages were not scanned, so product data coverage is not fully verified.') {
+    if (
+      limitation ===
+      'Product pages were not scanned, so product data coverage is not fully verified.'
+    ) {
       return t('ai.limitations.productPagesNotScanned');
     }
     if (
@@ -201,18 +213,17 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
   const getDeepScanLimitationCopy = (limitation?: string) => {
     if (!limitation) return '';
     const normalized = limitation.toLowerCase();
-    const reason =
-      normalized.includes('disabled')
-        ? 'browser_disabled'
-        : normalized.includes('launch')
-          ? 'browser_launch_failed'
-          : normalized.includes('no same-origin product')
-            ? 'no_product_urls'
-            : normalized.includes('no usable') || normalized.includes('no same-origin category')
-              ? 'deep_scan_no_samples'
-              : normalized.includes('automation')
-                ? 'browser_sampling_failed'
-                : undefined;
+    const reason = normalized.includes('disabled')
+      ? 'browser_disabled'
+      : normalized.includes('launch')
+        ? 'browser_launch_failed'
+        : normalized.includes('no same-origin product')
+          ? 'no_product_urls'
+          : normalized.includes('no usable') || normalized.includes('no same-origin category')
+            ? 'deep_scan_no_samples'
+            : normalized.includes('automation')
+              ? 'browser_sampling_failed'
+              : undefined;
 
     if (reason) {
       return t(`results.coverage.reasons.${reason}` as any);
@@ -221,85 +232,69 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     return locale === 'he' ? t('results.coverage.reasons.browser_sampling_failed') : limitation;
   };
 
-  const {
-    priorityRecs,
-    recommendationGroups,
-    roadmapWeeks,
-    headerTitle,
-    headerDescription,
-    expertFixCount,
-    expertFixKey,
-    quoteHref,
-  } = useMemo(() => {
-    const recommendations = flattenRecommendations(
-      results.sections,
-      key => t(`sections.${key}` as any)
-    ).map(rec => ({
-      ...getRecommendationCopy(rec),
-      sectionKey: rec.sectionKey,
-      sectionName: rec.sectionName,
-    })) as ExtendedRecommendation[];
+  const { priorityRecs, recommendationGroups, roadmapWeeks, headerTitle, headerDescription } =
+    useMemo(() => {
+      const recommendations = flattenRecommendations(results.sections, key =>
+        t(`sections.${key}` as any)
+      ).map(rec => ({
+        ...getRecommendationCopy(rec),
+        sectionKey: rec.sectionKey,
+        sectionName: rec.sectionName,
+      })) as ExtendedRecommendation[];
 
-    const uniqueRecommendations = dedupeRecommendations(recommendations) as ExtendedRecommendation[];
-    const priority = buildPriorityRecommendations(uniqueRecommendations, 3) as ExtendedRecommendation[];
-    const priorityKeys = new Set(priority.map(rec => getRecommendationKey(rec)));
-    const nonPriorityRecommendations = uniqueRecommendations.filter(
-      rec => !priorityKeys.has(getRecommendationKey(rec))
-    );
-    const grouped = {
-      measured: nonPriorityRecommendations.filter(rec => rec.confidence === 'measured'),
-      verified: nonPriorityRecommendations.filter(rec => rec.confidence === 'verified'),
-      estimated: nonPriorityRecommendations.filter(rec => rec.confidence === 'estimated'),
-      needsDeeperScan: nonPriorityRecommendations.filter(
-        rec => rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable'
-      ),
-    };
-    const highImpact = countHighImpact(uniqueRecommendations);
-    const roadmap = buildRoadmapWeeks(priority);
+      const uniqueRecommendations = dedupeRecommendations(
+        recommendations
+      ) as ExtendedRecommendation[];
+      const priority = buildPriorityRecommendations(
+        uniqueRecommendations,
+        3
+      ) as ExtendedRecommendation[];
+      const priorityKeys = new Set(priority.map(rec => getRecommendationKey(rec)));
+      const nonPriorityRecommendations = uniqueRecommendations.filter(
+        rec => !priorityKeys.has(getRecommendationKey(rec))
+      );
+      const grouped = {
+        measured: nonPriorityRecommendations.filter(rec => rec.confidence === 'measured'),
+        verified: nonPriorityRecommendations.filter(rec => rec.confidence === 'verified'),
+        estimated: nonPriorityRecommendations.filter(rec => rec.confidence === 'estimated'),
+        needsDeeperScan: nonPriorityRecommendations.filter(
+          rec => rec.confidence === 'insufficient_evidence' || rec.confidence === 'unavailable'
+        ),
+      };
+      const highImpact = countHighImpact(uniqueRecommendations);
+      const roadmap = buildRoadmapWeeks(priority);
 
-    let title: string;
-    let description: string;
+      let title: string;
+      let description: string;
 
-    if (priority.length > 0) {
-      title = t('results.strongScoreWithIssues', { count: priority.length });
-      description = t('results.strongScoreWithIssuesDesc');
-    } else if (results.overallScore >= 80) {
-      title = t('results.greatJob');
-      description = t('results.readyToScale');
-    } else if (highImpact === 1) {
-      title = t('results.issuesFound_singular', { count: highImpact });
-      description = t('results.evidenceGroundedIssues');
-    } else if (highImpact > 1) {
-      title = t('results.issuesFound', { count: highImpact });
-      description = t('results.evidenceGroundedIssues');
-    } else if (priority.length === 1) {
-      title = t('results.needsImprovement');
-      description = t('results.estimatedOpportunitiesDesc');
-    } else {
-      title = t('results.needsImprovement');
-      description = t('results.estimatedOpportunitiesDesc');
-    }
+      if (priority.length > 0) {
+        title = t('results.strongScoreWithIssues', { count: priority.length });
+        description = t('results.strongScoreWithIssuesDesc');
+      } else if (results.overallScore >= 80) {
+        title = t('results.greatJob');
+        description = t('results.readyToScale');
+      } else if (highImpact === 1) {
+        title = t('results.issuesFound_singular', { count: highImpact });
+        description = t('results.evidenceGroundedIssues');
+      } else if (highImpact > 1) {
+        title = t('results.issuesFound', { count: highImpact });
+        description = t('results.evidenceGroundedIssues');
+      } else if (priority.length === 1) {
+        title = t('results.needsImprovement');
+        description = t('results.estimatedOpportunitiesDesc');
+      } else {
+        title = t('results.needsImprovement');
+        description = t('results.estimatedOpportunitiesDesc');
+      }
 
-    const fixCount = priority.length;
-    const fixKey =
-      fixCount === 1 ? ('results.expertsCanFix_singular' as const) : ('results.expertsCanFix' as const);
-
-    return {
-      priorityRecs: priority,
-      recommendationGroups: grouped,
-      roadmapWeeks: roadmap,
-      headerTitle: title,
-      headerDescription: description,
-      expertFixCount: fixCount,
-      expertFixKey: fixKey,
-      quoteHref: `/contact?${new URLSearchParams({
-        projectType: 'consultation',
-        storeUrl: results.storeUrl,
-        score: String(results.overallScore),
-        fixes: String(fixCount),
-      }).toString()}`,
-    };
-  }, [results.overallScore, results.sections, results.storeUrl, t]);
+      return {
+        priorityRecs: priority,
+        recommendationGroups: grouped,
+        roadmapWeeks: roadmap,
+        headerTitle: title,
+        headerDescription: description,
+      };
+    }, [results.overallScore, results.sections, results.storeUrl, t]);
 
   const overallStatus = getStatusColor(results.overallScore);
   const marketCategoryLabel = getMarketCategoryLabel(results.competitorAnalysis?.category);
@@ -316,14 +311,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
     cached: false,
   };
   const hasDeepScanReason = Boolean(analysisMeta.featureAvailability?.deeperScan?.reasonCode);
-  const showDeepScanUnavailableNotice =
-    !analysisMeta.deeperScanAvailable && !hasDeepScanReason;
+  const showDeepScanUnavailableNotice = !analysisMeta.deeperScanAvailable && !hasDeepScanReason;
   const showDeeperScanEvidencePanel = Boolean(
     results.deeperScan &&
-      (results.deeperScan.available ||
-        results.deeperScan.categoryPagesAttempted > 0 ||
-        results.deeperScan.productPagesAttempted > 0 ||
-        results.deeperScan.cartInteractionAttempted)
+    (results.deeperScan.available ||
+      results.deeperScan.categoryPagesAttempted > 0 ||
+      results.deeperScan.productPagesAttempted > 0 ||
+      results.deeperScan.cartInteractionAttempted)
   );
   const footerReportMessage =
     analysisMeta.emailReportStatus === 'sent'
@@ -333,6 +327,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
         : analysisMeta.emailReportStatus === 'failed'
           ? t('results.emailDelayedDescription')
           : t('results.emailUnavailableDescription');
+
+  const primaryIssue = results.meta.primaryIssue || 'general_conversion';
+  useEffect(() => {
+    trackFunnelEvent('store_analyzer_report_viewed', {
+      primary_issue: primaryIssue,
+      intent: results.meta.analyzerIntent || 'generic',
+    });
+  }, [primaryIssue, results.meta.analyzerIntent]);
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
@@ -399,13 +401,21 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 </p>
               </div>
             </div>
-            <a href={getScheduleUrl()} target="_blank" rel="noopener noreferrer">
+            <a
+              href="#human-review"
+              onClick={() =>
+                trackFunnelEvent('store_analyzer_cta_clicked', {
+                  primary_issue: primaryIssue,
+                  cta_type: 'human_review_anchor',
+                })
+              }
+            >
               <Button
                 size="lg"
                 className="bg-surface-900 dark:bg-white text-white dark:text-surface-900 hover:opacity-90"
               >
                 <Calendar className="w-4 h-4 me-2" />
-                {t('cta.fixIssues')}
+                {t(`primaryIssue.${primaryIssue}.cta`)}
               </Button>
             </a>
           </div>
@@ -1033,10 +1043,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                 key={item.label}
                 className={`rounded-xl border p-4 ${item.active ? 'border-emerald-500/20 bg-emerald-500/10' : isDark ? 'border-white/5 bg-surface-900/50' : 'border-surface-200 bg-surface-50'}`}
               >
-                <div className={`text-xs font-semibold uppercase mb-2 ${isDark ? 'text-white/40' : 'text-surface-500'}`}>
+                <div
+                  className={`text-xs font-semibold uppercase mb-2 ${isDark ? 'text-white/40' : 'text-surface-500'}`}
+                >
                   {item.label}
                 </div>
-                <div className={`text-lg font-bold ${item.active ? 'text-emerald-600 dark:text-emerald-400' : isDark ? 'text-white' : 'text-surface-900'}`}>
+                <div
+                  className={`text-lg font-bold ${item.active ? 'text-emerald-600 dark:text-emerald-400' : isDark ? 'text-white' : 'text-surface-900'}`}
+                >
                   {item.value}
                 </div>
                 {item.detail && (
@@ -1161,10 +1175,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
 
                 <div className="space-y-3">
                   {week.items.map(item => (
-                    <div
-                      key={getRecommendationKey(item)}
-                      className="space-y-1"
-                    >
+                    <div key={getRecommendationKey(item)} className="space-y-1">
                       <div
                         className={`text-sm font-medium leading-snug ${isDark ? 'text-white/85' : 'text-surface-800'}`}
                       >
@@ -1263,11 +1274,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
                           >
                             {rec.title}
                           </div>
-                          <div className={`mt-1 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
+                          <div
+                            className={`mt-1 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}
+                          >
                             {rec.sectionName}
                           </div>
                         </div>
-                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${isDark ? 'bg-white/5 text-white/60' : 'bg-surface-100 text-surface-600'}`}>
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${isDark ? 'bg-white/5 text-white/60' : 'bg-surface-100 text-surface-600'}`}
+                        >
                           {t(`confidence.${rec.confidence ?? 'estimated'}` as any)}
                         </span>
                       </div>
@@ -1329,10 +1344,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
             <h3
               className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-surface-900'} mb-3`}
             >
-              {t('results.planNextVerifiedFixes')}
+              {t(`primaryIssue.${primaryIssue}.title`)}
             </h3>
             <p className={`text-base ${isDark ? 'text-white/70' : 'text-surface-600'} mb-6`}>
-              {t(expertFixKey, { count: expertFixCount })}
+              {t(`primaryIssue.${primaryIssue}.description`)}
             </p>
             <div className="flex items-center gap-2 text-sm">
               <div className="flex -space-x-2">
@@ -1352,46 +1367,17 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ results, onRes
               </span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-            <Link
-              href={quoteHref}
-              onClick={() => {
-                trackAnalyzerQuoteClick({
-                  storeUrl: results.storeUrl,
-                  overallScore: results.overallScore,
-                  fixCount: expertFixCount,
-                });
-                trackHighIntentCta({
-                  ctaText: t('cta.getQuote'),
-                  ctaLocation: 'analyzer_results_quote',
-                });
-              }}
-              className="w-full sm:w-auto"
-            >
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto border-primary-500/30 text-primary-600 dark:text-primary-400"
-              >
-                {t('cta.getQuote')}
-                <ArrowRight className="w-4 h-4 ms-2" />
-              </Button>
-            </Link>
-            <a
-              href={getScheduleUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto"
-            >
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-primary-600 hover:bg-primary-500 text-white border-0 shadow-lg shadow-primary-500/25"
-              >
-                <Calendar className="w-4 h-4 me-2" />
-                {t('cta.bookStrategyCall')}
-                <ArrowRight className="w-4 h-4 ms-2" />
-              </Button>
-            </a>
+          <div
+            id="human-review"
+            className="w-full md:w-auto"
+            onClick={() =>
+              trackFunnelEvent('store_analyzer_cta_clicked', {
+                primary_issue: primaryIssue,
+                cta_type: 'human_review',
+              })
+            }
+          >
+            <HumanReviewForm results={results} initialEmail={initialEmail} />
           </div>
         </div>
       </motion.div>

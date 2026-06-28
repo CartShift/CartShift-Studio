@@ -16,7 +16,7 @@ import { queryKeys } from '@/lib/utils/query-keys';
 export function useProposalPayments(pricingId: string, enabled: boolean) {
   const t = useTranslations('portal.pricing.proposalPayments');
   const queryClient = useQueryClient();
-  const queryKey = queryKeys.pricing.payments(pricingId);
+  const queryKey = queryKeys.requests.commercialPayments(pricingId);
   const paymentsQuery = useQuery({
     queryKey,
     queryFn: () => getProposalPayments(pricingId),
@@ -25,7 +25,7 @@ export function useProposalPayments(pricingId: string, enabled: boolean) {
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey });
-    queryClient.invalidateQueries({ queryKey: queryKeys.pricing.detail(pricingId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.requests.detail(pricingId) });
   };
 
   const issueLink = useMutation({

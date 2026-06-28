@@ -20,6 +20,7 @@ import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { PayPalProvider } from '@/components/providers/PayPalProvider';
 import { PayPalCheckoutButton } from '@/components/portal/PayPalCheckoutButton';
 import { PaymentSummaryCard } from '@/components/portal/billing/PaymentSummaryCard';
+import { RequestProfitSplitResponsibilities } from '@/components/portal/requests/RequestProfitSplitResponsibilities';
 import { RequestPricingFormPanel } from '@/components/portal/requests/RequestPricingFormPanel';
 import {
   formatCurrency,
@@ -42,6 +43,7 @@ interface RequestDetailSidebarProps {
   userData: PortalUser | null | undefined;
   showAgencyActions: boolean;
   showClientActions: boolean;
+  canManageProfitSplits?: boolean;
   requestPayments: ReturnType<typeof useRequestPayments>;
   showPricingForm: boolean;
   pricingLineItems: PricingLineItem[];
@@ -116,6 +118,7 @@ export function RequestDetailSidebar({
   userData,
   showAgencyActions,
   showClientActions,
+  canManageProfitSplits = false,
   requestPayments,
   showPricingForm,
   pricingLineItems,
@@ -453,6 +456,15 @@ export function RequestDetailSidebar({
         variant="danger"
         isLoading={isDeleting}
       />
+
+      {showAgencyActions && canManageProfitSplits && (
+        <RequestProfitSplitResponsibilities
+          request={request}
+          organization={clientOrganization ?? organization}
+          agencyTeam={agencyTeam}
+          canEdit={canManageProfitSplits}
+        />
+      )}
 
       <Card className="border-surface-200 dark:border-surface-800 shadow-sm bg-white dark:bg-surface-950">
         <div className="flex items-center justify-between mb-6">

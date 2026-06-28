@@ -117,6 +117,26 @@ describe('Radix-backed UI primitives', () => {
     expect(onValueChange).toHaveBeenCalledWith('ILS');
   });
 
+  it('renders select options above modal layers', async () => {
+    const user = userEvent.setup();
+    renderWithRadix(
+      <ModalBackdrop isOpen onClick={() => undefined}>
+        <ModalContent accessibleTitle="Edit request">
+          <Select
+            label="Priority"
+            options={[
+              { value: 'LOW', label: 'Low' },
+              { value: 'HIGH', label: 'High' },
+            ]}
+          />
+        </ModalContent>
+      </ModalBackdrop>
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Priority' }));
+    expect(await screen.findByRole('option', { name: 'High' })).toBeInTheDocument();
+  });
+
   it('toggles switches through the Radix switch contract', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

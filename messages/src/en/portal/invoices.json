@@ -14,7 +14,7 @@
       "reference": "Payment reference",
       "notes": "Internal notes",
       "clientBilling": "Client billing details",
-      "proposalManaged": "This request is billed through its linked proposal. Manage payments from the proposal payment panel.",
+      "proposalManaged": "This request uses a payment schedule. Manage payments from the quote payment panel.",
       "download": {
         "payment_request": "Download payment request",
         "invoice": "Download updated invoice",
@@ -22,9 +22,12 @@
         "payment_receipt": "Download payment receipt"
       },
       "statuses": {
+        "not_required": "Not required",
         "unpaid": "Unpaid",
+        "pending": "Pending",
         "partially_paid": "Partially paid",
-        "paid": "Paid"
+        "paid": "Paid",
+        "failed": "Failed"
       },
       "methods": {
         "paypal": "PayPal",

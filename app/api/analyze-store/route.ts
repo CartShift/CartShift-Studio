@@ -11,6 +11,8 @@ import { captureStoreAnalysisLead } from '@/lib/services/store-analysis-leads';
 import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateAnalyzeStoreRequest } from '@/lib/validation';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
+import { determinePrimaryIssue } from '@/lib/analyzer/funnel';
+import { storePrivateAnalysisReport } from '@/lib/services/analysis-report-store';
 
 export const maxDuration = 120;
 
@@ -49,7 +51,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const { storeUrl, email, subscribeNewsletter, locale, captchaToken } = validation.data;
+    const { storeUrl, email, subscribeNewsletter, locale, captchaToken, intent, attribution } =
+      validation.data;
     const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
 
     if (recaptchaSecret) {
@@ -98,6 +101,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(createErrorResponse(userFriendlyMsg, 500), { status: 500 });
     }
 
+    const issueDecision = determinePrimaryIssue(result);
+    const reportCompletedAt = new Date().toISOString();
+    result.meta = {
+      ...result.meta,
+      primaryIssue: issueDecision.primaryIssue,
+      primaryIssueReasons: issueDecision.reasons,
+      analyzerIntent: intent,
+      reportCompletedAt,
+    };
+
     const leadCaptureStatus = await captureStoreAnalysisLead({
       email,
       storeUrl: normalizedUrl,
@@ -128,10 +141,33 @@ export async function POST(request: NextRequest) {
         };
       })(),
       subscribeNewsletter: subscribeNewsletter ?? false,
+      intent,
+      attribution,
+      primaryIssue: issueDecision.primaryIssue,
+      analyzerSubmittedAt: attribution?.lastTouch.capturedAt || reportCompletedAt,
+      reportCompletedAt,
     });
 
     const emailReportStatus = resolveInitialEmailReportStatus();
     const skipLeadCapture = leadCaptureStatus === 'captured' || leadCaptureStatus === 'deduped';
+    let clientResult = serializeAnalysisForClient({
+      ...result,
+      meta: { ...result.meta, emailReportStatus, leadCaptureStatus },
+    });
+    let reportUrl: string | undefined;
+    try {
+      const reportToken = await storePrivateAnalysisReport(clientResult, locale || 'en');
+      if (reportToken) {
+        const reportPath = `/${locale || 'en'}/tools/store-analyzer/report/${reportToken}`;
+        reportUrl = new URL(reportPath, request.nextUrl.origin).toString();
+        clientResult = { ...clientResult, meta: { ...clientResult.meta, reportPath } };
+        result.meta.reportPath = reportPath;
+      }
+    } catch (reportStorageError) {
+      logError('Private analysis report storage failed', reportStorageError, {
+        storeUrl: normalizedUrl,
+      });
+    }
     const reportPayload = {
       email,
       storeUrl: normalizedUrl,
@@ -139,6 +175,10 @@ export async function POST(request: NextRequest) {
       results: result,
       subscribeNewsletter: subscribeNewsletter ?? false,
       skipLeadCapture,
+      intent,
+      attribution,
+      primaryIssue: issueDecision.primaryIssue,
+      reportUrl,
     };
 
     if (emailReportStatus === 'pending') {
@@ -153,15 +193,6 @@ export async function POST(request: NextRequest) {
         }
       });
     }
-
-    const clientResult = serializeAnalysisForClient({
-      ...result,
-      meta: {
-        ...result.meta,
-        emailReportStatus,
-        leadCaptureStatus,
-      },
-    });
 
     return NextResponse.json(clientResult, {
       headers: rateLimitHeaders(RATE_LIMIT_MAX_REQUESTS, rateLimit.result.remaining),

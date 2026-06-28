@@ -13,7 +13,6 @@ const nextConfig = {
     root: projectRoot,
   },
   experimental: {
-    turbopackFileSystemCacheForBuild: true,
     optimizePackageImports: ['framer-motion'],
     // Content-heavy blog prerenders can otherwise oversubscribe each export worker.
     staticGenerationMaxConcurrency: 4,

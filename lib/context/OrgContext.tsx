@@ -35,7 +35,10 @@ export function OrgProvider({ children }: OrgProviderProps) {
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const organizations = useMemo(() => userData?.organizations ?? [], [userData?.organizations]);
+  const organizations = useMemo(
+    () => [...new Set(userData?.organizations ?? [])],
+    [userData?.organizations]
+  );
 
   const {
     data: fullOrganizations = [],

@@ -22,7 +22,7 @@ export function getPricingRequestPendingAmount(pricingRequest: PricingRequest): 
 }
 
 export function getRequestPendingAmount(request: Request): number {
-  if (!request.isBillable || request.isFree || request.pricingOfferId) return 0;
+  if (!request.isBillable || request.isFree || request.requestRole === 'bundle_item') return 0;
   if (
     request.status === REQUEST_STATUS.CANCELED ||
     request.status === REQUEST_STATUS.CLOSED ||

@@ -16,17 +16,14 @@ import {
   TopClient,
   Organization,
   Currency,
-  Request,
 } from '@/lib/types/portal';
 import { PricingRequest, PRICING_STATUS } from '@/lib/types/pricing';
-import { getAllRequests } from '@/lib/services/portal-requests';
 import {
   getPricingRequestPendingAmount,
   getRecognizedRevenue,
-  getRequestPendingAmount,
 } from '@/lib/utils/sales-revenue';
 
-const PRICING_COLLECTION = 'portal_pricing_requests';
+const PRICING_COLLECTION = 'portal_requests';
 const ORGS_COLLECTION = 'portal_organizations';
 
 // ============================================
@@ -53,20 +50,6 @@ function getMonthString(date: Date): string {
 function daysBetween(start: Date, end: Date): number {
   const diffTime = Math.abs(end.getTime() - start.getTime());
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
-
-function sumRequestPendingAmount(requests: Request[]): number {
-  return requests.reduce((sum, request) => sum + getRequestPendingAmount(request), 0);
-}
-
-function groupRequestPendingByOrg(requests: Request[]): Map<string, number> {
-  const pendingByOrg = new Map<string, number>();
-  requests.forEach(request => {
-    const pending = getRequestPendingAmount(request);
-    if (!request.orgId || pending <= 0) return;
-    pendingByOrg.set(request.orgId, (pendingByOrg.get(request.orgId) || 0) + pending);
-  });
-  return pendingByOrg;
 }
 
 // ============================================
@@ -101,10 +84,13 @@ export async function getAllPricingRequestsForAnalytics(): Promise<PricingReques
   const q = query(collection(db, PRICING_COLLECTION), orderBy('createdAt', 'desc'));
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({
+  return (snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
-  })) as PricingRequest[];
+  })) as PricingRequest[]).filter(request => {
+    const role = request.requestRole ?? (request.parentRequestId ? 'bundle_item' : 'standalone');
+    return role !== 'bundle_item' && Boolean(request.isBillable || request.publicToken);
+  });
 }
 
 /**
@@ -128,9 +114,8 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
   await waitForAuth();
   await verifyAgencyAccess();
 
-  const [pricingRequests, requests, organizations] = await Promise.all([
+  const [pricingRequests, organizations] = await Promise.all([
     getAllPricingRequestsForAnalytics(),
-    getAllRequests(),
     getAllOrganizationsWithDates(),
   ]);
 
@@ -150,9 +135,10 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
 
   // Revenue calculations
   const totalRevenue = revenueBearingRequests.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
-  const pendingRevenue =
-    acceptedRequests.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0) +
-    sumRequestPendingAmount(requests);
+  const pendingRevenue = acceptedRequests.reduce(
+    (sum, pr) => sum + getPricingRequestPendingAmount(pr),
+    0
+  );
 
   // This month's revenue
   const revenueThisMonth = revenueBearingRequests
@@ -260,9 +246,8 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
   await waitForAuth();
   await verifyAgencyAccess();
 
-  const [pricingRequests, requests, organizations] = await Promise.all([
+  const [pricingRequests, organizations] = await Promise.all([
     getAllPricingRequestsForAnalytics(),
-    getAllRequests(),
     getAllOrganizationsWithDates(),
   ]);
 
@@ -296,23 +281,13 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
     }
   });
 
-  const requestPendingByOrg = groupRequestPendingByOrg(requests);
-
-  requests.forEach(request => {
-    if (!request.orgId || !requestPendingByOrg.has(request.orgId)) return;
-    if (!orgData.has(request.orgId)) {
-      orgData.set(request.orgId, { paid: [], accepted: [], all: [] });
-    }
-  });
-
   // Build revenue data array
   const revenueData: ClientRevenueData[] = [];
 
   orgData.forEach((data, orgId) => {
     const totalRevenue = data.paid.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
     const pendingRevenue =
-      data.accepted.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0) +
-      (requestPendingByOrg.get(orgId) || 0);
+      data.accepted.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0);
 
     // Find first and last payment dates
     const paidDates = data.paid

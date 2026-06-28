@@ -54,7 +54,7 @@ export async function capturePublicProposalPayPalOrder(
 
 export async function issueProposalPublicToken(pricingId: string): Promise<string> {
   const payload = await readJson<{ token: string }>(
-    await fetch(`/api/portal/proposals/${encodeURIComponent(pricingId)}/public-link`, {
+    await fetch(`/api/portal/requests/${encodeURIComponent(pricingId)}/public-link`, {
       method: 'POST',
     })
   );
@@ -63,7 +63,7 @@ export async function issueProposalPublicToken(pricingId: string): Promise<strin
 
 export async function getProposalPayments(pricingId: string): Promise<AgencyProposalPayment[]> {
   const payload = await readJson<{ payments: AgencyProposalPayment[] }>(
-    await fetch(`/api/portal/proposals/${encodeURIComponent(pricingId)}/payments`, {
+    await fetch(`/api/portal/requests/${encodeURIComponent(pricingId)}/payments?schedule=true`, {
       cache: 'no-store',
     })
   );
@@ -75,7 +75,7 @@ export async function createProposalInstallment(
   input: { label: string; amount: number; dueAt?: string }
 ): Promise<AgencyProposalPayment> {
   const payload = await readJson<{ payment: AgencyProposalPayment }>(
-    await fetch(`/api/portal/proposals/${encodeURIComponent(pricingId)}/payments`, {
+    await fetch(`/api/portal/requests/${encodeURIComponent(pricingId)}/payments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -87,7 +87,7 @@ export async function createProposalInstallment(
 export async function cancelProposalInstallment(pricingId: string, paymentId: string) {
   await readJson<{ success: true }>(
     await fetch(
-      `/api/portal/proposals/${encodeURIComponent(pricingId)}/payments/${encodeURIComponent(paymentId)}`,
+      `/api/portal/requests/${encodeURIComponent(pricingId)}/payments/${encodeURIComponent(paymentId)}`,
       { method: 'PATCH' }
     )
   );
@@ -104,7 +104,7 @@ export async function recordManualProposalPayment(
   }
 ): Promise<PublicProposalPayment> {
   const payload = await readJson<{ payment: PublicProposalPayment }>(
-    await fetch(`/api/portal/proposals/${encodeURIComponent(pricingId)}/payments/manual`, {
+    await fetch(`/api/portal/requests/${encodeURIComponent(pricingId)}/payments/manual`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),

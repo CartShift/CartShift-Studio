@@ -21,15 +21,18 @@
       "selected": "בקשות נבחרו",
       "selected_singular": "בקשה נבחרה",
       "createPricingOffer": "צור הצעת מחיר",
+      "bundleItems": "{count, plural, one {בקשה מאוגדת אחת} other {# בקשות מאוגדות}}",
       "requestsIncluded": "בקשות כלולות",
       "requestsIncluded_singular": "בקשה כלולה",
       "selectedRequests": "בקשות נבחרות",
       "hasPricing": "מתומחר",
       "createAndSend": "צור ושלח הצעה",
       "status": {
+        "draft": "טיוטה",
         "new": "חדש",
         "needs_info": "נדרש מידע",
         "quoted": "הוצע מחיר",
+        "changes_requested": "התבקשו שינויים",
         "accepted": "התקבל",
         "declined": "נדחה",
         "queued": "בתור",
@@ -38,7 +41,8 @@
         "delivered": "נמסר",
         "paid": "שולם",
         "closed": "סגור",
-        "canceled": "בוטל"
+        "canceled": "בוטל",
+        "expired": "פג תוקף"
       },
       "clientStatus": {
         "submitted": "הוגש",
@@ -189,7 +193,15 @@
         "currentStatus": "סטטוס נוכחי",
         "moveTo": "העבר ל",
         "workflowHint": "לחץ לשינוי סטטוס הבקשה",
-        "notDesc": "לא סופק תיאור"
+        "notDesc": "לא סופק תיאור",
+        "profitSplitResponsibilities": {
+          "title": "אחריות בחלוקת רווחים",
+          "hint": "מקור הליד מגיע מהסוכן האחראי על הלקוח. אספקה נקבעת לפי המומחה המוקצה. הגדר כאן מכירות וניהול; חלוקות נוצרות אוטומטית עם קבלת תשלום.",
+          "save": "שמור הגדרות חלוקה",
+          "allocationWarning": "ההקצאה היא {total}% — חייבת להיות 100% לפני סגירת חלוקות.",
+          "editOnClient": "שנה מקור ליד בלקוח",
+          "deliveryFromSpecialist": "נקבע דרך המומחה המוקצה למטה"
+        }
       },
       "preview": {
         "title": "תצוגה מקדימה של בקשה",

@@ -37,7 +37,7 @@ describe('sales revenue helpers', () => {
     ).toBe(169650);
   });
 
-  it('excludes proposal-managed and unaccepted requests', () => {
+  it('excludes bundle children and unaccepted requests', () => {
     expect(
       getRequestPendingAmount({
         isBillable: true,
@@ -52,7 +52,8 @@ describe('sales revenue helpers', () => {
         status: REQUEST_STATUS.ACCEPTED,
         paymentStatus: 'unpaid',
         balanceDue: 169650,
-        pricingOfferId: 'proposal-1',
+        requestRole: 'bundle_item',
+        parentRequestId: 'request-bundle-1',
       } as never)
     ).toBe(0);
   });

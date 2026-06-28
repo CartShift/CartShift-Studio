@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import type { RequestProfitSplitResponsibility } from '@/lib/types/profit-split';
 
 // Re-export Timestamp for use in components (avoids direct firebase imports)
 export { Timestamp };
@@ -8,9 +9,11 @@ export { Timestamp };
 // ============================================
 
 export const REQUEST_STATUS = {
+  DRAFT: 'DRAFT', // Agency-authored request/quote that has not been sent
   NEW: 'NEW',
   NEEDS_INFO: 'NEEDS_INFO',
   QUOTED: 'QUOTED', // Agency added pricing, awaiting client response
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED', // Client edited or requested changes to the quote
   ACCEPTED: 'ACCEPTED', // Client accepted the quote
   DECLINED: 'DECLINED', // Client declined the quote
   QUEUED: 'QUEUED',
@@ -20,6 +23,7 @@ export const REQUEST_STATUS = {
   PAID: 'PAID', // Client paid for billable request
   CLOSED: 'CLOSED',
   CANCELED: 'CANCELED',
+  EXPIRED: 'EXPIRED',
 } as const;
 
 export const REQUEST_PRIORITY = {
@@ -80,9 +84,39 @@ export type AccountType = (typeof ACCOUNT_TYPE)[keyof typeof ACCOUNT_TYPE];
 export type Currency = (typeof CURRENCY)[keyof typeof CURRENCY];
 export type ConsultationType = (typeof CONSULTATION_TYPE)[keyof typeof CONSULTATION_TYPE];
 export type ConsultationStatus = (typeof CONSULTATION_STATUS)[keyof typeof CONSULTATION_STATUS];
-export type PaymentStatus = 'unpaid' | 'partially_paid' | 'paid';
+export type PaymentStatus =
+  | 'not_required'
+  | 'unpaid'
+  | 'pending'
+  | 'partially_paid'
+  | 'paid'
+  | 'failed';
 export type PaymentMethod = 'paypal' | 'manual' | 'bank_transfer' | 'cash' | 'bit' | 'other';
 export type BillingDocumentType = 'payment_request' | 'invoice' | 'paid_invoice' | 'payment_receipt';
+export type RequestRole = 'standalone' | 'bundle' | 'bundle_item';
+export type PricingType = 'fixed' | 'hourly' | 'estimate';
+export type RequestPaymentStatus =
+  | 'not_required'
+  | 'pending'
+  | 'partially_paid'
+  | 'paid'
+  | 'failed';
+export type RequestPaymentType = 'deposit' | 'installment' | 'final' | 'payment';
+export type RequestPaymentRecordStatus =
+  | 'pending'
+  | 'paid'
+  | 'failed'
+  | 'canceled'
+  | 'refunded';
+export type RequestPaymentProvider = 'paypal' | 'manual';
+export type ManualPaymentMethod =
+  | 'bank_transfer'
+  | 'cash'
+  | 'bit'
+  | 'paybox'
+  | 'check'
+  | 'credit_card_manual'
+  | 'other';
 
 // Account type configuration for UI
 export const ACCOUNT_TYPE_CONFIG: Record<
@@ -103,10 +137,14 @@ export const CURRENCY_CONFIG: Record<Currency, { symbol: string; name: string }>
 // Pricing line item for billable requests
 export interface PricingLineItem {
   id: string;
+  title?: string;
   description: string;
   quantity: number;
   unitPrice: number; // in cents/smallest currency unit
   notes?: string;
+  pricingType?: PricingType;
+  sortOrder?: number;
+  requestId?: string;
 }
 
 // Utility functions for pricing
@@ -245,6 +283,33 @@ export interface PaymentRecord {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   isLegacy?: boolean;
+}
+
+/** Canonical payment/schedule record for every billable request. */
+export interface RequestPaymentRecord {
+  id: string;
+  requestId: string;
+  orgId: string;
+  paymentToken?: string;
+  type: RequestPaymentType;
+  label: string;
+  amount: number;
+  currency: Currency;
+  dueAt?: Timestamp;
+  status: RequestPaymentRecordStatus;
+  provider: RequestPaymentProvider;
+  manualMethod?: ManualPaymentMethod;
+  manualReference?: string;
+  note?: string;
+  paypalOrderId?: string;
+  paypalCaptureId?: string;
+  paidAt?: Timestamp;
+  failedAt?: Timestamp;
+  canceledAt?: Timestamp;
+  refundedAt?: Timestamp;
+  createdBy?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface OrganizationMember {
@@ -394,6 +459,12 @@ export interface Request {
   updatedAt: Timestamp;
   closedAt?: Timestamp;
 
+  // Hierarchy. Existing records without requestRole are treated as standalone.
+  requestRole?: RequestRole;
+  parentRequestId?: string;
+  childRequestIds?: string[];
+  legacyProposalId?: string;
+
   // Client invitation - for admins creating requests before client has an account
   clientEmail?: string; // Pre-assigned client email for auto-linking on registration
   clientUserId?: string; // Set after client registers and claims the request
@@ -446,11 +517,41 @@ export interface Request {
     method: PaymentMethod;
   }>;
 
-  // Pricing offer reference
-  pricingOfferId?: string; // Link to PricingRequest that includes this request
-  proposalLineItemId?: string;
   workDeadline?: Timestamp;
   timeframe?: string;
+
+  // Commercial document fields. A quote/proposal is a view of this request.
+  terms?: string;
+  publicToken?: string;
+  publicAccessEnabled?: boolean;
+  clientName?: string;
+  agencyNotes?: string;
+  paymentRequired?: boolean;
+  depositAmount?: number;
+  pendingAmount?: number;
+  billingMode?: 'manual_installments';
+  proposalPaymentStatus?: RequestPaymentStatus;
+  paymentProvider?: 'paypal';
+  paymentReference?: string;
+  firstPaymentAt?: Timestamp;
+  lastPaymentAt?: Timestamp;
+
+  // Signature audit trail (server-managed once accepted).
+  acceptedByName?: string;
+  acceptedByEmail?: string;
+  signatureText?: string;
+  termsAcceptedAt?: Timestamp;
+  acceptedIp?: string;
+  acceptedUserAgent?: string;
+  lockedAt?: Timestamp;
+  sentAt?: Timestamp;
+  lastSentAt?: Timestamp;
+  quoteEmailQueueId?: string;
+  quoteEmailRecipient?: string;
+
+  /** Agency profit-split role assignments; payouts are derived from this on each payment. */
+  profitSplitResponsibilities?: RequestProfitSplitResponsibility[];
+
 }
 
 export interface Comment {
@@ -697,6 +798,12 @@ export interface StatusConfig {
 }
 
 export const STATUS_CONFIG: Record<RequestStatus, StatusConfig> = {
+  DRAFT: {
+    label: 'Draft',
+    color: 'gray',
+    bgClass: 'bg-surface-100 dark:bg-surface-500/20',
+    textClass: 'text-surface-700 dark:text-surface-300',
+  },
   NEW: {
     label: 'New',
     color: 'blue',
@@ -714,6 +821,12 @@ export const STATUS_CONFIG: Record<RequestStatus, StatusConfig> = {
     color: 'purple',
     bgClass: 'bg-purple-100 dark:bg-purple-500/20',
     textClass: 'text-purple-700 dark:text-purple-300',
+  },
+  CHANGES_REQUESTED: {
+    label: 'Changes Requested',
+    color: 'yellow',
+    bgClass: 'bg-amber-100 dark:bg-amber-500/20',
+    textClass: 'text-amber-700 dark:text-amber-300',
   },
   ACCEPTED: {
     label: 'Accepted',
@@ -769,6 +882,12 @@ export const STATUS_CONFIG: Record<RequestStatus, StatusConfig> = {
     bgClass: 'bg-red-100 dark:bg-red-500/20',
     textClass: 'text-red-700 dark:text-red-300',
   },
+  EXPIRED: {
+    label: 'Expired',
+    color: 'gray',
+    bgClass: 'bg-surface-100 dark:bg-surface-500/20',
+    textClass: 'text-surface-700 dark:text-surface-300',
+  },
 };
 
 export const PRIORITY_CONFIG: Record<RequestPriority, { label: string; color: string }> = {
@@ -795,9 +914,11 @@ export type ClientStatus = 'SUBMITTED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETE
 
 export const CLIENT_STATUS_MAP: Record<RequestStatus, ClientStatus> = {
   // Phase 1: Submitted / Received
+  DRAFT: 'SUBMITTED',
   NEW: 'SUBMITTED',
   NEEDS_INFO: 'SUBMITTED', // Or 'ACTION_REQUIRED' if we want to be more specific, but simplified to Submitted for now
   QUOTED: 'SUBMITTED',
+  CHANGES_REQUESTED: 'SUBMITTED',
   ACCEPTED: 'SUBMITTED',
   DECLINED: 'SUBMITTED',
   QUEUED: 'SUBMITTED',
@@ -813,6 +934,7 @@ export const CLIENT_STATUS_MAP: Record<RequestStatus, ClientStatus> = {
   PAID: 'COMPLETED',
   CLOSED: 'COMPLETED',
   CANCELED: 'COMPLETED', // Shows as completed/archived
+  EXPIRED: 'COMPLETED',
 };
 
 export const CLIENT_STATUS_CONFIG: Record<ClientStatus, StatusConfig> = {

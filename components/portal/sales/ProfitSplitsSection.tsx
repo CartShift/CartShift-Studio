@@ -9,9 +9,7 @@ import {
   Loader2,
   Pencil,
   PieChart,
-  Plus,
   RefreshCw,
-  ShieldCheck,
   WalletCards,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
@@ -21,7 +19,6 @@ import { Select } from '@/components/ui/Select';
 import { ProfitSplitEditor } from '@/components/portal/profit-splits/ProfitSplitEditor';
 import { ProfitSplitMetricCard } from '@/components/portal/profit-splits/ProfitSplitMetricCard';
 import {
-  useCanManageProfitSplits,
   usePaidPricingRequestsForProfitSplits,
   useProfitSplitAgencyTeam,
   useProfitSplits,
@@ -48,13 +45,12 @@ import {
 } from '@/components/portal/ui/PortalTable';
 import { IconButton } from '@/components/ui/IconButton';
 
-export default function ProfitSplitsClient() {
+export function ProfitSplitsSection() {
   const t = useTranslations('portal');
   const locale = useLocale();
-  const { loading: accessLoading, canManage } = useCanManageProfitSplits();
   const { splits, loading, error, refetch } = useProfitSplits();
   const { paidRequests, error: paidRequestsError } = usePaidPricingRequestsForProfitSplits();
-  const { agencyTeam, error: agencyTeamError } = useProfitSplitAgencyTeam();
+  const { error: agencyTeamError } = useProfitSplitAgencyTeam();
   const [editorOpen, setEditorOpen] = useState(false);
   const [selectedSplit, setSelectedSplit] = useState<ProfitSplit | null>(null);
   const [employeeStatusFilter, setEmployeeStatusFilter] = useState<'all' | 'draft' | 'finalized'>(
@@ -83,57 +79,19 @@ export default function ProfitSplitsClient() {
   );
   const employeeSummary = useMemo(() => buildEmployeeSummary(employeeSplits), [employeeSplits]);
 
-  if (accessLoading) {
-    return (
-      <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
-        <Loader2 className="h-10 w-10 animate-spin text-primary-600" />
-        <p className="text-xs font-bold uppercase tracking-widest text-surface-500">
-          {t('common.loading')}
-        </p>
-      </div>
-    );
-  }
-
-  if (!canManage) {
-    return (
-      <div className="flex min-h-[400px] flex-col items-center justify-center p-10 text-center">
-        <ShieldCheck className="mx-auto mb-4 h-16 w-16 text-red-500" />
-        <h2 className="mb-2 text-2xl font-bold text-surface-900 dark:text-white">
-          {t('agency.accessDeniedTitle')}
-        </h2>
-        <p className="mx-auto max-w-sm text-surface-500">{t('profitSplits.accessDenied')}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="mb-1 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 dark:bg-emerald-500 shadow-lg shadow-emerald-500/25">
-              <PieChart className="h-5 w-5 text-white" />
-            </div>
-            <h1 className="portal-page-title">{t('profitSplits.title')}</h1>
-          </div>
-          <p className="portal-page-subtitle ms-[52px]">{t('profitSplits.subtitle')}</p>
+          <h2 className="text-lg font-black text-surface-900 dark:text-white">
+            {t('profitSplits.title')}
+          </h2>
+          <p className="mt-1 text-sm text-surface-500">{t('profitSplits.subtitle')}</p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="outline" onClick={() => refetch()} disabled={loading}>
-            <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
-            {t('common.refresh')}
-          </Button>
-          <Button
-            onClick={() => {
-              setSelectedSplit(null);
-              setEditorOpen(true);
-            }}
-          >
-            <Plus size={18} />
-            {t('profitSplits.create')}
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" onClick={() => refetch()} disabled={loading}>
+          <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
+          {t('common.refresh')}
+        </Button>
       </div>
 
       <div className="grid gap-3.5 md:grid-cols-2 min-[1040px]:grid-cols-5">
@@ -173,9 +131,9 @@ export default function ProfitSplitsClient() {
 
       <Card noPadding className="overflow-hidden">
         <div className="border-b border-surface-100 bg-surface-50/60 p-4 dark:border-surface-800 dark:bg-surface-900/40">
-          <h2 className="text-lg font-black text-surface-900 dark:text-white">
+          <h3 className="text-base font-black text-surface-900 dark:text-white">
             {t('profitSplits.projects')}
-          </h2>
+          </h3>
         </div>
 
         {loadError ? (
@@ -236,17 +194,13 @@ export default function ProfitSplitsClient() {
                     const tone = allocationTone(split);
 
                     return (
-                      <PortalTableRow
-                        key={split.id}
-                        hover
-                        className="transition-colors"
-                      >
+                      <PortalTableRow key={split.id} hover className="transition-colors">
                         <PortalTableCell className="px-5">
                           <div className="max-w-xs">
                             <p className="truncate font-bold text-surface-900 dark:text-white">
                               {split.projectTitle}
                             </p>
-                            <p className="mt-1 text-xs font-mono text-surface-400">
+                            <p className="mt-1 font-mono text-xs text-surface-400">
                               {split.pricingRequestId.slice(0, 8)}
                             </p>
                           </div>
@@ -303,7 +257,7 @@ export default function ProfitSplitsClient() {
                               variant="ghost"
                               size="sm"
                               iconSize={16}
-                              className="min-w-[44px] min-h-[44px]"
+                              className="min-h-[44px] min-w-[44px]"
                               onClick={() => {
                                 setSelectedSplit(split);
                                 setEditorOpen(true);
@@ -324,9 +278,9 @@ export default function ProfitSplitsClient() {
       <Card noPadding className="overflow-hidden">
         <div className="flex flex-col justify-between gap-3 border-b border-surface-100 bg-surface-50/60 p-4 dark:border-surface-800 dark:bg-surface-900/40 md:flex-row md:items-center">
           <div>
-            <h2 className="text-lg font-black text-surface-900 dark:text-white">
+            <h3 className="text-base font-black text-surface-900 dark:text-white">
               {t('profitSplits.employeeSummary')}
-            </h2>
+            </h3>
             <p className="text-sm text-surface-500">{t('profitSplits.employeeSummaryHint')}</p>
           </div>
           <Select
@@ -401,17 +355,13 @@ export default function ProfitSplitsClient() {
         )}
       </Card>
 
-      {editorOpen && (
+      {editorOpen && selectedSplit && (
         <ProfitSplitEditor
           split={selectedSplit}
-          paidRequests={paidRequests}
-          existingSplits={splits}
-          agencyTeam={agencyTeam}
           onClose={() => {
             setEditorOpen(false);
             setSelectedSplit(null);
           }}
-          onCreated={split => setSelectedSplit(split)}
         />
       )}
     </div>

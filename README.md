@@ -10,7 +10,7 @@ CartShift Studio provides a seamless experience for both agency administrators a
 
 ### Prerequisites
 
-- Node.js 22.x (see `.nvmrc`)
+- Node.js 24.x (see `.nvmrc`)
 - pnpm
 - Firebase CLI (`npm install -g firebase-tools`)
 

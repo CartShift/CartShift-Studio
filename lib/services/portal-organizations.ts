@@ -125,13 +125,12 @@ export async function getUserOrganizations(userId: string): Promise<Organization
   }
 
   const userData = userSnap.data();
-  const orgIds = userData.organizations || [];
+  const orgIds = [...new Set<string>(userData.organizations || [])];
 
   if (orgIds.length === 0) {
     return [];
   }
 
-  // Fetch all organizations
   const orgs: Organization[] = [];
   for (const orgId of orgIds) {
     const org = await getOrganization(orgId);

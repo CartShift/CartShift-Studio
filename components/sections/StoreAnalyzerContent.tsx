@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAnalyzerProgress } from '@/lib/hooks/use-analyzer-progress';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { useTranslations, useLocale } from 'next-intl';
@@ -30,10 +30,20 @@ import { useStoreAnalysisMutation } from '@/lib/hooks/useStoreAnalysisMutation';
 import { classifyStoreAnalysisError } from '@/lib/utils/store-analysis-errors';
 
 import type { AnalysisResult } from '@/lib/types/analyzer';
+import { ANALYZER_INTENTS, type AnalyzerIntent } from '@/lib/analyzer/funnel';
+import {
+  captureAnalyzerAttribution,
+  getAnalyzerAttribution,
+} from '@/lib/services/analyzer-attribution';
+import { trackFunnelEvent } from '@/lib/services/analyzer-events';
+import { Link } from '@/i18n/navigation';
 
 type AnalyzerState = 'form' | 'analyzing' | 'results';
 
-export const StoreAnalyzerContent: React.FC = () => {
+export const StoreAnalyzerContent: React.FC<{
+  initialIntent?: AnalyzerIntent;
+  relatedArticles?: Array<{ slug: string; title: string }>;
+}> = ({ initialIntent, relatedArticles = [] }) => {
   const t = useTranslations();
   const locale = useLocale();
   const direction = useDirection();
@@ -41,6 +51,7 @@ export const StoreAnalyzerContent: React.FC = () => {
 
   const [state, setState] = useState<AnalyzerState>('form');
   const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [intent, setIntent] = useState<AnalyzerIntent | undefined>(initialIntent);
   const analyzing = useAnalyzerProgress(state === 'analyzing');
   const { analyzeStoreAsync } = useStoreAnalysisMutation();
   const lastSubmitRef = useRef<{
@@ -49,6 +60,21 @@ export const StoreAnalyzerContent: React.FC = () => {
     subscribeNewsletter: boolean;
     captchaToken: string;
   } | null>(null);
+
+  useEffect(() => {
+    const attribution = captureAnalyzerAttribution();
+    setIntent(current => current || attribution.lastTouch.intent);
+    trackFunnelEvent('store_analyzer_viewed', {
+      intent: initialIntent || attribution.lastTouch.intent || 'generic',
+      landing_path: attribution.lastTouch.landingPath,
+      route_source: initialIntent ? 'intent_route' : 'generic_route',
+    });
+    if (attribution.lastTouch.partnerCode || attribution.lastTouch.referralCode) {
+      trackFunnelEvent('partner_attributed', {
+        partner: attribution.lastTouch.partnerCode || attribution.lastTouch.referralCode,
+      });
+    }
+  }, [initialIntent]);
 
   const handleAnalyze = async (data: {
     storeUrl: string;
@@ -62,9 +88,17 @@ export const StoreAnalyzerContent: React.FC = () => {
 
     const startTime = Date.now();
     trackEvent('store_analysis_started', { store_url: data.storeUrl });
+    trackFunnelEvent('store_analyzer_started', { intent: intent || 'generic' });
 
     try {
-      const result = await analyzeStoreAsync({ ...data, locale });
+      trackFunnelEvent('store_analyzer_url_submitted', { intent: intent || 'generic' });
+      trackFunnelEvent('store_analyzer_email_submitted', { intent: intent || 'generic' });
+      const result = await analyzeStoreAsync({
+        ...data,
+        locale,
+        intent,
+        attribution: getAnalyzerAttribution(),
+      });
       setResults(result);
 
       const duration = Date.now() - startTime;
@@ -83,20 +117,19 @@ export const StoreAnalyzerContent: React.FC = () => {
         email_report_status: result.meta?.emailReportStatus || 'unknown',
         cached: !!result.meta?.cached,
       });
+      trackFunnelEvent('store_analyzer_completed', {
+        intent: intent || 'generic',
+        primary_issue: result.meta.primaryIssue || 'general_conversion',
+        overall_score: result.overallScore,
+      });
 
-      if (
-        result.meta?.visualAnalysisAttempted &&
-        !result.meta?.visualAnalysisAvailable
-      ) {
+      if (result.meta?.visualAnalysisAttempted && !result.meta?.visualAnalysisAvailable) {
         trackEvent('analyzer_feature_unavailable', {
           feature_name: 'visual_analysis',
           reason: 'puppeteer_unavailable',
         });
       }
-      if (
-        result.meta?.visualAnalysisAttempted &&
-        !result.meta?.productAnalysisAvailable
-      ) {
+      if (result.meta?.visualAnalysisAttempted && !result.meta?.productAnalysisAvailable) {
         trackEvent('analyzer_feature_unavailable', {
           feature_name: 'product_analysis',
           reason: 'no_product_page_or_puppeteer_unavailable',
@@ -202,7 +235,11 @@ export const StoreAnalyzerContent: React.FC = () => {
 
   const stats = [
     { value: '6', label: t('analyzer.stats.categories'), icon: BarChart3 },
-    { value: t('analyzer.stats.durationValue'), label: t('analyzer.stats.durationLabel'), icon: Clock },
+    {
+      value: t('analyzer.stats.durationValue'),
+      label: t('analyzer.stats.durationLabel'),
+      icon: Clock,
+    },
     { value: t('analyzer.stats.freeValue'), label: t('analyzer.trust.free'), icon: CheckCircle },
     { value: 'PDF', label: t('analyzer.stats.reportFormat'), icon: Sparkles },
   ];
@@ -248,14 +285,21 @@ export const StoreAnalyzerContent: React.FC = () => {
                     transition={{ delay: 0.2 }}
                     className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
                   >
-                    <span className="text-surface-900 dark:text-white">
-                      {t('analyzer.hero.title')?.split(' ').slice(0, -2).join(' ') ||
-                        'Free E-Commerce'}
-                    </span>
-                    <br />
-                    <span className="text-primary-600 dark:text-primary-400">
-                      {t('analyzer.hero.subtitle') || 'Store Analyzer'}
-                    </span>
+                    {intent ? (
+                      <span className="text-surface-900 dark:text-white">
+                        {t(`analyzer.intents.${intent}.headline`)}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="text-surface-900 dark:text-white">
+                          {t('analyzer.hero.title')}
+                        </span>
+                        <br />
+                        <span className="text-primary-600 dark:text-primary-400">
+                          {t('analyzer.hero.subtitle')}
+                        </span>
+                      </>
+                    )}
                   </motion.h1>
 
                   {/* Description */}
@@ -265,8 +309,50 @@ export const StoreAnalyzerContent: React.FC = () => {
                     transition={{ delay: 0.3 }}
                     className="text-lg text-surface-600 dark:text-white/60 mb-8 max-w-xl mx-auto lg:mx-0"
                   >
-                    {t('analyzer.hero.description')}
+                    {intent
+                      ? t(`analyzer.intents.${intent}.description`)
+                      : t('analyzer.hero.description')}
                   </motion.p>
+
+                  <div
+                    className="mb-8 flex flex-wrap justify-center gap-2 lg:justify-start"
+                    aria-label={t('analyzer.intentPicker.label')}
+                  >
+                    {ANALYZER_INTENTS.map(value => (
+                      <button
+                        key={value}
+                        type="button"
+                        aria-pressed={intent === value}
+                        onClick={() => {
+                          setIntent(value);
+                          trackFunnelEvent('store_analyzer_intent_selected', {
+                            intent: value,
+                            source: 'landing_chip',
+                          });
+                        }}
+                        className={`min-h-11 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${intent === value ? 'border-primary-500 bg-primary-500/10 text-primary-700 dark:text-primary-300' : 'border-surface-300 text-surface-600 hover:border-primary-400 dark:border-white/15 dark:text-white/70'}`}
+                      >
+                        {t(`analyzer.intents.${value}.label`)}
+                      </button>
+                    ))}
+                  </div>
+
+                  {relatedArticles.length ? (
+                    <nav
+                      aria-label={t('analyzer.relatedArticles')}
+                      className="mb-8 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm lg:justify-start"
+                    >
+                      {relatedArticles.map(article => (
+                        <Link
+                          key={article.slug}
+                          href={`/blog/${article.slug}`}
+                          className="text-primary-700 underline-offset-4 hover:underline dark:text-primary-300"
+                        >
+                          {article.title}
+                        </Link>
+                      ))}
+                    </nav>
+                  ) : null}
 
                   {/* Stats Row */}
                   <motion.div
@@ -463,8 +549,7 @@ export const StoreAnalyzerContent: React.FC = () => {
                     {
                       step: '3',
                       title: t('analyzer.howItWorks.step3.title') || 'Get Results',
-                      description:
-                        t('analyzer.howItWorks.step3.description'),
+                      description: t('analyzer.howItWorks.step3.description'),
                       icon: CheckCircle,
                     },
                   ].map((item, index) => (
@@ -551,7 +636,11 @@ export const StoreAnalyzerContent: React.FC = () => {
           className="min-h-screen bg-background dark:bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32 pb-12"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AnalysisResults results={results} onReset={handleReset} />
+            <AnalysisResults
+              results={results}
+              initialEmail={lastSubmitRef.current?.email}
+              onReset={handleReset}
+            />
           </div>
         </motion.div>
       )}

@@ -10,7 +10,6 @@ import {
   Sparkles,
   ClipboardList,
   Users,
-  DollarSign,
   Bell,
   LayoutDashboard,
   CheckCircle2,
@@ -77,14 +76,6 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
       description: t('portal.onboarding.steps.requests.description'),
       icon: <ClipboardList className={tourIconClass} />,
       highlight: '[data-tour="nav-requests"]',
-      position: 'bottom-right',
-    },
-    {
-      id: 'pricing',
-      title: t('portal.onboarding.steps.pricing.title'),
-      description: t('portal.onboarding.steps.pricing.description'),
-      icon: <DollarSign className={tourIconClass} />,
-      highlight: '[data-tour="nav-pricing"]',
       position: 'bottom-right',
     },
     {

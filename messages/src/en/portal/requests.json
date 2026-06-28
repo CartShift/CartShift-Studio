@@ -20,16 +20,19 @@
       },
       "selected": "requests selected",
       "selected_singular": "request selected",
-      "createPricingOffer": "Create Pricing Offer",
+      "createPricingOffer": "Create Quote",
+      "bundleItems": "{count, plural, one {# bundled request} other {# bundled requests}}",
       "requestsIncluded": "requests included",
       "requestsIncluded_singular": "request included",
       "selectedRequests": "Selected Requests",
       "hasPricing": "Priced",
       "createAndSend": "Create & Send Offer",
       "status": {
+        "draft": "Draft",
         "new": "New",
         "needs_info": "Needs Info",
         "quoted": "Quoted",
+        "changes_requested": "Changes Requested",
         "accepted": "Accepted",
         "declined": "Declined",
         "queued": "Queued",
@@ -38,7 +41,8 @@
         "delivered": "Delivered",
         "paid": "Paid",
         "closed": "Closed",
-        "canceled": "Canceled"
+        "canceled": "Canceled",
+        "expired": "Expired"
       },
       "clientStatus": {
         "submitted": "Submitted",
@@ -189,7 +193,15 @@
         "currentStatus": "Current Status",
         "moveTo": "Move to",
         "workflowHint": "Click to change the request status",
-        "notDesc": "No description provided"
+        "notDesc": "No description provided",
+        "profitSplitResponsibilities": {
+          "title": "Profit split responsibilities",
+          "hint": "Lead source comes from the client's responsible agent. Delivery follows the assigned specialist. Set sales and management here; splits are created automatically when payments arrive.",
+          "save": "Save split settings",
+          "allocationWarning": "Allocation is {total}% — it must equal 100% before finalizing splits.",
+          "editOnClient": "Change lead source on client",
+          "deliveryFromSpecialist": "Set via Assigned Specialist below"
+        }
       },
       "preview": {
         "title": "Request preview",

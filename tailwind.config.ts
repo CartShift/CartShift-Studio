@@ -143,6 +143,7 @@ const config: Config = {
         sticky: '20',
         header: '30',
         sidebar: '40',
+        select: '80',
         modal: '50',
         'mobile-menu-backdrop': '55',
         'mobile-menu': '60',

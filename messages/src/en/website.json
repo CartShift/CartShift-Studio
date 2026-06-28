@@ -594,6 +594,33 @@
         "avgTimeLabel": "analysis time"
       }
     },
+    "contextualAnalyzer": {
+      "speed": {
+        "title": "Could slow loading be costing this store customers?",
+        "description": "Run a speed-focused store check after applying the ideas in this article.",
+        "button": "Run a free speed check"
+      },
+      "seo": {
+        "title": "Want to find technical SEO gaps in your store?",
+        "description": "Check search, metadata, schema, and content signals in under two minutes.",
+        "button": "Run an SEO-focused check"
+      },
+      "conversion": {
+        "title": "Not sure what is blocking more sales?",
+        "description": "Find the strongest conversion opportunities before changing the whole store.",
+        "button": "Find my conversion gaps"
+      },
+      "trust": {
+        "title": "Are shoppers seeing enough reasons to trust the store?",
+        "description": "Check proof, policies, security, and purchase reassurance.",
+        "button": "Check buyer trust"
+      },
+      "checkout": {
+        "title": "Could cart or checkout friction be wasting traffic?",
+        "description": "Check the path to payment before investing more in acquisition.",
+        "button": "Check checkout friction"
+      }
+    },
     "relatedServices": {
       "title": "Related Services",
       "description": "Explore our development services for Shopify and WordPress.",
@@ -1216,6 +1243,35 @@
       "description": "Get a comprehensive audit of your e-commerce store in 1–2 minutes. Discover performance issues, SEO gaps, and conversion opportunities.",
       "badge": "Free Tool"
     },
+    "intents": {
+      "conversion": {
+        "label": "Conversion",
+        "headline": "Getting traffic but not enough sales?",
+        "description": "Find the friction points that are costing your store conversions and revenue."
+      },
+      "speed": {
+        "label": "Mobile speed",
+        "headline": "Your store may be losing customers before it loads.",
+        "description": "Check the mobile performance issues that make shoppers leave early."
+      },
+      "seo": {
+        "label": "SEO",
+        "headline": "Can search engines understand your store?",
+        "description": "Before creating more content, uncover the technical and content gaps limiting discovery."
+      },
+      "trust": {
+        "label": "Buyer trust",
+        "headline": "Are shoppers seeing enough reasons to feel safe buying?",
+        "description": "Find the proof, policy, and reassurance gaps in your store."
+      },
+      "checkout": {
+        "label": "Checkout",
+        "headline": "Are customers dropping before payment?",
+        "description": "Before spending more on ads, check the cart and checkout path for friction."
+      }
+    },
+    "intentPicker": { "label": "Choose an optional analysis focus" },
+    "relatedArticles": "Related store improvement guides",
     "form": {
       "title": "Analyze Your Store",
       "subtitle": "Get your free report in 1–2 minutes",
@@ -1850,9 +1906,59 @@
       "insufficient_evidence": "Insufficient evidence",
       "unavailable": "Unavailable"
     },
+    "primaryIssue": {
+      "speed": {
+        "title": "Your biggest opportunity is mobile performance.",
+        "description": "Slow loading creates abandonment before shoppers can evaluate the offer. Request three prioritized speed fixes.",
+        "cta": "Get 3 prioritized speed fixes"
+      },
+      "seo": {
+        "title": "SEO gaps may be limiting discoverability.",
+        "description": "Resolve the highest-impact technical and content signals before publishing more content.",
+        "cta": "Get a prioritized SEO action plan"
+      },
+      "trust": {
+        "title": "Customers may need stronger reasons to feel safe buying.",
+        "description": "A short expert review can prioritize the proof, policy, and reassurance gaps that matter most.",
+        "cta": "Get a trust and conversion review"
+      },
+      "product_page": {
+        "title": "Product pages may be creating decision friction.",
+        "description": "Review the page with the strongest opportunity to clarify value, delivery, returns, and the buying action.",
+        "cta": "Review my priority product page"
+      },
+      "checkout": {
+        "title": "Customers may be dropping close to payment.",
+        "description": "Prioritize the cart, payment, and shipping friction that interrupts purchase intent.",
+        "cta": "Get a checkout friction review"
+      },
+      "general_conversion": {
+        "title": "Your store has several conversion opportunities.",
+        "description": "Turn the strongest findings into a focused 30-day improvement plan.",
+        "cta": "Build my 30-day improvement plan"
+      }
+    },
+    "humanReview": {
+      "title": "Human Store Review",
+      "description": "An expert will review the analyzer context and send three prioritized recommendations. No meeting required.",
+      "button": "Request a Human Store Review",
+      "email": "Email address",
+      "platform": "Platform (optional)",
+      "primaryGoal": "Primary goal (optional)",
+      "monthlyTraffic": "Monthly traffic range (optional)",
+      "monthlyRevenue": "Monthly revenue range (optional)",
+      "biggestConcern": "Biggest concern (optional)",
+      "anonymousConsent": "I agree that CartShift may anonymously share selected insights from this audit as an educational example.",
+      "namedConsent": "CartShift may mention and link to my store by name (only applies if the anonymous sharing permission is also selected).",
+      "capacity": "Limited weekly review slots. Requests are reviewed for fit and capacity.",
+      "submit": "Request 3 prioritized recommendations",
+      "submitting": "Sending request…",
+      "confirmation": "Request received. We’ll review the store context and reply by email if a weekly slot is available.",
+      "error": "Could not submit the review request."
+    },
     "cta": {
       "title": "Ready to Improve Your Store?",
-      "description": "Book a free strategy call with our experts to discuss your results and create an action plan.",
+      "description": "Not sure what to fix first? Run the analyzer and get a prioritized starting point.",
       "bookCall": "Book Free Strategy Call",
       "bookStrategyCall": "Book Strategy Call",
       "getQuote": "Get a quote for top fixes",

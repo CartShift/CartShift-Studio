@@ -166,6 +166,7 @@ const MARKETING_SOURCES = new Set([
   'service_page_cta',
   'blog_sidebar',
   'website',
+  'human_review',
 ]);
 const MARKETING_FOCUS_AREAS = new Set([
   'performance',
@@ -710,6 +711,7 @@ function getLeadScoreDelta(data = {}) {
   let score = 0;
   if (data.source === 'contact_form') score += 60;
   if (data.source === 'store_analyzer') score += 20;
+  if (data.source === 'human_review') score += 45;
   if (data.source === 'newsletter' || data.source === 'newsletter_footer') score += 5;
   if (data.source === 'blog_sidebar') score += 8;
   if (data.source === 'blog_cta' || data.source === 'service_page_cta') score += 10;
@@ -1199,6 +1201,28 @@ async function upsertMarketingLead(data) {
           existing.primaryRecommendation ||
           null,
         overallScore: overallScore ?? existing.overallScore ?? null,
+        analyzerIntent: sanitizeMarketingText(data.intent, 32) || existing.analyzerIntent || null,
+        primaryIssue: sanitizeMarketingText(data.primaryIssue, 40) || existing.primaryIssue || null,
+        ctaType: sanitizeMarketingText(data.ctaType, 80) || existing.ctaType || null,
+        analyzerSubmittedAt:
+          sanitizeMarketingText(data.analyzerSubmittedAt, 40) ||
+          existing.analyzerSubmittedAt ||
+          null,
+        reportCompletedAt:
+          sanitizeMarketingText(data.reportCompletedAt, 40) || existing.reportCompletedAt || null,
+        firstTouchAttribution:
+          existing.firstTouchAttribution || sanitizeMarketingMetadata(data.attribution?.firstTouch),
+        lastTouchAttribution:
+          sanitizeMarketingMetadata(data.attribution?.lastTouch) ||
+          existing.lastTouchAttribution ||
+          null,
+        partnerCode:
+          sanitizeMarketingText(
+            data.attribution?.lastTouch?.partnerCode || data.attribution?.lastTouch?.referralCode,
+            160
+          ) ||
+          existing.partnerCode ||
+          null,
         scoreBand:
           overallScore !== null ? getScoreBand(overallScore) : existing.scoreBand || 'unknown',
         primarySource: existing.primarySource || source,
@@ -1404,7 +1428,7 @@ async function sendMarketingJob(jobDoc) {
   try {
     const result = await resend.emails.send(
       {
-      from: `CartShift Studio <${DEFAULT_CONTACT_EMAIL}>`,
+        from: `CartShift Studio <${DEFAULT_CONTACT_EMAIL}>`,
         to: lead.email,
         subject: copy.subject,
         html,
@@ -3780,6 +3804,9 @@ async function captureStoreAnalysisLeadSideEffects({
   locale,
   results,
   subscribeNewsletter,
+  intent,
+  attribution,
+  primaryIssue,
 }) {
   const lang = locale === 'he' ? 'he' : 'en';
   const recorded = await recordStoreAnalysisLead({
@@ -3825,6 +3852,11 @@ async function captureStoreAnalysisLeadSideEffects({
       overallScore: results.overallScore,
       subscribeNewsletter: !!subscribeNewsletter,
       consent: !!subscribeNewsletter,
+      intent,
+      attribution,
+      primaryIssue,
+      analyzerSubmittedAt: attribution?.lastTouch?.capturedAt,
+      reportCompletedAt: results?.meta?.reportCompletedAt,
     },
     { skipWelcome: true }
   );
@@ -3848,7 +3880,18 @@ exports.sendStoreAnalysisReport = onRequest(
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-      const { email, storeUrl, locale, results, subscribeNewsletter, skipLeadCapture } = req.body;
+      const {
+        email,
+        storeUrl,
+        locale,
+        results,
+        subscribeNewsletter,
+        skipLeadCapture,
+        intent,
+        attribution,
+        primaryIssue,
+        reportUrl,
+      } = req.body;
 
       if (!email || !results) {
         return res.status(400).json({ error: 'Email and results are required' });
@@ -3857,6 +3900,48 @@ exports.sendStoreAnalysisReport = onRequest(
       const lang = locale === 'he' ? 'he' : 'en';
       const texts = ANALYSIS_TEXTS[lang];
       const isRtl = lang === 'he';
+      const issueCopy = {
+        speed: {
+          en: [
+            'Your biggest opportunity is mobile performance.',
+            'Get 3 prioritized speed fixes for your store',
+          ],
+          he: ['ההזדמנות הגדולה ביותר היא ביצועי המובייל.', 'קבלת 3 תיקוני מהירות בעדיפות גבוהה'],
+        },
+        seo: {
+          en: [
+            'SEO gaps may be limiting store discoverability.',
+            'Get a prioritized SEO action plan',
+          ],
+          he: ['פערי SEO עלולים להגביל את החשיפה של החנות.', 'קבלת תוכנית SEO לפי סדר עדיפויות'],
+        },
+        trust: {
+          en: [
+            'Customers may need stronger reasons to feel safe buying.',
+            'Get a trust and conversion review',
+          ],
+          he: ['לקוחות עשויים להזדקק ליותר סיבות להרגיש בטוחים בקנייה.', 'קבלת סקירת אמון והמרה'],
+        },
+        product_page: {
+          en: [
+            'Product pages may be creating decision friction.',
+            'Review my highest-priority product page',
+          ],
+          he: ['עמודי המוצר עלולים ליצור חיכוך בהחלטה.', 'סקירת עמוד המוצר החשוב ביותר'],
+        },
+        checkout: {
+          en: ['Customers may be dropping close to payment.', 'Get a checkout friction review'],
+          he: ['לקוחות עלולים לנטוש סמוך לתשלום.', 'קבלת סקירת חיכוך בצ׳קאאוט'],
+        },
+        general_conversion: {
+          en: [
+            'The store has several conversion opportunities.',
+            'Build my 30-day improvement plan',
+          ],
+          he: ['בחנות יש כמה הזדמנויות לשיפור ההמרה.', 'בניית תוכנית שיפור ל-30 יום'],
+        },
+      }[primaryIssue || results?.meta?.primaryIssue || 'general_conversion'];
+      const tailored = issueCopy?.[lang] || issueCopy?.en;
 
       if (!skipLeadCapture) {
         await captureStoreAnalysisLeadSideEffects({
@@ -3865,6 +3950,9 @@ exports.sendStoreAnalysisReport = onRequest(
           locale: lang,
           results,
           subscribeNewsletter,
+          intent,
+          attribution,
+          primaryIssue,
         });
       }
 
@@ -3906,10 +3994,15 @@ exports.sendStoreAnalysisReport = onRequest(
         overallScore: results.overallScore,
         scoreStatusText: texts.scoreStatus[scoreStatus],
         storeUrl: storeUrl || 'N/A',
-        ctaTitle: texts.ctaTitle,
-        ctaText: texts.ctaText,
-        ctaUrl: `https://cart-shift.com/${lang}/contact`,
-        ctaButtonText: texts.ctaButtonText,
+        ctaTitle: tailored[0],
+        ctaText:
+          lang === 'he'
+            ? 'בקשו בדיקת חנות אנושית קצרה עם 3 המלצות מתועדפות—ללא צורך לקבוע שיחה.'
+            : 'Request a short Human Store Review with three prioritized recommendations—no call required.',
+        ctaUrl: `https://cart-shift.com/${lang}/tools/store-analyzer?intent=${encodeURIComponent(intent || '')}&review=1&utm_source=report_email`,
+        ctaButtonText: tailored[1],
+        reportUrl:
+          typeof reportUrl === 'string' && /^https:\/\//.test(reportUrl) ? reportUrl : null,
         proTipLabel: texts.proTipLabel,
         proTipText: texts.proTipText,
         analyzedUrl: texts.analyzedUrl,
@@ -3994,6 +4087,7 @@ exports.sendStoreAnalysisReport = onRequest(
                   </td>
                 </tr>
               </table>
+              ${emailData.reportUrl ? `<p style="margin:-14px 0 30px;text-align:center;"><a href="${escapeHtml(emailData.reportUrl)}" style="color:#1d4ed8;font-weight:700;">${lang === 'he' ? 'פתיחת הדוח הפרטי בדפדפן' : 'Open your private report in the browser'}</a></p>` : ''}
               <!-- Pro Tip -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 32px;">
                 <tr>

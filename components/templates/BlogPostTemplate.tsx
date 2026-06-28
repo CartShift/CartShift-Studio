@@ -89,6 +89,8 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
         date={post.date}
         category={subtitle}
         readingTime={post.readingTime}
+        tags={post.tags}
+        analyzerIntent={post.analyzerIntent}
       />
     </>
   );

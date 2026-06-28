@@ -4,6 +4,71 @@ import {
   createDefaultProfitSplitParticipants,
 } from '@/lib/services/profit-splits';
 import { PROFIT_SPLIT_ROLE } from '@/lib/types/profit-split';
+import {
+  extractStoredProfitSplitResponsibilities,
+  resolveRequestProfitSplitResponsibilities,
+} from '@/lib/utils/profit-split-responsibilities';
+
+describe('profit split responsibilities', () => {
+  it('derives lead from client responsible agent and delivery from assigned specialist', () => {
+    const resolved = resolveRequestProfitSplitResponsibilities({
+      responsibleAgencyUserId: 'agent-1',
+      responsibleAgencyUserName: 'Ada',
+      assignedTo: 'dev-1',
+      assignedToName: 'Grace',
+      storedResponsibilities: [
+        {
+          role: PROFIT_SPLIT_ROLE.SALES,
+          userId: 'sales-1',
+          userName: 'Bob',
+          percentage: 10,
+        },
+      ],
+    });
+
+    expect(resolved.find(item => item.role === PROFIT_SPLIT_ROLE.LEAD)).toEqual({
+      role: PROFIT_SPLIT_ROLE.LEAD,
+      userId: 'agent-1',
+      userName: 'Ada',
+      percentage: 15,
+    });
+    expect(resolved.find(item => item.role === PROFIT_SPLIT_ROLE.DELIVERY)).toEqual({
+      role: PROFIT_SPLIT_ROLE.DELIVERY,
+      userId: 'dev-1',
+      userName: 'Grace',
+      percentage: 50,
+    });
+    expect(resolved.find(item => item.role === PROFIT_SPLIT_ROLE.SALES)).toEqual({
+      role: PROFIT_SPLIT_ROLE.SALES,
+      userId: 'sales-1',
+      userName: 'Bob',
+      percentage: 10,
+    });
+  });
+
+  it('stores only request-level overrides without lead/delivery user ids', () => {
+    const resolved = resolveRequestProfitSplitResponsibilities({
+      responsibleAgencyUserId: 'agent-1',
+      responsibleAgencyUserName: 'Ada',
+      assignedTo: 'dev-1',
+      assignedToName: 'Grace',
+    });
+    const stored = extractStoredProfitSplitResponsibilities(resolved);
+
+    expect(stored.find(item => item.role === PROFIT_SPLIT_ROLE.LEAD)).toEqual({
+      role: PROFIT_SPLIT_ROLE.LEAD,
+      userId: '',
+      userName: '',
+      percentage: 15,
+    });
+    expect(stored.find(item => item.role === PROFIT_SPLIT_ROLE.DELIVERY)).toEqual({
+      role: PROFIT_SPLIT_ROLE.DELIVERY,
+      userId: '',
+      userName: '',
+      percentage: 50,
+    });
+  });
+});
 
 describe('profit split calculations', () => {
   it('creates the default 15/10/25/50 role allocation', () => {

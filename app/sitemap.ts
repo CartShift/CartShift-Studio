@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/markdown';
 import { getAllCaseStudies } from '@/lib/case-studies';
+import { ANALYZER_INTENTS } from '@/lib/analyzer/funnel';
+import { adminDb } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-static';
 
@@ -47,6 +49,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     createLocalizedUrls(baseUrl, `/work/${study.slug}`, now, 'monthly', 0.7)
   );
 
+  const approvedInsights = adminDb
+    ? await adminDb
+        .collection('human_review_requests')
+        .where('anonymousInsightConsent', '==', true)
+        .limit(100)
+        .get()
+        .catch(() => null)
+    : null;
+  const insightUrls = (approvedInsights?.docs || []).flatMap(doc => {
+    const data = doc.data();
+    return ['anonymous_educational', 'approved_public_case_study'].includes(data.reviewVisibility)
+      ? createLocalizedUrls(
+          baseUrl,
+          `/audit-insights/${data.publicAuditSlug}`,
+          data.updatedAt?.toDate?.() || now,
+          'monthly',
+          0.6
+        )
+      : [];
+  });
+
   const industries = ['fashion', 'food', 'health', 'tech', 'arts', 'local'];
 
   const staticPages = [
@@ -61,6 +84,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/contact', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools/store-analyzer', changeFrequency: 'weekly' as const, priority: 0.9 },
+    ...ANALYZER_INTENTS.map(intent => ({
+      path: `/tools/store-analyzer/${intent}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     { path: '/tools/client-portal', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/terms', changeFrequency: 'yearly' as const, priority: 0.3 },
@@ -76,5 +104,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     createLocalizedUrls(baseUrl, page.path, now, page.changeFrequency, page.priority)
   );
 
-  return [...staticUrls, ...blogUrls, ...caseStudyUrls];
+  return [...staticUrls, ...blogUrls, ...caseStudyUrls, ...insightUrls];
 }

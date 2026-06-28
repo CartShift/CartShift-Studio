@@ -7,6 +7,6 @@ import { useParams } from 'next/navigation';
  */
 export function useResolvedPricingId(): string | null {
   const params = useParams();
-  const pricingId = params?.pricingId;
+  const pricingId = params?.pricingId ?? params?.requestId;
   return typeof pricingId === 'string' ? pricingId : null;
 }

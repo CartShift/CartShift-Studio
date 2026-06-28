@@ -138,20 +138,45 @@ service cloud.firestore {
     }
 
     match /portal_requests/{requestId} {
-      function changesServerManagedProposalRequestFields() {
-        return resource.data.get('pricingOfferId', '') != '' &&
-               request.resource.data.diff(resource.data).affectedKeys().hasAny([
-                 'pricingOfferId',
-                 'proposalLineItemId',
+      function changesServerManagedCommercialFields() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+                 'acceptedByName',
+                 'acceptedByEmail',
+                 'signatureText',
+                 'termsAcceptedAt',
+                 'acceptedIp',
+                 'acceptedUserAgent',
+                 'lockedAt',
                  'amountPaid',
-                 'balanceDue',
-                 'paymentStatus',
+                 'pendingAmount',
                  'paymentIds',
                  'paymentAllocations',
                  'paymentId',
                  'paymentMethod',
                  'paidAt'
                ]);
+      }
+
+      function changesAgencyCommercialFields() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'publicToken',
+          'publicAccessEnabled',
+          'requestRole',
+          'parentRequestId',
+          'childRequestIds',
+          'legacyProposalId',
+          'lineItems',
+          'totalAmount',
+          'subtotal',
+          'taxRate',
+          'taxAmount',
+          'currency',
+          'terms',
+          'depositAmount',
+          'paymentRequired',
+          'balanceDue',
+          'paymentStatus'
+        ]);
       }
 
       // Clients can read requests pre-assigned to their email (before registration)
@@ -175,7 +200,9 @@ service cloud.firestore {
         resource.data.get('clientEmail', '') == request.auth.token.email ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
-      ) && !changesServerManagedProposalRequestFields();
+      ) &&
+      !changesServerManagedCommercialFields() &&
+      (isAgencyUser() || !changesAgencyCommercialFields());
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
         resource.data.get('createdBy', '') == getUserId() ||
@@ -246,61 +273,19 @@ service cloud.firestore {
     }
 
     match /portal_pricing_requests/{requestId} {
-      function isLockedPricingProposal() {
-        return resource.data.get('status', '') == 'ACCEPTED' ||
-               resource.data.get('status', '') == 'PAID' ||
-               resource.data.get('lockedAt', null) != null;
-      }
-
-      function changesProtectedPricingProposalFields() {
-        return request.resource.data.diff(resource.data).affectedKeys().hasAny([
-          'acceptedAt',
-          'acceptedByName',
-          'acceptedByEmail',
-          'signatureText',
-          'termsAcceptedAt',
-          'acceptedIp',
-          'acceptedUserAgent',
-          'lockedAt',
-          'amountPaid',
-          'pendingAmount',
-          'paymentReference',
-          'paymentId',
-          'paymentMethod',
-          'paidAt',
-          'firstPaymentAt',
-          'lastPaymentAt',
-          'materializedRequestIds',
-          'requestsMaterializedAt'
-        ]);
-      }
-
+      // Rollback/compatibility source only. New writes belong in portal_requests.
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
         resource == null ||
         canAccessOrg(resource.data.get('orgId', '')) ||
         resource.data.get('createdBy', '') == getUserId()
       );
-      allow create: if isAuthenticated() && (
-        isAgencyUser() ||
-        isMemberOfOrg(request.resource.data.get('orgId', '')) ||
-        isOrgOwner(request.resource.data.get('orgId', ''))
-      ) &&
-      request.resource.data.get('status', '') == 'DRAFT' &&
-      request.resource.data.get('amountPaid', 0) == 0;
-      allow update: if isAuthenticated() && (
-        resource == null ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        resource.data.get('createdBy', '') == getUserId()
-      ) &&
-      !isLockedPricingProposal() &&
-      request.resource.data.get('status', '') != 'ACCEPTED' &&
-      request.resource.data.get('status', '') != 'PAID' &&
-      !changesProtectedPricingProposalFields();
-      allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource.data.get('createdBy', '') == getUserId()
-      ) && !isLockedPricingProposal();
+      allow create, update, delete: if false;
+    }
+
+    match /portal_request_aliases/{aliasId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
     }
 
     match /portal_proposal_payments/{paymentId} {
@@ -436,6 +421,25 @@ service cloud.firestore {
     match /marketing_unsubscribes/{leadId} {
       allow read: if isAuthenticated() && isAgencyUser();
       allow write: if false;
+    }
+
+    match /human_review_requests/{requestId} {
+      allow read, update: if isAuthenticated() && isAgencyUser();
+      allow create, delete: if false;
+    }
+
+    match /analyzer_funnel_events/{eventId} {
+      allow read: if isAuthenticated() && isAgencyUser();
+      allow write: if false;
+    }
+
+    match /referral_partners/{partnerId} {
+      allow read, update: if isAuthenticated() && isAgencyUser();
+      allow create, delete: if false;
+    }
+
+    match /store_analysis_reports/{reportId} {
+      allow read, write: if false;
     }
 
     match /{document=**} {

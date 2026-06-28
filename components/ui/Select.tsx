@@ -31,6 +31,8 @@ interface SelectProps
   placeholder?: string;
   value?: string | number;
   defaultValue?: string | number;
+  /** Explicit label for the selected value when the trigger cannot resolve item text. */
+  valueLabel?: React.ReactNode;
   onValueChange?: (value: string) => void;
   /** @deprecated Prefer onValueChange. Retained while controlled consumers migrate. */
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
@@ -58,6 +60,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       placeholder,
       value,
       defaultValue,
+      valueLabel,
       onValueChange,
       onChange,
       name,
@@ -124,7 +127,6 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             ref={ref}
             id={selectId}
             name={name}
-            value={value === undefined ? undefined : String(value)}
             onBlur={onBlur}
             aria-label={ariaLabel || label}
             aria-invalid={error ? true : undefined}
@@ -141,7 +143,9 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
               className
             )}
           >
-            <SelectPrimitive.Value placeholder={placeholder} />
+            <SelectPrimitive.Value placeholder={placeholder}>
+              {valueLabel}
+            </SelectPrimitive.Value>
             <SelectPrimitive.Icon asChild>
               {error ? (
                 <AlertCircle size={18} className="shrink-0 text-red-500" />
@@ -157,7 +161,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
               sideOffset={6}
               collisionPadding={12}
               className={cn(
-                'z-select max-h-[min(20rem,var(--radix-select-content-available-height))] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-surface-200/80 bg-white/95 p-1.5 text-surface-900 shadow-xl backdrop-blur-xl',
+                'z-tooltip max-h-[min(20rem,var(--radix-select-content-available-height))] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-surface-200/80 bg-white/95 p-1.5 text-surface-900 shadow-xl backdrop-blur-xl',
                 'dark:border-white/10 dark:bg-surface-900/95 dark:text-white',
                 'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
                 'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',

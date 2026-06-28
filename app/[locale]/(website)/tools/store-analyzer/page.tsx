@@ -7,6 +7,7 @@ import {
   generateSoftwareApplicationSchema,
 } from '@/lib/seo';
 import Script from 'next/script';
+import { isAnalyzerIntent } from '@/lib/analyzer/funnel';
 
 export async function generateMetadata({
   params,
@@ -39,10 +40,13 @@ export async function generateMetadata({
 
 export default async function StoreAnalyzerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ intent?: string }>;
 }) {
   const { locale } = await params;
+  const query = await searchParams;
   setRequestLocale(locale as 'en' | 'he');
 
   const breadcrumbSchema = generateBreadcrumbSchema(
@@ -80,7 +84,9 @@ export default async function StoreAnalyzerPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
       />
-      <StoreAnalyzerTemplate />
+      <StoreAnalyzerTemplate
+        initialIntent={isAnalyzerIntent(query.intent) ? query.intent : undefined}
+      />
     </>
   );
 }

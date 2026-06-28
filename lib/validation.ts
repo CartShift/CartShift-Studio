@@ -48,9 +48,62 @@ export const analyzeStoreRequestSchema = z.object({
   subscribeNewsletter: z.boolean().optional().default(false),
   locale: z.enum(['en', 'he']).optional().default('en'),
   captchaToken: z.string().max(4096).optional(),
+  intent: z.enum(['conversion', 'speed', 'seo', 'trust', 'checkout']).optional(),
+  attribution: z
+    .object({
+      firstTouch: z.object({
+        landingPath: z.string().max(500),
+        referrer: z.string().max(500).optional(),
+        utmSource: z.string().max(160).optional(),
+        utmMedium: z.string().max(160).optional(),
+        utmCampaign: z.string().max(160).optional(),
+        utmContent: z.string().max(160).optional(),
+        utmTerm: z.string().max(160).optional(),
+        referralCode: z.string().max(160).optional(),
+        partnerCode: z.string().max(160).optional(),
+        intent: z.enum(['conversion', 'speed', 'seo', 'trust', 'checkout']).optional(),
+        capturedAt: z.string().datetime(),
+      }),
+      lastTouch: z.object({
+        landingPath: z.string().max(500),
+        referrer: z.string().max(500).optional(),
+        utmSource: z.string().max(160).optional(),
+        utmMedium: z.string().max(160).optional(),
+        utmCampaign: z.string().max(160).optional(),
+        utmContent: z.string().max(160).optional(),
+        utmTerm: z.string().max(160).optional(),
+        referralCode: z.string().max(160).optional(),
+        partnerCode: z.string().max(160).optional(),
+        intent: z.enum(['conversion', 'speed', 'seo', 'trust', 'checkout']).optional(),
+        capturedAt: z.string().datetime(),
+      }),
+    })
+    .optional(),
 });
 
 export type AnalyzeStoreRequestData = z.infer<typeof analyzeStoreRequestSchema>;
+
+const optionalQualifier = z.string().trim().max(240).optional();
+export const humanReviewRequestSchema = z.object({
+  email: z.string().email().max(320),
+  storeUrl: z.string().url().max(2048),
+  locale: z.enum(['en', 'he']).default('en'),
+  platform: optionalQualifier,
+  primaryGoal: optionalQualifier,
+  monthlyTraffic: optionalQualifier,
+  monthlyRevenue: optionalQualifier,
+  biggestConcern: z.string().trim().max(1000).optional(),
+  primaryIssue: z.enum(['speed', 'seo', 'trust', 'product_page', 'checkout', 'general_conversion']),
+  intent: z.enum(['conversion', 'speed', 'seo', 'trust', 'checkout']).optional(),
+  overallScore: z.number().min(0).max(100).optional(),
+  anonymousInsightConsent: z.boolean().default(false),
+  namedStoreConsent: z.boolean().default(false),
+  consentVersion: z.literal('2026-06-28'),
+  attribution: analyzeStoreRequestSchema.shape.attribution,
+  website: z.string().max(0).optional(),
+});
+
+export type HumanReviewRequestData = z.infer<typeof humanReviewRequestSchema>;
 
 export function validateAnalyzeStoreRequest(
   data: unknown

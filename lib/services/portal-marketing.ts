@@ -15,6 +15,8 @@ import { getPortalUser } from '@/lib/services/portal-users';
 const LEADS_COLLECTION = 'marketing_leads';
 const JOBS_COLLECTION = 'marketing_email_jobs';
 const EVENTS_COLLECTION = 'marketing_events';
+const REVIEWS_COLLECTION = 'human_review_requests';
+const FUNNEL_EVENTS_COLLECTION = 'analyzer_funnel_events';
 
 export interface MarketingLead {
   leadId: string;
@@ -29,6 +31,12 @@ export interface MarketingLead {
   focusArea?: 'performance' | 'seo' | 'accessibility' | 'bestPractices' | 'cart' | 'trust';
   focusScore?: number | null;
   primaryRecommendation?: string | null;
+  analyzerIntent?: string | null;
+  primaryIssue?: string | null;
+  ctaType?: string | null;
+  partnerCode?: string | null;
+  firstTouchAttribution?: Record<string, string | number | boolean | null> | null;
+  lastTouchAttribution?: Record<string, string | number | boolean | null> | null;
   primarySource?: string;
   latestSource?: string;
   funnelStage?: string;
@@ -68,10 +76,41 @@ export interface MarketingEvent {
   createdAt?: Timestamp;
 }
 
+export type ReviewVisibility = 'private' | 'anonymous_educational' | 'approved_public_case_study';
+export interface HumanReviewRequest {
+  requestId: string;
+  email: string;
+  storeUrl: string;
+  platform?: string;
+  primaryIssue: string;
+  intent?: string;
+  status: string;
+  qualified?: boolean;
+  reviewVisibility: ReviewVisibility;
+  publicAuditSlug: string;
+  anonymousInsightConsent: boolean;
+  namedStoreConsent: boolean;
+  partner?: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+export interface AnalyzerFunnelEvent {
+  id: string;
+  sessionId: string;
+  name: string;
+  path: string;
+  properties?: Record<string, string | number | boolean | null>;
+  occurredAt: string;
+  createdAt?: Timestamp;
+}
+
 export interface MarketingDashboardData {
   leads: MarketingLead[];
   jobs: MarketingEmailJob[];
   events: MarketingEvent[];
+  reviews: HumanReviewRequest[];
+  funnelEvents: AnalyzerFunnelEvent[];
   metrics: {
     totalLeads: number;
     hotLeads: number;
@@ -89,6 +128,19 @@ export interface MarketingDashboardData {
     needsFollowUp: number;
     sourceCounts: Record<string, number>;
     stageCounts: Record<string, number>;
+    funnelCounts: Record<string, number>;
+    intentCounts: Record<string, number>;
+    issueCounts: Record<string, number>;
+    partnerCounts: Record<
+      string,
+      {
+        submissions: number;
+        completed: number;
+        reviews: number;
+        qualified: number;
+        conversionRate: number;
+      }
+    >;
   };
 }
 
@@ -111,11 +163,16 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
   await verifyAgencyAccess();
 
   const db = getFirestoreDb();
-  const [leadsSnapshot, jobsSnapshot, eventsSnapshot] = await Promise.all([
-    getDocs(query(collection(db, LEADS_COLLECTION), orderBy('updatedAt', 'desc'), limit(100))),
-    getDocs(query(collection(db, JOBS_COLLECTION), orderBy('dueAt', 'desc'), limit(150))),
-    getDocs(query(collection(db, EVENTS_COLLECTION), orderBy('createdAt', 'desc'), limit(150))),
-  ]);
+  const [leadsSnapshot, jobsSnapshot, eventsSnapshot, reviewsSnapshot, funnelSnapshot] =
+    await Promise.all([
+      getDocs(query(collection(db, LEADS_COLLECTION), orderBy('updatedAt', 'desc'), limit(100))),
+      getDocs(query(collection(db, JOBS_COLLECTION), orderBy('dueAt', 'desc'), limit(150))),
+      getDocs(query(collection(db, EVENTS_COLLECTION), orderBy('createdAt', 'desc'), limit(150))),
+      getDocs(query(collection(db, REVIEWS_COLLECTION), orderBy('createdAt', 'desc'), limit(150))),
+      getDocs(
+        query(collection(db, FUNNEL_EVENTS_COLLECTION), orderBy('createdAt', 'desc'), limit(500))
+      ),
+    ]);
 
   const leads = leadsSnapshot.docs.map(doc => ({
     leadId: doc.id,
@@ -131,6 +188,71 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
     id: doc.id,
     ...doc.data(),
   })) as MarketingEvent[];
+  const reviews = reviewsSnapshot.docs.map(doc => ({
+    requestId: doc.id,
+    ...doc.data(),
+  })) as HumanReviewRequest[];
+  const funnelEvents = funnelSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as AnalyzerFunnelEvent[];
+
+  const uniqueFunnelEvents = Array.from(
+    new Map(funnelEvents.map(event => [event.id, event])).values()
+  );
+  const funnelCounts = uniqueFunnelEvents.reduce<Record<string, number>>((acc, event) => {
+    acc[event.name] = (acc[event.name] || 0) + 1;
+    return acc;
+  }, {});
+  const intentCounts = uniqueFunnelEvents.reduce<Record<string, number>>((acc, event) => {
+    const intent = String(event.properties?.intent || 'generic');
+    acc[intent] = (acc[intent] || 0) + 1;
+    return acc;
+  }, {});
+  const issueCounts = reviews.reduce<Record<string, number>>((acc, review) => {
+    acc[review.primaryIssue || 'unknown'] = (acc[review.primaryIssue || 'unknown'] || 0) + 1;
+    return acc;
+  }, {});
+  const partnerCounts: MarketingDashboardData['metrics']['partnerCounts'] = {};
+  for (const review of reviews) {
+    if (!review.partner) continue;
+    const row = partnerCounts[review.partner] || {
+      submissions: 0,
+      completed: 0,
+      reviews: 0,
+      qualified: 0,
+      conversionRate: 0,
+    };
+    row.reviews += 1;
+    if (review.qualified) row.qualified += 1;
+    partnerCounts[review.partner] = row;
+  }
+  const partnerBySession = new Map(
+    uniqueFunnelEvents
+      .filter(event => event.name === 'partner_attributed' && event.properties?.partner)
+      .map(event => [event.sessionId, String(event.properties?.partner)])
+  );
+  for (const event of uniqueFunnelEvents) {
+    const partner = String(
+      event.properties?.partner || partnerBySession.get(event.sessionId) || ''
+    );
+    if (!partner) continue;
+    const row = partnerCounts[partner] || {
+      submissions: 0,
+      completed: 0,
+      reviews: 0,
+      qualified: 0,
+      conversionRate: 0,
+    };
+    if (event.name === 'store_analyzer_url_submitted') row.submissions += 1;
+    if (event.name === 'store_analyzer_completed') row.completed += 1;
+    partnerCounts[partner] = row;
+  }
+  Object.values(partnerCounts).forEach(row => {
+    row.conversionRate = row.submissions
+      ? Math.round((row.reviews / row.submissions) * 1000) / 10
+      : 0;
+  });
 
   const totalLeadScore = leads.reduce((sum, lead) => sum + (lead.leadScore || 0), 0);
   const sentEmails = jobs.filter(job => job.status === 'sent').length;
@@ -173,6 +295,8 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
     leads,
     jobs,
     events,
+    reviews,
+    funnelEvents,
     metrics: {
       totalLeads: leads.length,
       hotLeads: leads.filter(lead => (lead.leadScore || 0) >= 50).length,
@@ -191,8 +315,24 @@ export async function getMarketingDashboardData(): Promise<MarketingDashboardDat
       needsFollowUp,
       sourceCounts,
       stageCounts,
+      funnelCounts,
+      intentCounts,
+      issueCounts,
+      partnerCounts,
     },
   };
+}
+
+export async function updateHumanReview(
+  requestId: string,
+  update: { reviewVisibility?: ReviewVisibility; qualified?: boolean; status?: string }
+): Promise<void> {
+  await waitForAuth();
+  await verifyAgencyAccess();
+  await updateDoc(doc(getFirestoreDb(), REVIEWS_COLLECTION, requestId), {
+    ...update,
+    updatedAt: Timestamp.now(),
+  });
 }
 
 export async function updateMarketingLeadContactStatus(

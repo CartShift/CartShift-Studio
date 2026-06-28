@@ -1,0 +1,262 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e4]:
+      - navigation "Top" [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - link "CartShift Studio - E-commerce Development Agency" [ref=e8] [cursor=pointer]:
+              - /url: /en
+              - img "CartShift Studio - E-commerce Development Agency" [ref=e10]
+            - generic [ref=e12]:
+              - link "Home" [ref=e13] [cursor=pointer]:
+                - /url: /en
+                - text: Home
+              - button "Services" [ref=e14] [cursor=pointer]:
+                - text: Services
+                - img [ref=e16]
+              - button "Company" [ref=e18] [cursor=pointer]:
+                - text: Company
+                - img [ref=e20]
+              - button "Tools" [ref=e22] [cursor=pointer]:
+                - text: Tools
+                - img [ref=e24]
+              - link "Blog" [ref=e26] [cursor=pointer]:
+                - /url: /en/blog
+                - text: Blog
+              - link "Contact" [ref=e27] [cursor=pointer]:
+                - /url: /en/contact
+                - text: Contact
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - button "Select Language" [ref=e30] [cursor=pointer]:
+                - img [ref=e31]
+                - generic [ref=e36]: EN
+                - img [ref=e37]
+              - button "Switch to light mode" [ref=e40] [cursor=pointer]:
+                - img [ref=e43]
+            - button "Login" [ref=e45] [cursor=pointer]:
+              - generic [ref=e47]: Login
+            - button "Free Audit" [ref=e48] [cursor=pointer]:
+              - generic [ref=e51]:
+                - img [ref=e52]
+                - generic [ref=e54]: Free Audit
+    - main [ref=e55]:
+      - generic [ref=e57]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - heading "Your store may be losing customers before it loads." [level=1] [ref=e68]
+            - paragraph [ref=e69]: Check the mobile performance issues that make shoppers leave early.
+            - generic "Choose an optional analysis focus" [ref=e70]:
+              - button "Conversion" [ref=e71] [cursor=pointer]
+              - button "Mobile speed" [pressed] [ref=e72] [cursor=pointer]
+              - button "SEO" [ref=e73] [cursor=pointer]
+              - button "Buyer trust" [ref=e74] [cursor=pointer]
+              - button "Checkout" [ref=e75] [cursor=pointer]
+            - navigation "Related store improvement guides" [ref=e76]:
+              - 'link "WooCommerce Performance Optimization: The Store Owner’s Field Guide" [ref=e77] [cursor=pointer]':
+                - /url: /en/blog/woocommerce-performance-optimization
+              - 'link "Shopify SEO Review: Performance Evaluation for Rankings, CTR, and Revenue" [ref=e78] [cursor=pointer]':
+                - /url: /en/blog/shopify-seo-performance-evaluation
+              - 'link "Store Speed vs Conversion: Why Faster Pages Still Win" [ref=e79] [cursor=pointer]':
+                - /url: /en/blog/store-speed-vs-conversion
+            - generic [ref=e80]:
+              - generic [ref=e81]:
+                - generic [ref=e82]:
+                  - img [ref=e83]
+                  - generic [ref=e85]: "6"
+                - text: Audit categories
+              - generic [ref=e86]:
+                - generic [ref=e87]:
+                  - img [ref=e88]
+                  - generic [ref=e91]: 1–2 min
+                - text: Typical runtime
+              - generic [ref=e92]:
+                - generic [ref=e93]:
+                  - img [ref=e94]
+                  - generic [ref=e97]: Free
+                - text: Free forever
+              - generic [ref=e98]:
+                - generic [ref=e99]:
+                  - img [ref=e100]
+                  - generic [ref=e103]: PDF
+                - text: PDF email report
+            - generic [ref=e104]:
+              - generic [ref=e105]:
+                - img [ref=e106]
+                - generic [ref=e109]: Free forever
+              - generic [ref=e110]:
+                - img [ref=e111]
+                - generic [ref=e113]: Secure & private
+              - generic [ref=e114]:
+                - img [ref=e115]
+                - generic [ref=e117]: Expert insights
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - img [ref=e124]
+              - generic [ref=e126]:
+                - heading "Analyze Your Store" [level=2] [ref=e127]
+                - paragraph [ref=e128]: Get your free report in 1–2 minutes
+            - generic [ref=e129]:
+              - generic [ref=e131]:
+                - text: Your Store URL
+                - generic [ref=e132]:
+                  - generic:
+                    - img
+                  - textbox "Your Store URL" [ref=e133]:
+                    - /placeholder: https://your-store.com
+              - generic [ref=e135]:
+                - text: Email Address
+                - generic [ref=e136]:
+                  - generic:
+                    - img
+                  - textbox "Email Address" [ref=e137]:
+                    - /placeholder: you@example.com
+                - paragraph [ref=e138]: We'll send your detailed report here
+              - generic [ref=e139]:
+                - checkbox "Send me tips and insights to grow my store (recommended)" [checked] [ref=e140] [cursor=pointer]
+                - generic [ref=e141] [cursor=pointer]: Send me tips and insights to grow my store (recommended)
+              - button "Analyze My Store — Free" [ref=e142] [cursor=pointer]:
+                - generic [ref=e144]: Analyze My Store — Free
+              - paragraph [ref=e145]: Your data is secure. We never share your information with third parties.
+            - generic [ref=e147]:
+              - img [ref=e148]
+              - generic [ref=e150]: Your data is secure. We never share your information with third parties.
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - heading "What You'll Get" [level=2] [ref=e155]
+            - paragraph [ref=e156]: A comprehensive analysis covering every aspect of your store's success.
+          - generic [ref=e157]:
+            - generic [ref=e160]:
+              - img [ref=e162]
+              - heading "Performance Analysis" [level=3] [ref=e164]
+              - paragraph [ref=e165]: Load times & Core Web Vitals
+            - generic [ref=e168]:
+              - img [ref=e170]
+              - heading "SEO Audit" [level=3] [ref=e173]
+              - paragraph [ref=e174]: Meta tags, structure & indexing
+            - generic [ref=e177]:
+              - img [ref=e179]
+              - heading "Accessibility" [level=3] [ref=e182]
+              - paragraph [ref=e183]: WCAG compliance & usability
+            - generic [ref=e186]:
+              - img [ref=e188]
+              - heading "Best Practices" [level=3] [ref=e191]
+              - paragraph [ref=e192]: Security, HTTPS & modern standards
+            - generic [ref=e195]:
+              - img [ref=e197]
+              - heading "Cart & Checkout" [level=3] [ref=e201]
+              - paragraph [ref=e202]: Conversion optimization
+            - generic [ref=e205]:
+              - img [ref=e207]
+              - heading "Trust Signals" [level=3] [ref=e209]
+              - paragraph [ref=e210]: Reviews, badges & policies
+        - generic [ref=e213]:
+          - heading "How It Works" [level=2] [ref=e215]
+          - generic [ref=e218]:
+            - generic [ref=e219]:
+              - generic [ref=e220]:
+                - img [ref=e222]
+                - generic [ref=e225]: "1"
+              - heading "Enter Your URL" [level=3] [ref=e226]
+              - paragraph [ref=e227]: Paste your store URL and email address
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - img [ref=e231]
+                - generic [ref=e233]: "2"
+              - heading "We Analyze" [level=3] [ref=e234]
+              - paragraph [ref=e235]: Our engine scans 40+ data points
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - img [ref=e239]
+                - generic [ref=e242]: "3"
+              - heading "Get Results" [level=3] [ref=e243]
+              - paragraph [ref=e244]: See results on screen and receive the full PDF by email
+        - generic [ref=e248]:
+          - heading "Ready to Improve Your Store?" [level=2] [ref=e249]
+          - paragraph [ref=e250]: Book a free strategy call with our experts to discuss your results and create an action plan.
+          - button "Analyze My Store Now" [ref=e251] [cursor=pointer]:
+            - text: Analyze My Store Now
+            - img [ref=e252]
+    - contentinfo [ref=e254]:
+      - generic [ref=e256]:
+        - generic [ref=e257]:
+          - generic [ref=e258]:
+            - link "CartShift Studio - E-commerce Development Agency" [ref=e259] [cursor=pointer]:
+              - /url: /en
+              - img "CartShift Studio - E-commerce Development Agency" [ref=e261]
+            - paragraph [ref=e263]: Bold e-commerce builds for artists, makers, and brands. Shopify and WordPress websites that look great, load fast, and sell more.
+            - generic [ref=e264]:
+              - link "LinkedIn" [ref=e265] [cursor=pointer]:
+                - /url: https://linkedin.com/company/cartshiftstudio
+                - img [ref=e266]
+              - link "GitHub" [ref=e270] [cursor=pointer]:
+                - /url: https://github.com/cartshiftstudio
+                - img [ref=e271]
+          - generic [ref=e274]:
+            - heading "Solutions" [level=3] [ref=e275]
+            - list [ref=e276]:
+              - listitem [ref=e277]:
+                - link "Shopify Solutions" [ref=e278] [cursor=pointer]:
+                  - /url: /en/solutions/shopify
+              - listitem [ref=e279]:
+                - link "WordPress Solutions" [ref=e280] [cursor=pointer]:
+                  - /url: /en/solutions/wordpress
+              - listitem [ref=e281]:
+                - link "Pricing" [ref=e282] [cursor=pointer]:
+                  - /url: /en/pricing
+              - listitem [ref=e283]:
+                - link "Maintenance" [ref=e284] [cursor=pointer]:
+                  - /url: /en/maintenance
+          - generic [ref=e285]:
+            - heading "Tools" [level=3] [ref=e286]
+            - list [ref=e287]:
+              - listitem [ref=e288]:
+                - link "Free Store Analyzer" [ref=e289] [cursor=pointer]:
+                  - /url: /en/tools/store-analyzer
+              - listitem [ref=e290]:
+                - link "Client Portal" [ref=e291] [cursor=pointer]:
+                  - /url: /en/tools/client-portal
+          - generic [ref=e292]:
+            - heading "Company" [level=3] [ref=e293]
+            - list [ref=e294]:
+              - listitem [ref=e295]:
+                - link "About Us" [ref=e296] [cursor=pointer]:
+                  - /url: /en/about
+              - listitem [ref=e297]:
+                - link "Work" [ref=e298] [cursor=pointer]:
+                  - /url: /en/work
+              - listitem [ref=e299]:
+                - link "Blog" [ref=e300] [cursor=pointer]:
+                  - /url: /en/blog
+              - listitem [ref=e301]:
+                - link "Contact" [ref=e302] [cursor=pointer]:
+                  - /url: /en/contact
+          - generic [ref=e303]:
+            - heading "Stay Updated" [level=3] [ref=e304]
+            - paragraph [ref=e305]: Get e-commerce tips and news delivered to your inbox.
+            - generic [ref=e307]:
+              - textbox "Your email" [ref=e308]
+              - button "Subscribe" [ref=e309] [cursor=pointer]:
+                - generic [ref=e311]:
+                  - img [ref=e312]
+                  - generic [ref=e315]: Subscribe
+        - generic [ref=e317]:
+          - generic [ref=e318]:
+            - paragraph [ref=e319]: © 2026 CartShift Studio. All rights reserved.
+            - generic [ref=e320]:
+              - link "Privacy Policy" [ref=e321] [cursor=pointer]:
+                - /url: /en/privacy
+              - generic [ref=e322]: "|"
+              - link "Terms of Service" [ref=e323] [cursor=pointer]:
+                - /url: /en/terms
+          - generic [ref=e324]:
+            - generic [ref=e325]:
+              - img [ref=e326]
+              - text: SSL Secured
+            - generic [ref=e328]:
+              - img [ref=e329]
+              - text: Shopify Partner
+  - region "Notifications alt+T"
+  - alert [ref=e332]

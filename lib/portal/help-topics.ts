@@ -3,7 +3,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 const CLIENT_TOPIC_PATHS: Record<string, string> = {
   requests: getPortalPath('/requests/'),
   files: getPortalPath('/files/'),
-  pricing: getPortalPath('/pricing/'),
+  pricing: getPortalPath('/requests/'),
   team: getPortalPath('/team/'),
 };
 

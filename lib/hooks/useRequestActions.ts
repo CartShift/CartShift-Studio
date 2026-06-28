@@ -382,6 +382,8 @@ export function useRequestActions({
           specialistId,
           specialistName
         );
+        const { trySyncProfitSplitDraftForRequest } = await import('@/lib/services/profit-splits');
+        await trySyncProfitSplitDraftForRequest(requestId!);
         invalidatePortalRequestData(queryClient, {
         orgId: orgId ?? undefined,
         requestId: requestId!,

@@ -1,5 +1,11 @@
 # Development Scripts
 
+## Proposal-to-request migration
+
+- `pnpm migrate:proposals` performs a read-only dry run and prints reconciliation totals and conflicts.
+- `pnpm migrate:proposals:apply` writes canonical requests, aliases, payments, and related references.
+- Resolve every reported conflict before applying; conflicts are never overwritten and exit with code `2`.
+
 ## Dev Force Scripts
 
 These scripts automatically kill any existing Next.js dev processes and clear the cache before starting a fresh development server. This solves the common issue where Next.js can't acquire a lock because another instance is already running.

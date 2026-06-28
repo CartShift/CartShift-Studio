@@ -323,10 +323,10 @@ export default function AgencyPricingClient() {
                           <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
                             {req.id.slice(0, 8)}
                           </span>
-                          {req.requestIds && req.requestIds.length > 0 && (
+                          {req.childRequestIds && req.childRequestIds.length > 0 && (
                             <>
                               <span className="w-1 h-1 rounded-full bg-surface-300" />
-                              <span>{req.requestIds.length} requests</span>
+                              <span>{req.childRequestIds.length} requests</span>
                             </>
                           )}
                         </span>
@@ -461,10 +461,10 @@ export default function AgencyPricingClient() {
                                   <span className="font-mono bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded text-[10px] tracking-tight">
                                     {req.id.slice(0, 8)}
                                   </span>
-                                  {req.requestIds && req.requestIds.length > 0 && (
+                                  {req.childRequestIds && req.childRequestIds.length > 0 && (
                                     <>
                                       <span className="w-1 h-1 rounded-full bg-surface-300" />
-                                      <span>{req.requestIds.length} requests</span>
+                                      <span>{req.childRequestIds.length} requests</span>
                                     </>
                                   )}
                                 </span>

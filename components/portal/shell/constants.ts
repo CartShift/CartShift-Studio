@@ -5,8 +5,6 @@ import {
   Users,
   FolderOpen,
   Kanban,
-  DollarSign,
-  PieChart,
   Calendar,
   Star,
   Settings,
@@ -21,7 +19,6 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 type NavTranslationKey =
   | 'sidebar.nav.dashboard'
   | 'sidebar.nav.requests'
-  | 'sidebar.nav.pricing'
   | 'sidebar.nav.files'
   | 'sidebar.nav.settings'
   | 'sidebar.nav.team'
@@ -31,9 +28,7 @@ type NavTranslationKey =
   | 'sidebar.nav.sales'
   | 'sidebar.nav.marketing'
   | 'sidebar.nav.emailPreviews'
-  | 'sidebar.nav.profitSplits'
   | 'sidebar.nav.clients'
-  | 'sidebar.nav.pricing'
   | 'sidebar.nav.testimonials'
   | 'sidebar.nav.calculator'
   | 'sidebar.nav.help'
@@ -91,12 +86,6 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           href: getPortalPath('/agency/leads/'),
           roles: PERMISSIONS.VIEW_SALES_DASHBOARD,
         },
-        {
-          label: t('sidebar.nav.profitSplits'),
-          icon: PieChart,
-          href: getPortalPath('/agency/profit-splits/'),
-          roles: PERMISSIONS.VIEW_PROFIT_SPLITS,
-        },
       ],
     },
     {
@@ -127,12 +116,6 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       id: 'agency-growth',
       labelKey: 'sidebar.groups.growth',
       items: [
-        {
-          label: t('sidebar.nav.pricing'),
-          icon: DollarSign,
-          href: getPortalPath('/agency/pricing/'),
-          roles: PERMISSIONS.MANAGE_PRICING,
-        },
         {
           label: t('sidebar.nav.calculator'),
           icon: Calculator,
@@ -211,11 +194,6 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
       id: 'client-billing',
       labelKey: 'sidebar.groups.billing',
       items: [
-        {
-          label: t('sidebar.nav.pricing'),
-          icon: DollarSign,
-          href: getPortalPath('/pricing/'),
-        },
         {
           label: t('sidebar.nav.review'),
           icon: Star,

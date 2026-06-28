@@ -18,7 +18,7 @@ import {
 } from '@/components/portal/ui/PortalFormField';
 import { getRequestsByOrg } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { usePricingMutations } from '@/lib/hooks/usePricingMutations';
+import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { useOrg } from '@/lib/context/OrgContext';
 import {
@@ -81,7 +81,7 @@ export default function CreatePricingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userData } = usePortalAuth();
-  const { createPricingRequest, sendPricingRequest } = usePricingMutations();
+  const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,7 +122,10 @@ export default function CreatePricingForm() {
           'DELIVERED',
         ];
         const eligible = requests.filter(
-          r => eligibleStatuses.includes(r.status) && !r.pricingOfferId
+          r =>
+            eligibleStatuses.includes(r.status) &&
+            r.requestRole !== 'bundle' &&
+            !r.parentRequestId
         );
         setAvailableRequests(eligible);
       } catch (error) {
@@ -419,7 +422,7 @@ export default function CreatePricingForm() {
       setSubmitStatus('success');
 
       setTimeout(() => {
-        router.push(getPortalPath('/pricing/'));
+        router.push(getPortalPath(`/requests/${request.id}/`));
       }, 1500);
     } catch (error) {
       console.error('Failed to create pricing request:', error);

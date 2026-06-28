@@ -58,6 +58,7 @@ export async function createRequest(
       type: data.type,
       status: REQUEST_STATUS.NEW as RequestStatus,
       priority: data.priority,
+      requestRole: 'standalone' as const,
       createdBy: userId,
       createdByName: userName,
       tags: data.tags || [],
@@ -115,6 +116,7 @@ export async function createRequestForClient(
       type: data.type,
       status: REQUEST_STATUS.NEW as RequestStatus,
       priority: data.priority,
+      requestRole: 'standalone' as const,
       createdBy: userId,
       createdByName: userName,
       clientEmail: email, // Store client email for auto-linking
