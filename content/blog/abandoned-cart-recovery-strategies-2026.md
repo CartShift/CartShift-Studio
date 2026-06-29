@@ -15,6 +15,8 @@ A cart is not a sale. It is a signal that someone got close enough to picture th
 
 The average abandonment rate reported by [Baymard Institute's cart abandonment benchmark](https://baymard.com/lists/cart-abandonment-rate) sits around seven out of ten carts. That number is useful as a warning, not as a target. Your job is not to chase a benchmark. Your job is to understand why your own shoppers leave and build a calmer path back.
 
+Before adding another recovery channel, use the [conversion audit checklist](/blog/conversion-audit-checklist) to find checkout friction that prevents the cart from being completed in the first place.
+
 ## Understanding Cart Abandonment: The Real Numbers
 
 ### Industry Benchmark (2026)
@@ -1074,6 +1076,8 @@ Every abandoned cart is money left on the table. Start recovering your lost sale
 עגלה היא לא מכירה. היא סימן שמישהו כבר התקרב מספיק כדי לדמיין את הקנייה, ואז משהו עצר אותו. לפעמים זה משלוח. לפעמים תזמון. לפעמים הקופה פשוט ביקשה יותר מדי סבלנות.
 
 [מדד נטישת העגלות של Baymard Institute](https://baymard.com/lists/cart-abandonment-rate) מצביע על ממוצע נטישה סביב שבע מתוך עשר עגלות. זה מספר טוב כדי להתעורר, לא כדי להילחץ. המטרה היא להבין למה הלקוחות שלכם עוזבים, ולבנות להם דרך חזרה שמרגישה טבעית ולא לוחצת.
+
+לפני שמוסיפים ערוץ שחזור נוסף, עברו על [צ׳קליסט אודיט ההמרות](/blog/conversion-audit-checklist) כדי לזהות חיכוך ב-checkout שמונע מהעגלה להפוך להזמנה מלכתחילה.
 
 ## הבנת נטישת עגלות: המספרים האמיתיים
 

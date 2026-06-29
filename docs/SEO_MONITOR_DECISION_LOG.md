@@ -139,3 +139,22 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Deployment: No Vercel deployment is expected from this monitor run.
 - Likely next fix: Run `pnpm build` in an isolated CI checkout or after all other worktree builds stop; if it still hangs after generating routes, investigate the existing static-generation worker timeouts before releasing either pending SEO article change.
 - Worktree safety: Unrelated social ledger/queue changes, the concurrent `content/blog/headless-shopify-guide.md` article, and `docs/SEO_AUTOMATION_DECISION_LOG.md` were preserved and left unstaged.
+
+## 2026-06-29 - CartShift SEO Technical Monitor
+
+- Outcome: Safe internal-link fix validated and released
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK with `siteFullUser`
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top evidence: `/en/blog/shopify-seo-complete-guide` and `/en/pricing` remain `Crawled - currently not indexed`; the Shopify guide's recorded crawl is April 26 and pricing's is April 20. `/en/terms` remains submitted and indexed. Search Console found zero submitted-sitemap warnings or errors. The strongest CTR opportunity was `shopify seo review` with 44 impressions, 0 clicks, and average position 17.3.
+- Technical diagnosis: Both non-indexed pages return live HTTP 200 responses with `index, follow`, self-referencing canonicals, correct locale alternates, and live sitemap membership. The default `/blog/shopify-seo-complete-guide` path returns a 307 to `/en/blog/shopify-seo-complete-guide`, and raw Markdown blog links are localized during rendering. No deterministic robots, canonical, hreflang, metadata, or sitemap defect mapped to a safe repo fix.
+- Analytics caution: GA4 access succeeded, but its largest declines were authenticated portal routes with zero current sessions; this was treated as a period/measurement signal rather than evidence for a public SEO rewrite. The 44-impression CTR sample also did not justify rewriting an already intent-aligned title.
+- Chosen action: Added one natural link to `/blog/conversion-audit-checklist` in both English and Hebrew sections of the underlinked abandoned-cart guide. The existing Markdown renderer will emit `/en/blog/*` and `/he/blog/*` crawl paths.
+- Files touched: `content/blog/abandoned-cart-recovery-strategies-2026.md`, this decision log, and `docs/seo-monitor-reports/2026-06-29T13-15-36-915Z-seo-monitor.{md,json}`.
+- Validation: Prettier passed for all touched files, both localized link strings were confirmed, `git diff --check` passed, and `pnpm build` completed successfully. Next.js compiled in 2.5 minutes, completed TypeScript in 4.1 minutes, and generated all 211 static pages after automatic timeout retries.
+- Commit and push: Pending final staging at the time of this log entry; only the four automation-owned paths above will be staged.
+- Deployment: Vercel deployment is expected after the validated commit reaches `origin/main`.
+- Notes: No property mismatch or unrelated worktree changes were present.
