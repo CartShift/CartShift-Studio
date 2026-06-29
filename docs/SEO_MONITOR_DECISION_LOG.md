@@ -158,3 +158,12 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Commit and push: Pending final staging at the time of this log entry; only the four automation-owned paths above will be staged.
 - Deployment: Vercel deployment is expected after the validated commit reaches `origin/main`.
 - Notes: No property mismatch or unrelated worktree changes were present.
+
+### 2026-06-29 follow-up: remaining content-quality action
+
+- Trigger: The user asked to continue through the monitor's prioritized findings after commit `dace3a6`.
+- Decision: Technical indexing signals still have no deterministic repo defect, and the 44-impression CTR sample remains too weak for a safe title rewrite. The remaining repo-backed content issue was `tiktok-shop-complete-guide-2026`, which had no internal blog links.
+- Chosen action: Added one natural link in both English and Hebrew to `/blog/product-photography-ecommerce-guide`; the Markdown renderer localizes the crawlable URLs by locale.
+- Files touched: `content/blog/tiktok-shop-complete-guide-2026.md` and this decision log.
+- Validation: Prettier, localized link checks, and `git diff --check` passed. `pnpm build` compiled in 3.3 minutes, completed TypeScript in 2.7 minutes, and generated all 211 static pages after automatic timeout retries.
+- Release: Validation passed; only the TikTok article and this decision-log update are eligible for the follow-up commit and push to `origin/main`.
