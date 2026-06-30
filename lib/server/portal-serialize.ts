@@ -1,7 +1,7 @@
 import 'server-only';
 
 import type { DocumentData } from 'firebase-admin/firestore';
-import { createTimestampLike } from '@/lib/utils/timestamp-like';
+import { createSerializableTimestamp } from '@/lib/utils/timestamp-like';
 
 function isAdminTimestamp(value: unknown): value is { toMillis: () => number } {
   return (
@@ -18,7 +18,7 @@ export function serializeFirestoreValue(value: unknown): unknown {
   }
 
   if (isAdminTimestamp(value)) {
-    return createTimestampLike(value.toMillis());
+    return createSerializableTimestamp(value.toMillis());
   }
 
   if (Array.isArray(value)) {

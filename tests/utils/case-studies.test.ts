@@ -56,6 +56,26 @@ describe('case studies normalization', () => {
     );
   });
 
+  it('loads Hands & Vision as a bilingual WordPress and WooCommerce case study', () => {
+    const englishStudy = getCaseStudyBySlug('hands-and-vision-artist-collective', 'en');
+    const hebrewStudy = getCaseStudyBySlug('hands-and-vision-artist-collective', 'he');
+
+    expect(englishStudy).not.toBeNull();
+    expect(englishStudy?.siteUrl).toBe('https://handsandvision.com/');
+    expect(englishStudy?.platform).toBe('WordPress + WooCommerce');
+    expect(englishStudy?.gallery).toHaveLength(4);
+    expect(englishStudy?.evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ value: '5 Service Verticals', tone: 'qualitative' }),
+        expect.objectContaining({ value: '13 Artist Profiles', tone: 'qualitative' }),
+      ])
+    );
+
+    expect(hebrewStudy?.title).toContain('Hands & Vision');
+    expect(hebrewStudy?.hero.supportingCopy).toContain('דו-לשונית');
+    expect(hebrewStudy?.content).toContain('## על Hands & Vision');
+  });
+
   it('keeps the homepage hero image as the first gallery item and default thumbnail', () => {
     const normalized = normalizeCaseStudyRecord(
       {

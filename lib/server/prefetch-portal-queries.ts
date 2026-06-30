@@ -34,6 +34,26 @@ export async function prefetchPortalPageData(
 
   const queryClient = createAppQueryClient();
 
+  try {
+    await prefetchPortalQueries(queryClient, context, scope, options);
+  } catch (error) {
+    console.error('[prefetchPortalPageData] Prefetch failed:', error);
+    return undefined;
+  }
+
+  if (queryClient.getQueryCache().getAll().length === 0) {
+    return undefined;
+  }
+
+  return dehydrate(queryClient);
+}
+
+async function prefetchPortalQueries(
+  queryClient: ReturnType<typeof createAppQueryClient>,
+  context: NonNullable<Awaited<ReturnType<typeof getPortalSessionContext>>>,
+  scope: PortalPrefetchScope,
+  options?: { requestId?: string }
+): Promise<void> {
   if (context.isAgency) {
     if (scope === 'dashboard' || scope === 'requests' || scope === 'workboard') {
       await queryClient.prefetchQuery({
@@ -94,10 +114,4 @@ export async function prefetchPortalPageData(
       });
     }
   }
-
-  if (queryClient.getQueryCache().getAll().length === 0) {
-    return undefined;
-  }
-
-  return dehydrate(queryClient);
 }

@@ -2,6 +2,7 @@
 
 import { HydrationBoundary, type DehydratedState } from '@tanstack/react-query';
 import { ReactNode } from 'react';
+import { rehydrateDehydratedState } from '@/lib/query/rehydrate-dehydrated-state';
 
 interface PortalQueryHydrationProps {
   state?: DehydratedState;
@@ -13,5 +14,5 @@ export function PortalQueryHydration({ state, children }: PortalQueryHydrationPr
     return children;
   }
 
-  return <HydrationBoundary state={state}>{children}</HydrationBoundary>;
+  return <HydrationBoundary state={rehydrateDehydratedState(state)}>{children}</HydrationBoundary>;
 }
