@@ -256,3 +256,21 @@ The automation should append a new entry for every run, even when it decides not
 - **Deployment:** Skipped. No files were staged, committed, or pushed because the required production build failed. Vercel Git deployment is not expected for this run.
 - **Likely fix:** Investigate the shared blog/static-generation path and current worker concurrency or timeout behavior, then rerun `pnpm build` in an isolated environment. The new route should be profiled alongside the existing routes that also exceeded 60 seconds before release.
 - **Worktree safety:** The workspace was clean before the automation created its article and decision-log changes.
+
+## 2026-06-30 - CartShift SEO Content Refresher
+
+- **Outcome:** Refreshed and approved for deployment
+- **Run time:** 2026-06-30T18:57:06+03:00
+- **Data sources used:** Automation memory, `docs/SEO_AUTOMATION_CREDENTIALS.md`, repo SEO docs, current `content/blog/` inventory, Google Search Console Search Analytics and URL Inspection for `sc-domain:cart-shift.com`, GA4 Data API, git status, and Git push dry run.
+- **Access verification:** Required Google credential categories were present through the repo's dotenv-aware `.env.local` path; Search Console query/page, sitemap, and URL Inspection requests succeeded; GA4 returned 145 rows; `git push --dry-run origin HEAD:main` succeeded. Secret values were not printed.
+- **Chosen page:** `content/blog/shopify-seo-complete-guide.md`
+- **Source data:** GSC for 2026-04-01 to 2026-06-29 showed the legacy `/blog/shopify-seo-complete-guide` path declining from 16 to 2 impressions (87.5%), while URL Inspection reported both that path and `/en/blog/shopify-seo-complete-guide` as crawled but not indexed. Query overlap included `shopify site seo report generator` across localized and legacy paths (36 impressions), plus `shopify seo results`, `shopify seo ranking`, and an evaluation query split between the guide and the performance-review article. GA4 access succeeded with 145 organic landing-page rows. The top 4-20 CTR opportunity remained `shopify seo review` for the article refreshed on 2026-06-24, so another immediate rewrite of that page was intentionally avoided before Google could reprocess it.
+- **Rationale:** The complete guide had the strongest actionable combination of indexation risk, declining visibility, duplicated URL/query signals, and intent overlap. A surgical refresh clarifies that this page owns broad Shopify product, collection, architecture, and ranking guidance while routing review, audit, and implementation-plan intent to dedicated resources.
+- **Target intent:** Informational | Commercial
+- **Primary keyword:** Shopify SEO guide 2026
+- **Supporting keywords:** Shopify product SEO, Shopify collection SEO, SEO for Shopify stores, Shopify SEO rankings, Shopify SEO audit, Shopify SEO review
+- **Changes made:** Refocused English and Hebrew metadata on products, collections, and rankings; refreshed the article date; added a bilingual resource-selection table that distinguishes guide, review, audit-checklist, and analyzer intent; and strengthened contextual anchor text to the dedicated Shopify SEO review article.
+- **Affected files:** `content/blog/shopify-seo-complete-guide.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Validation:** `pnpm exec prettier --check content/blog/shopify-seo-complete-guide.md` and `git diff --check` passed. `pnpm build` passed: compilation completed in 3.8 minutes, TypeScript in 4.0 minutes, and all 213 static pages generated after automatic retries for existing 60-second route timeouts. The build also emitted existing stale Browserslist-data and experimental type-stripping warnings.
+- **Deployment:** Validation passed; only the refreshed article and this decision-log entry are being committed and pushed to `origin/main`. Vercel is expected to deploy automatically from the main-branch Git integration.
+- **Worktree safety:** The workspace was clean before editing. Report-only SEO monitor artifacts were used for analysis, removed before release, and never staged; no unrelated files were modified or staged.
