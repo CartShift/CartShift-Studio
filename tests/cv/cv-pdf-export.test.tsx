@@ -4,13 +4,15 @@ import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { CVDocument } from '@/app/[locale]/(standalone)/cv/CVDocument';
 import { getEnglishCVData } from '@/lib/cv/cv-data';
+import { resolveCvPdfAssets } from '@/lib/cv/cv-media';
 
-function createCVDocument() {
-  return <CVDocument cv={getEnglishCVData()} />;
+async function createCVDocument() {
+  const resolvedAssets = await resolveCvPdfAssets();
+  return <CVDocument cv={getEnglishCVData()} resolvedAssets={resolvedAssets} />;
 }
 
 async function renderPdfBuffer() {
-  const stream = (await pdf(createCVDocument()).toBuffer()) as Readable;
+  const stream = (await pdf(await createCVDocument()).toBuffer()) as Readable;
 
   return new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = [];
