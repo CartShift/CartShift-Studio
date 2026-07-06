@@ -30,6 +30,7 @@
     "seo:monitor": "node scripts/seo-monitor.mjs",
     "seo:monitor:json": "node scripts/seo-monitor.mjs --json",
     "seo:monitor:apply": "node scripts/seo-monitor.mjs --apply",
+    "seo:reindex-hebrew": "node scripts/gsc-reindex-hebrew.mjs",
     "blog:thumbnails": "node scripts/generate-blog-thumbnails.mjs",
     "social:linkedin:publish": "node scripts/publish-linkedin-post.mjs",
     "social:linkedin:publish:dry-run": "node scripts/publish-linkedin-post.mjs --dry-run",

@@ -167,3 +167,19 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Files touched: `content/blog/tiktok-shop-complete-guide-2026.md` and this decision log.
 - Validation: Prettier, localized link checks, and `git diff --check` passed. `pnpm build` compiled in 3.3 minutes, completed TypeScript in 2.7 minutes, and generated all 211 static pages after automatic timeout retries.
 - Release: Validation passed; only the TikTok article and this decision-log update are eligible for the follow-up commit and push to `origin/main`.
+## 2026-07-05 - CartShift SEO Technical Monitor
+
+- Outcome: Reported
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top issue: Search Console technical
+- Recommended action: Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.
+- Affected files: `docs/seo-monitor-reports/2026-07-05T13-04-31-191Z-seo-monitor.md`
+- Validation: Report generated; no code/content changes applied.
+- Deployment: Not attempted by monitor script.
+- Notes: No property mismatch detected.
+

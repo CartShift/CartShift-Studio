@@ -70,7 +70,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
             className={cn(
               'mx-auto border shadow-2xl',
               isCompact
-                ? 'max-w-xl rounded-xl border-white/10 bg-slate-950/92 p-3 text-white backdrop-blur-xl shadow-slate-950/30'
+                ? 'max-w-xl rounded-xl border-slate-200/80 bg-white/95 p-3 text-slate-900 shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/92 dark:text-white dark:shadow-slate-950/30'
                 : 'max-w-4xl rounded-2xl border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-800 md:p-6'
             )}
           >
@@ -85,7 +85,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
                   className={cn(
                     'leading-relaxed',
                     isCompact
-                      ? 'text-xs text-white/78'
+                      ? 'text-xs text-slate-600 dark:text-white/78'
                       : 'text-sm text-surface-600 dark:text-surface-400 md:text-base'
                   )}
                 >
@@ -94,7 +94,9 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
                     href="/privacy"
                     className={cn(
                       'font-semibold hover:underline',
-                      isCompact ? 'text-primary-300' : 'text-accent-600 dark:text-accent-400'
+                      isCompact
+                        ? 'text-primary-700 dark:text-primary-300'
+                        : 'text-accent-600 dark:text-accent-400'
                     )}
                     aria-label={content.learnMore}
                   >
@@ -108,7 +110,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
                   className={cn(
                     'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     isCompact
-                      ? 'text-white/60 hover:text-white'
+                      ? 'text-slate-500 hover:text-slate-900 dark:text-white/60 dark:hover:text-white'
                       : 'text-surface-600 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white'
                   )}
                 >

@@ -55,8 +55,8 @@ const projects = [
   {
     slug: 'rightflow',
     variants: [
-      { locale: 'en', theme: 'light', url: 'https://right-flow.com/' },
-      { locale: 'en', theme: 'dark', url: 'https://right-flow.com/' },
+      { locale: 'en', theme: 'light', url: 'https://right-flow.com/en' },
+      { locale: 'en', theme: 'dark', url: 'https://right-flow.com/en' },
       { locale: 'he', theme: 'light', url: 'https://right-flow.com/he' },
       { locale: 'he', theme: 'dark', url: 'https://right-flow.com/he' },
     ],
@@ -65,6 +65,15 @@ const projects = [
       await page.evaluate(({ theme }) => {
         localStorage.setItem('theme', theme);
       }, variant);
+    },
+    async beforeScreenshot(page) {
+      await page.evaluate(() => {
+        const button = Array.from(document.querySelectorAll('button')).find(
+          (el) => el.textContent?.trim() === 'Reject optional'
+        );
+        button?.click();
+      });
+      await wait(400);
     },
   },
 ];
@@ -88,6 +97,9 @@ async function captureVariant(browser, project, variant) {
       document.documentElement.classList.toggle('light', theme === 'light');
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, variant);
+    if (project.beforeScreenshot) {
+      await project.beforeScreenshot(page);
+    }
     await wait(2200);
     await page.screenshot({ path: output, type: 'png', fullPage: false });
     console.log(`Captured ${project.slug} ${variant.locale}/${variant.theme}: ${output}`);

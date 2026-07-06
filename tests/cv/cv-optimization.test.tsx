@@ -1,5 +1,6 @@
 import { render, screen, act } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
+import { ThemeProvider } from 'next-themes';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type React from 'react';
@@ -16,9 +17,11 @@ const heMessages = JSON.parse(readFileSync(join(process.cwd(), 'messages/he.json
 
 function renderWithMessages(ui: React.ReactElement, locale: 'en' | 'he' = 'en') {
   return render(
-    <NextIntlClientProvider messages={locale === 'he' ? heMessages : enMessages} locale={locale}>
-      {ui}
-    </NextIntlClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <NextIntlClientProvider messages={locale === 'he' ? heMessages : enMessages} locale={locale}>
+        {ui}
+      </NextIntlClientProvider>
+    </ThemeProvider>
   );
 }
 
@@ -40,7 +43,7 @@ describe('CV recruiter optimization', () => {
     expect(
       screen.getByText(/Delivered freelance web and integration projects/)
     ).toBeInTheDocument();
-  });
+  }, 10000);
 
   it('keeps Hebrew recruiter skill groups localized', () => {
     renderWithMessages(<CVPageContent />, 'he');

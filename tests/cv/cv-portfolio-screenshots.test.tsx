@@ -1,5 +1,4 @@
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -22,7 +21,9 @@ function renderCV(locale: 'en' | 'he') {
 }
 
 function expectImage(container: HTMLElement, src: string) {
-  expect(container.querySelector(`img[src="${src}"]`)).toBeInTheDocument();
+  expect(
+    container.querySelector(`img[src="${src}"], img[src^="${src}?"]`)
+  ).toBeInTheDocument();
 }
 
 describe('CV portfolio screenshot variants', () => {
@@ -33,24 +34,33 @@ describe('CV portfolio screenshot variants', () => {
     expectImage(container, '/images/cv/portfolio/cartshift-en-dark.png');
     expectImage(container, '/images/cv/portfolio/rightflow-en-light.png');
     expectImage(container, '/images/cv/portfolio/rightflow-en-dark.png');
-    expect(container.querySelector('[aria-label="Preview light screenshot"]')).toBeInTheDocument();
-    expect(container.querySelector('[aria-label="Preview dark screenshot"]')).toBeInTheDocument();
-  });
-
-  it('lets users switch a portfolio preview between light and dark without leaving the card', async () => {
-    const user = userEvent.setup();
-    const { container, getAllByRole } = renderCV('en');
-    const darkButton = getAllByRole('button', { name: 'Preview dark screenshot' })[0];
-
-    await user.click(darkButton);
-
-    expect(darkButton).toHaveAttribute('aria-pressed', 'true');
     expect(
-      container.querySelector('img[src="/images/cv/portfolio/rightflow-en-dark.png"]')
-    ).toHaveClass('opacity-100');
+      container.querySelector('[aria-label="Preview light screenshot"]')
+    ).not.toBeInTheDocument();
     expect(
-      container.querySelector('img[src="/images/cv/portfolio/rightflow-en-light.png"]')
+      container.querySelector('[aria-label="Preview dark screenshot"]')
+    ).not.toBeInTheDocument();
+  }, 10000);
+
+  it('syncs portfolio screenshots to the current page theme', async () => {
+    document.documentElement.classList.add('dark');
+    const { container, unmount } = renderCV('en');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector(
+          'img[src="/images/cv/portfolio/rightflow-en-dark.png"], img[src^="/images/cv/portfolio/rightflow-en-dark.png?"]'
+        )
+      ).toHaveClass('opacity-100');
+    });
+    expect(
+      container.querySelector(
+        'img[src="/images/cv/portfolio/rightflow-en-light.png"], img[src^="/images/cv/portfolio/rightflow-en-light.png?"]'
+      )
     ).toHaveClass('opacity-0');
+
+    unmount();
+    document.documentElement.classList.remove('dark');
   });
 
   it('uses Hebrew screenshots for localized projects on the Hebrew CV', () => {

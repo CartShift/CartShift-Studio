@@ -17,7 +17,10 @@ export default async function CvLayout({
   const messages = await getMessages();
 
   return (
-    <BaseClientProviders locale={activeLocale} messages={pickClientMessages(messages, ['cv', 'common'])}>
+    <BaseClientProviders
+      locale={activeLocale}
+      messages={pickClientMessages(messages, ['cv', 'common', 'portal'])}
+    >
       <GoogleAnalytics />
       <AnalyticsProvider>{children}</AnalyticsProvider>
     </BaseClientProviders>

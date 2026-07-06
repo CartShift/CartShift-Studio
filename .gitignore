@@ -19,6 +19,8 @@
 # misc
 .DS_Store
 *.pem
+tmp-*
+*.tmp
 
 # debug
 npm-debug.log*
@@ -42,4 +44,10 @@ next-env.d.ts
 
 build_out/
 .vercel
-.env*.local
+
+# operational / generated runtime data (keep *.example.json templates)
+/docs/seo-monitor-reports/*
+!/docs/seo-monitor-reports/README.md
+/data/social/*.json
+/data/social/*.log
+!/data/social/*.example.json

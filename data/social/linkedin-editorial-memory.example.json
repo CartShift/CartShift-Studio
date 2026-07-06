@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "strategy": {
+    "maxRecentPosts": 32,
+    "topicCooldownPosts": 6,
+    "candidatePoolSize": 4
+  },
+  "recentPosts": [],
+  "topicHistory": []
+}

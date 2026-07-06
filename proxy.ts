@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
+import {
+  buildLocalizedBlogRedirectPath,
+  resolveRequestLocale,
+} from './lib/i18n/resolve-request-locale';
 import { routing } from './i18n/routing';
 
-const handleI18nRouting = createMiddleware(routing);
+const handleI18nRouting = createMiddleware({
+  ...routing,
+  alternateLinks: false,
+});
 
 const ENABLE_PORTAL_SUBDOMAIN = true;
 const SESSION_COOKIE = '__session';
@@ -34,6 +41,24 @@ function getPortalPathFromRequest(pathname: string, isSubdomain: boolean): strin
 function getLocaleFromPath(pathname: string): string {
   const first = pathname.split('/').filter(Boolean)[0];
   return first && routing.locales.includes(first as 'en' | 'he') ? first : routing.defaultLocale;
+}
+
+function redirectUnlocalizedBlog(request: NextRequest): NextResponse | null {
+  const locale = resolveRequestLocale({
+    cookieLocale: request.cookies.get('NEXT_LOCALE')?.value,
+    countryCode: request.headers.get('x-vercel-ip-country'),
+    acceptLanguage: request.headers.get('accept-language'),
+    defaultLocale: routing.defaultLocale as 'en' | 'he',
+  });
+
+  const localizedPath = buildLocalizedBlogRedirectPath(request.nextUrl.pathname, locale);
+  if (!localizedPath) {
+    return null;
+  }
+
+  const redirectUrl = request.nextUrl.clone();
+  redirectUrl.pathname = localizedPath;
+  return NextResponse.redirect(redirectUrl, 308);
 }
 
 export function proxy(request: NextRequest) {
@@ -120,6 +145,11 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL(`/${locale}/portal/`, request.url));
       }
     }
+  }
+
+  const blogRedirect = redirectUnlocalizedBlog(request);
+  if (blogRedirect) {
+    return blogRedirect;
   }
 
   return handleI18nRouting(request);

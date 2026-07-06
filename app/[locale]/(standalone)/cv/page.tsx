@@ -31,9 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${siteUrl}/${locale}/cv`,
       images: [
         {
-          url: '/images/yotam-programmer.png',
-          width: 800,
-          height: 800,
+          url: '/images/cv/yotam-studio-cv.png',
+          width: 889,
+          height: 1024,
           alt: t('name'),
         },
       ],
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: t('title'),
       description: t('summary.metaDescription'),
-      images: ['/images/yotam-programmer.png'],
+      images: ['/images/cv/yotam-studio-cv.png'],
     },
   };
 }
@@ -68,7 +68,7 @@ export default async function CVPage({ params }: Props) {
       description: t('summary.metaDescription'),
       email: t('email'),
       url: `${siteUrl}/${locale}/cv`,
-      image: `${siteUrl}/images/yotam-programmer.png`,
+      image: `${siteUrl}/images/cv/yotam-studio-cv.png`,
       sameAs: ['https://linkedin.com/in/yotam-faraggi', 'https://github.com/yotamon'],
       worksFor: {
         '@type': 'Organization',

@@ -43,7 +43,7 @@ The `vercel.json` and `package.json` are configured to handle the build automati
 
 ### Node.js Version
 
-The project specifies `"node": ">=18.17.0"` in `package.json`. Vercel should automatically select a compatible Node.js version (e.g., Node 18 or 20).
+The project requires **Node.js 24.x** (see `package.json` `engines` and `.nvmrc`). Configure Vercel to use Node 24.
 
 ### Troubleshooting
 

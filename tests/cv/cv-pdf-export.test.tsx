@@ -1,61 +1,12 @@
 import { pdf } from '@react-pdf/renderer';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { Readable } from 'node:stream';
 import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { CVDocument } from '@/app/[locale]/(standalone)/cv/CVDocument';
-
-const enMessages = JSON.parse(readFileSync(join(process.cwd(), 'messages/en.json'), 'utf8'));
-
-const experienceKeys = [
-  'cartshift',
-  'curalife',
-  'paragonex',
-  'ecommerce_venture',
-  'hot',
-  'leumi',
-  'entrepreneurship',
-  'elbit',
-  'airforce',
-] as const;
-
-const skillKeys = ['primary', 'ecommerce', 'ai', 'cloud', 'legacy'] as const;
-const languageKeys = ['hebrew', 'english', 'german'] as const;
+import { getEnglishCVData } from '@/lib/cv/cv-data';
 
 function createCVDocument() {
-  const cv = enMessages.cv;
-
-  return (
-    <CVDocument
-      name={cv.name}
-      subtitle={cv.subtitle}
-      location={cv.location}
-      email={cv.email}
-      github="https://github.com/yotamon"
-      linkedin="https://linkedin.com/in/yotam-faraggi"
-      summary={cv.summary.text}
-      experiences={experienceKeys.map(key => ({
-        company: cv.experience[key].company,
-        title: cv.experience[key].title,
-        duration: cv.experience[key].duration,
-        durationYears: cv.experience[key].durationYears,
-        location: 'location' in cv.experience[key] ? cv.experience[key].location : undefined,
-        description:
-          'description' in cv.experience[key] ? cv.experience[key].description : undefined,
-        highlights: cv.experience[key].highlights,
-      }))}
-      skills={skillKeys.map(key => ({
-        category: cv.skills[key].category,
-        items: cv.skills[key].items,
-      }))}
-      education={cv.education}
-      languages={languageKeys.map(key => ({
-        name: cv.languageSkills[key].name,
-        level: cv.languageSkills[key].level,
-      }))}
-    />
-  );
+  return <CVDocument cv={getEnglishCVData()} />;
 }
 
 async function renderPdfBuffer() {
@@ -87,8 +38,11 @@ function extractPdfText(buffer: Buffer) {
   return [...decodedStreams.matchAll(/<([0-9A-Fa-f]+)>/g)]
     .map(match => Buffer.from(match[1], 'hex').toString('latin1'))
     .join('')
-    .replace(/\s+/g, ' ')
-    .toLowerCase();
+    .replace(/\s+/g, ' ');
+}
+
+function expectPdfTextIncludes(text: string, expected: string) {
+  expect(text.toLowerCase()).toContain(expected.toLowerCase());
 }
 
 describe('CV PDF export', () => {
@@ -98,16 +52,41 @@ describe('CV PDF export', () => {
     const text = extractPdfText(buffer);
 
     expect(raw.match(/\/Type\s*\/Page\b/g)).toHaveLength(2);
+    expect(raw.match(/\/Subtype\s*\/Image\b/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(text.trim().length).toBeGreaterThan(1000);
+
     expect(raw).toContain('/URI (mailto:yotamon@gmail.com)');
+    expect(raw).toContain('/URI (tel:+4915776211298)');
     expect(raw).toContain('/URI (https://linkedin.com/in/yotam-faraggi)');
     expect(raw).toContain('/URI (https://github.com/yotamon)');
+    expect(raw).toContain('/URI (https://cart-shift.com/en/cv)');
 
-    expect(text).toContain('professional summary');
-    expect(text).toContain('professional experience');
-    expect(text).toContain('technical skills');
-    expect(text).toContain('education');
-    expect(text).toContain('languages');
-    expect(text).toContain('primary stack');
-    expect(text).toContain('yotam faraggi');
-  }, 15_000);
+    [
+      'Yotam Faraggi',
+      'Senior Product Engineer',
+      'EU citizen',
+      '+4915776211298',
+      'Professional Experience',
+      'Technical Skills',
+      'Live CV & Portfolio',
+      'CartShift Studio',
+      'Curalife',
+      'ParagonEX',
+      'HOT',
+      'Leumi Bank',
+      'Elbit Systems',
+      'Israeli Air Force',
+    ].forEach(expected => expectPdfTextIncludes(text, expected));
+
+    [
+      'CartShift Studio CV',
+      'R&D Lead & Senior Full Stack Developer',
+      'Professional Summary',
+      'Page 1 of 2',
+      'Page 2 of 2',
+    ].forEach(forbidden => {
+      expect(text).not.toContain(forbidden);
+      expect(raw).not.toContain(forbidden);
+    });
+  }, 30_000);
 });

@@ -1,186 +1,186 @@
 {
   "cv": {
-    "title": "יותם פרג'י - קורות חיים",
+    "title": "יותם פרג'י - קורות חיים Senior Product Engineer",
     "name": "יותם פרג'י",
-    "subtitle": "מוביל מו\"פ ומפתח Full Stack בכיר | מסחר אלקטרוני ופתרונות AI",
+    "subtitle": "Senior Product Engineer | Full-Stack Web Products",
     "location": "ברלין, גרמניה",
-    "phone": "+49 157 76211298",
+    "workAuthorization": "אזרח האיחוד האירופי · מורשה לעבוד בגרמניה",
+    "phone": "+972503591552",
     "email": "yotamon@gmail.com",
     "linkedin": "לינקדאין",
     "github": "GitHub",
-    "saveAsPdf": "שמור כ-PDF",
+    "portfolioLink": "פורטפוליו",
+    "saveAsPdf": "הורדת קורות חיים",
+    "preparingPdf": "מכין PDF",
     "status": {
       "openToWork": "פתוח להזדמנויות"
+    },
+    "labels": {
+      "earlierExperience": "ניסיון הנדסי מוקדם"
     },
     "sections": {
       "summary": "תקציר מקצועי",
       "portfolio": "פורטפוליו נבחר",
       "experience": "ניסיון מקצועי",
       "skills": "מיומנויות טכניות",
-      "education": "השכלה",
+      "education": "השכלה נוספת",
       "languages": "שפות"
     },
     "portfolio": {
-      "intro": "ארבעה מוצרים ופרויקטים חיים שיזמתי, עיצבתי, פיתחתי ואני ממשיך להפעיל - בין סטודיו איקומרס, מיתוג אמן, מוצר פרודקטיביות ויזואלי ופלטפורמת תאימות מונעת AI.",
+      "intro": "פרויקטי מוצר ו-Web נבחרים שמציגים עבודה מעשית במסחר, כלי עבודה, אתרי אמנים ואפליקציות עתירות מסמכים.",
       "liveLabel": "פרויקט חי",
-      "featuredLabel": "מיזם בהובלה אישית",
-      "visitProject": "לצפייה בפרויקט החי",
+      "featuredLabel": "בהובלת מייסד",
+      "visitProject": "לצפייה בפרויקט",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "נוכחות דיגיטלית פרימיום לסטודיו איקומרס שמחברת מיצוב סוכנות, דפי שירות מוכווני המרה, כלי ניתוח חנות חינמי ופורטל לקוחות למערכת אחת מגובשת.",
-          "signals": [
-            "מיתוג סוכנות, יצירת לידים ו-UX לפורטל",
-            "מיצוב מוכוון המרה ל-Shopify ו-WordPress"
-          ]
+          "description": "אתר סטודיו ציבורי ופורטל לקוחות לעבודת e-commerce ופיתוח Web, סביב גילוי שירותים, קליטת פרויקטים ושיתוף פעולה עם לקוחות.",
+          "signals": ["אפליקציית Next.js", "פורטל לקוחות ואתר ציבורי"]
         },
         "atlasIrwin": {
           "eyebrow": "Atlas Irwin",
-          "description": "אתר אמן מוזיקלי שהופך קמפיין ריליס לבית דיגיטלי אימרסיבי, עם זהות חזקה, לינקים לפלטפורמות, יצירת קשר ואיסוף קהל בחוויה מהירה על Vercel.",
-          "signals": [
-            "זהות אמן, UX לריליס ואיסוף קהל",
-            "Frontend ב-Next.js עם ויזואליות רספונסיבית מלוטשת"
-          ]
+          "description": "אתר לאמן מוזיקלי עבור מידע על ריליסים, קישורי סטרימינג, איסוף קהל ודרכי קשר בחוויה רספונסיבית על Vercel.",
+          "signals": ["אתר אמן", "Frontend רספונסיבי"]
         },
         "starlinker": {
           "eyebrow": "StarLinker",
-          "description": "מערכת תכנון ויזואלית לאנשים שחושבים לא ליניארית, שממפה מטרות, משימות, הרגלים והערות על קנבס מחובר, ומשתמשת ב-AI כדי להציע את הצעד הבא.",
-          "signals": [
-            "חשיבה מוצרית מרחבית עם הנחיית AI",
-            "אינטראקציות מלוטשות למוצר פרודקטיביות יומיומי"
-          ]
+          "description": "מוצר תכנון ויזואלי למיפוי מטרות, משימות, הרגלים והערות על קנבס מחובר עם הצעות AI לצעד הבא.",
+          "signals": ["ממשק פרודקטיביות", "Workflow בסיוע AI"]
         },
         "rightflow": {
           "eyebrow": "RightFlow",
-          "description": "פלטפורמת אימות מונעת AI לעובדים וצוותי HR בישראל שבודקת הפקדות פנסיה ושכר, מזהה פערים ומייצאת דוחות מוכנים לשיתוף.",
-          "signals": ["אינטליגנציית מסמכים וזרימות תאימות", "UX מבוסס אמון לנתונים פיננסיים רגישים"]
+          "description": "פלטפורמת בדיקת מסמכים ואימות הפקדות פנסיה ושכר, כולל זרימות סקירה מובנות וייצוא דוחות.",
+          "signals": ["זרימות מסמכים", "נתונים פיננסיים רגישים"]
         }
       },
       "clients": {
         "kicker": "עבודות לקוחות",
-        "title": "עבודות הפרילנס והלקוחות מאחורי הסטודיו",
-        "description": "עמוד העבודות מרחיב את התמונה עם פרויקטים ללקוחות, רידיזיינים ובניות איקומרס שסופקו במסגרת שיתופי פעולה פרילנסריים.",
-        "cta": "לצפייה ב-Case Studies של לקוחות"
+        "title": "פרויקטי פרילנס ולקוחות",
+        "description": "עמוד העבודות כולל פרויקטים ללקוחות, רידיזיינים ובניות e-commerce שבוצעו במסגרת פרילנס וסטודיו.",
+        "cta": "לצפייה בעבודות לקוחות"
       }
     },
     "summary": {
-      "text": "מוביל מו\"פ ומפתח Full Stack בכיר עם יותר מ-10 שנות ניסיון בבניית פלטפורמות מסחר אלקטרוני, בריאות ואינטגרציה ארגונית. מתמחה ב-Next.js, TypeScript, אינטגרציות Shopify ו-HubSpot, תשתיות GCP/Firebase ואוטומציות עבודה מבוססות AI. לאחרונה הובלתי מערכות טלרפואה ואיקומרס תואמות HIPAA עם 99.9% זמינות, 85% פחות כשלי אינטגרציה ושיפורי ביצועים משמעותיים בפאנלים במובייל.",
-      "metaDescription": "מפתח Full Stack בכיר ומוביל מו\"פ המתמחה ב-Next.js, TypeScript, Shopify, HubSpot, GCP/Firebase ואוטומציות AI."
+      "text": "מפתח Full Stack בכיר עם יותר מ-10 שנות ניסיון בבניית מוצרי Web ומערכות פנימיות בתחומי e-commerce, בריאות, פינטק ותוכנה ארגונית. אני עובד על Frontend, Backend, אינטגרציות ותשתיות, עם דגש על הפיכת צרכים מוצריים מעשיים לתוכנה אמינה. העבודה האחרונה שלי כללה זרימות טלרפואה ו-e-commerce ללקוחות, אינטגרציות Shopify ו-HubSpot, אפליקציות React ו-Next.js מודרניות וכלי עבודה בסיוע AI.",
+      "metaDescription": "Senior Product Engineer ומפתח Full Stack בברלין הבונה מוצרי Web, אינטגרציות, מערכות e-commerce וכלי עבודה בסיוע AI."
     },
     "experience": {
       "cartshift": {
         "company": "CartShift Studio",
-        "title": "מייסד ומפתח ראשי",
-        "duration": "נובמבר 2025 - הווה",
-        "durationYears": "נוכחי",
-        "location": "ברלין, גרמניה",
-        "description": "הקמה והובלת סוכנות פרילנס מתמחה המספקת פתרונות פיתוח אתרי מסחר אלקטרוני מקצה לקצה ללקוחות בינלאומיים.",
+        "title": "מייסד ו-Product Engineer",
+        "duration": "November 2025 - Present",
+        "durationYears": "Current",
+        "location": "Berlin, Germany",
+        "description": "סטודיו עצמאי לפיתוח מוצרי Web המתמקד ב-e-commerce, פלטפורמות Web ואוטומציית תהליכי עבודה ללקוחות בינלאומיים.",
         "highlights": [
-          "בניית חנויות Shopify מותאמות אישית ופתרונות e-commerce headless עם Next.js וסטאק טכנולוגי מודרני",
-          "יישום כלי אוטומציה מונעי AI לייעול תהליכי עבודה של לקוחות והגברת יעילות תפעולית",
-          "אספקת פיתוח מחזור מלא מאסטרטגיה ועיצוב ועד פריסה ואופטימיזציה"
+          "בניית חנויות Shopify וחוויות e-commerce headless עם Next.js, React, TypeScript וכלי Web מודרניים.",
+          "פיתוח כלי עבודה בסיוע AI וכלים פנימיים למשימות תפעוליות.",
+          "ניהול פרויקטים משלב דרישות ותכנון טכני דרך מימוש, פריסה ושיפורים שוטפים."
         ]
       },
       "curalife": {
         "company": "Curalife",
-        "title": "מפתח Full Stack ומוביל מו\"פ",
-        "duration": "יולי 2021 - נובמבר 2025",
-        "durationYears": "4 שנים ו-5 חודשים",
-        "location": "תל אביב, ישראל",
-        "description": "הובלתי את כל יוזמות המו\"פ הדיגיטליות של החברה, תכנון תשתית מסחר אלקטרוני סקיילבילית ובניית פתרונות חדשניים ששיפרו את חוויית הלקוח ויעילות התפעול.",
+        "title": "Full Stack Developer & R&D Lead",
+        "duration": "July 2021 - November 2025",
+        "durationYears": "4 years 5 months",
+        "location": "Tel Aviv, Israel",
+        "description": "עבודה על מערכות טלרפואה ו-e-commerce ללקוחות, אינטגרציות, מודרניזציית Frontend ותשתיות ענן.",
         "highlights": [
-          "בניית פאנל טלרפואה מלא תואם HIPAA (Next.js 15, React, TypeScript, GCP) המטפל באלפי רישומי מטופלים עם 99.9% זמינות",
-          "תכנון ויישום ארכיטקטורה רב-שכבתית עם לקוח API עמיד, הפחתת כשלי אינטגרציה ב-85% במערכות Shopify ו-HubSpot",
-          "הובלת מעבר לסטאק טכנולוגי מודרני, שיפור זמני טעינה ב-60% והגדלת שיעורי המרה במובייל",
-          "פריסת תשתית GCP מאובטחת המבטיחה תאימות HIPAA מלאה והגנה על פרטיות המשתמש"
+          "בנייה ותחזוקה של Funnel טלרפואה תואם HIPAA באמצעות Next.js, React, TypeScript ו-Google Cloud Platform.",
+          "עבודה על אינטגרציות Shopify ו-HubSpot שתמכו בזרימות לקוח ותפעול.",
+          "הובלת עבודת מעבר לסטאק Frontend מודרני ושיפור זרימות מרכזיות ללקוחות.",
+          "בנייה ופריסה של תשתיות ענן עם דגש על פרטיות, אמינות ותחזוקה."
         ]
       },
       "paragonex": {
         "company": "ParagonEX",
         "title": "מפתח תוכנה ואינטגרציות",
-        "duration": "אוגוסט 2019 - יולי 2021",
-        "durationYears": "שנתיים",
-        "location": "אזור תל אביב, ישראל",
-        "description": "מתן פתרונות Full Stack לפלטפורמות פינטק, אופטימיזציית ביצועים ובניית אינטגרציות חזקות עבור מחלקת השותפים.",
+        "duration": "August 2019 - July 2021",
+        "durationYears": "2 years",
+        "location": "Tel Aviv Area, Israel",
+        "description": "בנייה ותחזוקה של חוויות Web ואינטגרציות לפעילות שותפים בתחום הפינטק.",
         "highlights": [
-          "פיתוח ואופטימיזציה של פתרונות WordPress בתעבורה גבוהה באמצעות Sage ו-Laravel, משרת 50K+ משתמשים חודשיים",
-          "בניית שכבת אינטגרציה מותאמת המחברת מערכות שותפים עם הפלטפורמה הראשית, הגדלת מהירות קליטת שותפים ב-40%",
-          "יישום אופטימיזציית Webpack שהפחיתה גודל Bundle ב-35% ושיפרה זמני טעינה"
+          "פיתוח ואופטימיזציה של פתרונות WordPress באמצעות Sage ו-Laravel לאתרים בעלי תעבורה גבוהה.",
+          "בניית אינטגרציות בין מערכות שותפים לשירותי הפלטפורמה המרכזיים.",
+          "עבודה על אופטימיזציית Build ב-Frontend ושיפורי ביצועי טעינה."
         ]
       },
       "ecommerce_venture": {
         "company": "עצמאי",
-        "title": "מייסד ומפתח מסחר אלקטרוני",
-        "duration": "אפריל 2018 - יולי 2019",
-        "durationYears": "שנה ו-4 חודשים",
+        "title": "מייסד ומפתח E-Commerce",
+        "duration": "April 2018 - July 2019",
+        "durationYears": "1 year 4 months",
         "highlights": [
-          "בניתי והפעלתי ניסויי e-commerce ישירים לצרכן, כולל הקמת חנות, תפעול מוצרים, אנליטיקה ושיפורי המרה",
-          "צברתי ניסיון מעשי ב-Shopify, WordPress, תשלומים, Fulfillment וגיוס לקוחות שהפך לבסיס לעבודת Full Stack במסחר"
+          "בנייה והפעלה של ניסויי e-commerce ישירים לצרכן, כולל הקמת Storefront, תפעול, תשלומים, Fulfillment, אנליטיקה ועבודת Conversion.",
+          "צבירת ניסיון מעשי עם Shopify, WordPress, גיוס לקוחות ותפעול מסחר יומיומי."
         ]
       },
       "hot": {
         "company": "HOT",
         "title": "מפתח אינטגרציות",
-        "duration": "פברואר 2017 - מרץ 2018",
-        "durationYears": "שנה ו-2 חודשים",
-        "location": "ישראל",
+        "duration": "February 2017 - March 2018",
+        "durationYears": "1 year 2 months",
+        "location": "Israel",
         "highlights": [
-          "בניית פתרונות אינטגרציה ארגוניים באמצעות Oracle OSB (11g-12g), WebLogic ו-IBM DataPower עבור ספק הכבלים הגדול בישראל",
-          "פיתוח שירותי אינטרנט בתפוקה גבוהה המטפלים ב-10K+ עסקאות יומיות עם JMS Queues",
-          "יישום טרנספורמציות נתונים מורכבות באמצעות XSL ו-XQuery, הפחתת זמן עיבוד ב-50%"
+          "בניית אינטגרציות ארגוניות ושירותי Web בעלי תפוקה גבוהה באמצעות Oracle OSB, WebLogic, IBM DataPower ו-JMS queues."
         ]
       },
       "leumi": {
         "company": "בנק לאומי",
         "title": "מפתח אינטגרציות",
-        "duration": "מרץ 2016 - דצמבר 2016",
-        "durationYears": "10 חודשים",
-        "location": "לוד, ישראל",
+        "duration": "March 2016 - December 2016",
+        "durationYears": "10 months",
+        "location": "Lod, Israel",
         "highlights": [
-          "פיתוח אינטגרציות בנקאיות קריטיות באמצעות IBM WebSphere ESB (WMB 7.0/IIB 9.0) עבור אחד הבנקים הגדולים בישראל",
-          "בנייה ותחזוקה של שירותי אינטרנט בזמינות גבוהה עם IBM DataPower המבטיחים 99.99% זמינות",
-          "תכנון ניתוב הודעות מאובטח עם MQ Queues המעבד אלפי עסקאות בנקאיות יומיות"
-        ]
-      },
-      "elbit": {
-        "company": "אלביט מערכות",
-        "title": "מפתח תוכנה",
-        "duration": "דצמבר 2013 - ספטמבר 2014",
-        "durationYears": "10 חודשים",
-        "highlights": [
-          "תרומה למערכת \"פיקוד ושליטה\" קריטית עבור מסוקים צבאיים",
-          "פיתוח רכיבי זמן אמת ב-C++, COM ו-VB המבטיחים זמני תגובה של מילישניות",
-          "ניהול מסדי נתונים Oracle ו-SQL התומכים בפעולות ביטחוניות קריטיות"
+          "פיתוח ותחזוקה של אינטגרציות בנקאיות ושירותים בזמינות גבוהה באמצעות IBM WebSphere ESB, IBM Integration Bus ו-DataPower."
         ]
       },
       "entrepreneurship": {
         "company": "עצמאי",
         "title": "יזם ומפתח עצמאי",
-        "duration": "אוקטובר 2014 - פברואר 2016",
-        "durationYears": "שנה ו-5 חודשים",
+        "duration": "October 2014 - February 2016",
+        "durationYears": "1 year 5 months",
         "highlights": [
-          "סיפקתי פרויקטי Web ואינטגרציה כפרילנסר לצד פיתוח רעיונות מוצר עצמאיים משלב גילוי הצורך ועד השקה",
-          "ניהלתי תקשורת לקוחות, אפיון, פיתוח ופריסה עבור אתרי עסקים קטנים וכלים פנימיים מותאמים"
+          "מסירת פרויקטי Web ואינטגרציה לעסקים קטנים לצד בניית רעיונות מוצר עצמאיים מדרישות ועד השקה."
+        ]
+      },
+      "elbit": {
+        "company": "אלביט מערכות",
+        "title": "מפתח תוכנה",
+        "duration": "December 2013 - September 2014",
+        "durationYears": "10 months",
+        "highlights": [
+          "תרומה לתוכנת פיקוד ושליטה בזמן אמת למערכות מסוקים צבאיים באמצעות C++, COM ו-VB."
         ]
       },
       "airforce": {
-        "company": "חיל האוויר הישראלי - \"ממר\"ם\"",
+        "company": "חיל האוויר הישראלי / ממרם",
         "title": "מתכנת תוכנה",
-        "duration": "מרץ 2011 - ספטמבר 2014",
-        "durationYears": "3 שנים ו-7 חודשים",
+        "duration": "March 2011 - September 2014",
+        "durationYears": "3 years 7 months",
         "highlights": [
-          "חבר ליבה בצוות אינטגרציות המחבר מערכות מטוסים עם תשתית בקרה קרקעית",
-          "הובלת מעבר מוצלח ממערכת C++ ישנה לשירותי אינטרנט IBM ESB מודרניים, הפחתת עלות תחזוקה ב-60%",
-          "פיתוח פתרונות רב-פלטפורמיים עם C#, SQL, PL/SQL, JavaScript, AngularJS לפעולות קריטיות"
+          "עבודה על מערכות אינטגרציה שחיברו בין מטוסים לתשתיות בקרה קרקעית, כולל מודרניזציה של שירותים Legacy."
         ]
       }
     },
     "skills": {
-      "primary": {
+      "productEngineering": {
+        "category": "Product Engineering",
+        "items": [
+          "Technical scoping",
+          "System design",
+          "API design",
+          "Performance optimization",
+          "Reliability",
+          "Web application architecture",
+          "Customer-facing product development"
+        ]
+      },
+      "frontendFullStack": {
         "category": "סטאק מרכזי",
         "items": [
-          "Next.js 16",
           "React",
+          "Next.js",
           "TypeScript",
           "JavaScript",
           "Node.js",
@@ -188,61 +188,64 @@
           "Framer Motion"
         ]
       },
-      "ecommerce": {
+      "commerceIntegrations": {
         "category": "איקומרס ואינטגרציות",
         "items": [
           "Shopify",
           "Shopify APIs",
           "HubSpot",
-          "WordPress",
           "Stripe",
+          "WordPress",
           "GraphQL",
           "REST APIs"
         ]
       },
-      "ai": {
+      "aiAutomation": {
         "category": "AI ואוטומציה",
         "items": ["OpenAI API", "Claude API", "LangChain", "Webhooks", "Puppeteer", "Playwright"]
       },
-      "cloud": {
+      "cloudData": {
         "category": "ענן ונתונים",
         "items": [
           "Google Cloud Platform",
           "Firebase",
           "Firestore",
+          "PostgreSQL",
           "Vercel",
           "Docker",
-          "PostgreSQL",
           "GitHub Actions"
         ]
       },
-      "legacy": {
-        "category": "Enterprise Legacy",
-        "items": ["Java", "C#", "C++", "PHP", "Laravel", "SQL", "PL/SQL", "IBM DataPower"]
+      "legacyEnterprise": {
+        "category": "מערכות ארגוניות Legacy",
+        "items": [
+          "Oracle OSB",
+          "WebLogic",
+          "IBM WebSphere ESB",
+          "IBM Integration Bus",
+          "IBM DataPower",
+          "JMS",
+          "C++"
+        ]
       }
     },
     "education": {
       "university": "אוניברסיטת בר-אילן",
       "program": "תוכנית מתמטיקה לנוער מחונן",
-      "years": "2006 - 2008",
-      "description": "בוגר מצטיין של תוכנית המתמטיקה התחרותית לנוער מחונן. בסיס בחשיבה אלגוריתמית, פתרון בעיות ומידול מתמטי."
+      "years": "2006 - 2008"
     },
     "languageSkills": {
       "hebrew": {
         "name": "עברית",
-        "level": "שפת אם (C2)"
+        "level": "שפת אם"
       },
       "english": {
         "name": "אנגלית",
-        "level": "שוטפת (C1)"
+        "level": "שוטפת"
       },
       "german": {
         "name": "גרמנית",
-        "level": "בסיסית (A2)"
-      },
-      "portuguese": {
-        "name": "פורטוגזית",
-        "level": "בסיסית (A1)"
+        "level": "מתחיל"
       }
     }
   }

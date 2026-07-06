@@ -107,7 +107,7 @@ See [VERCEL_MIGRATION.md](./docs/VERCEL_MIGRATION.md) for detailed Firebase Auth
 vercel --prod
 
 # Deploy Firebase Cloud Functions
-pnpm run deploy:functions
+pnpm run firebase:deploy:functions
 
 # Deploy Firestore/Storage rules
 pnpm run deploy:rules
@@ -165,6 +165,12 @@ If the analyzer fails or visual analysis is skipped:
 - [CODE_REVIEW.md](./docs/CODE_REVIEW.md) - Documentation of project refinements
 - [INCONSISTENCIES_ANALYSIS.md](./docs/INCONSISTENCIES_ANALYSIS.md) - Design system alignment
 
+## Security
+
+See [SECURITY.md](./SECURITY.md) for vulnerability reporting and production security checklist.
+
 ## License
 
-Private project - CartShift Studio © 2026
+CartShift Studio © 2026. All rights reserved.
+
+This repository is public for transparency and portfolio purposes. No license is granted for reuse without permission.

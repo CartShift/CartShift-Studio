@@ -168,7 +168,19 @@ Or in Search Console:
   site:cart-shift.com/en/blog/shopify-seo-complete-guide
   ```
 
-## Related: "Redirects to Another Website" (Feb 2026)
+## Related: Legacy `/blog/*` Cannibalization (Jul 2026)
+
+**Cause:** Unlocalized `/blog/*` URLs redirected with **307** to `/en/blog/*`, while next-intl also emitted HTTP `Link` headers with `hreflang="x-default"` pointing at the legacy `/blog/*` path. Google indexed the legacy URL as canonical for some posts.
+
+**Fixes applied:**
+
+1. **308 permanent redirect** in `proxy.ts` for `/blog` and `/blog/*` before next-intl routing, with locale from cookie, `Accept-Language`, or `x-vercel-ip-country: IL`
+2. **`alternateLinks: false`** on next-intl middleware — hreflang is owned by `lib/seo.ts` metadata only
+3. **`npm run seo:reindex-hebrew`** — resubmits sitemap via GSC API and inspects priority Hebrew URLs
+
+**Expected:** Legacy `/blog/*` URLs drop from the index over 2–4 weeks; Hebrew pages consolidate under `/he/*`.
+
+---
 
 When Google Search Console shows "הדף מפנה לכתובת אתר אחרת" (The page redirects to another website) for main-domain `/portal/` URLs:
 

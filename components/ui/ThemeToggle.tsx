@@ -19,7 +19,11 @@ const themeToggleVariants = cva('relative p-2 rounded-xl transition-all duration
   },
 });
 
-export const ThemeToggle: React.FC = () => {
+interface ThemeToggleProps {
+  className?: string;
+}
+
+export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -29,7 +33,10 @@ export const ThemeToggle: React.FC = () => {
 
   if (!mounted) {
     return (
-      <button className={cn(themeToggleVariants({ isDark: false }))} aria-label="Toggle theme">
+      <button
+        className={cn(themeToggleVariants({ isDark: false }), className)}
+        aria-label="Toggle theme"
+      >
         <div className="relative w-6 h-6" />
       </button>
     );
@@ -41,7 +48,7 @@ export const ThemeToggle: React.FC = () => {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={cn(themeToggleVariants({ isDark }))}
+      className={cn(themeToggleVariants({ isDark }), className)}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
       <div className="relative w-6 h-6">

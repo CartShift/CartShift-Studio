@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_FIREBASE_API_KEY: ci-stub-api-key
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ci-stub.firebaseapp.com
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: ci-stub-project
+  NEXT_PUBLIC_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000000000
+  NEXT_PUBLIC_FIREBASE_FUNCTION_URL: https://us-central1-ci-stub.cloudfunctions.net/contactForm
+  NEXT_PUBLIC_SITE_URL: https://example.com
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test:run
+
+      - name: Build
+        run: pnpm build
