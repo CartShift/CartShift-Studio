@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
 import Image from 'next/image';
 import {
   AnimatePresence,
@@ -146,26 +146,66 @@ type SectionId = 'summary' | 'experience' | 'skills' | 'portfolio' | 'education'
 
 function useActiveSection(ids: SectionId[]): SectionId {
   const [active, setActive] = useState<SectionId>(ids[0]);
+  const pendingRef = useRef<SectionId | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
+
+    const commitActive = (id: SectionId) => {
+      pendingRef.current = id;
+      if (rafRef.current !== null) return;
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = null;
+        if (pendingRef.current) setActive(pendingRef.current);
+      });
+    };
+
     const observer = new IntersectionObserver(
       entries => {
         const visible = entries
-          .filter(entry => entry.isIntersecting)
+          .filter(entry => entry.isIntersecting && entry.intersectionRatio >= 0.15)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id as SectionId);
+        if (visible) commitActive(visible.target.id as SectionId);
       },
-      { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+      { rootMargin: '-28% 0px -52% 0px', threshold: [0.15, 0.35, 0.55] }
     );
+
     ids.forEach(id => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, [ids]);
 
   return active;
+}
+
+const revealEase = [0.22, 1, 0.36, 1] as const;
+
+function scrollRevealProps(
+  reduceMotion: boolean,
+  delay = 0
+): Pick<
+  ComponentProps<typeof m.div>,
+  'initial' | 'whileInView' | 'viewport' | 'transition'
+> {
+  if (reduceMotion) {
+    return { initial: false };
+  }
+
+  return {
+    initial: { y: 14 },
+    whileInView: { y: 0 },
+    viewport: { once: true, amount: 0.12, margin: '0px 0px -8% 0px' },
+    transition: { duration: 0.38, delay, ease: revealEase },
+  };
 }
 
 const monthIndex: Record<string, number> = {
@@ -298,11 +338,8 @@ function TimelineItem({
       </span>
 
       <m.article
-        initial={reduceMotion ? false : { opacity: 0, y: 16, filter: 'blur(6px)' }}
-        whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-        viewport={{ once: true, margin: '-64px' }}
-        transition={{ duration: 0.38, delay: Math.min(index, 8) * 0.045, ease: [0.22, 1, 0.36, 1] }}
-        className="group rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-all hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40 sm:p-6 print:break-inside-avoid print:shadow-none print:hover:border-slate-200"
+        {...scrollRevealProps(reduceMotion, Math.min(index, 8) * 0.04)}
+        className="group rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-[border-color,box-shadow] hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40 sm:p-6 print:break-inside-avoid print:shadow-none print:hover:border-slate-200"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-start gap-3.5">
@@ -380,17 +417,20 @@ function PortfolioPreview({
   label,
   locale,
   previewTheme,
+  themeReady,
 }: {
   projectKey: CVPortfolioProjectKey;
   label: string;
   locale: string;
   previewTheme: 'light' | 'dark';
+  themeReady: boolean;
 }) {
   const project = portfolioMedia[projectKey];
   const fallback = project.imageVariants.en;
   const preferred = locale === 'he' ? project.imageVariants.he : fallback;
   const light = preferred?.light ?? preferred?.dark ?? fallback.light;
   const dark = preferred?.dark ?? preferred?.light ?? fallback.dark ?? fallback.light;
+  const activeTheme = themeReady ? previewTheme : 'dark';
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-sm dark:border-white/[0.08]">
@@ -403,9 +443,9 @@ function PortfolioPreview({
           fill
           unoptimized
           sizes="(min-width: 1024px) 34vw, 100vw"
-          className={`object-cover object-top transition-opacity duration-500 ${
-            previewTheme === 'light' ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`object-cover object-top ${
+            themeReady ? 'transition-opacity duration-300' : ''
+          } ${activeTheme === 'light' ? 'opacity-100' : 'opacity-0'}`}
         />
         <Image
           key={`${projectKey}-dark-${PORTFOLIO_MEDIA_VERSION}`}
@@ -414,9 +454,9 @@ function PortfolioPreview({
           fill
           unoptimized
           sizes="(min-width: 1024px) 34vw, 100vw"
-          className={`object-cover object-top transition-opacity duration-500 ${
-            previewTheme === 'dark' ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`object-cover object-top ${
+            themeReady ? 'transition-opacity duration-300' : ''
+          } ${activeTheme === 'dark' ? 'opacity-100' : 'opacity-0'}`}
         />
       </div>
     </div>
@@ -439,11 +479,12 @@ export default function CVPageContent() {
   const isRTL = locale === 'he';
   const [earlierExperienceOpen, setEarlierExperienceOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [themeReady, setThemeReady] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const { resolvedTheme } = useTheme();
   const previewTheme = resolvedTheme === 'light' ? 'light' : 'dark';
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() ?? false;
   const openToWork = messages.cv.status?.openToWork ?? 'Open to work';
   const activeSection = useActiveSection(SECTION_IDS);
   const experienceYears = getExperienceYears(cv.experiences);
@@ -464,7 +505,22 @@ export default function CVPageContent() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setHasScrolled(window.scrollY > headerHeight + 24);
+    setThemeReady(true);
+  }, []);
+
+  useEffect(() => {
+    const showThreshold = headerHeight + 24;
+    const hideThreshold = headerHeight + 8;
+
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      setHasScrolled(prev => {
+        if (!prev && scrollY > showThreshold) return true;
+        if (prev && scrollY < hideThreshold) return false;
+        return prev;
+      });
+    };
+
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -695,18 +751,14 @@ export default function CVPageContent() {
                           : 'text-slate-600 hover:text-slate-950 dark:text-surface-300 dark:hover:text-white'
                       }`}
                     >
-                      {activeSection === item.id ? (
-                        <m.span
-                          layoutId="cv-nav-pill"
-                          className="absolute inset-0 rounded-full bg-slate-950 dark:bg-white"
-                          transition={
-                            reduceMotion
-                              ? { duration: 0 }
-                              : { type: 'spring', stiffness: 380, damping: 32 }
-                          }
-                          aria-hidden="true"
-                        />
-                      ) : null}
+                      <span
+                        className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                          activeSection === item.id
+                            ? 'bg-slate-950 dark:bg-white'
+                            : 'bg-transparent'
+                        }`}
+                        aria-hidden="true"
+                      />
                       <span className="relative whitespace-nowrap sm:hidden">{item.shortLabel}</span>
                       <span className="relative hidden whitespace-nowrap sm:inline">{item.label}</span>
                     </a>
@@ -763,9 +815,13 @@ export default function CVPageContent() {
                 </div>
 
                 <m.h1
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  {...(reduceMotion
+                    ? { initial: false }
+                    : {
+                        initial: { y: 10 },
+                        animate: { y: 0 },
+                        transition: { duration: 0.45, ease: revealEase },
+                      })}
                   className="mt-6 max-w-4xl text-[2.125rem] font-bold leading-[1.14] tracking-[-0.02em] text-slate-950 text-balance dark:text-white min-[390px]:text-[2.5rem] sm:text-[4.25rem] sm:leading-[1.08]"
                 >
                   {cv.name}
@@ -806,7 +862,7 @@ export default function CVPageContent() {
                 key={experience.key}
                 experience={experience}
                 index={index}
-                reduceMotion={reduceMotion ?? false}
+                reduceMotion={reduceMotion}
                 isCurrent={index === 0}
                 isLast={false}
               />
@@ -827,7 +883,7 @@ export default function CVPageContent() {
                     key={experience.key}
                     experience={experience}
                     index={cv.recentExperiences.length + index}
-                    reduceMotion={reduceMotion ?? false}
+                    reduceMotion={reduceMotion}
                     isLast={index === cv.earlierExperiences.length - 1}
                   />
                 ))}
@@ -881,11 +937,8 @@ export default function CVPageContent() {
               return (
                 <m.article
                   key={group.key}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
+                  {...scrollRevealProps(reduceMotion)}
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-[border-color,box-shadow] hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
                 >
                   <div className="pointer-events-none absolute -end-6 -top-6 h-24 w-24 rounded-full bg-primary-500/5 blur-2xl transition-opacity group-hover:bg-primary-500/15 dark:bg-primary-400/10" />
                   <div className="relative flex min-w-0 items-center gap-2.5">
@@ -989,11 +1042,8 @@ export default function CVPageContent() {
               return (
                 <m.article
                   key={project.key}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                  className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 p-4 shadow-sm transition-all hover:-translate-y-1 hover:border-primary-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
+                  {...scrollRevealProps(reduceMotion)}
+                  className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 p-4 shadow-sm transition-[border-color,box-shadow] hover:border-primary-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
                 >
                   <a
                     href={media.href}
@@ -1007,6 +1057,7 @@ export default function CVPageContent() {
                       label={media.domain}
                       locale={locale}
                       previewTheme={previewTheme}
+                      themeReady={themeReady}
                     />
                     <div className="mt-5 flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
