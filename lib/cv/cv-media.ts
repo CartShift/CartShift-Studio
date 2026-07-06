@@ -20,9 +20,9 @@ export const cvPdfAssetPaths = [
   ...Object.values(companyLogos),
 ] as const;
 
-function toDataUri(filePath: string): string {
-  const { extname } = require('node:path') as typeof import('node:path');
-  const { readFileSync } = require('node:fs') as typeof import('node:fs');
+async function toDataUri(filePath: string): Promise<string> {
+  const { extname } = await import('node:path');
+  const { readFileSync } = await import('node:fs');
   const ext = extname(filePath).toLowerCase();
   const mime =
     ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
@@ -32,10 +32,8 @@ function toDataUri(filePath: string): string {
 export function resolveCvPdfAsset(assetPath: string): string {
   if (/^(https?:|data:|file:)/.test(assetPath)) return assetPath;
 
-  if (typeof window === 'undefined' || process.env.VITEST) {
-    const { join } = require('node:path') as typeof import('node:path');
-    const filePath = join(process.cwd(), 'public', assetPath.replace(/^\//, ''));
-    return toDataUri(filePath);
+  if (typeof window === 'undefined') {
+    return assetPath;
   }
 
   return new URL(assetPath, window.location.origin).href;
@@ -45,7 +43,7 @@ export async function resolveCvPdfAssetAsync(assetPath: string): Promise<string>
   if (/^(https?:|data:|file:)/.test(assetPath)) return assetPath;
 
   if (typeof window === 'undefined' || process.env.VITEST) {
-    const { join } = require('node:path') as typeof import('node:path');
+    const { join } = await import('node:path');
     const filePath = join(process.cwd(), 'public', assetPath.replace(/^\//, ''));
     return toDataUri(filePath);
   }
