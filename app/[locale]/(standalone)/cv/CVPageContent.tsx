@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   AnimatePresence,
@@ -110,7 +110,7 @@ const portfolioMedia: Record<CVPortfolioProjectKey, PortfolioMedia> = {
 };
 
 // Bump when portfolio screenshot assets are regenerated so Next/Image serves fresh files.
-const PORTFOLIO_MEDIA_VERSION = '20260706';
+const PORTFOLIO_MEDIA_VERSION = '2026070622';
 
 function withPortfolioMediaVersion(src: string) {
   return `${src}?v=${PORTFOLIO_MEDIA_VERSION}`;
@@ -397,18 +397,22 @@ function PortfolioPreview({
       <BrowserChrome domain={label} />
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
+          key={`${projectKey}-light-${PORTFOLIO_MEDIA_VERSION}`}
           src={withPortfolioMediaVersion(light)}
           alt=""
           fill
+          unoptimized
           sizes="(min-width: 1024px) 34vw, 100vw"
           className={`object-cover object-top transition-opacity duration-500 ${
             previewTheme === 'light' ? 'opacity-100' : 'opacity-0'
           }`}
         />
         <Image
+          key={`${projectKey}-dark-${PORTFOLIO_MEDIA_VERSION}`}
           src={withPortfolioMediaVersion(dark)}
           alt=""
           fill
+          unoptimized
           sizes="(min-width: 1024px) 34vw, 100vw"
           className={`object-cover object-top transition-opacity duration-500 ${
             previewTheme === 'dark' ? 'opacity-100' : 'opacity-0'
@@ -419,17 +423,24 @@ function PortfolioPreview({
   );
 }
 
-const SECTION_IDS: SectionId[] = ['summary', 'experience', 'skills', 'portfolio', 'education'];
+const SECTION_IDS: SectionId[] = ['summary', 'experience', 'skills', 'education', 'portfolio'];
 
 const CV_HERO_PORTRAIT = '/images/cv/yotam-studio-cv.png';
 
 export default function CVPageContent() {
-  const messages = useMessages() as { cv: RawCVMessages & { status?: { openToWork?: string } } };
+  const messages = useMessages() as {
+    cv: RawCVMessages & {
+      status?: { openToWork?: string };
+      sectionsShort?: Partial<Record<SectionId, string>>;
+    };
+  };
   const cv = useMemo(() => buildCVData(messages.cv), [messages.cv]);
   const locale = useLocale();
   const isRTL = locale === 'he';
   const [earlierExperienceOpen, setEarlierExperienceOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
   const { resolvedTheme } = useTheme();
   const previewTheme = resolvedTheme === 'light' ? 'light' : 'dark';
   const reduceMotion = useReducedMotion();
@@ -441,11 +452,23 @@ export default function CVPageContent() {
     : `Career · ${experienceYears}+ yrs`;
 
   useEffect(() => {
-    const onScroll = () => setHasScrolled(window.scrollY > 220);
+    const measureHeader = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
+    measureHeader();
+    window.addEventListener('resize', measureHeader);
+    return () => window.removeEventListener('resize', measureHeader);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setHasScrolled(window.scrollY > headerHeight + 24);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [headerHeight]);
 
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.4 });
@@ -459,19 +482,39 @@ export default function CVPageContent() {
     trackCTAClick(project.domain, 'cv_portfolio_project');
   };
 
-  const navItems: Array<{ id: SectionId; label: string }> = [
-    { id: 'summary', label: cv.sections.summary },
-    { id: 'experience', label: cv.sections.experience },
-    { id: 'skills', label: cv.sections.skills },
-    { id: 'portfolio', label: cv.sections.portfolio },
-    { id: 'education', label: cv.sections.education },
+  const navItems: Array<{ id: SectionId; label: string; shortLabel: string }> = [
+    {
+      id: 'summary',
+      label: cv.sections.summary,
+      shortLabel: messages.cv.sectionsShort?.summary ?? cv.sections.summary,
+    },
+    {
+      id: 'experience',
+      label: cv.sections.experience,
+      shortLabel: messages.cv.sectionsShort?.experience ?? cv.sections.experience,
+    },
+    {
+      id: 'skills',
+      label: cv.sections.skills,
+      shortLabel: messages.cv.sectionsShort?.skills ?? cv.sections.skills,
+    },
+    {
+      id: 'education',
+      label: cv.sections.education,
+      shortLabel: messages.cv.sectionsShort?.education ?? cv.sections.education,
+    },
+    {
+      id: 'portfolio',
+      label: cv.sections.portfolio,
+      shortLabel: messages.cv.sectionsShort?.portfolio ?? cv.sections.portfolio,
+    },
   ];
 
   const collapseArchiveLabel = isRTL ? 'סגירת הארכיון' : 'Collapse archive';
 
   return (
     <div
-      className="min-h-screen bg-surface-50 text-slate-900 dark:bg-surface-950 dark:text-white"
+      className="min-h-screen overflow-x-hidden bg-surface-50 text-slate-900 dark:bg-surface-950 dark:text-white"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       <a
@@ -499,96 +542,131 @@ export default function CVPageContent() {
         />
       </div>
 
-      <header className="relative z-30 px-4 pt-4 sm:px-6 lg:px-8 print:hidden">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/90 px-3 py-2.5 text-slate-900 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-slate-900/90 dark:text-white sm:px-4">
-          <Logo size="sm" />
-          <nav aria-label="CV contact actions" className="flex items-center gap-1.5 text-sm">
-            <div className="hidden items-center gap-1 rounded-xl border border-slate-200/80 bg-white/70 p-1 dark:border-white/[0.1] dark:bg-white/[0.04] sm:flex">
-              <a
-                href={phoneHref}
-                aria-label={cv.phone}
-                title={cv.phone}
-                className="group inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Phone className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden tabular-nums lg:inline">{cv.phone}</span>
-              </a>
-              <span className="h-4 w-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
-              <a
-                href={`mailto:${cv.email}`}
-                aria-label={cv.email}
-                title={cv.email}
-                className="group inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Mail className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden lg:inline">{cv.email}</span>
-              </a>
-              <span className="h-4 w-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
-              <a
-                href={cv.contact.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={cv.contact.linkedinLabel}
-                title={cv.contact.linkedinLabel}
-                className="group inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden lg:inline">{cv.contact.linkedinLabel}</span>
-              </a>
-              <span className="h-4 w-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
-              <a
-                href={cv.contact.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={cv.contact.githubLabel}
-                title={cv.contact.githubLabel}
-                className="group inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Github className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden lg:inline">{cv.contact.githubLabel}</span>
-              </a>
-            </div>
+      <header
+        ref={headerRef}
+        className="relative z-30 px-3 pt-3 safe-top sm:px-6 lg:px-8 print:hidden"
+      >
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl border border-slate-200 bg-white/90 text-slate-900 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-slate-900/90 dark:text-white">
+          <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4">
+            <Logo size="sm" className="min-w-0 shrink" />
 
-            <div className="flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white/70 p-1 dark:border-white/[0.1] dark:bg-white/[0.04] sm:hidden">
-              <a
-                href={phoneHref}
-                aria-label={cv.phone}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Phone className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href={`mailto:${cv.email}`}
-                aria-label={cv.email}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Mail className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href={cv.contact.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={cv.contact.linkedinLabel}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Linkedin className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href={cv.contact.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={cv.contact.githubLabel}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
-              >
-                <Github className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </div>
+            <nav
+              aria-label="CV contact actions"
+              className="hidden min-w-0 flex-1 items-center justify-center sm:flex"
+            >
+              <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/80 bg-white/70 p-1 [scrollbar-width:none] dark:border-white/[0.1] dark:bg-white/[0.04] [&::-webkit-scrollbar]:hidden">
+                <a
+                  href={phoneHref}
+                  aria-label={cv.phone}
+                  title={cv.phone}
+                  className="group inline-flex shrink-0 items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+                >
+                  <Phone className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="hidden tabular-nums lg:inline">{cv.phone}</span>
+                </a>
+                <span className="h-4 w-px shrink-0 bg-slate-200 dark:bg-white/10" aria-hidden="true" />
+                <a
+                  href={`mailto:${cv.email}`}
+                  aria-label={cv.email}
+                  title={cv.email}
+                  className="group inline-flex shrink-0 items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+                >
+                  <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="hidden lg:inline">{cv.email}</span>
+                </a>
+                <span className="h-4 w-px shrink-0 bg-slate-200 dark:bg-white/10" aria-hidden="true" />
+                <a
+                  href={cv.contact.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={cv.contact.linkedinLabel}
+                  title={cv.contact.linkedinLabel}
+                  className="group inline-flex shrink-0 items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+                >
+                  <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="hidden lg:inline">{cv.contact.linkedinLabel}</span>
+                </a>
+                <span className="h-4 w-px shrink-0 bg-slate-200 dark:bg-white/10" aria-hidden="true" />
+                <a
+                  href={cv.contact.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={cv.contact.githubLabel}
+                  title={cv.contact.githubLabel}
+                  className="group inline-flex shrink-0 items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+                >
+                  <Github className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="hidden lg:inline">{cv.contact.githubLabel}</span>
+                </a>
+              </div>
+            </nav>
 
-            <div className="flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white/70 p-0.5 dark:border-white/[0.1] dark:bg-white/[0.04]">
-              <ThemeToggle className="rounded-lg" />
+            <div className="flex shrink-0 items-center gap-1">
+              <div className="flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white/70 p-0.5 dark:border-white/[0.1] dark:bg-white/[0.04]">
+                <ThemeToggle className="rounded-lg" />
+              </div>
+              <div className="sm:hidden">
+                <LanguageSwitcher compact />
+              </div>
+              <div className="hidden sm:block">
+                <LanguageSwitcher />
+              </div>
+              <div className="sm:hidden">
+                <CVDownloadButton
+                  compact
+                  label={cv.labels.saveAsPdf}
+                  preparingLabel={cv.labels.preparingPdf}
+                />
+              </div>
+              <div className="hidden sm:block">
+                <CVDownloadButton
+                  label={cv.labels.saveAsPdf}
+                  preparingLabel={cv.labels.preparingPdf}
+                />
+              </div>
             </div>
-            <LanguageSwitcher />
-            <CVDownloadButton label={cv.labels.saveAsPdf} preparingLabel={cv.labels.preparingPdf} />
+          </div>
+
+          <nav
+            aria-label="CV contact actions"
+            className="grid grid-cols-4 gap-1 border-t border-slate-200/80 px-2 py-1.5 dark:border-white/[0.06] sm:hidden"
+          >
+            <a
+              href={phoneHref}
+              aria-label={cv.phone}
+              title={cv.phone}
+              className="inline-flex h-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+            >
+              <Phone className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href={`mailto:${cv.email}`}
+              aria-label={cv.email}
+              title={cv.email}
+              className="inline-flex h-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+            >
+              <Mail className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href={cv.contact.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={cv.contact.linkedinLabel}
+              title={cv.contact.linkedinLabel}
+              className="inline-flex h-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+            >
+              <Linkedin className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href={cv.contact.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={cv.contact.githubLabel}
+              title={cv.contact.githubLabel}
+              className="inline-flex h-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-900 hover:text-white dark:text-surface-100 dark:hover:bg-white dark:hover:text-slate-900"
+            >
+              <Github className="h-4 w-4" aria-hidden="true" />
+            </a>
           </nav>
         </div>
       </header>
@@ -602,35 +680,38 @@ export default function CVPageContent() {
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: -12 }}
             transition={{ duration: reduceMotion ? 0 : 0.25, ease: 'easeOut' }}
-            className="fixed inset-x-0 top-3 z-40 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 print:hidden"
+            className="fixed inset-x-0 top-0 z-40 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 lg:px-8 print:hidden"
           >
-            <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="mx-auto flex w-max items-center gap-1 rounded-full border border-slate-200 bg-white/95 p-1 shadow-lg shadow-slate-950/5 backdrop-blur-md dark:border-white/[0.1] dark:bg-slate-900/90 dark:shadow-black/40">
-                {navItems.map(item => (
-                  <a
-                    key={item.id}
-                    href={`#${item.id}`}
-                    className={`relative rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-                      activeSection === item.id
-                        ? 'text-white dark:text-slate-950'
-                        : 'text-slate-600 hover:text-slate-950 dark:text-surface-300 dark:hover:text-white'
-                    }`}
-                  >
-                    {activeSection === item.id ? (
-                      <m.span
-                        layoutId="cv-nav-pill"
-                        className="absolute inset-0 rounded-full bg-slate-950 dark:bg-white"
-                        transition={
-                          reduceMotion
-                            ? { duration: 0 }
-                            : { type: 'spring', stiffness: 380, damping: 32 }
-                        }
-                        aria-hidden="true"
-                      />
-                    ) : null}
-                    <span className="relative">{item.label}</span>
-                  </a>
-                ))}
+            <div className="mx-auto w-full max-w-6xl">
+              <div className="flex justify-center overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="inline-flex shrink-0 items-center gap-0.5 overflow-hidden rounded-full border border-slate-200 bg-white/95 p-1 shadow-lg shadow-slate-950/5 backdrop-blur-md dark:border-white/[0.1] dark:bg-slate-900/90 dark:shadow-black/40 sm:gap-1">
+                  {navItems.map(item => (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      className={`relative inline-flex shrink-0 items-center overflow-hidden rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none transition-colors sm:px-3.5 sm:py-1.5 sm:text-xs ${
+                        activeSection === item.id
+                          ? 'text-white dark:text-slate-950'
+                          : 'text-slate-600 hover:text-slate-950 dark:text-surface-300 dark:hover:text-white'
+                      }`}
+                    >
+                      {activeSection === item.id ? (
+                        <m.span
+                          layoutId="cv-nav-pill"
+                          className="absolute inset-0 rounded-full bg-slate-950 dark:bg-white"
+                          transition={
+                            reduceMotion
+                              ? { duration: 0 }
+                              : { type: 'spring', stiffness: 380, damping: 32 }
+                          }
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                      <span className="relative whitespace-nowrap sm:hidden">{item.shortLabel}</span>
+                      <span className="relative hidden whitespace-nowrap sm:inline">{item.label}</span>
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </m.nav>
@@ -665,7 +746,7 @@ export default function CVPageContent() {
             </div>
             <div className="relative grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_min(40%,380px)] lg:items-stretch lg:gap-10 lg:p-10 lg:pb-0">
               <div className="min-w-0 lg:pb-10">
-                <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600 dark:text-surface-300">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-2 text-xs font-medium text-slate-600 dark:text-surface-300 sm:text-sm">
                   <span className="relative inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inset-0 rounded-full bg-emerald-500 motion-safe:animate-ping" />
@@ -685,12 +766,12 @@ export default function CVPageContent() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
-                  className="mt-6 max-w-4xl pb-2 text-[2.75rem] font-bold leading-[1.14] tracking-[-0.02em] text-slate-950 text-balance dark:text-white sm:text-[4.25rem] sm:leading-[1.08]"
+                  className="mt-6 max-w-4xl text-[2.125rem] font-bold leading-[1.14] tracking-[-0.02em] text-slate-950 text-balance dark:text-white min-[390px]:text-[2.5rem] sm:text-[4.25rem] sm:leading-[1.08]"
                 >
                   {cv.name}
                 </m.h1>
 
-                <p className="mt-4 text-lg font-semibold text-primary-700 dark:text-primary-300 sm:text-xl">
+                <p className="mt-1.5 text-lg font-semibold text-primary-700 dark:text-primary-300 sm:text-xl">
                   {cv.headline}
                 </p>
                 <p className="mt-6 max-w-3xl text-base leading-7 text-slate-700 dark:text-surface-200 sm:text-[17px] sm:leading-[1.7]">
@@ -731,34 +812,36 @@ export default function CVPageContent() {
               />
             ))}
           </ol>
-          <div
-            id="earlier-experience-list"
-            className={`relative mt-4 ${reduceMotion ? '' : 'transition-[max-height,opacity] duration-500 ease-out'} ${
-              earlierExperienceOpen
-                ? 'max-h-[400rem] opacity-100'
-                : 'max-h-[26rem] overflow-hidden opacity-100'
-            }`}
-          >
-            <ol className="space-y-4">
-              {cv.earlierExperiences.map((experience, index) => (
-                <TimelineItem
-                  key={experience.key}
-                  experience={experience}
-                  index={cv.recentExperiences.length + index}
-                  reduceMotion={reduceMotion ?? false}
-                  isLast={index === cv.earlierExperiences.length - 1}
-                />
-              ))}
-            </ol>
+          <div className="relative mt-4">
+            <div
+              id="earlier-experience-list"
+              className={`${reduceMotion ? '' : 'transition-[max-height] duration-500 ease-out'} ${
+                earlierExperienceOpen
+                  ? 'max-h-[400rem]'
+                  : 'max-h-[28rem] overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_58%,rgba(0,0,0,0.55)_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_58%,rgba(0,0,0,0.55)_78%,transparent_100%)] print:max-h-none print:overflow-visible print:[mask-image:none] print:[-webkit-mask-image:none]'
+              }`}
+            >
+              <ol className="space-y-4">
+                {cv.earlierExperiences.map((experience, index) => (
+                  <TimelineItem
+                    key={experience.key}
+                    experience={experience}
+                    index={cv.recentExperiences.length + index}
+                    reduceMotion={reduceMotion ?? false}
+                    isLast={index === cv.earlierExperiences.length - 1}
+                  />
+                ))}
+              </ol>
+            </div>
 
             {!earlierExperienceOpen ? (
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-56 items-end justify-center bg-gradient-to-t from-surface-50 via-surface-50/95 to-transparent dark:from-surface-950 dark:via-surface-950/95">
+              <div className="-mt-10 flex justify-center pt-1 print:hidden">
                 <button
                   type="button"
                   aria-expanded={earlierExperienceOpen}
                   aria-controls="earlier-experience-list"
                   onClick={() => setEarlierExperienceOpen(true)}
-                  className="pointer-events-auto group mb-2 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-5 py-2 text-sm font-semibold text-slate-900 shadow-lg shadow-slate-900/5 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/[0.12] dark:bg-slate-900/90 dark:text-white dark:shadow-black/40 dark:hover:border-primary-400/50 dark:hover:text-primary-200"
+                  className="group inline-flex min-h-[44px] items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-5 py-2 text-sm font-semibold text-slate-900 shadow-lg shadow-slate-900/5 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/[0.12] dark:bg-slate-900/90 dark:text-white dark:shadow-black/40 dark:hover:border-primary-400/50 dark:hover:text-primary-200"
                 >
                   <span>{cv.labels.earlierExperience}</span>
                   <ChevronRight
@@ -771,7 +854,7 @@ export default function CVPageContent() {
           </div>
 
           {earlierExperienceOpen ? (
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center print:hidden">
               <button
                 type="button"
                 aria-expanded={earlierExperienceOpen}
@@ -805,18 +888,13 @@ export default function CVPageContent() {
                   className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
                 >
                   <div className="pointer-events-none absolute -end-6 -top-6 h-24 w-24 rounded-full bg-primary-500/5 blur-2xl transition-opacity group-hover:bg-primary-500/15 dark:bg-primary-400/10" />
-                  <div className="relative flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
-                        <Icon className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                      <h3 className="truncate font-bold text-slate-950 dark:text-white">
-                        {group.category}
-                      </h3>
-                    </div>
-                    <span className="font-mono text-[11px] font-semibold tabular-nums text-slate-400 dark:text-surface-500">
-                      {String(group.items.length).padStart(2, '0')}
+                  <div className="relative flex min-w-0 items-center gap-2.5">
+                    <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
+                      <Icon className="h-4 w-4" aria-hidden="true" />
                     </span>
+                    <h3 className="truncate font-bold text-slate-950 dark:text-white">
+                      {group.category}
+                    </h3>
                   </div>
                   <div className="relative mt-4 flex flex-wrap gap-1.5">
                     {group.items.map(item => (
@@ -831,98 +909,6 @@ export default function CVPageContent() {
                 </m.article>
               );
             })}
-          </div>
-        </section>
-
-        <section id="portfolio" className="mb-16 scroll-mt-28">
-          <SectionHeading
-            icon={Globe}
-            title={cv.sections.portfolio}
-          />
-          <p className="mb-8 max-w-3xl text-base leading-7 text-slate-700 dark:text-surface-200">
-            {cv.portfolio.intro}
-          </p>
-          <div className="grid gap-5 lg:grid-cols-2">
-            {cv.portfolio.projects.map(project => {
-              const media = portfolioMedia[project.key];
-              return (
-                <m.article
-                  key={project.key}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                  className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 p-4 shadow-sm transition-all hover:-translate-y-1 hover:border-primary-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
-                >
-                  <a
-                    href={media.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => handlePortfolioProjectClick(project.key)}
-                    className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                  >
-                    <PortfolioPreview
-                      projectKey={project.key}
-                      label={media.domain}
-                      locale={locale}
-                      previewTheme={previewTheme}
-                    />
-                    <div className="mt-5 flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-700 dark:text-primary-300">
-                          {project.eyebrow}
-                        </p>
-                        <h3 className="mt-1 text-lg font-bold text-slate-950 dark:text-white">
-                          {media.domain}
-                        </h3>
-                      </div>
-                      <span
-                        className="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-all group-hover:border-primary-500 group-hover:bg-primary-600 group-hover:text-white dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-100 dark:group-hover:border-primary-400"
-                        aria-hidden="true"
-                      >
-                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
-                      </span>
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-surface-200">
-                      {project.description}
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {project.signals.map(signal => (
-                        <span
-                          key={signal}
-                          className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-200"
-                        >
-                          {signal}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 dark:text-primary-300">
-                      {cv.portfolio.visitProject}
-                      <ArrowUpRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
-                    </span>
-                  </a>
-                </m.article>
-              );
-            })}
-          </div>
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-primary-50/40 p-5 dark:border-white/[0.08] dark:from-white/[0.035] dark:to-primary-500/[0.06]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-700 dark:text-primary-300">
-              {cv.portfolio.clients.kicker}
-            </p>
-            <h3 className="mt-1 text-xl font-bold text-slate-950 dark:text-white">
-              {cv.portfolio.clients.title}
-            </h3>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700 dark:text-surface-200">
-              {cv.portfolio.clients.description}
-            </p>
-            <Link
-              href="/work"
-              onClick={() => trackCTAClick('client_case_studies', 'cv_portfolio_work')}
-              className="mt-4 inline-flex min-h-[40px] items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-white/90"
-            >
-              {cv.portfolio.clients.cta}
-              <ChevronRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
-            </Link>
           </div>
         </section>
 
@@ -941,17 +927,28 @@ export default function CVPageContent() {
                   {cv.sections.education}
                 </h3>
               </div>
-              <p className="mt-4 font-semibold text-slate-800 dark:text-surface-100">
-                {cv.education.university}
-              </p>
-              <p className="mt-1 text-sm text-slate-700 dark:text-surface-300">
-                {cv.education.program}
-              </p>
-              {cv.education.years ? (
-                <p className="mt-1 text-xs text-slate-500 dark:text-surface-400">
-                  {cv.education.years}
-                </p>
-              ) : null}
+              <div className="mt-4 space-y-4">
+                {cv.education.map(entry => (
+                  <div key={`${entry.institution}-${entry.program}`}>
+                    <p className="font-semibold text-slate-800 dark:text-surface-100">
+                      {entry.institution}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-700 dark:text-surface-300">
+                      {entry.program}
+                    </p>
+                    {entry.description ? (
+                      <p className="mt-1 text-sm text-slate-600 dark:text-surface-400">
+                        {entry.description}
+                      </p>
+                    ) : null}
+                    {entry.years ? (
+                      <p className="mt-1 text-xs text-slate-500 dark:text-surface-400">
+                        {entry.years}
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
             </article>
             <article className="rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.035]">
               <div className="flex items-center gap-2.5">
@@ -978,6 +975,92 @@ export default function CVPageContent() {
                 ))}
               </div>
             </article>
+          </div>
+        </section>
+
+        <section id="portfolio" className="mb-16 scroll-mt-28">
+          <SectionHeading
+            icon={Globe}
+            title={cv.sections.portfolio}
+          />
+          <div className="grid gap-5 lg:grid-cols-2">
+            {cv.portfolio.projects.map(project => {
+              const media = portfolioMedia[project.key];
+              return (
+                <m.article
+                  key={project.key}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                  className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 p-4 shadow-sm transition-all hover:-translate-y-1 hover:border-primary-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
+                >
+                  <a
+                    href={media.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => handlePortfolioProjectClick(project.key)}
+                    className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  >
+                    <PortfolioPreview
+                      projectKey={project.key}
+                      label={media.domain}
+                      locale={locale}
+                      previewTheme={previewTheme}
+                    />
+                    <div className="mt-5 flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-700 dark:text-primary-300">
+                          {project.eyebrow}
+                        </p>
+                        <h3 className="mt-1 text-lg font-bold text-slate-950 dark:text-white">
+                          {media.domain}
+                        </h3>
+                      </div>
+                      <span className="inline-flex flex-none shrink-0 items-center gap-1.5 text-sm font-semibold text-primary-700 transition-colors group-hover:text-primary-600 dark:text-primary-300 dark:group-hover:text-primary-200">
+                        {cv.portfolio.visitProject}
+                        <ArrowUpRight
+                          className="h-4 w-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 rtl:-scale-x-100"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-surface-200">
+                      {project.description}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {project.signals.map(signal => (
+                        <span
+                          key={signal}
+                          className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-200"
+                        >
+                          {signal}
+                        </span>
+                      ))}
+                    </div>
+                  </a>
+                </m.article>
+              );
+            })}
+          </div>
+          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-primary-50/40 p-5 dark:border-white/[0.08] dark:from-white/[0.035] dark:to-primary-500/[0.06]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-700 dark:text-primary-300">
+              {cv.portfolio.clients.kicker}
+            </p>
+            <h3 className="mt-1 text-xl font-bold text-slate-950 dark:text-white">
+              {cv.portfolio.clients.title}
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700 dark:text-surface-200">
+              {cv.portfolio.clients.description}
+            </p>
+            <Link
+              href="/work"
+              onClick={() => trackCTAClick('client_case_studies', 'cv_portfolio_work')}
+              className="mt-4 inline-flex min-h-[40px] items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-white/90"
+            >
+              {cv.portfolio.clients.cta}
+              <ChevronRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+            </Link>
           </div>
         </section>
 

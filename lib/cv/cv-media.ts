@@ -15,16 +15,63 @@ export const companyLogos: Partial<Record<CVExperienceKey, string>> = {
   airforce: '/images/cv/israeli_air_force_logo.jpg',
 };
 
+export const cvPdfAssetPaths = [
+  CV_PROFILE_IMAGE,
+  ...Object.values(companyLogos),
+] as const;
+
+function toDataUri(filePath: string): string {
+  const { extname } = require('node:path') as typeof import('node:path');
+  const { readFileSync } = require('node:fs') as typeof import('node:fs');
+  const ext = extname(filePath).toLowerCase();
+  const mime =
+    ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+  return `data:${mime};base64,${readFileSync(filePath).toString('base64')}`;
+}
+
 export function resolveCvPdfAsset(assetPath: string): string {
   if (/^(https?:|data:|file:)/.test(assetPath)) return assetPath;
 
   if (typeof window === 'undefined' || process.env.VITEST) {
-    const { join, extname } = require('node:path') as typeof import('node:path');
-    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { join } = require('node:path') as typeof import('node:path');
     const filePath = join(process.cwd(), 'public', assetPath.replace(/^\//, ''));
-    const mime = extname(filePath).toLowerCase() === '.png' ? 'image/png' : 'image/jpeg';
-    return `data:${mime};base64,${readFileSync(filePath).toString('base64')}`;
+    return toDataUri(filePath);
   }
 
   return new URL(assetPath, window.location.origin).href;
+}
+
+export async function resolveCvPdfAssetAsync(assetPath: string): Promise<string> {
+  if (/^(https?:|data:|file:)/.test(assetPath)) return assetPath;
+
+  if (typeof window === 'undefined' || process.env.VITEST) {
+    const { join } = require('node:path') as typeof import('node:path');
+    const filePath = join(process.cwd(), 'public', assetPath.replace(/^\//, ''));
+    return toDataUri(filePath);
+  }
+
+  const response = await fetch(new URL(assetPath, window.location.origin).href);
+  if (!response.ok) {
+    throw new Error(`Failed to load CV asset: ${assetPath}`);
+  }
+
+  const buffer = await response.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let index = 0; index < bytes.length; index += 1) {
+    binary += String.fromCharCode(bytes[index]!);
+  }
+
+  const ext = assetPath.split('.').pop()?.toLowerCase();
+  const mime =
+    ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+  return `data:${mime};base64,${btoa(binary)}`;
+}
+
+export async function resolveCvPdfAssets(): Promise<Record<string, string>> {
+  const entries = await Promise.all(
+    cvPdfAssetPaths.map(async assetPath => [assetPath, await resolveCvPdfAssetAsync(assetPath)] as const)
+  );
+
+  return Object.fromEntries(entries);
 }

@@ -77,6 +77,13 @@ export interface CVPortfolioProject {
   signals: string[];
 }
 
+export interface CVEducationEntry {
+  institution: string;
+  program: string;
+  years?: string;
+  description?: string;
+}
+
 export interface CVData {
   title: string;
   name: string;
@@ -128,12 +135,7 @@ export interface CVData {
   recentExperiences: CVExperienceItem[];
   earlierExperiences: CVExperienceItem[];
   skills: CVSkillGroup[];
-  education: {
-    university: string;
-    program: string;
-    years?: string;
-    description?: string;
-  };
+  education: CVEducationEntry[];
   languages: CVLanguageItem[];
 }
 
@@ -189,7 +191,9 @@ export interface RawCVMessages {
       items: string[];
     }
   >;
-  education: CVData['education'];
+  education: {
+    entries: CVEducationEntry[];
+  };
   languageSkills: Record<
     CVLanguageKey,
     {
@@ -251,7 +255,7 @@ export function buildCVData(cv: RawCVMessages): CVData {
       key,
       ...cv.skills[key],
     })),
-    education: cv.education,
+    education: cv.education.entries,
     languages: languageKeys.map(key => ({
       key,
       ...cv.languageSkills[key],

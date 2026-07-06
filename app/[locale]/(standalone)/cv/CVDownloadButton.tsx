@@ -7,15 +7,18 @@ import { Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { CV_PDF_FILENAME, getEnglishCVData } from '@/lib/cv/cv-data';
+import { resolveCvPdfAssets } from '@/lib/cv/cv-media';
 
 interface CVDownloadButtonProps {
   label: string;
   preparingLabel?: string;
+  compact?: boolean;
 }
 
 export function CVDownloadButton({
   label,
   preparingLabel = 'Preparing PDF',
+  compact = false,
 }: CVDownloadButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const { resolvedTheme } = useTheme();
@@ -30,7 +33,10 @@ export function CVDownloadButton({
         import('@react-pdf/renderer'),
         import('./CVDocument'),
       ]);
-      const blob = await pdf(<CVDocument cv={getEnglishCVData()} />).toBlob();
+      const resolvedAssets = await resolveCvPdfAssets();
+      const blob = await pdf(
+        <CVDocument cv={getEnglishCVData()} resolvedAssets={resolvedAssets} />
+      ).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -45,22 +51,26 @@ export function CVDownloadButton({
     }
   };
 
+  const icon = isGenerating ? (
+    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+  ) : (
+    <Download className="h-4 w-4" aria-hidden="true" />
+  );
+
   return (
     <Button
-      size="sm"
+      size={compact ? 'icon' : 'sm'}
       variant={isDark ? 'glass' : 'secondary'}
       disabled={isGenerating}
       onClick={handleDownload}
-      leftIcon={
-        isGenerating ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-        ) : (
-          <Download className="h-4 w-4" aria-hidden="true" />
-        )
-      }
-      className="min-h-[40px]"
+      aria-label={label}
+      leftIcon={compact ? undefined : icon}
+      className={compact ? 'h-10 w-10 shrink-0 sm:h-8 sm:w-auto sm:px-3' : 'min-h-[40px]'}
     >
-      {isGenerating ? preparingLabel : label}
+      {compact ? icon : null}
+      <span className={compact ? 'hidden sm:inline' : undefined}>
+        {isGenerating ? preparingLabel : label}
+      </span>
     </Button>
   );
 }

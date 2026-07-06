@@ -102,7 +102,7 @@ const langItemVariants = cva(
   }
 );
 
-export const LanguageSwitcher = () => {
+export const LanguageSwitcher = ({ compact = false }: { compact?: boolean }) => {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -123,17 +123,24 @@ export const LanguageSwitcher = () => {
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenu.Trigger asChild>
-        <button className={cn(triggerVariants({ isOpen }))} aria-label="Select Language">
+        <button
+          className={cn(triggerVariants({ isOpen }), compact && 'px-2 py-2')}
+          aria-label="Select Language"
+        >
           {currentLanguage === 'en' ? <USFlag /> : <ILFlag />}
-          <span className="text-sm font-medium text-surface-700 dark:text-surface-200">
-            {currentLanguage === 'en' ? 'EN' : 'עב'}
-          </span>
-          <ChevronDown
-            className={cn(
-              'h-3 w-3 text-surface-500 transition-transform duration-200',
-              isOpen && 'rotate-180'
-            )}
-          />
+          {!compact ? (
+            <>
+              <span className="text-sm font-medium text-surface-700 dark:text-surface-200">
+                {currentLanguage === 'en' ? 'EN' : 'עב'}
+              </span>
+              <ChevronDown
+                className={cn(
+                  'h-3 w-3 text-surface-500 transition-transform duration-200',
+                  isOpen && 'rotate-180'
+                )}
+              />
+            </>
+          ) : null}
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>

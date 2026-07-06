@@ -3,6 +3,7 @@
 import React from 'react';
 import {
   Document,
+  Font,
   Image,
   Link,
   Page,
@@ -19,8 +20,15 @@ import {
   resolveCvPdfAsset,
 } from '@/lib/cv/cv-media';
 
+Font.registerHyphenationCallback(word => [word]);
+
 interface CVDocumentProps {
   cv: CVData;
+  resolvedAssets?: Record<string, string>;
+}
+
+function getPdfAsset(assetPath: string, resolvedAssets?: Record<string, string>) {
+  return resolvedAssets?.[assetPath] ?? resolveCvPdfAsset(assetPath);
 }
 
 const accent = '#0f4c75';
@@ -137,12 +145,19 @@ const styles = StyleSheet.create({
   summary: {
     fontSize: 8.7,
     color: '#1e293b',
-    textAlign: 'justify',
+    textAlign: 'left',
   },
   role: {
     marginBottom: 9,
     paddingLeft: 9,
     paddingBottom: 3,
+    borderLeftWidth: 1.4,
+    borderLeftColor: accentSoft,
+  },
+  roleCompact: {
+    marginBottom: 6,
+    paddingLeft: 9,
+    paddingBottom: 2,
     borderLeftWidth: 1.4,
     borderLeftColor: accentSoft,
   },
@@ -170,11 +185,34 @@ const styles = StyleSheet.create({
     borderWidth: 0.6,
     borderColor: hairline,
   },
+  companyLogoPlaceholder: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    marginRight: 7,
+    marginTop: 1,
+    borderWidth: 0.6,
+    borderColor: hairline,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  companyLogoInitial: {
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    color: accent,
+  },
   roleTitleCol: {
     flex: 1,
   },
   roleTitle: {
     fontSize: 9.4,
+    fontFamily: 'Helvetica-Bold',
+    color: '#020617',
+    lineHeight: 1.25,
+  },
+  roleTitleCompact: {
+    fontSize: 8.8,
     fontFamily: 'Helvetica-Bold',
     color: '#020617',
     lineHeight: 1.25,
@@ -186,12 +224,26 @@ const styles = StyleSheet.create({
     marginTop: 1.5,
     lineHeight: 1.25,
   },
+  companyCompact: {
+    fontSize: 7.8,
+    color: accent,
+    fontFamily: 'Helvetica-Bold',
+    marginTop: 1,
+    lineHeight: 1.25,
+  },
   roleMeta: {
     width: 118,
     fontSize: 7.3,
     color: muted,
     textAlign: 'right',
     lineHeight: 1.35,
+  },
+  roleMetaCompact: {
+    width: 112,
+    fontSize: 7,
+    color: muted,
+    textAlign: 'right',
+    lineHeight: 1.3,
   },
   description: {
     color: muted,
@@ -203,6 +255,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 1.6,
   },
+  bulletRowCompact: {
+    flexDirection: 'row',
+    marginTop: 1.2,
+  },
   bullet: {
     width: 8,
     color: accent,
@@ -212,34 +268,49 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#1e293b',
   },
+  bulletTextCompact: {
+    flex: 1,
+    color: '#1e293b',
+    fontSize: 7.8,
+    lineHeight: 1.3,
+  },
   skillGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginHorizontal: -3,
   },
   skillCard: {
-    width: '33.333%',
+    width: '50%',
     paddingHorizontal: 3,
-    marginBottom: 6,
+    marginBottom: 5,
   },
   skillCardInner: {
     backgroundColor: surface,
     borderLeftWidth: 1.4,
     borderLeftColor: accent,
-    padding: 6,
+    paddingVertical: 5,
+    paddingHorizontal: 6,
   },
   skillTitle: {
-    fontSize: 7.8,
+    fontSize: 7.6,
     fontFamily: 'Helvetica-Bold',
     color: ink,
-    marginBottom: 2,
+    marginBottom: 3,
     letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
-  skillItems: {
-    fontSize: 7.2,
+  skillItemsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  skillItem: {
+    fontSize: 7.1,
     color: muted,
     lineHeight: 1.35,
+  },
+  skillSep: {
+    fontSize: 7.1,
+    color: '#94a3b8',
   },
   twoCol: {
     flexDirection: 'row',
@@ -248,6 +319,9 @@ const styles = StyleSheet.create({
   col: {
     flex: 1,
   },
+  educationEntry: {
+    marginBottom: 6,
+  },
   smallTitle: {
     fontSize: 8.3,
     fontFamily: 'Helvetica-Bold',
@@ -255,6 +329,8 @@ const styles = StyleSheet.create({
   },
   smallMuted: {
     color: muted,
+    fontSize: 7.8,
+    lineHeight: 1.35,
   },
   footer: {
     position: 'absolute',
@@ -293,7 +369,7 @@ function GitHubIcon() {
   );
 }
 
-function Header({ cv }: { cv: CVData }) {
+function Header({ cv, resolvedAssets }: { cv: CVData; resolvedAssets?: Record<string, string> }) {
   const contacts: Array<{ key: string; node: React.ReactNode }> = [
     { key: 'loc', node: <Text>{cv.location}</Text> },
     { key: 'auth', node: <Text>{cv.workAuthorization}</Text> },
@@ -332,10 +408,10 @@ function Header({ cv }: { cv: CVData }) {
       ),
     },
     {
-      key: 'live',
+      key: 'portfolio',
       node: (
         <Link src={cv.contact.portfolioUrl} style={styles.link}>
-          Live CV & Portfolio · {cv.contact.portfolioDisplayUrl}
+          Portfolio: {cv.contact.portfolioDisplayUrl}
         </Link>
       ),
     },
@@ -344,7 +420,7 @@ function Header({ cv }: { cv: CVData }) {
   return (
     <View style={styles.header} wrap={false}>
       <View style={styles.headerTop}>
-        <Image src={resolveCvPdfAsset(CV_PROFILE_IMAGE)} style={styles.avatar} />
+        <Image src={getPdfAsset(CV_PROFILE_IMAGE, resolvedAssets)} style={styles.avatar} />
         <View style={styles.headerText}>
           <Text style={styles.name}>{cv.name}</Text>
           <Text style={styles.headline}>{cv.headline}</Text>
@@ -381,18 +457,42 @@ function Footer() {
   );
 }
 
-function ExperienceRole({ experience }: { experience: CVExperienceItem }) {
-  const meta = [experience.duration, experience.location].filter(Boolean).join(' · ');
+function CompanyMark({
+  experience,
+  resolvedAssets,
+}: {
+  experience: CVExperienceItem;
+  resolvedAssets?: Record<string, string>;
+}) {
   const logo = companyLogos[experience.key];
+  const initial = experience.company?.trim()?.charAt(0)?.toUpperCase() ?? '·';
+
+  if (logo) {
+    return <Image src={getPdfAsset(logo, resolvedAssets)} style={styles.companyLogo} />;
+  }
+
+  return (
+    <View style={styles.companyLogoPlaceholder}>
+      <Text style={styles.companyLogoInitial}>{initial}</Text>
+    </View>
+  );
+}
+
+function ExperienceRole({
+  experience,
+  resolvedAssets,
+}: {
+  experience: CVExperienceItem;
+  resolvedAssets?: Record<string, string>;
+}) {
+  const meta = [experience.duration, experience.location].filter(Boolean).join(' · ');
 
   return (
     <View style={styles.role} wrap={false}>
       <View style={styles.roleHeader}>
         <View style={styles.roleLeft}>
           <View style={styles.roleTitleRow}>
-            {logo ? (
-              <Image src={resolveCvPdfAsset(logo)} style={styles.companyLogo} />
-            ) : null}
+            <CompanyMark experience={experience} resolvedAssets={resolvedAssets} />
             <View style={styles.roleTitleCol}>
               <Text style={styles.roleTitle}>{experience.title}</Text>
               <Text style={styles.company}>{experience.company}</Text>
@@ -414,14 +514,43 @@ function ExperienceRole({ experience }: { experience: CVExperienceItem }) {
   );
 }
 
-export const CVDocument: React.FC<CVDocumentProps> = ({ cv }) => (
+function SkillItems({ items }: { items: string[] }) {
+  return (
+    <View style={styles.skillItemsRow}>
+      {items.map((item, index) => (
+        <Text key={item} style={styles.skillItem}>
+          {index > 0 ? <Text style={styles.skillSep}> · </Text> : null}
+          {item}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
+function EducationSection({ cv }: { cv: CVData }) {
+  return (
+    <View style={styles.col}>
+      <SectionTitle>Education</SectionTitle>
+      {cv.education.map(entry => (
+        <View key={`${entry.institution}-${entry.program}`} style={styles.educationEntry}>
+          <Text style={styles.smallTitle}>{entry.institution}</Text>
+          <Text style={styles.smallMuted}>{entry.program}</Text>
+          {entry.description ? <Text style={styles.smallMuted}>{entry.description}</Text> : null}
+          {entry.years ? <Text style={styles.smallMuted}>{entry.years}</Text> : null}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+export const CVDocument: React.FC<CVDocumentProps> = ({ cv, resolvedAssets }) => (
   <Document
     title={`${cv.name} - Senior Product Engineer CV`}
     author={cv.name}
     subject={cv.headline}
   >
-    <Page size="A4" style={styles.page}>
-      <Header cv={cv} />
+    <Page size="A4" style={styles.page} wrap>
+      <Header cv={cv} resolvedAssets={resolvedAssets} />
 
       <View style={styles.section}>
         <Text style={styles.summary}>{cv.summary.text}</Text>
@@ -430,30 +559,30 @@ export const CVDocument: React.FC<CVDocumentProps> = ({ cv }) => (
       <View style={styles.section}>
         <SectionTitle>Professional Experience</SectionTitle>
         {cv.experiences.map(experience => (
-          <ExperienceRole key={experience.key} experience={experience} />
+          <ExperienceRole
+            key={experience.key}
+            experience={experience}
+            resolvedAssets={resolvedAssets}
+          />
         ))}
       </View>
 
-      <View style={styles.section} wrap={false}>
+      <View style={styles.section}>
         <SectionTitle>Technical Skills</SectionTitle>
         <View style={styles.skillGrid}>
           {cv.skills.map(group => (
             <View key={group.key} style={styles.skillCard}>
               <View style={styles.skillCardInner}>
                 <Text style={styles.skillTitle}>{group.category}</Text>
-                <Text style={styles.skillItems}>{group.items.join(' · ')}</Text>
+                <SkillItems items={group.items} />
               </View>
             </View>
           ))}
         </View>
       </View>
 
-      <View style={[styles.section, styles.twoCol]} wrap={false}>
-        <View style={styles.col}>
-          <SectionTitle>Education</SectionTitle>
-          <Text style={styles.smallTitle}>{cv.education.university}</Text>
-          <Text style={styles.smallMuted}>{cv.education.program}</Text>
-        </View>
+      <View style={[styles.section, styles.twoCol]}>
+        <EducationSection cv={cv} />
         <View style={styles.col}>
           <SectionTitle>Languages</SectionTitle>
           {cv.languages.map(language => (

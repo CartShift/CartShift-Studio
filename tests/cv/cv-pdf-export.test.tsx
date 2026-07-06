@@ -52,7 +52,7 @@ describe('CV PDF export', () => {
     const text = extractPdfText(buffer);
 
     expect(raw.match(/\/Type\s*\/Page\b/g)).toHaveLength(2);
-    expect(raw.match(/\/Subtype\s*\/Image\b/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(raw.match(/\/Subtype\s*\/Image\b/g)?.length ?? 0).toBeGreaterThanOrEqual(8);
     expect(text.trim().length).toBeGreaterThan(1000);
 
     expect(raw).toContain('/URI (mailto:yotamon@gmail.com)');
@@ -68,25 +68,40 @@ describe('CV PDF export', () => {
       '+4915776211298',
       'Professional Experience',
       'Technical Skills',
-      'Live CV & Portfolio',
+      'Portfolio: cart-shift.com/en/cv',
       'CartShift Studio',
       'Curalife',
       'ParagonEX',
       'HOT',
       'Leumi Bank',
       'Elbit Systems',
-      'Israeli Air Force',
+      'Israeli Air Force / Mamram',
+      'Military Service',
+      'IDF School for Computer Professions',
+      'Programming Course',
+      'Bar-Ilan University',
+      'LEGACY ENTERPRISE',
+      'WordPress',
+      'HubSpot',
+      'Web application architecture',
+      'Google Cloud Platform',
     ].forEach(expected => expectPdfTextIncludes(text, expected));
 
     [
       'CartShift Studio CV',
       'R&D Lead & Senior Full Stack Developer',
       'Professional Summary',
+      'Earlier Engineering Experience',
       'Page 1 of 2',
       'Page 2 of 2',
+      'Live CV & Portfolio',
     ].forEach(forbidden => {
       expect(text).not.toContain(forbidden);
       expect(raw).not.toContain(forbidden);
     });
+
+    expect(raw).not.toMatch(/Page\s+\d+\s+of\s+\d+/i);
+    expect(text).not.toMatch(/Word[\s-]+Press/i);
+    expect(text).not.toMatch(/Hub[\s-]+Spot/i);
   }, 30_000);
 });

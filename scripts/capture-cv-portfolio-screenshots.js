@@ -109,11 +109,19 @@ async function captureVariant(browser, project, variant) {
 }
 
 async function main() {
+  const filter = process.argv.find((arg) => arg.startsWith('--project='))?.split('=')[1];
+  const selected = filter ? projects.filter((p) => p.slug === filter) : projects;
+
+  if (filter && selected.length === 0) {
+    console.error(`Unknown project "${filter}". Available: ${projects.map((p) => p.slug).join(', ')}`);
+    process.exit(1);
+  }
+
   fs.mkdirSync(outDir, { recursive: true });
 
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
   try {
-    for (const project of projects) {
+    for (const project of selected) {
       for (const variant of project.variants) {
         await captureVariant(browser, project, variant);
       }

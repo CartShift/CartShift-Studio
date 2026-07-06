@@ -19,8 +19,15 @@
       "portfolio": "Selected Portfolio",
       "experience": "Professional Experience",
       "skills": "Technical Skills",
-      "education": "Additional Education",
+      "education": "Education",
       "languages": "Languages"
+    },
+    "sectionsShort": {
+      "summary": "Summary",
+      "portfolio": "Portfolio",
+      "experience": "Experience",
+      "skills": "Skills",
+      "education": "Education"
     },
     "portfolio": {
       "intro": "Selected product and web projects that show hands-on work across commerce, workflow tools, artist websites, and document-heavy applications.",
@@ -57,7 +64,7 @@
       }
     },
     "summary": {
-      "text": "Senior full-stack developer with more than 10 years of experience building web products and internal systems across e-commerce, healthcare, fintech, and enterprise software. I work across frontend, backend, integrations, and infrastructure, with a focus on turning practical product needs into reliable software. My recent work has included customer-facing telemedicine and e-commerce flows, Shopify and HubSpot integrations, modern React and Next.js applications, and AI-assisted workflow tools.",
+      "text": "Senior full-stack developer with more than 10 years of experience building web products and internal systems across e-commerce, healthcare, fintech, and enterprise software. Experience spans frontend, backend, integrations, and infrastructure, with a focus on turning practical product needs into reliable software. Recent work includes customer-facing telemedicine and e-commerce flows, Shopify and HubSpot integrations, modern React and Next.js applications, and AI-assisted workflow tools.",
       "metaDescription": "Senior Product Engineer and full-stack developer in Berlin building web products, integrations, e-commerce systems, and AI-assisted workflow tools."
     },
     "experience": {
@@ -150,7 +157,7 @@
         ]
       },
       "airforce": {
-        "company": "Israeli Air Force / Mamram",
+        "company": "Israeli Air Force / Mamram (Military Service)",
         "title": "Software Programmer",
         "duration": "March 2011 - September 2014",
         "durationYears": "3 years 7 months",
@@ -226,9 +233,19 @@
       }
     },
     "education": {
-      "university": "Bar-Ilan University",
-      "program": "Mathematics Program for Talented Youth",
-      "years": "2006 - 2008"
+      "entries": [
+        {
+          "institution": "IDF School for Computer Professions (Basmach)",
+          "program": "Programming Course (Mamram)",
+          "description": "Intensive military software development training.",
+          "years": "2011"
+        },
+        {
+          "institution": "Bar-Ilan University",
+          "program": "Mathematics Program for Talented Youth",
+          "years": "2006 - 2008"
+        }
+      ]
     },
     "languageSkills": {
       "hebrew": { "name": "Hebrew", "level": "Native" },
