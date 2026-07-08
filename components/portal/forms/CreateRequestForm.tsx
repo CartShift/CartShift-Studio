@@ -107,6 +107,11 @@ export const CreateRequestForm = ({ orgId }: CreateRequestFormProps) => {
 
       // 1. Create the request
       const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
+      if (!targetOrgId) {
+        setError(t('portal.requests.form.errors.clientRequired'));
+        set(false);
+        return;
+      }
       const request = await createRequest(targetOrgId, user.uid, userName, {
         title: data.title,
         description: data.description,

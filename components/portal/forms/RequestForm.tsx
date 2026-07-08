@@ -118,6 +118,13 @@ export const RequestForm = ({
       return;
     }
 
+    // For agency users with no inherited org, a client MUST be selected.
+    const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
+    if (mode === 'create' && !targetOrgId) {
+      setError(t('portal.requests.form.errors.clientRequired'));
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -132,7 +139,6 @@ export const RequestForm = ({
 
       if (mode === 'create') {
         // 1. Create the request
-        const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
         const newRequest = await createRequest(targetOrgId, user.uid, userName, {
           title: data.title,
           description: data.description,
@@ -156,7 +162,6 @@ export const RequestForm = ({
       // 2. Upload files if any (for both create and edit)
       if (selectedFiles.length > 0 && targetRequestId) {
         setUploadProgress(10); // Start progress
-        const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
 
         const uploadedFiles = await uploadMultipleFiles(
           targetOrgId,

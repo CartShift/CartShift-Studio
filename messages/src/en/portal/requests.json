@@ -76,7 +76,8 @@
           "tip2": "Include links to any design references, examples, or inspiration.",
           "tip3": "Break down complex tasks into smaller, focused requests for faster delivery.",
           "tip4": "Mention any deadlines or time-sensitive requirements upfront."
-        }
+        },
+        "noClientsError": "You don't have any clients yet. Invite a client or create one before submitting a request."
       },
       "form": {
         "titleLabel": "What needs to be done?",
@@ -100,7 +101,8 @@
           "titleShort": "Title must be at least 5 characters",
           "titleLong": "Title is too long",
           "descShort": "Please provide more details (at least 20 characters)",
-          "typeRequired": "Please select a request type"
+          "typeRequired": "Please select a request type",
+          "clientRequired": "Please select a client for this request"
         },
         "clientLabel": "Client",
         "clientSelect": "Select client...",
