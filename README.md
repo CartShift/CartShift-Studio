@@ -1,176 +1,204 @@
-# CartShift Studio
+<p align="center">
+  <img src="docs/assets/readme/icon.png" alt="CartShift Studio" width="72" height="72" />
+</p>
 
-A modern, high-performance, and conversion-optimized ecosystem for CartShift Studio. This project includes a public website and a comprehensive agency/client portal built with Next.js 16+, Firebase, and TanStack Query.
+<h1 align="center">CartShift Studio</h1>
 
-## Project Vision
+<p align="center">
+  <strong>Production e-commerce product platform</strong> — marketing site, free store analyzer, and multi-role agency/client portal in one codebase.
+</p>
 
-CartShift Studio provides a seamless experience for both agency administrators and clients, managing consultations, service requests, workboards, and billing through a unified, avant-garde interface.
+<p align="center">
+  <a href="https://cart-shift.com/en"><img src="https://img.shields.io/badge/Live-cart--shift.com-21759b?style=for-the-badge" alt="Live site" /></a>
+  <a href="https://cart-shift.com/en/cv"><img src="https://img.shields.io/badge/CV_%26_Portfolio-View-96bf48?style=for-the-badge" alt="CV" /></a>
+  <a href="https://github.com/CartShift/CartShift-Studio/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/CartShift/CartShift-Studio/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI" /></a>
+</p>
 
-## Getting Started
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore%20%7C%20Functions-FFCA28?logo=firebase&logoColor=black" alt="Firebase" />
+  <img src="https://img.shields.io/badge/TanStack_Query-v5-FF4154?logo=reactquery&logoColor=white" alt="TanStack Query" />
+  <img src="https://img.shields.io/badge/i18n-EN%20%2B%20HE%20(RTL)-0A7EA4" alt="i18n" />
+  <img src="https://img.shields.io/badge/Vercel-Production-000000?logo=vercel&logoColor=white" alt="Vercel" />
+</p>
+
+<p align="center">
+  <a href="https://cart-shift.com/en">Live Product</a> ·
+  <a href="https://cart-shift.com/en/tools/store-analyzer">Store Analyzer</a> ·
+  <a href="https://cart-shift.com/en/cv">CV & Portfolio</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#getting-started">Getting Started</a>
+</p>
+
+---
+
+<p align="center">
+  <img src="docs/assets/readme/hero-en.jpg" alt="CartShift Studio marketing homepage" width="100%" />
+</p>
+
+## Why this project exists
+
+CartShift Studio is a real production system for an independent e-commerce studio — not a tutorial app.
+
+It connects three surfaces that usually live in separate tools:
+
+| Surface | What it does |
+| --- | --- |
+| **Public website** | Conversion-focused marketing, case studies, blog, bilingual EN/HE with full RTL |
+| **Store Analyzer** | Free diagnostic that audits performance, SEO, accessibility, cart/checkout, AI readiness, and competitors |
+| **Agency / client portal** | Multi-role workspace for consultations, requests, workboards, billing, invites, and file sharing |
+
+Built end-to-end by [Yotam Faraggi](https://github.com/yotamon) — product direction, UX, frontend, backend, Firebase rules, CI, SEO, and deployment.
+
+## Highlights recruiters care about
+
+- **Full-stack product ownership** — App Router, Firebase Auth/Firestore/Storage/Functions, Vercel production
+- **Real product complexity** — org/agency roles, session cookies, security rules, PayPal billing, email workflows
+- **Engineering craft** — TypeScript strict, CVA design system, TanStack Query hooks, optimistic updates, Vitest + CI
+- **Internationalization done properly** — `next-intl`, logical CSS (`ms-*` / `ps-*` / `start-*`), Hebrew RTL
+- **Growth engineering** — SEO metadata/schema, store analyzer lead funnel, LinkedIn publishing tooling
+- **Ship discipline** — GitHub Actions CI (lint → test → build), env validation, translation merge pipeline
+
+## Product tour
+
+### Marketing site (EN + HE / RTL)
+
+Dark, conversion-led public site with services, work, blog, and CTAs into the analyzer and portal.
+
+<p align="center">
+  <img src="docs/assets/readme/website-en-dark.jpg" alt="English marketing site" width="48%" />
+  &nbsp;
+  <img src="docs/assets/readme/website-he-dark.jpg" alt="Hebrew RTL marketing site" width="48%" />
+</p>
+
+### Free Store Analyzer
+
+Instant e-commerce audit covering Core Web Vitals, SEO, accessibility, best practices, cart actionability, structured data / AI readiness, screenshots (Puppeteer), and competitor context.
+
+<p align="center">
+  <img src="docs/assets/readme/store-analyzer.jpg" alt="Store Analyzer tool" width="100%" />
+</p>
+
+**Try it:** [cart-shift.com/en/tools/store-analyzer](https://cart-shift.com/en/tools/store-analyzer)
+
+### Client & agency portal
+
+Authenticated multi-tenant workspace:
+
+- Agency: clients, consultations, workboards, testimonials, pricing
+- Client orgs: requests, attachments, notifications, billing
+- Shared: invites, onboarding tour, command palette, role-aware navigation
+
+## Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                     Next.js 16 (App Router)                 │
+│  app/[locale]/(website) · portal · API routes · RSC/SSR     │
+└───────────────┬─────────────────────────────┬───────────────┘
+                │                             │
+     ┌──────────▼──────────┐       ┌──────────▼──────────┐
+     │  TanStack Query     │       │  Firebase            │
+     │  custom hooks       │       │  Auth · Firestore    │
+     │  optimistic UI      │       │  Storage · Functions │
+     └─────────────────────┘       └─────────────────────┘
+                │                             │
+     ┌──────────▼──────────┐       ┌──────────▼──────────┐
+     │  Design system      │       │  Integrations        │
+     │  CVA · Motion · RTL │       │  PayPal · Email ·    │
+     │  next-intl EN/HE    │       │  PageSpeed · Puppeteer│
+     └─────────────────────┘       └─────────────────────┘
+```
+
+### Repository map
+
+```text
+app/[locale]/          # Website + portal + locale routing
+components/            # Design system, sections, portal UI
+lib/hooks/             # TanStack Query + Firestore (SSOT for data)
+lib/services/          # Domain services
+functions/             # Firebase Cloud Functions
+messages/src/          # Translation sources (never edit generated JSON)
+tests/                 # Vitest unit / integration coverage
+.github/workflows/     # CI: lint, test, build
+```
+
+## Tech stack
+
+| Layer | Choices |
+| --- | --- |
+| Framework | Next.js 16, React, TypeScript (strict) |
+| Server state | TanStack Query v5 |
+| Backend | Firebase Auth, Firestore, Storage, Cloud Functions |
+| UI | Tailwind CSS, CVA, Radix, Framer Motion, Sonner |
+| Forms | React Hook Form + Zod |
+| i18n | next-intl (English + Hebrew RTL) |
+| Analyzer | PageSpeed Insights API, Puppeteer / Chromium |
+| Quality | ESLint, Prettier, Vitest, GitHub Actions |
+| Hosting | Vercel (web) + Firebase (backend) |
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js 24.x (see `.nvmrc`)
-- pnpm
-- Firebase CLI (`npm install -g firebase-tools`)
+- Node.js **24.x** (see `.nvmrc`)
+- [pnpm](https://pnpm.io/)
+- Firebase CLI (`npm i -g firebase-tools`) for functions / rules
 
-### Installation
-
-1. Install dependencies:
+### Setup
 
 ```bash
 pnpm install
+cd functions && pnpm install && cd ..
+cp .env.example .env.local   # fill Firebase + API values
+pnpm dev                     # web + translation watcher
 ```
 
-2. Install Firebase Functions dependencies:
+Open [http://localhost:3000](http://localhost:3000).
 
-```bash
-cd functions
-pnpm install
-cd ..
-```
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev:full` | Web + Firebase Functions emulator |
+| `pnpm lint` | ESLint + TypeScript |
+| `pnpm test:run` | Vitest |
+| `pnpm build` | Production build |
+| `pnpm i18n:merge` | Regenerate locale bundles from `messages/src/` |
 
-3. Set up environment variables:
-   - Copy `.env.example` to `.env.local`
-   - Fill in your Firebase and API configuration values.
-
-4. Run the fast web development server with the debounced translation watcher:
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-Use `pnpm dev:full` when Firebase Functions are also needed, `pnpm dev:functions`
-for the Functions emulator alone, and `pnpm clean:cache` when Turbopack reports
-a stale or corrupted cache (or after dependency changes on Windows ARM64).
-
-## Project Architecture
-
-- `app/[locale]/` - Next.js App Router with i18n support.
-  - `(website)` - Public pages (Hero, Services, Blog, Portfolio).
-  - `portal/` - The core application.
-    - `agency/` - Management interface for agency staff (Workboards, Client management, Consultations).
-    - `org/[orgId]/` - Client-specific dashboards and request management.
-- `components/` - Organized for scale:
-  - `portal/` - Application-specific UI components, forms, and providers.
-  - `sections/` - Content sections for the public website.
-  - `ui/` - Shared design system primitives (CVA-powered).
-- `lib/` - Shared logic:
-  - `services/` - Firebase/Firestore service layer.
-  - `hooks/` - Custom React hooks (TanStack Query integrations).
-  - `utils/` - Formatting, validation, and styling helpers.
-- `functions/` - Firebase Cloud Functions (Backend logic, Emails, Integrations).
-- `messages/` - Localization files for `next-intl`.
-  - `messages/src/` - **Source translation files (EDIT THESE)**
-  - `messages/*.json` - **Generated files (DO NOT EDIT - see messages/README.md)**
-
-## Tech Stack
-
-- **Framework**: [Next.js 16+](https://nextjs.org/) (App Router, Server Components)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict mode)
-- **Data Fetching**: [@tanstack/react-query](https://tanstack.com/query/latest) (Server state management)
-- **Backend/Auth**: [Firebase](https://firebase.google.com/) (Auth, Firestore, Storage, Hosting, Functions)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [class-variance-authority (CVA)](https://cva.style/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/) (Layout transitions, micro-interactions)
-- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Internationalization**: [next-intl](https://next-intl-docs.vercel.app/)
-- **UI Components**: [Sonner](https://sonner.stevenlyui.com/) (Toasts), [Lucide React](https://lucide.dev/) (Icons)
-
-## Key Features & Coding Standards
-
-- **Atomic Design System**: Components are built using CVA for consistent variants and themes.
-- **RTL Support**: All layout and spacing use logical CSS properties (`ms-*`, `pe-*`, `ps-*`, `start-*`, `end-*`) to support both LTR and RTL directions.
-- **Server State Hook Pattern**: Data operations are encapsulated in custom TanStack Query hooks (e.g., `useRequestMutation`, `useAgencyClients`) for caching and optimistic updates.
-- **Shared Element Transitions**: Morphing effects between views using Framer Motion's `layoutId`.
-- **Comprehensive Error Handling**: Centralized Error Boundaries and Toast-based notifications for all async actions.
-- **SEO & Performance**: Optimized metadata, fast LCP through Next.js Image/Font optimization, and bundle analysis.
-
-## Deployment
-
-**Current:** Vercel (with Firebase Auth, Firestore, and Cloud Functions)
-
-See [VERCEL_MIGRATION.md](./docs/VERCEL_MIGRATION.md) for detailed Firebase Auth configuration on Vercel.
-
-### Firebase Services
-
-- ✅ **Authentication** - Proxied via Next.js routes to Firebase Hosting
-- ✅ **Firestore Database** - Direct client connection
-- ✅ **Storage** - Direct client connection
-- ✅ **Cloud Functions** - Deployed separately to Firebase
-
-### Quick Deploy
-
-```bash
-# Deploy to Vercel
-vercel --prod
-
-# Deploy Firebase Cloud Functions
-pnpm run firebase:deploy:functions
-
-# Deploy Firestore/Storage rules
-pnpm run deploy:rules
-```
-
-## Translations
-
-⚠️ **Important**: Never edit `messages/en.json` or `messages/he.json` directly. These are auto-generated files.
-
-- Edit source files in `messages/src/{locale}/` (e.g., `messages/src/en/portal.json`)
-- Run `npm run i18n:merge` to regenerate output files
-- See [messages/README.md](./messages/README.md) for complete documentation
-
-## Store Analyzer
-
-The Store Analyzer is a free tool that provides comprehensive e-commerce store audits.
-
-### Features
-
-- 📊 Performance, SEO, Accessibility, and Best Practices analysis (via Google PageSpeed API)
-- 📸 Visual analysis with mobile/desktop screenshots (via Puppeteer)
-- 🛒 Product page auditing and cart actionability testing
-- 🤖 AI readiness and structured data analysis
-- 🎯 Competitor analysis and market positioning
-- 📈 Benchmark comparison with industry standards
-
-### Setup & Diagnostics
-
-```bash
-# Check if Puppeteer/Chrome is available
-pnpm diagnose:puppeteer
-
-# Test the analyzer (requires dev server)
-pnpm test:analyzer
-```
-
-### Troubleshooting
-
-If the analyzer fails or visual analysis is skipped:
-
-1. Run diagnostics: `pnpm diagnose:puppeteer`
-2. See [docs/STORE_ANALYZER_SETUP.md](./docs/STORE_ANALYZER_SETUP.md) for detailed setup
-3. See [docs/STORE_ANALYZER_FIX.md](./docs/STORE_ANALYZER_FIX.md) for recent bug fixes
-
-**Note**: The analyzer gracefully degrades if Puppeteer/Chrome is unavailable. Core metrics (Performance, SEO, Accessibility) will still work via the PageSpeed API.
+> **Translations:** edit `messages/src/{locale}/*.json` only. Generated `messages/en.json` / `messages/he.json` are rebuilt by `i18n:merge` (also on `predev` / `prebuild`).
 
 ## Documentation
 
-- [messages/README.md](./messages/README.md) - Translation files structure and workflow
-- [docs/STORE_ANALYZER_SETUP.md](./docs/STORE_ANALYZER_SETUP.md) - Store Analyzer setup and deployment guide
-- [docs/STORE_ANALYZER_FIX.md](./docs/STORE_ANALYZER_FIX.md) - Recent bug fixes and improvements
-- [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - Firebase deployment guide
-- [TESTING.md](./docs/TESTING.md) - Testing checklist
-- [PROJECT_SUMMARY.md](./docs/PROJECT_SUMMARY.md) - Implementation summary
-- [CODE_REVIEW.md](./docs/CODE_REVIEW.md) - Documentation of project refinements
-- [INCONSISTENCIES_ANALYSIS.md](./docs/INCONSISTENCIES_ANALYSIS.md) - Design system alignment
+| Doc | Topic |
+| --- | --- |
+| [SECURITY.md](./SECURITY.md) | Vulnerability reporting & production checklist |
+| [messages/README.md](./messages/README.md) | i18n source → merge workflow |
+| [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Deploy guide |
+| [docs/STORE_ANALYZER_SETUP.md](./docs/STORE_ANALYZER_SETUP.md) | Analyzer setup & diagnostics |
+| [docs/TESTING.md](./docs/TESTING.md) | Testing notes |
+| [DESIGN.md](./DESIGN.md) | Design tokens & visual system |
 
 ## Security
 
-See [SECURITY.md](./SECURITY.md) for vulnerability reporting and production security checklist.
+Public for portfolio transparency. Secrets stay in environment variables — never in the repo.
+
+- Session cookies verified with Firebase Admin
+- Firestore / Storage rules enforce org & agency membership
+- Rate limiting + validation on public endpoints
+- Dev-only auth routes disabled outside localhost
+
+See [SECURITY.md](./SECURITY.md) to report issues.
 
 ## License
 
-CartShift Studio © 2026. All rights reserved.
+© 2026 CartShift Studio. All rights reserved.
 
-This repository is public for transparency and portfolio purposes. No license is granted for reuse without permission.
+This repository is public for transparency and portfolio purposes. **No license is granted for reuse, redistribution, or commercial use without written permission.**
+
+---
+
+<p align="center">
+  Built by <a href="https://github.com/yotamon">Yotam Faraggi</a> ·
+  <a href="https://cart-shift.com/en">cart-shift.com</a> ·
+  <a href="mailto:yotamon@gmail.com">yotamon@gmail.com</a>
+</p>
