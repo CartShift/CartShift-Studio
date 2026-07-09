@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://cart-shift.com/en"><img src="https://img.shields.io/badge/Live-cart--shift.com-21759b?style=for-the-badge" alt="Live site" /></a>
   <a href="https://cart-shift.com/en/cv"><img src="https://img.shields.io/badge/CV_%26_Portfolio-View-96bf48?style=for-the-badge" alt="CV" /></a>
-  <a href="https://github.com/CartShift/CartShift-Studio/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/CartShift/CartShift-Studio/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI" /></a>
+  <a href="https://github.com/CartShift/CartShift-Studio/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/CartShift/CartShift-Studio/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white" alt="CI status" /></a>
 </p>
 
 <p align="center">
@@ -67,9 +67,9 @@ Built end-to-end by [Yotam Faraggi](https://github.com/yotamon) — product dire
 Dark, conversion-led public site with services, work, blog, and CTAs into the analyzer and portal.
 
 <p align="center">
-  <img src="docs/assets/readme/website-en-dark.jpg" alt="English marketing site" width="48%" />
+  <img src="https://raw.githubusercontent.com/CartShift/CartShift-Studio/main/docs/assets/readme/website-en-dark.jpg" alt="English marketing site" width="48%" />
   &nbsp;
-  <img src="docs/assets/readme/website-he-dark.jpg" alt="Hebrew RTL marketing site" width="48%" />
+  <img src="https://raw.githubusercontent.com/CartShift/CartShift-Studio/main/docs/assets/readme/website-he-dark.jpg" alt="Hebrew RTL marketing site" width="48%" />
 </p>
 
 ### Free Store Analyzer
@@ -77,7 +77,7 @@ Dark, conversion-led public site with services, work, blog, and CTAs into the an
 Instant e-commerce audit covering Core Web Vitals, SEO, accessibility, best practices, cart actionability, structured data / AI readiness, screenshots (Puppeteer), and competitor context.
 
 <p align="center">
-  <img src="docs/assets/readme/store-analyzer.jpg" alt="Store Analyzer tool" width="100%" />
+  <img src="https://raw.githubusercontent.com/CartShift/CartShift-Studio/main/docs/assets/readme/store-analyzer.jpg" alt="Store Analyzer tool" width="100%" />
 </p>
 
 **Try it:** [cart-shift.com/en/tools/store-analyzer](https://cart-shift.com/en/tools/store-analyzer)

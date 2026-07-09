@@ -63,6 +63,7 @@ build_out/
 .impeccable/
 .playwright-mcp/
 .codex/
+.github/skills/
 
 # operational / generated runtime data (keep *.example.json templates)
 /docs/seo-monitor-reports/*
