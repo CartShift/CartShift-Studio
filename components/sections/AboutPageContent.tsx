@@ -35,8 +35,8 @@ const BgBlob = ({ className, delay = 0 }: { className?: string; delay?: number }
 export const AboutPageContent: React.FC = () => {
   const t = useTranslations();
   const storyContent = t.raw('about.story.content') as string[];
-  const teamMembers = t.raw('about.team.members') as any[];
-  const valuesItems = t.raw('about.values.items') as any[];
+  const teamMembers = t.raw('about.team.members') as Array<{ name: string; role: string; bio: string; expertise: string }>;
+  const valuesItems = t.raw('about.values.items') as Array<{ title: string; description: string }>;
   const expectContent = t.raw('about.expect.content') as string[];
 
   const valueIcons = [MessagesSquare, Zap, Activity, CheckCircle];

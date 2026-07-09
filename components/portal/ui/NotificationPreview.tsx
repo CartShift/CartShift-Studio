@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 import { Notification } from '@/lib/types/portal';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
 interface NotificationPreviewProps {
   notifications: Notification[];
@@ -23,7 +24,7 @@ export function NotificationPreview({
   buttonRef: _buttonRef,
 }: NotificationPreviewProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
 
   const recentNotifications = notifications.slice(0, 3);
@@ -51,11 +52,11 @@ export function NotificationPreview({
                 <div className="flex items-center gap-2">
                   <Bell size={16} className="text-surface-400" />
                   <h4 className="text-sm font-semibold text-surface-900 dark:text-white font-outfit">
-                    {t('portal.header.recentNotifications')}
+                    {t('header.recentNotifications')}
                   </h4>
                   {unreadCount > 0 && (
                     <span className="ms-auto text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-2 py-0.5 rounded-full">
-                      {unreadCount} {t('portal.header.new')}
+                      {unreadCount} {t('header.new')}
                     </span>
                   )}
                 </div>
@@ -117,7 +118,7 @@ export function NotificationPreview({
               {notifications.length > 3 && (
                 <div className="p-3 border-t border-surface-200/50 dark:border-surface-800/30 bg-surface-50/50 dark:bg-surface-900/30 text-center">
                   <p className="text-xs text-surface-500 font-medium">
-                    {t('portal.header.viewAllNotifications', { count: notifications.length })}
+                    {t('header.viewAllNotifications', { count: notifications.length })}
                   </p>
                 </div>
               )}

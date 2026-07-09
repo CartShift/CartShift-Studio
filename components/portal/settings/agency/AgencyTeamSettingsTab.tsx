@@ -84,13 +84,13 @@ export function AgencyTeamSettingsTab({
               >
                 <div className="flex items-center gap-3 mb-3">
                   <Avatar
-                    name={member.name || t('consultations.userFallback' as any)}
+                    name={member.name || t('consultations.userFallback')}
                     size="md"
                     className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
                   />
                   <div>
                     <p className="font-bold text-surface-900 dark:text-white font-outfit">
-                      {member.name || t('common.unnamedUser' as any)}
+                      {member.name || t('common.unnamedUser')}
                     </p>
                     <p className="text-xs font-bold text-surface-400 uppercase tracking-tight">
                       {member.email}
@@ -147,13 +147,13 @@ export function AgencyTeamSettingsTab({
                         <PortalTableCell>
                           <div className="flex items-center gap-3">
                             <Avatar
-                              name={member.name || t('consultations.userFallback' as any)}
+                              name={member.name || t('consultations.userFallback')}
                               size="sm"
                               className="ring-2 ring-white dark:ring-surface-900 shadow-sm"
                             />
                             <div>
                               <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
-                                {member.name || t('common.unnamedUser' as any)}
+                                {member.name || t('common.unnamedUser')}
                               </p>
                               <p className="text-[10px] font-bold text-surface-400 uppercase tracking-tight">
                                 {member.email}
@@ -232,7 +232,7 @@ export function AgencyTeamSettingsTab({
                   <span className="text-[10px] font-bold text-surface-400 uppercase tracking-tighter">
                     {invite.createdAt?.toDate
                       ? invite.createdAt.toDate().toLocaleDateString()
-                      : t('common.sentRecently' as any)}
+                      : t('common.sentRecently')}
                   </span>
                   <button
                     onClick={() => onCancelInvite(invite.id)}

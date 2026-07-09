@@ -90,7 +90,7 @@ export function AgencyServicesSettingsTab({
                   )}
                 </h4>
                 <p className="text-xs text-surface-500 line-clamp-2 min-h-[2rem]">
-                  {service.description || t('common.noDescription' as any)}
+                  {service.description || t('common.noDescription')}
                 </p>
               </div>
 

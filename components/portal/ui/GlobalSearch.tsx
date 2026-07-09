@@ -3,11 +3,12 @@
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { FileText, ChevronRight, Search, Clock, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
-import { Request, CLIENT_STATUS_MAP } from '@/lib/types/portal';
+import { Request } from '@/lib/types/portal';
 import { useRequests } from '@/lib/hooks/useRequests';
+import { getStatusTranslationKey, getClientStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { Badge } from '@/components/ui/Badge';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
@@ -54,7 +55,7 @@ interface GlobalSearchProps {
 
 export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps) {
   const { openRequest } = useOpenRequest();
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -160,7 +161,7 @@ export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps)
         }}
         onBlur={() => setIsFocused(false)}
         onKeyDown={handleKeyDown}
-        placeholder={t('portal.header.search')}
+        placeholder={t('header.search')}
         leftIcon={
           <Search
             size={18}
@@ -284,10 +285,8 @@ export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps)
                             className="text-[9px] h-4 px-1.5"
                           >
                             {isAgency
-                              ? t(`portal.requests.status.${req.status.toLowerCase()}` as any)
-                              : t(
-                                  `portal.requests.clientStatus.${CLIENT_STATUS_MAP[req.status].toLowerCase()}` as any
-                                )}
+                              ? t(getStatusTranslationKey(req.status))
+                              : t(getClientStatusTranslationKey(req.status, true))}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-surface-500">

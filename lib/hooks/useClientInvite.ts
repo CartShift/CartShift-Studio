@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { inviteClient, cancelInvite } from '@/lib/services/portal-organizations';
 import { queryKeys } from '@/lib/utils/query-keys';
 
@@ -13,7 +13,7 @@ interface UseClientInviteOptions {
 
 export function useClientInvite({ orgId, onSuccess }: UseClientInviteOptions) {
   const queryClient = useQueryClient();
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const inviteMutation = useMutation({
     mutationFn: async ({
@@ -31,11 +31,11 @@ export function useClientInvite({ orgId, onSuccess }: UseClientInviteOptions) {
     },
     onSuccess: invite => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invites.byOrg(orgId) });
-      toast.success(t('portal.clientInvite.success'));
+      toast.success(t('clientInvite.success'));
       onSuccess?.(invite.code);
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('portal.clientInvite.errors.generic'));
+      toast.error(error.message || t('clientInvite.errors.generic'));
     },
   });
 
@@ -43,7 +43,7 @@ export function useClientInvite({ orgId, onSuccess }: UseClientInviteOptions) {
     mutationFn: cancelInvite,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invites.byOrg(orgId) });
-      toast.success(t('portal.team.inviteCanceled'));
+      toast.success(t('team.inviteCanceled'));
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to cancel invitation');

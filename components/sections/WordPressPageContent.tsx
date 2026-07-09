@@ -37,15 +37,15 @@ const GlowBlob = ({ className, delay = 0 }: { className?: string; delay?: number
 export const WordPressPageContent: React.FC = () => {
   const t = useTranslations();
   const locale = useLocale();
-  const services = t.raw('wordpress.services.items') as any[];
-  const whyItems = t.raw('wordpress.why.items') as any[];
-  const faqData = t.raw('wordpress.faq' as any) as {
+  const services = t.raw('wordpress.services.items') as Array<{ title: string; description: string }>;
+  const whyItems = t.raw('wordpress.why.items') as Array<{ strong: string; text: string }>;
+  const faqData = t.raw('wordpress.faq' as never) as {
     title: string;
     subtitle: string;
     items: FAQItem[];
   };
   const faqItems = faqData?.items || [];
-  const learnMoreData = t.raw('wordpress.learnMore' as any) as {
+  const learnMoreData = t.raw('wordpress.learnMore' as never) as {
     title: string;
     excerpt: string;
     category: string;

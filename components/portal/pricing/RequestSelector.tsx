@@ -1,13 +1,13 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Package, Check, Flame, Plus, ChevronUp, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Request } from '@/lib/types/portal';
-import { TYPE_ICONS, TYPE_COLORS } from './RequestPricingCalculator';
+import { TYPE_ICONS, TYPE_COLORS, type RequestPricingResult } from './RequestPricingCalculator';
 import { formatCalculatorPrice } from '@/lib/services/pricing-calculator';
 import { Currency } from '@/lib/types/portal';
 
@@ -18,7 +18,7 @@ interface RequestSelectorProps {
   onToggleExpanded: (id: string) => void;
   onQuickAddRequest?: () => void;
   expandedRequests: Set<string>;
-  pricingResults: any[];
+  pricingResults: RequestPricingResult[];
   currency: Currency;
   error?: string | null;
 }
@@ -38,7 +38,7 @@ export function RequestSelector({
   currency,
   error,
 }: RequestSelectorProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const toggleRequest = (requestId: string) => {
     if (selectedRequestIds.includes(requestId)) {
@@ -60,10 +60,10 @@ export function RequestSelector({
             </div>
             <div>
               <h3 className="font-bold text-surface-900 dark:text-white font-outfit">
-                {t('portal.pricing.selectAndPrice' as never)}
+                {t('pricing.selectAndPrice' as never)}
               </h3>
               <p className="text-xs text-surface-500">
-                {t('portal.pricing.selectAndPriceDesc' as never)}
+                {t('pricing.selectAndPriceDesc' as never)}
               </p>
             </div>
           </div>
@@ -72,8 +72,8 @@ export function RequestSelector({
               <Badge variant="blue">
                 {selectedRequestIds.length}{' '}
                 {selectedRequestIds.length === 1
-                  ? t('portal.pricing.form.selected_singular')
-                  : t('portal.pricing.form.selected')}
+                  ? t('pricing.form.selected_singular')
+                  : t('pricing.form.selected')}
               </Badge>
             )}
             {onQuickAddRequest && (
@@ -83,10 +83,10 @@ export function RequestSelector({
                 size="sm"
                 onClick={onQuickAddRequest}
                 className="gap-1.5"
-                aria-label={t('portal.pricing.quickAddRequest')}
+                aria-label={t('pricing.quickAddRequest')}
               >
                 <Plus size={14} />
-                {t('portal.pricing.quickAddRequest' as never) || 'Quick Add'}
+                {t('pricing.quickAddRequest' as never) || 'Quick Add'}
               </Button>
             )}
           </div>
@@ -108,7 +108,7 @@ export function RequestSelector({
               {/* FileText icon would be imported */}
               <span>📄</span>
             </div>
-            <p className="font-medium">{t('portal.pricing.form.noRequestsAvailable')}</p>
+            <p className="font-medium">{t('pricing.form.noRequestsAvailable')}</p>
           </div>
         ) : (
           availableRequests.map(request => {
@@ -126,7 +126,7 @@ export function RequestSelector({
                   tabIndex={0}
                   aria-expanded={isSelected && isExpanded}
                   aria-selected={isSelected}
-                  aria-label={`${request.title}, ${t(`portal.requests.types.${request.type}`)}, ${request.priority === 'URGENT' ? 'Urgent priority' : ''}. ${isSelected ? 'Selected' : 'Not selected'}. ${isExpanded ? 'Configuration expanded' : 'Configuration collapsed'}`}
+                  aria-label={`${request.title}, ${t(`requests.types.${request.type}`)}, ${request.priority === 'URGENT' ? 'Urgent priority' : ''}. ${isSelected ? 'Selected' : 'Not selected'}. ${isExpanded ? 'Configuration expanded' : 'Configuration collapsed'}`}
                   className={cn(
                     'p-4 flex items-start gap-3 sm:gap-4 cursor-pointer transition-colors',
                     'portal-focus-ring',
@@ -173,12 +173,12 @@ export function RequestSelector({
                         {request.title}
                       </h4>
                       <Badge variant="gray" size="sm">
-                        {t(`portal.requests.types.${request.type}`)}
+                        {t(`requests.types.${request.type}`)}
                       </Badge>
                       {request.priority === 'URGENT' && (
                         <Badge variant="red" size="sm">
                           <Flame size={10} className="me-0.5" />
-                          {t('portal.requests.priority.urgent')}
+                          {t('requests.priority.urgent')}
                         </Badge>
                       )}
                     </div>
@@ -208,7 +208,7 @@ export function RequestSelector({
                       <button
                         type="button"
                         aria-label={
-                          isExpanded ? t('portal.common.collapse') : t('portal.common.expand')
+                          isExpanded ? t('common.collapse') : t('common.expand')
                         }
                         onClick={e => {
                           e.stopPropagation();
@@ -227,7 +227,7 @@ export function RequestSelector({
                       {/* Remove Button */}
                       <button
                         type="button"
-                        aria-label={t('portal.common.delete')}
+                        aria-label={t('common.delete')}
                         onClick={e => {
                           e.stopPropagation();
                           onSelectionChange(selectedRequestIds.filter(id => id !== request.id));

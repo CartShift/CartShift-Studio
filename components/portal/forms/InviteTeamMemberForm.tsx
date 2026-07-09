@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Select } from '@/components/ui/Select';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { inviteTeamMember, inviteAgencyMember } from '@/lib/services/portal-organizations';
@@ -30,12 +30,12 @@ export const InviteTeamMemberForm = ({
   const [error, setError] = useState<string | null>(null);
   const { userData } = usePortalAuth();
   const queryClient = useQueryClient();
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const inviteSchema = useMemo(
     () =>
       z.object({
-        email: z.string().email(t('portal.team.inviteForm.errors.email')),
+        email: z.string().email(t('team.inviteForm.errors.email')),
         role: z.enum(['admin', 'sales_manager', 'developer', 'member', 'viewer']),
       }),
     [t]
@@ -57,7 +57,7 @@ export const InviteTeamMemberForm = ({
     setError(null);
 
     try {
-      if (!userData) throw new Error(t('portal.common.notAuthenticated'));
+      if (!userData) throw new Error(t('common.notAuthenticated'));
 
       if (isAgency) {
         await inviteAgencyMember(
@@ -83,7 +83,7 @@ export const InviteTeamMemberForm = ({
       onSuccess();
     } catch (error: unknown) {
       console.error('Invite error:', error);
-      setError(error instanceof Error ? error.message : t('portal.team.inviteForm.errors.generic'));
+      setError(error instanceof Error ? error.message : t('team.inviteForm.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -91,19 +91,19 @@ export const InviteTeamMemberForm = ({
 
   const roleOptions = useMemo(() => {
     const options = [
-      { value: 'admin', label: t('portal.team.inviteForm.roles.admin') },
-      { value: 'member', label: t('portal.team.inviteForm.roles.member') },
-      { value: 'viewer', label: t('portal.team.inviteForm.roles.viewer') },
+      { value: 'admin', label: t('team.inviteForm.roles.admin') },
+      { value: 'member', label: t('team.inviteForm.roles.member') },
+      { value: 'viewer', label: t('team.inviteForm.roles.viewer') },
     ];
 
     if (isAgency) {
       // Specific order for agency: Admin, Sales, Dev, Member, Viewer
       return [
-        { value: 'admin', label: t('portal.team.inviteForm.roles.admin') },
-        { value: 'sales_manager', label: t('portal.team.inviteForm.roles.sales_manager') },
-        { value: 'developer', label: t('portal.team.inviteForm.roles.developer') },
-        { value: 'member', label: t('portal.team.inviteForm.roles.member') },
-        { value: 'viewer', label: t('portal.team.inviteForm.roles.viewer') },
+        { value: 'admin', label: t('team.inviteForm.roles.admin') },
+        { value: 'sales_manager', label: t('team.inviteForm.roles.sales_manager') },
+        { value: 'developer', label: t('team.inviteForm.roles.developer') },
+        { value: 'member', label: t('team.inviteForm.roles.member') },
+        { value: 'viewer', label: t('team.inviteForm.roles.viewer') },
       ];
     }
 
@@ -113,20 +113,20 @@ export const InviteTeamMemberForm = ({
   return (
     <ModalBackdrop isOpen={true} onClick={onCancel}>
       <ModalContent maxWidth="md" onClick={e => e.stopPropagation()}>
-        <ModalHeader title={t('portal.team.inviteForm.title')} onClose={onCancel} />
+        <ModalHeader title={t('team.inviteForm.title')} onClose={onCancel} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalBody className="space-y-5">
             <Input
-              label={t('portal.team.inviteForm.emailLabel')}
+              label={t('team.inviteForm.emailLabel')}
               type="email"
-              placeholder={t('portal.team.inviteForm.emailPlaceholder')}
+              placeholder={t('team.inviteForm.emailPlaceholder')}
               error={errors.email?.message}
               {...register('email')}
             />
 
             <Select
-              label={t('portal.team.inviteForm.roleLabel')}
+              label={t('team.inviteForm.roleLabel')}
               error={errors.role?.message}
               options={roleOptions}
               {...register('role')}
@@ -141,10 +141,10 @@ export const InviteTeamMemberForm = ({
 
           <ModalFooter>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-              {t('portal.team.inviteForm.cancel')}
+              {t('team.inviteForm.cancel')}
             </Button>
             <Button type="submit" loading={loading} className="flex-1">
-              {loading ? t('portal.team.inviteForm.sending') : t('portal.team.inviteForm.submit')}
+              {loading ? t('team.inviteForm.sending') : t('team.inviteForm.submit')}
             </Button>
           </ModalFooter>
         </form>

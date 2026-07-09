@@ -21,6 +21,13 @@ import { BenchmarkService } from './benchmark';
 import { ScraperService } from './scraper';
 import { safeFetchStoreHtml } from '@/lib/utils/safe-store-fetch';
 import { detectPlatform, getScoreStatus } from './analyzer-platform';
+import type {
+  JsonLdRecord,
+  LighthouseAudit,
+  LighthouseAuditItem,
+  LighthouseAudits,
+  LighthouseNode,
+} from '@/lib/types/lighthouse';
 
 const PAGESPEED_API_KEY = process.env.PAGESPEED_API_KEY;
 const LIGHTHOUSE_LAB_LIMITATION =
@@ -194,7 +201,7 @@ interface PageSpeedResult {
       accessibility?: { score: number };
       'best-practices'?: { score: number };
     };
-    audits?: Record<string, any>;
+    audits?: LighthouseAudits;
   };
   loadingExperience?: {
     metrics?: Record<string, { percentile: number; category: string }>;
@@ -241,12 +248,12 @@ function lighthouseEvidenceBase(testedUrl: string) {
   };
 }
 
-function textFromNode(node: any): string {
+function textFromNode(node: LighthouseNode | undefined): string {
   if (!node || typeof node !== 'object') return '';
   return String(node.snippet || node.selector || node.nodeLabel || '').replace(/\s+/g, ' ').trim();
 }
 
-function classifyLighthouseElementContext(item: any): string {
+function classifyLighthouseElementContext(item: LighthouseAuditItem): string {
   const haystack = [
     item?.href,
     item?.url,
@@ -270,11 +277,15 @@ function classifyLighthouseElementContext(item: any): string {
   return 'page content';
 }
 
-function getAuditItems(audit: any): any[] {
+function getAuditItems(audit: LighthouseAudit | undefined): LighthouseAuditItem[] {
   return Array.isArray(audit?.details?.items) ? audit.details.items : [];
 }
 
-function formatAuditDiagnostics(audit: any, auditId: string, maxItems = 4): string[] {
+function formatAuditDiagnostics(
+  audit: LighthouseAudit | undefined,
+  auditId: string,
+  maxItems = 4
+): string[] {
   const items = getAuditItems(audit).slice(0, maxItems);
   if (!items.length) return [];
 
@@ -299,20 +310,25 @@ function formatAuditDiagnostics(audit: any, auditId: string, maxItems = 4): stri
       item.size ||
       item.value ||
       '';
-    return [nodeText || url || audit.title, value ? String(value) : ''].filter(Boolean).join(' - ');
+    return [nodeText || url || audit?.title || auditId, value ? String(value) : '']
+      .filter(Boolean)
+      .join(' - ');
   });
 }
 
-function summarizeAuditEvidence(audit: any, auditId: string): { evidence: string; diagnostics: string[] } {
+function summarizeAuditEvidence(
+  audit: LighthouseAudit | undefined,
+  auditId: string
+): { evidence: string; diagnostics: string[] } {
   const diagnostics = formatAuditDiagnostics(audit, auditId);
   const baseEvidence =
-    audit.displayValue ||
-    audit.description?.split('.')[0] ||
+    audit?.displayValue ||
+    audit?.description?.split('.')[0] ||
     'The Lighthouse audit did not pass.';
 
   if (auditId === 'link-name') {
     const items = getAuditItems(audit);
-    const count = items.length || Number(audit.numericValue) || 1;
+    const count = items.length || Number(audit?.numericValue) || 1;
     const contexts = new Set(items.map(classifyLighthouseElementContext));
     return {
       evidence: `${count} affected link${count === 1 ? '' : 's'} found. Contexts: ${
@@ -330,20 +346,20 @@ function summarizeAuditEvidence(audit: any, auditId: string): { evidence: string
   };
 }
 
-function linkNameImpact(audit: any): Recommendation['impact'] {
+function linkNameImpact(audit: LighthouseAudit | undefined): Recommendation['impact'] {
   const items = getAuditItems(audit);
   const contexts = items.map(classifyLighthouseElementContext);
   const hasCriticalPath = contexts.some(context =>
     /primary navigation|cart\/checkout|product UI/.test(context)
   );
-  const affectedCount = items.length || Number(audit.numericValue) || 1;
+  const affectedCount = items.length || Number(audit?.numericValue) || 1;
 
   if (hasCriticalPath || affectedCount >= 10) return 'high';
   if (affectedCount >= 3) return 'medium';
   return 'low';
 }
 
-function lcpElementIsImage(audits: Record<string, any>): boolean {
+function lcpElementIsImage(audits: LighthouseAudits): boolean {
   const items = getAuditItems(audits['largest-contentful-paint-element']);
   return items.some(item => {
     const text = [item?.node?.snippet, item?.node?.selector, item?.url].filter(Boolean).join(' ');
@@ -385,7 +401,7 @@ function createMeasuredRecommendation(
 }
 
 function extractPerformanceLighthouseFindings(
-  audits: Record<string, any>,
+  audits: LighthouseAudits,
   testedUrl: string
 ): { findings: Finding[]; recommendations: Recommendation[] } {
   const findings: Finding[] = [];
@@ -446,19 +462,23 @@ function extractPerformanceLighthouseFindings(
   for (const cluster of clusters) {
     const failedAudits = cluster.auditIds
       .map(auditId => [auditId, audits[auditId]] as const)
-      .filter(([, audit]) => audit && audit.score !== null && audit.score < 0.9);
+      .filter((entry): entry is readonly [string, LighthouseAudit] => {
+        const audit = entry[1];
+        return Boolean(audit && audit.score !== null && audit.score !== undefined && audit.score < 0.9);
+      });
 
     for (const audit of cluster.auditIds.map(auditId => audits[auditId])) {
       if (!audit || audit.scoreDisplayMode === 'notApplicable' || audit.scoreDisplayMode === 'informative') {
         continue;
       }
 
+      const title = audit.title || 'Lighthouse audit';
       findings.push({
-        type: audit.score === 1 ? 'positive' : audit.score !== null && audit.score < 0.9 ? 'issue' : 'positive',
-        title: audit.title,
+        type: audit.score === 1 ? 'positive' : audit.score != null && audit.score < 0.9 ? 'issue' : 'positive',
+        title,
         description: audit.score === 1 ? 'Passed' : audit.displayValue || 'Measured by Lighthouse.',
         ...evidenceBase,
-        exactEvidence: [audit.displayValue || audit.description || audit.title],
+        exactEvidence: [audit.displayValue || audit.description || title],
       });
     }
 
@@ -478,7 +498,7 @@ function extractPerformanceLighthouseFindings(
       .join('; ')}. Affected audits: ${failedAudits.map(([auditId]) => auditId).join(', ')}.${
       diagnostics.length ? ` Diagnostics: ${diagnostics.slice(0, 4).join(' | ')}` : ''
     }`;
-    const impact = failedAudits.some(([, audit]) => audit.score < 0.5) ? 'high' : 'medium';
+    const impact = failedAudits.some(([, audit]) => (audit.score ?? 1) < 0.5) ? 'high' : 'medium';
 
     recommendations.push(
       createMeasuredRecommendation(
@@ -505,7 +525,7 @@ function extractPerformanceLighthouseFindings(
 }
 
 function extractLighthouseFindings(
-  audits: Record<string, any>,
+  audits: LighthouseAudits,
   category: string,
   testedUrl: string
 ): { findings: Finding[]; recommendations: Recommendation[] } {
@@ -566,22 +586,24 @@ function extractLighthouseFindings(
     )
       continue;
 
+    const title = audit.title || auditId;
     if (audit.score === 1) {
       findings.push({
         type: 'positive',
-        title: audit.title,
+        title,
         description: 'Passed',
         ...evidenceBase,
-        exactEvidence: [audit.displayValue || audit.title],
+        exactEvidence: [audit.displayValue || title],
       });
-    } else if (audit.score !== null && audit.score < 0.9) {
+    } else if (audit.score != null && audit.score < 0.9) {
       const recommendation = lighthouseRecommendationMap[auditId];
-      const impact = auditId === 'link-name' ? linkNameImpact(audit) : audit.score < 0.5 ? 'high' : 'medium';
+      const impact =
+        auditId === 'link-name' ? linkNameImpact(audit) : audit.score < 0.5 ? 'high' : 'medium';
       const { evidence, diagnostics } = summarizeAuditEvidence(audit, auditId);
 
       findings.push({
         type: 'issue',
-        title: audit.title,
+        title,
         description: evidence,
         ...evidenceBase,
         exactEvidence: [evidence],
@@ -606,7 +628,7 @@ function extractLighthouseFindings(
             )
           : createMeasuredRecommendation(
               auditId,
-              audit.title
+              title
                 .replace('Ensure', 'Fix')
                 .replace('Avoid', 'Remove')
                 .replace('Eliminate', 'Fix'),
@@ -1166,7 +1188,7 @@ function extractJsonLdBlocks(html: string): string[] {
   ].map(match => match[1].trim());
 }
 
-function collectProductEntities(value: unknown, products: Record<string, any>[]) {
+function collectProductEntities(value: unknown, products: JsonLdRecord[]) {
   if (!value) return;
   if (Array.isArray(value)) {
     value.forEach(item => collectProductEntities(item, products));
@@ -1174,7 +1196,7 @@ function collectProductEntities(value: unknown, products: Record<string, any>[])
   }
   if (typeof value !== 'object') return;
 
-  const record = value as Record<string, any>;
+  const record = value as JsonLdRecord;
   const type = record['@type'];
   const types = Array.isArray(type) ? type : [type];
   if (types.some(item => typeof item === 'string' && item.toLowerCase() === 'product')) {
@@ -1183,13 +1205,14 @@ function collectProductEntities(value: unknown, products: Record<string, any>[])
   if (record['@graph']) collectProductEntities(record['@graph'], products);
 }
 
-function hasOfferField(product: Record<string, any>, field: string): boolean {
+function hasOfferField(product: JsonLdRecord, field: string): boolean {
   const offers = product.offers;
   const offerList = Array.isArray(offers) ? offers : offers ? [offers] : [];
   return offerList.some(offer => {
     if (!offer || typeof offer !== 'object') return false;
-    if (field in offer) return Boolean(offer[field]);
-    if (field === 'price' && 'lowPrice' in offer) return Boolean(offer.lowPrice);
+    const offerRecord = offer as Record<string, unknown>;
+    if (field in offerRecord) return Boolean(offerRecord[field]);
+    if (field === 'price' && 'lowPrice' in offerRecord) return Boolean(offerRecord.lowPrice);
     return false;
   });
 }
@@ -1263,7 +1286,7 @@ function confirmProductDetailPage(html: string, url: string, platform: string | 
 
 function validateProductSchema(html: string, url: string): ProductSchemaEntityEvidence {
   const blocks = extractJsonLdBlocks(html);
-  const products: Record<string, any>[] = [];
+  const products: JsonLdRecord[] = [];
   let malformedJsonLd = false;
 
   for (const block of blocks) {
@@ -1879,35 +1902,40 @@ export class AnalyzerService {
       const fetched = await safeFetchStoreHtml(normalizedUrl, 15000);
       html = fetched.html;
       fetchedUrl = fetched.finalUrl;
-    } catch (fetchError: any) {
+    } catch (fetchError: unknown) {
+      const message = fetchError instanceof Error ? fetchError.message : String(fetchError);
+      const name = fetchError instanceof Error ? fetchError.name : undefined;
+      const code =
+        fetchError instanceof Error && 'code' in fetchError
+          ? String((fetchError as NodeJS.ErrnoException).code ?? '')
+          : undefined;
       const errorDetails = {
-        message: fetchError.message,
-        cause: fetchError.cause,
-        code: fetchError.code,
-        name: fetchError.name,
-        stack: fetchError.stack,
+        message,
+        cause: fetchError instanceof Error ? fetchError.cause : undefined,
+        code,
+        name,
+        stack: fetchError instanceof Error ? fetchError.stack : undefined,
       };
 
       logError('Store fetch error', fetchError, { ...errorDetails, url: normalizedUrl });
 
-      // Enhance error message based on specific failure types
-      if (fetchError.name === 'TimeoutError' || fetchError.name === 'AbortError') {
+      if (name === 'TimeoutError' || name === 'AbortError') {
         throw new Error(
           `Connection timed out after 15 seconds. The store at ${normalizedUrl} took too long to respond.`
         );
       }
 
-      if (fetchError.code === 'ENOTFOUND') {
+      if (code === 'ENOTFOUND') {
         throw new Error(
           `Could not resolve hostname for ${normalizedUrl}. Please check if the URL is correct.`
         );
       }
 
-      if (fetchError.code === 'ECONNREFUSED') {
+      if (code === 'ECONNREFUSED') {
         throw new Error(`Connection refused by ${normalizedUrl}. The server might be down.`);
       }
 
-      throw new Error(`Could not access store URL: ${fetchError.message}`);
+      throw new Error(`Could not access store URL: ${message}`);
     }
 
     const platform = detectPlatform(html, fetchedUrl);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
 import { cn } from '@/lib/utils';
 import { Request, Currency } from '@/lib/types/portal';
@@ -94,7 +94,7 @@ export function RequestPricingCalculator({
   className,
   orgId,
 }: RequestPricingCalculatorProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   // Global modifiers state
   const [globalUrgent, setGlobalUrgent] = useState(false);
@@ -147,7 +147,7 @@ export function RequestPricingCalculator({
   // Generate line items when pricing changes
   useEffect(() => {
     const lineItems: LineItemOutput[] = pricingResults.map(result => ({
-      description: `${result.request.title} (${t(`portal.requests.types.${result.request.type}`)})`,
+      description: `${result.request.title} (${t(`requests.types.${result.request.type}`)})`,
       quantity: 1,
       unitPrice: result.adjustedPrice / 100, // Convert cents to dollars
       requestId: result.requestId,
@@ -249,13 +249,13 @@ export function RequestPricingCalculator({
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-bold text-surface-900 dark:text-white">
-                {t('portal.pricing.quote.total')}
+                {t('pricing.quote.total')}
               </h4>
               <p className="text-sm text-surface-600 dark:text-surface-400">
                 {selectedRequestIds.length}{' '}
                 {selectedRequestIds.length === 1
-                  ? t('portal.pricing.requests_singular')
-                  : t('portal.pricing.requests')}
+                  ? t('pricing.requests_singular')
+                  : t('pricing.requests')}
               </p>
             </div>
             <div className="text-end">

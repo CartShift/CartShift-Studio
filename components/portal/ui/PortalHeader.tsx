@@ -9,7 +9,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { MobileSearchButton } from './MobileSearchButton';
 import { GlobalSearch } from './GlobalSearch';
 import { NotificationPreview } from './NotificationPreview';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { ACCOUNT_TYPE, AccountType, Notification } from '@/lib/types/portal';
 import { cva } from 'class-variance-authority';
 import { Dropdown } from '@/components/ui/Dropdown';
@@ -18,6 +18,7 @@ import { LogOut, Settings, User, ExternalLink } from 'lucide-react';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getHelpPath } from '@/lib/portal/help-topics';
 import { usePlatformModifierKey } from '@/lib/hooks/usePlatformModifierKey';
+import { getPortalRoleKey } from '@/lib/i18n/portal-translation-keys';
 
 const notificationButtonVariants = cva(
   'portal-focus-ring relative min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center transition-colors duration-200',
@@ -85,25 +86,24 @@ export function PortalHeader({
   viewTransitionName,
   onOpenCommandPalette,
 }: PortalHeaderProps) {
-  const t = useTranslations();
-  const tA11y = useTranslations('portal.accessibility');
+  const t = usePortalTranslations();
   const router = useRouter();
   const modifierKey = usePlatformModifierKey();
   const helpHref = getHelpPath(userData?.isAgency ?? accountType === ACCOUNT_TYPE.AGENCY);
 
   const profileItems = [
     {
-      label: t('portal.sidebar.help'),
+      label: t('sidebar.help'),
       icon: <HelpCircle size={16} />,
       onClick: () => router.push(helpHref),
     },
     {
-      label: t('portal.header.visitWebsite'),
+      label: t('header.visitWebsite'),
       icon: <ExternalLink size={16} />,
       onClick: () => window.open('/', '_blank'),
     },
     {
-      label: t('portal.settings.tabs.profile'),
+      label: t('settings.tabs.profile'),
       icon: <User size={16} />,
       onClick: () =>
         router.push(
@@ -113,7 +113,7 @@ export function PortalHeader({
         ),
     },
     {
-      label: t('portal.settings.title'),
+      label: t('settings.title'),
       icon: <Settings size={16} />,
       onClick: () =>
         router.push(
@@ -121,7 +121,7 @@ export function PortalHeader({
         ),
     },
     {
-      label: t('portal.sidebar.signOut'),
+      label: t('sidebar.signOut'),
       icon: <LogOut size={16} />,
       variant: 'danger' as const,
       onClick: onSignOut,
@@ -138,7 +138,7 @@ export function PortalHeader({
           id="portal-mobile-menu-button"
           onClick={onMobileMenuToggle}
           className="portal-focus-ring md:hidden p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors touch-manipulation active:scale-95 rounded-xl hover:bg-surface-100/50 dark:hover:bg-surface-800/50"
-          aria-label={tA11y('openMenu')}
+          aria-label={t('accessibility.openMenu')}
           aria-expanded={isMobileMenuOpen}
         >
           <Menu size={24} />
@@ -152,10 +152,10 @@ export function PortalHeader({
         <button
           onClick={onOpenCommandPalette}
           className="portal-focus-ring hidden md:flex items-center gap-2 px-2.5 py-2 text-xs font-medium text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100/50 hover:bg-surface-100 dark:bg-surface-800/30 dark:hover:bg-surface-800 rounded-lg transition-colors border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
-          aria-label={tA11y('commandPalette')}
-          title={tA11y('commandPaletteHint', { modifier: modifierKey })}
+          aria-label={t('accessibility.commandPalette')}
+          title={t('accessibility.commandPaletteHint', { modifier: modifierKey })}
         >
-          <span className="hidden xl:inline">{t('portal.header.commands')}</span>
+          <span className="hidden xl:inline">{t('header.commands')}</span>
           <kbd className="inline-flex h-5 items-center gap-1 rounded border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 px-1.5 font-mono text-[10px] font-medium text-surface-500 dark:text-surface-400">
             <span className="text-xs">{modifierKey}</span>K
           </kbd>
@@ -163,7 +163,7 @@ export function PortalHeader({
         <button
           onClick={onOpenCommandPalette}
           className="portal-focus-ring md:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors rounded-xl hover:bg-surface-100/50 dark:hover:bg-surface-800/50"
-          aria-label={tA11y('commandPalette')}
+          aria-label={t('accessibility.commandPalette')}
         >
           <Command size={20} />
         </button>
@@ -182,7 +182,7 @@ export function PortalHeader({
           <Link
             href={helpHref}
             className="portal-focus-ring min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100/80 dark:hover:bg-surface-800/50 transition-colors"
-            aria-label={tA11y('helpCenter')}
+            aria-label={t('accessibility.helpCenter')}
           >
             <HelpCircle size={20} aria-hidden />
           </Link>
@@ -194,7 +194,7 @@ export function PortalHeader({
               data-tour="header-notifications"
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               className={cn(notificationButtonVariants({ isOpen: isNotificationOpen }))}
-              aria-label={t('portal.header.notifications')}
+              aria-label={t('header.notifications')}
               aria-expanded={isNotificationOpen}
               aria-haspopup="true"
             >
@@ -206,7 +206,7 @@ export function PortalHeader({
               {unreadCount > 0 && (
                 <span
                   className="absolute top-2.5 end-2.5 w-2.5 h-2.5 bg-primary-600 rounded-full ring-2 ring-white dark:ring-surface-950 motion-safe:animate-pulse"
-                  aria-label={t('portal.header.unreadNotifications', { count: unreadCount })}
+                  aria-label={t('header.unreadNotifications', { count: unreadCount })}
                 />
               )}
             </button>
@@ -223,12 +223,12 @@ export function PortalHeader({
         <div className="flex items-center gap-2.5 border-s border-surface-200 dark:border-surface-800 ps-3 md:ps-4">
           <div className="hidden sm:flex flex-col items-end leading-none gap-1">
             <span className="text-[13px] font-semibold text-surface-900 dark:text-white font-outfit truncate max-w-[140px]">
-              {userData?.name || t('portal.header.authorizedMember' as never)}
+              {userData?.name || t('header.authorizedMember' as never)}
             </span>
             <div className="flex items-center gap-1.5">
               {userRole ? (
                 <span className="text-[10px] text-surface-500 dark:text-surface-400 font-medium">
-                  {t(`portal.roles.${userRole}` as any)}
+                  {t(getPortalRoleKey(userRole))}
                 </span>
               ) : (
                 <span
@@ -240,8 +240,8 @@ export function PortalHeader({
                   )}
                 >
                   {accountType === ACCOUNT_TYPE.AGENCY
-                    ? t('portal.accountType.badge.agency' as never)
-                    : t('portal.accountType.badge.client' as never)}
+                    ? t('accountType.badge.agency' as never)
+                    : t('accountType.badge.client' as never)}
                 </span>
               )}
             </div>
@@ -252,7 +252,7 @@ export function PortalHeader({
             trigger={
               <button
                 className="portal-avatar portal-focus-ring group cursor-pointer hover:ring-2 hover:ring-primary-500/50 hover:ring-offset-2 dark:hover:ring-offset-surface-950 transition-all active:scale-95 rounded-full"
-                aria-label={t('portal.header.profileMenu' as any)}
+                aria-label={t('header.profileMenu')}
               >
                 <Avatar
                   name={userData?.name}

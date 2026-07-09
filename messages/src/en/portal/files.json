@@ -27,6 +27,10 @@
         "deleteFailed": "Failed to delete file"
       },
       "imageLabels": {
+        "uploadedImage": "Uploaded image",
+        "upload": "Upload Image",
+        "uploading": "Uploading...",
+        "dropHint": "Drop an image here or click to upload",
         "remove": "Remove Image",
         "change": "Change Image"
       },

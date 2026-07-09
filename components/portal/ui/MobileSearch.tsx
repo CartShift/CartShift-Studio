@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 import { Dialog } from 'radix-ui';
 import { Search, X, Clock, ArrowRight, Trash2 } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { useRouter } from '@/i18n/navigation';
 import { isRTLLocale } from '@/lib/locale-config';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -50,7 +51,7 @@ export interface MobileSearchProps {
 }
 
 export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
   const isRTL = isRTLLocale(locale);
   const router = useRouter();
@@ -109,12 +110,12 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
 
   const quickLinks = [
     {
-      label: t('portal.sidebar.nav.dashboard' as any),
+      label: t('sidebar.nav.dashboard'),
       href: getPortalPath('/dashboard/'),
       icon: '📊',
     },
     {
-      label: t('portal.sidebar.nav.requests' as any),
+      label: t('sidebar.nav.requests'),
       href: getPortalPath('/requests/'),
       icon: '📋',
     },
@@ -131,7 +132,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
             className
           )}
         >
-            <Dialog.Title className="sr-only">{t('portal.header.searchPlaceholder')}</Dialog.Title>
+            <Dialog.Title className="sr-only">{t('header.searchPlaceholder')}</Dialog.Title>
             <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden max-w-lg mx-auto">
               {/* Search Input */}
               <div className="flex items-center gap-3 p-4 border-b border-surface-100 dark:border-surface-800">
@@ -146,7 +147,7 @@ export function MobileSearch({ isOpen, onClose, className }: MobileSearchProps) 
                       handleSearch(query);
                     }
                   }}
-                  placeholder={t('portal.header.searchPlaceholder')}
+                  placeholder={t('header.searchPlaceholder')}
                   className={cn(searchInputVariants({ hasQuery: query.length > 0 }))}
                   aria-label="Search"
                 />

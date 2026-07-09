@@ -13,7 +13,7 @@ import { PortalFormGrid } from '@/components/portal/ui/PortalFormField';
 import { cn } from '@/lib/utils';
 import { activateOnKeyboard } from '@/lib/utils/portal-interactive';
 import { format } from 'date-fns';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
 interface RequestMilestonesProps {
   request: Request;
@@ -21,7 +21,7 @@ interface RequestMilestonesProps {
 }
 
 export function RequestMilestones({ request, isAgency }: RequestMilestonesProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const [isEditing, setIsEditing] = useState(false);
   const [milestones, setMilestones] = useState<Milestone[]>(request.milestones || []);
   const [isSaving, setIsSaving] = useState(false);
@@ -29,7 +29,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
   const handleAddMilestone = () => {
     const newMilestone: Milestone = {
       id: `ms_${Date.now()}`,
-      title: t('portal.milestones.newMilestone'),
+      title: t('milestones.newMilestone'),
       status: MILESTONE_STATUS.PENDING as MilestoneStatus,
       order: milestones.length,
       createdAt: Timestamp.now(),
@@ -95,10 +95,10 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
       <div className="flex items-center justify-between mb-8">
         <div>
           <h3 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-            {t('portal.milestones.title')}
+            {t('milestones.title')}
           </h3>
           <p className="portal-label-sm text-[10px] mt-1">
-            {t('portal.milestones.subtitle')}
+            {t('milestones.subtitle')}
           </p>
         </div>
         {isAgency && !isEditing && (
@@ -108,7 +108,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
             className="h-9 px-4 font-outfit"
             onClick={() => setIsEditing(true)}
           >
-            {t('portal.milestones.managePipeline')}
+            {t('milestones.managePipeline')}
           </Button>
         )}
       </div>
@@ -118,7 +118,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-surface-400">
-              <span>{t('portal.milestones.overallProgress')}</span>
+              <span>{t('milestones.overallProgress')}</span>
               <span className="text-primary-600">{Math.round(progress)}%</span>
             </div>
             <div className="w-full h-2 bg-surface-100 dark:bg-surface-900 rounded-full overflow-hidden">
@@ -156,7 +156,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                             : 'bg-surface-100 dark:bg-surface-800 text-surface-400'
                       )}
                       role={isAgency && !isEditing ? 'button' : undefined}
-                      aria-label={t('portal.accessibility.toggleMilestoneStatus')}
+                      aria-label={t('accessibility.toggleMilestoneStatus')}
                     >
                       {isCompleted ? (
                         <CheckCircle2 size={12} strokeWidth={3} />
@@ -179,20 +179,20 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                         </h4>
                         {isActive && (
                           <span className="text-[9px] font-black uppercase tracking-widest text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-md border border-primary-100 dark:border-primary-900/30">
-                            {t('portal.milestones.current')}
+                            {t('milestones.current')}
                           </span>
                         )}
                       </div>
                       <p className="text-xs text-surface-500 font-medium">
-                        {ms.description || t('portal.milestones.deliverablesDescription')}
+                        {ms.description || t('milestones.deliverablesDescription')}
                       </p>
                       {ms.dueDate && (
                         <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-surface-400 uppercase tracking-tight">
                           <Calendar size={12} />
-                          {t('portal.milestones.target')}{' '}
+                          {t('milestones.target')}{' '}
                           {ms.dueDate.toDate
                             ? format(ms.dueDate.toDate(), 'MMM d, yyyy')
-                            : t('portal.milestones.tbd')}
+                            : t('milestones.tbd')}
                         </div>
                       )}
                     </div>
@@ -201,7 +201,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
               })
             ) : (
               <div className="py-8 text-center text-surface-400 italic text-sm">
-                {t('portal.milestones.noMilestonesForProject')}
+                {t('milestones.noMilestonesForProject')}
               </div>
             )}
           </div>
@@ -220,16 +220,16 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                     <Input
                       value={ms.title}
                       onChange={e => handleUpdateMilestone(ms.id, { title: e.target.value })}
-                      placeholder={t('portal.milestones.milestoneTitle')}
+                      placeholder={t('milestones.milestoneTitle')}
                     />
                     <Select
                       value={ms.status}
                       onChange={e => handleUpdateMilestone(ms.id, { status: e.target.value as MilestoneStatus })}
                       options={[
-                        { value: 'pending', label: t('portal.milestones.status.pending') },
-                        { value: 'in_progress', label: t('portal.milestones.status.inProgress') },
-                        { value: 'completed', label: t('portal.milestones.status.completed') },
-                        { value: 'blocked', label: t('portal.milestones.status.blocked') },
+                        { value: 'pending', label: t('milestones.status.pending') },
+                        { value: 'in_progress', label: t('milestones.status.inProgress') },
+                        { value: 'completed', label: t('milestones.status.completed') },
+                        { value: 'blocked', label: t('milestones.status.blocked') },
                       ]}
                     />
                   </PortalFormGrid>
@@ -237,7 +237,7 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
                 <button
                   type="button"
                   onClick={() => handleRemoveMilestone(ms.id)}
-                  aria-label={t('portal.common.delete')}
+                  aria-label={t('common.delete')}
                   className="portal-focus-ring p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-surface-400 hover:text-rose-500 transition-colors"
                 >
                   <Trash2 size={18} />
@@ -251,19 +251,19 @@ export function RequestMilestones({ request, isAgency }: RequestMilestonesProps)
             onClick={handleAddMilestone}
             className="portal-focus-ring w-full py-4 min-h-[44px] border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-2xl text-surface-400 hover:text-primary-500 hover:border-primary-500 hover:bg-primary-50/20 transition-all font-outfit font-bold flex items-center justify-center gap-2"
           >
-            <Plus size={18} /> {t('portal.milestones.addNewPhase')}
+            <Plus size={18} /> {t('milestones.addNewPhase')}
           </button>
 
           <div className="flex gap-3 pt-6 border-t border-surface-100 dark:border-surface-800">
             <Button variant="outline" className="flex-1" onClick={() => setIsEditing(false)}>
-              {t('portal.milestones.discard')}
+              {t('milestones.discard')}
             </Button>
             <Button
               className="flex-1 shadow-lg shadow-primary-500/20"
               onClick={handleSave}
               loading={isSaving}
             >
-              {t('portal.milestones.applyPipelineUpdates')}
+              {t('milestones.applyPipelineUpdates')}
             </Button>
           </div>
         </div>

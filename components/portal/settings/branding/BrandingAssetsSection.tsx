@@ -26,10 +26,10 @@ export function BrandingAssetsSection({ profile, setProfile, userUid }: Branding
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <h4 className="text-sm font-bold text-surface-900 dark:text-white mb-2">
-            {t('settings.branding.logo.title' as any)}
+            {t('settings.branding.logo.title')}
           </h4>
           <p className="text-xs text-surface-500 mb-4">
-            {t('settings.branding.logo.description' as any)}
+            {t('settings.branding.logo.description')}
           </p>
           <div className="p-6 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-xl flex flex-col items-center justify-center gap-4 bg-surface-50/50 dark:bg-surface-900/30">
             {profile.branding?.logoUrl ? (
@@ -48,7 +48,7 @@ export function BrandingAssetsSection({ profile, setProfile, userUid }: Branding
                   }
                   className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold rounded-lg"
                 >
-                  {t('settings.branding.logo.remove' as any)}
+                  {t('settings.branding.logo.remove')}
                 </button>
               </div>
             ) : (
@@ -79,7 +79,7 @@ export function BrandingAssetsSection({ profile, setProfile, userUid }: Branding
                 >
                   <Camera size={24} />
                   <span className="text-xs font-bold uppercase tracking-widest">
-                    {t('settings.branding.logo.upload' as any)}
+                    {t('settings.branding.logo.upload')}
                   </span>
                 </label>
               </div>
@@ -105,17 +105,17 @@ export function BrandingAssetsSection({ profile, setProfile, userUid }: Branding
               htmlFor="invert-logo"
               className="text-sm font-medium text-surface-700 dark:text-surface-300 cursor-pointer select-none"
             >
-              {t('settings.branding.darkmode.invertLogo' as any)}
+              {t('settings.branding.darkmode.invertLogo')}
             </label>
           </div>
         </div>
 
         <div>
           <h4 className="text-sm font-bold text-surface-900 dark:text-white mb-2">
-            {t('settings.branding.icon.title' as any)}
+            {t('settings.branding.icon.title')}
           </h4>
           <p className="text-xs text-surface-500 mb-4">
-            {t('settings.branding.icon.description' as any)}
+            {t('settings.branding.icon.description')}
           </p>
           <div className="p-6 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-xl flex flex-col items-center justify-center gap-4 bg-surface-50/50 dark:bg-surface-900/30">
             {profile.branding?.iconUrl ? (
@@ -134,7 +134,7 @@ export function BrandingAssetsSection({ profile, setProfile, userUid }: Branding
                   }
                   className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold rounded-lg"
                 >
-                  {t('settings.branding.icon.remove' as any)}
+                  {t('settings.branding.icon.remove')}
                 </button>
               </div>
             ) : (
@@ -167,7 +167,7 @@ export function BrandingAssetsSection({ profile, setProfile, userUid }: Branding
                     <Plus size={20} />
                   </div>
                   <span className="text-xs font-bold uppercase tracking-widest">
-                    {t('settings.branding.icon.upload' as any)}
+                    {t('settings.branding.icon.upload')}
                   </span>
                 </label>
               </div>

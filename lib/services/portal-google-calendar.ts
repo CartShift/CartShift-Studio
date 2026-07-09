@@ -505,7 +505,7 @@ export async function getFreeBusyIntervals(
     const data = await response.json();
     const busySlots = data.busy || [];
 
-    return busySlots.map((slot: any) => ({
+    return busySlots.map((slot: { start: string; end: string }) => ({
       start: new Date(slot.start),
       end: new Date(slot.end),
     }));

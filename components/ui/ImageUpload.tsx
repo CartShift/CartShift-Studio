@@ -83,14 +83,14 @@ export const ImageUpload = ({
 
       try {
         await onUpload(file);
-        toast.success(t('portal.common.uploadSuccess' as any));
+        toast.success(t('portal.common.uploadSuccess'));
       } catch (err) {
         const msg = err instanceof Error ? err.message : t('portal.common.uploadFailed');
         setError(msg);
         toast.error(msg);
       }
     },
-    [onUpload]
+    [onUpload, t]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +131,7 @@ export const ImageUpload = ({
       setError(null);
       try {
         await onDelete();
-        toast.success(t('portal.common.removeSuccess' as any));
+        toast.success(t('portal.common.removeSuccess'));
       } catch (err) {
         const msg = err instanceof Error ? err.message : t('portal.common.failedToRemove');
         setError(msg);
@@ -163,7 +163,7 @@ export const ImageUpload = ({
           <>
             <img
               src={currentImageUrl}
-              alt={placeholder || t('portal.files.imageLabels.uploadedImage' as any)}
+              alt={placeholder || t('portal.files.imageLabels.uploadedImage')}
               className="w-full h-full object-cover"
             />
             {/* Hover overlay */}
@@ -214,7 +214,7 @@ export const ImageUpload = ({
         onChange={handleInputChange}
         className="hidden"
         disabled={disabled || isUploading}
-        aria-label={placeholder || t('portal.files.imageLabels.upload' as any)}
+        aria-label={placeholder || t('portal.files.imageLabels.upload')}
       />
 
       {/* Action buttons */}
@@ -229,14 +229,14 @@ export const ImageUpload = ({
           {isUploading ? (
             <>
               <Loader2 className="w-3 h-3 animate-spin me-1.5" />
-              {labels.uploading || t('portal.files.imageLabels.uploading' as any)}
+              {labels.uploading || t('portal.files.imageLabels.uploading')}
             </>
           ) : (
             <>
               <Camera className="w-3 h-3 me-1.5" />
               {currentImageUrl
-                ? labels.change || t('portal.files.imageLabels.change' as any)
-                : labels.upload || t('portal.files.imageLabels.upload' as any)}
+                ? labels.change || t('portal.files.imageLabels.change')
+                : labels.upload || t('portal.files.imageLabels.upload')}
             </>
           )}
         </Button>
@@ -250,7 +250,7 @@ export const ImageUpload = ({
             className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20"
           >
             <Trash2 className="w-3 h-3 me-1.5" />
-            {labels.remove || t('portal.files.imageLabels.remove' as any)}
+            {labels.remove || t('portal.files.imageLabels.remove')}
           </Button>
         )}
       </div>
@@ -258,7 +258,7 @@ export const ImageUpload = ({
       {/* Hint text */}
       {!error && !currentImageUrl && (
         <p className="text-[10px] font-medium text-surface-400 text-center uppercase tracking-wider">
-          {labels.dropHint || t('portal.files.imageLabels.dropHint' as any)}
+          {labels.dropHint || t('portal.files.imageLabels.dropHint')}
         </p>
       )}
 

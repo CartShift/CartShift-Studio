@@ -309,14 +309,22 @@ export async function syncSessionCookie(user: User | null): Promise<void> {
 
 const LOGGING_OUT_KEY = '__cartshift_logging_out';
 
+type LoggingOutGlobal = typeof globalThis & {
+  [LOGGING_OUT_KEY]?: boolean;
+};
+
+function getLoggingOutGlobal(): LoggingOutGlobal {
+  return globalThis as LoggingOutGlobal;
+}
+
 export function isLoggingOut(): boolean {
   if (typeof window === 'undefined') return false;
-  return (globalThis as any)[LOGGING_OUT_KEY] === true;
+  return getLoggingOutGlobal()[LOGGING_OUT_KEY] === true;
 }
 
 export function setLoggingOut(value: boolean): void {
   if (typeof window !== 'undefined') {
-    (globalThis as any)[LOGGING_OUT_KEY] = value;
+    getLoggingOutGlobal()[LOGGING_OUT_KEY] = value;
   }
 }
 

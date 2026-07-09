@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { RequestFormCoreFields } from '@/components/portal/forms/RequestFormCoreFields';
 import { CreateRequestData } from '@/lib/types/portal';
-import { createRequest, updateRequest } from '@/lib/services/portal-requests';
+import { updateRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { useRequestMutations } from '@/lib/hooks/useRequestMutations';
 import { trackPortalRequestCreate } from '@/lib/analytics';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import {
@@ -28,7 +29,7 @@ import {
   File,
   Plus,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { uploadMultipleFiles, formatFileSize } from '@/lib/services/portal-files';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { CardSectionTitle } from '@/components/ui/Card';
@@ -65,20 +66,21 @@ export const RequestForm = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { user, userData, isAgency } = usePortalAuth();
+  const { createRequest } = useRequestMutations(orgId);
   const { organizations: clients } = useAgencyClients();
   const [selectedClientId, setSelectedClientId] = useState<string>('');
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const requestSchema = useMemo(
     () =>
       z.object({
         title: z
           .string()
-          .min(5, t('portal.requests.form.errors.titleShort'))
-          .max(200, t('portal.requests.form.errors.titleLong')),
-        description: z.string().min(20, t('portal.requests.form.errors.descShort')),
+          .min(5, t('requests.form.errors.titleShort'))
+          .max(200, t('requests.form.errors.titleLong')),
+        description: z.string().min(20, t('requests.form.errors.descShort')),
         type: z.enum(['feature', 'bug', 'optimization', 'content', 'design', 'other'], {
-          message: t('portal.requests.form.errors.typeRequired'),
+          message: t('requests.form.errors.typeRequired'),
         }),
         priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']),
       }),
@@ -114,14 +116,14 @@ export const RequestForm = ({
 
   const onSubmit = async (data: RequestFormData) => {
     if (!user) {
-      setError(t('portal.requests.form.errors.auth'));
+      setError(t('requests.form.errors.auth'));
       return;
     }
 
     // For agency users with no inherited org, a client MUST be selected.
     const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
     if (mode === 'create' && !targetOrgId) {
-      setError(t('portal.requests.form.errors.clientRequired'));
+      setError(t('requests.form.errors.clientRequired'));
       return;
     }
 
@@ -133,17 +135,22 @@ export const RequestForm = ({
         userData?.name ||
         user.displayName ||
         user.email?.split('@')[0] ||
-        t('portal.common.unknown');
+        t('common.unknown');
 
       let targetRequestId = requestId;
 
       if (mode === 'create') {
         // 1. Create the request
-        const newRequest = await createRequest(targetOrgId, user.uid, userName, {
-          title: data.title,
-          description: data.description,
-          type: data.type as CreateRequestData['type'],
-          priority: data.priority as CreateRequestData['priority'],
+        const newRequest = await createRequest({
+          targetOrgId,
+          userId: user.uid,
+          userName,
+          data: {
+            title: data.title,
+            description: data.description,
+            type: data.type as CreateRequestData['type'],
+            priority: data.priority as CreateRequestData['priority'],
+          },
         });
         targetRequestId = newRequest.id;
 
@@ -212,7 +219,7 @@ export const RequestForm = ({
       }
     } catch (error: unknown) {
       console.error('Request form error:', error);
-      setError(error instanceof Error ? error.message : t('portal.requests.form.errors.generic'));
+      setError(error instanceof Error ? error.message : t('requests.form.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -230,16 +237,16 @@ export const RequestForm = ({
   };
 
   const typeOptions = [
-    { value: 'design', label: t('portal.requests.type.design'), icon: <Layout size={14} /> },
-    { value: 'feature', label: t('portal.requests.type.feature'), icon: <Sparkles size={14} /> },
-    { value: 'bug', label: t('portal.requests.type.bug'), icon: <Bug size={14} /> },
+    { value: 'design', label: t('requests.type.design'), icon: <Layout size={14} /> },
+    { value: 'feature', label: t('requests.type.feature'), icon: <Sparkles size={14} /> },
+    { value: 'bug', label: t('requests.type.bug'), icon: <Bug size={14} /> },
     {
       value: 'optimization',
-      label: t('portal.requests.type.optimization'),
+      label: t('requests.type.optimization'),
       icon: <Zap size={14} />,
     },
-    { value: 'content', label: t('portal.requests.type.content'), icon: <FileText size={14} /> },
-    { value: 'other', label: t('portal.requests.type.other'), icon: <Send size={14} /> },
+    { value: 'content', label: t('requests.type.content'), icon: <FileText size={14} /> },
+    { value: 'other', label: t('requests.type.other'), icon: <Send size={14} /> },
   ];
 
   if (success && mode === 'create') {
@@ -249,14 +256,14 @@ export const RequestForm = ({
           <CheckCircle2 className="w-8 h-8 text-emerald-500" />
         </div>
         <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-          {t('portal.requests.form.successTitle')}
+          {t('requests.form.successTitle')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 font-medium max-w-xs">
-          {t('portal.requests.form.successDesc')}
+          {t('requests.form.successDesc')}
         </p>
         <div className="pt-4 flex items-center gap-2 portal-label-sm text-[10px] animate-pulse">
           <Loader2 size={12} className="animate-spin" />
-          {t('portal.requests.form.redirecting')}
+          {t('requests.form.redirecting')}
         </div>
       </div>
     );
@@ -267,11 +274,11 @@ export const RequestForm = ({
       <div className="space-y-6">
         {mode === 'create' && isAgency && clients.length > 0 && (
           <Select
-            label={t('portal.requests.form.clientLabel')}
+            label={t('requests.form.clientLabel')}
             value={selectedClientId}
             onChange={e => setSelectedClientId(e.target.value)}
             options={[
-              { value: '', label: t('portal.requests.form.clientSelect') },
+              { value: '', label: t('requests.form.clientSelect') },
               ...clients.map(client => ({ value: client.id, label: client.name })),
             ]}
           />
@@ -288,7 +295,7 @@ export const RequestForm = ({
           <div className="space-y-4 pt-4 border-t border-surface-100 dark:border-surface-800">
             <div className="flex items-center justify-between px-1">
               <CardSectionTitle icon={Paperclip} iconClassName="text-primary-500">
-                {t('portal.requests.new.attachments')}
+                {t('requests.new.attachments')}
               </CardSectionTitle>
             </div>
 
@@ -310,10 +317,10 @@ export const RequestForm = ({
                   <Plus className="text-surface-400 group-hover:text-primary-500" size={20} />
                 </div>
                 <p className="text-sm font-bold text-surface-900 dark:text-white font-outfit">
-                  {t('portal.requests.new.uploadText')}
+                  {t('requests.new.uploadText')}
                 </p>
                 <p className="text-[10px] text-surface-500 uppercase tracking-tight font-medium mt-1">
-                  {t('portal.requests.new.uploadSubtext')}
+                  {t('requests.new.uploadSubtext')}
                 </p>
               </button>
 
@@ -354,7 +361,7 @@ export const RequestForm = ({
                   <div className="h-full flex flex-col items-center justify-center opacity-30 text-center grayscale py-8">
                     <File size={24} className="mb-2" />
                     <p className="text-[10px] font-black uppercase tracking-widest">
-                      {t('portal.requests.detail.noAssets')}
+                      {t('requests.detail.noAssets')}
                     </p>
                   </div>
                 )}
@@ -364,7 +371,7 @@ export const RequestForm = ({
             {loading && uploadProgress > 0 && (
               <div className="space-y-1.5 animate-in fade-in duration-300">
                 <div className="flex justify-between text-[10px] font-black text-primary-600 uppercase tracking-widest">
-                  <span>{t('portal.files.uploadForm.uploading')}</span>
+                  <span>{t('files.uploadForm.uploading')}</span>
                   <span>{uploadProgress}%</span>
                 </div>
                 <div className="h-1 w-full bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
@@ -388,7 +395,7 @@ export const RequestForm = ({
 
       <div className="flex items-center justify-between border-t border-surface-100 dark:border-surface-800 pt-6">
         <p className="hidden md:block text-[10px] font-bold text-surface-400 uppercase tracking-widest max-w-[200px]">
-          {mode === 'create' ? t('portal.requests.form.footerNote') : ''}
+          {mode === 'create' ? t('requests.form.footerNote') : ''}
         </p>
         <div className="flex gap-3 w-full md:w-auto">
           <Button
@@ -401,7 +408,7 @@ export const RequestForm = ({
             disabled={loading}
             className="flex-1 md:flex-none font-outfit"
           >
-            {t('portal.common.cancel')}
+            {t('common.cancel')}
           </Button>
           <Button
             type="submit"
@@ -411,11 +418,11 @@ export const RequestForm = ({
           >
             {loading
               ? mode === 'create'
-                ? t('portal.requests.form.submitting')
-                : t('portal.common.saving')
+                ? t('requests.form.submitting')
+                : t('common.saving')
               : mode === 'create'
-                ? t('portal.requests.form.submit')
-                : t('portal.common.save')}
+                ? t('requests.form.submit')
+                : t('common.save')}
           </Button>
         </div>
       </div>

@@ -8,7 +8,7 @@ import {
   extractPaymentResult,
   PaymentResult,
 } from '@/lib/services/payment';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import {
   capturePublicProposalPayPalOrder,
   createPublicProposalPayPalOrder,
@@ -33,13 +33,13 @@ export function PayPalCheckoutButton({
   proposalPayment,
 }: PayPalCheckoutButtonProps) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   if (isPending) {
     return (
       <div className="flex items-center justify-center py-4">
         <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
-        <span className="ms-2 text-sm text-surface-500">{t('portal.common.loading')}</span>
+        <span className="ms-2 text-sm text-surface-500">{t('common.loading')}</span>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export function PayPalCheckoutButton({
   if (isRejected) {
     return (
       <div className="text-center py-4">
-        <p className="text-red-500 text-sm">{t('portal.pricing.payment.loadError')}</p>
+        <p className="text-red-500 text-sm">{t('pricing.payment.loadError')}</p>
       </div>
     );
   }
@@ -88,10 +88,10 @@ export function PayPalCheckoutButton({
               if (result.payment.status === 'paid') {
                 onSuccess({ success: true, paymentId: _data.orderID });
               } else {
-                onError(t('portal.common.paymentFailed'));
+                onError(t('common.paymentFailed'));
               }
             } catch (error) {
-              onError(error instanceof Error ? error.message : t('portal.common.paymentFailed'));
+              onError(error instanceof Error ? error.message : t('common.paymentFailed'));
             }
             return;
           }
@@ -104,18 +104,18 @@ export function PayPalCheckoutButton({
             const orderDetails = await actions.order.capture();
             const result = extractPaymentResult({
               orderId: orderDetails.id || '',
-              status: orderDetails.status || t('portal.pricing.payment.statusUnknown'),
+              status: orderDetails.status || t('pricing.payment.statusUnknown'),
               payer: orderDetails.payer,
             });
 
             if (result.success) {
               onSuccess(result);
             } else {
-              onError(result.error || t('portal.common.paymentFailed'));
+              onError(result.error || t('common.paymentFailed'));
             }
           } catch (error) {
             console.error('PayPal capture error:', error);
-            onError(t('portal.common.paymentFailedRetry'));
+            onError(t('common.paymentFailedRetry'));
           }
         }}
         onError={err => {

@@ -12,7 +12,7 @@ interface ProcessSectionProps {
 
 export const ProcessSection: React.FC<ProcessSectionProps> = ({ processPath }) => {
   const t = useTranslations();
-  const processData = t.raw(processPath as any) as {
+  const processData = t.raw(processPath as never) as {
     title: string;
     subtitle: string;
     steps: Array<{ title: string; description: string }>;

@@ -74,7 +74,7 @@ export const Header: React.FC = () => {
       { name: t('nav.blog'), href: '/blog' },
       { name: t('nav.contact'), href: '/contact' },
     ],
-    [t, isPricingVisible]
+    [t, isPricingVisible, isMaintenanceVisible]
   );
 
   // Helper to get the correct ref based on dropdown type
@@ -256,7 +256,7 @@ export const Header: React.FC = () => {
         onToggleDropdown={actions.toggleMobileDropdown}
         isRtl={isRtl}
         isLoggedIn={isLoggedIn}
-        t={(key: string) => t(key as any)}
+        t={t}
       />
     </>
   );

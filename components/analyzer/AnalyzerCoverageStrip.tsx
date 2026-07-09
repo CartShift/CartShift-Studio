@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, CircleDashed, XCircle } from 'lucide-react';
 import type { AnalysisMeta, AnalyzerFeatureAvailability } from '@/lib/types/analyzer';
+import { translateIfExists } from '@/lib/i18n/analyzer-translation-keys';
 
 type CoverageStatus = 'active' | 'partial' | 'unavailable';
 
@@ -67,12 +68,10 @@ interface AnalyzerCoverageStripProps {
 export function AnalyzerCoverageStrip({ meta, isDark = false }: AnalyzerCoverageStripProps) {
   const t = useTranslations('analyzer.results.coverage');
 
-  const reasonText = (
-    availability: AnalyzerFeatureAvailability | undefined
-  ) => {
+  const reasonText = (availability: AnalyzerFeatureAvailability | undefined) => {
     if (!availability?.reasonCode) return '';
-    const key = `reasons.${availability.reasonCode}` as const;
-    return t.has(key as any) ? t(key as any) : availability.reason || '';
+    const key = `reasons.${availability.reasonCode}`;
+    return translateIfExists(t, key, availability.reason || '');
   };
 
   const emailAvailability = meta.featureAvailability?.email ?? {

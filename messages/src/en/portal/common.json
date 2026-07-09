@@ -52,6 +52,8 @@
       "organizationLogo": "Organization logo",
       "failedToSubscribe": "Failed to subscribe",
       "uploadFailed": "Upload failed",
+      "uploadSuccess": "Image uploaded successfully",
+      "removeSuccess": "Image removed successfully",
       "failedToRemove": "Failed to remove image",
       "selectImageFile": "Please select an image file",
       "imageTooLarge": "Image must be smaller than 2MB",

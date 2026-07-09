@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { RequestStatus, REQUEST_STATUS } from '@/lib/types/portal';
 import { useTranslations } from 'next-intl';
+import { getStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
 
 // Define the workflow stages with their allowed transitions
 const WORKFLOW_STAGES: {
@@ -327,8 +328,8 @@ export function RequestStatusWorkflow({
             </span>
             <span className="text-sm font-bold text-surface-900 dark:text-white font-outfit leading-none">
               {pendingStatus
-                ? t(`requests.status.${pendingStatus?.toLowerCase()}` as any)
-                : t(`requests.status.${currentStatus.toLowerCase()}` as any)}
+                ? t(getStatusTranslationKey(pendingStatus))
+                : t(getStatusTranslationKey(currentStatus))}
             </span>
           </div>
 
@@ -379,7 +380,7 @@ export function RequestStatusWorkflow({
                             <StageIcon size={14} className={stage.color} />
                           </div>
                           <span className="text-sm font-semibold text-surface-700 dark:text-surface-200">
-                            {t(`requests.status.${status.toLowerCase()}` as any)}
+                            {t(getStatusTranslationKey(status))}
                           </span>
                         </button>
                       );
@@ -454,7 +455,7 @@ export function RequestStatusWorkflow({
                       : 'opacity-0 -translate-y-1 text-surface-400'
                   )}
                 >
-                  {t(`requests.status.${stage.status.toLowerCase()}` as any)}
+                  {t(getStatusTranslationKey(stage.status))}
                 </div>
               </div>
             );

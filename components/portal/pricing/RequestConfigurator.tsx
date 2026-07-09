@@ -1,6 +1,7 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Clock, RotateCcw, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
@@ -10,13 +11,14 @@ import { EffortLevel, EFFORT_LEVEL_CONFIG } from '@/lib/types/pricing-calculator
 import { CURRENCY_CONFIG, Currency } from '@/lib/types/portal';
 import { formatCalculatorPrice } from '@/lib/services/pricing-calculator';
 import { PRICING_UI, PRICING_ERRORS } from '@/lib/constants/pricing';
+import type { RequestPricingConfig, RequestPricingResult } from './RequestPricingCalculator';
 
 interface RequestConfiguratorProps {
   requestId: string;
-  config: any;
-  result: any;
+  config: RequestPricingConfig;
+  result: RequestPricingResult;
   currency: string;
-  onUpdateConfig: (requestId: string, updates: any) => void;
+  onUpdateConfig: (requestId: string, updates: Partial<RequestPricingConfig>) => void;
   isExpanded: boolean;
 }
 
@@ -32,7 +34,7 @@ export function RequestConfigurator({
   onUpdateConfig,
   isExpanded,
 }: RequestConfiguratorProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
   const isRTL = locale === 'he';
   const effortLevels: EffortLevel[] = ['low', 'medium', 'high', 'complex'];
@@ -78,7 +80,7 @@ export function RequestConfigurator({
     </div>
   );
 
-  const updateConfig = (updates: any) => {
+  const updateConfig = (updates: Partial<RequestPricingConfig>) => {
     onUpdateConfig(requestId, updates);
   };
 
@@ -115,7 +117,7 @@ export function RequestConfigurator({
             {/* Effort Level */}
             <div className="space-y-2">
               <label className="portal-label-sm">
-                {t('portal.pricing.effortLevel')}
+                {t('pricing.effortLevel')}
               </label>
               {renderEffortSelector()}
             </div>
@@ -127,7 +129,7 @@ export function RequestConfigurator({
                 <div className="flex flex-col sm:flex-row sm:items-end gap-3">
                   <div className="flex-1">
                     <label className="portal-label-sm mb-2 block">
-                      {t('portal.pricing.customPrice' as never) || 'Custom Price'}
+                      {t('pricing.customPrice' as never) || 'Custom Price'}
                     </label>
                     <div className="relative">
                       <Input
@@ -141,7 +143,7 @@ export function RequestConfigurator({
                             : result.adjustedPrice / 100
                         }
                         onChange={e => handleCustomPriceChange(e.target.value)}
-                        aria-label={t('portal.pricing.customPrice')}
+                        aria-label={t('pricing.customPrice')}
                         aria-describedby="custom-price-hint"
                         leftIcon={
                           <span className="text-surface-400 text-sm font-medium">
@@ -157,7 +159,7 @@ export function RequestConfigurator({
                       />
                     </div>
                     <div id="custom-price-hint" className="text-xs text-surface-500 mt-1">
-                      {t('portal.pricing.calculatorSubtitle') ||
+                      {t('pricing.calculatorSubtitle') ||
                         'Leave empty to use calculated price'}
                     </div>
                   </div>
@@ -168,10 +170,10 @@ export function RequestConfigurator({
                       size="sm"
                       onClick={resetCustomPrice}
                       className="gap-1.5"
-                      aria-label={t('portal.pricing.resetToCalculated')}
+                      aria-label={t('pricing.resetToCalculated')}
                     >
                       <RotateCcw size={14} />
-                      {t('portal.pricing.resetToCalculated' as never) || 'Reset'}
+                      {t('pricing.resetToCalculated' as never) || 'Reset'}
                     </Button>
                   )}
                 </div>
@@ -195,8 +197,8 @@ export function RequestConfigurator({
                       )}
                     >
                       {config.customPrice !== undefined
-                        ? t('portal.pricing.overriddenPrice' as never) || 'Overridden Price'
-                        : t('portal.pricing.itemPrice')}
+                        ? t('pricing.overriddenPrice' as never) || 'Overridden Price'
+                        : t('pricing.itemPrice')}
                     </div>
                     <div
                       className={cn(
@@ -210,16 +212,16 @@ export function RequestConfigurator({
                     </div>
                     {config.customPrice !== undefined && (
                       <div className="text-xs text-surface-500 mt-1 line-through">
-                        {t('portal.pricing.calculatedPrice' as never) || 'Calculated'}:{' '}
+                        {t('pricing.calculatedPrice' as never) || 'Calculated'}:{' '}
                         {formatCalculatorPrice(result.basePrice, currency as Currency)}
                       </div>
                     )}
                   </div>
                   <div className="text-start sm:text-end text-xs text-surface-600 dark:text-surface-400">
-                    <div className="text-surface-500">{t('portal.common.estimated')}</div>
+                    <div className="text-surface-500">{t('common.estimated')}</div>
                     <div className="font-bold text-sm">
                       {result.estimatedHours.min}-{result.estimatedHours.max}{' '}
-                      {t('portal.common.hours')}
+                      {t('common.hours')}
                     </div>
                   </div>
                 </div>

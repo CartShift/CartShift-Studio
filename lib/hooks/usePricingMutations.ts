@@ -34,25 +34,25 @@ export function usePricingMutations() {
       data: CreatePricingRequestData;
     }) => createPricingRequest(orgId, userId, userName, data),
     onSuccess: pricingOffer => {
-      toast.success(t('form.createSuccess' as any));
+      toast.success(t('form.createSuccess'));
       invalidatePricing({ orgId: pricingOffer.orgId, pricingId: pricingOffer.id });
       return pricingOffer;
     },
     onError: error => {
       console.error('Failed to create pricing request:', error);
-      toast.error(t('form.errors.generic' as any));
+      toast.error(t('form.errors.generic'));
     },
   });
 
   const sendMutation = useMutation({
     mutationFn: sendPricingRequest,
     onSuccess: (_result, requestId) => {
-      toast.success(t('form.sendSuccess' as any));
+      toast.success(t('form.sendSuccess'));
       invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to send pricing request:', error);
-      toast.error(t('form.sendFailed' as any));
+      toast.error(t('form.sendFailed'));
     },
   });
 
@@ -65,12 +65,12 @@ export function usePricingMutations() {
       data: UpdatePricingRequestData;
     }) => updatePricingRequest(requestId, data),
     onSuccess: (_result, { requestId }) => {
-      toast.success(t('form.updateSuccess' as any));
+      toast.success(t('form.updateSuccess'));
       invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to update pricing request:', error);
-      toast.error(t('form.errors.generic' as any));
+      toast.error(t('form.errors.generic'));
     },
   });
 
@@ -78,12 +78,12 @@ export function usePricingMutations() {
     mutationFn: ({ requestId, clientNotes }: { requestId: string; clientNotes?: string }) =>
       acceptPricingRequest(requestId, clientNotes),
     onSuccess: () => {
-      toast.success(t('form.acceptSuccess' as any));
+      toast.success(t('form.acceptSuccess'));
       invalidatePricing();
     },
     onError: error => {
       console.error('Failed to accept pricing request:', error);
-      toast.error(t('form.sendFailed' as any));
+      toast.error(t('form.sendFailed'));
     },
   });
 
@@ -91,36 +91,36 @@ export function usePricingMutations() {
     mutationFn: ({ requestId, reason }: { requestId: string; reason?: string }) =>
       declinePricingRequest(requestId, reason),
     onSuccess: (_result, { requestId }) => {
-      toast.success(t('form.declineSuccess' as any));
+      toast.success(t('form.declineSuccess'));
       invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to decline pricing request:', error);
-      toast.error(t('form.sendFailed' as any));
+      toast.error(t('form.sendFailed'));
     },
   });
 
   const cancelMutation = useMutation({
     mutationFn: cancelPricingRequest,
     onSuccess: (_result, requestId) => {
-      toast.success(t('form.cancelSuccess' as any));
+      toast.success(t('form.cancelSuccess'));
       invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to cancel pricing request:', error);
-      toast.error(t('form.deleteFailed' as any));
+      toast.error(t('form.deleteFailed'));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deletePricingRequest,
     onSuccess: (_result, requestId) => {
-      toast.success(t('form.cancelSuccess' as any));
+      toast.success(t('form.cancelSuccess'));
       invalidatePricing({ pricingId: requestId });
     },
     onError: error => {
       console.error('Failed to delete pricing request:', error);
-      toast.error(t('form.deleteFailed' as any));
+      toast.error(t('form.deleteFailed'));
     },
   });
 

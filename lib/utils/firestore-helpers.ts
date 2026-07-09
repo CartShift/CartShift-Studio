@@ -54,7 +54,7 @@ export function shouldSuppressPermissionError(): boolean {
 /**
  * Wraps a Firestore error handler to suppress expected permission errors
  */
-export function wrapFirestoreErrorHandler<TArgs extends any[], TReturn>(
+export function wrapFirestoreErrorHandler<TArgs extends unknown[], TReturn>(
   handler: (...args: TArgs) => TReturn,
   context?: string
 ): (...args: TArgs) => TReturn {

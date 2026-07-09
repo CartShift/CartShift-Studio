@@ -28,6 +28,10 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import {
+  getAgencyClientBadgeKey,
+  getAgencyClientPlanKey,
+} from '@/lib/i18n/portal-translation-keys';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
@@ -182,12 +186,12 @@ export default function AgencyClientsClient() {
         queryClient.invalidateQueries({ queryKey: queryKeys.sales.metrics }),
       ]);
       toast.success(
-        t('agency.clients.deleteSuccess' as any, { name: deletedOrgName } as any) ??
+        t('agency.clients.deleteSuccess', { name: deletedOrgName }) ??
           `${deletedOrgName} was deactivated`
       );
     } catch (err) {
       console.error('Failed to delete client:', err);
-      toast.error(t('agency.clients.deleteFailed' as any) ?? 'Failed to delete client');
+      toast.error(t('agency.clients.deleteFailed') ?? 'Failed to delete client');
     } finally {
       setIsDeleting(false);
     }
@@ -198,7 +202,7 @@ export default function AgencyClientsClient() {
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
         <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
-          {t('agency.clients.loading' as any)}
+          {t('agency.clients.loading')}
         </p>
       </div>
     );
@@ -209,7 +213,7 @@ export default function AgencyClientsClient() {
       <div className="min-h-[400px] flex flex-col items-center justify-center p-10 text-center">
         <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">
-          {t('agency.accessDeniedTitle' as any)}
+          {t('agency.accessDeniedTitle')}
         </h2>
         <p className="text-surface-500 max-w-sm mx-auto mb-8">
           {t('agency.notRegisteredAsAdmin', { email: user?.email || '' })}
@@ -233,25 +237,22 @@ export default function AgencyClientsClient() {
         isOpen={!!orgToDelete}
         onClose={() => setOrgToDelete(null)}
         onConfirm={handleDeleteClient}
-        title={t('agency.clients.deleteTitle' as any) || 'Delete Client'}
+        title={t('agency.clients.deleteTitle') || 'Delete Client'}
         description={
-          (t(
-            'agency.clients.deleteConfirm' as any,
-            { name: orgToDelete?.name || '' } as any
-          ) as string) ||
+          (t('agency.clients.deleteConfirm', { name: orgToDelete?.name || '' }) as string) ||
           `Are you sure you want to delete ${orgToDelete?.name}? This will deactivate their workspace.`
         }
-        confirmText={t('common.delete' as any) || 'Delete'}
+        confirmText={t('common.delete') || 'Delete'}
         variant="danger"
         isLoading={isDeleting}
       />
       <PortalPageHeader
-        title={t('agency.clients.title' as any)}
-        description={t('agency.clients.subtitle' as any)}
+        title={t('agency.clients.title')}
+        description={t('agency.clients.subtitle')}
         className="mb-0"
         action={
           <Link href={getPortalPath('/agency/clients/new/')}>
-            <Button leftIcon={<Plus size={18} />}>{t('agency.clients.onboard' as any)}</Button>
+            <Button leftIcon={<Plus size={18} />}>{t('agency.clients.onboard')}</Button>
           </Link>
         }
       />
@@ -261,7 +262,7 @@ export default function AgencyClientsClient() {
         <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
           <PortalMetricCard
             icon={DollarSign}
-            label={t('sales.metrics.totalRevenue' as any)}
+            label={t('sales.metrics.totalRevenue')}
             value={formatRevenue(totals.totalRevenue)}
             tone="success"
             interactive
@@ -271,7 +272,7 @@ export default function AgencyClientsClient() {
         <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
           <PortalMetricCard
             icon={Clock}
-            label={t('sales.metrics.pendingRevenue' as any)}
+            label={t('sales.metrics.pendingRevenue')}
             value={formatRevenue(totals.pendingRevenue)}
             tone="warning"
             interactive
@@ -280,7 +281,7 @@ export default function AgencyClientsClient() {
 
         <PortalMetricCard
           icon={Users}
-          label={t('sales.metrics.activeClients' as any)}
+          label={t('sales.metrics.activeClients')}
           value={filteredOrgs.length}
           tone="neutral"
         />
@@ -288,7 +289,7 @@ export default function AgencyClientsClient() {
         <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
           <PortalMetricCard
             icon={TrendingUp}
-            label={t('sales.metrics.avgDealSize' as any)}
+            label={t('sales.metrics.avgDealSize')}
             value={
               organizations.filter(o => o.paidCount && o.paidCount > 0).length > 0
                 ? formatRevenue(
@@ -308,14 +309,14 @@ export default function AgencyClientsClient() {
       <div className="flex flex-col md:flex-row md:items-center gap-4 bg-white/70 dark:bg-surface-900/50 p-4 rounded-2xl border border-surface-200/70 dark:border-white/[0.08] shadow-sm backdrop-blur-xl">
         <PortalSearchField
           className="flex-1"
-          placeholder={t('agency.clients.searchPlaceholder' as any)}
+          placeholder={t('agency.clients.searchPlaceholder')}
           value={searchQuery}
           onChange={setSearchQuery}
           inputClassName="h-11 bg-surface-50 dark:bg-surface-900/50"
         />
         <div className="flex items-center gap-3 flex-wrap">
           <div className="text-xs font-medium text-surface-500 dark:text-surface-400 px-2 tabular-nums">
-            {filteredOrgs.length} {t('agency.clients.activeAccounts' as any)}
+            {filteredOrgs.length} {t('agency.clients.activeAccounts')}
           </div>
 
           {/* My Clients Toggle */}
@@ -327,12 +328,12 @@ export default function AgencyClientsClient() {
               'h-11 transition-all',
               !showMyClientsOnly && 'border-surface-200 dark:border-surface-800 text-surface-500'
             )}
-            aria-label={t('agency.clients.filter.myClients' as any)}
+            aria-label={t('agency.clients.filter.myClients')}
             aria-pressed={showMyClientsOnly}
           >
             <Users size={16} className="me-2" aria-hidden="true" />
             <span className="hidden sm:inline">
-              {t('agency.clients.filter.myClients' as any) || 'My Clients'}
+              {t('agency.clients.filter.myClients') || 'My Clients'}
             </span>
             <span className="sm:hidden">{t('common.filter')}</span>
           </Button>
@@ -357,7 +358,7 @@ export default function AgencyClientsClient() {
             size="sm"
             className="h-11 border-surface-200 dark:border-surface-800"
           >
-            {t('agency.clients.export' as any)}
+            {t('agency.clients.export')}
           </Button>
         </div>
       </div>
@@ -397,15 +398,15 @@ export default function AgencyClientsClient() {
                       className="text-[9px] font-black uppercase tracking-widest h-5"
                     >
                       {org.status
-                        ? t(`agency.clients.badge.${org.status}` as any)
-                        : t('agency.clients.badge.active' as any)}
+                        ? t(getAgencyClientBadgeKey(org.status))
+                        : t('agency.clients.badge.active')}
                     </Badge>
                     {(org.memberCount ?? 0) === 0 && (
                       <Badge
                         variant="yellow"
                         className="text-[9px] font-black uppercase tracking-widest h-5"
                       >
-                        {t('agency.clients.badge.pendingInvitation' as any) || 'Pending Invitation'}
+                        {t('agency.clients.badge.pendingInvitation') || 'Pending Invitation'}
                       </Badge>
                     )}
                     {org.responsibleAgencyUserId === user?.uid && (
@@ -413,7 +414,7 @@ export default function AgencyClientsClient() {
                         variant="blue"
                         className="text-[9px] font-black uppercase tracking-widest h-5"
                       >
-                        {t('agency.clients.you' as any)}
+                        {t('agency.clients.you')}
                       </Badge>
                     )}
                     <div className="text-surface-300 transition-colors">
@@ -422,17 +423,17 @@ export default function AgencyClientsClient() {
                         align="right"
                         items={[
                           {
-                            label: t('agency.clients.detail.overview' as any),
+                            label: t('agency.clients.detail.overview'),
                             icon: <ArrowUpRight size={16} />,
                             onClick: () => router.push(getPortalPath(`/agency/clients/${org.id}/`)),
                           },
                           {
-                            label: t('agency.clients.viewAsClient' as any),
+                            label: t('agency.clients.viewAsClient'),
                             icon: <Eye size={16} />,
                             onClick: () => viewAsClient(org.id),
                           },
                           {
-                            label: t('common.delete' as any) || 'Delete',
+                            label: t('common.delete') || 'Delete',
                             icon: <Trash2 size={16} />,
                             variant: 'danger',
                             onClick: () => setOrgToDelete({ id: org.id, name: org.name }),
@@ -456,8 +457,8 @@ export default function AgencyClientsClient() {
                   />
                   <span className="text-xs font-bold text-surface-500 uppercase tracking-widest">
                     {org.plan
-                      ? t(`agency.clients.plans.${org.plan}` as any)
-                      : t('agency.clients.enterprise' as any)}
+                      ? t(getAgencyClientPlanKey(org.plan))
+                      : t('agency.clients.enterprise')}
                   </span>
                 </div>
 
@@ -468,7 +469,7 @@ export default function AgencyClientsClient() {
                       <div className="flex items-center gap-2">
                         <DollarSign size={16} className="text-emerald-600 dark:text-emerald-400" />
                         <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">
-                          {t('sales.metrics.totalRevenue' as any)}
+                          {t('sales.metrics.totalRevenue')}
                         </span>
                       </div>
                       <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
@@ -478,7 +479,7 @@ export default function AgencyClientsClient() {
                     {(org.pendingRevenue ?? 0) > 0 && (
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/50 dark:border-emerald-500/20">
                         <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                          {t('sales.metrics.pending' as any)}
+                          {t('sales.metrics.pending')}
                         </span>
                         <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
                           +{formatRevenue(org.pendingRevenue || 0)}
@@ -491,7 +492,7 @@ export default function AgencyClientsClient() {
                 <div className="grid grid-cols-2 gap-3 pt-5 border-t border-surface-50 dark:border-surface-800/50">
                   <div>
                     <p className="portal-label-sm text-[10px] mb-1">
-                      {t('agency.clients.tickets' as any)}
+                      {t('agency.clients.tickets')}
                     </p>
                     <div className="flex items-center gap-2">
                       <span className="text-lg font-bold text-surface-900 dark:text-white">
@@ -502,7 +503,7 @@ export default function AgencyClientsClient() {
                   </div>
                   <div>
                     <p className="portal-label-sm text-[10px] mb-1">
-                      {t('agency.clients.members' as any)}
+                      {t('agency.clients.members')}
                     </p>
                     <div
                       className={cn(
@@ -530,7 +531,7 @@ export default function AgencyClientsClient() {
                   className="flex items-center justify-between text-primary-600 dark:text-primary-400 transition-colors"
                 >
                   <span className="text-xs font-black uppercase tracking-widest">
-                    {t('agency.clients.detail.overview' as any)}
+                    {t('agency.clients.detail.overview')}
                   </span>
                   <ArrowUpRight size={18} />
                 </Link>
@@ -543,12 +544,12 @@ export default function AgencyClientsClient() {
         <div className="py-20 text-center bg-white dark:bg-surface-950 rounded-3xl border border-surface-200 dark:border-surface-800">
             <Users className="w-16 h-16 text-surface-100 dark:text-surface-800 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-surface-900 dark:text-white">
-              {t('agency.clients.emptyTitle' as any)}
+              {t('agency.clients.emptyTitle')}
             </h3>
             <p className="text-surface-500 dark:text-surface-400 text-sm mt-1 max-w-sm mx-auto">
-              {t('agency.clients.emptyDesc' as any)}
+              {t('agency.clients.emptyDesc')}
             </p>
-          <Button className="mt-8 h-11 px-8">{t('agency.clients.onboard' as any)}</Button>
+          <Button className="mt-8 h-11 px-8">{t('agency.clients.onboard')}</Button>
         </div>
       )}
     </div>

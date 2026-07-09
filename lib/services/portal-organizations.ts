@@ -295,11 +295,14 @@ export async function getOrganizationMembers(orgId: string): Promise<Organizatio
 
   const snapshot = await getDocs(q);
   return snapshot.docs
-    .map(doc => ({
-      id: doc.id,
-      ...doc.data(),
+    .map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data(),
     }))
-    .filter(m => !(m as any).removedAt) as OrganizationMember[];
+    .filter((m): m is OrganizationMember => {
+      const member = m as OrganizationMember;
+      return !member.removedAt;
+    });
 }
 
 export async function getMemberByUserId(
@@ -799,7 +802,7 @@ export function subscribeToMembers(
           id: doc.id,
           ...doc.data(),
         }))
-        .filter(m => !(m as any).removedAt) as OrganizationMember[];
+        .filter((m): m is OrganizationMember => !(m as OrganizationMember).removedAt);
       callback(members);
     },
     error => {

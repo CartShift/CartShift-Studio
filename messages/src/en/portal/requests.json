@@ -111,6 +111,7 @@
       },
       "detail": {
         "loading": "Opening your request...",
+        "notFound": "Request not found",
         "notFoundDesc": "The request you are looking for might have been deleted or moved, or you may not have permission to view it.",
         "deleteTitle": "Delete Request",
         "deleteConfirm": "Are you sure you want to delete this request? This action cannot be undone.",

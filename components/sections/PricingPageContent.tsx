@@ -135,56 +135,29 @@ export const PricingPageContent: React.FC = () => {
 
   if (settingsLoading || authLoading) return null;
 
-  const pricingData = t.raw('pricing' as any) as any;
+  type PricingTranslationData = {
+  hero: { title: string; subtitle: string; description: string; badge: string };
+  packages: {
+    quickLaunch: { name: string; description: string; price: string; timeline: string; features: string[]; cta: string };
+    growthUpgrade: { name: string; description: string; price: string; timeline: string; popular: boolean; features: string[]; cta: string };
+    customBuild: { name: string; description: string; price: string; timeline: string; features: string[]; cta: string };
+    storeAudit: { name: string; description: string; price: string; timeline: string; features: string[]; cta: string };
+  };
+  included: { title: string; items: string[] };
+  notIncluded: { title: string; items: string[] };
+  faq: { title: string; subtitle?: string; items: Array<{ question: string; answer: string }> };
+  cta: { title: string; titleSpan: string; description: string; button: string };
+  popularBadge?: string;
+};
+  const pricingData = t.raw('pricing' as never) as PricingTranslationData;
 
   if (!pricingData || !pricingData.packages) {
     throw new Error('Pricing translation data is missing or invalid');
   }
 
-  const pricing = pricingData as {
-    hero: { title: string; subtitle: string; description: string; badge: string };
-    packages: {
-      quickLaunch: {
-        name: string;
-        description: string;
-        price: string;
-        timeline: string;
-        features: string[];
-        cta: string;
-      };
-      growthUpgrade: {
-        name: string;
-        description: string;
-        price: string;
-        timeline: string;
-        popular: boolean;
-        features: string[];
-        cta: string;
-      };
-      customBuild: {
-        name: string;
-        description: string;
-        price: string;
-        timeline: string;
-        features: string[];
-        cta: string;
-      };
-      storeAudit: {
-        name: string;
-        description: string;
-        price: string;
-        timeline: string;
-        features: string[];
-        cta: string;
-      };
-    };
-    included: { title: string; items: string[] };
-    notIncluded: { title: string; items: string[] };
-    faq: { title: string; subtitle?: string; items: Array<{ question: string; answer: string }> };
-    cta: { title: string; titleSpan: string; description: string; button: string };
-  };
+  const pricing = pricingData;
 
-  const popularBadgeText = (pricing as any).popularBadge || '';
+  const popularBadgeText = pricing.popularBadge || '';
   const packages = [
     { ...pricing.packages.storeAudit, index: 0 },
     { ...pricing.packages.quickLaunch, index: 1 },

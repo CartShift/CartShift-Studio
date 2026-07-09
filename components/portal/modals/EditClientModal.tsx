@@ -20,22 +20,22 @@ import { useTranslations } from 'next-intl';
 import { Select } from '@/components/ui/Select';
 import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 
-type TranslationFunction = ReturnType<typeof useTranslations>;
+type TranslationFunction = ReturnType<typeof useTranslations<'portal'>>;
 
 const editOrgSchema = (t: TranslationFunction) =>
   z.object({
     name: z
       .string()
-      .min(3, t('organization.createForm.errors.name' as any))
-      .max(100, t('organization.createForm.errors.nameLong' as any)),
+      .min(3, t('organization.createForm.errors.name'))
+      .max(100, t('organization.createForm.errors.nameLong')),
     website: z
       .string()
-      .url(t('organization.createForm.errors.website' as any))
+      .url(t('organization.createForm.errors.website'))
       .optional()
       .or(z.literal('')),
     industry: z
       .string()
-      .min(2, t('organization.createForm.errors.industry' as any))
+      .min(2, t('organization.createForm.errors.industry'))
       .optional()
       .or(z.literal('')),
     responsibleAgencyUserId: z.string().optional(),
@@ -153,7 +153,7 @@ export const EditClientModal = ({
       onClose();
     } catch (error: unknown) {
       console.error('Update organization error:', error);
-      setError(error instanceof Error ? error.message : t('common.error' as any));
+      setError(error instanceof Error ? error.message : t('common.error'));
     } finally {
       set(false);
     }
@@ -162,30 +162,30 @@ export const EditClientModal = ({
   return (
     <ModalBackdrop isOpen={isOpen} onClick={onClose}>
       <ModalContent maxWidth="lg" onClick={e => e.stopPropagation()}>
-        <ModalHeader title={t('agency.clients.detail.editClient' as any)} onClose={onClose} />
+        <ModalHeader title={t('agency.clients.detail.editClient')} onClose={onClose} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalBody scrollable className="space-y-5">
             <Input
-              label={t('organization.createForm.nameLabel' as any)}
-              placeholder={t('organization.createForm.namePlaceholder' as any)}
+              label={t('organization.createForm.nameLabel')}
+              placeholder={t('organization.createForm.namePlaceholder')}
               error={errors.name?.message}
               {...register('name')}
               className="font-outfit"
             />
 
             <Input
-              label={t('organization.createForm.websiteLabel' as any)}
+              label={t('organization.createForm.websiteLabel')}
               type="url"
-              placeholder={t('organization.createForm.websitePlaceholder' as any)}
+              placeholder={t('organization.createForm.websitePlaceholder')}
               error={errors.website?.message}
               {...register('website')}
               className="font-outfit"
             />
 
             <Input
-              label={t('organization.createForm.industryLabel' as any)}
-              placeholder={t('organization.createForm.industryPlaceholder' as any)}
+              label={t('organization.createForm.industryLabel')}
+              placeholder={t('organization.createForm.industryPlaceholder')}
               error={errors.industry?.message}
               {...register('industry')}
               className="font-outfit"
@@ -206,10 +206,10 @@ export const EditClientModal = ({
               </div>
             </div>
 
-            <PortalFormField label={t('agency.clients.detail.info.responsibleAgent' as any)}>
+            <PortalFormField label={t('agency.clients.detail.info.responsibleAgent')}>
               <Select
                 options={[
-                  { value: '', label: t('agency.clients.detail.info.unassigned' as any) },
+                  { value: '', label: t('agency.clients.detail.info.unassigned') },
                   ...agencyMembers.map(member => ({
                     value: member.id,
                     label: member.name || member.email,
@@ -219,12 +219,12 @@ export const EditClientModal = ({
               />
             </PortalFormField>
 
-            <PortalFormField label={t('agency.clients.detail.info.status' as any)}>
+            <PortalFormField label={t('agency.clients.detail.info.status')}>
               <Select
                 options={[
-                  { value: 'active', label: t('agency.clients.badge.active' as any) },
-                  { value: 'inactive', label: t('agency.clients.badge.inactive' as any) },
-                  { value: 'suspended', label: t('agency.clients.badge.suspended' as any) },
+                  { value: 'active', label: t('agency.clients.badge.active') },
+                  { value: 'inactive', label: t('agency.clients.badge.inactive') },
+                  { value: 'suspended', label: t('agency.clients.badge.suspended') },
                 ]}
                 {...register('status')}
               />

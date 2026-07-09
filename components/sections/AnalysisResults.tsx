@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { motion } from '@/lib/motion';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { useAnalyzerTranslations } from '@/lib/i18n/translations';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/Button';
 import { ScoreGauge } from '@/components/ui/ScoreGauge';
@@ -43,6 +44,21 @@ import { AnalyzerCoverageStrip } from '@/components/analyzer/AnalyzerCoverageStr
 import { ANIMATION_DELAY_STEP, ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/constants/ui';
 import { HumanReviewForm } from '@/components/analyzer/HumanReviewForm';
 import { trackFunnelEvent } from '@/lib/services/analyzer-events';
+import {
+  getAiSchemaStatusKey,
+  getAiStatusKey,
+  getAnalysisConfidenceKey,
+  getAnalyzerSectionKey,
+  getCoverageReasonKey,
+  getImpactKey,
+  getMarketConfidenceKey,
+  getMarketPositionKey,
+  getProductCartStatusKey,
+  getRecommendationGroupKeys,
+  getRoadmapWeekKeys,
+  isCoverageReasonCode,
+  translateIfExists,
+} from '@/lib/i18n/analyzer-translation-keys';
 
 interface AnalysisResultsProps {
   results: AnalysisResult;
@@ -64,7 +80,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   initialEmail,
   onReset,
 }) => {
-  const t = useTranslations('analyzer');
+  const t = useAnalyzerTranslations();
   const locale = useLocale();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -138,8 +154,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
 
   type ExtendedRecommendation = Recommendation & { sectionKey: string; sectionName: string };
 
-  const translateOptional = (key: string, fallback: string) =>
-    t.has(key as any) ? t(key as any) : fallback;
+  const translateOptional = useCallback(
+    (key: string, fallback: string) => translateIfExists(t, key, fallback),
+    [t]
+  );
 
   const getMarketCategoryLabel = (category?: string) => {
     if (!category) return '';
@@ -150,21 +168,27 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     return translateOptional(`market.categories.${normalized}`, category);
   };
 
-  const getRecommendationCopy = (rec: Recommendation): Recommendation => {
-    if (!rec.code) return rec;
-    const translationKey = rec.code.replace(/-/g, '_');
+  const getRecommendationCopy = useCallback(
+    (rec: Recommendation): Recommendation => {
+      if (!rec.code) return rec;
+      const translationKey = rec.code.replace(/-/g, '_');
 
-    return {
-      ...rec,
-      title: translateOptional(`recommendations.items.${translationKey}.title`, rec.title),
-      description: rec.description
-        ? translateOptional(`recommendations.items.${translationKey}.description`, rec.description)
-        : undefined,
-      action: rec.action
-        ? translateOptional(`recommendations.items.${translationKey}.action`, rec.action)
-        : undefined,
-    };
-  };
+      return {
+        ...rec,
+        title: translateOptional(`recommendations.items.${translationKey}.title`, rec.title),
+        description: rec.description
+          ? translateOptional(
+              `recommendations.items.${translationKey}.description`,
+              rec.description
+            )
+          : undefined,
+        action: rec.action
+          ? translateOptional(`recommendations.items.${translationKey}.action`, rec.action)
+          : undefined,
+      };
+    },
+    [translateOptional]
+  );
 
   const getEvidenceCopy = (rec: Recommendation) => {
     if (locale !== 'he') {
@@ -225,8 +249,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               ? 'browser_sampling_failed'
               : undefined;
 
-    if (reason) {
-      return t(`results.coverage.reasons.${reason}` as any);
+    if (reason && isCoverageReasonCode(reason)) {
+      return t(getCoverageReasonKey(reason));
     }
 
     return locale === 'he' ? t('results.coverage.reasons.browser_sampling_failed') : limitation;
@@ -235,7 +259,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const { priorityRecs, recommendationGroups, roadmapWeeks, headerTitle, headerDescription } =
     useMemo(() => {
       const recommendations = flattenRecommendations(results.sections, key =>
-        t(`sections.${key}` as any)
+        t(getAnalyzerSectionKey(key))
       ).map(rec => ({
         ...getRecommendationCopy(rec),
         sectionKey: rec.sectionKey,
@@ -294,7 +318,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         headerTitle: title,
         headerDescription: description,
       };
-    }, [results.overallScore, results.sections, results.storeUrl, t]);
+    }, [results.overallScore, results.sections, t, getRecommendationCopy]);
 
   const overallStatus = getStatusColor(results.overallScore);
   const marketCategoryLabel = getMarketCategoryLabel(results.competitorAnalysis?.category);
@@ -504,7 +528,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   <div
                     className={`text-2xl font-bold capitalize ${isDark ? 'text-white' : 'text-surface-900'}`}
                   >
-                    {t(`market.positions.${results.competitorAnalysis.marketPosition}` as any)}
+                    {t(getMarketPositionKey(results.competitorAnalysis.marketPosition))}
                   </div>
                 )}
               <p className={`text-xs mt-2 ${isDark ? 'text-white/50' : 'text-surface-600'}`}>
@@ -514,7 +538,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-500">
-                  {t(`market.confidence.${results.competitorAnalysis.confidence}` as any)}
+                  {t(getMarketConfidenceKey(results.competitorAnalysis.confidence))}
                 </span>
                 {results.competitorAnalysis.category && (
                   <span className="rounded-full border border-surface-500/20 bg-surface-500/10 px-2 py-1 text-xs text-surface-500 dark:text-white/60">
@@ -586,7 +610,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           {comp.confidenceScore ?? comp.similarityScore}%
                         </div>
                         <div className="text-[10px] text-surface-400">
-                          {t(`market.confidence.${comp.confidence}` as any)}
+                          {t(getMarketConfidenceKey(comp.confidence))}
                         </div>
                       </div>
                     </div>
@@ -775,10 +799,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 {results.aiAnalysis.score}/100
               </div>
               <div className="text-sm font-medium uppercase tracking-wide text-teal-600/70 mb-4">
-                {t(`ai.status.${results.aiAnalysis.aiReadinessStatus}` as any)}
+                {t(getAiStatusKey(results.aiAnalysis.aiReadinessStatus))}
               </div>
               <div className="mb-3 inline-flex self-center rounded-full border border-teal-500/20 bg-teal-500/10 px-2 py-1 text-xs font-medium text-teal-600 dark:text-teal-300">
-                {t(`confidence.${results.aiAnalysis.confidence ?? 'insufficient_evidence'}` as any)}
+                {t(
+                  getAnalysisConfidenceKey(
+                    results.aiAnalysis.confidence ?? 'insufficient_evidence'
+                  )
+                )}
               </div>
               <p className={`text-xs ${isDark ? 'text-white/60' : 'text-surface-600'}`}>
                 {t('ai.scoreHelp')}
@@ -787,7 +815,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <p className={`mt-2 text-xs ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
                   {t('ai.productSchemaStatus', {
                     status: t(
-                      `ai.schemaStatus.${results.aiAnalysis.scannedScope.productSchemaCoverageStatus}` as any
+                      getAiSchemaStatusKey(
+                        results.aiAnalysis.scannedScope.productSchemaCoverageStatus
+                      )
                     ),
                     count: results.aiAnalysis.scannedScope.productPageCountSucceeded,
                   })}
@@ -972,9 +1002,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   {t('product.checkoutFlow')}
                 </span>
                 <span className="font-semibold capitalize">
-                  {t(
-                    `product.cartStatus.${results.productAnalysis.cartActionabilityStatus}` as any
-                  )}
+                  {t(getProductCartStatusKey(results.productAnalysis.cartActionabilityStatus))}
                 </span>
               </div>
             </div>
@@ -1091,7 +1119,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                     <span
                       className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
                     >
-                      {t(`sections.${key}` as any)}
+                      {t(getAnalyzerSectionKey(key))}
                     </span>
                   </div>
                   <span
@@ -1165,10 +1193,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                     <div
                       className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
                     >
-                      {t(`roadmap.weeks.${week.key}.title` as any)}
+                      {t(getRoadmapWeekKeys(week.key).title)}
                     </div>
                     <div className={isDark ? 'text-xs text-white/40' : 'text-xs text-surface-500'}>
-                      {t(`roadmap.weeks.${week.key}.focus` as any)}
+                      {t(getRoadmapWeekKeys(week.key).focus)}
                     </div>
                   </div>
                 </div>
@@ -1191,7 +1219,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                 : 'bg-surface-500/10 text-surface-500 dark:text-white/50'
                           }`}
                         >
-                          {t(`impact.${item.impact}` as any)}
+                          {t(getImpactKey(item.impact))}
                         </span>
                         <span
                           className={
@@ -1252,14 +1280,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   <h3
                     className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}
                   >
-                    {t(`recommendationGroups.${group.key}.title` as any)}
+                    {t(getRecommendationGroupKeys(group.key).title)}
                   </h3>
                   <span className={`text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
                     {t('results.topIssues', { count: group.items.length })}
                   </span>
                 </div>
                 <p className={`mb-4 text-sm ${isDark ? 'text-white/50' : 'text-surface-500'}`}>
-                  {t(`recommendationGroups.${group.key}.subtitle` as any)}
+                  {t(getRecommendationGroupKeys(group.key).subtitle)}
                 </p>
                 <div className="grid md:grid-cols-2 gap-3">
                   {group.items.slice(0, 8).map(rec => (
@@ -1283,7 +1311,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                         <span
                           className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${isDark ? 'bg-white/5 text-white/60' : 'bg-surface-100 text-surface-600'}`}
                         >
-                          {t(`confidence.${rec.confidence ?? 'estimated'}` as any)}
+                          {t(getAnalysisConfidenceKey(rec.confidence ?? 'estimated'))}
                         </span>
                       </div>
                     </div>

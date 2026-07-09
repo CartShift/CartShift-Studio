@@ -74,6 +74,14 @@ export function getPricingStatusBadgeVariant(color: string): BadgeVariant {
  * {formatPortalDate(request.createdAt, 'MMMM d, yyyy', locale)}
  * ```
  */
+function portalTimestampToDate(
+  timestamp: Timestamp | Date | undefined | null
+): Date | null {
+  if (!timestamp) return null;
+  if (timestamp instanceof Date) return timestamp;
+  return timestamp.toDate();
+}
+
 export function formatPortalDate(
   timestamp: Timestamp | Date | undefined | null,
   formatStr: string = 'MMM d, yyyy',
@@ -83,12 +91,8 @@ export function formatPortalDate(
   if (!timestamp) return fallback;
 
   try {
-    const date =
-      timestamp instanceof Date
-        ? timestamp
-        : 'toDate' in timestamp
-          ? timestamp.toDate()
-          : new Date(timestamp as any);
+    const date = portalTimestampToDate(timestamp);
+    if (!date) return fallback;
 
     return format(date, formatStr, { locale: getDateLocale(locale) });
   } catch {
@@ -105,12 +109,8 @@ export function formatRelativeTime(
 ): string {
   if (!timestamp) return '';
 
-  const date =
-    timestamp instanceof Date
-      ? timestamp
-      : 'toDate' in timestamp
-        ? timestamp.toDate()
-        : new Date(timestamp as any);
+  const date = portalTimestampToDate(timestamp);
+  if (!date) return '';
 
   return formatDistanceToNow(date, {
     addSuffix: true,

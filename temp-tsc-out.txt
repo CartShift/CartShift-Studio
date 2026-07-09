@@ -1,0 +1,5 @@
+components/portal/ui/PortalHeader.tsx(141,23): error TS2304: Cannot find name 'tA11y'.
+components/portal/ui/PortalHeader.tsx(155,23): error TS2304: Cannot find name 'tA11y'.
+components/portal/ui/PortalHeader.tsx(156,18): error TS2304: Cannot find name 'tA11y'.
+components/portal/ui/PortalHeader.tsx(166,23): error TS2304: Cannot find name 'tA11y'.
+components/portal/ui/PortalHeader.tsx(185,25): error TS2304: Cannot find name 'tA11y'.

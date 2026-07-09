@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/Button';
 import { updateOrganization } from '@/lib/services/portal-organizations';
 import { Organization } from '@/lib/types/portal';
 import { toast } from 'sonner';
+import { getShopifyAccessStatusKey } from '@/lib/i18n/portal-translation-keys';
 
 interface ShopifyStoreIntegrationProps {
   organization: Organization;
@@ -106,12 +107,12 @@ export default function ShopifyStoreIntegration({
       .replace(/\/$/, '');
 
     if (cleanDomain && !validateDomain(cleanDomain)) {
-      toast.error(t('errors.invalidDomain' as any));
+      toast.error(t('errors.invalidDomain'));
       return;
     }
 
     if (collaboratorCode && !validateCode(collaboratorCode)) {
-      toast.error(t('errors.invalidCode' as any));
+      toast.error(t('errors.invalidCode'));
       return;
     }
 
@@ -128,7 +129,7 @@ export default function ShopifyStoreIntegration({
       onUpdate?.();
     } catch (err) {
       console.error('Failed to save Shopify settings:', err);
-      toast.error(t('errors.saveFailed' as any));
+      toast.error(t('errors.saveFailed'));
     } finally {
       set(false);
     }
@@ -195,9 +196,9 @@ export default function ShopifyStoreIntegration({
             </div>
             <div>
               <h3 className="text-sm font-bold text-surface-600 dark:text-surface-400">
-                {t('agency.notConnected' as any)}
+                {t('agency.notConnected')}
               </h3>
-              <p className="text-xs text-surface-400">{t('agency.notConnectedDesc' as any)}</p>
+              <p className="text-xs text-surface-400">{t('agency.notConnectedDesc')}</p>
             </div>
           </div>
         </div>
@@ -225,7 +226,7 @@ export default function ShopifyStoreIntegration({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                {t('title' as any)}
+                {t('title')}
               </h3>
               <span
                 className={cn(
@@ -240,7 +241,7 @@ export default function ShopifyStoreIntegration({
                   size={10}
                   className={accessStatus === 'requested' ? 'animate-spin' : ''}
                 />
-                {t(`status.${accessStatus}` as any)}
+                {t(getShopifyAccessStatusKey(accessStatus))}
               </span>
             </div>
             <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">
@@ -253,7 +254,7 @@ export default function ShopifyStoreIntegration({
         <div className="p-4 rounded-xl bg-white/80 dark:bg-surface-800/50 border border-surface-100 dark:border-surface-700 space-y-3 mb-6">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-              {t('storeUrl' as any)}
+              {t('storeUrl')}
             </span>
             <a
               href={`https://${organization.shopifyDomain}`}
@@ -268,7 +269,7 @@ export default function ShopifyStoreIntegration({
           {organization.shopifyCollaboratorCode && (
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-                {t('collaboratorCode' as any)}
+                {t('collaboratorCode')}
               </span>
               <div className="flex items-center gap-2">
                 <code className="px-2 py-1 bg-surface-100 dark:bg-surface-900 rounded text-sm font-mono font-bold text-surface-700 dark:text-surface-300">
@@ -301,7 +302,7 @@ export default function ShopifyStoreIntegration({
                   className="gap-2 shadow-lg shadow-accent-600/20"
                 >
                   <ShoppingBag size={16} />
-                  {t('agency.requestAccess' as any)}
+                  {t('agency.requestAccess')}
                   <ExternalLink size={12} className="opacity-60" />
                 </Button>
               </a>
@@ -313,7 +314,7 @@ export default function ShopifyStoreIntegration({
                 className="gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-                {t('agency.markRequested' as any)}
+                {t('agency.markRequested')}
               </Button>
             </>
           )}
@@ -332,12 +333,12 @@ export default function ShopifyStoreIntegration({
                 ) : (
                   <CheckCircle2 size={14} />
                 )}
-                {t('agency.markConnected' as any)}
+                {t('agency.markConnected')}
               </Button>
               <a href={partnerLink || '#'} target="_blank" rel="noopener noreferrer">
                 <Button variant="ghost" size="sm" className="gap-2 text-surface-500">
                   <ExternalLink size={14} />
-                  {t('agency.openPartnerDashboard' as any)}
+                  {t('agency.openPartnerDashboard')}
                 </Button>
               </a>
             </>
@@ -355,7 +356,7 @@ export default function ShopifyStoreIntegration({
                 className="gap-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
               >
                 <ShoppingBag size={16} />
-                {t('agency.openAdmin' as any)}
+                {t('agency.openAdmin')}
                 <ExternalLink size={12} className="opacity-60" />
               </Button>
             </a>
@@ -394,7 +395,7 @@ export default function ShopifyStoreIntegration({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-              {t('title' as any)}
+              {t('title')}
             </h3>
             {hasConnection && (
               <span
@@ -410,12 +411,12 @@ export default function ShopifyStoreIntegration({
                   size={10}
                   className={accessStatus === 'requested' ? 'animate-spin' : ''}
                 />
-                {t(`status.${accessStatus}` as any)}
+                {t(getShopifyAccessStatusKey(accessStatus))}
               </span>
             )}
           </div>
           <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">
-            {t('description' as any)}
+            {t('description')}
           </p>
         </div>
       </div>
@@ -434,7 +435,7 @@ export default function ShopifyStoreIntegration({
               {/* Store Domain Input */}
               <div>
                 <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-                  {t('form.storeUrl' as any)} *
+                  {t('form.storeUrl')} *
                 </label>
                 <div className="relative">
                   <input
@@ -446,16 +447,16 @@ export default function ShopifyStoreIntegration({
                   />
                 </div>
                 <p className="text-[10px] text-surface-400 mt-1.5">
-                  {t('form.storeUrlHint' as any)}
+                  {t('form.storeUrlHint')}
                 </p>
               </div>
 
               {/* Collaborator Code Input */}
               <div>
                 <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-                  {t('form.collaboratorCode' as any)}
+                  {t('form.collaboratorCode')}
                   <span className="text-surface-400 normal-case font-normal ms-1">
-                    ({t('form.optional' as any)})
+                    ({t('form.optional')})
                   </span>
                 </label>
                 <div className="relative">
@@ -471,7 +472,7 @@ export default function ShopifyStoreIntegration({
                   />
                 </div>
                 <p className="text-[10px] text-surface-400 mt-1.5">
-                  {t('form.collaboratorCodeHint' as any)}
+                  {t('form.collaboratorCodeHint')}
                 </p>
               </div>
 
@@ -479,8 +480,8 @@ export default function ShopifyStoreIntegration({
               <div className="p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800/50 flex items-start gap-3">
                 <Info className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-primary-700 dark:text-primary-300">
-                  <p className="font-bold mb-1">{t('form.infoTitle' as any)}</p>
-                  <p className="leading-relaxed">{t('form.infoDesc' as any)}</p>
+                  <p className="font-bold mb-1">{t('form.infoTitle')}</p>
+                  <p className="leading-relaxed">{t('form.infoDesc')}</p>
                 </div>
               </div>
 
@@ -503,7 +504,7 @@ export default function ShopifyStoreIntegration({
             <div className="p-4 rounded-xl bg-white/80 dark:bg-surface-800/50 border border-accent-600/20 dark:border-accent-600/10 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-                  {t('storeUrl' as any)}
+                  {t('storeUrl')}
                 </span>
                 <a
                   href={`https://${organization.shopifyDomain}`}
@@ -518,7 +519,7 @@ export default function ShopifyStoreIntegration({
               {organization.shopifyCollaboratorCode && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-surface-500 uppercase tracking-wider">
-                    {t('collaboratorCode' as any)}
+                    {t('collaboratorCode')}
                   </span>
                   <code className="px-2 py-1 bg-surface-100 dark:bg-surface-900 rounded text-sm font-mono font-bold text-surface-700 dark:text-surface-300">
                     {organization.shopifyCollaboratorCode}
@@ -531,7 +532,7 @@ export default function ShopifyStoreIntegration({
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
                   <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-2">
                     <Clock size={12} />
-                    {t('statusMessages.pending' as any)}
+                    {t('statusMessages.pending')}
                   </p>
                 </div>
               )}
@@ -539,7 +540,7 @@ export default function ShopifyStoreIntegration({
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
                   <p className="text-xs text-primary-600 dark:text-primary-400 flex items-center gap-2">
                     <Loader2 size={12} className="animate-spin" />
-                    {t('statusMessages.requested' as any)}
+                    {t('statusMessages.requested')}
                   </p>
                 </div>
               )}
@@ -547,7 +548,7 @@ export default function ShopifyStoreIntegration({
                 <div className="pt-2 border-t border-surface-100 dark:border-surface-700">
                   <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-2">
                     <Shield size={12} />
-                    {t('statusMessages.connected' as any)}
+                    {t('statusMessages.connected')}
                   </p>
                 </div>
               )}
@@ -564,15 +565,15 @@ export default function ShopifyStoreIntegration({
               <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-400">
                 <li className="flex items-center gap-2">
                   <Check size={14} className="text-accent-600" />
-                  {t('features.feature1' as any)}
+                  {t('features.feature1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <Check size={14} className="text-accent-600" />
-                  {t('features.feature2' as any)}
+                  {t('features.feature2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <Check size={14} className="text-accent-600" />
-                  {t('features.feature3' as any)}
+                  {t('features.feature3')}
                 </li>
               </ul>
             </div>
@@ -592,7 +593,7 @@ export default function ShopifyStoreIntegration({
               className="gap-2 shadow-lg shadow-accent-600/20 bg-accent-600 hover:bg-accent-700"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-              {saving ? t('form.saving' as any) : t('form.save' as any)}
+              {saving ? t('form.saving') : t('form.save')}
             </Button>
             <Button
               variant="ghost"
@@ -607,7 +608,7 @@ export default function ShopifyStoreIntegration({
               className="gap-2 text-surface-500"
             >
               <X size={16} />
-              {t('form.cancel' as any)}
+              {t('form.cancel')}
             </Button>
           </>
         ) : hasConnection ? (
@@ -617,7 +618,7 @@ export default function ShopifyStoreIntegration({
             onClick={() => setEditing(true)}
             className="gap-2 border-accent-600/30 text-accent-700 dark:text-accent-600 hover:bg-accent-600/10"
           >
-            {t('actions.edit' as any)}
+            {t('actions.edit')}
           </Button>
         ) : (
           <Button
@@ -627,7 +628,7 @@ export default function ShopifyStoreIntegration({
             className="gap-2 shadow-lg shadow-accent-600/20 bg-accent-600 hover:bg-accent-700"
           >
             <ShoppingBag size={16} />
-            {t('actions.connect' as any)}
+            {t('actions.connect')}
             <ArrowRight size={14} className="opacity-60" />
           </Button>
         )}

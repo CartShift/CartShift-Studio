@@ -5,6 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { motion } from '@/lib/motion';
 import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { SidebarBrandProps } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useBranding } from '@/components/providers/BrandingProvider';
@@ -17,13 +18,13 @@ export function SidebarBrand({
   isSidebarOpen,
   onToggleSidebar,
 }: SidebarBrandProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const tA11y = useTranslations('portal.accessibility');
   const { branding } = useBranding();
   const homeHref = isAgency ? getPortalPath('/agency/workboard/') : getPortalPath('/dashboard/');
 
   const collapseLabel = isSidebarOpen
-    ? t('portal.sidebar.collapse')
+    ? t('sidebar.collapse')
     : tA11y('expandSidebar');
 
   const toggleButton = (
@@ -93,10 +94,10 @@ export function SidebarBrand({
             ) : (
               <>
                 <span className="font-bold text-sm tracking-tight text-surface-100 truncate">
-                  {t('portal.sidebar.title')}
+                  {t('sidebar.title')}
                 </span>
                 <span className="text-[9px] font-bold text-primary-400 uppercase tracking-wider mt-0.5 opacity-90">
-                  {t('portal.sidebar.subtitle')}
+                  {t('sidebar.subtitle')}
                 </span>
               </>
             )}

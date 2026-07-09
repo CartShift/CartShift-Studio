@@ -37,6 +37,7 @@ import { useConsultationMutations } from '@/lib/hooks/useConsultationMutations';
 import ScheduleConsultationForm from '@/components/portal/ScheduleConsultationForm';
 import { PortalSearchField } from '@/components/portal/ui/PortalSearchField';
 import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
+import { getConsultationStatusKey } from '@/lib/i18n/portal-translation-keys';
 
 const typeIcons: Record<ConsultationType, React.ElementType> = {
   onboarding: UserPlus,
@@ -289,7 +290,7 @@ export default function AgencyConsultationsClient() {
                   : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
               )}
             >
-              {status === 'all' ? t('common.all') : t(`consultations.status.${status}` as any)}
+              {status === 'all' ? t('common.all') : t(getConsultationStatusKey(status))}
             </button>
           ))}
         </div>

@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { MobileDropdownType } from '@/lib/hooks/useNavigationState';
 import { DropdownType } from '@/lib/hooks/useNavigationState';
+import { useTranslations } from 'next-intl';
 
 // Define the navigation item structure (reused from Header)
 export interface NavigationItem {
@@ -28,7 +29,7 @@ interface MobileMenuProps {
   onToggleDropdown: (type: MobileDropdownType) => void;
   isRtl: boolean;
   isLoggedIn: boolean;
-  t: (key: string) => string;
+  t: ReturnType<typeof useTranslations>;
 }
 
 export const MobileMenu: React.FC<MobileMenuProps> = ({

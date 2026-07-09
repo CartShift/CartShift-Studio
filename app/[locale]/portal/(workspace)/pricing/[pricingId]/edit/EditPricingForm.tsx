@@ -137,7 +137,7 @@ export default function EditPricingForm() {
         paymentRequired: z.boolean(),
         depositAmount: z.number().min(0),
       }),
-    []
+    [t]
   );
 
   const {

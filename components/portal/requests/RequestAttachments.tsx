@@ -17,7 +17,6 @@ import {
 import { FileAttachment, Request } from '@/lib/types/portal';
 import {
   subscribeToRequestFiles,
-  deleteFile,
   formatFileSize,
   getFileIcon,
 } from '@/lib/services/portal-files';
@@ -27,6 +26,7 @@ import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
+import { useFileMutations } from '@/lib/hooks/useFileMutations';
 
 interface RequestAttachmentsProps {
   request: Request;
@@ -37,6 +37,7 @@ interface RequestAttachmentsProps {
 export function RequestAttachments({ request, isAgency, orgId }: RequestAttachmentsProps) {
   const t = useTranslations('portal');
   const { confirm, ConfirmDialog } = useConfirmDialog();
+  const { deleteFile } = useFileMutations(orgId);
   const [files, setFiles] = useState<FileAttachment[]>([]);
   const [loading, set] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
@@ -86,7 +87,7 @@ export function RequestAttachments({ request, isAgency, orgId }: RequestAttachme
     });
     if (!ok) return;
     try {
-      await deleteFile(file.id, file.storagePath);
+      await deleteFile({ fileId: file.id, storagePath: file.storagePath });
     } catch (error) {
       console.error('Error deleting file:', error);
     }

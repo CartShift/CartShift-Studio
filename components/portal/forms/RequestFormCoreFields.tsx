@@ -1,7 +1,7 @@
 'use client';
 
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
@@ -28,18 +28,18 @@ export function RequestFormCoreFields({
   typeOptions,
   titleClassName,
 }: RequestFormCoreFieldsProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const priorityOptions = Object.keys(PRIORITY_CONFIG).map(priority => ({
     value: priority,
-    label: t(`portal.requests.priority.${priority.toLowerCase()}` as Parameters<typeof t>[0]),
+    label: t(`requests.priority.${priority.toLowerCase()}` as Parameters<typeof t>[0]),
   }));
 
   return (
     <div className="space-y-6">
       <Input
-        label={t('portal.requests.form.titleLabel')}
-        placeholder={t('portal.requests.form.titlePlaceholder')}
+        label={t('requests.form.titleLabel')}
+        placeholder={t('requests.form.titlePlaceholder')}
         error={errors.title?.message}
         {...register('title')}
         className={titleClassName}
@@ -47,24 +47,24 @@ export function RequestFormCoreFields({
 
       <PortalFormGrid className="md:grid-cols-2">
         <Select
-          label={t('portal.requests.form.categoryLabel')}
+          label={t('requests.form.categoryLabel')}
           error={errors.type?.message}
-          placeholder={t('portal.requests.form.categorySelect')}
+          placeholder={t('requests.form.categorySelect')}
           options={typeOptions}
           {...register('type')}
         />
         <Select
-          label={t('portal.requests.form.priorityLabel')}
+          label={t('requests.form.priorityLabel')}
           options={priorityOptions}
           {...register('priority')}
         />
       </PortalFormGrid>
 
-      <PortalFormField label={t('portal.requests.form.detailsLabel')} error={errors.description?.message}>
+      <PortalFormField label={t('requests.form.detailsLabel')} error={errors.description?.message}>
         <Textarea
           {...register('description')}
           rows={6}
-          placeholder={t('portal.requests.form.detailsPlaceholder')}
+          placeholder={t('requests.form.detailsPlaceholder')}
           className="rounded-3xl py-4 resize-none text-sm font-medium leading-relaxed"
         />
       </PortalFormField>

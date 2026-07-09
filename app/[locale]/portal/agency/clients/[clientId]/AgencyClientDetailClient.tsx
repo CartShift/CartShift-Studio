@@ -45,6 +45,11 @@ import { getDateLocale, getDateLocaleString } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import {
+  getAgencyClientBadgeKey,
+  getAgencyClientPlanKey,
+  getPortalActivityActionKey,
+} from '@/lib/i18n/portal-translation-keys';
 import { toast } from 'sonner';
 
 export default function AgencyClientDetailClient({
@@ -112,7 +117,7 @@ export default function AgencyClientDetailClient({
     (canView && (orgLoading || requestsLoading || activitiesLoading || teamLoading));
 
   const error = useMemo(() => {
-    if (!clientId) return t('clients.noClientId' as any);
+    if (!clientId) return t('agency.clients.noClientId');
     if (!auth && !userData) return 'You must be logged in to view this page';
     if (!auth && userData && !userData.isAgency) {
       return 'You do not have permission to view this page. Agency access required.';
@@ -202,7 +207,7 @@ export default function AgencyClientDetailClient({
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
         <p className="text-surface-500 font-bold uppercase tracking-widest text-xs">
-          {t('agency.clients.detail.loading' as any)}
+          {t('agency.clients.detail.loading')}
         </p>
       </div>
     );
@@ -215,7 +220,7 @@ export default function AgencyClientDetailClient({
           <Briefcase size={32} className="text-red-600" />
         </div>
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-          {error || t('common.error' as any)}
+          {error || t('common.error')}
         </h2>
         <p className="text-surface-500 max-w-md mx-auto text-sm">
           {error ||
@@ -224,7 +229,7 @@ export default function AgencyClientDetailClient({
         <Link href={getPortalPath('/agency/clients/')}>
           <Button variant="outline" className="mt-4">
             <ArrowLeft size={16} />
-            {t('agency.clients.detail.backToClients' as any)}
+            {t('agency.clients.detail.backToClients')}
           </Button>
         </Link>
       </div>
@@ -237,12 +242,12 @@ export default function AgencyClientDetailClient({
         isOpen={isRemoveMemberOpen}
         onClose={() => setIsRemoveMemberOpen(false)}
         onConfirm={confirmRemoveMember}
-        title={t('agency.clients.detail.team.removeMemberTitle' as any) || 'Remove Team Member'}
+        title={t('agency.clients.detail.team.removeMemberTitle') || 'Remove Team Member'}
         description={
-          t('agency.clients.detail.team.removeMemberDesc' as any) ||
+          t('agency.clients.detail.team.removeMemberDesc') ||
           `Are you sure you want to remove ${memberToRemove?.name || memberToRemove?.email} from this client? They will lose access to the client portal.`
         }
-        confirmText={t('common.removeLabel' as any) || 'Remove'}
+        confirmText={t('common.removeLabel') || 'Remove'}
         variant="danger"
         isLoading={isRemovingMember}
       />
@@ -256,7 +261,7 @@ export default function AgencyClientDetailClient({
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-bold uppercase tracking-widest">
-            {t('agency.clients.detail.backToClients' as any)}
+            {t('agency.clients.detail.backToClients')}
           </span>
         </Link>
 
@@ -284,15 +289,15 @@ export default function AgencyClientDetailClient({
                       className="text-[9px] font-black uppercase tracking-widest"
                     >
                       {organization.status
-                        ? t(`agency.clients.badge.${organization.status}` as any)
-                        : t('agency.clients.badge.active' as any)}
+                        ? t(getAgencyClientBadgeKey(organization.status))
+                        : t('agency.clients.badge.active')}
                     </Badge>
                     {members.length === 0 && (
                       <Badge
                         variant="yellow"
                         className="text-[9px] font-black uppercase tracking-widest"
                       >
-                        {t('agency.clients.badge.pendingInvitation' as any) || 'Pending Invitation'}
+                        {t('agency.clients.badge.pendingInvitation') || 'Pending Invitation'}
                       </Badge>
                     )}
                   </div>
@@ -330,8 +335,8 @@ export default function AgencyClientDetailClient({
                       />
                       <span className="text-sm font-bold text-surface-600 dark:text-surface-400 uppercase tracking-widest">
                         {organization.plan
-                          ? t(`agency.clients.plans.${organization.plan}` as any)
-                          : t('agency.clients.enterprise' as any)}
+                          ? t(getAgencyClientPlanKey(organization.plan))
+                          : t('agency.clients.enterprise')}
                       </span>
                     </div>
                   </div>
@@ -340,7 +345,7 @@ export default function AgencyClientDetailClient({
                     <div className="flex items-center gap-2 text-xs text-surface-400 font-bold uppercase tracking-widest">
                       <Calendar size={12} />
                       <span>
-                        {t('agency.clients.detail.stats.joinedDate' as any)}:{' '}
+                        {t('agency.clients.detail.stats.joinedDate')}:{' '}
                         {new Date(organization.createdAt.toDate()).toLocaleDateString(
                           getDateLocaleString(locale),
                           {
@@ -363,7 +368,7 @@ export default function AgencyClientDetailClient({
                   onClick={() => setIsInviteModalOpen(true)}
                 >
                   <Mail size={16} />
-                  {t('agency.clients.detail.actions.sendInvitation' as any) || 'Send Invitation'}
+                  {t('agency.clients.detail.actions.sendInvitation') || 'Send Invitation'}
                 </Button>
                 <Button
                   variant="outline"
@@ -374,7 +379,7 @@ export default function AgencyClientDetailClient({
                   }}
                 >
                   <ExternalLink size={16} />
-                  {t('agency.clients.detail.viewDashboard' as any)}
+                  {t('agency.clients.detail.viewDashboard')}
                 </Button>
                 <Button
                   className="shadow-lg shadow-primary-500/20"
@@ -384,7 +389,7 @@ export default function AgencyClientDetailClient({
                   }}
                 >
                   <FileText size={16} />
-                  {t('agency.clients.detail.actions.viewAllRequests' as any)}
+                  {t('agency.clients.detail.actions.viewAllRequests')}
                 </Button>
               </div>
             </div>
@@ -398,7 +403,7 @@ export default function AgencyClientDetailClient({
           <div className="flex items-start justify-between">
             <div>
               <p className="portal-label-sm text-[10px] mb-2">
-                {t('agency.clients.detail.stats.totalRequests' as any)}
+                {t('agency.clients.detail.stats.totalRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {requests.length}
@@ -417,7 +422,7 @@ export default function AgencyClientDetailClient({
           <div className="flex items-start justify-between">
             <div>
               <p className="portal-label-sm text-[10px] mb-2">
-                {t('agency.clients.detail.stats.activeRequests' as any)}
+                {t('agency.clients.detail.stats.activeRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {activeRequests}
@@ -436,7 +441,7 @@ export default function AgencyClientDetailClient({
           <div className="flex items-start justify-between">
             <div>
               <p className="portal-label-sm text-[10px] mb-2">
-                {t('agency.clients.detail.stats.completedRequests' as any)}
+                {t('agency.clients.detail.stats.completedRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {completedRequests}
@@ -455,13 +460,13 @@ export default function AgencyClientDetailClient({
           <div className="flex items-start justify-between">
             <div>
               <p className="portal-label-sm text-[10px] mb-2">
-                {t('agency.clients.detail.stats.avgResolution' as any)}
+                {t('agency.clients.detail.stats.avgResolution')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
                 {avgResolution > 0 ? avgResolution : '—'}
               </p>
               <p className="text-xs text-surface-500 font-bold">
-                {avgResolution > 0 ? t('agency.clients.detail.stats.days' as any) : '—'}
+                {avgResolution > 0 ? t('agency.clients.detail.stats.days') : '—'}
               </p>
             </div>
             <div className="w-10 h-10 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center transition-transform duration-300">
@@ -479,7 +484,7 @@ export default function AgencyClientDetailClient({
           <div>
             <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.requests' as any)}
+                {t('agency.clients.detail.sections.requests')}
               </h2>
               <button
                 onClick={() => {
@@ -488,7 +493,7 @@ export default function AgencyClientDetailClient({
                 }}
                 className="text-xs font-black text-primary-600 hover:text-primary-700 dark:text-primary-400 uppercase tracking-widest flex items-center gap-2 group"
               >
-                <span>{t('agency.clients.detail.requests.viewAll' as any)}</span>
+                <span>{t('agency.clients.detail.requests.viewAll')}</span>
                 <ExternalLink
                   size={12}
                   className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
@@ -558,10 +563,10 @@ export default function AgencyClientDetailClient({
                 <div className="py-16 text-center">
                   <FileText className="w-12 h-12 text-surface-200 dark:text-surface-800 mx-auto mb-3" />
                   <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                    {t('agency.clients.detail.requests.emptyTitle' as any)}
+                    {t('agency.clients.detail.requests.emptyTitle')}
                   </h3>
                   <p className="text-xs text-surface-500">
-                    {t('agency.clients.detail.requests.emptyDesc' as any)}
+                    {t('agency.clients.detail.requests.emptyDesc')}
                   </p>
                 </div>
               )}
@@ -577,7 +582,7 @@ export default function AgencyClientDetailClient({
               as="h2"
               className="mb-0 px-5 pt-5 pb-3.5 border-b border-surface-100 dark:border-surface-800 uppercase tracking-tight"
             >
-              {t('agency.clients.detail.sections.recentActivity' as any)}
+              {t('agency.clients.detail.sections.recentActivity')}
             </CardSectionTitle>
             {recentActivities.length > 0 ? (
               <div className="divide-y divide-surface-50 dark:divide-surface-800">
@@ -591,8 +596,18 @@ export default function AgencyClientDetailClient({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                          {t(`activity.actions.${activity.action?.toLowerCase() || ''}` as any) ||
-                            (activity.action ? activity.action.replace(/_/g, ' ') : 'Activity')}
+                          {(() => {
+                            const actionKey = getPortalActivityActionKey(
+                              activity.action?.toLowerCase()
+                            );
+                            return (
+                              actionKey
+                                ? t(actionKey)
+                                : activity.action
+                                  ? activity.action.replace(/_/g, ' ')
+                                  : 'Activity'
+                            );
+                          })()}
                         </p>
                         {activity.details && typeof activity.details.requestTitle === 'string' && (
                           <p className="text-xs text-surface-500 truncate">
@@ -639,10 +654,10 @@ export default function AgencyClientDetailClient({
               <div className="py-16 text-center">
                 <Activity className="w-12 h-12 text-surface-200 dark:text-surface-800 mx-auto mb-3" />
                 <h3 className="text-sm font-bold text-surface-900 dark:text-white mb-1">
-                  {t('agency.clients.detail.activity.emptyTitle' as any)}
+                  {t('agency.clients.detail.activity.emptyTitle')}
                 </h3>
                 <p className="text-xs text-surface-500">
-                  {t('agency.clients.detail.activity.emptyDesc' as any)}
+                  {t('agency.clients.detail.activity.emptyDesc')}
                 </p>
               </div>
             )}
@@ -655,13 +670,13 @@ export default function AgencyClientDetailClient({
           <div>
             <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.information' as any)}
+                {t('agency.clients.detail.sections.information')}
               </h2>
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 className="text-xs font-black text-primary-600 hover:text-primary-700 dark:text-primary-400 uppercase tracking-widest flex items-center gap-2 group"
               >
-                <span>{t('agency.clients.detail.editClient' as any) || 'Edit'}</span>
+                <span>{t('agency.clients.detail.editClient') || 'Edit'}</span>
                 <Settings
                   size={14}
                   className="group-hover:rotate-90 transition-transform duration-500"
@@ -674,7 +689,7 @@ export default function AgencyClientDetailClient({
                 {organization.website && (
                   <div>
                     <p className="portal-label-sm text-[10px] mb-2">
-                      {t('agency.clients.detail.info.website' as any)}
+                      {t('agency.clients.detail.info.website')}
                     </p>
                     <a
                       href={organization.website}
@@ -697,7 +712,7 @@ export default function AgencyClientDetailClient({
                 {organization.industry && (
                   <div>
                     <p className="portal-label-sm text-[10px] mb-2">
-                      {t('agency.clients.detail.info.industry' as any)}
+                      {t('agency.clients.detail.info.industry')}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white">
                       {organization.industry}
@@ -707,7 +722,7 @@ export default function AgencyClientDetailClient({
 
                 <div>
                   <p className="portal-label-sm text-[10px] mb-2">
-                    {t('agency.clients.detail.info.plan' as any)}
+                    {t('agency.clients.detail.info.plan')}
                   </p>
                   <div className="flex items-center gap-2">
                     <ShieldCheck
@@ -718,7 +733,7 @@ export default function AgencyClientDetailClient({
                     />
                     <span className="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-widest">
                       {organization.plan
-                        ? t(`agency.clients.plans.${organization.plan}` as any)
+                        ? t(getAgencyClientPlanKey(organization.plan))
                         : t('agency.clients.enterprise')}
                     </span>
                   </div>
@@ -726,7 +741,7 @@ export default function AgencyClientDetailClient({
 
                 <div>
                   <p className="portal-label-sm text-[10px] mb-2">
-                    {t('agency.clients.detail.info.status' as any)}
+                    {t('agency.clients.detail.info.status')}
                   </p>
                   <Badge
                     variant={
@@ -739,14 +754,14 @@ export default function AgencyClientDetailClient({
                     className="text-[9px] font-black uppercase tracking-widest"
                   >
                     {organization.status
-                      ? t(`agency.clients.badge.${organization.status}` as any)
-                      : t('agency.clients.badge.active' as any)}
+                      ? t(getAgencyClientBadgeKey(organization.status))
+                      : t('agency.clients.badge.active')}
                   </Badge>
                 </div>
 
                 <div>
                   <p className="portal-label-sm text-[10px] mb-2">
-                    {t('agency.clients.detail.info.responsibleAgent' as any)}
+                    {t('agency.clients.detail.info.responsibleAgent')}
                   </p>
                   {responsibleAgent ? (
                     <div className="flex items-center gap-2">
@@ -762,7 +777,7 @@ export default function AgencyClientDetailClient({
                     </div>
                   ) : (
                     <span className="text-sm font-bold text-surface-400 italic">
-                      {t('agency.clients.detail.info.unassigned' as any)}
+                      {t('agency.clients.detail.info.unassigned')}
                     </span>
                   )}
                 </div>
@@ -791,7 +806,7 @@ export default function AgencyClientDetailClient({
           <div>
             <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xl font-black text-surface-900 dark:text-white uppercase tracking-tight">
-                {t('agency.clients.detail.sections.team' as any)}
+                {t('agency.clients.detail.sections.team')}
               </h2>
             </div>
 
@@ -822,7 +837,7 @@ export default function AgencyClientDetailClient({
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-surface-900 dark:text-white truncate">
-                          {member.name || t('common.anonymous' as any)}
+                          {member.name || t('common.anonymous')}
                         </p>
                         <p className="text-xs text-surface-500 truncate">{member.email}</p>
                       </div>
@@ -835,7 +850,7 @@ export default function AgencyClientDetailClient({
                       <button
                         onClick={() => handleRemoveMember(member)}
                         className="p-1.5 text-surface-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                        title={t('common.removeLabel' as any) || 'Remove'}
+                        title={t('common.removeLabel') || 'Remove'}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -888,7 +903,7 @@ export default function AgencyClientDetailClient({
                       }}
                       className="w-full text-center block text-xs font-black text-primary-600 hover:text-primary-700 dark:text-primary-400 uppercase tracking-widest pt-2"
                     >
-                      {t('agency.clients.detail.team.viewAll' as any)}
+                      {t('agency.clients.detail.team.viewAll')}
                     </button>
                   )}
                 </div>
@@ -896,10 +911,10 @@ export default function AgencyClientDetailClient({
                 <div className="py-8 text-center">
                   <Users className="w-10 h-10 text-surface-200 dark:text-surface-800 mx-auto mb-2" />
                   <h3 className="text-xs font-bold text-surface-900 dark:text-white mb-1">
-                    {t('agency.clients.detail.team.emptyTitle' as any)}
+                    {t('agency.clients.detail.team.emptyTitle')}
                   </h3>
                   <p className="text-[10px] text-surface-500">
-                    {t('agency.clients.detail.team.emptyDesc' as any)}
+                    {t('agency.clients.detail.team.emptyDesc')}
                   </p>
                 </div>
               )}
@@ -925,7 +940,7 @@ export default function AgencyClientDetailClient({
           onSuccess={() => {
             setIsInviteModalOpen(false);
             toast.success(
-              t('portal.clientInvite.success' as any) || 'Invitation sent successfully'
+              t('clientInvite.success') || 'Invitation sent successfully'
             );
           }}
           onCancel={() => setIsInviteModalOpen(false)}

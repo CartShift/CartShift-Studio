@@ -278,7 +278,7 @@ export default function AgencySettingsClient() {
 
   const tabs = [
     { id: 'profile' as const, label: t('agency.settings.tabs.profile'), icon: Building2 },
-    { id: 'branding' as const, label: t('settings.tabs.branding' as any), icon: Palette },
+    { id: 'branding' as const, label: t('settings.tabs.branding'), icon: Palette },
     { id: 'user-profile' as const, label: t('settings.tabs.profile'), icon: User },
     { id: 'services' as const, label: t('agency.settings.tabs.services'), icon: Tag },
     { id: 'team' as const, label: t('agency.settings.tabs.team'), icon: User },

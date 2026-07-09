@@ -306,7 +306,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
       clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [content]);
+  }, [content, title]);
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = title;

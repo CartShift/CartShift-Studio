@@ -139,7 +139,7 @@ export const ClientPortalPageContent: React.FC = () => {
   const t = useTranslations();
   const locale = useLocale();
 
-  const portalInfo = t.raw('clientPortalPage' as any) as {
+  const portalInfo = t.raw('clientPortalPage' as never) as {
     hero: {
       badge: string;
       title: string;

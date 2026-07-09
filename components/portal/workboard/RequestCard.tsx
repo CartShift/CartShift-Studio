@@ -6,6 +6,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { Request } from '@/lib/types/portal';
 import { useTranslations } from 'next-intl';
+import { getPriorityTranslationKey } from '@/lib/i18n/portal-translation-keys';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { MoreVertical, Trash2, MessageSquare, Paperclip, Check } from 'lucide-react';
@@ -108,7 +109,7 @@ export function RequestCard({
           }
           className="text-[9px] px-1.5 h-4 font-black uppercase tracking-tighter shrink-0"
         >
-          {t(`requests.priority.${(req.priority || 'NORMAL').toLowerCase()}` as any)}
+          {t(getPriorityTranslationKey(req.priority))}
         </Badge>
 
         <span className="text-[10px] text-surface-400 font-medium">

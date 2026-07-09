@@ -22,6 +22,7 @@ import { ActivityLog, Timestamp } from '@/lib/types/portal';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale, isRTLLocale } from '@/lib/locale-config';
+import { getActivityActionKey } from '@/lib/i18n/portal-translation-keys';
 
 interface ActivityTimelineProps {
   activities: ActivityLog[];
@@ -96,6 +97,23 @@ const activityIconVariants = cva(
     },
   }
 );
+
+const ICON_ACTIONS = [
+  'CREATED_REQUEST',
+  'ASSIGNED_REQUEST',
+  'ADDED_PRICING',
+  'ACCEPTED_QUOTE',
+  'DECLINED_QUOTE',
+  'STARTED_WORK',
+  'PAID_REQUEST',
+  'ADDED_COMMENT',
+] as const;
+
+type IconAction = (typeof ICON_ACTIONS)[number] | 'DEFAULT';
+
+function toIconAction(action: string): IconAction {
+  return (ICON_ACTIONS as readonly string[]).includes(action) ? (action as IconAction) : 'DEFAULT';
+}
 
 const ACTION_ICONS: Record<string, typeof Plus> = {
   CREATED_REQUEST: Plus,
@@ -220,14 +238,18 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                 );
                 const rowContent = (
                   <>
-                    <div className={cn(activityIconVariants({ action: activity.action as any }))}>
+                    <div className={cn(activityIconVariants({ action: toIconAction(activity.action) }))}>
                       <Icon size={18} />
                     </div>
                     <div className="flex-1 min-w-0 py-0.5">
                       <div className="flex items-center justify-between gap-4">
                         <span className="text-sm font-bold text-surface-900 dark:text-white truncate font-outfit">
-                          {t(activity.action.toLowerCase() as any) ||
-                            String(activity.action).replace(/_/g, ' ')}
+                          {(() => {
+                            const actionKey = getActivityActionKey(activity.action.toLowerCase());
+                            return actionKey
+                              ? t(actionKey)
+                              : String(activity.action).replace(/_/g, ' ');
+                          })()}
                         </span>
                         <span className="text-[10px] font-black text-surface-400 uppercase tracking-tight whitespace-nowrap">
                           {formatTimeAgo(activity.createdAt, locale)}

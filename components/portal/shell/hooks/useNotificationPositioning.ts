@@ -25,7 +25,7 @@ export function useNotificationPositioning({
   buttonRef,
   dropdownRef,
   isOpen,
-  dropdownWidth = 384,
+  dropdownWidth: _dropdownWidth = 384,
   dropdownHeight = 450,
   gap = 8,
   padding = 16,
@@ -78,7 +78,7 @@ export function useNotificationPositioning({
     }
 
     setPosition({ top, right, left });
-  }, [buttonRef, dropdownRef, dropdownWidth, dropdownHeight, gap, padding]);
+  }, [buttonRef, dropdownRef, dropdownHeight, gap, padding]);
 
   // Position update effect
   useEffect(() => {

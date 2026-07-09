@@ -51,6 +51,11 @@
         "load": "טעינת פרטי הצוות נכשלה.",
         "cancelInvite": "ביטול ההזמנה נכשל"
       },
+      "success": {
+        "cancelInvite": "ההזמנה בוטלה",
+        "removeMember": "החבר הוסר",
+        "updateRole": "התפקיד עודכן"
+      },
       "confirmCancel": "האם אתם בטוחים שברצונכם לבטל הזמנה זו?",
       "changeRole": "שנה תפקיד",
       "removeMember": "הסר חבר",

@@ -24,7 +24,7 @@ import { usePricingForm } from '@/lib/hooks/usePricingForm';
 import { useBillingProfile } from '@/lib/hooks/useBillingProfile';
 import { useRequestPayments } from '@/lib/hooks/useRequestPayments';
 import { useCanManageProfitSplits } from '@/lib/hooks/useProfitSplits';
-import { PortalUser, CLIENT_STATUS_MAP } from '@/lib/types/portal';
+import { PortalUser } from '@/lib/types/portal';
 import type { PricingRequest } from '@/lib/types/pricing';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -33,6 +33,12 @@ import { useSearchParams } from 'next/navigation';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
 import EditPricingForm from '../../pricing/[pricingId]/edit/EditPricingForm';
+import {
+  getStatusTranslationKey,
+  getClientStatusTranslationKey,
+  getTypeTranslationKey,
+  getPriorityTranslationKey,
+} from '@/lib/i18n/portal-translation-keys';
 
 // ============================================
 // SUBCOMPONENTS (Extracted for clarity)
@@ -92,7 +98,7 @@ function ErrorState({ error, t }: { error: string | null; t: ReturnType<typeof u
         <AlertCircle size={40} className="text-rose-500" />
       </div>
       <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit">
-        {error || t('requests.detail.not')}
+        {error || t('requests.detail.notFound')}
       </h2>
       <p className="text-surface-500 mt-2 max-w-sm mx-auto font-medium">
         {t('requests.detail.notDesc')}
@@ -285,30 +291,27 @@ export default function RequestDetailClient({
     closeRequest: t('requests.detail.closeRequest'),
     addAttachment: t('requests.detail.addAttachment'),
     requestRevision: t('requests.detail.requestRevision'),
-    deleteRequest: t('common.deleteRequest' as any) || 'Delete Request',
-    deleteTitle: t('requests.detail.deleteTitle' as any) || 'Delete Request',
+    deleteRequest: t('common.deleteRequest') || 'Delete Request',
+    deleteTitle: t('requests.detail.deleteTitle') || 'Delete Request',
     deleteConfirm:
-      t('requests.detail.deleteConfirm' as any) ||
+      t('requests.detail.deleteConfirm') ||
       'Are you sure you want to delete this request? This action cannot be undone.',
-    delete: t('common.delete' as any) || 'Delete',
+    delete: t('common.delete') || 'Delete',
     assignedSpecialist: t('requests.detail.assignedSpecialist'),
     unassigned: t('requests.detail.unassigned'),
     specialist: t('requests.detail.specialist'),
     waitingForAssignment: t('requests.detail.waitingForAssignment'),
   };
 
-  const clientStatus = CLIENT_STATUS_MAP[request.status] ?? 'SUBMITTED';
   const statusLabel = isAgency
-    ? t(`requests.status.${request.status.toLowerCase()}` as any)
-    : t(`requests.clientStatus.${clientStatus.toLowerCase()}` as any);
+    ? t(getStatusTranslationKey(request.status))
+    : t(getClientStatusTranslationKey(request.status, true));
 
   const typeLabel = request.type
-    ? t(`requests.type.${request.type.toLowerCase()}` as any)
+    ? t(getTypeTranslationKey(request.type))
     : t('requests.type.design');
 
-  const priorityLabel =
-    t(`requests.priority.${request.priority.toLowerCase()}` as any) ||
-    t('requests.priority.normal');
+  const priorityLabel = t(getPriorityTranslationKey(request.priority));
 
   return (
     <div className="space-y-6">
@@ -322,8 +325,8 @@ export default function RequestDetailClient({
         onExpandPreview={onExpandPreview}
         typeLabel={typeLabel}
         statusLabel={statusLabel}
-        closePreviewLabel={t('requests.preview.close' as any)}
-        openFullPageLabel={t('requests.preview.openFullPage' as any)}
+        closePreviewLabel={t('requests.preview.close')}
+        openFullPageLabel={t('requests.preview.openFullPage')}
       />
 
       {showAgencyActions && (

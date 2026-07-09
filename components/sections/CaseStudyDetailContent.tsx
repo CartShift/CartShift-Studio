@@ -82,7 +82,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
   const heroStoryY = useTransform(heroProgress, [0, 1], [42, -28]);
   const heroStoryRotate = useTransform(heroProgress, [0, 1], [-6, -2]);
 
-  const workT = t.raw('work' as any) as WorkDetailTranslations;
+  const workT = t.raw('work' as never) as WorkDetailTranslations;
 
   const breadcrumbItems = [
     { label: t('navigation.home'), href: '/' },

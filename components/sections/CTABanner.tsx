@@ -47,7 +47,7 @@ export const CTABanner: React.FC = () => {
               >
                 <Sparkles size={16} className="text-accent-500" />
                 <span className="text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest">
-                  {t('ctaBanner.badge' as any) || 'Ready to Scale?'}
+                  {t('ctaBanner.badge') || 'Ready to Scale?'}
                 </span>
               </motion.div>
 

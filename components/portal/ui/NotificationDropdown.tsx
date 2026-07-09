@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 import { Notification } from '@/lib/types/portal';
 import { formatDistanceToNow } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
 export interface NotificationDropdownProps {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export function NotificationDropdown({
   position,
   dropdownRef,
 }: Omit<NotificationDropdownProps, 'onClose'>) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
 
   return (
@@ -50,7 +51,7 @@ export function NotificationDropdown({
         >
           <div className="p-6 border-b border-surface-200/50 dark:border-surface-800/30 flex items-center justify-between bg-white/50 dark:bg-surface-900/50">
             <h3 className="text-base font-black text-surface-900 dark:text-white font-outfit">
-              {t('portal.header.notifications')}
+              {t('header.notifications')}
             </h3>
             {unreadCount > 0 && (
               <button
@@ -58,7 +59,7 @@ export function NotificationDropdown({
                 className="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1.5 hover:underline decoration-2 underline-offset-4 transition-all"
               >
                 <CheckCheck size={14} />
-                {t('portal.header.markAllRead')}
+                {t('header.markAllRead')}
               </button>
             )}
           </div>
@@ -70,7 +71,7 @@ export function NotificationDropdown({
                   <Bell size={24} className="text-surface-300 dark:text-surface-700" />
                 </div>
                 <p className="text-sm text-surface-500 font-bold">
-                  {t('portal.header.noNotifications')}
+                  {t('header.noNotifications')}
                 </p>
               </div>
             ) : (

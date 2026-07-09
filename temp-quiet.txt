@@ -1,0 +1,6 @@
+
+C:\Users\yotam\Desktop\Personal Projects\CartShift Studio\components\portal\ui\PortalHeader.tsx
+  91:9  error  'tA11y' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+Γ£û 1 problem (1 error, 0 warnings)
+

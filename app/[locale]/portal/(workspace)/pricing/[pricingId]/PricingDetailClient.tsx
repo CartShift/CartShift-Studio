@@ -24,8 +24,12 @@ import {
   getStatusBadgeVariant,
   getClientStatusBadgeVariant,
 } from '@/lib/utils/portal-helpers';
-import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import {
+  getStatusTranslationKey,
+  getClientStatusTranslationKey,
+  getTypeTranslationKey,
+} from '@/lib/i18n/portal-translation-keys';
 
 // mapStatusColor moved to lib/utils/portal-helpers.ts
 
@@ -77,7 +81,7 @@ export default function PricingDetailClient() {
       <div className="py-20 flex flex-col items-center justify-center space-y-3">
         <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
         <p className="text-sm font-bold text-surface-400 font-outfit">
-          {t('common.loading' as any)}
+          {t('common.loading')}
         </p>
       </div>
     );
@@ -88,11 +92,11 @@ export default function PricingDetailClient() {
       <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500" />
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-          {t('common.error' as any)}
+          {t('common.error')}
         </h2>
         <p className="text-surface-500 dark:text-surface-400 max-w-sm">{error}</p>
         <Link href={getPortalPath('/pricing/')}>
-          <Button>{t('common.back' as any)}</Button>
+          <Button>{t('common.back')}</Button>
         </Link>
       </div>
     );
@@ -107,7 +111,7 @@ export default function PricingDetailClient() {
           <Link href={getPortalPath('/pricing/')}>
             <Button variant="ghost" className="flex items-center gap-2">
               <ArrowLeft size={18} />
-              {t('common.back' as any)}
+              {t('common.back')}
             </Button>
           </Link>
           {isAgency &&
@@ -116,7 +120,7 @@ export default function PricingDetailClient() {
               <Link href={getPortalPath(`/pricing/${pricingId}/edit`)}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Pencil size={18} />
-                  {t('common.edit' as any)}
+                  {t('common.edit')}
                 </Button>
               </Link>
             )}
@@ -150,7 +154,7 @@ export default function PricingDetailClient() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="portal-label-sm mb-1">
-                  {t('pricing.form.total' as any)}
+                  {t('pricing.form.total')}
                 </p>
                 <p className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
                   {formatCurrency(pricingRequest.totalAmount, pricingRequest.currency)}
@@ -158,7 +162,7 @@ export default function PricingDetailClient() {
               </div>
               <div>
                 <p className="portal-label-sm mb-1">
-                  {t('common.status' as any)}
+                  {t('common.status')}
                 </p>
                 <Badge variant={statusColor}>
                   {t(`pricing.status.${pricingRequest.status.toLowerCase()}` as never)}
@@ -278,7 +282,7 @@ export default function PricingDetailClient() {
                           </h4>
                           <Badge variant="gray" className="text-xs">
                             {request.type
-                              ? t(`requests.type.${request.type.toLowerCase()}` as any)
+                              ? t(getTypeTranslationKey(request.type))
                               : t('requests.type.design')}
                           </Badge>
                           <Badge
@@ -290,10 +294,8 @@ export default function PricingDetailClient() {
                             className="text-xs"
                           >
                             {isAgency
-                              ? t(`requests.status.${request.status.toLowerCase()}` as any)
-                              : t(
-                                  `requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
-                                )}
+                              ? t(getStatusTranslationKey(request.status))
+                              : t(getClientStatusTranslationKey(request.status, true))}
                           </Badge>
                         </div>
                         {request.description && (

@@ -1,70 +1,103 @@
 # Translation System Best Practices
 
-## 📂 File Structure
+## File Structure
 
-The translation system uses a **split-file architecture** to maintain manageability.
+- **Source (SSOT):** `messages/src/{locale}/**/*.json`
+- **Generated:** `messages/{locale}.json` — never edit by hand
 
-- **Source Files**: `messages/src/{locale}/**/*.json`
-- **Generated Files**: `messages/{locale}.json` (DO NOT EDIT DIRECTLY)
+Portal copy is split by feature under `messages/src/{locale}/portal/` (e.g. `requests.json`, `dashboard.json`).
 
-### Portal Translations
+## Adding a New Key
 
-Portal translations are split by feature in `messages/src/{locale}/portal/`.
-Example: `dashboard.json`, `settings.json`, `requests.json`.
+1. Add the key to the matching English source file under `messages/src/en/…`
+2. Add the same key path to `messages/src/he/…`
+3. Run `pnpm i18n:merge` (or rely on `pnpm dev` / `prebuild`)
+4. Run `pnpm i18n:validate` if you want an immediate parity check
+5. Use a namespace helper in UI code (see below)
 
-### Common Translations
+## Canonical Code Patterns
 
-General UI elements (buttons, common errors) live in `messages/src/{locale}/common.json`.
+Helpers live in `@/lib/i18n/translations`. Prefer them over raw `useTranslations()` so ESLint and validation stay consistent.
 
-## 📝 Workflow
-
-1. **Adding New Keys**:
-   - Locate the relevant feature file in `messages/src/en/`.
-   - Add the key (maintain alphabetical order if possible).
-   - Add the corresponding key to `messages/src/he/`.
-
-2. **Watch Mode**:
-   - The watch mode is integrated into `pnpm dev`.
-   - It runs automatically in the background and merges debounced source changes.
-   - You can also run it standalone via `pnpm i18n:watch` if needed.
-
-3. **Validation**:
-   - Run `pnpm i18n:validate` to check for missing keys or mismatching parameters.
-   - The validation script runs automatically on pre-commit (planned).
-
-## 🔑 Naming Conventions
-
-- Use **camelCase** for keys: `myKeyName`
-- Use **descriptive keys** for nesting: `settings.profile.uploadButton`
-- Avoid generic keys like `title` at the top level of a file (unless it's a very specific file).
-
-## 🧩 TypeScript Types
-
-Types are provided by the `next-intl` augmentation in `i18n/global.ts`.
-**Always use `useTranslations('portal')` for portal translations** - this provides better type safety and cleaner code.
+### Portal
 
 ```tsx
-// ✅ CORRECT: Use namespaced hook for portal translations
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
-const t = useTranslations('portal'); // Typesafe!
-<h1>{t('dashboard.title')}</h1>; // No 'portal.' prefix needed
+const t = usePortalTranslations();
+<h1>{t('dashboard.title')}</h1>;
 
-// ❌ WRONG: Don't use useTranslations() without namespace
-const t = useTranslations();
-<h1>{t('portal.dashboard.title')}</h1>; // Avoid this pattern
+// Optional deeper namespace
+const tToast = usePortalTranslations('portal.requests.toast');
 ```
 
-### Standardized Pattern (2026-01-21)
+```tsx
+// ❌ Avoid root hook + portal. prefix in portal files
+const t = useTranslations();
+t('portal.dashboard.title');
+```
 
-**All portal files now use:**
+Server components / metadata:
 
-- `useTranslations('portal')` - Namespaced hook
-- Keys without `portal.` prefix (e.g., `t('files.title')` not `t('portal.files.title')`)
+```tsx
+import { getPortalTranslations } from '@/lib/i18n/translations';
 
-**Benefits:**
+const t = await getPortalTranslations({ locale, namespace: 'portal.sidebar.nav' });
+```
 
-- Better TypeScript type safety and autocomplete
-- Cleaner, shorter translation keys
-- Consistent pattern across entire codebase
-- Easier refactoring and maintenance
+### Website / common
+
+```tsx
+import { useWebsiteTranslations, useCommonTranslations } from '@/lib/i18n/translations';
+
+const t = useWebsiteTranslations(); // hero.*, nav.*, marketing.*, …
+const tCommon = useCommonTranslations(); // same root tree; use for shared chrome
+```
+
+### Analyzer
+
+```tsx
+import { useAnalyzerTranslations } from '@/lib/i18n/translations';
+
+const t = useAnalyzerTranslations();
+t('coverage.reasons.slowLcp');
+```
+
+### Dynamic enum → key maps
+
+Use `@/lib/i18n/portal-translation-keys` / `analyzer-translation-keys` with **relative** keys when the hook is already namespaced:
+
+```tsx
+const t = usePortalTranslations();
+t(getStatusTranslationKey(status)); // requests.status.new
+```
+
+## Naming
+
+- **camelCase** keys: `uploadButton`
+- Nest by feature: `settings.profile.uploadButton`
+- Avoid generic top-level keys like bare `title` unless the file is tiny and scoped
+
+## Validation (what fails the build)
+
+`pnpm i18n:validate` (wired into `prebuild`) hard-fails on:
+
+- Missing source files between `en` / `he`
+- Missing keys between locales
+- Interpolation `{param}` mismatches
+- Structure type mismatches (string vs object)
+- Empty string values
+- Static `t('…')` keys in code that do not exist in messages
+
+Unused-key detection is a **warning** only (dynamic keys cause false positives).
+
+## ESLint
+
+- `portal-translations/enforce-portal-translations` (**error**): portal files under `app/.../portal`, `components/portal`, and `lib/hooks` must not use bare `useTranslations()`; no redundant `portal.` key prefix under a portal namespace.
+- `portal-translations/no-hardcoded-jsx-text` (**warn**): flags likely user-facing hardcoded JSX text in website/portal UI.
+
+Auto-fix portal hook issues with `pnpm lint:fix`.
+
+## TypeScript
+
+Message types come from `i18n/global.ts` (augments `next-intl` from `messages/en.json`). Namespaced helpers give the best autocomplete.

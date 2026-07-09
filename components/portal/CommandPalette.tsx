@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRequests } from '@/lib/hooks/useRequests';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { useRouter } from '@/i18n/navigation';
@@ -18,7 +18,7 @@ import {
   Command,
   HelpCircle,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
@@ -70,18 +70,21 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   const isControlled = typeof externalIsOpen !== 'undefined';
   const isOpen = isControlled ? externalIsOpen : internalIsOpen;
 
-  const handleOpenChange = (open: boolean) => {
-    if (isControlled && onOpenChange) {
-      onOpenChange(open);
-    } else {
-      setInternalIsOpen(open);
-    }
-  };
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (isControlled && onOpenChange) {
+        onOpenChange(open);
+      } else {
+        setInternalIsOpen(open);
+      }
+    },
+    [isControlled, onOpenChange]
+  );
 
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const router = useRouter();
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const orgId = useResolvedOrgId();
   const { isAgency } = usePortalAuth();
   const { requests } = useRequests();
@@ -105,7 +108,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handleOpenChange, isOpen]);
 
   const commands = useMemo(() => {
     if (!orgId) return [];
@@ -113,7 +116,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
     const actionItems = [
       {
         icon: Plus,
-        label: t('portal.quickActions.newRequest'),
+        label: t('quickActions.newRequest'),
         path: getPortalPath('/requests/new/'),
         keywords: ['new', 'create', 'request'],
       },
@@ -121,7 +124,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
     if (isAgency) {
       actionItems.push({
         icon: Users,
-        label: t('portal.commandPalette.items.addClient'),
+        label: t('commandPalette.items.addClient'),
         path: getPortalPath('/agency/clients/new'),
         keywords: ['add', 'client', 'agency'],
       });
@@ -130,19 +133,19 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
     const navItems = [
       {
         icon: LayoutDashboard,
-        label: t('portal.commandPalette.items.dashboard'),
+        label: t('commandPalette.items.dashboard'),
         path: getPortalPath('/dashboard'),
         keywords: ['home', 'main'],
       },
       {
         icon: Settings,
-        label: t('portal.commandPalette.items.settings'),
+        label: t('commandPalette.items.settings'),
         path: getPortalPath('/settings/profile'),
         keywords: ['profile', 'account', 'preferences'],
       },
       {
         icon: HelpCircle,
-        label: t('portal.commandPalette.items.help'),
+        label: t('commandPalette.items.help'),
         path: getHelpPath(isAgency),
         keywords: ['help', 'support', 'docs', 'guide', 'shortcuts'],
       },
@@ -153,19 +156,19 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
         0,
         {
           icon: LayoutList,
-          label: t('portal.commandPalette.items.workboard'),
+          label: t('commandPalette.items.workboard'),
           path: getPortalPath('/agency/workboard'),
           keywords: ['kanban', 'requests', 'tasks'],
         },
         {
           icon: Users,
-          label: t('portal.commandPalette.items.clients'),
+          label: t('commandPalette.items.clients'),
           path: getPortalPath('/agency/clients'),
           keywords: ['customers', 'agency'],
         },
         {
           icon: CreditCard,
-          label: t('portal.commandPalette.items.salesRevenue'),
+          label: t('commandPalette.items.salesRevenue'),
           path: getPortalPath('/agency/sales'),
           keywords: ['analytics', 'money', 'finance'],
         }
@@ -176,13 +179,13 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
         0,
         {
           icon: ClipboardList,
-          label: t('portal.sidebar.nav.requests'),
+          label: t('sidebar.nav.requests'),
           path: getPortalPath('/requests'),
           keywords: ['my requests', 'list', 'orders', 'tasks'],
         },
         {
           icon: Calendar,
-          label: t('portal.sidebar.nav.consultations'),
+          label: t('sidebar.nav.consultations'),
           path: getPortalPath('/consultations'),
           keywords: ['meetings', 'calls', 'schedule', 'book', 'support'],
         }
@@ -190,9 +193,9 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
     }
 
     return [
-      { heading: t('portal.commandPalette.headings.actions'), items: actionItems },
+      { heading: t('commandPalette.headings.actions'), items: actionItems },
       {
-        heading: t('portal.commandPalette.headings.requests'),
+        heading: t('commandPalette.headings.requests'),
         items: requests.map(req => ({
           icon: FileText,
           label: req.title,
@@ -202,7 +205,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
           keywords: [req.id, req.status, ...(req.description ? [req.description] : [])],
         })),
       },
-      { heading: t('portal.commandPalette.headings.navigation'), items: navItems },
+      { heading: t('commandPalette.headings.navigation'), items: navItems },
     ];
   }, [orgId, t, requests, isAgency]);
 
@@ -224,14 +227,17 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   // Flatten for keyboard nav
   const flatItems = useMemo(() => filteredCommands.flatMap(g => g.items), [filteredCommands]);
 
-  const navigateTo = (item: { path: string; requestId?: string; orgId?: string }) => {
-    handleOpenChange(false);
-    if (item.requestId) {
-      openRequest(item.requestId, { orgId: item.orgId });
-      return;
-    }
-    router.push(item.path);
-  };
+  const navigateTo = useCallback(
+    (item: { path: string; requestId?: string; orgId?: string }) => {
+      handleOpenChange(false);
+      if (item.requestId) {
+        openRequest(item.requestId, { orgId: item.orgId });
+        return;
+      }
+      router.push(item.path);
+    },
+    [handleOpenChange, openRequest, router]
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -253,7 +259,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, activeIndex, flatItems]);
+  }, [isOpen, activeIndex, flatItems, navigateTo]);
 
   // Reset index when query changes
   useEffect(() => setActiveIndex(0), [query]);
@@ -263,7 +269,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-modal bg-surface-950/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
         <Dialog.Content className="fixed start-1/2 top-[5vh] z-[51] flex max-h-[90vh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col overflow-hidden rounded-xl border border-surface-200 bg-white shadow-2xl outline-none rtl:translate-x-1/2 dark:border-surface-800 dark:bg-surface-900 md:top-[15vh] md:max-h-[70vh] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none">
-            <Dialog.Title className="sr-only">{t('portal.header.searchPlaceholder')}</Dialog.Title>
+            <Dialog.Title className="sr-only">{t('header.searchPlaceholder')}</Dialog.Title>
             {/* Search Input */}
             <div className="flex items-center gap-3 p-4 border-b border-surface-100 dark:border-surface-800">
               <Command size={18} className="text-surface-400" />
@@ -271,7 +277,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
                 ref={inputRef}
                 autoFocus
                 type="text"
-                placeholder={t('portal.header.searchPlaceholder')}
+                placeholder={t('header.searchPlaceholder')}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 className="flex-1 bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder-surface-400 text-base"
@@ -292,7 +298,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
             <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 min-h-0">
               {filteredCommands.length === 0 ? (
                 <div className="py-8 text-center text-surface-500">
-                  <p>{t('portal.commandPalette.noResults')}</p>
+                  <p>{t('commandPalette.noResults')}</p>
                 </div>
               ) : (
                 filteredCommands.map((group, groupIndex) => {
@@ -329,16 +335,16 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
                 <span className="flex items-center gap-1">
                   <span className="bg-surface-200 dark:bg-surface-800 px-1 rounded">↑</span>
                   <span className="bg-surface-200 dark:bg-surface-800 px-1 rounded">↓</span>
-                  {t('portal.commandPalette.footer.toNavigate')}
+                  {t('commandPalette.footer.toNavigate')}
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="bg-surface-200 dark:bg-surface-800 px-1 rounded">↵</span>
-                  {t('portal.commandPalette.footer.toSelect')}
+                  {t('commandPalette.footer.toSelect')}
                 </span>
               </div>
               <span className="flex items-center gap-1">
                 <span className="bg-surface-200 dark:bg-surface-800 px-1 rounded">Esc</span>
-                {t('portal.commandPalette.footer.toClose')}
+                {t('commandPalette.footer.toClose')}
               </span>
             </div>
         </Dialog.Content>

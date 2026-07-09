@@ -60,7 +60,7 @@ export function ClientsFilterBar({
             )}
           >
             <Filter size={16} className="me-2" />
-            <span className="hidden sm:inline">{t('agency.clients.filter.myClients' as any)}</span>
+            <span className="hidden sm:inline">{t('agency.clients.filter.myClients')}</span>
             <span className="sm:hidden">{t('common.filter')}</span>
           </Button>
 

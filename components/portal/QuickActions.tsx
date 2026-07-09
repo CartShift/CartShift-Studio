@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import {
   Plus,
   Calendar,
@@ -28,7 +28,7 @@ interface Action {
 }
 
 export function QuickActions() {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const orgId = useResolvedOrgId();
   const { isAgency } = usePortalAuth();
 
@@ -37,19 +37,19 @@ export function QuickActions() {
   const clientActions: Action[] = [
     {
       icon: Plus,
-      label: t('portal.quickActions.newRequest'),
+      label: t('quickActions.newRequest'),
       href: getPortalPath('/requests/new/'),
       tone: 'primary',
     },
     {
       icon: Calendar,
-      label: t('portal.quickActions.schedule'),
+      label: t('quickActions.schedule'),
       href: getPortalPath('/consultations?action=schedule'),
       tone: 'accent',
     },
     {
       icon: Upload,
-      label: t('portal.quickActions.upload'),
+      label: t('quickActions.upload'),
       href: getPortalPath('/requests?action=upload'),
       tone: 'success',
     },
@@ -58,19 +58,19 @@ export function QuickActions() {
   const agencyActions: Action[] = [
     {
       icon: Users,
-      label: t('portal.quickActions.addClient'),
+      label: t('quickActions.addClient'),
       href: getPortalPath('/agency/clients/new'),
       tone: 'primary',
     },
     {
       icon: FilePlus,
-      label: t('portal.quickActions.createProposal'),
+      label: t('quickActions.createProposal'),
       href: getPortalPath('/requests/new'),
       tone: 'accent',
     },
     {
       icon: BarChart,
-      label: t('portal.quickActions.viewReports'),
+      label: t('quickActions.viewReports'),
       href: getPortalPath('/agency/sales'),
       tone: 'success',
     },
@@ -87,11 +87,11 @@ export function QuickActions() {
               <Zap size={16} className="text-white fill-white" />
             </div>
             <h2 className="text-lg font-semibold text-surface-900 dark:text-white font-outfit">
-              {t('portal.quickActions.title')}
+              {t('quickActions.title')}
             </h2>
           </div>
           <p className="text-sm text-surface-500 dark:text-surface-400">
-            {t('portal.quickActions.subtitle')}
+            {t('quickActions.subtitle')}
           </p>
         </div>
       </div>

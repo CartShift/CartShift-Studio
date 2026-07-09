@@ -36,7 +36,7 @@ import {
   LineItemOutput,
 } from '@/components/portal/pricing/RequestPricingCalculator';
 import { EmbeddedCalculator } from '@/components/portal/pricing/EmbeddedCalculator';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import {
   CURRENCY,
   Currency,
@@ -83,7 +83,7 @@ export default function CreatePricingForm() {
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -161,13 +161,13 @@ export default function CreatePricingForm() {
         title: z
           .string()
           .min(3, 'Title must be at least 3 characters')
-          .max(200, t('portal.pricing.form.errors.titleTooLong')),
+          .max(200, t('pricing.form.errors.titleTooLong')),
         description: z.string().optional(),
         lineItems: z
           .array(
             z.object({
-              description: z.string().min(1, t('portal.common.descriptionRequired')),
-              quantity: z.number().min(1, t('portal.pricing.form.errors.quantityMustBeAtLeast1')),
+              description: z.string().min(1, t('common.descriptionRequired')),
+              quantity: z.number().min(1, t('pricing.form.errors.quantityMustBeAtLeast1')),
               unitPrice: z.number().min(0, 'Price must be positive'),
               notes: z.string().optional(),
               requestId: z.string().optional(),
@@ -188,7 +188,7 @@ export default function CreatePricingForm() {
         paymentRequired: z.boolean(),
         depositAmount: z.number().min(0),
       }),
-    []
+    [t]
   );
 
   const {
@@ -213,7 +213,7 @@ export default function CreatePricingForm() {
       clientEmail: '',
       agencyNotes: '',
       includeTax: true, // Default to true for VAT in Israel typically
-      terms: t('portal.pricing.form.defaultTerms'),
+      terms: t('pricing.form.defaultTerms'),
       paymentRequired: false,
       depositAmount: 0,
     },
@@ -241,7 +241,7 @@ export default function CreatePricingForm() {
           const currentValues = watch();
           // Title can be more descriptive if multiple items
           const suggestedTitle =
-            formItems.length === 1 ? firstItem.description : t('portal.pricing.calculatorTitle');
+            formItems.length === 1 ? firstItem.description : t('pricing.calculatorTitle');
 
           // Preserve other values but update line items
           reset({
@@ -287,9 +287,9 @@ export default function CreatePricingForm() {
 
   const pricingTypeOptions = useMemo(
     () => [
-      { value: 'fixed', label: t('portal.pricing.form.pricingType.fixed') },
-      { value: 'hourly', label: t('portal.pricing.form.pricingType.hourly') },
-      { value: 'estimate', label: t('portal.pricing.form.pricingType.estimate') },
+      { value: 'fixed', label: t('pricing.form.pricingType.fixed') },
+      { value: 'hourly', label: t('pricing.form.pricingType.hourly') },
+      { value: 'estimate', label: t('pricing.form.pricingType.estimate') },
     ],
     [t]
   );
@@ -318,7 +318,7 @@ export default function CreatePricingForm() {
             currentValues.title ||
             (items.length === 1
               ? items[0].description.split(' (')[0]
-              : t('portal.pricing.calculatorTitle')),
+              : t('pricing.calculatorTitle')),
         });
         setLineItemsFromCalculator(true);
       } else if (lineItemsFromCalculator) {
@@ -334,6 +334,8 @@ export default function CreatePricingForm() {
     [watch, reset, t, lineItemsFromCalculator]
   );
 
+  const watchedIncludeTax = watch('includeTax');
+
   const { totalAmount, subtotal, taxAmount } = useMemo(() => {
     const items: PricingLineItem[] = (watchedLineItems || []).map(
       (item: LineItemInput, index: number) => ({
@@ -344,13 +346,13 @@ export default function CreatePricingForm() {
         pricingType: item.pricingType,
       })
     );
-    const taxRate = watch('includeTax') ? TAX_RATE : 0;
+    const taxRate = watchedIncludeTax ? TAX_RATE : 0;
     const subtotal = calculateTotalAmount(items, 0); // items sum
     const taxAmount = Math.round(subtotal * taxRate);
     const totalAmount = subtotal + taxAmount;
 
     return { totalAmount, subtotal, taxAmount };
-  }, [watchedLineItems, watch('includeTax')]);
+  }, [watchedLineItems, watchedIncludeTax]);
 
   const watchedPaymentRequired = watch('paymentRequired');
   const watchedDepositAmount = watch('depositAmount');
@@ -363,7 +365,7 @@ export default function CreatePricingForm() {
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (!userData?.id || !orgId || typeof orgId !== 'string') {
-      setErrorMessage(t('portal.common.authRequired'));
+      setErrorMessage(t('common.authRequired'));
       setSubmitStatus('error');
       return;
     }
@@ -389,7 +391,7 @@ export default function CreatePricingForm() {
       const request = await createPricingRequest({
         orgId,
         userId: userData.id,
-        userName: userData.name || t('portal.common.unknown'),
+        userName: userData.name || t('common.unknown'),
         data: {
           title: data.title,
           description: data.description,
@@ -468,9 +470,9 @@ export default function CreatePricingForm() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="portal-page-title">{t('portal.pricing.newOffer')}</h1>
+          <h1 className="portal-page-title">{t('pricing.newOffer')}</h1>
           <p className="portal-page-subtitle">
-            {t('portal.pricing.form.createNewDescription' as never) ||
+            {t('pricing.form.createNewDescription' as never) ||
               'Create a new pricing proposal for your client.'}
           </p>
         </div>
@@ -481,26 +483,26 @@ export default function CreatePricingForm() {
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6">
             <PortalFormSection
-              title={t('portal.pricing.form.offerDetails' as never) || 'Offer Details'}
+              title={t('pricing.form.offerDetails' as never) || 'Offer Details'}
             >
               <Input
-                label={t('portal.pricing.form.titleLabel')}
+                label={t('pricing.form.titleLabel')}
                 required
-                placeholder={t('portal.pricing.form.titlePlaceholder')}
+                placeholder={t('pricing.form.titlePlaceholder')}
                 error={errors.title?.message}
                 {...register('title')}
               />
 
-              <PortalFormField label={t('portal.pricing.form.descriptionLabel')}>
+              <PortalFormField label={t('pricing.form.descriptionLabel')}>
                 <Textarea
                   {...register('description')}
                   rows={3}
-                  placeholder={t('portal.pricing.form.descriptionPlaceholder')}
+                  placeholder={t('pricing.form.descriptionPlaceholder')}
                   className="resize-none"
                 />
               </PortalFormField>
 
-              <PortalFormField label={t('portal.pricing.form.terms')}>
+              <PortalFormField label={t('pricing.form.terms')}>
                 <Textarea
                   {...register('terms')}
                   rows={10}
@@ -551,11 +553,11 @@ export default function CreatePricingForm() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                    {t('portal.pricing.form.lineItems')}
+                    {t('pricing.form.lineItems')}
                   </h3>
                   {lineItemsFromCalculator && selectedRequestIds.length > 0 && (
                     <p className="text-xs text-surface-500 mt-1">
-                      {t('portal.pricing.form.lineItemsFromCalculator' as never) ||
+                      {t('pricing.form.lineItemsFromCalculator' as never) ||
                         ' from selected requests - edit as needed'}
                     </p>
                   )}
@@ -569,7 +571,7 @@ export default function CreatePricingForm() {
                   className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                 >
                   <Plus size={16} />
-                  {t('portal.pricing.form.addItem')}
+                  {t('pricing.form.addItem')}
                 </button>
               </div>
             </div>
@@ -578,10 +580,10 @@ export default function CreatePricingForm() {
               {/* Header - Hidden on mobile, visible on larger screens */}
               <div className="hidden sm:grid grid-cols-12 gap-3 px-1 text-xs font-black text-surface-400 uppercase tracking-wider">
                 <div className="col-span-5 md:col-span-6">
-                  {t('portal.pricing.form.itemDescription')}
+                  {t('pricing.form.itemDescription')}
                 </div>
-                <div className="col-span-2 text-center">{t('portal.pricing.form.quantity')}</div>
-                <div className="col-span-3 md:col-span-2">{t('portal.pricing.form.unitPrice')}</div>
+                <div className="col-span-2 text-center">{t('pricing.form.quantity')}</div>
+                <div className="col-span-3 md:col-span-2">{t('pricing.form.unitPrice')}</div>
                 <div className="col-span-2"></div>
               </div>
 
@@ -594,13 +596,13 @@ export default function CreatePricingForm() {
                     {/* Description - Full width on mobile */}
                     <div className="w-full sm:col-span-5 md:col-span-6">
                       <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
-                        {t('portal.pricing.form.itemDescription')}
+                        {t('pricing.form.itemDescription')}
                       </label>
                       <Input
                         {...register(`lineItems.${index}.description`)}
                         type="text"
                         placeholder={
-                          t('portal.pricing.form.itemDescriptionPlaceholder' as never) ||
+                          t('pricing.form.itemDescriptionPlaceholder' as never) ||
                           'Service or product...'
                         }
                         error={errors.lineItems?.[index]?.description?.message}
@@ -616,7 +618,7 @@ export default function CreatePricingForm() {
                     <div className="flex gap-3 w-full sm:contents">
                       <div className="flex-1 sm:col-span-2">
                         <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
-                          {t('portal.pricing.form.quantity')}
+                          {t('pricing.form.quantity')}
                         </label>
                         <Input
                           {...register(`lineItems.${index}.quantity`, {
@@ -629,7 +631,7 @@ export default function CreatePricingForm() {
                       </div>
                       <div className="flex-1 sm:col-span-3 md:col-span-2">
                         <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
-                          {t('portal.pricing.form.unitPrice')}
+                          {t('pricing.form.unitPrice')}
                         </label>
                         <Input
                           {...register(`lineItems.${index}.unitPrice`, {
@@ -653,7 +655,7 @@ export default function CreatePricingForm() {
                           <button
                             type="button"
                             onClick={() => remove(index)}
-                            aria-label={t('portal.common.delete')}
+                            aria-label={t('common.delete')}
                             className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
                           >
                             <Trash2 size={16} />
@@ -670,7 +672,7 @@ export default function CreatePricingForm() {
                   <AlertCircle size={14} />
                   {typeof errors.lineItems.message === 'string'
                     ? errors.lineItems.message
-                    : t('portal.pricing.form.errors.checkLineItems')}
+                    : t('pricing.form.errors.checkLineItems')}
                 </p>
               )}
             </div>
@@ -679,13 +681,13 @@ export default function CreatePricingForm() {
             {/* Subtotal, Tax, Total */}
             <div className="mx-6 mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 space-y-3">
               <div className="flex items-center justify-between text-sm text-surface-500">
-                <span>{t('portal.pricing.form.subtotal' as any) || 'Subtotal'}</span>
+                <span>{t('pricing.form.subtotal') || 'Subtotal'}</span>
                 <span>{formatCurrency(subtotal, watchedCurrency)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm text-surface-500">
                 <div className="flex items-center gap-2">
-                  <span>{t('portal.pricing.form.tax' as any) || 'VAT (17%)'}</span>
+                  <span>{t('pricing.form.tax') || 'VAT (17%)'}</span>
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -699,7 +701,7 @@ export default function CreatePricingForm() {
 
               <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800/50">
                 <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
-                  {t('portal.pricing.form.total')}
+                  {t('pricing.form.total')}
                 </span>
                 <span className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
                   {formatCurrency(totalAmount, watchedCurrency)}
@@ -713,38 +715,38 @@ export default function CreatePricingForm() {
         <div className="space-y-6">
           {/* Currency & Validity */}
           <Card className="p-6">
-            <PortalFormSection title={t('portal.pricing.form.settings' as never) || 'Settings'}>
+            <PortalFormSection title={t('pricing.form.settings' as never) || 'Settings'}>
               <Select
-                label={t('portal.pricing.form.currency')}
+                label={t('pricing.form.currency')}
                 options={currencyOptions}
                 {...register('currency')}
               />
 
               <Input
-                label={t('portal.pricing.form.validUntil')}
+                label={t('pricing.form.validUntil')}
                 type="date"
                 leftIcon={<CalendarIcon size={16} />}
                 {...register('validUntil')}
               />
 
               <Input
-                label={t('portal.pricing.form.timeframe')}
+                label={t('pricing.form.timeframe')}
                 required
-                placeholder={t('portal.pricing.form.timeframePlaceholder')}
+                placeholder={t('pricing.form.timeframePlaceholder')}
                 error={errors.timeframe?.message}
                 {...register('timeframe')}
               />
 
               <Input
-                label={t('portal.pricing.form.workDeadline')}
+                label={t('pricing.form.workDeadline')}
                 type="date"
                 leftIcon={<CalendarIcon size={16} />}
                 {...register('workDeadline')}
               />
 
               <Select
-                label={t('portal.pricing.form.assignedDeveloper')}
-                placeholder={t('portal.pricing.form.selectDeveloper')}
+                label={t('pricing.form.assignedDeveloper')}
+                placeholder={t('pricing.form.selectDeveloper')}
                 options={developerOptions}
                 error={errors.assignedTo?.message}
                 {...register('assignedTo')}
@@ -755,17 +757,17 @@ export default function CreatePricingForm() {
           {/* Client Info */}
           <Card className="p-6">
             <PortalFormSection
-              title={t('portal.pricing.form.clientInfo' as never) || 'Client Info'}
+              title={t('pricing.form.clientInfo' as never) || 'Client Info'}
             >
               <PortalFormGrid className="md:grid-cols-1">
                 <Input
-                  label={t('portal.pricing.form.clientName')}
+                  label={t('pricing.form.clientName')}
                   type="text"
-                  placeholder={t('portal.common.namePlaceholder')}
+                  placeholder={t('common.namePlaceholder')}
                   {...register('clientName')}
                 />
                 <Input
-                  label={t('portal.pricing.form.clientEmail')}
+                  label={t('pricing.form.clientEmail')}
                   type="email"
                   placeholder="client@company.com"
                   error={errors.clientEmail?.message}
@@ -777,14 +779,14 @@ export default function CreatePricingForm() {
 
           {/* Agency Notes */}
           <Card className="p-6">
-            <PortalFormSection title={t('portal.pricing.form.payment')}>
+            <PortalFormSection title={t('pricing.form.payment')}>
               <label className="flex items-start gap-3 text-sm text-surface-600 dark:text-surface-300">
                 <input type="checkbox" className="mt-1" {...register('paymentRequired')} />
-                <span>{t('portal.pricing.form.requireDeposit')}</span>
+                <span>{t('pricing.form.requireDeposit')}</span>
               </label>
               {watchedPaymentRequired && (
                 <Input
-                  label={t('portal.pricing.form.depositAmount')}
+                  label={t('pricing.form.depositAmount')}
                   type="number"
                   min={0.01}
                   step={0.01}
@@ -795,11 +797,11 @@ export default function CreatePricingForm() {
           </Card>
 
           <Card className="p-6">
-            <PortalFormSection title={t('portal.pricing.form.agencyNotes')}>
+            <PortalFormSection title={t('pricing.form.agencyNotes')}>
               <Textarea
                 {...register('agencyNotes')}
                 rows={4}
-                placeholder={t('portal.pricing.form.agencyNotesPlaceholder')}
+                placeholder={t('pricing.form.agencyNotesPlaceholder')}
                 className="resize-none text-sm"
               />
             </PortalFormSection>
@@ -824,7 +826,7 @@ export default function CreatePricingForm() {
               className="w-full h-12 flex items-center justify-center gap-2"
             >
               {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send size={18} />}
-              {isSending ? t('portal.pricing.form.sending') : t('portal.pricing.form.sendToClient')}
+              {isSending ? t('pricing.form.sending') : t('pricing.form.sendToClient')}
             </Button>
 
             <Button
@@ -839,7 +841,7 @@ export default function CreatePricingForm() {
               ) : (
                 <Save size={18} />
               )}
-              {t('portal.pricing.form.saveDraft')}
+              {t('pricing.form.saveDraft')}
             </Button>
 
             <button
@@ -847,7 +849,7 @@ export default function CreatePricingForm() {
               onClick={() => router.back()}
               className="w-full h-10 text-sm font-bold text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors"
             >
-              {t('portal.common.cancel')}
+              {t('common.cancel')}
             </button>
           </div>
         </div>

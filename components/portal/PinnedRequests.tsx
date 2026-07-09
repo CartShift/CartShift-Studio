@@ -4,14 +4,14 @@ import React from 'react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { Pin, ExternalLink, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Request } from '@/lib/types/portal';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { getStatusBadgeVariant, getClientStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { usePinnedRequests } from '@/lib/hooks/usePinnedRequests';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
-import { CLIENT_STATUS_MAP } from '@/lib/types/portal';
+import { getStatusTranslationKey, getClientStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
 
 interface PinnedRequestsProps {
   requests: Request[];
@@ -28,7 +28,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
   isAgency = false,
   className,
 }) => {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const { pinnedIds, unpinRequest } = usePinnedRequests(orgId);
   const { openRequest } = useOpenRequest();
 
@@ -50,7 +50,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
         <div className="w-6 h-6 rounded-lg bg-amber-600 dark:bg-amber-500 flex items-center justify-center">
           <Pin size={12} className="text-white" />
         </div>
-        {t('portal.dashboard.pinned.title')}
+        {t('dashboard.pinned.title')}
         <Badge variant="yellow" size="xs" className="ms-auto" glow>
           {pinnedRequests.length}
         </Badge>
@@ -99,10 +99,8 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
                     dot
                   >
                     {isAgency
-                      ? t(`portal.requests.status.${request.status.toLowerCase()}` as any)
-                      : t(
-                          `portal.requests.clientStatus.${CLIENT_STATUS_MAP[request.status].toLowerCase()}` as any
-                        )}
+                      ? t(getStatusTranslationKey(request.status))
+                      : t(getClientStatusTranslationKey(request.status, true))}
                   </Badge>
                   <span className="text-[10px] text-surface-400 font-mono">
                     #{request.id.slice(-6).toUpperCase()}
@@ -113,7 +111,7 @@ export const PinnedRequests: React.FC<PinnedRequestsProps> = ({
               <button
                 onClick={() => unpinRequest(request.id)}
                 className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-amber-200/50 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-all"
-                aria-label={t('portal.dashboard.pinned.unpin')}
+                aria-label={t('dashboard.pinned.unpin')}
               >
                 <X size={14} />
               </button>
@@ -141,7 +139,7 @@ export const PinButton: React.FC<PinButtonProps> = ({
   size = 'sm',
   className,
 }) => {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const { isPinned, isPinning, togglePin, loadingRequestIds } = usePinnedRequests(orgId);
   const pinned = isPinned(requestId);
   const loading = loadingRequestIds?.has(requestId) ?? isPinning(requestId);
@@ -163,8 +161,8 @@ export const PinButton: React.FC<PinButtonProps> = ({
         loading && 'opacity-70 cursor-wait animate-pulse',
         className
       )}
-      aria-label={pinned ? t('portal.dashboard.pinned.unpin') : t('portal.dashboard.pinned.pin')}
-      title={pinned ? t('portal.dashboard.pinned.unpin') : t('portal.dashboard.pinned.pin')}
+      aria-label={pinned ? t('dashboard.pinned.unpin') : t('dashboard.pinned.pin')}
+      title={pinned ? t('dashboard.pinned.unpin') : t('dashboard.pinned.pin')}
     >
       <Pin size={size === 'sm' ? 14 : 18} className={cn(pinned && 'fill-current')} />
     </button>

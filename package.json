@@ -6,7 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
+    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent && node scripts/validate-translations.js",
     "predev": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
     "dev": "node dev-pro.mjs",
     "dev:web": "next dev",
@@ -20,6 +20,7 @@
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx && tsc --noEmit",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix && tsc --noEmit",
     "lint:next": "next lint",
+    "typecheck": "node ./node_modules/typescript-7/bin/tsc --noEmit",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "deploy:rules": "firebase deploy --only firestore:rules,storage",
@@ -112,6 +113,7 @@
     "@types/react-google-recaptcha": "^2.1.9",
     "@types/sanitize-html": "^2.16.0",
     "@types/uuid": "^10.0.0",
+    "@typescript/typescript-win32-arm64": "7.0.2",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/ui": "^4.0.16",
     "autoprefixer": "^10.4.19",
@@ -130,8 +132,9 @@
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.4",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.53.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-7": "npm:typescript@7.0.2",
+    "typescript-eslint": "^8.63.0",
     "vitest": "^4.0.16"
   },
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"

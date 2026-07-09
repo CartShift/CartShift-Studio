@@ -18,13 +18,13 @@ export function useConsultationMutations() {
     }) =>
       cancelConsultation(vars.consultationId, vars.orgId, vars.userId, vars.userName, vars.reason),
     onSuccess: () => {
-      toast.success(t('consultations.form.cancelSuccess' as any));
+      toast.success(t('consultations.form.cancelSuccess'));
       queryClient.invalidateQueries({ queryKey: queryKeys.consultations.byOrg() });
       queryClient.invalidateQueries({ queryKey: queryKeys.consultations.all() });
     },
     onError: error => {
       console.error('Failed to cancel consultation:', error);
-      toast.error(t('consultations.form.failedToCancel' as any));
+      toast.error(t('consultations.form.failedToCancel'));
     },
   });
 
@@ -46,13 +46,13 @@ export function useConsultationMutations() {
         vars.actionItems
       ),
     onSuccess: () => {
-      toast.success(t('consultations.form.completeSuccess' as any));
+      toast.success(t('consultations.form.completeSuccess'));
       queryClient.invalidateQueries({ queryKey: queryKeys.consultations.byOrg() });
       queryClient.invalidateQueries({ queryKey: queryKeys.consultations.all() });
     },
     onError: error => {
       console.error('Failed to complete consultation:', error);
-      toast.error(t('consultations.form.failedToComplete' as any));
+      toast.error(t('consultations.form.failedToComplete'));
     },
   });
 

@@ -16,7 +16,8 @@ import {
   Layers,
   Coins,
 } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -49,7 +50,7 @@ export function PricingCalculator({
   className,
   compact: _compact = false,
 }: PricingCalculatorProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
   const isRTL = locale === 'he';
 
@@ -98,8 +99,8 @@ export function PricingCalculator({
       {/* SECTION 1: GLOBAL SETTINGS */}
       {/* ============================================ */}
       <PortalSettingsSection
-        title={t('portal.pricing.globalSettings')}
-        description={t('portal.pricing.globalSettingsDesc')}
+        title={t('pricing.globalSettings')}
+        description={t('pricing.globalSettingsDesc')}
         defaultOpen
         icon={
           <div className="w-10 h-10 bg-surface-600 dark:bg-surface-500 rounded-xl flex items-center justify-center shadow-lg shadow-slate-500/20 shrink-0">
@@ -113,7 +114,7 @@ export function PricingCalculator({
             <div className="flex items-center gap-2">
               <Coins size={14} className="text-surface-400" />
               <label className="portal-label-sm">
-                {t('portal.pricing.form.currency')}
+                {t('pricing.form.currency')}
               </label>
             </div>
             <div className="flex gap-2">
@@ -137,7 +138,7 @@ export function PricingCalculator({
           {/* Global Modifiers */}
           <div className="space-y-3">
             <label className="portal-label-sm">
-              {t('portal.pricing.modifiers.title')}
+              {t('pricing.modifiers.title')}
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Urgent */}
@@ -162,10 +163,10 @@ export function PricingCalculator({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-surface-900 dark:text-white font-outfit text-sm">
-                    {t('portal.pricing.modifiers.urgent')}
+                    {t('pricing.modifiers.urgent')}
                   </div>
                   <div className="text-xs text-surface-500">
-                    {t('portal.pricing.modifiers.urgentDesc')}
+                    {t('pricing.modifiers.urgentDesc')}
                   </div>
                 </div>
                 <div
@@ -211,10 +212,10 @@ export function PricingCalculator({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-surface-900 dark:text-white font-outfit text-sm">
-                    {t('portal.pricing.modifiers.recurring')}
+                    {t('pricing.modifiers.recurring')}
                   </div>
                   <div className="text-xs text-surface-500">
-                    {t('portal.pricing.modifiers.recurringDesc')}
+                    {t('pricing.modifiers.recurringDesc')}
                   </div>
                 </div>
                 <div
@@ -246,8 +247,8 @@ export function PricingCalculator({
       {/* SECTION 2: ITEM BUILDER */}
       {/* ============================================ */}
       <PortalSettingsSection
-        title={t('portal.pricing.itemBuilder')}
-        description={t('portal.pricing.itemBuilderDesc')}
+        title={t('pricing.itemBuilder')}
+        description={t('pricing.itemBuilderDesc')}
         defaultOpen
         icon={
           <div className="w-10 h-10 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 shrink-0">
@@ -259,7 +260,7 @@ export function PricingCalculator({
           {/* Request Type Selection */}
           <div className="space-y-3">
             <label className="portal-label-sm">
-              {t('portal.requests.form.type')}
+              {t('requests.form.type')}
             </label>
             <div className="flex flex-wrap gap-2">
               {requestTypes.map(type => {
@@ -281,7 +282,7 @@ export function PricingCalculator({
                     )}
                   >
                     <Icon size={16} />
-                    {t(`portal.requests.types.${type}`)}
+                    {t(`requests.types.${type}`)}
                   </motion.button>
                 );
               })}
@@ -291,7 +292,7 @@ export function PricingCalculator({
           {/* Effort Level Selection */}
           <div className="space-y-3">
             <label className="portal-label-sm">
-              {t('portal.pricing.effortLevel')}
+              {t('pricing.effortLevel')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {effortLevels.map(level => {
@@ -344,7 +345,7 @@ export function PricingCalculator({
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-black text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-widest mb-1">
-                  {t('portal.pricing.itemPrice')}
+                  {t('pricing.itemPrice')}
                 </div>
                 <motion.div
                   key={result.adjustedPrice}
@@ -357,8 +358,8 @@ export function PricingCalculator({
               </div>
               <div className="text-end">
                 <div className="text-xs text-surface-500 dark:text-surface-400">
-                  {t('portal.common.estimated')} {result.estimatedHours.min}-
-                  {result.estimatedHours.max} {t('portal.common.hours')}
+                  {t('common.estimated')} {result.estimatedHours.min}-
+                  {result.estimatedHours.max} {t('common.hours')}
                 </div>
               </div>
             </div>
@@ -370,7 +371,7 @@ export function PricingCalculator({
               variant="outline"
               onClick={reset}
               className="px-4"
-              title={t('portal.pricing.actions.reset')}
+              title={t('pricing.actions.reset')}
             >
               <RotateCcw size={16} />
             </Button>
@@ -381,7 +382,7 @@ export function PricingCalculator({
               onClick={() => addToQuote(locale)}
             >
               <Plus size={16} className={cn(isRTL ? 'ms-2' : 'me-2')} />
-              {t('portal.pricing.actions.addToQuote')}
+              {t('pricing.actions.addToQuote')}
             </Button>
 
             {showCreateButton && !quoteHasItems && (
@@ -389,7 +390,7 @@ export function PricingCalculator({
                 onClick={handleSingleOffer}
                 className="flex-1 bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600"
               >
-                {t('portal.pricing.actions.createOffer')}
+                {t('pricing.actions.createOffer')}
                 <ArrowRight size={16} className={cn(isRTL ? 'me-2 rotate-180' : 'ms-2')} />
               </Button>
             )}
@@ -416,10 +417,10 @@ export function PricingCalculator({
                   </div>
                   <div>
                     <h3 className="font-bold text-surface-900 dark:text-white font-outfit">
-                      {t('portal.pricing.quote.items')} ({quoteItems.length})
+                      {t('pricing.quote.items')} ({quoteItems.length})
                     </h3>
                     <p className="text-xs text-surface-500">
-                      {t('portal.pricing.quote.reviewItems')}
+                      {t('pricing.quote.reviewItems')}
                     </p>
                   </div>
                 </div>
@@ -427,7 +428,7 @@ export function PricingCalculator({
                   onClick={clearQuote}
                   className="text-xs font-black text-rose-500 uppercase tracking-widest hover:text-rose-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/10"
                 >
-                  {t('portal.pricing.actions.clearQuote')}
+                  {t('pricing.actions.clearQuote')}
                 </button>
               </div>
 
@@ -460,12 +461,12 @@ export function PricingCalculator({
                           </div>
                           <div className="text-xs text-surface-500 flex items-center gap-2">
                             <span className="capitalize">
-                              {t(`portal.pricing.effort.${item.effortLevel}`)}
+                              {t(`pricing.effort.${item.effortLevel}`)}
                             </span>
                             <span className="text-surface-300">•</span>
                             <span>
                               {formatCalculatorPrice(item.basePrice, currency)}{' '}
-                              {t('portal.pricing.quote.base')}
+                              {t('pricing.quote.base')}
                             </span>
                           </div>
                         </div>
@@ -479,7 +480,7 @@ export function PricingCalculator({
                         <button
                           onClick={() => removeFromQuote(item.id)}
                           className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-surface-400 hover:text-rose-500 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all opacity-0 group-hover:opacity-100"
-                          title={t('portal.pricing.quote.remove')}
+                          title={t('pricing.quote.remove')}
                         >
                           <X size={16} />
                         </button>
@@ -531,7 +532,7 @@ export function PricingCalculator({
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <div className="text-xs font-black text-white/70 uppercase tracking-widest mb-1">
-                      {t('portal.pricing.quote.total')}
+                      {t('pricing.quote.total')}
                     </div>
                     <div className="text-4xl font-black font-outfit">
                       {formattedQuoteTotalPrice}
@@ -539,11 +540,11 @@ export function PricingCalculator({
                   </div>
                   <div className="text-end">
                     <div className="text-sm font-medium text-white/80">
-                      {t('portal.pricing.quote.jobsCount', { count: quoteItems.length })}
+                      {t('pricing.quote.jobsCount', { count: quoteItems.length })}
                     </div>
                     <div className="text-[10px] text-white/60">
                       {quoteResult.totalEstimatedHours.min}-{quoteResult.totalEstimatedHours.max}{' '}
-                      {t('portal.common.hours')} {t('portal.pricing.quote.totalHours')}
+                      {t('common.hours')} {t('pricing.quote.totalHours')}
                     </div>
                   </div>
                 </div>
@@ -552,7 +553,7 @@ export function PricingCalculator({
                   onClick={handleMultipleOffers}
                   className="w-full bg-white text-primary-600 hover:bg-primary-50 border-none shadow-xl h-14 text-lg font-black font-outfit"
                 >
-                  {t('portal.pricing.actions.createOffer')}
+                  {t('pricing.actions.createOffer')}
                   <ArrowRight size={20} className={cn(isRTL ? 'me-2 rotate-180' : 'ms-2')} />
                 </Button>
               </div>

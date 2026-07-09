@@ -1302,6 +1302,8 @@
       "organizationLogo": "Organization logo",
       "failedToSubscribe": "Failed to subscribe",
       "uploadFailed": "Upload failed",
+      "uploadSuccess": "Image uploaded successfully",
+      "removeSuccess": "Image removed successfully",
       "failedToRemove": "Failed to remove image",
       "selectImageFile": "Please select an image file",
       "imageTooLarge": "Image must be smaller than 2MB",
@@ -1404,6 +1406,9 @@
         "notes": "Agenda / Notes",
         "notesPlaceholder": "What will you discuss?",
         "failedToCancel": "Failed to cancel consultation",
+        "cancelSuccess": "Consultation canceled",
+        "completeSuccess": "Consultation marked as complete",
+        "failedToComplete": "Failed to complete consultation",
         "notFound": "Consultation not found",
         "calendarConflict": "There is a calendar conflict. Do you want to proceed anyway?",
         "cancelConfirm": "Are you sure you want to cancel this consultation?"
@@ -1595,6 +1600,10 @@
         "deleteFailed": "Failed to delete file"
       },
       "imageLabels": {
+        "uploadedImage": "Uploaded image",
+        "upload": "Upload Image",
+        "uploading": "Uploading...",
+        "dropHint": "Drop an image here or click to upload",
         "remove": "Remove Image",
         "change": "Change Image"
       },
@@ -2545,6 +2554,7 @@
       },
       "detail": {
         "loading": "Opening your request...",
+        "notFound": "Request not found",
         "notFoundDesc": "The request you are looking for might have been deleted or moved, or you may not have permission to view it.",
         "deleteTitle": "Delete Request",
         "deleteConfirm": "Are you sure you want to delete this request? This action cannot be undone.",
@@ -3182,6 +3192,11 @@
       "errors": {
         "load": "Failed to load team information.",
         "cancelInvite": "Failed to cancel invite"
+      },
+      "success": {
+        "cancelInvite": "Invite canceled",
+        "removeMember": "Member removed",
+        "updateRole": "Role updated"
       },
       "confirmCancel": "Are you sure you want to cancel this invitation?",
       "changeRole": "Change Role",

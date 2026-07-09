@@ -22,22 +22,22 @@ import { useTranslations } from 'next-intl';
 import { Select } from '@/components/ui/Select';
 import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 
-type TranslationFunction = ReturnType<typeof useTranslations>;
+type TranslationFunction = ReturnType<typeof useTranslations<'portal'>>;
 
 const orgSchema = (t: TranslationFunction) =>
   z.object({
     name: z
       .string()
-      .min(3, t('organization.createForm.errors.name' as any))
-      .max(100, t('organization.createForm.errors.nameLong' as any)),
+      .min(3, t('organization.createForm.errors.name'))
+      .max(100, t('organization.createForm.errors.nameLong')),
     website: z
       .string()
-      .url(t('organization.createForm.errors.website' as any))
+      .url(t('organization.createForm.errors.website'))
       .optional()
       .or(z.literal('')),
     industry: z
       .string()
-      .min(2, t('organization.createForm.errors.industry' as any))
+      .min(2, t('organization.createForm.errors.industry'))
       .optional()
       .or(z.literal('')),
     responsibleAgencyUserId: z.string().optional(),
@@ -86,7 +86,7 @@ export const CreateOrganizationForm = ({
 
   const onSubmit = async (data: OrgFormData) => {
     if (!user || !userData) {
-      setError(t('organization.createForm.errors.auth' as any));
+      setError(t('organization.createForm.errors.auth'));
       return;
     }
 
@@ -116,7 +116,7 @@ export const CreateOrganizationForm = ({
     } catch (error: unknown) {
       console.error('Create organization error:', error);
       setError(
-        error instanceof Error ? error.message : t('organization.createForm.errors.generic' as any)
+        error instanceof Error ? error.message : t('organization.createForm.errors.generic')
       );
     } finally {
       setIsSubmitting(false);
@@ -131,13 +131,13 @@ export const CreateOrganizationForm = ({
   return (
     <ModalBackdrop isOpen={true} onClick={onCancel}>
       <ModalContent maxWidth="lg" onClick={e => e.stopPropagation()}>
-        <ModalHeader title={t('organization.createForm.title' as any)} onClose={onCancel} />
+        <ModalHeader title={t('organization.createForm.title')} onClose={onCancel} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalBody className="space-y-5">
             <Input
-              label={t('organization.createForm.nameLabel' as any)}
-              placeholder={t('organization.createForm.namePlaceholder' as any)}
+              label={t('organization.createForm.nameLabel')}
+              placeholder={t('organization.createForm.namePlaceholder')}
               error={errors.name?.message}
               {...register('name')}
               className="font-outfit"
@@ -145,9 +145,9 @@ export const CreateOrganizationForm = ({
             />
 
             <Input
-              label={t('organization.createForm.websiteLabel' as any)}
+              label={t('organization.createForm.websiteLabel')}
               type="url"
-              placeholder={t('organization.createForm.websitePlaceholder' as any)}
+              placeholder={t('organization.createForm.websitePlaceholder')}
               error={errors.website?.message}
               {...register('website')}
               className="font-outfit"
@@ -155,21 +155,21 @@ export const CreateOrganizationForm = ({
             />
 
             <Input
-              label={t('organization.createForm.industryLabel' as any)}
-              placeholder={t('organization.createForm.industryPlaceholder' as any)}
+              label={t('organization.createForm.industryLabel')}
+              placeholder={t('organization.createForm.industryPlaceholder')}
               error={errors.industry?.message}
               {...register('industry')}
               className="font-outfit"
               disabled={isSubmitting}
             />
 
-            <PortalFormField label={t('organization.createForm.responsibleAgentLabel' as any)}>
+            <PortalFormField label={t('organization.createForm.responsibleAgentLabel')}>
               <Select
                 disabled={isSubmitting}
                 options={[
                   {
                     value: '',
-                    label: t('organization.createForm.responsibleAgentPlaceholder' as any),
+                    label: t('organization.createForm.responsibleAgentPlaceholder'),
                   },
                   ...agencyMembers.map(member => ({
                     value: member.id,
@@ -182,8 +182,8 @@ export const CreateOrganizationForm = ({
 
             <div className="bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-900/20 rounded-xl p-4">
               <p className="text-xs text-primary-800 dark:text-primary-300 leading-relaxed font-medium">
-                <strong className="font-bold">{t('organization.createForm.note' as any)}</strong>{' '}
-                {t('organization.createForm.noteText' as any)}
+                <strong className="font-bold">{t('organization.createForm.note')}</strong>{' '}
+                {t('organization.createForm.noteText')}
               </p>
             </div>
 
@@ -202,12 +202,12 @@ export const CreateOrganizationForm = ({
               disabled={isSubmitting}
               className="flex-1 font-outfit"
             >
-              {t('organization.createForm.cancel' as any)}
+              {t('organization.createForm.cancel')}
             </Button>
             <Button type="submit" loading={isSubmitting} className="flex-1 font-outfit">
               {isSubmitting
-                ? t('organization.createForm.submitting' as any)
-                : t('organization.createForm.submit' as any)}
+                ? t('organization.createForm.submitting')
+                : t('organization.createForm.submit')}
             </Button>
           </ModalFooter>
         </form>

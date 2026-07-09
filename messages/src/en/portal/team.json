@@ -51,6 +51,11 @@
         "load": "Failed to load team information.",
         "cancelInvite": "Failed to cancel invite"
       },
+      "success": {
+        "cancelInvite": "Invite canceled",
+        "removeMember": "Member removed",
+        "updateRole": "Role updated"
+      },
       "confirmCancel": "Are you sure you want to cancel this invitation?",
       "changeRole": "Change Role",
       "removeMember": "Remove Member",

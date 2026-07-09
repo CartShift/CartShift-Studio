@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { X, Upload as UploadIcon, File, Loader2 } from 'lucide-react';
 import { uploadFile } from '@/lib/services/portal-files';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import {
   ModalBackdrop,
   ModalContent,
@@ -23,7 +23,7 @@ interface UploadFileFormProps {
 
 export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: UploadFileFormProps) => {
   const { user, userData } = usePortalAuth();
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -45,7 +45,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
     if (file) {
       // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        setError(t('portal.files.uploadForm.errorSize'));
+        setError(t('files.uploadForm.errorSize'));
         return;
       }
       setSelectedFile(file);
@@ -61,7 +61,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
     setUploadProgress(0);
 
     try {
-      const userName = userData?.name || user.displayName || t('portal.common.unknownUser');
+      const userName = userData?.name || user.displayName || t('common.unknownUser');
 
       // Clear any existing interval
       if (progressIntervalRef.current) {
@@ -86,7 +86,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
       onSuccess();
     } catch (error: unknown) {
       console.error('Upload error:', error);
-      setError(error instanceof Error ? error.message : t('portal.files.uploadForm.errorGeneric'));
+      setError(error instanceof Error ? error.message : t('files.uploadForm.errorGeneric'));
     } finally {
       set(false);
       // Clear interval on error as well
@@ -108,7 +108,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
   return (
     <ModalBackdrop isOpen={true} onClick={onCancel} zIndex="50">
       <ModalContent maxWidth="lg" onClick={e => e.stopPropagation()}>
-        <ModalHeader title={t('portal.files.uploadForm.title')} onClose={onCancel} />
+        <ModalHeader title={t('files.uploadForm.title')} onClose={onCancel} />
 
         <ModalBody>
           <div className="space-y-5">
@@ -120,10 +120,10 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
               >
                 <UploadIcon className="w-12 h-12 text-surface-300 dark:text-surface-700 mx-auto mb-4 group-hover:text-primary-500 transition-colors" />
                 <p className="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-1">
-                  {t('portal.files.uploadForm.browse')}
+                  {t('files.uploadForm.browse')}
                 </p>
                 <p className="text-xs text-surface-500 dark:text-surface-400">
-                  {t('portal.files.uploadForm.maxSize')}
+                  {t('files.uploadForm.maxSize')}
                 </p>
                 <input
                   ref={fileInputRef}
@@ -161,7 +161,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
                 {loading && (
                   <div className="mt-4">
                     <div className="flex items-center justify-between text-xs text-surface-600 dark:text-surface-400 mb-2">
-                      <span>{t('portal.files.uploadForm.uploading')}</span>
+                      <span>{t('files.uploadForm.uploading')}</span>
                       <span>{uploadProgress}%</span>
                     </div>
                     <div className="h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
@@ -191,7 +191,7 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
             disabled={loading}
             className="flex-1"
           >
-            {t('portal.files.uploadForm.cancel')}
+            {t('files.uploadForm.cancel')}
           </Button>
           <Button
             type="button"
@@ -203,10 +203,10 @@ export const UploadFileForm = ({ orgId, requestId, onSuccess, onCancel }: Upload
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {t('portal.files.uploadForm.uploading')}
+                {t('files.uploadForm.uploading')}
               </>
             ) : (
-              t('portal.files.uploadForm.submit')
+              t('files.uploadForm.submit')
             )}
           </Button>
         </ModalFooter>

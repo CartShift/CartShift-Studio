@@ -63,58 +63,13 @@ import {
   PortalTableCell,
 } from '@/components/portal/ui/PortalTable';
 import { IconButton } from '@/components/ui/IconButton';
+import {
+  getStatusTranslationKey,
+  getClientStatusTranslationKey,
+  getPriorityTranslationKey,
+} from '@/lib/i18n/portal-translation-keys';
 
 const MotionPortalTableRow = motion(PortalTableRow);
-
-const getStatusTranslationKey = (status: string | undefined): string => {
-  const statusMap: Record<string, string> = {
-    draft: 'requests.status.draft',
-    new: 'requests.status.new',
-    needs_info: 'requests.status.needs_info',
-    quoted: 'requests.status.quoted',
-    changes_requested: 'requests.status.changes_requested',
-    accepted: 'requests.status.accepted',
-    declined: 'requests.status.declined',
-    queued: 'requests.status.queued',
-    in_progress: 'requests.status.in_progress',
-    in_review: 'requests.status.in_review',
-    delivered: 'requests.status.delivered',
-    paid: 'requests.status.paid',
-    closed: 'requests.status.closed',
-    canceled: 'requests.status.canceled',
-    expired: 'requests.status.expired',
-  };
-  return statusMap[status?.toLowerCase() || 'new'] || 'requests.status.new';
-};
-
-const getClientStatusTranslationKey = (
-  status: string | undefined,
-  isAgencyStatus: boolean = false
-): string => {
-  const statusMap: Record<string, string> = {
-    submitted: 'requests.clientStatus.submitted',
-    in_progress: 'requests.clientStatus.in_progress',
-    in_review: 'requests.clientStatus.in_review',
-    completed: 'requests.clientStatus.completed',
-  };
-  if (isAgencyStatus) {
-    const mappedStatus = CLIENT_STATUS_MAP[status as keyof typeof CLIENT_STATUS_MAP];
-    return (
-      statusMap[mappedStatus?.toLowerCase() || 'submitted'] || 'requests.clientStatus.submitted'
-    );
-  }
-  return statusMap[status?.toLowerCase() || 'submitted'] || 'requests.clientStatus.submitted';
-};
-
-const getPriorityTranslationKey = (priority: string | undefined): string => {
-  const priorityMap: Record<string, string> = {
-    low: 'requests.priority.low',
-    normal: 'requests.priority.normal',
-    high: 'requests.priority.high',
-    urgent: 'requests.priority.urgent',
-  };
-  return priorityMap[priority?.toLowerCase() || 'normal'] || 'requests.priority.normal';
-};
 
 export default function RequestsClient() {
   const orgId = useResolvedOrgId();
@@ -535,8 +490,8 @@ export default function RequestsClient() {
                 {filter === 'All'
                   ? t('common.all')
                   : isAgency
-                    ? t(getStatusTranslationKey(filter) as any)
-                    : t(getClientStatusTranslationKey(filter, false) as any)}
+                    ? t(getStatusTranslationKey(filter))
+                    : t(getClientStatusTranslationKey(filter, false))}
               </button>
             ))}
             {/* Organization Filter - Agency Only */}
@@ -724,7 +679,7 @@ export default function RequestsClient() {
                                         {child.title}
                                       </span>
                                       <Badge variant={getStatusBadgeVariant(child.status)}>
-                                        {t(getStatusTranslationKey(child.status) as any)}
+                                        {t(getStatusTranslationKey(child.status))}
                                       </Badge>
                                     </button>
                                   ))}
@@ -880,18 +835,13 @@ export default function RequestsClient() {
                                         <motion.div>
                                           {isAgency ? (
                                             <Badge variant={getStatusBadgeVariant(req.status)}>
-                                              {t(getStatusTranslationKey(req.status) as any)}
+                                              {t(getStatusTranslationKey(req.status))}
                                             </Badge>
                                           ) : (
                                             <Badge
                                               variant={getClientStatusBadgeVariant(req.status)}
                                             >
-                                              {t(
-                                                getClientStatusTranslationKey(
-                                                  req.status,
-                                                  true
-                                                ) as any
-                                              )}
+                                              {t(getClientStatusTranslationKey(req.status, true))}
                                             </Badge>
                                           )}
                                         </motion.div>
@@ -916,7 +866,7 @@ export default function RequestsClient() {
                                           )}
                                         />
                                         <span className="text-sm font-bold text-surface-600 dark:text-surface-300 font-outfit whitespace-nowrap">
-                                          {t(getPriorityTranslationKey(req.priority) as any)}
+                                          {t(getPriorityTranslationKey(req.priority))}
                                         </span>
                                       </div>
                                     </PortalTableCell>
@@ -1026,7 +976,7 @@ export default function RequestsClient() {
                                                 <Badge
                                                   variant={getStatusBadgeVariant(child.status)}
                                                 >
-                                                  {t(getStatusTranslationKey(child.status) as any)}
+                                                  {t(getStatusTranslationKey(child.status))}
                                                 </Badge>
                                               </button>
                                             ))}

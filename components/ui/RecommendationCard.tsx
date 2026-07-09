@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { motion } from '@/lib/motion';
-import { useTranslations } from 'next-intl';
+import { useAnalyzerTranslations } from '@/lib/i18n/translations';
 import { useTheme } from 'next-themes';
 import { ArrowRight, CheckCircle2, Clock3, Flame, Minus, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { getEffortKey } from '@/lib/i18n/analyzer-translation-keys';
 
 const recommendationCardVariants = cva('border rounded-xl p-4 transition-colors', {
   variants: {
@@ -43,7 +44,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   impact,
   delay = 0,
 }) => {
-  const t = useTranslations('analyzer');
+  const t = useAnalyzerTranslations();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -73,7 +74,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
   const config = impactConfig[impact];
   const Icon = config.icon;
-  const effortLabel = effort ? t(`recommendations.effort.${effort}` as any) : null;
+  const effortLabel = effort ? t(getEffortKey(effort)) : null;
 
   return (
     <motion.div

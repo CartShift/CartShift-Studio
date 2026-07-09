@@ -9,7 +9,7 @@ interface RetryOptions {
   /** Factor to multiply delay by after each failure (default: 2) */
   backoffFactor?: number;
   /** Optional conditional function to determine if we should retry based on the error */
-  shouldRetry?: (error: any) => boolean;
+  shouldRetry?: (error: unknown) => boolean;
 }
 
 /**
@@ -27,7 +27,7 @@ export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions =
     shouldRetry = () => true,
   } = options;
 
-  let lastError: any;
+  let lastError: unknown;
   let delay = initialDelay;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {

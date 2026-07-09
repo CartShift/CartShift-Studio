@@ -2,7 +2,8 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { usePathname } from '@/i18n/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { getRequest } from '@/lib/services/portal-requests';
 import { getPricingRequest } from '@/lib/services/pricing-requests';
 import { getOrganization } from '@/lib/services/portal-organizations';
@@ -19,7 +20,7 @@ interface BreadcrumbsProps {
 export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: BreadcrumbsProps) {
   const pathname = usePathname();
   const locale = useLocale();
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   // State for dynamically fetched labels (e.g., request title)
   const [dynamicLabels, setDynamicLabels] = useState<Record<string, string>>({});
@@ -145,22 +146,22 @@ export function Breadcrumbs({ className, customLabels = {}, maxItems = 4 }: Brea
 
     // Translation map for common path segments
     const segmentLabels: Record<string, string> = {
-      portal: t('portal.breadcrumbs.portal'),
-      org: t('portal.breadcrumbs.organization'),
-      dashboard: t('portal.breadcrumbs.dashboard'),
-      requests: t('portal.breadcrumbs.requests'),
-      settings: t('portal.breadcrumbs.settings'),
-      team: t('portal.breadcrumbs.team'),
-      files: t('portal.breadcrumbs.files'),
-      pricing: t('portal.breadcrumbs.pricing'),
-      consultations: t('portal.breadcrumbs.consultations'),
-      agency: t('portal.breadcrumbs.agency'),
-      workboard: t('portal.breadcrumbs.workboard'),
-      clients: t('portal.breadcrumbs.clients'),
-      new: t('portal.breadcrumbs.new'),
-      calculator: t('portal.breadcrumbs.calculator'),
-      sales: t('portal.breadcrumbs.sales'),
-      help: t('portal.breadcrumbs.help'),
+      portal: t('breadcrumbs.portal'),
+      org: t('breadcrumbs.organization'),
+      dashboard: t('breadcrumbs.dashboard'),
+      requests: t('breadcrumbs.requests'),
+      settings: t('breadcrumbs.settings'),
+      team: t('breadcrumbs.team'),
+      files: t('breadcrumbs.files'),
+      pricing: t('breadcrumbs.pricing'),
+      consultations: t('breadcrumbs.consultations'),
+      agency: t('breadcrumbs.agency'),
+      workboard: t('breadcrumbs.workboard'),
+      clients: t('breadcrumbs.clients'),
+      new: t('breadcrumbs.new'),
+      calculator: t('breadcrumbs.calculator'),
+      sales: t('breadcrumbs.sales'),
+      help: t('breadcrumbs.help'),
       ...customLabels,
     };
 

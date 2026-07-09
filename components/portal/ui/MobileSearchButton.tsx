@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -12,7 +12,7 @@ export function MobileSearchButton({
   onClickAction: () => void;
   className?: string;
 }) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   return (
     <button
@@ -21,8 +21,8 @@ export function MobileSearchButton({
         'p-3 rounded-2xl text-surface-400 hover:text-surface-900 dark:hover:text-white hover:bg-surface-50 dark:hover:bg-surface-900 transition-all md:hidden',
         className
       )}
-      aria-label={t('portal.accessibility.search')}
-      title={t('portal.accessibility.search')}
+      aria-label={t('accessibility.search')}
+      title={t('accessibility.search')}
     >
       <Search size={24} />
     </button>

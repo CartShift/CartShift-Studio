@@ -15,7 +15,9 @@ vi.mock('@/i18n/navigation', () => ({
     get: mockGet,
   }),
   usePathname: () => '/portal/login',
-  Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
 vi.mock('@/lib/services/auth', () => ({

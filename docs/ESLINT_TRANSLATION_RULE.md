@@ -1,122 +1,66 @@
-# ESLint Translation Pattern Rule
+# ESLint Translation Pattern Rules
 
 ## Overview
 
-The `portal-translations/enforce-portal-translations` ESLint rule enforces the standardized translation pattern across all portal files.
+The `portal-translations` ESLint plugin enforces consistent next-intl usage and surfaces hardcoded UI copy.
 
-## Enforced Pattern
+| Rule | Level | Scope |
+|------|-------|--------|
+| `enforce-portal-translations` | error | `app/[locale]/portal/**`, `components/portal/**`, `lib/hooks/**` |
+| `no-hardcoded-jsx-text` | warn | Website sections/layout/templates + portal UI |
 
-**✅ CORRECT:**
+## Portal rule — enforced pattern
+
+**Correct:**
 
 ```tsx
-// Use namespaced hook
+import { usePortalTranslations } from '@/lib/i18n/translations';
+
+const t = usePortalTranslations();
+<h1>{t('files.title')}</h1>;
+```
+
+Also accepted (legacy-compatible):
+
+```tsx
 const t = useTranslations('portal');
-
-// Keys without 'portal.' prefix
-<h1>{t('files.title')}</h1>
-<p>{t('common.error')}</p>
 ```
 
-**❌ WRONG:**
+**Wrong:**
 
 ```tsx
-// Don't use useTranslations() without namespace
 const t = useTranslations();
-
-// Don't use 'portal.' prefix with namespaced hook
-<h1>{t('portal.files.title')}</h1>;
+t('portal.files.title');
 ```
 
-## What the Rule Checks
+### What it checks
 
-1. **Enforces `useTranslations('portal')` in portal files**
-   - Detects `useTranslations()` without namespace
-   - Auto-fixes to `useTranslations('portal')`
+1. Bare `useTranslations()` in portal files → must be `usePortalTranslations()` or `useTranslations('portal' | 'portal.*')`
+2. Redundant `portal.` key prefix when the hook namespace is already portal-scoped (including nested `portal.activity.actions`)
+3. Auto-fix adds the `@/lib/i18n/translations` import when rewriting bare hooks
 
-2. **Prevents `portal.` prefix when using namespaced hook**
-   - Detects `t('portal.key')` when using `useTranslations('portal')`
-   - Auto-fixes to `t('key')`
-
-3. **Works with template literals**
-   - Handles dynamic keys like `t(\`portal.files.${key}\`)`
-   - Fixes to `t(\`files.${key}\`)`
-
-## File Scope
-
-The rule only applies to files matching the pattern:
-
-- `app/[locale]/portal/**/*.{ts,tsx,js,jsx}`
-
-Files outside this pattern are not checked.
-
-## Auto-Fix
-
-The rule is **auto-fixable** - run `pnpm lint:fix` to automatically fix violations:
+### Auto-fix
 
 ```bash
 pnpm lint:fix
 ```
 
-## Examples
+## Hardcoded JSX text (warn)
 
-### Example 1: Wrong Hook Usage
+Flags JSX text nodes that look like user-facing copy (letters in EN/HE). Brand tokens (`CartShift`, `Shopify`, …) and short acronyms are allowlisted.
 
-```tsx
-// ❌ Before
-const t = useTranslations();
-
-// ✅ After (auto-fixed)
-const t = useTranslations('portal');
-```
-
-### Example 2: Wrong Key Prefix
-
-```tsx
-// ❌ Before
-const t = useTranslations('portal');
-<h1>{t('portal.files.title')}</h1>;
-
-// ✅ After (auto-fixed)
-const t = useTranslations('portal');
-<h1>{t('files.title')}</h1>;
-```
-
-### Example 3: Template Literal
-
-```tsx
-// ❌ Before
-const t = useTranslations('portal');
-{
-  t(`portal.pricing.status.${status}`);
-}
-
-// ✅ After (auto-fixed)
-const t = useTranslations('portal');
-{
-  t(`pricing.status.${status}`);
-}
-```
+Migrate flagged strings into `messages/src/{locale}/…` and load them via a translation helper.
 
 ## Configuration
 
-The rule is configured in `eslint.config.mjs`:
-
 ```js
-{
-  rules: {
-    "portal-translations/enforce-portal-translations": "error",
-  },
-}
+// eslint.config.mjs
+'portal-translations/enforce-portal-translations': 'error',
+'portal-translations/no-hardcoded-jsx-text': 'warn',
 ```
 
-## Benefits
-
-- ✅ **Consistency**: All portal files follow the same pattern
-- ✅ **Type Safety**: Better TypeScript autocomplete and validation
-- ✅ **Maintainability**: Easier to refactor and update translations
-- ✅ **Auto-Fix**: Violations can be automatically corrected
-
-## Related Documentation
+## Related
 
 - [Translation Best Practices](../messages/BEST_PRACTICES.md)
-- [Translation Consistency Review](./Translation-Consistency-Review.md)
+- [messages/README.md](../messages/README.md)
+- Helpers: `lib/i18n/translations.ts`

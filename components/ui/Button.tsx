@@ -153,7 +153,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       currentState === 'success' ||
       currentState === 'error';
 
-    const Component = (motion[as as keyof typeof motion] as any) || motion.button;
+    const Component = (motion[as as keyof typeof motion] as typeof motion.button) || motion.button;
 
     return (
       <Component
@@ -165,7 +165,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           buttonVariants({
             variant,
             size,
-            btnState: currentState as any,
+            btnState: currentState,
             className,
           })
         )}

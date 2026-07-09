@@ -176,7 +176,7 @@ export function useRequestActions({
         setIsAddingPricing(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, t]
+    [canPerformAction, requestId, orgId, userData, t]
   );
 
   // Mark as free (agency only)
@@ -195,7 +195,7 @@ export function useRequestActions({
     } finally {
       setIsMarkingFree(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast, t]);
+  }, [canPerformAction, requestId, orgId, userData, t]);
 
   // Accept quote
   const handleAcceptQuote = useCallback(async () => {
@@ -233,7 +233,7 @@ export function useRequestActions({
     } finally {
       setIsAccepting(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast, queryClient, t]);
+  }, [canPerformAction, requestId, orgId, userData, queryClient, t]);
 
   // Decline quote
   const handleDeclineQuote = useCallback(async () => {
@@ -270,7 +270,7 @@ export function useRequestActions({
     } finally {
       setIsDeclining(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast, queryClient, t]);
+  }, [canPerformAction, requestId, orgId, userData, queryClient, t]);
 
   // Start work
   const handleStartWork = useCallback(async () => {
@@ -307,7 +307,7 @@ export function useRequestActions({
     } finally {
       setIsWork(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, toast, queryClient, t]);
+  }, [canPerformAction, requestId, orgId, userData, queryClient, t]);
 
   // Payment success
   const handlePaymentSuccess = useCallback(
@@ -350,7 +350,7 @@ export function useRequestActions({
         toast.error(t('paymentRecorded'), t('paymentRecordedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, queryClient, t]
   );
 
   // Assign specialist
@@ -403,7 +403,7 @@ export function useRequestActions({
         setIsAssigning(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, queryClient, t]
   );
 
   // Request revision
@@ -451,7 +451,7 @@ export function useRequestActions({
         setIsSubmittingRevision(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, queryClient, t]
   );
 
   // File upload
@@ -480,7 +480,7 @@ export function useRequestActions({
         setIsUploading(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, toast, t]
+    [canPerformAction, requestId, orgId, userData, t]
   );
 
   // Status change
@@ -536,7 +536,7 @@ export function useRequestActions({
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, isAgency, toast, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, isAgency, queryClient, t]
   );
 
   // Send comment with optimistic update
@@ -590,7 +590,7 @@ export function useRequestActions({
         setIsSubmittingComment(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, onCommentsUpdate, toast]
+    [canPerformAction, requestId, orgId, userData, onCommentsUpdate, t]
   );
 
   // Delete request
@@ -617,7 +617,7 @@ export function useRequestActions({
     } finally {
       setIsDeleting(false);
     }
-  }, [canPerformAction, requestId, isAgency, _request?.createdBy, userData?.id, toast, tPortal]);
+  }, [canPerformAction, requestId, isAgency, _request?.createdBy, userData?.id, tPortal, t]);
 
   return {
     handleAddPricing,

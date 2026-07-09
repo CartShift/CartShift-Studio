@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import React, { useMemo } from 'react';
 import { motion } from '@/lib/motion';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { FileText, Clock, CheckCircle2, DollarSign, TrendingUp, Activity } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Request, REQUEST_STATUS, RequestStatus } from '@/lib/types/portal';
@@ -95,7 +95,7 @@ const getRecentRequests = (requests: Request[]): Request[] => {
 };
 
 export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, className }) => {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const analytics = useMemo(() => {
     const recentRequests = getRecentRequests(requests);
@@ -141,8 +141,8 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
       <div className={cn('py-8', className)}>
         <EmptyState
           icon={Activity}
-          title={t('portal.analytics.noDataYet')}
-          description={t('portal.analytics.noDataDescription')}
+          title={t('analytics.noDataYet')}
+          description={t('analytics.noDataDescription')}
           variant="plain"
           className="bg-transparent border-0"
         />
@@ -155,8 +155,8 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
       <div className={cn('py-8', className)}>
         <EmptyState
           icon={Activity}
-          title={t('portal.analytics.noDataYet')}
-          description={t('portal.analytics.noDataDescription')}
+          title={t('analytics.noDataYet')}
+          description={t('analytics.noDataDescription')}
           variant="plain"
           className="bg-transparent border-0"
         />
@@ -186,7 +186,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
                   <AnimatedNumber value={analytics.total} duration={800} />
                 </div>
                 <div className="text-[10px] text-surface-400 uppercase tracking-wider font-semibold">
-                  {t('portal.analytics.total')}
+                  {t('analytics.total')}
                 </div>
               </div>
             </div>
@@ -201,7 +201,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
                   <AnimatedNumber value={analytics.active} duration={800} />
                 </div>
                 <div className="text-[10px] text-surface-400 uppercase tracking-wider font-semibold">
-                  {t('portal.analytics.active')}
+                  {t('analytics.active')}
                 </div>
               </div>
             </div>
@@ -216,7 +216,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
                   <AnimatedNumber value={analytics.completed} duration={800} />
                 </div>
                 <div className="text-[10px] text-surface-400 uppercase tracking-wider font-semibold">
-                  {t('portal.analytics.done')}
+                  {t('analytics.done')}
                 </div>
               </div>
             </div>
@@ -232,7 +232,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
                     {analytics.avgResolution}d
                   </div>
                   <div className="text-[10px] text-surface-400 uppercase tracking-wider font-semibold">
-                    {t('portal.analytics.avgResolution')}
+                    {t('analytics.avgResolution')}
                   </div>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
                 )}
               >
                 <TrendingUp size={12} className={cn(analytics.trend < 0 && 'rotate-180')} />
-                {Math.abs(analytics.trend)}% {t('portal.analytics.inLast30Days')}
+                {Math.abs(analytics.trend)}% {t('analytics.inLast30Days')}
               </div>
             )}
           </div>
@@ -288,7 +288,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
                 </div>
               </div>
               <div className="text-xs text-surface-500 hidden sm:block">
-                {t('portal.analytics.completionRate')}
+                {t('analytics.completionRate')}
               </div>
             </div>
           )}
@@ -299,7 +299,7 @@ export const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({ requests, clas
           <div className="mt-3 pt-3 border-t border-surface-200/50 dark:border-white/[0.04] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DollarSign size={14} className="text-emerald-500" />
-              <span className="text-sm text-surface-500">{t('portal.analytics.totalSpend')}</span>
+              <span className="text-sm text-surface-500">{t('analytics.totalSpend')}</span>
             </div>
             <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
               {formatCurrency(analytics.totalSpend)}
@@ -316,7 +316,7 @@ export const ClientAnalyticsCompact: React.FC<{
   requests: Request[];
   className?: string;
 }> = ({ requests, className }) => {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const analytics = useMemo(() => {
     return {
@@ -327,9 +327,9 @@ export const ClientAnalyticsCompact: React.FC<{
   }, [requests]);
 
   const items = [
-    { label: t('portal.analytics.total'), value: analytics.total, color: 'bg-primary-500' },
-    { label: t('portal.analytics.active'), value: analytics.active, color: 'bg-amber-500' },
-    { label: t('portal.analytics.done'), value: analytics.completed, color: 'bg-green-500' },
+    { label: t('analytics.total'), value: analytics.total, color: 'bg-primary-500' },
+    { label: t('analytics.active'), value: analytics.active, color: 'bg-amber-500' },
+    { label: t('analytics.done'), value: analytics.completed, color: 'bg-green-500' },
   ];
 
   return (

@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { FirebaseError } from 'firebase/app';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import {
   getGlobalBranding,
@@ -21,6 +22,33 @@ const BrandingContext = createContext<BrandingContextType>({
 });
 
 export const useBranding = () => useContext(BrandingContext);
+
+const BRANDING_RADIUS_VALUES = ['0px', '0.5rem', '1rem'] as const;
+type BrandingRadius = (typeof BRANDING_RADIUS_VALUES)[number];
+
+function parseStoredRadius(value: string | null): BrandingRadius | undefined {
+  if (value && (BRANDING_RADIUS_VALUES as readonly string[]).includes(value)) {
+    return value as BrandingRadius;
+  }
+  return undefined;
+}
+
+function isPermissionDeniedError(error: unknown): boolean {
+  if (error instanceof FirebaseError) {
+    return error.code === 'permission-denied';
+  }
+  if (error instanceof Error) {
+    return (
+      error.message.includes('permission') ||
+      error.message.includes('Missing or insufficient permissions')
+    );
+  }
+  return false;
+}
+
+function isClientSideInitError(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('client side');
+}
 
 export function BrandingProvider({ children }: { children: React.ReactNode }) {
   const { user, userData } = usePortalAuth();
@@ -57,7 +85,7 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
           storedPrimary || undefined,
           storedAccent || undefined,
           storedFontEn || undefined,
-          storedRadius as any,
+          storedRadius ? parseStoredRadius(storedRadius) : undefined,
           storedFontHe || undefined
         );
       }
@@ -93,9 +121,8 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
                 fontFamilyHe
               );
             }
-          } catch (e: any) {
-            // Silently handle permission errors for global branding (expected if not public)
-            if (e?.code !== 'permission-denied' && !e?.message?.includes('permission')) {
+          } catch (e: unknown) {
+            if (!isPermissionDeniedError(e)) {
               console.log('No global branding found or accessible:', e);
             }
           } finally {
@@ -165,24 +192,15 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
               }
             }
           }
-        } catch (error: any) {
-          // Handle permission errors gracefully - user might not have access yet
-          const isPermissionError =
-            error?.code === 'permission-denied' ||
-            error?.message?.includes('Missing or insufficient permissions') ||
-            error?.message?.includes('permission');
-
-          if (!isPermissionError) {
+        } catch (error: unknown) {
+          if (!isPermissionDeniedError(error)) {
             console.error('Failed to load portal theme:', error);
           }
-          // Permission errors are expected if user doesn't have org membership yet
         } finally {
           set(false);
         }
-      } catch (error: any) {
-        // Handle Firebase initialization errors (e.g., during build/SSR)
-        if (error?.message?.includes('client side')) {
-          // Expected during SSR - ignore
+      } catch (error: unknown) {
+        if (isClientSideInitError(error)) {
           set(false);
           return;
         }

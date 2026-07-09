@@ -48,10 +48,10 @@ export function AgencyBrandingSettings({
   return (
     <Card className="border-surface-200 dark:border-surface-800 shadow-sm">
       <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-6 font-outfit">
-        {t('settings.branding.title' as any)}
+        {t('settings.branding.title')}
       </h3>
       <p className="text-sm text-surface-500 dark:text-surface-400 mb-8">
-        {t('settings.branding.subtitle' as any)}
+        {t('settings.branding.subtitle')}
       </p>
 
       <div className="space-y-4">

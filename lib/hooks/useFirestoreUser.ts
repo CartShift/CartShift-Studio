@@ -16,6 +16,7 @@ export interface UserData {
   isAgency: boolean;
   organizations?: string[];
   notificationPreferences?: PortalUser['notificationPreferences'];
+  preferences?: PortalUser['preferences'];
   onboardingComplete?: boolean;
   agencyRole?: import('@/lib/types/portal').UserRole;
   createdAt?: import('firebase/firestore').Timestamp;

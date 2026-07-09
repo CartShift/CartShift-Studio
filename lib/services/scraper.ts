@@ -7,6 +7,7 @@ import {
   VisualAnalysis,
 } from '@/lib/types/analyzer';
 import { Logger } from '@/lib/logger';
+import type { Page } from 'puppeteer-core';
 import { launchAnalyzerBrowser, probeAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
 
 export interface ScraperResult {
@@ -61,10 +62,10 @@ function uniqueUrls(urls: string[]) {
   return [...new Set(urls.map(url => url.split('#')[0]))];
 }
 
-async function discoverDeepScanUrls(page: any, homepageUrl: string) {
+async function discoverDeepScanUrls(page: Page, homepageUrl: string) {
   const urls = await page.evaluate(() => {
-    return Array.from(document.querySelectorAll('a[href]'))
-      .map((anchor: any) => anchor.href)
+    return Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'))
+      .map(anchor => anchor.href)
       .filter((href: string) => {
         try {
           const url = new URL(href);
@@ -94,18 +95,18 @@ async function discoverDeepScanUrls(page: any, homepageUrl: string) {
   };
 }
 
-async function sampleCategoryPage(page: any, url: string): Promise<CategoryPageSample> {
+async function sampleCategoryPage(page: Page, url: string): Promise<CategoryPageSample> {
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 12000 });
 
   return page.evaluate((sampleUrl: string) => {
-    const productLinks = Array.from(document.querySelectorAll('a[href]')).filter((anchor: any) =>
-      /\/products?\//i.test(anchor.href) || /\/product\//i.test(anchor.href)
+    const productLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]')).filter(
+      anchor => /\/products?\//i.test(anchor.href) || /\/product\//i.test(anchor.href)
     );
     const visibleProductCards = Array.from(
       document.querySelectorAll(
         '.product, .product-card, .grid__item, [class*="product"], [data-product-id]'
       )
-    ).filter((element: any) => {
+    ).filter(element => {
       const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     });
@@ -134,7 +135,7 @@ async function sampleCategoryPage(page: any, url: string): Promise<CategoryPageS
   }, url);
 }
 
-async function sampleProductPage(page: any, url: string): Promise<ProductPageSample> {
+async function sampleProductPage(page: Page, url: string): Promise<ProductPageSample> {
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 14000 });
 
   const analysis = await page.evaluate((sampleUrl: string) => {
@@ -195,9 +196,14 @@ async function sampleProductPage(page: any, url: string): Promise<ProductPageSam
 
   if (!addToCartBtn) return analysis;
 
-  const isClickable = await page.evaluate((el: any) => {
-    const style = window.getComputedStyle(el);
-    return style.display !== 'none' && style.visibility !== 'hidden' && !el.disabled;
+  const isClickable = await page.evaluate((el: Element) => {
+    const htmlEl = el as HTMLElement;
+    const style = window.getComputedStyle(htmlEl);
+    return (
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      !('disabled' in htmlEl && Boolean((htmlEl as HTMLButtonElement).disabled))
+    );
   }, addToCartBtn);
 
   return {
@@ -210,7 +216,7 @@ async function sampleProductPage(page: any, url: string): Promise<ProductPageSam
   };
 }
 
-async function sampleCartInteraction(page: any, productUrl?: string): Promise<CartInteractionSample> {
+async function sampleCartInteraction(page: Page, productUrl?: string): Promise<CartInteractionSample> {
   const evidence: string[] = [];
   const result: CartInteractionSample = {
     attempted: Boolean(productUrl),
@@ -285,8 +291,8 @@ async function sampleCartInteraction(page: any, productUrl?: string): Promise<Ca
         ? 'checkout link/control detected after click'
         : 'checkout link/control not detected after click'
     );
-  } catch (error: any) {
-    const message = error?.message || 'Cart interaction failed.';
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Cart interaction failed.';
     result.error = message;
     evidence.push(message);
   }

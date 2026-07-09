@@ -90,11 +90,23 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
   const IndustryIcon = config.icon;
 
   // Industry content from translations
-  const industriesContent = t.raw('industriesContent' as any) as any;
+  type IndustryBenefit = { title: string; description: string };
+  type IndustryPageCopy = { title: string; subtitle: string; description: string };
+  interface IndustriesContent {
+    benefits: IndustryBenefit[];
+    services: string[];
+    fashion: IndustryPageCopy;
+    food: IndustryPageCopy;
+    health: IndustryPageCopy;
+    tech: IndustryPageCopy;
+    arts: IndustryPageCopy;
+    local: IndustryPageCopy;
+  }
+  const industriesContent = t.raw('industriesContent' as never) as IndustriesContent;
 
   const content = industriesContent[industry];
 
-  const genericBenefits = industriesContent.benefits.map((benefit: any, index: number) => ({
+  const genericBenefits = industriesContent.benefits.map((benefit: IndustryBenefit, index: number) => ({
     icon: [TrendingUp, Zap, Shield, Target][index],
     title: benefit.title,
     description: benefit.description,
@@ -146,7 +158,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {genericBenefits.map(
-            (benefit: { icon: any; title: string; description: string }, index: number) => {
+            (benefit: { icon: React.ComponentType<{ className?: string; size?: number }>; title: string; description: string }, index: number) => {
               const BenefitIcon = benefit.icon;
               return (
                 <motion.div

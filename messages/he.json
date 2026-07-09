@@ -1303,6 +1303,8 @@
       "organizationLogo": "לוגו ארגון",
       "failedToSubscribe": "ההרשמה נכשלה",
       "uploadFailed": "העלאה נכשלה",
+      "uploadSuccess": "התמונה הועלתה בהצלחה",
+      "removeSuccess": "התמונה הוסרה בהצלחה",
       "failedToRemove": "הסרת התמונה נכשלה",
       "selectImageFile": "אנא בחרו קובץ תמונה",
       "imageTooLarge": "התמונה חייבת להיות קטנה מ-2MB",
@@ -1404,6 +1406,9 @@
         "notes": "סדר יום / הערות",
         "notesPlaceholder": "מה תדונו?",
         "failedToCancel": "ביטול הפגישה נכשל",
+        "cancelSuccess": "הפגישה בוטלה",
+        "completeSuccess": "הפגישה סומנה כהושלמה",
+        "failedToComplete": "סימון הפגישה כהושלמה נכשל",
         "notFound": "פגישה לא נמצאה",
         "calendarConflict": "יש התנגשות בלוח השנה. האם אתם רוצים להמשיך בכל זאת?",
         "cancelConfirm": "האם אתם בטוחים שברצונכם לבטל את הפגישה הזו?"
@@ -1595,6 +1600,10 @@
         "deleteFailed": "מחיקת הקובץ נכשלה"
       },
       "imageLabels": {
+        "uploadedImage": "תמונה שהועלתה",
+        "upload": "העלה תמונה",
+        "uploading": "מעלה...",
+        "dropHint": "גרור תמונה לכאן או לחץ להעלאה",
         "remove": "הסר תמונה",
         "change": "שנה תמונה"
       },
@@ -2545,6 +2554,7 @@
       },
       "detail": {
         "loading": "פותח את הבקשה שלך...",
+        "notFound": "הבקשה לא נמצאה",
         "notFoundDesc": "הבקשה שאתם מחפשים אולי נמחקה או הועברה, או שאין לכם הרשאות לצפות בה.",
         "deleteTitle": "מחק בקשה",
         "deleteConfirm": "האם אתה בטוח שברצונך למחוק את הבקשה הזו? פעולה זו אינה ניתנת לביטול.",
@@ -3182,6 +3192,11 @@
       "errors": {
         "load": "טעינת פרטי הצוות נכשלה.",
         "cancelInvite": "ביטול ההזמנה נכשל"
+      },
+      "success": {
+        "cancelInvite": "ההזמנה בוטלה",
+        "removeMember": "החבר הוסר",
+        "updateRole": "התפקיד עודכן"
       },
       "confirmCancel": "האם אתם בטוחים שברצונכם לבטל הזמנה זו?",
       "changeRole": "שנה תפקיד",

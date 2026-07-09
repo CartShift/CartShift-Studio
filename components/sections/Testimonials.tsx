@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 
 export const Testimonials: React.FC = () => {
   const t = useTranslations();
-  const testimonials = t.raw('testimonials.items') as any[];
+  const testimonials = t.raw('testimonials.items') as Array<{ quote: string; author: string; company: string; rating: number }>;
 
   if (!testimonials || testimonials.length === 0) return null;
 

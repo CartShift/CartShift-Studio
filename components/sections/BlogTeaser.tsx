@@ -34,7 +34,7 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
   const t = useTranslations();
   const locale = useLocale();
   const isHe = locale === 'he';
-  const latestPosts = t.raw('blogTeaser.posts') as any[];
+  const latestPosts = t.raw('blogTeaser.posts') as Array<{ title: string; excerpt: string; category: string; date: string; href: string; image?: string; imageAlt?: string; readingTime?: number }>;
 
   const displayPosts = posts
     ? posts.map(post => ({

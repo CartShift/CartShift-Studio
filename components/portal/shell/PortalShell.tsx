@@ -85,8 +85,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   // Get nav groups based on user type
   const navGroups = state.isAgency
-    ? getAgencyNavGroups(key => t(key as any))
-    : getClientNavGroups(key => t(key as any));
+    ? getAgencyNavGroups(key => t(key as Parameters<typeof t>[0]))
+    : getClientNavGroups(key => t(key as Parameters<typeof t>[0]));
 
   const filteredNavGroups = useMemo(
     () =>

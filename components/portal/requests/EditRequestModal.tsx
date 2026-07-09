@@ -4,7 +4,7 @@ import { ModalBackdrop, ModalContent } from '@/components/ui/ModalBackdrop';
 import { RequestForm } from '@/components/portal/forms/RequestForm';
 import { Request } from '@/lib/types/portal';
 import { X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
 interface EditRequestModalProps {
   isOpen: boolean;
@@ -14,7 +14,7 @@ interface EditRequestModalProps {
 }
 
 export function EditRequestModal({ isOpen, onClose, request, orgId }: EditRequestModalProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   if (!isOpen) return null;
 
@@ -24,7 +24,7 @@ export function EditRequestModal({ isOpen, onClose, request, orgId }: EditReques
         <div className="bg-white dark:bg-surface-900 rounded-3xl shadow-2xl overflow-hidden border border-surface-200 dark:border-surface-800 max-h-[90vh] flex flex-col">
           <div className="flex items-center justify-between p-6 border-b border-surface-100 dark:border-surface-800 shrink-0">
             <h2 className="text-xl font-bold text-surface-900 dark:text-white font-outfit">
-              {t('portal.common.edit')} {t('portal.requests.title_singular')}
+              {t('common.edit')} {t('requests.title_singular')}
             </h2>
             <button
               onClick={onClose}
@@ -42,8 +42,8 @@ export function EditRequestModal({ isOpen, onClose, request, orgId }: EditReques
               initialValues={{
                 title: request.title,
                 description: request.description,
-                type: request.type as any, // Enum needs casting sometimes
-                priority: request.priority as any,
+                type: request.type,
+                priority: request.priority,
               }}
               onSuccess={onClose}
               onCancel={onClose}

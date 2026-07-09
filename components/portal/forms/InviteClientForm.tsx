@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { toast } from 'sonner';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import {
@@ -45,12 +45,12 @@ export const InviteClientForm = ({
   const [existingInviteId, setExistingInviteId] = useState<string | null>(null);
   const [cancellingExisting, setCancellingExisting] = useState(false);
   const { userData } = usePortalAuth();
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   const inviteSchema = useMemo(
     () =>
       z.object({
-        email: z.string().email(t('portal.clientInvite.errors.email')),
+        email: z.string().email(t('clientInvite.errors.email')),
       }),
     [t]
   );
@@ -91,7 +91,7 @@ export const InviteClientForm = ({
     setError(null);
 
     try {
-      if (!userData) throw new Error(t('portal.common.notAuthenticated'));
+      if (!userData) throw new Error(t('common.notAuthenticated'));
 
       // Find all requests for this client email
       const clientRequests = await getRequestsByClientEmail(orgId, data.email);
@@ -106,12 +106,12 @@ export const InviteClientForm = ({
         requestIds
       );
 
-      toast.success(t('portal.clientInvite.success'));
+      toast.success(t('clientInvite.success'));
       onSuccess(invite.code);
     } catch (error: unknown) {
       console.error('Client invite error:', error);
       const errorMsg =
-        error instanceof Error ? error.message : t('portal.clientInvite.errors.generic');
+        error instanceof Error ? error.message : t('clientInvite.errors.generic');
 
       // Check if error is about existing invitation (match both "invite" and "invitation")
       if (errorMsg.toLowerCase().includes('already been sent to this email')) {
@@ -139,18 +139,18 @@ export const InviteClientForm = ({
   return (
     <ModalBackdrop isOpen={true}>
       <ModalContent>
-        <ModalHeader title={t('portal.clientInvite.title')} onClose={onCancel} />
+        <ModalHeader title={t('clientInvite.title')} onClose={onCancel} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalBody>
             <div className="space-y-6">
               <p className="text-sm text-surface-600 dark:text-surface-400">
-                {t('portal.clientInvite.description')}
+                {t('clientInvite.description')}
               </p>
 
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium">
-                  {t('portal.clientInvite.emailLabel')}
+                  {t('clientInvite.emailLabel')}
                 </label>
                 <Input
                   id="email"
@@ -169,7 +169,7 @@ export const InviteClientForm = ({
               {preSelectedEmail && (
                 <div className="rounded-lg bg-primary-50 dark:bg-primary-900/20 p-4 border border-primary-200 dark:border-primary-800">
                   <p className="text-sm text-primary-800 dark:text-primary-200">
-                    {t('portal.clientInvite.linkedRequestsInfo')}
+                    {t('clientInvite.linkedRequestsInfo')}
                   </p>
                 </div>
               )}
@@ -196,10 +196,10 @@ export const InviteClientForm = ({
 
           <ModalFooter>
             <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
-              {t('portal.common.cancel')}
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={loading}>
-              {t('portal.clientInvite.sendButton')}
+              {t('clientInvite.sendButton')}
             </Button>
           </ModalFooter>
         </form>

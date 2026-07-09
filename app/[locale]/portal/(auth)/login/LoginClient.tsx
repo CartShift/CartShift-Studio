@@ -24,7 +24,7 @@ import { useLocale } from 'next-intl';
 
 type LoginData = z.infer<ReturnType<typeof getLoginSchema>>;
 
-const getLoginSchema = (t: (path: string) => string) =>
+const getLoginSchema = (t: ReturnType<typeof useTranslations<'portal'>>) =>
   z.object({
     email: z.string().email(t('auth.errors.invalidEmail')),
     password: z.string().min(6, t('auth.errors.weakPassword')),
@@ -43,7 +43,7 @@ function LoginForm() {
   const locale = useLocale();
   const { branding } = useBranding();
 
-  const loginSchema = useMemo(() => getLoginSchema((path: string) => t(path as any)), [t]);
+  const loginSchema = useMemo(() => getLoginSchema(t), [t]);
 
   const {
     register,
@@ -59,21 +59,21 @@ function LoginForm() {
     setError(null);
     try {
       await signInWithGoogle();
-      toast.success(t('auth.login.success' as any));
+      toast.success(t('auth.login.success'));
       const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
       window.location.assign(getPortalPathnameForRedirect(targetPath, locale));
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/popup-closed-by-user'
-          ? t('auth.errors.popupClosed' as any)
+          ? t('auth.errors.popupClosed')
           : firebaseError.code === 'auth/popup-blocked'
-            ? t('auth.errors.popupBlocked' as any)
+            ? t('auth.errors.popupBlocked')
             : firebaseError.code === 'auth/cancelled-popup-request'
-              ? t('auth.errors.popupCancelled' as any)
+              ? t('auth.errors.popupCancelled')
               : firebaseError.code === 'auth/account-exists-with-different-credential'
-                ? t('auth.errors.account' as any)
-                : firebaseError.message || t('auth.errors.generic' as any);
+                ? t('auth.errors.accountExists')
+                : firebaseError.message || t('auth.errors.generic');
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -86,22 +86,22 @@ function LoginForm() {
     setError(null);
     try {
       await loginWithEmail(data.email, data.password);
-      toast.success(t('auth.login.success' as any));
+      toast.success(t('auth.login.success'));
       const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
       window.location.assign(getPortalPathnameForRedirect(targetPath, locale));
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
         firebaseError.code === 'auth/user-not-found'
-          ? t('auth.errors.userNot' as any)
+          ? t('auth.errors.userNotFound')
           : firebaseError.code === 'auth/wrong-password' ||
               firebaseError.code === 'auth/invalid-credential'
-            ? t('auth.errors.wrongPassword' as any)
+            ? t('auth.errors.wrongPassword')
             : firebaseError.code === 'auth/invalid-email'
-              ? t('auth.errors.invalidEmail' as any)
+              ? t('auth.errors.invalidEmail')
               : firebaseError.code === 'auth/too-many-requests'
-                ? t('auth.errors.too-many-requests' as any)
-                : firebaseError.message || t('auth.errors.generic' as any);
+                ? t('auth.errors.tooManyRequests')
+                : firebaseError.message || t('auth.errors.generic');
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -181,7 +181,7 @@ function LoginForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute end-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors z-10"
                   aria-label={
-                    showPassword ? t('auth.hidePassword' as any) : t('auth.showPassword' as any)
+                    showPassword ? t('auth.hidePassword') : t('auth.showPassword')
                   }
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -200,7 +200,7 @@ function LoginForm() {
                 htmlFor="rememberMe"
                 className="text-xs font-medium text-surface-500 dark:text-surface-400 cursor-pointer select-none"
               >
-                {t('auth.login.rememberMe' as any)}
+                {t('auth.login.rememberMe')}
               </label>
             </div>
           </div>

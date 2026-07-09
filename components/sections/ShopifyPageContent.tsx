@@ -51,12 +51,12 @@ export const ShopifyPageContent: React.FC = () => {
     description: string;
   }>;
   const whyItems = t.raw('shopify.why.items') as string[];
-  const learnMoreData = t.raw('shopify.learnMore' as any) as {
+  const learnMoreData = t.raw('shopify.learnMore' as never) as {
     title: string;
     description: string;
     links: Array<{ title: string; href: string }>;
   };
-  const faqData = t.raw('shopify.faq' as any) as {
+  const faqData = t.raw('shopify.faq' as never) as {
     title: string;
     subtitle: string;
     items: FAQItem[];

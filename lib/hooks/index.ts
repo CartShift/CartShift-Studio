@@ -41,6 +41,7 @@ export * from './useUserOrganizations';
 export * from './useOrgFiles';
 export * from './useFileMutations';
 export * from './useRequestListMutations';
+export * from './useRequestMutations';
 export * from './useConfirmDialog';
 export * from './useAgencyProfile';
 export * from './useAgencyInvites';

@@ -7,9 +7,25 @@ async function readJson<T>(response: Response): Promise<T> {
   return payload as T;
 }
 
-function timestamp(value: any): Timestamp {
-  if (value?.toDate) return value;
-  return new Timestamp(value?._seconds ?? value?.seconds ?? 0, value?._nanoseconds ?? value?.nanoseconds ?? 0);
+function timestamp(value: unknown): Timestamp {
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'toDate' in value &&
+    typeof (value as Timestamp).toDate === 'function'
+  ) {
+    return value as Timestamp;
+  }
+  const record = value as {
+    _seconds?: number;
+    seconds?: number;
+    _nanoseconds?: number;
+    nanoseconds?: number;
+  } | null;
+  return new Timestamp(
+    record?._seconds ?? record?.seconds ?? 0,
+    record?._nanoseconds ?? record?.nanoseconds ?? 0
+  );
 }
 
 function normalizePayment(payment: PaymentRecord): PaymentRecord {

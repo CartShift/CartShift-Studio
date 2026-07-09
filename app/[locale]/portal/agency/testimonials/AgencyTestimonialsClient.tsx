@@ -43,6 +43,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { invalidatePortalTestimonialData } from '@/lib/utils/portal-cache-invalidation';
 import { toast } from 'sonner';
 import { useDirection } from '@/lib/i18n-utils';
+import { getTestimonialStatusKey } from '@/lib/i18n/portal-translation-keys';
 
 // ============================================
 // Types
@@ -144,7 +145,7 @@ function TestimonialCard({
 
           <Badge variant={config.variant} className="shrink-0">
             <StatusIcon className="w-3.5 h-3.5 me-1" />
-            {t(`agency.testimonials.status.${testimonial.status}` as any)}
+            {t(getTestimonialStatusKey(testimonial.status))}
           </Badge>
         </div>
 
@@ -444,7 +445,7 @@ export default function AgencyTestimonialsClient() {
       }
     }
     fetchTestimonials();
-  }, []);
+  }, [toastT]);
 
   // Filter and search
   const filteredTestimonials = useMemo(() => {

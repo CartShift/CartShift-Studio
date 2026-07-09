@@ -94,7 +94,7 @@ interface ErrorBoundaryProps {
 export function ErrorBoundary({ children, fallback }: ErrorBoundaryProps) {
   const t = useTranslations('errorBoundary');
   return (
-    <ErrorBoundaryInner t={t as any} fallback={fallback}>
+    <ErrorBoundaryInner t={t as unknown as (key: string) => string} fallback={fallback}>
       {children}
     </ErrorBoundaryInner>
   );

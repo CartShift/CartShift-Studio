@@ -265,7 +265,7 @@ export default function DashboardClient({
   messages,
   locale,
 }: {
-  messages: Record<string, any>;
+  messages: Record<string, unknown>;
   locale: string;
 }) {
   if (!messages || !locale) {

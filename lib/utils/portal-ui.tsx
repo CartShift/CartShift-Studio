@@ -87,7 +87,9 @@ export function DateDisplay({
         ? timestamp
         : 'toDate' in timestamp
           ? timestamp.toDate()
-          : new Date(timestamp as any);
+          : (() => {
+              throw new Error('Unsupported timestamp value');
+            })();
 
     if (showStatusDateOnly && status === 'DRAFT') {
       return (

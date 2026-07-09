@@ -30,7 +30,7 @@ export function RequestPreviewModal() {
     >
       <ModalContent
         maxWidth="full"
-        accessibleTitle={t('requests.preview.title' as any)}
+        accessibleTitle={t('requests.preview.title')}
         onClick={event => event.stopPropagation()}
         className={cn(
           'w-[min(100vw-1rem,72rem)] max-h-[95vh] sm:max-h-[90vh] flex flex-col overflow-hidden p-0',

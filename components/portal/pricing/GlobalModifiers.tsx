@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { Flame, Users, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
@@ -29,7 +29,7 @@ export function GlobalModifiers({
   onApplyGlobal,
   className,
 }: GlobalModifiersProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
 
   return (
     <Card className={cn('p-4', className)}>
@@ -39,7 +39,7 @@ export function GlobalModifiers({
             <Calculator size={16} className="text-surface-500" />
           </div>
           <span className="text-sm font-bold text-surface-700 dark:text-surface-300">
-            {t('portal.pricing.globalModifiers' as never)}
+            {t('pricing.globalModifiers' as never)}
           </span>
         </div>
 
@@ -49,7 +49,7 @@ export function GlobalModifiers({
             type="button"
             onClick={onUrgentToggle}
             aria-pressed={urgent}
-            aria-label={t('portal.pricing.modifiers.urgent')}
+            aria-label={t('pricing.modifiers.urgent')}
             className={cn(
               'flex items-center gap-2 px-3 py-2 rounded-xl border-2 text-sm font-semibold transition-all',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500',
@@ -59,7 +59,7 @@ export function GlobalModifiers({
             )}
           >
             <Flame size={14} />
-            {t('portal.pricing.modifiers.urgent')}
+            {t('pricing.modifiers.urgent')}
           </button>
 
           {/* Global Recurring */}
@@ -67,7 +67,7 @@ export function GlobalModifiers({
             type="button"
             onClick={onRecurringToggle}
             aria-pressed={recurring}
-            aria-label={t('portal.pricing.modifiers.recurring')}
+            aria-label={t('pricing.modifiers.recurring')}
             className={cn(
               'flex items-center gap-2 px-3 py-2 rounded-xl border-2 text-sm font-semibold transition-all',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500',
@@ -77,7 +77,7 @@ export function GlobalModifiers({
             )}
           >
             <Users size={14} />
-            {t('portal.pricing.modifiers.recurring')}
+            {t('pricing.modifiers.recurring')}
           </button>
 
           {selectedCount > 0 && (
@@ -86,9 +86,9 @@ export function GlobalModifiers({
               variant="secondary"
               size="sm"
               onClick={onApplyGlobal}
-              aria-label={t('portal.pricing.applyToAll')}
+              aria-label={t('pricing.applyToAll')}
             >
-              {t('portal.pricing.applyToAll' as never)}
+              {t('pricing.applyToAll' as never)}
             </Button>
           )}
         </div>

@@ -104,7 +104,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
   const filterRailOpacity = useTransform(scrollY, [40, 280], [0.82, 1]);
   const gridY = useTransform(scrollY, [240, 760], [26, 0]);
 
-  const work = t.raw('work' as any) as WorkTranslations;
+  const work = t.raw('work' as never) as WorkTranslations;
 
   const filteredCaseStudies = useMemo(() => {
     if (activeFilter === 'all') {

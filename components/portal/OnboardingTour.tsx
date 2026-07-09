@@ -16,7 +16,8 @@ import {
   Rocket,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { isRTLLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { updateOnboardingStatus } from '@/lib/services/portal-users';
@@ -40,7 +41,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComple
   const [currentStep, setCurrentStep] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
   const isRTL = isRTLLocale(locale);
 
@@ -57,47 +58,47 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
   const steps: TourStep[] = [
     {
       id: 'welcome',
-      title: t('portal.onboarding.steps.welcome.title'),
-      description: t('portal.onboarding.steps.welcome.description'),
+      title: t('onboarding.steps.welcome.title'),
+      description: t('onboarding.steps.welcome.description'),
       icon: <Sparkles className={tourIconClass} />,
       position: 'center',
     },
     {
       id: 'dashboard',
-      title: t('portal.onboarding.steps.dashboard.title'),
-      description: t('portal.onboarding.steps.dashboard.description'),
+      title: t('onboarding.steps.dashboard.title'),
+      description: t('onboarding.steps.dashboard.description'),
       icon: <LayoutDashboard className={tourIconClass} />,
       highlight: '[data-tour="nav-dashboard"]',
       position: 'bottom-right',
     },
     {
       id: 'requests',
-      title: t('portal.onboarding.steps.requests.title'),
-      description: t('portal.onboarding.steps.requests.description'),
+      title: t('onboarding.steps.requests.title'),
+      description: t('onboarding.steps.requests.description'),
       icon: <ClipboardList className={tourIconClass} />,
       highlight: '[data-tour="nav-requests"]',
       position: 'bottom-right',
     },
     {
       id: 'team',
-      title: t('portal.onboarding.steps.team.title'),
-      description: t('portal.onboarding.steps.team.description'),
+      title: t('onboarding.steps.team.title'),
+      description: t('onboarding.steps.team.description'),
       icon: <Users className={tourIconClass} />,
       highlight: '[data-tour="nav-team"]',
       position: 'bottom-right',
     },
     {
       id: 'notifications',
-      title: t('portal.onboarding.steps.notifications.title'),
-      description: t('portal.onboarding.steps.notifications.description'),
+      title: t('onboarding.steps.notifications.title'),
+      description: t('onboarding.steps.notifications.description'),
       icon: <Bell className={tourIconClass} />,
       highlight: '[data-tour="header-notifications"]',
       position: 'top-center',
     },
     {
       id: 'complete',
-      title: t('portal.onboarding.steps.complete.title'),
-      description: t('portal.onboarding.steps.complete.description'),
+      title: t('onboarding.steps.complete.title'),
+      description: t('onboarding.steps.complete.description'),
       icon: <Rocket className={tourIconClass} />,
       position: 'center',
     },
@@ -126,22 +127,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
     return () => window.removeEventListener('resize', updateHighlight);
   }, [currentStep, step.highlight]);
 
-  const handleNext = useCallback(() => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      handleComplete();
-    }
-  }, [currentStep, steps.length]);
-
-  const handlePrev = useCallback(() => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-    }
-  }, [currentStep]);
-
   const handleComplete = useCallback(async () => {
-    // Ensure we're on client side
     if (typeof window === 'undefined') {
       console.warn('handleComplete called on server side, skipping');
       return;
@@ -157,6 +143,20 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
     }
     onComplete();
   }, [userId, onComplete]);
+
+  const handleNext = useCallback(() => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      handleComplete();
+    }
+  }, [currentStep, steps.length, handleComplete]);
+
+  const handlePrev = useCallback(() => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
+  }, [currentStep]);
 
   const handleSkip = useCallback(async () => {
     // Ensure we're on client side
@@ -272,7 +272,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
             <button
               onClick={handleSkip}
               className="absolute top-4 end-4 rtl:end-auto rtl:start-4 p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800"
-              aria-label={t('portal.onboarding.skip')}
+              aria-label={t('onboarding.skip')}
             >
               <X size={20} />
             </button>
@@ -298,7 +298,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-4"
             >
               <CheckCircle2 size={12} />
-              {t('portal.onboarding.step')} {currentStep + 1} / {steps.length}
+              {t('onboarding.step')} {currentStep + 1} / {steps.length}
             </motion.div>
 
             {/* Title */}
@@ -333,7 +333,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
                   className="flex items-center gap-2 border-surface-200 dark:border-surface-700"
                 >
                   <ChevronLeft size={18} className={cn(isRTL && 'rotate-180')} />
-                  {t('portal.onboarding.prev')}
+                  {t('onboarding.prev')}
                 </Button>
               ) : (
                 <div />
@@ -353,7 +353,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
                           ? 'bg-primary-300 dark:bg-primary-700'
                           : 'bg-surface-200 dark:bg-surface-700'
                     )}
-                    aria-label={`${t('portal.onboarding.goToStep')} ${index + 1}`}
+                    aria-label={`${t('onboarding.goToStep')} ${index + 1}`}
                   />
                 ))}
               </div>
@@ -365,12 +365,12 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
               >
                 {isLastStep ? (
                   <>
-                    {t('portal.onboarding.start')}
+                    {t('onboarding.start')}
                     <Rocket size={18} />
                   </>
                 ) : (
                   <>
-                    {t('portal.onboarding.next')}
+                    {t('onboarding.next')}
                     <ChevronRight size={18} className={cn(isRTL && 'rotate-180')} />
                   </>
                 )}
@@ -381,7 +381,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
           {/* Keyboard Hint */}
           <div className="px-8 pb-6 text-center">
             <p className="text-xs text-surface-400 font-medium">
-              {t('portal.onboarding.keyboardHint')}
+              {t('onboarding.keyboardHint')}
             </p>
           </div>
         </motion.div>

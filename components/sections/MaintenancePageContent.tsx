@@ -119,7 +119,7 @@ export const MaintenancePageContent: React.FC = () => {
 
   if (settingsLoading || authLoading) return null;
 
-  const maintenance = t.raw('maintenance' as any) as {
+  const maintenance = t.raw('maintenance' as never) as {
     hero: { title: string; subtitle: string; description: string; badge: string };
     plans: {
       essential: {

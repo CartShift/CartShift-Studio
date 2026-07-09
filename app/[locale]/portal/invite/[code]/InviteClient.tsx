@@ -91,7 +91,7 @@ export default function InviteClient() {
     } else if (!auth && !isAuthenticated) {
       set(false);
     }
-  }, [code, auth, t, isAuthenticated]);
+  }, [code, auth, t, isAuthenticated, router, switchOrg]);
 
   const handleAcceptInvite = async () => {
     if (!invite || !user || !userData) return;

@@ -53,6 +53,8 @@
       "organizationLogo": "לוגו ארגון",
       "failedToSubscribe": "ההרשמה נכשלה",
       "uploadFailed": "העלאה נכשלה",
+      "uploadSuccess": "התמונה הועלתה בהצלחה",
+      "removeSuccess": "התמונה הוסרה בהצלחה",
       "failedToRemove": "הסרת התמונה נכשלה",
       "selectImageFile": "אנא בחרו קובץ תמונה",
       "imageTooLarge": "התמונה חייבת להיות קטנה מ-2MB",

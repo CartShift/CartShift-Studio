@@ -2,8 +2,6 @@ import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import * as crypto from 'crypto';
 import type * as React from 'react';
-
-// Templates
 import NewRequest from './templates/NewRequest';
 import StatusUpdate from './templates/StatusUpdate';
 import MilestoneCompleted from './templates/MilestoneCompleted';
@@ -13,7 +11,6 @@ import NewComment from './templates/NewComment';
 import ContactFormNotification from './templates/ContactFormNotification';
 import TeamInvite from './templates/TeamInvite';
 
-// Types
 export interface EmailConfig {
   from: string;
   replyTo: string;
@@ -44,9 +41,21 @@ function getResendClient(apiKey?: string): Resend | null {
   return resendClient;
 }
 
-// ----------------------------------------------------------------------------
-// Render Logic
-// ----------------------------------------------------------------------------
+function getErrMsg(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    return String((error as { message: unknown }).message);
+  }
+  return String(error);
+}
+
+function getErrStatus(error: unknown): number | undefined {
+  if (typeof error === 'object' && error !== null && 'statusCode' in error) {
+    const code = (error as { statusCode: unknown }).statusCode;
+    return typeof code === 'number' ? code : undefined;
+  }
+  return undefined;
+}
 
 export type EmailTemplate =
   | 'new_request'
@@ -58,6 +67,9 @@ export type EmailTemplate =
   | 'contact_form_notification'
   | 'team_invite';
 
+type EmailTemplateData = Record<string, unknown>;
+type EmailTemplateComponent = (data: EmailTemplateData) => React.ReactElement;
+
 const EMAIL_TEMPLATE_REGISTRY = {
   new_request: NewRequest,
   status_update: StatusUpdate,
@@ -67,11 +79,11 @@ const EMAIL_TEMPLATE_REGISTRY = {
   new_comment: NewComment,
   contact_form_notification: ContactFormNotification,
   team_invite: TeamInvite,
-} satisfies Record<EmailTemplate, (data: any) => React.ReactElement>;
+} as unknown as Record<EmailTemplate, EmailTemplateComponent>;
 
 export const SUPPORTED_EMAIL_TEMPLATES = Object.keys(EMAIL_TEMPLATE_REGISTRY) as EmailTemplate[];
 
-function getTemplateComponent(templateName: EmailTemplate) {
+function getTemplateComponent(templateName: EmailTemplate): EmailTemplateComponent {
   const Template = EMAIL_TEMPLATE_REGISTRY[templateName];
   if (!Template) {
     throw new Error(`Unknown template: ${templateName}`);
@@ -79,32 +91,97 @@ function getTemplateComponent(templateName: EmailTemplate) {
   return Template;
 }
 
-function renderTemplate(templateName: EmailTemplate, data: any) {
+function renderTemplate(templateName: EmailTemplate, data: EmailTemplateData) {
   return getTemplateComponent(templateName)(data);
 }
 
-export const renderEmail = async (templateName: EmailTemplate, data: any): Promise<string> => {
+export const renderEmail = async (
+  templateName: EmailTemplate,
+  data: EmailTemplateData
+): Promise<string> => {
   return render(renderTemplate(templateName, data));
 };
 
-export const renderEmailText = async (templateName: EmailTemplate, data: any): Promise<string> => {
+export const renderEmailText = async (
+  templateName: EmailTemplate,
+  data: EmailTemplateData
+): Promise<string> => {
   return render(renderTemplate(templateName, data), { plainText: true });
 };
-
-// ----------------------------------------------------------------------------
-// Sending Logic
-// ----------------------------------------------------------------------------
 
 export interface SendEmailOptions {
   to: string | string[];
   subject: string;
   templateName: EmailTemplate;
-  data: any;
+  data: EmailTemplateData;
   tags?: { name: string; value: string }[];
   scheduledAt?: string;
   headers?: Record<string, string>;
   idempotencyKey?: string;
-  uniqueId?: string; // For auto-generating idempotency key
+  uniqueId?: string;
+}
+
+interface ResendEmailPayload {
+  from: string;
+  to: string[];
+  subject: string;
+  html: string;
+  text: string;
+  reply_to: string;
+  tags: { name: string; value: string }[];
+  headers: Record<string, string>;
+  scheduled_at?: string;
+}
+
+interface FirebaseAdminLike {
+  firestore: {
+    (): {
+      collection: (name: string) => {
+        add: (data: Record<string, unknown>) => Promise<unknown>;
+        where: (
+          field: string,
+          op: string,
+          value: unknown
+        ) => {
+          limit: (n: number) => {
+            get: () => Promise<{
+              empty: boolean;
+              docs: Array<{ ref: { update: (data: Record<string, unknown>) => Promise<unknown> } }>;
+            }>;
+          };
+        };
+      };
+    };
+    FieldValue: {
+      serverTimestamp: () => unknown;
+      arrayUnion: (...elements: unknown[]) => unknown;
+    };
+  };
+}
+
+interface WebhookRequest {
+  body: ResendWebhookEvent;
+  headers: Record<string, string | string[] | undefined>;
+}
+
+interface ResendWebhookEventData {
+  email_id: string;
+  created_at: string;
+  bounce?: { message?: string };
+  click?: { link?: string };
+}
+
+interface ResendWebhookEvent {
+  type: string;
+  data: ResendWebhookEventData;
+}
+
+interface AudienceContactData {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  source?: string;
+  properties?: Record<string, string>;
 }
 
 const EMAIL_ADDRESS_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -118,6 +195,11 @@ function normalizeRecipients(to: string | string[]): string[] {
   }
 
   return [...new Set(recipients)];
+}
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
 }
 
 export async function sendEmail(
@@ -136,7 +218,7 @@ export async function sendEmail(
     const html = await renderEmail(options.templateName, options.data);
     const text = await renderEmailText(options.templateName, options.data);
 
-    const emailPayload: any = {
+    const emailPayload: ResendEmailPayload = {
       from: EMAIL_CONFIG.from,
       to: recipients,
       subject: options.subject,
@@ -175,8 +257,8 @@ export async function sendEmail(
       `[Email] Sent to ${recipients.join(',')}: "${options.subject}" (ID: ${result?.id})`
     );
     return { success: true, id: result?.id };
-  } catch (error: any) {
-    console.error(`[Email] ❌ Attempt ${attempt} failed:`, error.message);
+  } catch (error: unknown) {
+    console.error(`[Email] ❌ Attempt ${attempt} failed:`, getErrMsg(error));
 
     if (attempt < EMAIL_CONFIG.retryAttempts && isRetryableError(error)) {
       const delay = EMAIL_CONFIG.retryDelayMs * Math.pow(2, attempt - 1);
@@ -184,29 +266,26 @@ export async function sendEmail(
       return sendEmail(apiKey, options, attempt + 1);
     }
 
-    return { success: false, error: error.message };
+    return { success: false, error: getErrMsg(error) };
   }
 }
 
-function isRetryableError(error: any) {
+function isRetryableError(error: unknown) {
   const retryableCodes = [429, 500, 502, 503, 504];
-  const msg = (error.message || '').toLowerCase();
-  if (error.statusCode && retryableCodes.includes(error.statusCode)) return true;
+  const msg = getErrMsg(error).toLowerCase();
+  const statusCode = getErrStatus(error);
+  if (statusCode && retryableCodes.includes(statusCode)) return true;
   return ['rate limit', 'timeout', 'network', 'econnreset'].some(k => msg.includes(k));
 }
 
-// ----------------------------------------------------------------------------
-// Logging wrapper
-// ----------------------------------------------------------------------------
-
 export async function sendEmailWithLogging(
-  adminInstance: any,
+  adminInstance: FirebaseAdminLike,
   apiKey: string,
   options: SendEmailOptions
 ) {
   const result = await sendEmail(apiKey, options);
 
-  const logEntry: any = {
+  const logEntry: Record<string, unknown> = {
     to: options.to,
     subject: options.subject,
     templateName: options.templateName,
@@ -234,10 +313,6 @@ export async function sendEmailWithLogging(
   return result;
 }
 
-// ----------------------------------------------------------------------------
-// Utilities (ported from JS)
-// ----------------------------------------------------------------------------
-
 export function generateIdempotencyKey(
   to: string | string[],
   subject: string,
@@ -254,10 +329,6 @@ export function generateIdempotencyKey(
   const payload = `${normalizedTo}-${subject}-${template}-${stableOrBucket}`;
   return crypto.createHash('sha256').update(payload).digest('hex').slice(0, 64);
 }
-
-// ----------------------------------------------------------------------------
-// Batch Sending
-// ----------------------------------------------------------------------------
 
 export async function sendBatchEmails(apiKey: string, emails: SendEmailOptions[]) {
   const client = getResendClient(apiKey);
@@ -296,15 +367,11 @@ export async function sendBatchEmails(apiKey: string, emails: SendEmailOptions[]
 
     console.log(`[Email] ✅ Batch sent: ${emails.length} emails`);
     return { success: true, data: result };
-  } catch (error: any) {
-    console.error('[Email] ❌ Batch send failed:', error.message);
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    console.error('[Email] ❌ Batch send failed:', getErrMsg(error));
+    return { success: false, error: getErrMsg(error) };
   }
 }
-
-// ----------------------------------------------------------------------------
-// Scheduling
-// ----------------------------------------------------------------------------
 
 export async function sendScheduledEmail(apiKey: string, options: SendEmailOptions) {
   if (!options.scheduledAt) {
@@ -321,8 +388,8 @@ export async function cancelScheduledEmail(apiKey: string, emailId: string) {
     const { data, error } = await client.emails.cancel(emailId);
     if (error) throw { message: error.message };
     return { success: true, data };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: getErrMsg(error) };
   }
 }
 
@@ -334,14 +401,10 @@ export async function getEmailStatus(apiKey: string, emailId: string) {
     const { data, error } = await client.emails.get(emailId);
     if (error) throw { message: error.message };
     return { success: true, data };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: getErrMsg(error) };
   }
 }
-
-// ----------------------------------------------------------------------------
-// Webhooks
-// ----------------------------------------------------------------------------
 
 export function verifyWebhookSignature(
   payload: string,
@@ -368,11 +431,11 @@ export function verifyWebhookSignature(
   });
 }
 
-export function parseWebhookEvent(req: any, webhookSecret: string) {
+export function parseWebhookEvent(req: WebhookRequest, webhookSecret: string) {
   const payload = JSON.stringify(req.body);
-  const svixId = req.headers['svix-id'];
-  const svixTimestamp = req.headers['svix-timestamp'];
-  const svixSignature = req.headers['svix-signature'];
+  const svixId = headerValue(req.headers['svix-id']);
+  const svixTimestamp = headerValue(req.headers['svix-timestamp']);
+  const svixSignature = headerValue(req.headers['svix-signature']);
 
   if (!svixId || !svixTimestamp || !svixSignature) {
     throw new Error('Missing webhook headers');
@@ -384,33 +447,38 @@ export function parseWebhookEvent(req: any, webhookSecret: string) {
   return req.body;
 }
 
-const WEBHOOK_EVENT_HANDLERS: any = {
-  'email.sent': async (admin: any, data: any) => {
+type WebhookHandler = (
+  admin: FirebaseAdminLike,
+  data: ResendWebhookEventData
+) => Promise<void>;
+
+const WEBHOOK_EVENT_HANDLERS: Record<string, WebhookHandler> = {
+  'email.sent': async (admin, data) => {
     await updateEmailLog(admin, data.email_id, {
       status: 'sent',
       sentAt: new Date(data.created_at),
     });
   },
-  'email.delivered': async (admin: any, data: any) => {
+  'email.delivered': async (admin, data) => {
     await updateEmailLog(admin, data.email_id, {
       status: 'delivered',
       deliveredAt: new Date(data.created_at),
     });
   },
-  'email.bounced': async (admin: any, data: any) => {
+  'email.bounced': async (admin, data) => {
     await updateEmailLog(admin, data.email_id, {
       status: 'bounced',
       bouncedAt: new Date(data.created_at),
       bounceReason: data.bounce?.message || 'Unknown',
     });
   },
-  'email.opened': async (admin: any, data: any) => {
+  'email.opened': async (admin, data) => {
     await updateEmailLog(admin, data.email_id, {
       opened: true,
       openedAt: admin.firestore.FieldValue.arrayUnion(new Date(data.created_at)),
     });
   },
-  'email.clicked': async (admin: any, data: any) => {
+  'email.clicked': async (admin, data) => {
     await updateEmailLog(admin, data.email_id, {
       clicked: true,
       clicks: admin.firestore.FieldValue.arrayUnion({
@@ -419,7 +487,7 @@ const WEBHOOK_EVENT_HANDLERS: any = {
       }),
     });
   },
-  'email.complained': async (admin: any, data: any) => {
+  'email.complained': async (admin, data) => {
     await updateEmailLog(admin, data.email_id, {
       status: 'complained',
       complainedAt: new Date(data.created_at),
@@ -427,7 +495,11 @@ const WEBHOOK_EVENT_HANDLERS: any = {
   },
 };
 
-async function updateEmailLog(admin: any, emailId: string, updates: any) {
+async function updateEmailLog(
+  admin: FirebaseAdminLike,
+  emailId: string,
+  updates: Record<string, unknown>
+) {
   try {
     const logsRef = admin.firestore().collection('email_logs');
     const snapshot = await logsRef.where('emailId', '==', emailId).limit(1).get();
@@ -437,12 +509,15 @@ async function updateEmailLog(admin: any, emailId: string, updates: any) {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
-  } catch (error: any) {
-    console.error(`[Email] Failed to update log for ${emailId}:`, error.message);
+  } catch (error: unknown) {
+    console.error(`[Email] Failed to update log for ${emailId}:`, getErrMsg(error));
   }
 }
 
-export async function handleWebhookEvent(admin: any, event: any) {
+export async function handleWebhookEvent(
+  admin: FirebaseAdminLike,
+  event: ResendWebhookEvent
+) {
   const handler = WEBHOOK_EVENT_HANDLERS[event.type];
   if (handler) {
     await handler(admin, event.data);
@@ -450,11 +525,7 @@ export async function handleWebhookEvent(admin: any, event: any) {
   }
 }
 
-// ----------------------------------------------------------------------------
-// Audience
-// ----------------------------------------------------------------------------
-
-export async function addToAudience(apiKey: string, contactData: any) {
+export async function addToAudience(apiKey: string, contactData: AudienceContactData) {
   const client = getResendClient(apiKey);
   if (!client) return { success: false, reason: 'no_api_key' };
 
@@ -491,13 +562,17 @@ export async function addToAudience(apiKey: string, contactData: any) {
 
     console.log(`[Audience] ✅ Added contact: ${email}`);
     return { success: true, id: data?.id };
-  } catch (error: any) {
-    console.error('[Audience] ❌ Failed to add contact:', error.message);
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    console.error('[Audience] ❌ Failed to add contact:', getErrMsg(error));
+    return { success: false, error: getErrMsg(error) };
   }
 }
 
-export async function updateContact(apiKey: string, email: string, updates: any) {
+export async function updateContact(
+  apiKey: string,
+  email: string,
+  updates: Record<string, unknown>
+) {
   const client = getResendClient(apiKey);
   if (!client) return { success: false, reason: 'no_api_key' };
 
@@ -505,8 +580,8 @@ export async function updateContact(apiKey: string, email: string, updates: any)
     const { data, error } = await client.contacts.update({ email, ...updates });
     if (error) throw { message: error.message };
     return { success: true, data };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: getErrMsg(error) };
   }
 }
 
@@ -518,7 +593,7 @@ export async function removeFromAudience(apiKey: string, email: string) {
     const { data, error } = await client.contacts.remove({ email });
     if (error) throw { message: error.message };
     return { success: true, data };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: getErrMsg(error) };
   }
 }

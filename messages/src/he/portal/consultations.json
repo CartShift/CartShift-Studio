@@ -52,6 +52,9 @@
         "notes": "סדר יום / הערות",
         "notesPlaceholder": "מה תדונו?",
         "failedToCancel": "ביטול הפגישה נכשל",
+        "cancelSuccess": "הפגישה בוטלה",
+        "completeSuccess": "הפגישה סומנה כהושלמה",
+        "failedToComplete": "סימון הפגישה כהושלמה נכשל",
         "notFound": "פגישה לא נמצאה",
         "calendarConflict": "יש התנגשות בלוח השנה. האם אתם רוצים להמשיך בכל זאת?",
         "cancelConfirm": "האם אתם בטוחים שברצונכם לבטל את הפגישה הזו?"

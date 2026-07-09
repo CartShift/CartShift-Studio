@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -30,15 +30,25 @@ export function GeoLocaleRedirect() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const localeRef = useRef(locale);
+  const pathnameRef = useRef(pathname);
+  const routerRef = useRef(router);
+  localeRef.current = locale;
+  pathnameRef.current = pathname;
+  routerRef.current = router;
 
   useEffect(() => {
+    const currentPathname = pathnameRef.current;
+    const currentLocale = localeRef.current;
+    const currentRouter = routerRef.current;
+
     // Explicit CV locale URLs are recruiter-facing and must never be geo-swapped.
-    if (isExplicitCvPath(pathname)) {
+    if (isExplicitCvPath(currentPathname)) {
       return;
     }
 
     // Skip geo redirect for portal routes - user has already chosen their locale
-    if (pathname.includes('/portal')) {
+    if (currentPathname.includes('/portal')) {
       return;
     }
 
@@ -64,11 +74,11 @@ export function GeoLocaleRedirect() {
         // Only redirect if we need to change locale (first visit to this locale path)
         // Check sessionStorage to avoid redirecting on every page navigation
         const sessionChecked = sessionStorage.getItem(GEO_LOCALE_KEY);
-        if (!sessionChecked && targetLocale !== locale) {
+        if (!sessionChecked && targetLocale !== currentLocale) {
           sessionStorage.setItem(GEO_LOCALE_KEY, cachedCountry);
-          const pathWithoutLocale = pathname.replace(/^\/(en|he)/, '');
+          const pathWithoutLocale = currentPathname.replace(/^\/(en|he)/, '');
           const newPath = `/${targetLocale}${pathWithoutLocale || '/'}`;
-          router.replace(newPath);
+          currentRouter.replace(newPath);
         } else if (!sessionChecked) {
           sessionStorage.setItem(GEO_LOCALE_KEY, cachedCountry);
         }
@@ -126,10 +136,10 @@ export function GeoLocaleRedirect() {
         const targetLocale = countryCode === 'IL' ? 'he' : 'en';
 
         // Only redirect if we need to change locale
-        if (targetLocale !== locale) {
-          const pathWithoutLocale = pathname.replace(/^\/(en|he)/, '');
+        if (targetLocale !== currentLocale) {
+          const pathWithoutLocale = currentPathname.replace(/^\/(en|he)/, '');
           const newPath = `/${targetLocale}${pathWithoutLocale || '/'}`;
-          router.replace(newPath);
+          currentRouter.replace(newPath);
         }
       } catch {
         sessionStorage.setItem(GEO_LOCALE_KEY, 'error');
@@ -137,7 +147,6 @@ export function GeoLocaleRedirect() {
     }
 
     detectAndRedirect();
-    // Only run on mount
   }, []);
 
   return null;

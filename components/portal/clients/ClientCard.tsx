@@ -17,6 +17,10 @@ import {
 } from 'lucide-react';
 import { Organization } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import {
+  getAgencyClientBadgeKey,
+  getAgencyClientPlanKey,
+} from '@/lib/i18n/portal-translation-keys';
 
 interface AgencyClient extends Organization {
   totalRevenue?: number;
@@ -72,7 +76,7 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
                   className="text-[9px] font-black uppercase tracking-widest h-4 px-1.5"
                 >
                   {client.status
-                    ? t(`agency.clients.badge.${client.status}` as any)
+                    ? t(getAgencyClientBadgeKey(client.status))
                     : t('agency.clients.badge.active')}
                 </Badge>
                 {isMyClient && (
@@ -124,7 +128,7 @@ export function ClientCard({ client, isMyClient, onViewAsClient, onDelete }: Cli
               className={client.plan === 'enterprise' ? 'text-purple-500' : 'text-emerald-500'}
             />
             <span className="text-[10px] font-black uppercase tracking-widest leading-none">
-              {client.plan ? t(`agency.clients.plans.${client.plan}` as any) : 'Basic'}
+              {client.plan ? t(getAgencyClientPlanKey(client.plan)) : 'Basic'}
             </span>
           </div>
 

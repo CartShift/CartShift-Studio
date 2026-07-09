@@ -58,12 +58,12 @@ export function BrandingAppearanceSection({ profile, setProfile }: BrandingAppea
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div className="space-y-6">
           <h4 className="text-sm font-bold text-surface-900 dark:text-white">
-            {t('settings.branding.colors.title' as any)}
+            {t('settings.branding.colors.title')}
           </h4>
 
           <div>
             <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-              {t('settings.branding.colors.primary' as any)}
+              {t('settings.branding.colors.primary')}
             </label>
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -100,7 +100,7 @@ export function BrandingAppearanceSection({ profile, setProfile }: BrandingAppea
 
           <div>
             <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-              {t('settings.branding.colors.accent' as any)}
+              {t('settings.branding.colors.accent')}
             </label>
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -138,21 +138,21 @@ export function BrandingAppearanceSection({ profile, setProfile }: BrandingAppea
 
         <div className="space-y-6">
           <h4 className="text-sm font-bold text-surface-900 dark:text-white">
-            {t('settings.branding.typography.title' as any)} /{' '}
-            {t('settings.branding.borderRadius.title' as any)}
+            {t('settings.branding.typography.title')} /{' '}
+            {t('settings.branding.borderRadius.title')}
           </h4>
 
           <div className="grid grid-cols-1 gap-6">
             <div>
               <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-                {t('settings.branding.typography.english' as any)}
+                {t('settings.branding.typography.english')}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {ENGLISH_FONTS.map(font => (
                   <button
                     key={font.id}
                     onClick={() => {
-                      const val = font.id as any;
+                      const val = font.id;
                       setProfile({
                         ...profile,
                         branding: { ...profile.branding, fontFamilyEn: val },
@@ -180,7 +180,7 @@ export function BrandingAppearanceSection({ profile, setProfile }: BrandingAppea
 
             <div>
               <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-                {t('settings.branding.typography.hebrew' as any)}
+                {t('settings.branding.typography.hebrew')}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {HEBREW_FONTS.map(font => (
@@ -190,7 +190,7 @@ export function BrandingAppearanceSection({ profile, setProfile }: BrandingAppea
                       const val = font.id;
                       setProfile({
                         ...profile,
-                        branding: { ...profile.branding, fontFamilyHe: val as any },
+                        branding: { ...profile.branding, fontFamilyHe: val },
                       });
                       applyTheme(undefined, undefined, undefined, undefined, val);
                     }}
@@ -266,13 +266,13 @@ export function BrandingAppearanceSection({ profile, setProfile }: BrandingAppea
 
           <div>
             <label className="block text-xs font-bold text-surface-500 uppercase tracking-wider mb-2">
-              {t('settings.branding.borderRadius.title' as any)}
+              {t('settings.branding.borderRadius.title')}
             </label>
             <div className="flex bg-surface-100 dark:bg-surface-800 p-1 rounded-xl">
               {[
-                { id: '0px', label: t('settings.branding.borderRadius.sharp' as any) },
-                { id: '0.5rem', label: t('settings.branding.borderRadius.soft' as any) },
-                { id: '1rem', label: t('settings.branding.borderRadius.round' as any) },
+                { id: '0px', label: t('settings.branding.borderRadius.sharp') },
+                { id: '0.5rem', label: t('settings.branding.borderRadius.soft') },
+                { id: '1rem', label: t('settings.branding.borderRadius.round') },
               ].map(radius => (
                 <button
                   key={radius.id}

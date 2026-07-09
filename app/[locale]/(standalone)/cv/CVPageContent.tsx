@@ -339,7 +339,7 @@ function TimelineItem({
 
       <m.article
         {...scrollRevealProps(reduceMotion, Math.min(index, 8) * 0.04)}
-        className="group rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-[border-color,box-shadow] hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40 sm:p-6 print:break-inside-avoid print:shadow-none print:hover:border-slate-200"
+        className="group rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.035] sm:p-6 print:break-inside-avoid print:shadow-none"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-start gap-3.5">
@@ -938,9 +938,9 @@ export default function CVPageContent() {
                 <m.article
                   key={group.key}
                   {...scrollRevealProps(reduceMotion)}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm transition-[border-color,box-shadow] hover:border-primary-300 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.035]"
                 >
-                  <div className="pointer-events-none absolute -end-6 -top-6 h-24 w-24 rounded-full bg-primary-500/5 blur-2xl transition-opacity group-hover:bg-primary-500/15 dark:bg-primary-400/10" />
+                  <div className="pointer-events-none absolute -end-6 -top-6 h-24 w-24 rounded-full bg-primary-500/5 blur-2xl dark:bg-primary-400/10" />
                   <div className="relative flex min-w-0 items-center gap-2.5">
                     <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
                       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -953,7 +953,7 @@ export default function CVPageContent() {
                     {group.items.map(item => (
                       <span
                         key={item}
-                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors hover:border-primary-300 hover:text-primary-700 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-200 dark:hover:border-primary-500/40 dark:hover:text-primary-300"
+                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-surface-200"
                       >
                         {item}
                       </span>
@@ -1043,14 +1043,14 @@ export default function CVPageContent() {
                 <m.article
                   key={project.key}
                   {...scrollRevealProps(reduceMotion)}
-                  className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 p-4 shadow-sm transition-[border-color,box-shadow] hover:border-primary-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.035] dark:hover:border-primary-500/40"
+                  className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.035]"
                 >
                   <a
                     href={media.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => handlePortfolioProjectClick(project.key)}
-                    className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                    className="block rounded-xl transition-[border-color,box-shadow] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 hover:shadow-xl"
                   >
                     <PortfolioPreview
                       projectKey={project.key}

@@ -34,7 +34,7 @@ export const HomepageIntro: React.FC = () => {
   const t = useTranslations();
   const direction = useDirection();
   const isRtl = direction === 'rtl';
-  const introData = t.raw('hero.intro' as any) as { title: string; paragraphs: string[] };
+  const introData = t.raw('hero.intro' as never) as { title: string; paragraphs: string[] };
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (

@@ -24,7 +24,7 @@ import {
 
 type SignupData = z.infer<ReturnType<typeof getSignupSchema>>;
 
-const getSignupSchema = (t: (path: string) => string) =>
+const getSignupSchema = (t: ReturnType<typeof useTranslations<'portal'>>) =>
   z
     .object({
       name: z.string().min(2, t('auth.errors.nameTooShort')),
@@ -52,7 +52,7 @@ function SignupForm() {
   const t = useTranslations('portal');
   const redirectPath = searchParams.get('redirect');
 
-  const signupSchema = useMemo(() => getSignupSchema((path: string) => t(path as any)), [t]);
+  const signupSchema = useMemo(() => getSignupSchema(t), [t]);
 
   const {
     register,

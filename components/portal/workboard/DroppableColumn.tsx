@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { PlusCircle, MoreHorizontal } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 
 const columnIndicatorVariants = cva('w-2 h-2 rounded-full', {
   variants: {
@@ -60,9 +60,9 @@ export function DroppableColumn({
   emptyMessage,
   isAdding = false,
 }: DroppableColumnProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const { setNodeRef, isOver } = useDroppable({ id });
-  const displayEmptyMessage = emptyMessage || t('portal.common.noItems');
+  const displayEmptyMessage = emptyMessage || t('common.noItems');
 
   return (
     <div className="space-y-4">
@@ -112,7 +112,7 @@ export function DroppableColumn({
         >
           <PlusCircle size={14} className="group-hover:scale-110 transition-transform" />
           <span className="text-[10px] font-black uppercase tracking-widest">
-            {t('portal.workboard.addItem')}
+            {t('workboard.addItem')}
           </span>
         </button>
       )}

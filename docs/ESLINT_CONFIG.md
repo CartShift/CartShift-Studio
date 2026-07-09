@@ -9,8 +9,9 @@ This project uses **ESLint flat config format** (`eslint.config.mjs`) with Next.
 ### Primary Linting (Recommended)
 
 ```bash
-npm run lint          # Run ESLint + TypeScript type checking
+npm run lint          # Run ESLint + TypeScript type checking (default tsc / TS 6)
 npm run lint:fix      # Run ESLint with auto-fix + TypeScript type checking
+npm run typecheck     # TypeScript 7 checks only (no ESLint)
 ```
 
 ### Next.js Built-in Linting (Known Issue)
@@ -53,10 +54,21 @@ This approach:
 
 ## Type Checking
 
-TypeScript type checking is included in the lint script to match what `next build` does during deployment. This ensures:
+TypeScript type checking is included in the lint script (`tsc --noEmit`, default TypeScript 6 package) to match what `next build` does during deployment.
+
+For **TypeScript 7** checks without running ESLint, use:
+
+```bash
+npm run typecheck
+```
+
+This invokes `typescript-7` (`typescript@7.0.2`) via `node ./node_modules/typescript-7/bin/tsc --noEmit`. On Windows ARM64, the native binary package `@typescript/typescript-win32-arm64` must be installed (already listed in `devDependencies`).
+
+This ensures:
 
 - Type errors are caught before deployment
 - Linting and type checking are consistent
+- TS 7 can be validated independently of the full lint pass
 - No surprises during CI/CD builds
 
 ## Custom ESLint Plugins

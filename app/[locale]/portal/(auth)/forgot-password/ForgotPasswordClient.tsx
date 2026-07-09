@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { useBranding } from '@/components/providers/BrandingProvider';
 import Image from 'next/image';
 
-const getForgotPasswordSchema = (t: (path: string) => string) =>
+const getForgotPasswordSchema = (t: ReturnType<typeof useTranslations<'portal'>>) =>
   z.object({
     email: z.string().email(t('auth.errors.invalidEmail')),
   });
@@ -32,7 +32,7 @@ export default function ForgotPasswordClient() {
   const [error, setError] = useState<string | null>(null);
   const { branding } = useBranding();
 
-  const schema = getForgotPasswordSchema(path => t(path as any));
+  const schema = getForgotPasswordSchema(t);
 
   const {
     register,

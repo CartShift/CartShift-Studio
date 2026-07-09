@@ -8,7 +8,8 @@ import {
   ChevronDown,
   Plus,
 } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { usePortalTranslations } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { usePricingCalculator } from '@/lib/hooks/usePricingCalculator';
@@ -48,7 +49,7 @@ export function EmbeddedCalculator({
   defaultExpanded = false,
   className,
 }: EmbeddedCalculatorProps) {
-  const t = useTranslations();
+  const t = usePortalTranslations();
   const locale = useLocale();
   const isRTL = locale === 'he';
 
@@ -81,7 +82,7 @@ export function EmbeddedCalculator({
   };
 
   const generateDescription = () => {
-    const typeLabel = t(`portal.requests.types.${requestType}`);
+    const typeLabel = t(`requests.types.${requestType}`);
     const effortConfig = EFFORT_LEVEL_CONFIG[effortLevel];
     const effortLabel = isRTL ? effortConfig.labelHe : effortConfig.label;
     return `${typeLabel} - ${effortLabel}`;
@@ -116,10 +117,10 @@ export function EmbeddedCalculator({
           </div>
           <div>
             <h4 className="font-bold text-surface-900 dark:text-white font-outfit">
-              {t('portal.pricing.calculator')}
+              {t('pricing.calculator')}
             </h4>
             <p className="text-xs text-surface-500 dark:text-surface-400">
-              {t('portal.pricing.calculatorSubtitle')}
+              {t('pricing.calculatorSubtitle')}
             </p>
           </div>
         </div>
@@ -146,7 +147,7 @@ export function EmbeddedCalculator({
               {/* Request Type Selection */}
               <div className="space-y-2">
                 <label className="portal-label-sm">
-                  {t('portal.requests.form.type')}
+                  {t('requests.form.type')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {requestTypes.map(type => {
@@ -167,7 +168,7 @@ export function EmbeddedCalculator({
                         )}
                       >
                         <Icon size={14} />
-                        {t(`portal.requests.types.${type}`)}
+                        {t(`requests.types.${type}`)}
                       </button>
                     );
                   })}
@@ -177,7 +178,7 @@ export function EmbeddedCalculator({
               {/* Effort Level Selection */}
               <div className="space-y-2">
                 <label className="portal-label-sm">
-                  {t('portal.pricing.effortLevel')}
+                  {t('pricing.effortLevel')}
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {effortLevels.map(level => {
@@ -218,14 +219,14 @@ export function EmbeddedCalculator({
               <div className="flex items-center justify-between gap-4 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200/50 dark:border-emerald-800/30">
                 <div>
                   <div className="text-xs font-black text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-widest">
-                    {t('portal.pricing.itemPrice')}
+                    {t('pricing.itemPrice')}
                   </div>
                   <div className="text-2xl font-black text-emerald-700 dark:text-emerald-400 font-outfit">
                     {formattedPrice}
                   </div>
                   <div className="text-xs text-surface-500 mt-1">
                     {result.estimatedHours.min}-{result.estimatedHours.max}{' '}
-                    {t('portal.common.hours')}
+                    {t('common.hours')}
                   </div>
                 </div>
 
@@ -235,7 +236,7 @@ export function EmbeddedCalculator({
                   className="h-12 px-5 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                 >
                   <Plus size={18} className={cn(isRTL ? 'ms-2' : 'me-2')} />
-                  {t('portal.pricing.form.addItem')}
+                  {t('pricing.form.addItem')}
                 </Button>
               </div>
             </div>

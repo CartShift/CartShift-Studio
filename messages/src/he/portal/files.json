@@ -27,6 +27,10 @@
         "deleteFailed": "מחיקת הקובץ נכשלה"
       },
       "imageLabels": {
+        "uploadedImage": "תמונה שהועלתה",
+        "upload": "העלה תמונה",
+        "uploading": "מעלה...",
+        "dropHint": "גרור תמונה לכאן או לחץ להעלאה",
         "remove": "הסר תמונה",
         "change": "שנה תמונה"
       },

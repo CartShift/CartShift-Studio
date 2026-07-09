@@ -38,8 +38,8 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
       const token = await user.getIdToken();
       console.log('✅ Auth token retrieved successfully');
       console.log('Token preview:', token.substring(0, 20) + '...');
-    } catch (error: any) {
-      console.error('❌ Failed to get auth token:', error.message);
+    } catch (error: unknown) {
+      console.error('❌ Failed to get auth token:', (error instanceof Error ? error.message : String(error)));
       console.log('💡 Solution: Sign out and sign back in');
       console.groupEnd();
       return;
@@ -85,12 +85,12 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
                 console.log(`   Expected document ID: ${memberId}`);
                 console.log('💡 Solution: Create member document or re-accept invite');
               }
-            } catch (error: any) {
-              if (error.code === 'permission-denied') {
+            } catch (error: unknown) {
+              if (typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'permission-denied') {
                 console.error(`❌ Permission denied accessing member doc for org ${orgId}`);
                 console.log('💡 Solution: Check Firestore rules and ensure user has access');
               } else {
-                console.error(`❌ Error checking member doc:`, error.message);
+                console.error(`❌ Error checking member doc:`, (error instanceof Error ? error.message : String(error)));
               }
             }
 
@@ -107,11 +107,11 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
               } else {
                 console.error(`❌ Organization document missing: ${orgId}`);
               }
-            } catch (error: any) {
-              if (error.code === 'permission-denied') {
+            } catch (error: unknown) {
+              if (typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'permission-denied') {
                 console.error(`❌ Permission denied accessing org ${orgId}`);
               } else {
-                console.error(`❌ Error checking org doc:`, error.message);
+                console.error(`❌ Error checking org doc:`, (error instanceof Error ? error.message : String(error)));
               }
             }
           }
@@ -120,14 +120,14 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
         console.error('❌ User document does not exist in Firestore');
         console.log('💡 Solution: Complete signup or contact support');
       }
-    } catch (error: any) {
-      if (error.code === 'permission-denied') {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'permission-denied') {
         console.error('❌ Permission denied accessing user document');
         console.log(
           '💡 Solution: Check Firestore rules - user should be able to read their own document'
         );
       } else {
-        console.error('❌ Error accessing user document:', error.message);
+        console.error('❌ Error accessing user document:', (error instanceof Error ? error.message : String(error)));
       }
     }
 
@@ -137,9 +137,9 @@ export async function diagnoseFirebasePermissions(): Promise<void> {
     console.log('- Auth Token:', user ? '✅' : '❌');
     console.log('- User Document:', 'Check above');
     console.log('- Organization Access:', 'Check above');
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Diagnostic error:', error);
-    if (error.message?.includes('client side')) {
+    if ((error instanceof Error ? error.message : String(error))?.includes('client side')) {
       console.log('💡 This diagnostic must be run in the browser console');
     }
   }
@@ -159,8 +159,8 @@ export async function checkFirestoreAccess(
     const docRef = doc(db, collection, documentId);
     await getDoc(docRef);
     return true;
-  } catch (error: any) {
-    if (error.code === 'permission-denied') {
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'permission-denied') {
       console.error(`❌ Permission denied: ${collection}/${documentId}`);
       return false;
     }

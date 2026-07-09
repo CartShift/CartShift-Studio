@@ -52,6 +52,9 @@
         "notes": "Agenda / Notes",
         "notesPlaceholder": "What will you discuss?",
         "failedToCancel": "Failed to cancel consultation",
+        "cancelSuccess": "Consultation canceled",
+        "completeSuccess": "Consultation marked as complete",
+        "failedToComplete": "Failed to complete consultation",
         "notFound": "Consultation not found",
         "calendarConflict": "There is a calendar conflict. Do you want to proceed anyway?",
         "cancelConfirm": "Are you sure you want to cancel this consultation?"
