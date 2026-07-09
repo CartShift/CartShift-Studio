@@ -1,3 +1,9 @@
 # Translation files - mark generated files
 messages/en.json linguist-generated=true
 messages/he.json linguist-generated=true
+
+# Keep language stats focused on product code
+docs/** linguist-documentation=true
+scripts/** linguist-vendored=true
+functions/lib/** linguist-generated=true
+*.md linguist-documentation=true

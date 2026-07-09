@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/readme/icon.png" alt="CartShift Studio" width="72" height="72" />
+  <img src="https://raw.githubusercontent.com/CartShift/CartShift-Studio/main/docs/assets/readme/icon.png" alt="CartShift Studio" width="80" />
 </p>
 
 <h1 align="center">CartShift Studio</h1>
@@ -34,7 +34,7 @@
 ---
 
 <p align="center">
-  <img src="docs/assets/readme/hero-en.jpg" alt="CartShift Studio marketing homepage" width="100%" />
+  <img src="https://raw.githubusercontent.com/CartShift/CartShift-Studio/main/docs/assets/readme/hero-en.jpg" alt="CartShift Studio marketing homepage" width="100%" />
 </p>
 
 ## Why this project exists

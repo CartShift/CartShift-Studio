@@ -54,8 +54,15 @@ next-env.d.ts
 
 build_out/
 .vercel
-.playwright-mcp/
+
+# Local AI / agent tooling (not part of the product)
+.agent/
+.automaker/
+.cursor/
+.gemini/
 .impeccable/
+.playwright-mcp/
+.codex/
 
 # operational / generated runtime data (keep *.example.json templates)
 /docs/seo-monitor-reports/*
