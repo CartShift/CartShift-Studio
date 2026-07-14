@@ -24,6 +24,24 @@ The automation should append a new entry for every run, even when it decides not
 
 ## Runs
 
+## 2026-07-14 - CartShift SEO Article Publisher
+
+- **Outcome:** Written, validated, and approved for deployment
+- **Run time:** 2026-07-14T03:38:24.8934781Z
+- **Data sources used:** Automation memory, `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, `docs/seo-monitor-reports/2026-07-13T11-29-29-993Z-seo-monitor.md`, `docs/seo-monitor-reports/2026-07-13T11-29-29-993Z-seo-monitor.json`, current `content/blog/` inventory, raw Search Console Search Analytics smoke read for `sc-domain:cart-shift.com`, GA4 Data API smoke read, git status, git push dry run, and official Shopify pricing, organization, B2B, expansion-store, and checkout customization documentation.
+- **Access verification:** Required Google credential categories were present in `.env.local`; the fresh monitor report showed Search Console OK and GA4 OK; an additional non-persistent API smoke read returned Search Console blog rows and GA4 organic blog rows; `git push --dry-run origin HEAD:main` returned `Everything up-to-date`. Secret values were not printed.
+- **Candidates considered:** CREATE candidate 1 was `Shopify Plus vs Standard`, targeting the strategy-listed `shopify plus vs standard` / `shopify pricing comparison` decision gap with strong Shopify development, B2B, checkout, migration, and enterprise architecture fit. CREATE candidate 2 was `Shopify App Development`, targeting the strategy-listed `shopify app development` service keyword, but it risked sitting too close to the existing app optimization and custom development content without current query support. REFRESH candidate 1 was `content/blog/shopify-seo-performance-evaluation.md`, supported by 132 impressions, 0 clicks, 0% CTR, and average position 18.3 for `shopify seo review`, but the page was refreshed on 2026-06-24 and URL Inspection still showed Google last crawled it on 2026-06-21, before that refresh. REFRESH candidate 2 was `content/blog/shopify-seo-complete-guide.md`, supported by index coverage and cannibalization signals, but it was refreshed on 2026-06-30 and URL Inspection showed the relevant crawl on 2026-04-26, before the refresh.
+- **Chosen opportunity:** Create `content/blog/shopify-plus-vs-standard.md`.
+- **Rationale:** The strongest raw refresh signals remain inside the 21-day cooldown or lack post-refresh crawl evidence, while the new article cap allows one more article in the current rolling seven-day window. The Shopify Plus decision guide fills a clean commercial gap in the current inventory without creating another thin Shopify SEO, speed, checkout, or app-stack variant.
+- **Target intent:** Commercial | Comparison | Technical
+- **Primary keyword:** Shopify Plus vs Standard
+- **Supporting keywords:** Shopify Plus vs Shopify, Shopify Plus upgrade, Shopify Plus B2B, Shopify checkout customization, Shopify expansion stores, Shopify API limits, Shopify pricing comparison
+- **Affected files:** `content/blog/shopify-plus-vs-standard.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`, automation memory.
+- **Article notes:** Added exactly one bilingual article with English frontmatter, Hebrew frontmatter fields, English body, Hebrew body after `---he---`, official Shopify documentation links, contextual internal links, a decision table, upgrade-readiness checklist, and a natural CartShift Studio service CTA. Reused the existing validated Shopify apps image assets to avoid unvalidated media.
+- **Validation:** `pnpm exec prettier --check content/blog/shopify-plus-vs-standard.md docs/SEO_AUTOMATION_DECISION_LOG.md`, article structure/internal-target checks, `git diff --check`, and `pnpm build` passed. The build compiled in 101 seconds, finished TypeScript in 2.8 minutes, and generated all 219 static pages in 4.6 minutes, including `/en/blog/shopify-plus-vs-standard`. Several unrelated existing routes retried after the 60-second static-generation limit before completing successfully. Existing stale Browserslist-data and experimental type-stripping warnings remain.
+- **Deployment:** Validation passed; only the new article and this publisher decision-log entry are being committed and pushed to `origin/main`. Vercel is expected to deploy automatically through the main-branch Git integration.
+- **Worktree safety:** The run started with one unrelated dirty file, `docs/SEO_MONITOR_DECISION_LOG.md`, which was not edited or staged. The shared SEO release lock was acquired before editing.
+
 ## 2026-05-25 - CartShift SEO Article Publisher
 
 - Outcome: Blocked
