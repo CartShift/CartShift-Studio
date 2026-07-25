@@ -24,6 +24,22 @@ The automation should append a new entry for every run, even when it decides not
 
 ## Runs
 
+## 2026-07-25 - CartShift Unified SEO Growth
+
+- **Outcome:** Skipped; no repository-changing SEO action selected
+- **Run time:** 2026-07-25T04:33:00Z
+- **Data sources used:** Missing automation memory check, `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, fresh report `docs/seo-monitor-reports/2026-07-23T11-29-11-109Z-seo-monitor.{md,json}`, current `content/blog/` inventory, local Markdown link localization code, sitemap code, git status, and Git push dry run.
+- **Access verification:** The newest usable monitor report is inside the rolling seven-day window and shows Search Console OK for `sc-domain:cart-shift.com` with `siteFullUser`, sitemap access OK with zero issues, URL Inspection coverage for 15 URLs, and GA4 OK with 147 rows. Required Google credential variable categories are present locally without printing values, and `git push --dry-run origin HEAD:main` returned `Everything up-to-date`.
+- **Candidates considered:** TECHNICAL candidate 1 was the report's safe `Localize Markdown blog links` fix, but `lib/markdown.ts` already rewrites raw `/blog/*` article links to `/{locale}/blog/*` during rendering. TECHNICAL candidate 2 was sitemap/index coverage around `/en/blog/shopify-seo-complete-guide` and `/en/pricing`; local `app/sitemap.ts` already emits localized URLs with hreflang alternates, Search Console shows the submitted sitemap has zero errors, and URL Inspection crawl timestamps are stale rather than evidence of a new deterministic repo defect. CREATE candidate 1 was `Shopify App Development`, a strategy-listed service keyword, but the inventory already includes Shopify apps optimization, custom theme, headless, Plus, checkout, launch, migration, and custom-development content without fresh query support. CREATE candidate 2 was `WooCommerce vs Shopify Cost Breakdown`, but the current inventory already has two platform-comparison articles, WooCommerce migration, Shopify Plus, and custom WooCommerce content, so the cannibalization risk is higher than the evidence. REFRESH candidate 1 was `content/blog/shopify-seo-performance-evaluation.md`, supported by `shopify seo review` with 181 impressions, 0 clicks, and average position 18.8, but it was refreshed on 2026-07-23 and is inside the 21-day cooldown. REFRESH candidate 2 was `content/blog/shopify-seo-complete-guide.md`, supported by an 84.2% impression decline and `Crawled - currently not indexed`, but it was refreshed on 2026-06-30 and Search Console still reports a 2026-04-26 last crawl, so another rewrite would be speculative before Google reprocesses the deployed refresh.
+- **Rationale:** No action cleared the evidence threshold. The strongest raw opportunity was already acted on two days ago, the technical issues either map to already-present code or stale Google-side crawl state, and the create candidates lacked fresh demand evidence strong enough to justify another article.
+- **Target intent:** Not applicable
+- **Primary keyword:** Not selected
+- **Supporting keywords:** Not selected
+- **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md`; automation memory only.
+- **Validation:** `pnpm exec prettier --check docs/SEO_AUTOMATION_DECISION_LOG.md`, `git diff --check -- docs/SEO_AUTOMATION_DECISION_LOG.md`, and `pnpm build` passed. The build compiled in 70 seconds, completed TypeScript in 118 seconds, and generated all 219 static pages after several existing blog routes retried once after the 60-second static-generation limit. Existing unused-translation, stale Browserslist-data, and Node type-stripping warnings remain.
+- **Deployment:** Validation passed; only this no-change decision-log entry is eligible for a docs-only commit and push. No production content, translation, or code files changed, so no Vercel-impacting SEO page deployment is expected beyond the normal main-branch documentation commit.
+- **Worktree safety:** The run started with unrelated user-owned changes in `docs/SEO_MONITOR_DECISION_LOG.md`; that dirty file was not edited, staged, or used as a technical-monitor target. The shared SEO release lock was acquired before any validation or repo edit.
+
 ## 2026-07-23 - CartShift Unified SEO Growth
 
 - **Outcome:** Refreshed, validated, and approved for deployment
