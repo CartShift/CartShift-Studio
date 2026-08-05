@@ -15,6 +15,7 @@ interface PageHeroProps {
   backgroundImage?: string;
   backgroundImageAlt?: string;
   backgroundImagePriority?: boolean;
+  children?: React.ReactNode;
 }
 
 const HeroBlob = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
@@ -48,6 +49,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
   backgroundImage,
   backgroundImageAlt = '',
   backgroundImagePriority = false,
+  children,
 }) => {
   const hasBackgroundImage = Boolean(backgroundImage);
 
@@ -89,14 +91,15 @@ export const PageHero: React.FC<PageHeroProps> = ({
 
       <div className="max-w-7xl mx-auto relative z-10 w-full group">
         <div className="max-w-4xl mx-auto text-center">
-
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
               'font-display font-bold leading-[1.1] tracking-tight mb-8 transition-colors duration-500',
-              hasBackgroundImage ? 'text-white drop-shadow-2xl' : 'text-surface-900 dark:text-white',
+              hasBackgroundImage
+                ? 'text-white drop-shadow-2xl'
+                : 'text-surface-900 dark:text-white',
               compact ? 'text-4xl md:text-5xl lg:text-6xl' : 'text-5xl md:text-7xl lg:text-8xl'
             )}
           >
@@ -138,6 +141,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
             >
               {description}
             </p>
+            {children && <div className="pt-4">{children}</div>}
           </motion.div>
         </div>
       </div>

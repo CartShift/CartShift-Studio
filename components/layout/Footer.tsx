@@ -21,6 +21,7 @@ export const Footer: React.FC = () => {
     solutions: [
       { name: t('footer.links.shopify'), href: '/solutions/shopify' },
       { name: t('footer.links.wordpress'), href: '/solutions/wordpress' },
+      { name: t('footer.links.seo'), href: '/solutions/seo' },
       ...(isPricingVisible ? [{ name: t('nav.pricing'), href: '/pricing' }] : []),
       ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
     ],

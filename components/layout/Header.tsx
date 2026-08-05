@@ -46,6 +46,7 @@ export const Header: React.FC = () => {
         submenu: [
           { name: t('servicesOverview.shopify.title'), href: '/solutions/shopify' },
           { name: t('servicesOverview.wordpress.title'), href: '/solutions/wordpress' },
+          { name: t('servicesOverview.seo.title'), href: '/solutions/seo' },
           ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
         ],
       },
@@ -136,20 +137,20 @@ export const Header: React.FC = () => {
                         <DropdownMenu.Trigger asChild>
                           <button
                             ref={dropdownRefs.button}
-                          className={cn(
-                            'flex items-center gap-1.5 py-2 text-sm font-semibold tracking-tight transition-colors duration-200 focus:outline-none',
-                            isOpen
-                              ? 'text-primary-600 dark:text-primary-400'
-                              : 'text-surface-600 dark:text-white hover:text-surface-900 dark:hover:text-white'
-                          )}
-                        >
-                          {item.name}
-                          <motion.span
-                            animate={{ rotate: isOpen ? 180 : 0 }}
-                            className="opacity-50 group-hover/nav:opacity-100"
+                            className={cn(
+                              'flex items-center gap-1.5 py-2 text-sm font-semibold tracking-tight transition-colors duration-200 focus:outline-none',
+                              isOpen
+                                ? 'text-primary-600 dark:text-primary-400'
+                                : 'text-surface-600 dark:text-white hover:text-surface-900 dark:hover:text-white'
+                            )}
                           >
-                            <Icon name="chevron-down" size={14} />
-                          </motion.span>
+                            {item.name}
+                            <motion.span
+                              animate={{ rotate: isOpen ? 180 : 0 }}
+                              className="opacity-50 group-hover/nav:opacity-100"
+                            >
+                              <Icon name="chevron-down" size={14} />
+                            </motion.span>
                           </button>
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Portal>
@@ -159,20 +160,20 @@ export const Header: React.FC = () => {
                             collisionPadding={12}
                             className="z-[60] w-64 overflow-hidden rounded-2xl border border-surface-200 bg-white p-1.5 shadow-xl shadow-surface-900/10 outline-none backdrop-blur-xl dark:border-surface-700/60 dark:bg-surface-900 dark:shadow-black/30 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 motion-reduce:animate-none"
                           >
-                              {/* Accent gradient line */}
-                              <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-primary-500 to-accent-500 opacity-60" />
-                              <div className="grid gap-0.5 pt-1">
-                                {item.submenu.map(subItem => (
-                                  <DropdownMenu.Item key={subItem.name} asChild>
-                                    <Link
-                                      href={subItem.href}
-                                      className="flex items-center rounded-xl px-3.5 py-2.5 text-sm font-semibold text-surface-700 outline-none transition-colors duration-150 hover:bg-surface-100 hover:text-surface-900 data-[highlighted]:bg-surface-100 dark:text-white dark:hover:bg-surface-800/60 dark:hover:text-white dark:data-[highlighted]:bg-surface-800/60"
-                                    >
-                                      {subItem.name}
-                                    </Link>
-                                  </DropdownMenu.Item>
-                                ))}
-                              </div>
+                            {/* Accent gradient line */}
+                            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-primary-500 to-accent-500 opacity-60" />
+                            <div className="grid gap-0.5 pt-1">
+                              {item.submenu.map(subItem => (
+                                <DropdownMenu.Item key={subItem.name} asChild>
+                                  <Link
+                                    href={subItem.href}
+                                    className="flex items-center rounded-xl px-3.5 py-2.5 text-sm font-semibold text-surface-700 outline-none transition-colors duration-150 hover:bg-surface-100 hover:text-surface-900 data-[highlighted]:bg-surface-100 dark:text-white dark:hover:bg-surface-800/60 dark:hover:text-white dark:data-[highlighted]:bg-surface-800/60"
+                                  >
+                                    {subItem.name}
+                                  </Link>
+                                </DropdownMenu.Item>
+                              ))}
+                            </div>
                           </DropdownMenu.Content>
                         </DropdownMenu.Portal>
                       </DropdownMenu.Root>

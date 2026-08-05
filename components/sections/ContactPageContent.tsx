@@ -280,6 +280,7 @@ export const ContactPageContent: React.FC = () => {
                       <option value="">{t('contact.form.selectOption')}</option>
                       <option value="shopify">{t('contact.form.options.shopify')}</option>
                       <option value="wordpress">{t('contact.form.options.wordpress')}</option>
+                      <option value="seo">{t('contact.form.options.seo')}</option>
                       <option value="consultation">{t('contact.form.options.consultation')}</option>
                       <option value="other">{t('contact.form.options.other')}</option>
                     </select>

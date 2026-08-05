@@ -16,6 +16,7 @@ interface FAQProps {
   className?: string;
   allowMultiple?: boolean;
   showExpandAll?: boolean;
+  animateOnView?: boolean;
 }
 
 export const FAQ: React.FC<FAQProps> = ({
@@ -23,6 +24,7 @@ export const FAQ: React.FC<FAQProps> = ({
   className = '',
   allowMultiple = false,
   showExpandAll = false,
+  animateOnView = true,
 }) => {
   const t = useTranslations();
   const [openIndices, setOpenIndices] = useState<Set<number>>(new Set());
@@ -72,8 +74,8 @@ export const FAQ: React.FC<FAQProps> = ({
         {items.map((item, index) => (
           <motion.div
             key={index}
-            initial="hidden"
-            whileInView="visible"
+            initial={animateOnView ? 'hidden' : false}
+            whileInView={animateOnView ? 'visible' : undefined}
             viewport={{ once: true }}
             variants={faqItem}
             custom={index * 0.1}

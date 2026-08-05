@@ -7,7 +7,7 @@ import { Section, SectionHeader } from '@/components/ui/Section';
 import { TiltCard } from '@/components/ui/TiltCard';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Check, ArrowRight, ShoppingCart, Globe } from 'lucide-react';
+import { Check, ArrowRight, ShoppingCart, Globe, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const ServiceBlob = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
@@ -52,6 +52,15 @@ export const ServicesOverview: React.FC = () => {
       color: 'accent',
       blobColor: 'bg-accent-500',
     },
+    {
+      title: t('servicesOverview.seo.title'),
+      description: t('servicesOverview.seo.description'),
+      features: t.raw('servicesOverview.seo.features') as string[],
+      href: '/solutions/seo',
+      icon: Search,
+      color: 'primary',
+      blobColor: 'bg-primary-500',
+    },
   ];
 
   return (
@@ -62,12 +71,12 @@ export const ServicesOverview: React.FC = () => {
         className="mb-20"
       />
 
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
         {services.map((service, index) => {
           const ServiceIcon = service.icon;
           return (
             <motion.div
-              key={index}
+              key={service.href}
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-100px' }}
@@ -87,7 +96,7 @@ export const ServicesOverview: React.FC = () => {
                 <Card
                   variant="glass"
                   hoverEffect="lift"
-                  className="h-full group relative overflow-hidden p-8 md:p-12 bg-white/70 dark:bg-surface-900/60 border-surface-200/50 dark:border-white/5 backdrop-blur-xl"
+                  className="group relative h-full overflow-hidden border-surface-200/50 bg-white/70 p-7 backdrop-blur-xl dark:border-white/5 dark:bg-surface-900/60 md:p-8"
                 >
                   <CardHeader className="p-0 border-none mb-8">
                     <div
@@ -98,7 +107,7 @@ export const ServicesOverview: React.FC = () => {
                           : 'bg-accent-500/10 border-accent-500/20 text-accent-600 dark:text-accent-400 group-hover:bg-accent-500 group-hover:text-white'
                       )}
                     >
-                      <ServiceIcon size={index === 0 ? 32 : 36} strokeWidth={1.5} />
+                      <ServiceIcon size={index === 1 ? 36 : 32} strokeWidth={1.5} />
                     </div>
                     <CardTitle className="text-3xl md:text-4xl font-display font-bold mt-8 tracking-tight group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors">
                       {service.title}
@@ -111,7 +120,7 @@ export const ServicesOverview: React.FC = () => {
                     <ul className="space-y-5 mb-12">
                       {service.features.map((feature, idx) => (
                         <motion.li
-                          key={idx}
+                          key={feature}
                           className="flex items-start group/item"
                           initial={{ opacity: 0, x: -10 }}
                           whileInView={{ opacity: 1, x: 0 }}

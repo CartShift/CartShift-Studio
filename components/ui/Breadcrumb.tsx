@@ -18,6 +18,7 @@ interface BreadcrumbProps {
   className?: string;
   showHome?: boolean;
   homeHref?: string;
+  includeJsonLd?: boolean;
 }
 
 // Helper for RTL
@@ -28,6 +29,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   className = '',
   showHome = false,
   homeHref = '/',
+  includeJsonLd = true,
 }) => {
   // Map items to schema format
   const schemaItems = items.map(item => ({
@@ -41,11 +43,13 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
 
   return (
     <>
-      <Script
-        id="breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      {includeJsonLd && (
+        <Script
+          id="breadcrumb-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+      )}
       <nav aria-label="Breadcrumb" className={cn('flex items-center text-sm', className)}>
         <ol
           className="flex items-center gap-1.5 flex-wrap"

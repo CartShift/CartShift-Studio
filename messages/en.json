@@ -111,7 +111,323 @@
     "expandAll": "Expand All"
   },
   "seo": {
-    "clientPortalH1": "Client Portal for Project Management | Fast & Transparent"
+    "clientPortalH1": "Client Portal for Project Management | Fast & Transparent",
+    "metadata": {
+      "title": "SEO Services for Businesses | Technical, Local & Content SEO",
+      "description": "Technical, local and content SEO with hands-on implementation. Improve visibility, qualified traffic and conversions with CartShift Studio.",
+      "keywords": [
+        "SEO services for businesses",
+        "technical SEO services",
+        "local SEO services",
+        "small business SEO",
+        "Google Business Profile optimization",
+        "on-page SEO",
+        "SEO audit"
+      ]
+    },
+    "schema": {
+      "serviceName": "SEO Services for Businesses",
+      "serviceDescription": "SEO strategy and hands-on implementation spanning technical SEO, content structure, local visibility, performance, analytics, and conversion measurement."
+    },
+    "hero": {
+      "title": "SEO That Gets Implemented",
+      "subtitle": "More visibility. Better-qualified traffic. Clearer growth.",
+      "description": "We combine technical SEO, content structure, local search, analytics, and hands-on development to help businesses get found for the searches that matter and turn more visits into enquiries, bookings, and sales.",
+      "seoH1": "SEO Services for Businesses | Technical, Local and Content SEO",
+      "consoleLabel": "SEARCH SIGNAL PIPELINE",
+      "signals": [
+        {
+          "title": "Search intent",
+          "description": "Map the demand that matters"
+        },
+        {
+          "title": "Technical delivery",
+          "description": "Ship the highest-impact changes"
+        },
+        {
+          "title": "Business outcomes",
+          "description": "Connect visits to leads, bookings, or sales"
+        }
+      ]
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "solutions": "Services",
+      "current": "SEO"
+    },
+    "differentiator": {
+      "title": "We don’t stop at recommendations",
+      "description": "An audit is useful only when the right fixes are understood, prioritized, and shipped. CartShift connects SEO strategy with technical development, content structure, performance, analytics, and conversion thinking so the work moves from a report into the website.",
+      "positioning": "SEO strategy and implementation for businesses that need more than a report.",
+      "capabilities": [
+        {
+          "title": "Diagnose what blocks visibility",
+          "description": "We examine technical constraints, search intent, content structure, local signals, and measurement gaps to find what is actually holding the site back."
+        },
+        {
+          "title": "Prioritize work by business impact",
+          "description": "Issues are ranked by their likely value, risk, effort, and relationship to the searches and conversions that matter to the business."
+        },
+        {
+          "title": "Implement, measure, and iterate",
+          "description": "We can ship agreed improvements, validate the outcome, and use real search and conversion data to guide the next useful step."
+        }
+      ]
+    },
+    "services": {
+      "title": "SEO work, connected end to end",
+      "subtitle": "A practical service that covers the technical foundation, the content people discover, local visibility, site experience, and the measurement needed to improve with confidence.",
+      "items": [
+        {
+          "title": "Technical SEO",
+          "description": "Make the site easier for search engines to crawl, understand, and index without creating avoidable migration or duplication risk.",
+          "details": [
+            "Crawlability",
+            "Indexing",
+            "Canonicals",
+            "Sitemap and robots",
+            "Redirects",
+            "Structured data",
+            "Migration protection"
+          ]
+        },
+        {
+          "title": "On-page and content SEO",
+          "description": "Align pages with real search intent and build a clearer path between topics, services, and conversion actions.",
+          "details": [
+            "Keyword and search-intent mapping",
+            "Titles and descriptions",
+            "Page hierarchy",
+            "Service and landing pages",
+            "Internal linking",
+            "Existing-content improvement"
+          ]
+        },
+        {
+          "title": "Local SEO and Google Business Profile",
+          "description": "Strengthen local relevance and make business information more consistent across the places customers use to choose a provider.",
+          "details": [
+            "Categories",
+            "Services",
+            "Business information consistency",
+            "Reviews strategy",
+            "Local citations",
+            "Location and service-area pages"
+          ]
+        },
+        {
+          "title": "Performance and Core Web Vitals",
+          "description": "Reduce experience and rendering problems that affect visitors, crawl efficiency, and organic landing-page performance.",
+          "details": [
+            "LCP",
+            "CLS",
+            "Heavy media",
+            "Redundant JavaScript",
+            "Mobile usability",
+            "Site speed"
+          ]
+        },
+        {
+          "title": "Analytics and conversion tracking",
+          "description": "Connect organic visibility with the meaningful actions a visit should produce, using a measurement setup appropriate to the business.",
+          "details": [
+            "Google Search Console",
+            "GA4",
+            "Form and booking conversions",
+            "Calls and enquiries",
+            "Organic landing-page performance"
+          ]
+        },
+        {
+          "title": "Ongoing SEO growth",
+          "description": "Keep improving as search demand, competitors, the website, and the business itself change over time.",
+          "details": [
+            "Monitoring",
+            "Competitor opportunities",
+            "Page improvements",
+            "New search opportunities",
+            "Monthly prioritization and reporting"
+          ]
+        }
+      ]
+    },
+    "audiences": {
+      "title": "Built around the business model",
+      "subtitle": "The same SEO checklist does not fit every website. We shape the work around how customers discover, evaluate, and choose the business.",
+      "items": [
+        {
+          "title": "Local and service businesses",
+          "description": "For businesses that need qualified calls, enquiries, visits, or bookings from local and service-led searches."
+        },
+        {
+          "title": "Ecommerce and online stores",
+          "description": "For stores balancing collection and product visibility, technical scale, performance, merchandising, and revenue measurement."
+        },
+        {
+          "title": "B2B and lead-generation websites",
+          "description": "For longer consideration journeys where the right organic visit should become a qualified conversation."
+        },
+        {
+          "title": "Content and publishing businesses",
+          "description": "For sites where information architecture, editorial quality, discoverability, and internal linking need to work together."
+        },
+        {
+          "title": "SaaS and startup websites",
+          "description": "For evolving products that need clear search positioning, technically sound pages, and measurable acquisition paths."
+        }
+      ],
+      "note": "We do not claim one fixed playbook for every industry. The strategy changes with the business model, customer journey, competitive landscape, and website."
+    },
+    "pricing": {
+      "title": "Clear starting scopes",
+      "subtitle": "Choose a focused entry point, then refine the scope around the website, goals, access, and implementation needs.",
+      "customScope": "Custom scope",
+      "recommended": "Recommended",
+      "packages": [
+        {
+          "name": "SEO Audit",
+          "price": "From €390 one-time",
+          "description": "A focused diagnosis and prioritized plan for teams that need clarity before implementation.",
+          "includes": [
+            "Technical and indexability review",
+            "Search visibility baseline",
+            "Keyword and competitor snapshot",
+            "Priority roadmap",
+            "Written findings",
+            "60-minute review session"
+          ]
+        },
+        {
+          "name": "SEO Foundation",
+          "price": "From €790 one-time",
+          "description": "Audit, setup, and hands-on implementation of an agreed first wave of priority improvements.",
+          "includes": [
+            "Everything in SEO Audit",
+            "Search Console and analytics review/setup",
+            "Implementation of agreed priority technical fixes",
+            "On-page optimization for up to five key pages",
+            "Internal-linking improvements",
+            "Relevant structured data",
+            "Local-search baseline where relevant"
+          ]
+        },
+        {
+          "name": "SEO Growth",
+          "price": "From €590/month",
+          "description": "A recurring improvement cycle for businesses ready to measure, learn, and compound organic progress.",
+          "includes": [
+            "Ongoing technical and on-page improvements",
+            "Ranking, organic-traffic, and conversion monitoring",
+            "One priority page or content optimization per month",
+            "Local and Google Business Profile improvements where relevant",
+            "Competitor and opportunity monitoring",
+            "Monthly report and strategy call"
+          ]
+        }
+      ],
+      "notesTitle": "Pricing notes",
+      "notes": [
+        "Prices are starting points; final pricing depends on website size and scope.",
+        "VAT is added where applicable.",
+        "SEO Growth works best after an audit or equivalent discovery.",
+        "Paid ads and purchased links are not included unless separately scoped.",
+        "High-volume content production is not included unless separately scoped."
+      ]
+    },
+    "process": {
+      "title": "From baseline to continuous improvement",
+      "subtitle": "A four-stage sequence that keeps decisions traceable and gives every implementation step a clear reason.",
+      "deliverableLabel": "What you receive",
+      "items": [
+        {
+          "title": "Discovery and baseline",
+          "description": "We align on business goals, priority audiences, valuable conversions, known constraints, and the current search footprint.",
+          "deliverable": "A shared baseline, access checklist, and definition of the outcomes worth measuring."
+        },
+        {
+          "title": "Prioritized roadmap",
+          "description": "Findings are organized by impact, effort, dependency, and risk so the next work is commercially and technically sensible.",
+          "deliverable": "A sequenced roadmap with clear priorities, rationale, owners, and implementation scope."
+        },
+        {
+          "title": "Implementation",
+          "description": "We ship the agreed technical, on-page, local, performance, or tracking improvements and validate them after release.",
+          "deliverable": "Implemented changes, quality checks, and a record of what changed and why."
+        },
+        {
+          "title": "Measurement and iteration",
+          "description": "Search and conversion signals are reviewed in context, then used to select the next useful improvement rather than chase noise.",
+          "deliverable": "A practical performance review and the next prioritized set of actions."
+        }
+      ]
+    },
+    "measurement": {
+      "title": "Measure outcomes, not only positions",
+      "description": "Rankings can provide useful context, but reporting should connect visibility with qualified visits and the actions that matter to the business. We define the right measurement set during discovery and keep it focused enough to guide decisions.",
+      "note": "Not every metric applies to every business; the measurement plan reflects the website, funnel, and available data.",
+      "metricsLabel": "Possible SEO performance metrics",
+      "metrics": [
+        "Search impressions",
+        "Qualified organic clicks",
+        "Visibility for priority searches",
+        "Enquiries",
+        "Calls",
+        "Bookings",
+        "Sales",
+        "Conversion rate from organic landing pages"
+      ]
+    },
+    "faq": {
+      "title": "SEO questions, answered clearly",
+      "subtitle": "What to expect before choosing an audit, an implementation scope, or ongoing SEO work.",
+      "items": [
+        {
+          "question": "How long does SEO take to show results?",
+          "answer": "SEO timelines vary with the site’s starting point, competition, technical constraints, search demand, and the speed of implementation. Some technical improvements can be validated quickly, while meaningful visibility and business outcomes usually develop over several months. We establish a baseline and report progress without inventing a universal deadline."
+        },
+        {
+          "question": "Do you guarantee first-place rankings?",
+          "answer": "No. Search rankings are controlled by search engines and influenced by competitors, algorithms, demand, and many factors no agency can guarantee. We commit to evidence-based priorities, careful implementation, transparent measurement, and continuous improvement."
+        },
+        {
+          "question": "Which website platforms can CartShift work with?",
+          "answer": "We are strongest where we can inspect and implement changes directly, including Shopify, WordPress, and modern custom websites. We can also audit other platforms, but we confirm technical access and implementation constraints before defining the scope."
+        },
+        {
+          "question": "Is local SEO included?",
+          "answer": "Local SEO is included where it matches the business model and agreed package. Work can cover Google Business Profile, categories, services, business information consistency, review strategy, citations, and location or service-area pages."
+        },
+        {
+          "question": "Does CartShift write SEO content?",
+          "answer": "We can improve page structure, search intent, briefs, on-page copy, titles, descriptions, internal links, and selected priority pages. Large-scale article or landing-page production is quoted separately so expectations, expertise, and quality controls remain clear."
+        },
+        {
+          "question": "What access do you need?",
+          "answer": "Access depends on the scope and may include the website CMS or codebase, Google Search Console, GA4, Tag Manager, Google Business Profile, hosting, and relevant reporting tools. We request the minimum practical access and agree on permissions before work begins."
+        },
+        {
+          "question": "Can you work with our existing developer or marketing team?",
+          "answer": "Yes. We can implement directly, collaborate with an internal or external team, or provide clearly documented tickets and acceptance checks. Ownership and handoffs are agreed during discovery so work does not stall between strategy and release."
+        },
+        {
+          "question": "What is the difference between an SEO audit and ongoing SEO?",
+          "answer": "An audit establishes the baseline, identifies issues and opportunities, and produces a prioritized roadmap. Ongoing SEO adds a recurring implementation and measurement cycle so the site can respond to new data, competitors, content needs, and business priorities."
+        },
+        {
+          "question": "Is there a long-term contract?",
+          "answer": "One-time audit and foundation packages do not create an ongoing commitment. Any recurring SEO Growth engagement, notice period, and minimum term are stated clearly in the proposal before work starts; there is no artificial urgency or hidden renewal."
+        },
+        {
+          "question": "How is final SEO pricing calculated?",
+          "answer": "Final pricing reflects website size, platform complexity, number of locations or markets, current technical condition, content volume, analytics maturity, access, implementation responsibility, and the pace of work. The listed prices are starting points, followed by a written scope before approval."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Start with a focused SEO review",
+      "description": "Tell us what your business needs to be found for, what is not working today, and what a valuable organic visit should lead to.",
+      "button": "Book an SEO Consultation"
+    }
   },
   "notFound": {
     "title": "Page Not Found",
@@ -3916,7 +4232,7 @@
     "badge": "Client Portal",
     "title": "Manage your projects",
     "titleSpan": "with a single click",
-    "description": "Your dedicated space to track requests, review progress, share files, and stay connected with our team — all in one place. No more email chains or lost messages.",
+    "description": "Your dedicated space to track requests, review progress, share files, and stay connected with our team, all in one place. No more email chains or lost messages.",
     "cta": "Discover the Portal",
     "secondaryCta": "Contact Us",
     "features": {
@@ -4080,6 +4396,7 @@
       "options": {
         "shopify": "Shopify Store",
         "wordpress": "WordPress Website",
+        "seo": "SEO & Organic Growth",
         "consultation": "General Consultation",
         "other": "Other"
       },
@@ -4463,7 +4780,7 @@
   },
   "servicesOverview": {
     "title": "Our Core Solutions",
-    "subtitle": "E-commerce expertise across Shopify and WordPress",
+    "subtitle": "Development and organic growth expertise for businesses that need their website to perform",
     "shopify": {
       "title": "E-Commerce Growth",
       "description": "Everything you need to sell online. We handle design, setup, and performance so you can focus on your products.",
@@ -4482,6 +4799,16 @@
         "Easy to Edit",
         "Online Store Ready",
         "SEO Optimized"
+      ]
+    },
+    "seo": {
+      "title": "SEO & Organic Growth",
+      "description": "Technical, local, and content SEO with hands-on implementation and measurement tied to meaningful business actions.",
+      "features": [
+        "Technical, Local & Content SEO",
+        "Hands-On Implementation",
+        "Search & Conversion Measurement",
+        "Growth Prioritized by Impact"
       ]
     }
   },
@@ -4511,6 +4838,7 @@
     "links": {
       "shopify": "Shopify Solutions",
       "wordpress": "WordPress Solutions",
+      "seo": "SEO Services",
       "about": "About Us",
       "blog": "Blog",
       "contact": "Contact",
@@ -4690,7 +5018,7 @@
       "emailInvalid": "Invalid email address",
       "emailHint": "We'll send your detailed report here",
       "newsletterLabel": "Send me tips and insights to grow my store (recommended)",
-      "submitButton": "Analyze My Store — Free",
+      "submitButton": "Analyze My Store (Free)",
       "analyzing": "Analyzing...",
       "tryAgain": "Try again",
       "submitFailed": "Could not start the analysis. Please try again.",
@@ -4803,7 +5131,7 @@
       "inProgress": "In progress",
       "finishing": "Finishing up",
       "phaseLabel": "Stage: {phase}",
-      "tip": "We run Lighthouse, HTML heuristics, and conversion checks — your full PDF report arrives by email.",
+      "tip": "We run Lighthouse, HTML heuristics, and conversion checks. Your full PDF report arrives by email.",
       "phases": {
         "connecting": "Connecting",
         "performance": "Performance",
@@ -4827,10 +5155,10 @@
       "breakdown": "Score Breakdown",
       "emailSent": "Comprehensive Report Sent!",
       "emailPendingTitle": "PDF report on its way",
-      "emailPendingDescription": "Your on-screen results are ready. The full PDF usually arrives within a few minutes—check spam if needed.",
+      "emailPendingDescription": "Your on-screen results are ready. The full PDF usually arrives within a few minutes. Check spam if needed.",
       "emailUnavailableTitle": "On-screen report ready",
       "emailUnavailableDescription": "Email delivery is not configured for this environment. Your full results are available on this page.",
-      "emailDelayedTitle": "Report saved — email may be delayed",
+      "emailDelayedTitle": "Report saved; email may be delayed",
       "emailDelayedDescription": "Your results are on screen. If the PDF does not arrive within a few minutes, check spam or run the analyzer again.",
       "partialDataNotice": "Some live performance data was unavailable, so parts of this report use HTML-based estimates. The emailed PDF reflects the same analysis run.",
       "deeperScanUnavailableNotice": "Browser-based category, product, and cart interaction sampling was unavailable for this run, so checkout recommendations remain lower confidence unless explicitly verified.",
@@ -5378,7 +5706,7 @@
       "title": "Your Projects,",
       "titleSpan": "One Dashboard",
       "subtitle": "Manage everything in one place",
-      "description": "No more scattered emails, lost files, or unclear timelines. Our client portal gives you complete visibility into your projects — from initial request to final delivery."
+      "description": "No more scattered emails, lost files, or unclear timelines. Our client portal gives you complete visibility into your projects, from initial request to final delivery."
     },
     "features": {
       "title": "Everything You Need",
@@ -5387,7 +5715,7 @@
         {
           "icon": "requests",
           "title": "Request Management",
-          "description": "Submit new requests, track progress, and get updates — all without sending a single email."
+          "description": "Submit new requests, track progress, and get updates without sending a single email."
         },
         {
           "icon": "realtime",
@@ -5423,7 +5751,7 @@
         "No more email chains searching for that one attachment",
         "24/7 access to your project status from any device",
         "Clear visibility into timelines and deliverables",
-        "Instant feedback loops — comment directly on deliverables",
+        "Instant feedback loops: comment directly on deliverables",
         "All project history in one searchable archive",
         "Dedicated workspace for each project",
         "Faster turnaround with streamlined communication",
@@ -5462,8 +5790,8 @@
       },
       "requests": [
         "Homepage redesign in progress",
-        "Product filter feature — pending review",
-        "Speed optimization — ready for approval"
+        "Product filter feature: pending review",
+        "Speed optimization: ready for approval"
       ]
     },
     "cta": {

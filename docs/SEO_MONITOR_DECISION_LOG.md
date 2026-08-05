@@ -183,3 +183,51 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Deployment: Not attempted by monitor script.
 - Notes: No property mismatch detected.
 
+## 2026-07-13 - CartShift SEO Technical Monitor
+
+- Outcome: Reported
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top issue: Search Console technical
+- Recommended action: Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.
+- Affected files: `docs/seo-monitor-reports/2026-07-13T11-29-29-993Z-seo-monitor.md`
+- Validation: Report generated; no code/content changes applied.
+- Deployment: Not attempted by monitor script.
+- Notes: No property mismatch detected.
+
+## 2026-07-13 - LLM SEO Release Decision
+
+- Outcome: No safe technical SEO code change applied
+- Run time: `2026-07-13T11:29:29Z` to `2026-07-13T11:43Z` UTC
+- Data sources used: Fresh monitor report `docs/seo-monitor-reports/2026-07-13T11-29-29-993Z-seo-monitor.{md,json}`, Search Console URL Inspection, GA4, live HTML responses, live redirects, and local sitemap/metadata/blog route code
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK with `siteFullUser`
+- Top evidence: Search Console still reports `https://cart-shift.com/en/blog/shopify-seo-complete-guide` and `https://cart-shift.com/en/pricing` as `Crawled - currently not indexed`, while `https://cart-shift.com/en/terms` remains submitted and indexed. The strongest CTR sample is still `shopify seo review` on the performance-evaluation article with 132 impressions, 0 clicks, and average position 18.3.
+- Technical diagnosis: Live checks show `/en/blog/shopify-seo-complete-guide` and `/en/pricing` both return HTTP 200 with `index, follow` and self canonicals, and the default `/blog/shopify-seo-complete-guide` path returns an HTTP 308 redirect to the English locale. `app/sitemap.ts` already emits localized blog, pricing, and root URLs with hreflang alternates. No deterministic robots, canonical, hreflang, redirect, or sitemap defect mapped to a safe repo edit.
+- Analytics caution: The large GA4 drops are still concentrated in authenticated portal paths and other non-public routes, so they were treated as measurement or period signals rather than public SEO regressions that should trigger content rewrites here.
+- Chosen action: Preserve the repo state, make no speculative metadata or internal-link change, and record this as a Search Console re-crawl or content-quality follow-up rather than a technical release candidate.
+- Files touched: `docs/SEO_MONITOR_DECISION_LOG.md`
+- Validation: `git diff --check` should pass after this log-only update. Full `pnpm build` was intentionally skipped because no production code or content changed in this decision pass.
+- Commit and push: Not attempted because no safe repo fix was applied. Report artifacts were left unstaged.
+- Deployment: No Vercel deployment is expected from this run.
+## 2026-07-23 - CartShift SEO Technical Monitor
+
+- Outcome: Reported
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top issue: Search Console technical
+- Recommended action: Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.
+- Affected files: `docs/seo-monitor-reports/2026-07-23T11-29-11-109Z-seo-monitor.md`
+- Validation: Report generated; no code/content changes applied.
+- Deployment: Not attempted by monitor script.
+- Notes: No property mismatch detected.
+

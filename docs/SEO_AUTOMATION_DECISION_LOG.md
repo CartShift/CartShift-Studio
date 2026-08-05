@@ -24,6 +24,22 @@ The automation should append a new entry for every run, even when it decides not
 
 ## Runs
 
+## 2026-07-28 - CartShift Unified SEO Growth
+
+- **Outcome:** Skipped; no repository-changing SEO action selected
+- **Run time:** 2026-07-28T05:28:11Z
+- **Data sources used:** Automation memory check, `docs/SEO_AUTOMATION_CREDENTIALS.md`, `docs/SEO_STRATEGY.md`, `docs/KEYWORD_STRATEGY.md`, fresh-in-window report `docs/seo-monitor-reports/2026-07-23T11-29-11-109Z-seo-monitor.{md,json}`, current `content/blog/` inventory, local i18n routing/proxy/sitemap/Markdown code, focused legacy-link search, git status, and Git push dry run.
+- **Access verification:** The newest usable monitor report is inside the rolling seven-day window and shows Search Console OK for `sc-domain:cart-shift.com` with `siteFullUser`, sitemap access OK with zero issues, URL Inspection coverage for 15 URLs, and GA4 OK with 147 rows. Required Google credential variable categories are present in `.env.local` without printing values, and `git push --dry-run origin HEAD:main` returned `Everything up-to-date`.
+- **Candidates considered:** TECHNICAL candidate 1 was the report's `Localize Markdown blog links` fix for default `/blog/*` URLs, but `lib/markdown.ts` already rewrites raw Markdown blog links to `/{locale}/blog/*`, `proxy.ts` 308-redirects unlocalized `/blog/*`, and `@/i18n/navigation` uses `localePrefix: 'always'`. TECHNICAL candidate 2 was the URL Inspection sitemap/index coverage group around `/en/blog/shopify-seo-complete-guide`, legacy `/blog/shopify-seo-complete-guide`, `/en/pricing`, and `/blog/shopify-seo-audit-checklist`, but `app/sitemap.ts` already emits localized blog and pricing URLs with hreflang alternates, Search Console reports zero submitted sitemap errors, and the high-severity indexation samples still show stale April crawl timestamps rather than a fresh repo defect. CREATE candidate 1 was `Shopify App Development`, a strategy-listed service keyword, but the inventory already includes Shopify apps optimization, custom Shopify development, custom theme, checkout, Plus, headless, migration, launch, and SEO content without fresh query support. CREATE candidate 2 was `Shopify Store Redesign`, a service-aligned long-tail adjacent to theme and launch work, but the current evidence set does not show ranking/query demand and the angle risks duplicating the custom theme and launch checklist articles. REFRESH candidate 1 was `content/blog/shopify-seo-performance-evaluation.md`, supported by `shopify seo review` with 181 impressions, 0 clicks, and average position 18.8, but it was refreshed on 2026-07-23 and remains inside the 21-day cooldown. REFRESH candidate 2 was `content/blog/shopify-seo-complete-guide.md`, supported by an 84.2% impression decline and `Crawled - currently not indexed`, but it was refreshed on 2026-06-30 and Search Console still reports a 2026-04-26 last crawl, so another rewrite before reprocessing would be speculative.
+- **Rationale:** No candidate cleared the evidence threshold. Technical findings either map to already-present locale handling or stale Google-side crawl state, the best refresh target is in cooldown, and the create candidates are strategy-plausible but not evidence-backed enough to justify new content.
+- **Target intent:** Not applicable
+- **Primary keyword:** Not selected
+- **Supporting keywords:** Not selected
+- **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md`; automation memory only.
+- **Validation:** `pnpm exec prettier --check docs/SEO_AUTOMATION_DECISION_LOG.md` passed, and `git diff --check -- docs/SEO_AUTOMATION_DECISION_LOG.md` passed with the existing LF-to-CRLF warning. `pnpm build` passed translation validation, compilation, and TypeScript, then failed during static generation after repeated 60-second route retries, exiting on `/he/blog/conversion-audit-checklist`.
+- **Deployment:** Skipped. No files were staged, committed, or pushed because full build validation failed. No production content, translation, or code files changed, so no Vercel deployment is expected from this run.
+- **Worktree safety:** The run started with unrelated user-owned changes in `docs/SEO_MONITOR_DECISION_LOG.md`; that dirty file was not edited, staged, or used as a technical-monitor target. The shared SEO release lock was acquired before the decision-log edit.
+
 ## 2026-07-25 - CartShift Unified SEO Growth
 
 - **Outcome:** Skipped; no repository-changing SEO action selected
