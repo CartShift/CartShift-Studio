@@ -167,6 +167,7 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Files touched: `content/blog/tiktok-shop-complete-guide-2026.md` and this decision log.
 - Validation: Prettier, localized link checks, and `git diff --check` passed. `pnpm build` compiled in 3.3 minutes, completed TypeScript in 2.7 minutes, and generated all 211 static pages after automatic timeout retries.
 - Release: Validation passed; only the TikTok article and this decision-log update are eligible for the follow-up commit and push to `origin/main`.
+
 ## 2026-07-05 - CartShift SEO Technical Monitor
 
 - Outcome: Reported
@@ -215,6 +216,7 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Validation: `git diff --check` should pass after this log-only update. Full `pnpm build` was intentionally skipped because no production code or content changed in this decision pass.
 - Commit and push: Not attempted because no safe repo fix was applied. Report artifacts were left unstaged.
 - Deployment: No Vercel deployment is expected from this run.
+
 ## 2026-07-23 - CartShift SEO Technical Monitor
 
 - Outcome: Reported
@@ -231,3 +233,34 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Deployment: Not attempted by monitor script.
 - Notes: No property mismatch detected.
 
+## 2026-08-06 - CartShift SEO Technical Monitor
+
+- Outcome: Reported
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top issue: Search Console technical
+- Recommended action: Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.
+- Affected files: `docs/seo-monitor-reports/2026-08-06T04-46-25-199Z-seo-monitor.md`
+- Validation: Report generated; no code/content changes applied.
+- Deployment: Not attempted by monitor script.
+- Notes: No property mismatch detected.
+
+## 2026-08-06 - Unified SEO Release Decision
+
+- Outcome: Fresh scan reviewed; no safe technical SEO code change applied.
+- Run time: `2026-08-06T04:46:15Z` to `2026-08-06T05:01Z` UTC.
+- Data sources used: Fresh monitor report `docs/seo-monitor-reports/2026-08-06T04-46-25-199Z-seo-monitor.{md,json}`, Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, live HTML responses, live sitemap, local `app/sitemap.ts`, local blog metadata generation, repo strategy docs, and current blog inventory.
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK with 148 rows.
+- GSC access: OK with `siteFullUser`; URL Inspection checked 15 URLs and the submitted sitemap had zero warnings or errors.
+- Top evidence: URL Inspection reports `https://cart-shift.com/en/blog/shopify-seo-complete-guide` and `https://cart-shift.com/en/pricing` as `Crawled - currently not indexed`. The Shopify SEO guide also shows a 355-to-12 impression decline, while the strongest CTR opportunity remains `shopify seo review` on `content/blog/shopify-seo-performance-evaluation.md` with 251 impressions, 0 clicks, and average position 17.9.
+- Technical diagnosis: Live checks show `/en/blog/shopify-seo-complete-guide` and `/en/pricing` both return HTTP 200 with `index, follow`, self-referencing canonicals, and sitemap membership. The default `/blog/shopify-seo-complete-guide` path returns a 308 redirect to `/en/blog/shopify-seo-complete-guide`. Local metadata and sitemap code already emit localized canonicals and alternates. No deterministic robots, canonical, hreflang, redirect, or sitemap defect mapped to a safe repo edit.
+- Decision: Preserve production code and content. Treat the Search Console findings as re-crawl/index-quality follow-up evidence rather than an automated technical fix, and avoid refreshing the Shopify SEO review article while it remains inside the 21-day cooldown.
+- Files touched: `docs/SEO_MONITOR_DECISION_LOG.md` and `docs/SEO_AUTOMATION_DECISION_LOG.md`; fresh generated report artifacts were kept ignored and unstaged.
+- Validation: `pnpm exec prettier --check docs/SEO_AUTOMATION_DECISION_LOG.md docs/SEO_MONITOR_DECISION_LOG.md`, `git diff --check -- docs/SEO_AUTOMATION_DECISION_LOG.md docs/SEO_MONITOR_DECISION_LOG.md`, and `pnpm build` passed. The build generated all 221 static pages after automatic retries for existing slow static routes.
+- Commit and push: Validation passed; only docs-owned decision logs are being staged for a docs-only commit and push to `origin/main`.
+- Deployment: No Vercel-impacting deployment expected because no production code or content changed.
