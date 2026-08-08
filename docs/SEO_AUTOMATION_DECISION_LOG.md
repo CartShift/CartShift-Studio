@@ -24,6 +24,19 @@ The automation should append a new entry for every run, even when it decides not
 
 ## Runs
 
+## 2026-08-09 - CartShift Unified SEO Growth
+
+- **Outcome:** Skipped; reviewed current technical evidence and selected no repository-changing SEO fix, article creation, or article refresh.
+- **Run time:** 2026-08-08T22:31:41Z
+- **Data sources used:** Automation memory, SEO credentials and strategy docs, decision history, the fresh-in-window `docs/seo-monitor-reports/2026-08-06T04-46-25-199Z-seo-monitor.{md,json}` report, the full 36-article bilingual inventory, recent blog Git history, local metadata/sitemap/redirect code, live response and sitemap checks, git status, and Git push dry run.
+- **Access verification:** The August 6 evidence is inside the rolling seven-day window and records Search Console `siteFullUser` access for `sc-domain:cart-shift.com`, query/page and sitemap APIs OK with zero sitemap issues, 15 URL inspections, and GA4 OK with 148 rows. Required credential categories remain present in `.env.local` without values being printed, and `git push --dry-run origin HEAD:main` returned `Everything up-to-date`.
+- **Candidates considered:** TECHNICAL candidate 1 was `/en/blog/shopify-seo-complete-guide`, which Search Console reports as `Crawled - currently not indexed` with a 355-to-12 impression decline; TECHNICAL candidate 2 was `/en/pricing`, with the same coverage state. Both live pages return HTTP 200 with `index, follow`, self canonicals, and sitemap membership, while the legacy guide URL returns a 308 to the localized URL, so neither maps to a deterministic repo defect. CREATE candidate 1 was `Shopify App Development`; CREATE candidate 2 was `Shopify Store Redesign`. Both remain strategy-aligned, but neither has fresh query support and both overlap existing app optimization, custom theme, launch, and service content; one article, `liquid-loom-shopify-theme-framework`, was already created inside the rolling seven-day window. REFRESH candidate 1 was `content/blog/shopify-seo-performance-evaluation.md`, supported by `shopify seo review` at 251 impressions, 0 clicks, and position 17.9, but its July 23 refresh remains inside the 21-day cooldown through August 13. REFRESH candidate 2 was `content/blog/shopify-seo-complete-guide.md`, but Google's April 26 crawl predates its June 30 refresh, so another rewrite would be speculative without post-refresh crawl evidence.
+- **Rationale:** The strongest actionable signal is the Shopify SEO review CTR opportunity, but cooldown safety blocks it; technical candidates have clean live implementation, and creation candidates do not clear the evidence and cannibalization thresholds.
+- **Affected files:** `docs/SEO_AUTOMATION_DECISION_LOG.md`; automation memory. No production code, article, translation, monitor log, or generated report was changed.
+- **Validation:** `pnpm exec prettier --check docs/SEO_AUTOMATION_DECISION_LOG.md`, `git diff --check -- docs/SEO_AUTOMATION_DECISION_LOG.md`, and `pnpm build` passed. The build compiled in 45 seconds, finished TypeScript in 88 seconds, and generated all 223 static pages in 70 seconds.
+- **Deployment:** Validation passed; only this decision-log entry is being committed and pushed to `origin/main`. No Vercel-impacting content or code deployment is expected from the docs-only commit.
+- **Notes:** The shared SEO release lock was acquired before repository edits. The next evidence-backed editorial review date is August 13 for `shopify-seo-performance-evaluation`; re-check the guide only after Google records a post-June-30 crawl.
+
 ## 2026-08-06 - CartShift Unified SEO Growth
 
 - **Outcome:** Skipped; fresh technical scan completed, but no repository-changing SEO fix, article creation, or article refresh selected.
