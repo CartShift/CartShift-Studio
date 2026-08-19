@@ -264,3 +264,32 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Validation: `pnpm exec prettier --check docs/SEO_AUTOMATION_DECISION_LOG.md docs/SEO_MONITOR_DECISION_LOG.md`, `git diff --check -- docs/SEO_AUTOMATION_DECISION_LOG.md docs/SEO_MONITOR_DECISION_LOG.md`, and `pnpm build` passed. The build generated all 221 static pages after automatic retries for existing slow static routes.
 - Commit and push: Validation passed; only docs-owned decision logs are being staged for a docs-only commit and push to `origin/main`.
 - Deployment: No Vercel-impacting deployment expected because no production code or content changed.
+
+## 2026-08-19 - CartShift SEO Technical Monitor
+
+- Outcome: Reported
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top issue: Search Console technical
+- Recommended action: Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.
+- Affected files: `docs/seo-monitor-reports/2026-08-19T09-57-21-891Z-seo-monitor.md`
+- Validation: Report generated; no code/content changes applied.
+- Deployment: Not attempted by monitor script.
+- Notes: No property mismatch detected.
+
+## 2026-08-19 - Unified SEO Release Decision
+
+- Outcome: Fresh scan reviewed; no safe technical SEO code or content change applied.
+- Run time: `2026-08-19T09:56:37Z` to `2026-08-19T10:10:08Z`.
+- API status: Search Console OK for `sc-domain:cart-shift.com` with `siteFullUser`; query/page APIs OK, one sitemap inspected with zero warnings or errors, 15 URLs inspected, and GA4 OK with 151 rows.
+- Top evidence: Search Console reports the legacy `/blog/shopify-vs-woocommerce` URL with Google canonical on the legacy path while the declared canonical is `/en/blog/shopify-vs-woocommerce`; it also reports `/en/blog/shopify-seo-complete-guide` as `Crawled - currently not indexed`, with impressions down from 366 to 1. The strongest CTR signal is `shopify seo review` at 312 impressions, 0 clicks, and average position 17.8.
+- Technical diagnosis: Current Googlebot checks show the legacy comparison URL returning a permanent 308 to `/en/blog/shopify-vs-woocommerce`; English and Hebrew targets return 200 with self canonicals and correct hreflang alternates; the live sitemap contains localized comparison URLs only; the two GSC-recorded referrers no longer expose the legacy link; and `lib/markdown.ts` already localizes raw Markdown blog links. The comparison crawl was July 17, while current live behavior is deterministic and clean. The Shopify SEO guide's April 26 crawl predates its June 30 refresh, and the SEO review article's June 21 crawl predates its July 23 refresh.
+- Decision and outcome: Preserve production code and content. Treat the canonical mismatch as a stale or not-yet-reprocessed Search Console signal unless a future crawl reproduces it, and avoid speculative re-refreshes until Google processes the current article versions.
+- Files touched: `docs/SEO_MONITOR_DECISION_LOG.md`, `docs/SEO_AUTOMATION_DECISION_LOG.md`; ignored fresh report artifacts were not staged.
+- Validation: Focused Prettier formatting and targeted `git diff --check` passed. `pnpm build` passed translation validation, compiled in 56 seconds, completed TypeScript in 86 seconds, and generated all 223 static pages in 2.3 minutes.
+- Commit and push: Validation passed; only the two decision logs are eligible for a docs-only release.
+- Deployment: No Vercel-impacting deployment is expected because production code and content are unchanged.
