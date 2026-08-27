@@ -20,14 +20,12 @@ async function main() {
     const definition = cvVariantDefinitions[variant];
     const cv = getCVDataForVariant(variant);
     const outputPath = join(outputDir, definition.filename);
+    const document = React.createElement(CVDocument, {
+      cv,
+      resolvedAssets,
+    }) as Parameters<typeof renderToFile>[0];
 
-    await renderToFile(
-      React.createElement(CVDocument, {
-        cv,
-        resolvedAssets,
-      }),
-      outputPath
-    );
+    await renderToFile(document, outputPath);
 
     console.log(`Generated ${definition.label}: ${outputPath}`);
   }
