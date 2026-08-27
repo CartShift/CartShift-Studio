@@ -1,0 +1,50 @@
+name: Generate Tailored CVs
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lib/cv/**'
+      - 'app/[locale]/(standalone)/cv/**'
+      - 'scripts/generate-tailored-cvs.tsx'
+      - '.github/workflows/generate-tailored-cvs.yml'
+      - 'public/images/cv/**'
+      - 'public/images/yotam-programmer.png'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate tailored CV PDFs
+        run: pnpm tsx scripts/generate-tailored-cvs.tsx
+
+      - name: Upload tailored CVs
+        uses: actions/upload-artifact@v4
+        with:
+          name: tailored-cvs
+          path: artifacts/cv-tailored/*.pdf
+          if-no-files-found: error
+          retention-days: 7
