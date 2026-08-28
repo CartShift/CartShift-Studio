@@ -293,3 +293,31 @@ This log records Search Console and GA4 SEO monitor runs, findings, fixes, valid
 - Validation: Focused Prettier formatting and targeted `git diff --check` passed. `pnpm build` passed translation validation, compiled in 56 seconds, completed TypeScript in 86 seconds, and generated all 223 static pages in 2.3 minutes.
 - Commit and push: Validation passed; only the two decision logs are eligible for a docs-only release.
 - Deployment: No Vercel-impacting deployment is expected because production code and content are unchanged.
+
+## 2026-08-28 - CartShift SEO Technical Monitor
+
+- Outcome: Reported
+- Data sources used: Search Console Search Analytics, Search Console Sitemaps, Search Console URL Inspection, GA4, repo blog inventory, SEO docs
+- Search Console property: `sc-domain:cart-shift.com`
+- GA4 access: OK
+- GSC access: OK
+- URL Inspection coverage: 15 URLs checked
+- Sitemap API coverage: 1 submitted sitemap entries checked
+- Top issue: Search Console technical
+- Recommended action: Fix URL Inspection and sitemap issues before broader content changes; these are direct Google-side crawl/index signals.
+- Affected files: `docs/seo-monitor-reports/2026-08-28T13-39-23-038Z-seo-monitor.md`
+- Validation: Report generated; no code/content changes applied.
+- Deployment: Not attempted by monitor script.
+- Notes: No property mismatch detected.
+
+## 2026-08-28 - Unified SEO Release Decision
+
+- Outcome: Fresh technical scan completed; no deterministic technical fix was warranted, and one evidence-backed bilingual article refresh was applied.
+- Run time: `2026-08-28T13:38:59Z` to `2026-08-28T13:55:18Z`.
+- API status: Search Console OK for `sc-domain:cart-shift.com` with `siteFullUser`; query/page APIs returned 80 rows, page data returned 28 rows, one submitted sitemap had zero warnings or errors, 15 URLs were inspected, and GA4 was OK with 140 rows.
+- Top technical evidence: Search Console still reports a canonical mismatch on legacy `/blog/shopify-vs-woocommerce`, but the July 17 crawl predates current clean behavior: a permanent 308 to the localized English URL, 200 self-canonical localized targets, localized-only sitemap membership, and repo-level Markdown link localization. `/en/blog/shopify-seo-complete-guide` remains crawled-not-indexed with a 367-to-0 impression decline, but its April 26 crawl predates the June 30 refresh; the live page is indexable, self-canonical, and in the sitemap. Low-severity empty sitemap fields on inspected URLs were not treated as defects when the URLs were submitted/indexed or present in the live sitemap.
+- Editorial evidence and decision: `/en/blog/shopify-seo-performance-evaluation` is submitted and indexed, and Google crawled it on August 23 after its July 23 refresh. The exact query `shopify seo review` then accumulated 377 impressions, 0 clicks, and average position 17.3. This post-refresh signal justified a narrow metadata, scoring-method, and CTA improvement instead of another speculative technical change.
+- Files touched: `content/blog/shopify-seo-performance-evaluation.md`, `docs/SEO_MONITOR_DECISION_LOG.md`, and `docs/SEO_AUTOMATION_DECISION_LOG.md`. Fresh report artifacts under `docs/seo-monitor-reports/` remain ignored and unstaged.
+- Validation: Focused article structure, bilingual frontmatter, internal-target, Prettier, and targeted `git diff --check` checks passed. `pnpm build` passed translation validation, compiled in 89 seconds, completed TypeScript in 116 seconds, and generated all 223 static pages in 3.2 minutes after automatic retries for unrelated slow routes.
+- Commit and push: Validation passed; only the refreshed article and the two SEO decision logs are eligible for the release commit and push to `origin/main`.
+- Deployment: Vercel is expected to deploy the refreshed English and Hebrew article routes automatically from `main`.

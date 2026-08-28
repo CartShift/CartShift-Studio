@@ -1,17 +1,21 @@
 ---
-title: 'Shopify SEO Review: Scorecard for Rankings, CTR, and Revenue'
-date: '2026-07-23'
-excerpt: 'Use this Shopify SEO review scorecard to turn Search Console, GA4, CTR, ranking, revenue, and technical signals into a prioritized fix plan.'
+title: 'Shopify SEO Review: 60-Minute Scorecard and Action Plan'
+date: '2026-08-28'
+excerpt: 'Run a practical Shopify SEO review in 60 minutes. Score rankings, CTR, indexability, content, and revenue, then leave with a five-item action plan.'
 category: 'Shopify'
 image: '/images/blog/shopify-seo-performance-evaluation.webp'
 imageAlt: 'Editorial ecommerce thumbnail showing an SEO performance analytics wall'
 socialImage: '/images/blog/og/shopify-seo-performance-evaluation.webp'
-title_he: 'סקירת Shopify SEO: Scorecard לדירוגים, CTR והכנסות'
-excerpt_he: 'השתמשו ב-scorecard לסקירת Shopify SEO שמחבר Search Console, GA4, CTR, דירוגים, הכנסות וסימנים טכניים לתוכנית תיקון מתועדפת.'
+title_he: 'סקירת Shopify SEO: Scorecard ותוכנית פעולה ב-60 דקות'
+excerpt_he: 'בצעו סקירת Shopify SEO מעשית ב-60 דקות. תנו ציון לדירוגים, CTR, אינדוקס, תוכן והכנסות, וסיימו עם תוכנית פעולה של חמישה צעדים.'
 category_he: 'שופיפיי'
 ---
 
-A Shopify SEO review should not ask one vague question: "Is SEO working?"
+A Shopify SEO review should end with five ranked actions, not a 40-tab dashboard.
+
+In 60 minutes, you should be able to identify the page worth fixing first, the evidence behind that choice, and the metric that will show whether the fix worked.
+
+The review should not ask one vague question: "Is SEO working?"
 
 It should answer a sharper one: which pages are earning visibility, which pages are wasting impressions, and which fixes are most likely to turn search demand into revenue?
 
@@ -47,6 +51,27 @@ Use this scorecard before you rewrite content or add another SEO app. A page doe
 | Revenue connection | SEO pages can be tied to inquiries, assisted sales, or product exploration | Rankings are reported separately from commercial behavior          | Tag pages by intent and review downstream actions      |
 
 For most Shopify stores, the highest-value row is the one closest to revenue. If two issues look equal, fix the one that affects product, collection, checkout, or qualified-service paths first.
+
+## How to calculate a Shopify SEO score
+
+A score is useful only when it points to the next action. Give each area 0, 10, or 20 points based on the strongest evidence you can verify.
+
+| Scoring area              | 0 points                                             | 10 points                                                | 20 points                                                     |
+| ------------------------- | ---------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------- |
+| Indexability              | Important pages are blocked, duplicated, or missing  | Coverage is mixed or Google has not processed key fixes  | Key pages are crawlable, canonical, and represented correctly |
+| Query and landing fit     | The page answers the wrong search intent             | The intent is close, but the title or opening is unclear | Query, title, opening, and page type all match                |
+| Search-result click fit   | Impressions produce no useful clicks                 | The snippet is relevant but weak or untested             | The snippet earns qualified clicks for its position           |
+| Content and internal path | The page is thin, isolated, or sends readers nowhere | The answer is useful but has gaps or a weak next step    | The answer is complete and links to the next useful page      |
+| Measurement and revenue   | No meaningful action is tracked                      | Some engagement or lead events are visible               | The page has a clear business job and measurable next action  |
+
+Add the five scores, then use the weakest rows to build the action plan:
+
+- **80-100:** Protect what works and expand the query cluster carefully.
+- **60-79:** Fix the two weakest areas before publishing more content.
+- **40-59:** Resolve intent, content, and internal-path problems before polishing the snippet.
+- **0-39:** Start with crawlability, indexability, and measurement.
+
+This is not a Google ranking factor, and it is not useful for comparing one store with another. It is a prioritization tool for one store over time. A [store grader](/tools/store-analyzer) can speed up evidence collection, but the review still needs a person to decide which fix matters most.
 
 ## What to measure first
 
@@ -255,7 +280,7 @@ Bring in a technical partner when the evaluation shows:
 - organic traffic is rising but leads or sales are not,
 - the team knows the problem but cannot safely implement the fix.
 
-CartShift Studio works where SEO, performance, and ecommerce implementation overlap. If your review points to theme, app, structure, or conversion issues, start with the [store analyzer](/tools/store-analyzer) or review our [Shopify development services](/solutions/shopify).
+CartShift Studio works where SEO, performance, and ecommerce implementation overlap. If your review points to theme, app, structure, or conversion issues, start with the [store analyzer](/tools/store-analyzer), review our [Shopify development services](/solutions/shopify), or see how we approach [technical and content SEO](/solutions/seo).
 
 ## Final takeaway
 
@@ -265,7 +290,11 @@ The best version shows which pages deserve attention, which queries are close to
 
 ---he---
 
-סקירת Shopify SEO לא צריכה לשאול שאלה כללית מדי: "האם ה-SEO עובד?"
+סקירת Shopify SEO צריכה להסתיים בחמש פעולות מדורגות, לא בדשבורד עם 40 טאבים.
+
+בתוך 60 דקות, אתם אמורים לזהות את העמוד שכדאי לתקן ראשון, את הראיות שמאחורי הבחירה ואת המדד שיראה אם התיקון עבד.
+
+הסקירה לא צריכה לשאול שאלה כללית מדי: "האם ה-SEO עובד?"
 
 היא צריכה לענות על שאלה חדה יותר: אילו עמודים מקבלים חשיפה, אילו עמודים מבזבזים impressions, ואילו תיקונים הכי צפויים להפוך ביקוש אורגני להכנסות.
 
@@ -301,6 +330,27 @@ The best version shows which pages deserve attention, which queries are close to
 | חיבור להכנסות | אפשר לקשור עמודי SEO לפניות, assisted sales או חקירת מוצרים | דירוגים מדווחים בנפרד מהתנהגות מסחרית                            | סימון עמודים לפי כוונה ובדיקת פעולות downstream |
 
 ברוב חנויות Shopify, השורה בעלת הערך הגבוה ביותר היא זו שהכי קרובה להכנסה. אם שתי בעיות נראות שוות, תקנו קודם את זו שמשפיעה על מוצר, collection, checkout או מסלול פנייה איכותי.
+
+## איך לחשב ציון Shopify SEO
+
+ציון שימושי רק כשהוא מצביע על הפעולה הבאה. תנו לכל אזור 0, 10 או 20 נקודות לפי הראיות החזקות ביותר שאפשר לאמת.
+
+| אזור ניקוד              | 0 נקודות                                      | 10 נקודות                                             | 20 נקודות                                          |
+| ----------------------- | --------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------- |
+| אינדוקס                 | עמודים חשובים חסומים, כפולים או חסרים         | הכיסוי מעורב או ש-Google עדיין לא עיבד תיקונים חשובים | עמודים חשובים ניתנים לסריקה, קנוניים ומיוצגים נכון |
+| התאמת query ועמוד נחיתה | העמוד עונה על כוונת חיפוש שגויה               | הכוונה קרובה, אבל ה-title או הפתיחה לא ברורים         | ה-query, ה-title, הפתיחה וסוג העמוד תואמים         |
+| התאמת התוצאה לקליק      | impressions לא מייצרים קליקים שימושיים        | ה-snippet רלוונטי אבל חלש או לא נבדק                  | ה-snippet מייצר קליקים איכותיים ביחס למיקום        |
+| תוכן ומסלול פנימי       | העמוד דק, מבודד או לא שולח את הקורא לשום מקום | התשובה מועילה אבל יש בה פערים או צעד המשך חלש         | התשובה מלאה ומקשרת לעמוד השימושי הבא               |
+| מדידה והכנסות           | לא נמדדת פעולה משמעותית                       | יש נתוני מעורבות או לידים חלקיים                      | לעמוד יש תפקיד עסקי ברור ופעולת המשך שאפשר למדוד   |
+
+חברו את חמשת הציונים ובנו את תוכנית הפעולה מהשורות החלשות ביותר:
+
+- **80-100:** שמרו על מה שעובד והרחיבו בזהירות את קלאסטר ה-queries.
+- **60-79:** תקנו את שני האזורים החלשים לפני שמפרסמים תוכן נוסף.
+- **40-59:** פתרו בעיות כוונה, תוכן ומסלול פנימי לפני שמלטשים את ה-snippet.
+- **0-39:** התחילו מסריקה, אינדוקס ומדידה.
+
+זה לא פקטור דירוג של Google, ואין טעם להשתמש בציון כדי להשוות בין חנויות שונות. זה כלי לתעדוף השיפור של אותה חנות לאורך זמן. [כלי דירוג חנות](/tools/store-analyzer) יכול לקצר את איסוף הראיות, אבל עדיין נדרש אדם שיחליט איזה תיקון חשוב ביותר.
 
 ## מה מודדים קודם
 
@@ -509,7 +559,7 @@ GA4 לא צריך להיות דשבורד גס של "טראפיק SEO עלה א�
 - הטראפיק האורגני עולה אבל לידים או מכירות לא,
 - הצוות יודע מה הבעיה אבל לא יכול ליישם בבטחה.
 
-CartShift Studio עובד בדיוק באזור שבו SEO, ביצועים ויישום איקומרס נפגשים. אם הסקירה מצביעה על theme, אפליקציות, מבנה או בעיות המרה, התחילו עם [כלי ניתוח החנות](/tools/store-analyzer) או קראו על [שירותי Shopify](/solutions/shopify).
+CartShift Studio עובד בדיוק באזור שבו SEO, ביצועים ויישום איקומרס נפגשים. אם הסקירה מצביעה על theme, אפליקציות, מבנה או בעיות המרה, התחילו עם [כלי ניתוח החנות](/tools/store-analyzer), קראו על [שירותי Shopify](/solutions/shopify), או ראו איך אנחנו ניגשים ל-[SEO טכני ותוכן](/solutions/seo).
 
 ## השורה התחתונה
 
