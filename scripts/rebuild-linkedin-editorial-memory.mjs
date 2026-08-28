@@ -56,6 +56,7 @@ const normalizedHistory = posted
   .filter(entry => entry?.slug && entry?.postedAt)
   .sort((a, b) => new Date(a.postedAt) - new Date(b.postedAt))
   .map(entry => ({
+    editorialVersion: entry.editorialVersion || 1,
     slug: entry.slug,
     title: entry.title || entry.slug,
     contentType: entry.contentType || 'blog',
@@ -66,6 +67,10 @@ const normalizedHistory = posted
     editorialPillar: entry.editorialPillar || 'unknown',
     semanticSignature: legacySemanticSignature(entry),
     critic: entry.critic,
+    grounding: entry.grounding,
+    editorialReview: entry.editorialReview,
+    editorialProcess: entry.editorialProcess,
+    editorialFingerprint: entry.editorialFingerprint,
     publishedAt: entry.postedAt,
     linkedinPostId: entry.linkedinPostId || '',
   }));
@@ -81,7 +86,7 @@ for (const entry of normalizedHistory) {
   };
 }
 
-memory.version = 1;
+memory.version = 2;
 memory.updatedAt = new Date().toISOString();
 memory.recentPosts = normalizedHistory.slice(-maxRecentPosts);
 memory.topicStats = topicStats;
@@ -96,6 +101,6 @@ console.log(
       memoryFile,
     },
     null,
-    2,
-  ),
+    2
+  )
 );

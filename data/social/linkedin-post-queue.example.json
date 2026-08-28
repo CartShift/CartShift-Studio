@@ -1,3 +1,105 @@
 {
-  "items": []
+  "items": [
+    {
+      "editorialVersion": 2,
+      "contentType": "blog",
+      "slug": "example-product-state",
+      "title": "The Drawer Succeeded but the Table Disagreed",
+      "url": "https://cart-shift.com/en/blog/example-product-state",
+      "cycle": 1,
+      "editorialPillar": "system-design",
+      "topicKey": "cross-surface-server-state",
+      "angle": "A mutation is incomplete while another screen can contradict the result.",
+      "audience": "product-minded engineers building operational software",
+      "format": "concrete-product-observation",
+      "semanticSignature": {
+        "thesis": "A mutation is incomplete while another product surface can contradict its result.",
+        "concepts": [
+          "server state",
+          "cache invalidation",
+          "optimistic updates",
+          "product consistency"
+        ],
+        "mechanism": "Patch or invalidate every relevant cached representation and make rollback behavior visible.",
+        "consequence": "People see one coherent account of the entity after a write or failure.",
+        "hookPattern": "concrete-product-bug"
+      },
+      "critic": {
+        "status": "passed",
+        "scores": {
+          "humanVoice": 5,
+          "originality": 4,
+          "technicalCredibility": 5,
+          "professionalPositioning": 5,
+          "practicalUsefulness": 5,
+          "hookQuality": 4
+        },
+        "unsupportedClaims": [],
+        "total": 28,
+        "rewriteCount": 1
+      },
+      "grounding": {
+        "mode": "published-source",
+        "concreteSituation": "An order is updated in a side drawer while the table behind it keeps the old status.",
+        "sources": [
+          {
+            "type": "blog",
+            "reference": "content/blog/example-product-state.md"
+          }
+        ],
+        "verifiedPersonalClaims": []
+      },
+      "editorialReview": {
+        "status": "passed",
+        "scores": {
+          "centralIdea": 5,
+          "concreteSituation": 5,
+          "authorPerspective": 5,
+          "humanVoice": 5,
+          "technicalCredibility": 5,
+          "productSpecificity": 5,
+          "naturalRhythm": 4,
+          "usefulEnding": 5,
+          "responsePotential": 4,
+          "beyondDocumentation": 5,
+          "technicalRestraint": 4,
+          "sourceIntegrity": 5
+        },
+        "risks": {
+          "genericAphorisms": false,
+          "linkedinTemplate": false,
+          "preachyTone": false,
+          "genericCallToAction": false,
+          "excessiveLists": false,
+          "fabricatedExperience": false,
+          "vagueAdvice": false,
+          "textbookSummary": false
+        },
+        "aiGenericLikelihood": 1,
+        "documentationLikelihood": 0,
+        "thoughtLeaderLikelihood": 0,
+        "unsupportedClaims": [],
+        "critique": "The situation and opinion are specific; the technical detail serves the product argument.",
+        "requiredChanges": [],
+        "rewriteCount": 1
+      },
+      "editorialProcess": {
+        "version": 2,
+        "stages": [
+          "topic-selection",
+          "context-grounding",
+          "draft",
+          "skeptical-review",
+          "rewrite",
+          "final-review",
+          "final-validation"
+        ],
+        "reviewPasses": 2,
+        "rewriteCount": 1,
+        "structurePattern": "concrete-product-bug"
+      },
+      "queuedAt": "2026-01-01T00:00:00.000Z",
+      "text": "You update an order from a side drawer, close it, and the table behind it still shows the previous status.\n\nThe request succeeded. The drawer even showed a success toast. But the product now has two answers for the same order, and the person using it has no good reason to trust either one.\n\nI like optimistic updates for actions that are easy to reverse. I do not like using them to make an uncertain write look settled. The implementation is not finished when the button owner looks correct. It is finished when the other views that carry the same fact can no longer contradict it.\n\nThat usually means deciding which cache gets patched immediately, which queries should be invalidated, and what the interface says if the write fails after the optimistic state appears. The exact choice depends on how expensive a refetch is and how many screens share the entity.\n\nA useful test is to complete the mutation, then open another surface that shows the same record. If the two views tell different stories, there is still product work hiding inside the state-management work.\n\nhttps://cart-shift.com/en/blog/example-product-state"
+    }
+  ]
 }

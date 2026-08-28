@@ -29,7 +29,7 @@ function parseArgs(argv) {
   const args = {
     analytics: false,
     port: Number(process.env.LINKEDIN_OAUTH_PORT || 3457),
-    scope: process.env.LINKEDIN_SCOPE || 'w_organization_social',
+    scope: process.env.LINKEDIN_SCOPE || 'w_member_social',
     scopeProvided: false,
     writeEnv: false,
   };

@@ -18,6 +18,7 @@ function createOriginalText({ hashtags = '#ProductEngineering', words = 230 } = 
 
 function createItem(overrides = {}) {
   return {
+    editorialVersion: 2,
     contentType: 'blog',
     slug,
     title: 'Reliable Product Systems',
@@ -43,6 +44,61 @@ function createItem(overrides = {}) {
       unsupportedClaims: [],
       total: 25,
       rewriteCount: 0,
+    },
+    grounding: {
+      mode: 'published-source',
+      concreteSituation:
+        'A status changes in a detail drawer while the table behind it keeps the previous value.',
+      sources: [{ type: 'blog', reference: `content/blog/${slug}.md` }],
+      verifiedPersonalClaims: [],
+    },
+    editorialReview: {
+      status: 'passed',
+      scores: {
+        centralIdea: 5,
+        concreteSituation: 5,
+        authorPerspective: 4,
+        humanVoice: 4,
+        technicalCredibility: 5,
+        productSpecificity: 5,
+        naturalRhythm: 4,
+        usefulEnding: 4,
+        responsePotential: 4,
+        beyondDocumentation: 4,
+        technicalRestraint: 4,
+        sourceIntegrity: 5,
+      },
+      risks: {
+        genericAphorisms: false,
+        linkedinTemplate: false,
+        preachyTone: false,
+        genericCallToAction: false,
+        excessiveLists: false,
+        fabricatedExperience: false,
+        vagueAdvice: false,
+        textbookSummary: false,
+      },
+      aiGenericLikelihood: 1,
+      documentationLikelihood: 1,
+      thoughtLeaderLikelihood: 0,
+      unsupportedClaims: [],
+      critique: 'The example is concrete and the opinion is visible without over-explaining it.',
+      requiredChanges: [],
+      rewriteCount: 0,
+    },
+    editorialProcess: {
+      version: 2,
+      stages: [
+        'topic-selection',
+        'context-grounding',
+        'draft',
+        'skeptical-review',
+        'final-review',
+        'final-validation',
+      ],
+      reviewPasses: 1,
+      rewriteCount: 0,
+      structurePattern: 'concrete-product-situation',
     },
     ...overrides,
   };
@@ -96,7 +152,7 @@ describe('validateLinkedInQueueItem', () => {
   it('rejects posts outside the editorial length range', () => {
     const result = validateLinkedInQueueItem(createItem({ text: createText({ words: 50 }) }));
 
-    expect(result.errors).toContainEqual(expect.stringContaining('must contain 220-450 words'));
+    expect(result.errors).toContainEqual(expect.stringContaining('must contain 120-320 words'));
   });
 
   it('rejects literal escaped newlines', () => {
@@ -107,5 +163,38 @@ describe('validateLinkedInQueueItem', () => {
     expect(result.errors).toContain(
       'post text contains escaped newline characters instead of real line breaks'
     );
+  });
+
+  it('requires the skeptical editorial review before queueing', () => {
+    const result = validateLinkedInQueueItem(createItem({ editorialReview: undefined }));
+
+    expect(result.errors).toContain('editorial review is required');
+  });
+
+  it('requires a final review after every rewrite', () => {
+    const result = validateLinkedInQueueItem(
+      createItem({
+        editorialReview: {
+          ...createItem().editorialReview,
+          rewriteCount: 1,
+        },
+        editorialProcess: {
+          ...createItem().editorialProcess,
+          stages: [
+            'topic-selection',
+            'context-grounding',
+            'draft',
+            'skeptical-review',
+            'rewrite',
+            'final-validation',
+          ],
+          reviewPasses: 1,
+          rewriteCount: 1,
+        },
+      })
+    );
+
+    expect(result.errors).toContain('editorial process is missing final-review');
+    expect(result.errors).toContain('each rewrite requires a new skeptical review pass');
   });
 });

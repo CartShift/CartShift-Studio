@@ -1,3 +1,5 @@
+import { analyzeLinkedInEditorialQuality } from './linkedin-editorial-quality.mjs';
+
 export const CRITIC_SCORE_KEYS = [
   'humanVoice',
   'originality',
@@ -7,8 +9,8 @@ export const CRITIC_SCORE_KEYS = [
   'hookQuality',
 ];
 
-const LINKEDIN_WORD_COUNT_MIN = 220;
-const LINKEDIN_WORD_COUNT_MAX = 450;
+const LINKEDIN_WORD_COUNT_MIN = 120;
+const LINKEDIN_WORD_COUNT_MAX = 320;
 const LINKEDIN_HASHTAG_MAX = 2;
 const MARKDOWN_LINK_PATTERN = /\[[^\]]+\]\(https?:\/\/[^)]+\)/i;
 const HASHTAG_PATTERN = /(^|\s)#[\p{L}\p{N}_]+/gu;
@@ -23,12 +25,13 @@ function countWords(text) {
   return text.trim().split(/\s+/u).filter(Boolean).length;
 }
 
-export function validateLinkedInQueueItem(item) {
+export function validateLinkedInQueueItem(item, { recentPosts = [] } = {}) {
   const errors = [];
   const contentType = item?.contentType || 'blog';
   const criticScores = item?.critic?.scores;
   const signature = item?.semanticSignature;
 
+  if (item?.editorialVersion !== 2) errors.push('editorialVersion must be 2');
   if (!item?.slug) errors.push('slug is required');
   if (!item?.title) errors.push('title is required');
   if (!item?.text) errors.push('text is required');
@@ -102,9 +105,24 @@ export function validateLinkedInQueueItem(item) {
     errors.push('semantic hookPattern is required');
   }
 
+  const editorialQuality = analyzeLinkedInEditorialQuality({
+    text: item?.text || '',
+    grounding: item?.grounding,
+    editorialReview: item?.editorialReview,
+    editorialProcess: item?.editorialProcess,
+    semanticSignature: signature,
+    recentPosts,
+  });
+  errors.push(...editorialQuality.errors);
+
   return {
     valid: errors.length === 0,
-    errors,
+    errors: [...new Set(errors)],
+    warnings: editorialQuality.warnings,
+    editorialReviewTotal: editorialQuality.editorialReviewTotal,
+    closestSimilarity: editorialQuality.closestSimilarity,
+    editorialFingerprint: editorialQuality.fingerprint,
+    metrics: editorialQuality.metrics,
     criticTotal: criticScores
       ? CRITIC_SCORE_KEYS.reduce((sum, key) => sum + Number(criticScores[key] || 0), 0)
       : 0,

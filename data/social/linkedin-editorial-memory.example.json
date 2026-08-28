@@ -1,10 +1,12 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": null,
   "strategy": {
     "maxRecentPosts": 32,
     "topicCooldownPosts": 6,
-    "candidatePoolSize": 4
+    "candidatePoolSize": 4,
+    "recentSemanticWindow": 6,
+    "recentStructureWindow": 6
   },
   "recentPosts": [],
   "topicHistory": []

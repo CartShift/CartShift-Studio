@@ -79,10 +79,26 @@ pnpm run dev
 
 ## Social Publishing
 
+The LinkedIn automation uses a staged editorial pipeline. Build the current context packet before selecting a topic:
+
+```bash
+npm run social:linkedin:editorial:context
+```
+
+The packet combines the stored author profile, blog inventory, recent confirmed posts, performance availability, and recent git evidence. It also provides separate prompts for topic selection, drafting, skeptical review, and rewriting. These stages must remain separate; the writer cannot self-approve its own draft in the same pass.
+
+Validate all queued items against the human-voice, grounding, review, and repetition gates:
+
+```bash
+npm run social:linkedin:editorial:validate
+```
+
+See [`docs/LINKEDIN_EDITORIAL_SYSTEM.md`](../docs/LINKEDIN_EDITORIAL_SYSTEM.md) for the pipeline contract and queue metadata.
+
 Publish a LinkedIn post from a text file with optional ledger-backed idempotency:
 
 ```bash
-pnpm run social:linkedin:publish -- --text-file path/to/post.txt --ledger-file data/social/linkedin-blog-post-ledger.json --slug my-post --title "Post title" --url https://cartshift.com/blog/my-post
+pnpm run social:linkedin:publish -- --text-file path/to/post.txt --ledger-file data/social/linkedin-blog-post-ledger.json --slug my-post --title "Post title" --url https://cart-shift.com/en/blog/my-post
 ```
 
 Dry run:

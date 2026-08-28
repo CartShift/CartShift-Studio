@@ -2,6 +2,8 @@
 
 Runtime state for LinkedIn publishing scripts. These files are **gitignored** to avoid committing operational data to a public repository.
 
+The tracked author voice and editorial thresholds live in [`config/linkedin-editorial.json`](../../config/linkedin-editorial.json). Runtime memory stores confirmed semantic, opening, ending, and structure fingerprints so future posts can avoid repeating the same idea or LinkedIn template.
+
 ## Setup
 
 Copy the example templates to their runtime filenames:

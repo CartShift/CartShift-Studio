@@ -1,0 +1,168 @@
+{
+  "version": 2,
+  "authorProfile": {
+    "name": "Yotam",
+    "role": "senior full-stack and product engineer",
+    "audience": [
+      "senior engineers",
+      "product-minded developers",
+      "engineering leads",
+      "technical ecommerce operators"
+    ],
+    "voiceQualities": [
+      "technically strong without performing expertise",
+      "product-minded",
+      "opinionated but nuanced",
+      "curious rather than preachy",
+      "clear, concise, conversational, and slightly informal"
+    ],
+    "recurringLenses": [
+      "product behavior matters as much as technical correctness",
+      "UX and architecture are connected",
+      "strong engineering reduces ambiguity",
+      "simple implementations are valuable until they hide product inconsistency",
+      "maintainable systems need clear state ownership",
+      "AI and automation should be discussed without hype"
+    ],
+    "allowedFirstPerson": {
+      "preferences": ["I like", "I prefer", "I do not like", "I am not convinced"],
+      "generalObservations": [
+        "I keep seeing",
+        "I have learned",
+        "One thing that bothers me",
+        "The interesting part is"
+      ],
+      "rule": "First-person preferences and general observations are allowed. Specific personal incidents require a recorded source and exact verified claim."
+    }
+  },
+  "topicSelection": {
+    "candidateCount": 4,
+    "question": "Is there a specific engineering tension, failure mode, tradeoff, surprising behavior, or opinion here?",
+    "requiredCandidateFields": [
+      "observation",
+      "tension",
+      "opinion",
+      "concreteSituation",
+      "technicalMechanism",
+      "unresolvedTradeoff",
+      "sourceReferences",
+      "semanticSignature"
+    ],
+    "avoidBroadTopics": [
+      "clean code",
+      "microservices",
+      "scalability",
+      "testing is important",
+      "AI will change development",
+      "communication matters",
+      "technical debt is bad",
+      "optimistic UI without a narrower product behavior",
+      "API design without a specific failure mode"
+    ]
+  },
+  "writing": {
+    "targetWords": {
+      "min": 150,
+      "max": 250
+    },
+    "hardWords": {
+      "min": 120,
+      "max": 320
+    },
+    "maxHashtags": 2,
+    "maxLists": 1,
+    "maxListItems": 5,
+    "primaryIdeas": 1,
+    "preferredSituations": [
+      "dashboards",
+      "tables",
+      "drawers",
+      "detail views",
+      "permissions",
+      "publishing flows",
+      "inventory",
+      "payments",
+      "forms",
+      "search and filters",
+      "optimistic UI",
+      "queues and background jobs",
+      "integrations and APIs",
+      "state management and data synchronization"
+    ],
+    "structurePatterns": [
+      "concrete-product-bug",
+      "surprising-ui-state",
+      "opinion-from-tradeoff",
+      "small-architecture-decision",
+      "implementation-seam",
+      "question-from-a-real-constraint",
+      "repository-change-observation"
+    ],
+    "endingStrategies": [
+      "concrete-test",
+      "technical-discussion-question",
+      "nuanced-unresolved-tradeoff",
+      "specific-observation"
+    ],
+    "bannedPhrases": [
+      "Before your next",
+      "The real question is",
+      "Every engineer should",
+      "The lesson?",
+      "The takeaway?",
+      "Here's the thing:",
+      "Agree?",
+      "Thoughts?",
+      "Who else has experienced this?"
+    ],
+    "bannedBuzzwords": [
+      "game changer",
+      "unlock",
+      "leverage",
+      "paradigm shift",
+      "10x",
+      "thought leadership",
+      "revolutionary",
+      "cutting-edge"
+    ],
+    "forbiddenCharacters": ["—"]
+  },
+  "grounding": {
+    "allowedModes": [
+      "general-observation",
+      "published-source",
+      "repository-evidence",
+      "verified-experience"
+    ],
+    "specificPersonalClaimsRequireEvidence": true,
+    "neverInfer": [
+      "clients",
+      "employers",
+      "team conversations",
+      "dates of personal incidents",
+      "metrics",
+      "business outcomes",
+      "production incidents not present in a source"
+    ]
+  },
+  "review": {
+    "minimumScorePerDimension": 3,
+    "minimumHumanScore": 4,
+    "minimumTotal": 48,
+    "maximumAiGenericLikelihood": 1,
+    "maximumDocumentationLikelihood": 1,
+    "maximumThoughtLeaderLikelihood": 1,
+    "maximumRewrites": 3,
+    "trimTargetPercent": [15, 25],
+    "requiredRiskState": false
+  },
+  "repetition": {
+    "recentSemanticWindow": 6,
+    "recentStructureWindow": 6,
+    "highSemanticSimilarity": 0.34,
+    "moderateSemanticSimilarity": 0.2,
+    "highOpeningSimilarity": 0.72,
+    "highEndingSimilarity": 0.72,
+    "maximumConsecutiveStructureUses": 2
+  }
+}

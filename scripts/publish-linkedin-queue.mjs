@@ -47,6 +47,7 @@ function updateEditorialMemory(item, linkedinPostId) {
   const publishedAt = new Date().toISOString();
   const topicKey = item.topicKey || item.slug;
   const entry = {
+    editorialVersion: item.editorialVersion,
     slug: item.slug,
     title: item.title,
     contentType: item.contentType || 'blog',
@@ -57,18 +58,21 @@ function updateEditorialMemory(item, linkedinPostId) {
     editorialPillar: item.editorialPillar || '',
     semanticSignature: item.semanticSignature,
     critic: item.critic,
+    grounding: item.grounding,
+    editorialReview: item.editorialReview,
+    editorialProcess: item.editorialProcess,
+    editorialFingerprint: item.editorialFingerprint,
     publishedAt,
     linkedinPostId,
   };
 
   const recentPosts = Array.isArray(memory.recentPosts) ? memory.recentPosts : [];
   memory.recentPosts = [...recentPosts.filter(post => post.slug !== item.slug), entry].slice(
-    -maxRecentPosts,
+    -maxRecentPosts
   );
 
-  const topicStats = memory.topicStats && typeof memory.topicStats === 'object'
-    ? memory.topicStats
-    : {};
+  const topicStats =
+    memory.topicStats && typeof memory.topicStats === 'object' ? memory.topicStats : {};
   const existingTopic = topicStats[topicKey] || { publishCount: 0 };
   topicStats[topicKey] = {
     publishCount: Number(existingTopic.publishCount || 0) + 1,
@@ -77,7 +81,7 @@ function updateEditorialMemory(item, linkedinPostId) {
     lastAngle: entry.angle,
   };
 
-  memory.version = 1;
+  memory.version = 2;
   memory.updatedAt = publishedAt;
   memory.topicStats = topicStats;
   writeJsonAtomic(memoryFile, memory);
@@ -92,7 +96,9 @@ if (!Array.isArray(queue.items) || queue.items.length === 0) {
 
 const [item, ...remainingItems] = queue.items;
 const contentType = item?.contentType || 'blog';
-const validation = validateLinkedInQueueItem(item);
+const memory = readJson(memoryFile, { recentPosts: [] });
+const recentPosts = Array.isArray(memory.recentPosts) ? memory.recentPosts.slice(-6) : [];
+const validation = validateLinkedInQueueItem(item, { recentPosts });
 
 if (!validation.valid) {
   console.error(
@@ -105,11 +111,13 @@ if (!validation.valid) {
         validationErrors: validation.errors,
       },
       null,
-      2,
-    ),
+      2
+    )
   );
   process.exit(1);
 }
+
+item.editorialFingerprint = validation.editorialFingerprint;
 
 const publish = spawnSync(
   process.execPath,
@@ -138,6 +146,16 @@ const publish = spawnSync(
     JSON.stringify(item.semanticSignature),
     '--critic',
     JSON.stringify(item.critic),
+    '--editorial-version',
+    String(item.editorialVersion),
+    '--grounding',
+    JSON.stringify(item.grounding),
+    '--editorial-review',
+    JSON.stringify(item.editorialReview),
+    '--editorial-process',
+    JSON.stringify(item.editorialProcess),
+    '--editorial-fingerprint',
+    JSON.stringify(item.editorialFingerprint),
     '--url',
     item.url || '',
     '--cycle',
@@ -147,7 +165,7 @@ const publish = spawnSync(
     cwd: process.cwd(),
     encoding: 'utf8',
     input: item.text,
-  },
+  }
 );
 
 const stdout = publish.stdout.trim();
@@ -165,8 +183,8 @@ if (publish.status !== 0 || !parsedOutput.ok) {
         publisher: parsedOutput,
       },
       null,
-      2,
-    ),
+      2
+    )
   );
   process.exit(1);
 }
@@ -181,7 +199,8 @@ try {
   updateEditorialMemory(item, parsedOutput.linkedinPostId);
   memoryUpdated = true;
 } catch {
-  memoryWarning = 'Post published, but editorial memory could not be updated; rebuild it from the ledger.';
+  memoryWarning =
+    'Post published, but editorial memory could not be updated; rebuild it from the ledger.';
 }
 
 console.log(
@@ -197,6 +216,6 @@ console.log(
       remainingQueueItems: queue.items.length,
     },
     null,
-    2,
-  ),
+    2
+  )
 );
