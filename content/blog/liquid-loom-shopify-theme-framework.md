@@ -1,6 +1,6 @@
 ---
 title: 'Liquid Loom: A Source-First Shopify Theme Development Framework'
-date: '2026-08-06'
+date: '2026-08-29'
 excerpt: 'Meet Liquid Loom, an open-source Shopify theme framework that turns organized source code into deterministic, Shopify-ready output with Vite, Tailwind CSS, caching, and tested build safeguards.'
 category: 'Shopify'
 image: '/images/blog/liquid-loom-shopify-theme-framework.webp'
@@ -36,6 +36,8 @@ It does not replace Liquid. It does not add a storefront runtime. It makes the b
 ## Why source-first theme development matters
 
 Shopify's runtime contract is useful precisely because it is conventional. A deployable theme has recognizable directories such as `layout`, `sections`, `snippets`, `templates`, `config`, `locales`, and `assets`. The platform, theme editor, Theme Check, and Shopify CLI all understand that shape.
+
+Teams still choosing between light customization, a native custom build, and headless delivery should first use our [custom Shopify theme development decision guide](/blog/custom-shopify-theme-development). Liquid Loom is intentionally built for the native-theme branch of that decision.
 
 The problem begins when the deployment format also becomes the authoring format.
 
@@ -230,6 +232,8 @@ It is not a headless storefront, an application framework, or a replacement for 
 
 The most useful open-source tools often do not erase constraints. They turn constraints into contracts developers can see, test, and trust.
 
+For a production storefront, pair the repository checks with a [store speed and conversion review](/blog/store-speed-vs-conversion). If the work extends into theme architecture, integrations, or storefront QA, [CartShift's Shopify development service](/solutions/shopify) can help turn the framework into a production-ready theme.
+
 Explore the [Liquid Loom repository on GitHub](https://github.com/yotamon/Liquid-Loom), run the validation suite, and open a focused issue or pull request when you find a way to make Shopify theme development more predictable.
 
 ---he---
@@ -253,6 +257,8 @@ dist/theme/sections/hero.liquid
 ## למה פיתוח תבניות מבוסס-מקור חשוב
 
 החוזה של Shopify בזמן ריצה שימושי דווקא מפני שהוא קונבנציונלי. לתבנית מוכנה לפריסה יש תיקיות מוכרות כמו `layout`, `sections`, `snippets`, `templates`, `config`, `locales` ו-`assets`. הפלטפורמה, עורך התבנית, Theme Check ו-Shopify CLI מבינים את המבנה הזה.
+
+צוותים שעדיין בוחרים בין התאמה קלה, תבנית native מותאמת אישית ופתרון headless יכולים להתחיל עם [מדריך ההחלטה שלנו לפיתוח תבנית Shopify מותאמת](/blog/custom-shopify-theme-development). Liquid Loom נועד במכוון למסלול התבנית ה-native בהחלטה הזו.
 
 הבעיה מתחילה כאשר פורמט הפריסה הופך גם לפורמט הכתיבה.
 
@@ -446,5 +452,7 @@ Liquid Loom מתאים לצוותי תבניות Shopify שרוצים:
 הוא אינו חנות headless, פריימוורק אפליקציה או תחליף ל-Shopify CLI. הוא סביבת העבודה שמקיפה תבנית: קלטים מאורגנים, טרנספורמציות מוגנות ותוצאה מוכנה לפריסה שנשארת native לפלטפורמה.
 
 כלי הקוד הפתוח השימושיים ביותר לא תמיד מוחקים מגבלות. הם הופכים מגבלות לחוזים שמפתחים יכולים לראות, לבדוק ולסמוך עליהם.
+
+בחנות production כדאי לשלב את בדיקות המאגר עם [סקירת מהירות והמרות](/blog/store-speed-vs-conversion). אם העבודה מתרחבת לארכיטקטורת תבנית, אינטגרציות או QA לחנות, [שירותי הפיתוח שלנו ל-Shopify](/solutions/shopify) יכולים לעזור להפוך את הפריימוורק לתבנית מוכנה לפריסה.
 
 היכנסו ל-[מאגר Liquid Loom ב-GitHub](https://github.com/yotamon/Liquid-Loom), הריצו את חבילת האימות ופתחו issue ממוקד או pull request כאשר תמצאו דרך להפוך את פיתוח תבניות Shopify לצפוי יותר.
