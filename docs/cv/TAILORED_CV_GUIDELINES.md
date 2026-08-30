@@ -38,9 +38,9 @@ A backend role does not require pretending that the rest of the full-stack exper
 
 ---
 
-## 2. Stable positioning vs. role-specific positioning
+## 2. Stable positioning vs. role-specific focus
 
-Think of the top of the CV as two conceptual layers:
+Think of the top of the CV as two layers.
 
 ### Stable identity / positioning
 
@@ -52,29 +52,47 @@ Preferred base:
 
 This wording can be refined over time if Yotam changes his long-term positioning, but it should not be changed simply because a job advertisement uses a different title.
 
-### Role-specific subtitle / focus
+### Tailored subtitle / focus
 
-A short secondary focus can be tailored to the role, for example:
+The secondary focus may be tailored, but it must remain **capability-based, broad, and reusable across multiple employers**.
 
-- Banking Systems, APIs & Integrations
+It should describe a genuine professional area inside Yotam's experience, not the industry, company, or vacancy he is applying to.
+
+Good examples:
+
+- Systems, APIs & Integrations
 - Distributed Systems & Cloud Platforms
 - React, Product UX & Web Performance
+- Cloud Platforms, APIs & Integrations
+- AI-Assisted Products, Automation & Integrations
+
+Avoid subtitles such as:
+
+- Banking Systems, APIs & Integrations
 - Healthcare Platforms & Integrations
-- E-commerce, Automation & Integrations
+- Fintech Backend Systems
+- E-commerce Engineering for Retail
+- N26 Connectivity & Banking Systems
 
-This is where the CV may speak directly to the target opportunity.
+Even when these are factually supported, they can make the CV look visibly rewritten for one employer.
 
-The role-specific subtitle should describe **which part of Yotam's existing experience is most relevant**, not claim a new identity.
+### Subtitle test
 
-### If the current PDF layout only supports one headline
+Before using a subtitle, ask:
 
-Do not solve the limitation by changing the primary profession.
+> **Would this still look natural if the recruiter knew the same CV had been sent to another company with a similar engineering problem?**
 
-Prefer a stable headline such as:
+If yes, it is probably a good professional focus.
 
-**Senior Full-Stack Engineer | Product & AI**
+If it only makes sense because of the target company's industry or wording, move that relevance into the summary, experience bullets, and skill emphasis instead.
 
-and express the job-specific focus through the summary, experience emphasis, skill ordering, and metadata until the renderer has a dedicated subtitle field.
+### Important distinction
+
+Industry-specific evidence is absolutely allowed and often valuable inside the CV.
+
+For example, a banking role can and should surface Leumi, high-availability banking services, fintech integrations, and enterprise messaging when relevant. The rule is only that **the top-level subtitle should not advertise that the CV was tailored to banking**.
+
+The recruiter should discover the fit from the evidence, rather than from a label that announces the tailoring.
 
 ---
 
@@ -162,6 +180,7 @@ A tailored CV should not look like the job advertisement was copied into the can
 Avoid:
 
 - changing the title to exactly match the vacancy when that is not Yotam's real professional identity
+- using an industry- or company-specific subtitle that reveals the targeting
 - repeating the employer's wording unnaturally
 - inserting every keyword from the requirements
 - forcing marginal experience into the summary because a keyword appears in the listing
@@ -285,6 +304,8 @@ The code and the generated PDF should remain reproducible from the repository.
 Before generating any tailored CV, verify:
 
 - [ ] The primary professional identity still says **Senior Full-Stack Engineer**.
+- [ ] The stable positioning remains **Product & AI** unless Yotam explicitly changes it.
+- [ ] The subtitle describes a broad professional capability, not the target company or industry.
 - [ ] The CV does not pretend Yotam has become the exact job title in the vacancy.
 - [ ] The summary makes the target fit obvious within the first few sentences.
 - [ ] The strongest relevant evidence appears early.
