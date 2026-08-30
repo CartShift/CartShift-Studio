@@ -7,7 +7,12 @@ import {
   type CVSkillKey,
 } from './cv-data';
 
-export const cvVariantIds = ['product-ai', 'fullstack-healthcare', 'product-frontend'] as const;
+export const cvVariantIds = [
+  'product-ai',
+  'fullstack-healthcare',
+  'product-frontend',
+  'n26-backend',
+] as const;
 
 export type CVVariantId = (typeof cvVariantIds)[number];
 
@@ -36,6 +41,12 @@ export const cvVariantDefinitions: Record<CVVariantId, CVVariantDefinition> = {
     label: 'Product Frontend',
     filename: 'yotam-faraggi-senior-product-engineer-react-cv.pdf',
     headline: 'Senior Product Engineer | React & Full-Stack Web Products',
+  },
+  'n26-backend': {
+    id: 'n26-backend',
+    label: 'N26 Backend',
+    filename: 'yotam-faraggi-senior-backend-product-engineer-n26-cv.pdf',
+    headline: 'Senior Backend & Product Engineer | APIs, Integrations & Cloud',
   },
 };
 
@@ -272,6 +283,145 @@ function buildProductFrontendVariant() {
   return cv;
 }
 
+function buildN26BackendVariant() {
+  const cv = cloneCVData();
+  cv.headline = cvVariantDefinitions['n26-backend'].headline;
+  cv.summary.text =
+    'Senior engineer with more than 10 years of experience building production software across banking, fintech, healthcare, and e-commerce. Backend and integration experience includes high-availability banking services, high-throughput web services, event-driven messaging with JMS, REST APIs and third-party integrations, Node.js and TypeScript, PostgreSQL, Docker, CI/CD, and Google Cloud Platform. Combines hands-on system design and delivery with product ownership, taking work from technical scoping through deployment and ongoing improvement.';
+  cv.summary.metaDescription =
+    'Berlin-based senior backend and product engineer with banking, fintech, API, integration, cloud, event-driven messaging, and production systems experience.';
+
+  updateExperience(cv, 'cartshift', {
+    description:
+      'Independent product and web development studio focused on production web applications, integrations, and workflow automation for international clients.',
+    highlights: [
+      'Build and ship production applications and backend workflows using TypeScript, Node.js, Next.js, third-party APIs, webhooks, and modern web tooling.',
+      'Own architecture and integration decisions from requirements and technical planning through deployment and iterative improvement.',
+      'Develop AI-assisted workflow tools and automations that integrate LLM APIs with external services and operational processes.',
+    ],
+  });
+
+  updateExperience(cv, 'curalife', {
+    description:
+      'Worked across customer-facing telemedicine and e-commerce systems, backend integrations, cloud infrastructure, and technical leadership.',
+    highlights: [
+      'Built and maintained a HIPAA-compliant telemedicine funnel using Next.js, React, TypeScript, and Google Cloud Platform, connecting customer-facing flows with backend services.',
+      'Designed and integrated third-party healthcare and eligibility APIs supporting dynamic customer and operational workflows.',
+      'Built Shopify and HubSpot integrations supporting customer-facing and operational processes.',
+      'Led technical modernization and cloud deployment work with a focus on privacy, reliability, and maintainability.',
+    ],
+  });
+
+  updateExperience(cv, 'paragonex', {
+    description:
+      'Built and maintained production integrations and high-traffic web systems for fintech affiliate operations.',
+    highlights: [
+      'Built integrations between affiliate systems and core fintech platform services.',
+      'Developed and optimized high-traffic web applications using Laravel, Sage, and WordPress with a focus on performance and maintainability.',
+    ],
+  });
+
+  updateExperience(cv, 'ecommerce_venture', {
+    highlights: [
+      'Built and operated direct-to-consumer systems spanning storefronts, payments, fulfillment, analytics, integrations, and day-to-day operations.',
+    ],
+  });
+
+  updateExperience(cv, 'hot', {
+    highlights: [
+      'Built enterprise integrations and high-throughput web services using Oracle OSB, WebLogic, IBM DataPower, and JMS queues.',
+      'Used asynchronous JMS messaging to connect services and operational systems in production environments.',
+    ],
+  });
+
+  updateExperience(cv, 'leumi', {
+    highlights: [
+      'Developed and maintained high-availability banking integrations using IBM WebSphere ESB, IBM Integration Bus, and IBM DataPower.',
+      'Worked on production services connecting banking systems with a focus on reliability and operational continuity.',
+    ],
+  });
+
+  const productEngineering = getSkill(cv, 'productEngineering');
+  if (productEngineering) {
+    productEngineering.category = 'Backend & Product Engineering';
+    productEngineering.items = [
+      'System design',
+      'API design',
+      'Technical scoping',
+      'Production systems',
+      'Reliability',
+      'Performance optimization',
+      'End-to-end ownership',
+    ];
+  }
+
+  const cloudData = getSkill(cv, 'cloudData');
+  if (cloudData) {
+    cloudData.category = 'Cloud & Delivery';
+    cloudData.items = [
+      'Google Cloud Platform',
+      'Docker',
+      'GitHub Actions',
+      'CI/CD',
+      'PostgreSQL',
+      'Firebase',
+      'Vercel',
+    ];
+  }
+
+  const integrations = getSkill(cv, 'commerceIntegrations');
+  if (integrations) {
+    integrations.category = 'APIs, Integrations & Messaging';
+    integrations.items = [
+      'REST APIs',
+      'GraphQL',
+      'Webhooks',
+      'JMS',
+      'IBM Integration Bus',
+      'Oracle OSB',
+      'IBM DataPower',
+    ];
+  }
+
+  const fullStack = getSkill(cv, 'frontendFullStack');
+  if (fullStack) {
+    fullStack.category = 'Backend & Full-Stack';
+    fullStack.items = [
+      'Node.js',
+      'TypeScript',
+      'JavaScript',
+      'Next.js',
+      'React',
+      'PostgreSQL',
+    ];
+  }
+
+  const enterprise = getSkill(cv, 'legacyEnterprise');
+  if (enterprise) {
+    enterprise.category = 'Enterprise & Banking Systems';
+    enterprise.items = [
+      'IBM WebSphere ESB',
+      'IBM Integration Bus',
+      'Oracle OSB',
+      'WebLogic',
+      'IBM DataPower',
+      'JMS',
+      'C++',
+    ];
+  }
+
+  reorderSkills(cv, [
+    'productEngineering',
+    'cloudData',
+    'commerceIntegrations',
+    'frontendFullStack',
+    'legacyEnterprise',
+    'aiAutomation',
+  ]);
+
+  return cv;
+}
+
 export function getCVDataForVariant(variant: CVVariantId): CVData {
   switch (variant) {
     case 'product-ai':
@@ -280,5 +430,7 @@ export function getCVDataForVariant(variant: CVVariantId): CVData {
       return buildHealthcareVariant();
     case 'product-frontend':
       return buildProductFrontendVariant();
+    case 'n26-backend':
+      return buildN26BackendVariant();
   }
 }
