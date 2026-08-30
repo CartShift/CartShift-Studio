@@ -16,37 +16,39 @@ export const cvVariantIds = [
 
 export type CVVariantId = (typeof cvVariantIds)[number];
 
+export const CANONICAL_CV_IDENTITY = 'Senior Full-Stack Engineer | Product & AI';
+
 export interface CVVariantDefinition {
   id: CVVariantId;
   label: string;
   filename: string;
-  headline: string;
+  focus: string;
 }
 
 export const cvVariantDefinitions: Record<CVVariantId, CVVariantDefinition> = {
   'product-ai': {
     id: 'product-ai',
     label: 'Product AI',
-    filename: 'yotam-faraggi-senior-product-engineer-ai-cv.pdf',
-    headline: 'Senior Product Engineer | AI & Full-Stack Products',
+    filename: 'yotam-faraggi-senior-full-stack-engineer-product-ai-cv.pdf',
+    focus: 'AI-Assisted Products, Automation & Integrations',
   },
   'fullstack-healthcare': {
     id: 'fullstack-healthcare',
     label: 'Full-Stack Healthcare',
-    filename: 'yotam-faraggi-senior-full-stack-healthcare-cv.pdf',
-    headline: 'Senior Full-Stack Engineer | Healthcare & Cloud Products',
+    filename: 'yotam-faraggi-senior-full-stack-engineer-healthcare-cv.pdf',
+    focus: 'Healthcare Platforms, Cloud & Integrations',
   },
   'product-frontend': {
     id: 'product-frontend',
     label: 'Product Frontend',
-    filename: 'yotam-faraggi-senior-product-engineer-react-cv.pdf',
-    headline: 'Senior Product Engineer | React & Full-Stack Web Products',
+    filename: 'yotam-faraggi-senior-full-stack-engineer-frontend-cv.pdf',
+    focus: 'React, Product UX & Web Performance',
   },
   'n26-backend': {
     id: 'n26-backend',
-    label: 'N26 Backend',
-    filename: 'yotam-faraggi-senior-backend-product-engineer-n26-cv.pdf',
-    headline: 'Senior Backend & Product Engineer | APIs, Integrations & Cloud',
+    label: 'N26',
+    filename: 'yotam-faraggi-senior-full-stack-engineer-n26-cv.pdf',
+    focus: 'Banking Systems, APIs & Integrations',
   },
 };
 
@@ -92,6 +94,10 @@ function cloneCVData(): CVData {
   };
 }
 
+function applyPositioning(cv: CVData, variant: CVVariantId) {
+  cv.headline = `${CANONICAL_CV_IDENTITY}\n${cvVariantDefinitions[variant].focus}`;
+}
+
 function updateExperience(
   cv: CVData,
   key: CVExperienceKey,
@@ -115,11 +121,11 @@ function reorderSkills(cv: CVData, order: CVSkillKey[]) {
 
 function buildProductAIVariant() {
   const cv = cloneCVData();
-  cv.headline = cvVariantDefinitions['product-ai'].headline;
+  applyPositioning(cv, 'product-ai');
   cv.summary.text =
-    'Senior Product Engineer with more than 10 years of experience building customer-facing web products and internal systems across e-commerce, healthcare, fintech, and enterprise software. Full-stack across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud infrastructure, and PostgreSQL, with a strong focus on turning practical product needs into reliable software. Recent work includes AI-assisted workflow tools, headless e-commerce, telemedicine, and third-party integrations, with ownership from technical planning through deployment and ongoing improvement.';
+    'Senior Full-Stack Engineer with more than 10 years of experience building customer-facing web products and internal systems across e-commerce, healthcare, fintech, and enterprise software. Full-stack across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud infrastructure, and PostgreSQL, with a strong focus on turning practical product needs into reliable software. Recent work includes AI-assisted workflow tools, headless e-commerce, telemedicine, and third-party integrations, with ownership from technical planning through deployment and ongoing improvement.';
   cv.summary.metaDescription =
-    'Senior Product Engineer in Berlin building full-stack web products, AI-assisted workflows, integrations, and reliable customer-facing software.';
+    'Senior Full-Stack Engineer in Berlin building product-focused web applications, AI-assisted workflows, integrations, and reliable customer-facing software.';
 
   updateExperience(cv, 'cartshift', {
     highlights: [
@@ -168,7 +174,7 @@ function buildProductAIVariant() {
 
 function buildHealthcareVariant() {
   const cv = cloneCVData();
-  cv.headline = cvVariantDefinitions['fullstack-healthcare'].headline;
+  applyPositioning(cv, 'fullstack-healthcare');
   cv.summary.text =
     'Senior Full-Stack Engineer with more than 10 years of experience building web products, integrations, and production systems, including more than four years working on customer-facing healthcare and telemedicine software. Strong across React, Next.js, TypeScript, Node.js, API design, cloud infrastructure, and data systems, with hands-on experience building a HIPAA-compliant telemedicine funnel on Google Cloud Platform. Focused on privacy, reliability, maintainability, and translating operational requirements into dependable software.';
   cv.summary.metaDescription =
@@ -221,11 +227,11 @@ function buildHealthcareVariant() {
 
 function buildProductFrontendVariant() {
   const cv = cloneCVData();
-  cv.headline = cvVariantDefinitions['product-frontend'].headline;
+  applyPositioning(cv, 'product-frontend');
   cv.summary.text =
-    'Senior Product Engineer with more than 10 years of experience building customer-facing web products, with a strong center of gravity in modern frontend development and full-stack delivery. Deep experience with React, Next.js, TypeScript, JavaScript, performance optimization, API integrations, and web application architecture, backed by hands-on work with Node.js, PostgreSQL, Google Cloud Platform, and Vercel. Built telemedicine, e-commerce, and high-traffic web experiences from requirements and technical planning through deployment and continuous improvement.';
+    'Senior Full-Stack Engineer with more than 10 years of experience building customer-facing web products, with a strong center of gravity in modern frontend development and full-stack delivery. Deep experience with React, Next.js, TypeScript, JavaScript, performance optimization, API integrations, and web application architecture, backed by hands-on work with Node.js, PostgreSQL, Google Cloud Platform, and Vercel. Built telemedicine, e-commerce, and high-traffic web experiences from requirements and technical planning through deployment and continuous improvement.';
   cv.summary.metaDescription =
-    'Senior Product Engineer in Berlin specializing in React, Next.js, TypeScript, frontend architecture, full-stack delivery, and customer-facing web products.';
+    'Senior Full-Stack Engineer in Berlin with deep React, Next.js, TypeScript, frontend architecture, API integration, and customer-facing product experience.';
 
   updateExperience(cv, 'cartshift', {
     highlights: [
@@ -285,11 +291,11 @@ function buildProductFrontendVariant() {
 
 function buildN26BackendVariant() {
   const cv = cloneCVData();
-  cv.headline = cvVariantDefinitions['n26-backend'].headline;
+  applyPositioning(cv, 'n26-backend');
   cv.summary.text =
-    'Senior engineer with more than 10 years of experience building production software across banking, fintech, healthcare, and e-commerce. Backend and integration experience includes high-availability banking services, high-throughput web services, event-driven messaging with JMS, REST APIs and third-party integrations, Node.js and TypeScript, PostgreSQL, Docker, CI/CD, and Google Cloud Platform. Combines hands-on system design and delivery with product ownership, taking work from technical scoping through deployment and ongoing improvement.';
+    'Senior Full-Stack Engineer with more than 10 years of experience building production software across banking, fintech, healthcare, and e-commerce. Backend and integration experience includes high-availability banking services, high-throughput web services, event-driven messaging with JMS, REST APIs and third-party integrations, Node.js and TypeScript, PostgreSQL, Docker, CI/CD, and Google Cloud Platform. Combines hands-on system design and delivery with product ownership, taking work from technical scoping through deployment and ongoing improvement.';
   cv.summary.metaDescription =
-    'Berlin-based senior backend and product engineer with banking, fintech, API, integration, cloud, event-driven messaging, and production systems experience.';
+    'Berlin-based Senior Full-Stack Engineer with banking, fintech, API, integration, cloud, event-driven messaging, and production systems experience.';
 
   updateExperience(cv, 'cartshift', {
     description:
