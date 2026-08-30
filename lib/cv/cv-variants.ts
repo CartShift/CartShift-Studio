@@ -36,7 +36,7 @@ export const cvVariantDefinitions: Record<CVVariantId, CVVariantDefinition> = {
     id: 'fullstack-healthcare',
     label: 'Full-Stack Healthcare',
     filename: 'yotam-faraggi-senior-full-stack-engineer-healthcare-cv.pdf',
-    focus: 'Healthcare Platforms, Cloud & Integrations',
+    focus: 'Cloud Platforms, APIs & Integrations',
   },
   'product-frontend': {
     id: 'product-frontend',
@@ -48,7 +48,7 @@ export const cvVariantDefinitions: Record<CVVariantId, CVVariantDefinition> = {
     id: 'n26-backend',
     label: 'N26',
     filename: 'yotam-faraggi-senior-full-stack-engineer-n26-cv.pdf',
-    focus: 'Banking Systems, APIs & Integrations',
+    focus: 'Systems, APIs & Integrations',
   },
 };
 
