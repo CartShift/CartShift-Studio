@@ -129,7 +129,8 @@
         "durationYears": "1 year 2 months",
         "location": "Israel",
         "highlights": [
-          "בניית אינטגרציות ארגוניות ושירותי Web בעלי תפוקה גבוהה באמצעות Oracle OSB, WebLogic, IBM DataPower ו-JMS queues."
+          "בניית אינטגרציות ארגוניות ושירותי Web בעלי תפוקה גבוהה באמצעות Oracle OSB, WebLogic, IBM DataPower ו-JMS queues.",
+          "שימוש בהודעות אסינכרוניות לחיבור בין שירותי פרודקשן למערכות תפעוליות, עם דגש על אמינות."
         ]
       },
       "leumi": {
@@ -139,7 +140,8 @@
         "durationYears": "10 months",
         "location": "Lod, Israel",
         "highlights": [
-          "פיתוח ותחזוקה של אינטגרציות בנקאיות ושירותים בזמינות גבוהה באמצעות IBM WebSphere ESB, IBM Integration Bus ו-DataPower."
+          "פיתוח ותחזוקה של אינטגרציות בנקאיות ושירותים בזמינות גבוהה באמצעות IBM WebSphere ESB, IBM Integration Bus ו-DataPower.",
+          "עבודה על שירותי פרודקשן שחיברו בין מערכות בנקאיות, עם דגש על אמינות והמשכיות תפעולית."
         ]
       },
       "entrepreneurship": {
@@ -209,7 +211,7 @@
       },
       "aiAutomation": {
         "category": "AI ואוטומציה",
-        "items": ["OpenAI API", "Claude API", "LangChain", "Webhooks", "Puppeteer", "Playwright"]
+        "items": ["OpenAI API", "Claude API", "LangChain", "LLM-assisted workflows", "Webhooks", "Puppeteer", "Playwright"]
       },
       "cloudData": {
         "category": "ענן ונתונים",
