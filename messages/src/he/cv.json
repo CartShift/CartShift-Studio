@@ -73,16 +73,16 @@
     },
     "experience": {
       "cartshift": {
-        "company": "CartShift Studio",
-        "title": "מייסד ו-Product Engineer",
+        "company": "CartShift Studio · עצמאי",
+        "title": "Senior Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "סטודיו עצמאי לפיתוח מוצרי Web המתמקד ב-e-commerce, פלטפורמות Web ואוטומציית תהליכי עבודה ללקוחות בינלאומיים.",
+        "description": "פעילות עצמאית ב-Product Engineering המשלבת עבודת לקוחות עם פיתוח מעשי של מוצרי Web ומוצרים בסיוע AI לפרודקשן.",
         "highlights": [
-          "בניית חנויות Shopify וחוויות e-commerce headless עם Next.js, React, TypeScript וכלי Web מודרניים.",
-          "פיתוח כלי עבודה בסיוע AI וכלים פנימיים למשימות תפעוליות.",
-          "ניהול פרויקטים משלב דרישות ותכנון טכני דרך מימוש, פריסה ושיפורים שוטפים."
+          "בניית מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
+          "יצירת מוצרים ובהם StarLinker ו-RightFlow, עם אחריות על הגדרת המוצר, ארכיטקטורה, מימוש, פריסה ואיטרציה.",
+          "הקמת CartShift Studio ומסירת פרויקטי e-commerce, אפליקציות Web, אינטגרציות ואוטומציית תהליכים ללקוחות חיצוניים."
         ]
       },
       "curalife": {

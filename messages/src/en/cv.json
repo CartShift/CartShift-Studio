@@ -69,16 +69,16 @@
     },
     "experience": {
       "cartshift": {
-        "company": "CartShift Studio",
-        "title": "Founder & Product Engineer",
+        "company": "CartShift Studio · Self-Employed",
+        "title": "Senior Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "Independent product and web development studio focused on production web applications, e-commerce, integrations, and workflow automation.",
+        "description": "Independent product engineering practice combining client work with hands-on development of production web and AI-assisted products.",
         "highlights": [
-          "Build and ship full-stack web products using Next.js, React, TypeScript, Node.js, third-party APIs, and modern cloud tooling.",
-          "Develop AI-assisted workflow tools and automations that integrate LLM APIs with external services and operational processes.",
-          "Own projects from product definition and technical planning through implementation, deployment, iteration, and maintenance."
+          "Build and ship full-stack products and client systems using Next.js, React, TypeScript, Node.js, APIs, PostgreSQL, and modern cloud tooling.",
+          "Created products including StarLinker and RightFlow, owning product definition, architecture, implementation, deployment, and iteration.",
+          "Founded CartShift Studio and deliver e-commerce, web application, integration, and workflow automation projects for external clients."
         ]
       },
       "curalife": {
