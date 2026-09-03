@@ -2,7 +2,7 @@
   "cv": {
     "title": "Yotam Faraggi - Senior Product Engineer CV",
     "name": "Yotam Faraggi",
-    "subtitle": "Senior Product Engineer | Full-Stack Web Products",
+    "subtitle": "Senior Product Engineer | Full-Stack, APIs & Integrations",
     "location": "Berlin, Germany",
     "workAuthorization": "EU citizen · Authorized to work in Germany",
     "phone": "+4915776211298",
@@ -30,7 +30,7 @@
       "education": "Education"
     },
     "portfolio": {
-      "intro": "Selected product and web projects that show hands-on work across commerce, workflow tools, artist websites, and document-heavy applications.",
+      "intro": "Selected product and web projects showing hands-on ownership across AI-assisted workflows, commerce, document-heavy applications, and customer-facing web products.",
       "liveLabel": "Live project",
       "featuredLabel": "Founder-led",
       "visitProject": "Visit project",
@@ -64,8 +64,8 @@
       }
     },
     "summary": {
-      "text": "Senior full-stack developer with more than 10 years of experience building web products and internal systems across e-commerce, healthcare, fintech, and enterprise software. Experience spans frontend, backend, integrations, and infrastructure, with a focus on turning practical product needs into reliable software. Recent work includes customer-facing telemedicine and e-commerce flows, Shopify and HubSpot integrations, modern React and Next.js applications, and AI-assisted workflow tools.",
-      "metaDescription": "Senior Product Engineer and full-stack developer in Berlin building web products, integrations, e-commerce systems, and AI-assisted workflow tools."
+      "text": "Berlin-based Senior Product Engineer and full-stack developer with 10+ years of experience building and operating production software across healthcare, fintech, e-commerce, and enterprise systems. Strong across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud infrastructure, and PostgreSQL, with end-to-end ownership from technical scoping and architecture through deployment and iteration. At Curalife, defined, architected, and built a HIPAA-compliant telemedicine acquisition product that became one of the company’s primary customer-acquisition and revenue funnels. Recent work includes AI-assisted workflow tools, commerce systems, and integration-heavy product development.",
+      "metaDescription": "Berlin-based Senior Product Engineer with 10+ years of full-stack experience across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud systems, healthcare, fintech, and AI-assisted products."
     },
     "experience": {
       "cartshift": {
@@ -74,11 +74,11 @@
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "Independent product and web development studio focused on e-commerce, web platforms, and workflow automation for international clients.",
+        "description": "Independent product and web development studio focused on production web applications, e-commerce, integrations, and workflow automation.",
         "highlights": [
-          "Build Shopify storefronts and headless e-commerce experiences using Next.js, React, TypeScript, and modern web tooling.",
-          "Develop AI-assisted workflow tools and internal utilities for operational tasks.",
-          "Handle projects from requirements and technical planning through implementation, deployment, and ongoing improvements."
+          "Build and ship full-stack web products using Next.js, React, TypeScript, Node.js, third-party APIs, and modern cloud tooling.",
+          "Develop AI-assisted workflow tools and automations that integrate LLM APIs with external services and operational processes.",
+          "Own projects from product definition and technical planning through implementation, deployment, iteration, and maintenance."
         ]
       },
       "curalife": {
@@ -87,12 +87,12 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv",
-        "description": "Worked across customer-facing telemedicine and e-commerce systems, integrations, frontend modernization, and cloud infrastructure.",
+        "description": "Owned major customer-facing product and platform work across telemedicine and e-commerce, spanning product definition, architecture, frontend, backend, integrations, cloud infrastructure, and production operation.",
         "highlights": [
-          "Built and maintained a HIPAA-compliant telemedicine funnel using Next.js, React, TypeScript, and Google Cloud Platform.",
-          "Worked on Shopify and HubSpot integrations supporting customer and operational workflows.",
-          "Led migration work toward a modern frontend stack and improved key customer-facing flows.",
-          "Built and deployed cloud infrastructure with a focus on privacy, reliability, and maintainability."
+          "Defined, architected, and built Curalife’s HIPAA-compliant telemedicine acquisition product end-to-end, spanning the patient-facing flow, backend logic, external integrations, Google Cloud infrastructure, and production operations.",
+          "The telemedicine product became one of Curalife’s primary customer-acquisition and revenue funnels.",
+          "Built and evolved customer-facing healthcare and commerce experiences with Next.js, React, TypeScript, Shopify, HubSpot, and third-party APIs.",
+          "Led frontend modernization and production workflow improvements with a focus on privacy, reliability, and maintainability."
         ]
       },
       "paragonex": {
@@ -101,11 +101,11 @@
         "duration": "August 2019 - July 2021",
         "durationYears": "2 years",
         "location": "Tel Aviv Area",
-        "description": "Built and maintained web experiences and integrations for fintech affiliate operations.",
+        "description": "Built and maintained production integrations and high-traffic web systems for fintech affiliate operations.",
         "highlights": [
-          "Developed and optimized WordPress solutions using Sage and Laravel for high-traffic websites.",
-          "Built integrations between affiliate systems and core platform services.",
-          "Worked on frontend build optimization and loading performance improvements."
+          "Built integrations between affiliate systems and core fintech platform services.",
+          "Developed and optimized high-traffic web applications using Laravel, Sage, and WordPress with a focus on performance and maintainability.",
+          "Improved frontend build and page-loading performance across production web properties."
         ]
       },
       "ecommerce_venture": {
@@ -114,8 +114,8 @@
         "duration": "April 2018 - July 2019",
         "durationYears": "1 year 4 months",
         "highlights": [
-          "Built and operated direct-to-consumer e-commerce experiments across storefront setup, operations, payments, fulfillment, analytics, and conversion work.",
-          "Gained hands-on experience with Shopify, WordPress, customer acquisition, and day-to-day commerce operations."
+          "Built and operated direct-to-consumer systems spanning storefronts, payments, fulfillment, analytics, integrations, and day-to-day operations.",
+          "Gained hands-on product and commercial experience across Shopify, WordPress, customer acquisition, conversion, and e-commerce operations."
         ]
       },
       "hot": {
@@ -125,7 +125,8 @@
         "durationYears": "1 year 2 months",
         "location": "Israel",
         "highlights": [
-          "Built enterprise integrations and high-throughput web services using Oracle OSB, WebLogic, IBM DataPower, and JMS queues."
+          "Built enterprise integrations and high-throughput web services using Oracle OSB, WebLogic, IBM DataPower, and JMS queues.",
+          "Used asynchronous messaging to connect production services and operational systems with a focus on reliability."
         ]
       },
       "leumi": {
@@ -135,7 +136,8 @@
         "durationYears": "10 months",
         "location": "Lod",
         "highlights": [
-          "Developed and maintained banking integrations and high-availability services using IBM WebSphere ESB, IBM Integration Bus, and DataPower."
+          "Developed and maintained high-availability banking integrations using IBM WebSphere ESB, IBM Integration Bus, and IBM DataPower.",
+          "Worked on production services connecting banking systems with a focus on reliability and operational continuity."
         ]
       },
       "entrepreneurship": {
@@ -144,7 +146,7 @@
         "duration": "October 2014 - February 2016",
         "durationYears": "1 year 5 months",
         "highlights": [
-          "Delivered freelance web and integration projects for small businesses while building independent product ideas from requirements through launch."
+          "Delivered freelance web and integration projects for small businesses while taking independent product ideas from requirements through launch."
         ]
       },
       "elbit": {
@@ -173,10 +175,10 @@
           "Technical scoping",
           "System design",
           "API design",
-          "Performance optimization",
-          "Reliability",
+          "Product ownership",
           "Web application architecture",
-          "Customer-facing product development"
+          "Reliability",
+          "Performance optimization"
         ]
       },
       "frontendFullStack": {
@@ -192,35 +194,35 @@
         ]
       },
       "commerceIntegrations": {
-        "category": "E-Commerce & Integrations",
+        "category": "APIs, Commerce & Integrations",
         "items": [
+          "REST APIs",
+          "GraphQL",
           "Shopify",
           "Shopify APIs",
           "HubSpot",
           "Stripe",
-          "WordPress",
-          "GraphQL",
-          "REST APIs"
+          "WordPress"
         ]
       },
       "aiAutomation": {
         "category": "AI & Automation",
-        "items": ["OpenAI API", "Claude API", "LangChain", "Webhooks", "Puppeteer", "Playwright"]
+        "items": ["OpenAI API", "Claude API", "LangChain", "LLM-assisted workflows", "Webhooks", "Puppeteer", "Playwright"]
       },
       "cloudData": {
         "category": "Cloud & Data",
         "items": [
           "Google Cloud Platform",
+          "PostgreSQL",
           "Firebase",
           "Firestore",
-          "PostgreSQL",
-          "Vercel",
           "Docker",
+          "Vercel",
           "GitHub Actions"
         ]
       },
       "legacyEnterprise": {
-        "category": "Legacy Enterprise",
+        "category": "Enterprise Integration",
         "items": [
           "Oracle OSB",
           "WebLogic",
