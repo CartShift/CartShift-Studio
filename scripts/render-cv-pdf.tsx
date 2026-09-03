@@ -32,8 +32,23 @@ function getOutputDirectory(args: string[]) {
   return resolve(process.cwd(), value);
 }
 
+function getPositionalArgs(args: string[]) {
+  const positional: string[] = [];
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index]!;
+    if (arg === '--output') {
+      index += 1;
+      continue;
+    }
+    if (!arg.startsWith('--')) positional.push(arg);
+  }
+
+  return positional;
+}
+
 function getRequestedVariant(args: string[]): CVVariantId {
-  const value = args.find(arg => !arg.startsWith('--') && arg !== args[args.indexOf('--output') + 1]);
+  const [value] = getPositionalArgs(args);
 
   if (!value) {
     throw new Error('Missing CV variant. Run `pnpm cv:list` to see available variants.');
