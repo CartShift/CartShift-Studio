@@ -65,7 +65,7 @@ describe('CV PDF export', () => {
 
     [
       'Yotam Faraggi',
-      'Senior Product Engineer',
+      'Senior Full-Stack Engineer',
       'EU citizen',
       '+4915776211298',
       'Professional Experience',
@@ -77,12 +77,13 @@ describe('CV PDF export', () => {
       'HOT',
       'Leumi Bank',
       'Elbit Systems',
-      'Israeli Air Force / Mamram',
-      'Military Service',
-      'IDF School for Computer Professions',
-      'Programming Course',
+      'IDF / Mamram',
+      'Basmach / Mamram',
+      'Software Development Program',
       'Bar-Ilan University',
-      'LEGACY ENTERPRISE',
+      'E-COMMERCE, SHOPIFY & INTEGRATIONS',
+      'ENTERPRISE INTEGRATION',
+      'Shopify storefronts',
       'WordPress',
       'HubSpot',
       'Web application architecture',
@@ -91,12 +92,15 @@ describe('CV PDF export', () => {
 
     [
       'CartShift Studio CV',
+      'Senior Product Engineer',
       'R&D Lead & Senior Full Stack Developer',
       'Professional Summary',
       'Earlier Engineering Experience',
       'Page 1 of 2',
       'Page 2 of 2',
       'Live CV & Portfolio',
+      'Israeli Air Force / Mamram',
+      'Military Service',
     ].forEach(forbidden => {
       expect(text).not.toContain(forbidden);
       expect(raw).not.toContain(forbidden);

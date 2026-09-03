@@ -1,8 +1,8 @@
 {
   "cv": {
-    "title": "Yotam Faraggi - Senior Product Engineer CV",
+    "title": "Yotam Faraggi - Senior Full-Stack Engineer CV",
     "name": "Yotam Faraggi",
-    "subtitle": "Senior Product Engineer | Full-Stack, APIs & Integrations",
+    "subtitle": "Senior Full-Stack Engineer | E-commerce, Shopify & Integrations",
     "location": "Berlin, Germany",
     "workAuthorization": "EU citizen · Authorized to work in Germany",
     "phone": "+4915776211298",
@@ -12,8 +12,12 @@
     "portfolioLink": "Portfolio",
     "saveAsPdf": "Download CV",
     "preparingPdf": "Preparing PDF",
-    "status": { "openToWork": "Open to work" },
-    "labels": { "earlierExperience": "Earlier Engineering Experience" },
+    "status": {
+      "openToWork": "Open to work"
+    },
+    "labels": {
+      "earlierExperience": "Earlier Engineering Experience"
+    },
     "sections": {
       "summary": "Professional Summary",
       "portfolio": "Selected Portfolio",
@@ -30,55 +34,67 @@
       "education": "Education"
     },
     "portfolio": {
-      "intro": "Selected product and web projects showing hands-on ownership across AI-assisted workflows, commerce, document-heavy applications, and customer-facing web products.",
+      "intro": "Selected work showing hands-on ownership across e-commerce, Shopify-focused delivery, integration-heavy products, and modern full-stack applications.",
       "liveLabel": "Live project",
       "featuredLabel": "Founder-led",
       "visitProject": "Visit project",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "Public studio site and client portal for e-commerce and web development work, built around service discovery, project intake, and client collaboration.",
-          "signals": ["Next.js application", "Client portal and public website"]
+          "description": "Independent e-commerce and web engineering studio focused on Shopify, full-stack applications, integrations, automation, and production-grade client delivery.",
+          "signals": [
+            "E-commerce & Shopify",
+            "Next.js application"
+          ]
         },
         "atlasIrwin": {
           "eyebrow": "Atlas Irwin",
           "description": "Music artist website for release information, streaming links, audience capture, and contact paths in a responsive Vercel-hosted experience.",
-          "signals": ["Artist website", "Responsive frontend"]
+          "signals": [
+            "Artist website",
+            "Responsive frontend"
+          ]
         },
         "starlinker": {
           "eyebrow": "StarLinker",
           "description": "Visual planning product for mapping goals, tasks, habits, and notes on a connected canvas with AI-assisted next-step suggestions.",
-          "signals": ["Productivity UI", "AI-assisted workflow"]
+          "signals": [
+            "Productivity UI",
+            "AI-assisted workflow"
+          ]
         },
         "rightflow": {
           "eyebrow": "RightFlow",
           "description": "Document review and verification platform for pension and payroll contribution checks, including structured review flows and report export.",
-          "signals": ["Document workflows", "Sensitive financial data"]
+          "signals": [
+            "Document workflows",
+            "Sensitive financial data"
+          ]
         }
       },
       "clients": {
         "kicker": "Client Work",
-        "title": "Freelance and client projects",
-        "description": "The work page includes client projects, redesigns, and e-commerce builds delivered through freelance and studio work.",
+        "title": "E-commerce and full-stack client delivery",
+        "description": "The work page includes Shopify and e-commerce builds, redesigns, integrations, performance work, and custom web applications delivered through freelance and studio engagements.",
         "cta": "View client work"
       }
     },
     "summary": {
-      "text": "Berlin-based Senior Product Engineer and full-stack developer with 10+ years of experience building and operating production software across healthcare, fintech, e-commerce, and enterprise systems. Strong across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud infrastructure, and PostgreSQL, with end-to-end ownership from technical scoping and architecture through deployment and iteration. At Curalife, defined, architected, and built a HIPAA-compliant telemedicine acquisition product that became one of the company’s primary customer-acquisition and revenue funnels. Recent work includes AI-assisted workflow tools, commerce systems, and integration-heavy product development.",
-      "metaDescription": "Berlin-based Senior Product Engineer with 10+ years of full-stack experience across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud systems, healthcare, fintech, and AI-assisted products."
+      "text": "Berlin-based Senior Full-Stack Engineer with 10+ years of experience building and operating production software, with deep experience in e-commerce, Shopify, APIs, integrations, and customer-facing products. At Curalife, owned major parts of the Shopify-based commerce and digital-health ecosystem, including customer journeys, Shopify-HubSpot integrations, frontend modernization, cloud infrastructure, and a HIPAA-compliant telemedicine acquisition product that became one of the company’s primary customer-acquisition and revenue funnels. Strong across React, Next.js, TypeScript, Node.js, PostgreSQL, and cloud systems, with end-to-end ownership from architecture and implementation through deployment and iteration.",
+      "metaDescription": "Berlin-based Senior Full-Stack Engineer with 10+ years of experience across e-commerce, Shopify, React, Next.js, TypeScript, Node.js, APIs, integrations, and cloud systems."
     },
     "experience": {
       "cartshift": {
         "company": "CartShift Studio · Self-Employed",
-        "title": "Senior Product Engineer",
+        "title": "Founder & Senior Full-Stack Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "Independent product engineering practice combining client work with hands-on development of production web and AI-assisted products.",
+        "description": "Independent full-stack and e-commerce engineering practice combining client delivery with hands-on development of production web, commerce, and AI-assisted products.",
         "highlights": [
           "Build and ship full-stack products and client systems using Next.js, React, TypeScript, Node.js, APIs, PostgreSQL, and modern cloud tooling.",
-          "Created products including StarLinker and RightFlow, owning product definition, architecture, implementation, deployment, and iteration.",
-          "Founded CartShift Studio and deliver e-commerce, web application, integration, and workflow automation projects for external clients."
+          "Deliver e-commerce and Shopify-focused work spanning storefront development, integrations, performance optimization, conversion-oriented improvements, and workflow automation.",
+          "Created products including StarLinker and RightFlow, owning product definition, architecture, implementation, deployment, and iteration."
         ]
       },
       "curalife": {
@@ -87,12 +103,12 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv",
-        "description": "Owned major customer-facing product and platform work across telemedicine and e-commerce, spanning product definition, architecture, frontend, backend, integrations, cloud infrastructure, and production operation.",
+        "description": "Owned major customer-facing product and platform work across Shopify commerce and digital health, spanning storefronts, acquisition funnels, frontend, backend, integrations, cloud infrastructure, and production operations.",
         "highlights": [
-          "Defined, architected, and built Curalife’s HIPAA-compliant telemedicine acquisition product end-to-end, spanning the patient-facing flow, backend logic, external integrations, Google Cloud infrastructure, and production operations.",
-          "The telemedicine product became one of Curalife’s primary customer-acquisition and revenue funnels.",
-          "Built and evolved customer-facing healthcare and commerce experiences with Next.js, React, TypeScript, Shopify, HubSpot, and third-party APIs.",
-          "Led frontend modernization and production workflow improvements with a focus on privacy, reliability, and maintainability."
+          "Owned the technical evolution of Curalife’s Shopify-based e-commerce ecosystem, building and improving customer journeys, storefront experiences, Shopify-HubSpot integrations, and supporting operational workflows.",
+          "Designed a resilient Shopify-HubSpot integration layer that reduced sync failures by 85%, improving reliability between commerce, CRM, and internal operations.",
+          "Led frontend modernization across key commerce and acquisition journeys, improving page performance by 60% while moving core experiences to Next.js, React, and TypeScript.",
+          "Defined, architected, and built Curalife’s HIPAA-compliant telemedicine acquisition product end-to-end; it became one of the company’s primary customer-acquisition and revenue funnels."
         ]
       },
       "paragonex": {
@@ -194,20 +210,29 @@
         ]
       },
       "commerceIntegrations": {
-        "category": "APIs, Commerce & Integrations",
+        "category": "E-commerce, Shopify & Integrations",
         "items": [
-          "REST APIs",
-          "GraphQL",
           "Shopify",
           "Shopify APIs",
+          "Shopify storefronts",
           "HubSpot",
           "Stripe",
+          "REST APIs",
+          "GraphQL",
+          "Webhooks",
           "WordPress"
         ]
       },
       "aiAutomation": {
         "category": "AI & Automation",
-        "items": ["OpenAI API", "Claude API", "LangChain", "LLM-assisted workflows", "Webhooks", "Puppeteer", "Playwright"]
+        "items": [
+          "OpenAI API",
+          "Claude API",
+          "LangChain",
+          "LLM-assisted workflows",
+          "Puppeteer",
+          "Playwright"
+        ]
       },
       "cloudData": {
         "category": "Cloud & Data",
@@ -250,9 +275,18 @@
       ]
     },
     "languageSkills": {
-      "hebrew": { "name": "Hebrew", "level": "Native" },
-      "english": { "name": "English", "level": "Fluent" },
-      "german": { "name": "German", "level": "Beginner" }
+      "hebrew": {
+        "name": "Hebrew",
+        "level": "Native"
+      },
+      "english": {
+        "name": "English",
+        "level": "Fluent"
+      },
+      "german": {
+        "name": "German",
+        "level": "Beginner"
+      }
     }
   }
 }

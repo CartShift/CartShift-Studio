@@ -257,7 +257,6 @@ function getDurationMonths(experience: CVData['experiences'][number]) {
   if (!experience.durationYears || experience.durationYears.toLowerCase().includes('current')) {
     return 0;
   }
-
   const years = Number(experience.durationYears.match(/(\d+)\s*year/)?.[1] ?? 0);
   const months = Number(experience.durationYears.match(/(\d+)\s*month/)?.[1] ?? 0);
   return years * 12 + months;
@@ -475,6 +474,7 @@ export default function CVPageContent() {
     };
   };
   const cv = useMemo(() => buildCVData(messages.cv), [messages.cv]);
+  const primaryRole = cv.headline.split(' | ')[0];
   const locale = useLocale();
   const isRTL = locale === 'he';
   const [earlierExperienceOpen, setEarlierExperienceOpen] = useState(false);
@@ -927,10 +927,7 @@ export default function CVPageContent() {
         </section>
 
         <section id="skills" className="mb-16 scroll-mt-28">
-          <SectionHeading
-            icon={Code}
-            title={cv.sections.skills}
-          />
+          <SectionHeading icon={Code} title={cv.sections.skills} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {cv.skills.map(group => {
               const Icon = skillIcon[group.key] ?? Code;
@@ -1032,10 +1029,7 @@ export default function CVPageContent() {
         </section>
 
         <section id="portfolio" className="mb-16 scroll-mt-28">
-          <SectionHeading
-            icon={Globe}
-            title={cv.sections.portfolio}
-          />
+          <SectionHeading icon={Globe} title={cv.sections.portfolio} />
           <div className="grid gap-5 lg:grid-cols-2">
             {cv.portfolio.projects.map(project => {
               const media = portfolioMedia[project.key];
@@ -1129,8 +1123,8 @@ export default function CVPageContent() {
               <div>
                 <h2 className="max-w-2xl text-[2rem] font-bold leading-[1.1] tracking-[-0.02em] text-slate-950 dark:text-white sm:text-[2.5rem]">
                   {isRTL
-                    ? 'מחפשים מפתח מוצר סניור בברלין, מרחוק או היברידי?'
-                    : 'Looking for a senior product engineer?'}
+                    ? `מחפשים ${primaryRole} בברלין, מרחוק או היברידי?`
+                    : `Looking for a ${primaryRole.toLowerCase()}?`}
                 </h2>
                 <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-white/70 sm:text-base">
                   {isRTL
@@ -1170,7 +1164,7 @@ export default function CVPageContent() {
 
       <footer className="relative z-10 border-t border-slate-200/70 px-4 py-8 text-center text-xs text-slate-500 dark:border-white/[0.06] dark:text-surface-500 print:hidden">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
-          <span>Yotam Faraggi · Senior Product Engineer</span>
+          <span>{cv.name} · {primaryRole}</span>
           <div className="flex items-center gap-4">
             <a href={`mailto:${cv.email}`} className="hover:text-primary-600 dark:hover:text-primary-300">
               {cv.email}

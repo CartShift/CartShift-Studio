@@ -431,10 +431,12 @@ function SectionTitle({ children }: { children: string }) {
   );
 }
 
-function Footer() {
+function Footer({ cv }: { cv: CVData }) {
+  const primaryRole = cv.headline.split(' | ')[0];
+
   return (
     <View style={styles.footer} fixed>
-      <Text>Yotam Faraggi · Senior Product Engineer</Text>
+      <Text>{cv.name} · {primaryRole}</Text>
       <Text render={({ pageNumber, totalPages }) => `p. ${pageNumber} / ${totalPages}`} />
     </View>
   );
@@ -527,11 +529,7 @@ function EducationSection({ cv }: { cv: CVData }) {
 }
 
 export const CVDocument: React.FC<CVDocumentProps> = ({ cv, resolvedAssets }) => (
-  <Document
-    title={`${cv.name} - Senior Product Engineer CV`}
-    author={cv.name}
-    subject={cv.headline}
-  >
+  <Document title={cv.title} author={cv.name} subject={cv.headline}>
     <Page size="A4" style={styles.page} wrap>
       <Header cv={cv} />
 
@@ -577,7 +575,7 @@ export const CVDocument: React.FC<CVDocumentProps> = ({ cv, resolvedAssets }) =>
         </View>
       </View>
 
-      <Footer />
+      <Footer cv={cv} />
     </Page>
   </Document>
 );

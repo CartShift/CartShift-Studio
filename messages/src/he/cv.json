@@ -1,8 +1,8 @@
 {
   "cv": {
-    "title": "יותם פרג'י - קורות חיים Senior Product Engineer",
+    "title": "יותם פרג'י - קורות חיים Senior Full-Stack Engineer",
     "name": "יותם פרג'י",
-    "subtitle": "Senior Product Engineer | Full-Stack Web Products",
+    "subtitle": "Senior Full-Stack Engineer | E-commerce, Shopify & Integrations",
     "location": "ברלין, גרמניה",
     "workAuthorization": "אזרח האיחוד האירופי · מורשה לעבוד בגרמניה",
     "phone": "+972503591552",
@@ -34,55 +34,67 @@
       "education": "השכלה"
     },
     "portfolio": {
-      "intro": "פרויקטי מוצר ו-Web נבחרים שמציגים עבודה מעשית במסחר, כלי עבודה, אתרי אמנים ואפליקציות עתירות מסמכים.",
+      "intro": "עבודות נבחרות שמציגות אחריות מעשית על e-commerce, פיתוח ממוקד Shopify, מוצרים עתירי אינטגרציות ואפליקציות Full Stack מודרניות.",
       "liveLabel": "פרויקט חי",
       "featuredLabel": "בהובלת מייסד",
       "visitProject": "לצפייה בפרויקט",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "אתר סטודיו ציבורי ופורטל לקוחות לעבודת e-commerce ופיתוח Web, סביב גילוי שירותים, קליטת פרויקטים ושיתוף פעולה עם לקוחות.",
-          "signals": ["אפליקציית Next.js", "פורטל לקוחות ואתר ציבורי"]
+          "description": "סטודיו עצמאי ל-e-commerce ופיתוח Web עם דגש על Shopify, אפליקציות Full Stack, אינטגרציות, אוטומציה ומסירה ללקוחות בפרודקשן.",
+          "signals": [
+            "E-commerce ו-Shopify",
+            "אפליקציית Next.js"
+          ]
         },
         "atlasIrwin": {
           "eyebrow": "Atlas Irwin",
           "description": "אתר לאמן מוזיקלי עבור מידע על ריליסים, קישורי סטרימינג, איסוף קהל ודרכי קשר בחוויה רספונסיבית על Vercel.",
-          "signals": ["אתר אמן", "Frontend רספונסיבי"]
+          "signals": [
+            "אתר אמן",
+            "Frontend רספונסיבי"
+          ]
         },
         "starlinker": {
           "eyebrow": "StarLinker",
           "description": "מוצר תכנון ויזואלי למיפוי מטרות, משימות, הרגלים והערות על קנבס מחובר עם הצעות AI לצעד הבא.",
-          "signals": ["ממשק פרודקטיביות", "Workflow בסיוע AI"]
+          "signals": [
+            "ממשק פרודקטיביות",
+            "Workflow בסיוע AI"
+          ]
         },
         "rightflow": {
           "eyebrow": "RightFlow",
           "description": "פלטפורמת בדיקת מסמכים ואימות הפקדות פנסיה ושכר, כולל זרימות סקירה מובנות וייצוא דוחות.",
-          "signals": ["זרימות מסמכים", "נתונים פיננסיים רגישים"]
+          "signals": [
+            "זרימות מסמכים",
+            "נתונים פיננסיים רגישים"
+          ]
         }
       },
       "clients": {
         "kicker": "עבודות לקוחות",
-        "title": "פרויקטי פרילנס ולקוחות",
-        "description": "עמוד העבודות כולל פרויקטים ללקוחות, רידיזיינים ובניות e-commerce שבוצעו במסגרת פרילנס וסטודיו.",
+        "title": "מסירת פרויקטי E-commerce ו-Full Stack",
+        "description": "עמוד העבודות כולל בניות Shopify ו-e-commerce, רידיזיינים, אינטגרציות, שיפורי ביצועים ואפליקציות Web מותאמות שנמסרו במסגרת פרילנס והסטודיו.",
         "cta": "לצפייה בעבודות לקוחות"
       }
     },
     "summary": {
-      "text": "מפתח Full Stack בכיר עם יותר מ-10 שנות ניסיון בבניית מוצרי Web ומערכות פנימיות בתחומי e-commerce, בריאות, פינטק ותוכנה ארגונית. הניסיון כולל Frontend, Backend, אינטגרציות ותשתיות, עם דגש על הפיכת צרכים מוצריים מעשיים לתוכנה אמינה. העבודה האחרונה כללה זרימות טלרפואה ו-e-commerce ללקוחות, אינטגרציות Shopify ו-HubSpot, אפליקציות React ו-Next.js מודרניות וכלי עבודה בסיוע AI.",
-      "metaDescription": "Senior Product Engineer ומפתח Full Stack בברלין הבונה מוצרי Web, אינטגרציות, מערכות e-commerce וכלי עבודה בסיוע AI."
+      "text": "Senior Full-Stack Engineer בברלין עם יותר מ-10 שנות ניסיון בבנייה ותפעול של תוכנה לפרודקשן, עם ניסיון עמוק ב-e-commerce, Shopify, APIs, אינטגרציות ומוצרים ללקוחות. ב-Curalife הובלתי חלקים מרכזיים באקוסיסטם המסחר והדיגיטל-הלת' מבוסס Shopify, כולל מסעות לקוח, אינטגרציות Shopify-HubSpot, מודרניזציית Frontend, תשתיות ענן ומוצר רכישה לטלרפואה תואם HIPAA שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של החברה. ניסיון חזק ב-React, Next.js, TypeScript, Node.js, PostgreSQL ומערכות ענן, עם אחריות מקצה לקצה מארכיטקטורה ומימוש ועד פריסה ואיטרציה.",
+      "metaDescription": "Senior Full-Stack Engineer בברלין עם יותר מ-10 שנות ניסיון ב-e-commerce, Shopify, React, Next.js, TypeScript, Node.js, APIs, אינטגרציות ומערכות ענן."
     },
     "experience": {
       "cartshift": {
         "company": "CartShift Studio · עצמאי",
-        "title": "Senior Product Engineer",
+        "title": "Founder & Senior Full-Stack Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "פעילות עצמאית ב-Product Engineering המשלבת עבודת לקוחות עם פיתוח מעשי של מוצרי Web ומוצרים בסיוע AI לפרודקשן.",
+        "description": "פעילות עצמאית ב-Full Stack ו-e-commerce המשלבת מסירת פרויקטים ללקוחות עם פיתוח מעשי של מוצרי Web, מסחר ומוצרים בסיוע AI לפרודקשן.",
         "highlights": [
-          "בניית מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
-          "יצירת מוצרים ובהם StarLinker ו-RightFlow, עם אחריות על הגדרת המוצר, ארכיטקטורה, מימוש, פריסה ואיטרציה.",
-          "הקמת CartShift Studio ומסירת פרויקטי e-commerce, אפליקציות Web, אינטגרציות ואוטומציית תהליכים ללקוחות חיצוניים."
+          "בנייה והשקה של מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
+          "מסירת עבודת e-commerce ו-Shopify הכוללת פיתוח Storefront, אינטגרציות, אופטימיזציית ביצועים, שיפורים ממוקדי Conversion ואוטומציית תהליכים.",
+          "יצירת מוצרים ובהם StarLinker ו-RightFlow, עם אחריות על הגדרת המוצר, ארכיטקטורה, מימוש, פריסה ואיטרציה."
         ]
       },
       "curalife": {
@@ -91,12 +103,12 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv, Israel",
-        "description": "עבודה על מערכות טלרפואה ו-e-commerce ללקוחות, אינטגרציות, מודרניזציית Frontend ותשתיות ענן.",
+        "description": "אחריות על עבודת מוצר ופלטפורמה מרכזית ב-Shopify commerce וב-digital health, כולל Storefronts, פאנלי רכישה, Frontend, Backend, אינטגרציות, תשתיות ענן ותפעול פרודקשן.",
         "highlights": [
-          "בנייה ותחזוקה של Funnel טלרפואה תואם HIPAA באמצעות Next.js, React, TypeScript ו-Google Cloud Platform.",
-          "עבודה על אינטגרציות Shopify ו-HubSpot שתמכו בזרימות לקוח ותפעול.",
-          "הובלת עבודת מעבר לסטאק Frontend מודרני ושיפור זרימות מרכזיות ללקוחות.",
-          "בנייה ופריסה של תשתיות ענן עם דגש על פרטיות, אמינות ותחזוקה."
+          "הובלת ההתפתחות הטכנולוגית של אקוסיסטם ה-e-commerce מבוסס Shopify של Curalife, כולל מסעות לקוח, חוויות Storefront, אינטגרציות Shopify-HubSpot ותהליכים תפעוליים תומכים.",
+          "תכנון שכבת אינטגרציה עמידה בין Shopify ל-HubSpot שהפחיתה תקלות סנכרון ב-85% ושיפרה את האמינות בין המסחר, ה-CRM והתפעול הפנימי.",
+          "הובלת מודרניזציית Frontend במסלולי מסחר ורכישה מרכזיים, עם שיפור של 60% בביצועי העמודים ומעבר חוויות ליבה ל-Next.js, React ו-TypeScript.",
+          "הגדרה, ארכיטקטורה ובנייה מקצה לקצה של מוצר רכישה לטלרפואה תואם HIPAA, שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של Curalife."
         ]
       },
       "paragonex": {
@@ -118,8 +130,8 @@
         "duration": "April 2018 - July 2019",
         "durationYears": "1 year 4 months",
         "highlights": [
-          "בנייה והפעלה של ניסויי e-commerce ישירים לצרכן, כולל הקמת Storefront, תפעול, תשלומים, Fulfillment, אנליטיקה ועבודת Conversion.",
-          "צבירת ניסיון מעשי עם Shopify, WordPress, גיוס לקוחות ותפעול מסחר יומיומי."
+          "בנייה והפעלה של מערכות e-commerce ישירות לצרכן, כולל Storefronts, תשלומים, Fulfillment, אנליטיקה, אינטגרציות ותפעול יומיומי.",
+          "צבירת ניסיון מעשי ומסחרי ב-Shopify, WordPress, גיוס לקוחות, Conversion ותפעול e-commerce."
         ]
       },
       "hot": {
@@ -163,12 +175,12 @@
         ]
       },
       "airforce": {
-        "company": "חיל האוויר הישראלי / ממרם (שירות צבאי)",
+        "company": "IDF / Mamram",
         "title": "מתכנת תוכנה",
         "duration": "March 2011 - September 2014",
         "durationYears": "3 years 7 months",
         "highlights": [
-          "עבודה על מערכות אינטגרציה שחיברו בין מטוסים לתשתיות בקרה קרקעית, כולל מודרניזציה של שירותים Legacy."
+          "עבודה על מערכות אינטגרציה שחיברו בין תשתיות מוטסות ובקרת קרקע, כולל מודרניזציה של שירותי Legacy."
         ]
       }
     },
@@ -179,10 +191,10 @@
           "Technical scoping",
           "System design",
           "API design",
-          "Performance optimization",
-          "Reliability",
+          "Product ownership",
           "Web application architecture",
-          "Customer-facing product development"
+          "Reliability",
+          "Performance optimization"
         ]
       },
       "frontendFullStack": {
@@ -198,30 +210,39 @@
         ]
       },
       "commerceIntegrations": {
-        "category": "איקומרס ואינטגרציות",
+        "category": "E-commerce, Shopify ואינטגרציות",
         "items": [
           "Shopify",
           "Shopify APIs",
+          "Shopify storefronts",
           "HubSpot",
           "Stripe",
-          "WordPress",
+          "REST APIs",
           "GraphQL",
-          "REST APIs"
+          "Webhooks",
+          "WordPress"
         ]
       },
       "aiAutomation": {
         "category": "AI ואוטומציה",
-        "items": ["OpenAI API", "Claude API", "LangChain", "LLM-assisted workflows", "Webhooks", "Puppeteer", "Playwright"]
+        "items": [
+          "OpenAI API",
+          "Claude API",
+          "LangChain",
+          "LLM-assisted workflows",
+          "Puppeteer",
+          "Playwright"
+        ]
       },
       "cloudData": {
         "category": "ענן ונתונים",
         "items": [
           "Google Cloud Platform",
+          "PostgreSQL",
           "Firebase",
           "Firestore",
-          "PostgreSQL",
-          "Vercel",
           "Docker",
+          "Vercel",
           "GitHub Actions"
         ]
       },
