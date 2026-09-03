@@ -86,7 +86,7 @@
         "title": "Full Stack Developer & R&D Lead",
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
-        "location": "Tel Aviv, Israel",
+        "location": "Tel Aviv",
         "description": "Worked across customer-facing telemedicine and e-commerce systems, integrations, frontend modernization, and cloud infrastructure.",
         "highlights": [
           "Built and maintained a HIPAA-compliant telemedicine funnel using Next.js, React, TypeScript, and Google Cloud Platform.",
@@ -100,7 +100,7 @@
         "title": "Software & Integration Developer",
         "duration": "August 2019 - July 2021",
         "durationYears": "2 years",
-        "location": "Tel Aviv Area, Israel",
+        "location": "Tel Aviv Area",
         "description": "Built and maintained web experiences and integrations for fintech affiliate operations.",
         "highlights": [
           "Developed and optimized WordPress solutions using Sage and Laravel for high-traffic websites.",
@@ -123,7 +123,6 @@
         "title": "Integration Developer",
         "duration": "February 2017 - March 2018",
         "durationYears": "1 year 2 months",
-        "location": "Israel",
         "highlights": [
           "Built enterprise integrations and high-throughput web services using Oracle OSB, WebLogic, IBM DataPower, and JMS queues."
         ]
@@ -133,7 +132,7 @@
         "title": "Integration Developer",
         "duration": "March 2016 - December 2016",
         "durationYears": "10 months",
-        "location": "Lod, Israel",
+        "location": "Lod",
         "highlights": [
           "Developed and maintained banking integrations and high-availability services using IBM WebSphere ESB, IBM Integration Bus, and DataPower."
         ]
@@ -153,16 +152,16 @@
         "duration": "December 2013 - September 2014",
         "durationYears": "10 months",
         "highlights": [
-          "Contributed to real-time command-and-control software for military helicopter systems using C++, COM, and VB."
+          "Contributed to real-time command-and-control software for helicopter systems using C++, COM, and VB."
         ]
       },
       "airforce": {
-        "company": "Israeli Air Force / Mamram (Military Service)",
+        "company": "IDF / Mamram",
         "title": "Software Programmer",
         "duration": "March 2011 - September 2014",
         "durationYears": "3 years 7 months",
         "highlights": [
-          "Worked on integration systems connecting aircraft and ground-control infrastructure, including modernization of legacy services."
+          "Worked on integration systems connecting airborne and ground-control infrastructure, including modernization of legacy services."
         ]
       }
     },
@@ -235,9 +234,9 @@
     "education": {
       "entries": [
         {
-          "institution": "IDF School for Computer Professions (Basmach)",
-          "program": "Programming Course (Mamram)",
-          "description": "Intensive military software development training.",
+          "institution": "Basmach / Mamram",
+          "program": "Software Development Program",
+          "description": "Intensive software development training.",
           "years": "2011"
         },
         {
