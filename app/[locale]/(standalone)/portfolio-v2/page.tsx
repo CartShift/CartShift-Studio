@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import PortfolioV2 from './PortfolioV2';
+import './portfolio-v2.css';
 
 type Props = {
   params: Promise<{ locale: string }>;
