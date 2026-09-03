@@ -65,7 +65,7 @@ describe('CV PDF export', () => {
 
     [
       'Yotam Faraggi',
-      'Senior Product Engineer',
+      'Senior Full-Stack Engineer',
       'EU citizen',
       '+4915776211298',
       'Professional Experience',
@@ -82,7 +82,9 @@ describe('CV PDF export', () => {
       'IDF School for Computer Professions',
       'Programming Course',
       'Bar-Ilan University',
+      'E-COMMERCE, SHOPIFY & INTEGRATIONS',
       'LEGACY ENTERPRISE',
+      'Shopify storefronts',
       'WordPress',
       'HubSpot',
       'Web application architecture',
@@ -91,6 +93,7 @@ describe('CV PDF export', () => {
 
     [
       'CartShift Studio CV',
+      'Senior Product Engineer',
       'R&D Lead & Senior Full Stack Developer',
       'Professional Summary',
       'Earlier Engineering Experience',
