@@ -14,11 +14,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import type { CVData, CVExperienceItem } from '@/lib/cv/cv-data';
-import {
-  CV_PROFILE_IMAGE,
-  companyLogos,
-  resolveCvPdfAsset,
-} from '@/lib/cv/cv-media';
+import { companyLogos, resolveCvPdfAsset } from '@/lib/cv/cv-media';
 
 Font.registerHyphenationCallback(word => [word]);
 
@@ -52,22 +48,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   headerTop: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
     marginBottom: 8,
   },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 8,
-    objectFit: 'cover',
-    marginRight: 12,
-    borderWidth: 0.8,
-    borderColor: hairline,
-  },
   headerText: {
-    flex: 1,
-    paddingTop: 2,
+    width: '100%',
   },
   name: {
     fontSize: 22,
@@ -369,7 +353,7 @@ function GitHubIcon() {
   );
 }
 
-function Header({ cv, resolvedAssets }: { cv: CVData; resolvedAssets?: Record<string, string> }) {
+function Header({ cv }: { cv: CVData }) {
   const contacts: Array<{ key: string; node: React.ReactNode }> = [
     { key: 'loc', node: <Text>{cv.location}</Text> },
     { key: 'auth', node: <Text>{cv.workAuthorization}</Text> },
@@ -420,7 +404,6 @@ function Header({ cv, resolvedAssets }: { cv: CVData; resolvedAssets?: Record<st
   return (
     <View style={styles.header} wrap={false}>
       <View style={styles.headerTop}>
-        <Image src={getPdfAsset(CV_PROFILE_IMAGE, resolvedAssets)} style={styles.avatar} />
         <View style={styles.headerText}>
           <Text style={styles.name}>{cv.name}</Text>
           <Text style={styles.headline}>{cv.headline}</Text>
@@ -550,7 +533,7 @@ export const CVDocument: React.FC<CVDocumentProps> = ({ cv, resolvedAssets }) =>
     subject={cv.headline}
   >
     <Page size="A4" style={styles.page} wrap>
-      <Header cv={cv} resolvedAssets={resolvedAssets} />
+      <Header cv={cv} />
 
       <View style={styles.section}>
         <Text style={styles.summary}>{cv.summary.text}</Text>
