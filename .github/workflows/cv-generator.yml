@@ -38,7 +38,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Test CV variants
-        run: pnpm vitest run tests/cv/cv-variants.test.ts tests/cv/cv-pdf-export.test.tsx tests/cv/cv-tailored-pdf-export.test.tsx
+        run: pnpm vitest run tests/cv/cv-variants.test.ts tests/cv/cv-tailoring.test.ts tests/cv/cv-pdf-export.test.tsx tests/cv/cv-tailored-pdf-export.test.tsx
 
       - name: Render CV PDFs
         run: node scripts/cv.mjs render-all
