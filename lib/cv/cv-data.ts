@@ -1,6 +1,6 @@
 import enMessages from '@/messages/src/en/cv.json';
 
-export const CV_PDF_FILENAME = 'yotam-faraggi-senior-product-engineer-cv.pdf';
+export const CV_PDF_FILENAME = 'yotam-faraggi-senior-full-stack-engineer-cv.pdf';
 
 export const experienceKeys = [
   'cartshift',
@@ -30,17 +30,17 @@ export const earlierExperienceKeys = [
 ] as const;
 
 export const skillKeys = [
-  'productEngineering',
   'frontendFullStack',
   'commerceIntegrations',
-  'aiAutomation',
+  'productEngineering',
   'cloudData',
+  'aiAutomation',
   'legacyEnterprise',
 ] as const;
 
 export const languageKeys = ['hebrew', 'english', 'german'] as const;
 
-export const portfolioProjectKeys = ['rightflow', 'starlinker', 'atlasIrwin', 'cartshift'] as const;
+export const portfolioProjectKeys = ['cartshift', 'rightflow', 'starlinker', 'atlasIrwin'] as const;
 
 export type CVExperienceKey = (typeof experienceKeys)[number];
 export type CVSkillKey = (typeof skillKeys)[number];
