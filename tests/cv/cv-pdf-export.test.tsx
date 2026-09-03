@@ -47,6 +47,10 @@ function expectPdfTextIncludes(text: string, expected: string) {
   expect(text.toLowerCase()).toContain(expected.toLowerCase());
 }
 
+function expectPdfTextExcludes(text: string, forbidden: string) {
+  expect(text.toLowerCase()).not.toContain(forbidden.toLowerCase());
+}
+
 describe('CV PDF export', () => {
   it('generates a searchable two-page PDF with clickable recruiter contact links', async () => {
     const buffer = await renderPdfBuffer();
@@ -66,6 +70,7 @@ describe('CV PDF export', () => {
     [
       'Yotam Faraggi',
       'Senior Product Engineer',
+      'Full-Stack, APIs & Integrations',
       'EU citizen',
       '+4915776211298',
       'Professional Experience',
@@ -73,20 +78,22 @@ describe('CV PDF export', () => {
       'Portfolio: cart-shift.com/en/cv',
       'CartShift Studio',
       'Curalife',
+      'telemedicine acquisition product end-to-end',
+      'customer-acquisition and revenue funnels',
       'ParagonEX',
       'HOT',
       'Leumi Bank',
       'Elbit Systems',
-      'Israeli Air Force / Mamram',
-      'Military Service',
-      'IDF School for Computer Professions',
-      'Programming Course',
+      'IDF / Mamram',
+      'Basmach / Mamram',
+      'Software Development Program',
       'Bar-Ilan University',
-      'LEGACY ENTERPRISE',
+      'Enterprise Integration',
       'WordPress',
       'HubSpot',
       'Web application architecture',
       'Google Cloud Platform',
+      'PostgreSQL',
     ].forEach(expected => expectPdfTextIncludes(text, expected));
 
     [
@@ -97,9 +104,15 @@ describe('CV PDF export', () => {
       'Page 1 of 2',
       'Page 2 of 2',
       'Live CV & Portfolio',
+      'Israeli Air Force / Mamram',
+      'Military Service',
+      'military helicopter systems',
+      'IDF School for Computer Professions',
+      'Programming Course',
+      'LEGACY ENTERPRISE',
     ].forEach(forbidden => {
-      expect(text).not.toContain(forbidden);
-      expect(raw).not.toContain(forbidden);
+      expectPdfTextExcludes(text, forbidden);
+      expect(raw.toLowerCase()).not.toContain(forbidden.toLowerCase());
     });
 
     expect(raw).not.toMatch(/Page\s+\d+\s+of\s+\d+/i);

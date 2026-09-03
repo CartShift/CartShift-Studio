@@ -1,0 +1,60 @@
+name: CV Generator
+
+on:
+  push:
+    branches:
+      - cv-generator-v2
+    paths:
+      - 'lib/cv/**'
+      - 'app/**/cv/**'
+      - 'messages/src/en/cv.json'
+      - 'scripts/cv.mjs'
+      - 'scripts/render-cv-pdf.tsx'
+      - 'tests/cv/**'
+      - '.github/workflows/cv-generator.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-and-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test CV variant data
+        run: pnpm vitest run tests/cv/cv-variants.test.ts
+
+      - name: Test CV tailoring rules
+        run: pnpm vitest run tests/cv/cv-tailoring.test.ts
+
+      - name: Test canonical CV PDF export
+        run: pnpm vitest run tests/cv/cv-pdf-export.test.tsx
+
+      - name: Test tailored CV PDF export
+        run: pnpm vitest run tests/cv/cv-tailored-pdf-export.test.tsx
+
+      - name: Render CV PDFs
+        run: node scripts/cv.mjs render-all
+
+      - name: Upload CV PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: cv-pdfs
+          path: generated/cv/*.pdf
+          if-no-files-found: error

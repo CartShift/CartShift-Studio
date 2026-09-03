@@ -71,3 +71,6 @@ build_out/
 /data/social/*.json
 /data/social/*.log
 !/data/social/*.example.json
+
+# locally generated CV PDFs
+/generated/cv/
