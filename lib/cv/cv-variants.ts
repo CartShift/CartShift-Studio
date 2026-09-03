@@ -13,6 +13,7 @@ export const cvVariantIds = [
   'product-frontend',
   'fullstack-healthcare',
   'product-ai',
+  'defense-tech',
 ] as const;
 
 export type CVVariantId = (typeof cvVariantIds)[number];
@@ -78,6 +79,15 @@ const aiSkillOrder: readonly CVSkillKey[] = [
   'cloudData',
   'commerceIntegrations',
   'legacyEnterprise',
+];
+
+const defenseSkillOrder: readonly CVSkillKey[] = [
+  'frontendFullStack',
+  'productEngineering',
+  'commerceIntegrations',
+  'legacyEnterprise',
+  'cloudData',
+  'aiAutomation',
 ];
 
 const curalifeOwnershipHighlights = [
@@ -167,6 +177,33 @@ export const cvVariants: Record<CVVariantId, CVVariantConfig> = {
     },
     skillOrder: aiSkillOrder,
     portfolioProjectOrder: ['starlinker', 'rightflow', 'cartshift', 'atlasIrwin'],
+  },
+  'defense-tech': {
+    id: 'defense-tech',
+    label: 'Defense / Mission Systems',
+    filename: 'Yotam Faraggi CV - Defense Tech - 2026.pdf',
+    title: 'Yotam Faraggi - Senior Full-Stack Engineer CV',
+    headline: 'Senior Full-Stack Engineer | APIs, Integrations & Product Systems',
+    summary: {
+      text: 'Berlin-based Senior Full-Stack Engineer with 10+ years of experience building production software across healthcare, fintech, e-commerce, enterprise systems, and earlier defence and aviation work. Strong across React, Next.js, TypeScript, Node.js, APIs, integrations, cloud infrastructure, and PostgreSQL, with end-to-end ownership from technical scoping and architecture through deployment and iteration. Earlier engineering work included airborne and ground-control integration systems in IDF / Mamram and real-time command-and-control software for helicopter systems at Elbit Systems.',
+      metaDescription:
+        'Berlin-based Senior Full-Stack Engineer with 10+ years of experience across React, Next.js, TypeScript, APIs, integrations, cloud systems, and earlier defence and aviation software.',
+    },
+    skillOrder: defenseSkillOrder,
+    skillOverrides: {
+      legacyEnterprise: {
+        category: 'Systems & Enterprise Integration',
+        items: [
+          'C++',
+          'IBM Integration Bus',
+          'IBM DataPower',
+          'Oracle OSB',
+          'WebLogic',
+          'IBM WebSphere ESB',
+          'JMS',
+        ],
+      },
+    },
   },
 };
 
