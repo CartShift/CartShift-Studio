@@ -1,37 +1,40 @@
 @media (max-width: 639px) {
-  #top h1 {
-    font-size: 18vw;
-    line-height: 0.74;
-    letter-spacing: -0.085em;
+  .portfolio-name {
+    font-size: 18.2vw !important;
+    line-height: 0.74 !important;
+    letter-spacing: -0.082em !important;
   }
 
-  #top h1 > span:nth-child(2) {
+  .portfolio-name > span:nth-child(2) {
     margin-inline-start: 5vw;
   }
 
-  #work article h3 {
-    font-size: 12.5vw;
-    line-height: 0.86;
-    letter-spacing: -0.065em;
+  #work h2,
+  #about h2,
+  #contact h2 {
+    text-wrap: balance;
+  }
+
+  #work h2 {
+    font-size: 14.5vw;
+    line-height: 0.82;
   }
 
   #about h2,
   #contact h2 {
-    font-size: 14.5vw;
-    line-height: 0.78;
-  }
-
-  #work article + article {
-    margin-top: 9rem;
+    font-size: 14.2vw;
+    line-height: 0.8;
   }
 }
 
 @media (max-width: 380px) {
-  #top h1 {
-    font-size: 17.2vw;
+  .portfolio-name {
+    font-size: 17.3vw !important;
   }
 
-  #work article h3 {
-    font-size: 12vw;
+  #work h2,
+  #about h2,
+  #contact h2 {
+    font-size: 13.5vw;
   }
 }
