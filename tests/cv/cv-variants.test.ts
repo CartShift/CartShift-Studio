@@ -37,6 +37,30 @@ describe('CV variants', () => {
     }
   });
 
+  it('keeps Berlin and German work authorization prominent in every variant', () => {
+    for (const id of cvVariantIds) {
+      const cv = resolveCVVariant(id).cv;
+      expect(cv.location).toBe('Berlin, Germany');
+      expect(cv.workAuthorization).toContain('EU citizen');
+      expect(cv.workAuthorization).toContain('Authorized to work in Germany');
+    }
+  });
+
+  it('keeps military experience factual without restoring military-heavy labeling', () => {
+    for (const id of cvVariantIds) {
+      const cv = resolveCVVariant(id).cv;
+      const service = cv.experiences.find(item => item.key === 'airforce');
+      const serialized = JSON.stringify(cv);
+
+      expect(service?.company).toBe('IDF / Mamram');
+      expect(serialized).not.toContain('Israeli Air Force');
+      expect(serialized).not.toContain('Military Service');
+      expect(serialized).not.toContain('IDF School for Computer Professions');
+      expect(serialized).not.toContain('Intensive military software development training');
+      expect(serialized).not.toContain('military helicopter systems');
+    }
+  });
+
   it('surfaces end-to-end Curalife ownership in every tailored lane', () => {
     for (const id of ['product-frontend', 'fullstack-healthcare', 'product-ai'] as const) {
       const curalife = resolveCVVariant(id).cv.experiences.find(item => item.key === 'curalife');
