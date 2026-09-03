@@ -77,7 +77,7 @@ function decodeCompressedPayload(encoded: string) {
 async function renderPdfBuffer(cv: ReturnType<typeof resolveCVVariant>['cv']) {
   const resolvedAssets = await resolveCvPdfAssets();
   const document = createElement(CVDocument, { cv, resolvedAssets });
-  const stream = (await pdf(document).toBuffer()) as Readable;
+  const stream = (await pdf(document as Parameters<typeof pdf>[0]).toBuffer()) as Readable;
 
   return new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = [];
