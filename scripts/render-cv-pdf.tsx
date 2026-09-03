@@ -1,4 +1,3 @@
-import React from 'react';
 import { createWriteStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
