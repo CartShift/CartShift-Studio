@@ -45,11 +45,14 @@
   isolation: isolate;
 }
 
-/* Keep the oversized editorial titles warm and clearly readable over dark photography. */
+/* Force the oversized editorial titles to stay warm white over the dark photography,
+   including nested spans and any WebKit text-fill rules from global typography. */
 #top .portfolio-name,
+#top .portfolio-name span,
 #about h2,
 #about h3 {
   color: #f3eee5 !important;
+  -webkit-text-fill-color: #f3eee5 !important;
 }
 
 #top::before,
