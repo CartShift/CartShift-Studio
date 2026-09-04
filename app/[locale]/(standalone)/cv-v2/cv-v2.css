@@ -1,0 +1,11 @@
+#profile h2,
+#profile h3,
+#skills h2,
+#skills h3,
+#work h2,
+#work h3,
+#education h2,
+#education h3 {
+  color: #1c1d20 !important;
+  -webkit-text-fill-color: #1c1d20 !important;
+}
