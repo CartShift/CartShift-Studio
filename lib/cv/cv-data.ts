@@ -1,6 +1,6 @@
 import enMessages from '@/messages/src/en/cv.json';
 
-export const CV_PDF_FILENAME = 'yotam-faraggi-senior-full-stack-engineer-cv.pdf';
+export const CV_PDF_FILENAME = 'yotam-faraggi-senior-product-engineer-cv.pdf';
 
 export const experienceKeys = [
   'cartshift',
@@ -39,7 +39,6 @@ export const skillKeys = [
 ] as const;
 
 export const languageKeys = ['hebrew', 'english', 'german'] as const;
-
 export const portfolioProjectKeys = ['cartshift', 'rightflow', 'starlinker', 'atlasIrwin'] as const;
 
 export type CVExperienceKey = (typeof experienceKeys)[number];
@@ -203,6 +202,10 @@ export interface RawCVMessages {
   >;
 }
 
+function productizeIdentity(value: string) {
+  return value.replace(/Senior Full-Stack Engineer/g, 'Senior Product Engineer');
+}
+
 export function buildCVData(cv: RawCVMessages): CVData {
   const experiences = experienceKeys.map(key => ({
     key,
@@ -210,12 +213,12 @@ export function buildCVData(cv: RawCVMessages): CVData {
   }));
 
   return {
-    title: cv.title,
+    title: productizeIdentity(cv.title),
     name: cv.name,
-    headline: cv.subtitle,
+    headline: productizeIdentity(cv.subtitle),
     location: cv.location,
     workAuthorization: cv.workAuthorization,
-    phone: cv.phone,
+    phone: cv.phone.startsWith('+972') ? '+4915776211298' : cv.phone,
     email: cv.email,
     contact: {
       linkedinLabel: cv.linkedin,
@@ -223,8 +226,8 @@ export function buildCVData(cv: RawCVMessages): CVData {
       portfolioLabel: cv.portfolioLink,
       linkedinUrl: 'https://linkedin.com/in/yotam-faraggi',
       githubUrl: 'https://github.com/yotamon',
-      portfolioUrl: 'https://cart-shift.com/en/cv',
-      portfolioDisplayUrl: 'cart-shift.com/en/cv',
+      portfolioUrl: 'https://cart-shift.com/en/portfolio',
+      portfolioDisplayUrl: 'cart-shift.com/en/portfolio',
     },
     labels: {
       saveAsPdf: cv.saveAsPdf,
@@ -232,7 +235,10 @@ export function buildCVData(cv: RawCVMessages): CVData {
       earlierExperience: cv.labels.earlierExperience,
     },
     sections: cv.sections,
-    summary: cv.summary,
+    summary: {
+      text: productizeIdentity(cv.summary.text),
+      metaDescription: productizeIdentity(cv.summary.metaDescription),
+    },
     portfolio: {
       intro: cv.portfolio.intro,
       liveLabel: cv.portfolio.liveLabel,
