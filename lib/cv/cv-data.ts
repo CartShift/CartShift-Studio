@@ -203,7 +203,10 @@ export interface RawCVMessages {
 }
 
 function productizeIdentity(value: string) {
-  return value.replace(/Senior Full-Stack Engineer/g, 'Senior Product Engineer');
+  return value
+    .replace(/Senior Full-Stack Engineer/g, 'Senior Product Engineer')
+    .replace(/Senior full-stack developer/gi, 'Senior Product Engineer')
+    .replace(/מפתח Full Stack בכיר/g, 'Senior Product Engineer');
 }
 
 export function buildCVData(cv: RawCVMessages): CVData {
