@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [
         {
           url: '/images/portfolio-v2/hero-art.webp',
-          alt: 'Yotam Faraggi',
+          alt: isHebrew ? "יותם פרג'י" : 'Yotam Faraggi',
         },
       ],
     },
@@ -55,16 +55,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PortfolioPage({ params }: Props) {
   const { locale } = await params;
   const validLocale = locale as 'en' | 'he';
+  const isHebrew = validLocale === 'he';
   setRequestLocale(validLocale);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
-    inLanguage: validLocale === 'he' ? 'he-IL' : 'en-US',
+    inLanguage: isHebrew ? 'he-IL' : 'en-US',
     mainEntity: {
       '@type': 'Person',
-      name: 'Yotam Faraggi',
+      name: isHebrew ? "יותם פרג'י" : 'Yotam Faraggi',
       jobTitle: 'Senior Product Engineer',
       url: `${siteUrl}/${locale}/portfolio`,
       image: `${siteUrl}/images/portfolio-v2/hero-art.webp`,
@@ -75,7 +76,7 @@ export default async function PortfolioPage({ params }: Props) {
       ],
       address: {
         '@type': 'PostalAddress',
-        addressLocality: 'Berlin',
+        addressLocality: isHebrew ? 'ברלין' : 'Berlin',
         addressCountry: 'DE',
       },
       knowsAbout: [
