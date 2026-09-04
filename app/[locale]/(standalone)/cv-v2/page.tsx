@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
   return {
-    title: 'Yotam Faraggi — CV',
+    title: 'Yotam Faraggi - CV',
     description:
       'Senior Product Engineer and Senior Full-Stack Engineer in Berlin with 10+ years of product, commerce, AI, integration, and production engineering experience.',
     robots: { index: false, follow: false },
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${siteUrl}/${locale}/cv-v2`,
     },
     openGraph: {
-      title: 'Yotam Faraggi — CV',
+      title: 'Yotam Faraggi - CV',
       description: 'Senior Product Engineer · Full-stack · AI · Commerce',
       type: 'profile',
       url: `${siteUrl}/${locale}/cv-v2`,
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Yotam Faraggi — CV',
+      title: 'Yotam Faraggi - CV',
       description: 'Senior Product Engineer · Full-stack · AI · Commerce',
       images: ['/images/portfolio-v2/hero-art.webp'],
     },
