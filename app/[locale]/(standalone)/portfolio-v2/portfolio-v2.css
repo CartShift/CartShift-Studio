@@ -38,3 +38,95 @@
     font-size: 13.5vw;
   }
 }
+
+/* Editorial photography, scoped to the experimental portfolio only. */
+#top,
+#about {
+  isolation: isolate;
+}
+
+#top::before,
+#top::after,
+#about::before,
+#about::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#top::before {
+  z-index: 0;
+  background-image: url('/images/portfolio-v2/hero-art.webp');
+  background-size: cover;
+  background-position: center center;
+  opacity: 0.94;
+  filter: saturate(0.78) contrast(1.04);
+  transform: scale(1.012);
+}
+
+#top::after {
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(28, 29, 32, 0.14) 0%, rgba(28, 29, 32, 0.06) 42%, rgba(28, 29, 32, 0.62) 100%),
+    linear-gradient(90deg, rgba(28, 29, 32, 0.28) 0%, rgba(28, 29, 32, 0.02) 52%, rgba(28, 29, 32, 0.2) 100%);
+}
+
+#top > *,
+#about > * {
+  position: relative;
+  z-index: 1;
+}
+
+#about::before {
+  z-index: 0;
+  background-image: url('/images/portfolio-v2/about-dog-art.webp');
+  background-size: cover;
+  background-position: center center;
+  opacity: 0.5;
+  filter: saturate(0.7) contrast(1.04);
+  transform: scale(1.01);
+}
+
+#about::after {
+  z-index: 0;
+  background:
+    linear-gradient(90deg, rgba(28, 29, 32, 0.97) 0%, rgba(28, 29, 32, 0.86) 35%, rgba(28, 29, 32, 0.47) 70%, rgba(28, 29, 32, 0.64) 100%),
+    linear-gradient(180deg, rgba(28, 29, 32, 0.16) 0%, rgba(28, 29, 32, 0.08) 52%, rgba(28, 29, 32, 0.72) 100%);
+}
+
+@media (max-width: 639px) {
+  #top::before {
+    background-image: url('/images/portfolio-v2/hero-mobile-art.webp');
+    background-position: center 42%;
+    opacity: 0.92;
+    transform: scale(1.015);
+  }
+
+  #top::after {
+    background:
+      linear-gradient(180deg, rgba(28, 29, 32, 0.1) 0%, rgba(28, 29, 32, 0.08) 36%, rgba(28, 29, 32, 0.72) 76%, rgba(28, 29, 32, 0.92) 100%),
+      linear-gradient(90deg, rgba(28, 29, 32, 0.2), rgba(28, 29, 32, 0.04) 54%, rgba(28, 29, 32, 0.24));
+  }
+
+  #about::before {
+    background-position: 63% center;
+    opacity: 0.31;
+  }
+
+  #about::after {
+    background: linear-gradient(180deg, rgba(28, 29, 32, 0.94) 0%, rgba(28, 29, 32, 0.74) 34%, rgba(28, 29, 32, 0.54) 64%, rgba(28, 29, 32, 0.93) 100%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 640px) {
+  #top::before,
+  #about::before {
+    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s ease;
+  }
+
+  #top:hover::before,
+  #about:hover::before {
+    transform: scale(1.025);
+  }
+}
