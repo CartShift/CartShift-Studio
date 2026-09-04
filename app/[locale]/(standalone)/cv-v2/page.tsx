@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import CVV2 from './CVV2';
+import './cv-v2.css';
 
 type Props = {
   params: Promise<{ locale: string }>;
