@@ -45,6 +45,13 @@
   isolation: isolate;
 }
 
+/* Keep the oversized editorial titles warm and clearly readable over dark photography. */
+#top .portfolio-name,
+#about h2,
+#about h3 {
+  color: #f3eee5 !important;
+}
+
 #top::before,
 #top::after,
 #about::before,
