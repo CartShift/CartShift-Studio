@@ -93,7 +93,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/tools/client-portal', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/terms', changeFrequency: 'yearly' as const, priority: 0.3 },
-    { path: '/cv', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/cv', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/portfolio', changeFrequency: 'monthly' as const, priority: 0.8 },
     ...industries.map(industry => ({
       path: `/industries/${industry}`,
       changeFrequency: 'monthly' as const,
