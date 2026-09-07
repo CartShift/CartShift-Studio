@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const title = validLocale === 'he'
-    ? "יותם פרג'י - Senior Product Engineer | קורות חיים"
-    : 'Yotam Faraggi - Senior Product Engineer | CV';
+    ? "יותם פרג'י | Senior Product Engineer בברלין"
+    : 'Yotam Faraggi | Senior Product Engineer in Berlin';
   const description = validLocale === 'he'
     ? 'Senior Product Engineer בברלין עם 10+ שנות ניסיון במוצרי Full-Stack, AI, מסחר, אינטגרציות ומערכות פרודקשן.'
     : 'Berlin-based Senior Product Engineer with 10+ years of experience building full-stack products, AI-assisted software, commerce systems, integrations, and production platforms.';
