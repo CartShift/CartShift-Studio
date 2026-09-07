@@ -54,7 +54,8 @@ describe('CV PDF export', () => {
     const text = extractPdfText(buffer);
 
     expect(raw.match(/\/Type\s*\/Page\b/g)).toHaveLength(2);
-    expect(raw.match(/\/Subtype\s*\/Image\b/g)?.length ?? 0).toBeGreaterThanOrEqual(8);
+    // The current two-page layout embeds six distinct experience logo images.
+    expect(raw.match(/\/Subtype\s*\/Image\b/g)?.length ?? 0).toBeGreaterThanOrEqual(6);
     expect(text.trim().length).toBeGreaterThan(1000);
 
     expect(raw).toContain('/URI (mailto:yotamon@gmail.com)');
