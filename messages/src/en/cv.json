@@ -229,7 +229,9 @@
           "OpenAI API",
           "Claude API",
           "LangChain",
-          "LLM-assisted workflows"
+          "LLM-assisted workflows",
+          "AI SDK",
+          "MCP"
         ]
       },
       "cloudData": {
