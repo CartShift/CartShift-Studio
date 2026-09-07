@@ -92,7 +92,7 @@
         "location": "Berlin, Germany",
         "description": "Independent full-stack and e-commerce engineering practice combining client delivery with hands-on development of production web, commerce, and AI-assisted products.",
         "highlights": [
-          "Build and ship full-stack products and client systems using Next.js, React, TypeScript, Node.js, APIs, PostgreSQL, and modern cloud tooling.",
+          "Build and ship full-stack products and client systems using Next.js, React, TypeScript, Node.js, APIs, PostgreSQL, and modern cloud tooling, with automated unit, integration, and end-to-end testing.",
           "Deliver e-commerce and Shopify-focused work spanning storefront development, integrations, performance optimization, conversion-oriented improvements, and workflow automation.",
           "Created products including StarLinker and RightFlow, owning product definition, architecture, implementation, deployment, and iteration."
         ]
@@ -229,9 +229,7 @@
           "OpenAI API",
           "Claude API",
           "LangChain",
-          "LLM-assisted workflows",
-          "Puppeteer",
-          "Playwright"
+          "LLM-assisted workflows"
         ]
       },
       "cloudData": {
@@ -247,15 +245,15 @@
         ]
       },
       "legacyEnterprise": {
-        "category": "Enterprise Integration",
+        "category": "Testing & Quality",
         "items": [
-          "Oracle OSB",
-          "WebLogic",
-          "IBM WebSphere ESB",
-          "IBM Integration Bus",
-          "IBM DataPower",
-          "JMS",
-          "C++"
+          "Jest",
+          "Vitest",
+          "React Testing Library",
+          "Playwright",
+          "Puppeteer",
+          "Unit & integration testing",
+          "End-to-end testing"
         ]
       }
     },
