@@ -61,16 +61,17 @@ describe('CV PDF export', () => {
     expect(raw).toContain('/URI (tel:+4915776211298)');
     expect(raw).toContain('/URI (https://linkedin.com/in/yotam-faraggi)');
     expect(raw).toContain('/URI (https://github.com/yotamon)');
-    expect(raw).toContain('/URI (https://cart-shift.com/en/cv)');
+    expect(raw).toContain('/URI (https://cart-shift.com/en/portfolio)');
 
     [
       'Yotam Faraggi',
+      'Senior Product Engineer',
       'Senior Full-Stack Engineer',
       'EU citizen',
       '+4915776211298',
       'Professional Experience',
       'Technical Skills',
-      'Portfolio: cart-shift.com/en/cv',
+      'Portfolio: cart-shift.com/en/portfolio',
       'CartShift Studio',
       'Curalife',
       'ParagonEX',
@@ -92,7 +93,6 @@ describe('CV PDF export', () => {
 
     [
       'CartShift Studio CV',
-      'Senior Product Engineer',
       'R&D Lead & Senior Full Stack Developer',
       'Professional Summary',
       'Earlier Engineering Experience',
