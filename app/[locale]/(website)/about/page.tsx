@@ -17,11 +17,13 @@ export async function generateMetadata({
   const { locale } = await params;
   return genMeta(
     {
-      title: 'About CartShift Studio | Expert E-commerce Development Team',
+      title: 'About CartShift Studio | Yotam Faraggi & Team',
       description:
-        'Meet the team behind CartShift Studio. Expert Shopify and WordPress developers dedicated to building custom e-commerce solutions for your business.',
+        'Meet Yotam Faraggi, a Berlin-based Senior Product Engineer and co-founder of CartShift Studio, and the team building high-quality Shopify, WordPress, and custom web products.',
       url: '/about',
       keywords: [
+        'Yotam Faraggi',
+        'Senior Product Engineer Berlin',
         'about us',
         'e-commerce team',
         'Shopify developers',
@@ -37,6 +39,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const orgSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
@@ -46,22 +49,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     locale as 'en' | 'he'
   );
 
-  const teamMembers = [
-    {
-      name: 'Technical Lead',
-      jobTitle: 'Technical Lead & Co-er',
-      description:
-        'Expert in Shopify and WordPress development, specializing in custom e-commerce solutions and performance optimization.',
-    },
-    {
-      name: 'Customer-Facing Partner',
-      jobTitle: 'Customer-Facing Partner & Co-er',
-      description:
-        'Dedicated to building strong client relationships and ensuring exceptional customer experience throughout the development process.',
-    },
-  ];
-
-  const personSchemas = teamMembers.map(member => generatePersonSchema(member));
+  const yotamSchema = generatePersonSchema({
+    name: 'Yotam Faraggi',
+    jobTitle: 'Co-Founder & Senior Product Engineer',
+    description:
+      'Berlin-based Senior Product Engineer with 10+ years of experience building full-stack products, e-commerce systems, integrations, and AI-assisted software.',
+    url: `${siteUrl}/${locale}/cv`,
+    image: '/images/portfolio-v2/hero-art.webp',
+  });
 
   return (
     <>
@@ -75,14 +70,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      {personSchemas.map((schema, index) => (
-        <Script
-          key={index}
-          id={`person-schema-${index}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      ))}
+      <Script
+        id="yotam-person-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(yotamSchema) }}
+      />
       <AboutTemplate />
     </>
   );
