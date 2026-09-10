@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { setRequestLocale } from 'next-intl/server';
-import PortfolioV2 from '../portfolio-v2/PortfolioV2';
-import '../portfolio-v2/portfolio-v2.css';
+import PortfolioV3 from '../portfolio-v3/PortfolioV3';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -16,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "יותם פרג'י - Senior Product Engineer | פורטפוליו"
     : 'Yotam Faraggi - Senior Product Engineer | Portfolio';
   const description = isHebrew
-    ? 'פורטפוליו של Senior Product Engineer בברלין: מוצרי Full-Stack, AI, מסחר, אינטגרציות ועבודה מקצה לקצה.'
-    : 'Portfolio of a Berlin-based Senior Product Engineer building full-stack products, AI-assisted software, commerce systems, integrations, and production platforms.';
+    ? 'פורטפוליו של Senior Product Engineer בברלין עם 10+ שנות ניסיון ב-Full-Stack, מסחר, אינטגרציות ו-AI, עם דגש על ownership ותוצאות בפרודקשן.'
+    : 'Portfolio of a Berlin-based Senior Product Engineer with 10+ years across full-stack products, commerce, integrations and AI, focused on ownership and production outcomes.';
 
   return {
     title,
@@ -67,6 +66,9 @@ export default async function PortfolioPage({ params }: Props) {
       '@type': 'Person',
       name: isHebrew ? "יותם פרג'י" : 'Yotam Faraggi',
       jobTitle: 'Senior Product Engineer',
+      description: isHebrew
+        ? 'Senior Product Engineer בברלין המתמחה במוצרי Full-Stack, מסחר, אינטגרציות ו-AI.'
+        : 'Senior Product Engineer in Berlin focused on full-stack products, commerce, integrations and AI.',
       url: `${siteUrl}/${locale}/portfolio`,
       image: `${siteUrl}/images/portfolio-v2/hero-art.webp`,
       sameAs: [
@@ -100,7 +102,7 @@ export default async function PortfolioPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PortfolioV2 locale={locale} />
+      <PortfolioV3 locale={locale} />
     </>
   );
 }
