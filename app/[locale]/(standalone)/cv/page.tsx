@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import CVV2 from '../cv-v2/CVV2';
-import '../cv-v2/cv-v2.css';
+import CVV3 from '../cv-v3/CVV3';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -17,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "יותם פרג'י | Senior Product Engineer בברלין"
     : 'Yotam Faraggi | Senior Product Engineer in Berlin';
   const description = validLocale === 'he'
-    ? 'Senior Product Engineer בברלין עם 10+ שנות ניסיון במוצרי Full-Stack, AI, מסחר, אינטגרציות ומערכות פרודקשן.'
-    : 'Berlin-based Senior Product Engineer with 10+ years of experience building full-stack products, AI-assisted software, commerce systems, integrations, and production platforms.';
+    ? 'Senior Product Engineer בברלין עם 10+ שנות ניסיון ב-Full-Stack, מסחר, אינטגרציות, AI ומערכות פרודקשן מורכבות.'
+    : 'Berlin-based Senior Product Engineer with 10+ years across full-stack products, commerce, integrations, AI and production software.';
 
   return {
     title,
@@ -61,8 +60,8 @@ export default async function CVPage({ params }: Props) {
   const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const description = validLocale === 'he'
-    ? 'Senior Product Engineer בברלין עם ניסיון במוצרי Full-Stack, AI, מסחר ואינטגרציות.'
-    : 'Senior Product Engineer in Berlin building full-stack products, AI-assisted software, commerce systems, and integration-heavy platforms.';
+    ? 'Senior Product Engineer בברלין עם ניסיון ב-Full-Stack, מסחר, אינטגרציות ו-AI.'
+    : 'Senior Product Engineer in Berlin building full-stack products, commerce systems, AI-assisted software and integration-heavy platforms.';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -114,7 +113,7 @@ export default async function CVPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <CVV2 />
+      <CVV3 />
     </>
   );
 }
