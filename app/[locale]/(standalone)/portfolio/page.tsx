@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { setRequestLocale } from 'next-intl/server';
-import PortfolioV3 from '../portfolio-v3/PortfolioV3';
+import PortfolioV4 from '../portfolio-v4/PortfolioV4';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "יותם פרג'י - Senior Product Engineer | פורטפוליו"
     : 'Yotam Faraggi - Senior Product Engineer | Portfolio';
   const description = isHebrew
-    ? 'פורטפוליו של Senior Product Engineer בברלין עם 10+ שנות ניסיון ב-Full-Stack, מסחר, אינטגרציות ו-AI, עם דגש על ownership ותוצאות בפרודקשן.'
-    : 'Portfolio of a Berlin-based Senior Product Engineer with 10+ years across full-stack products, commerce, integrations and AI, focused on ownership and production outcomes.';
+    ? 'פורטפוליו מוצרי של Senior Product Engineer בברלין עם 10+ שנות ניסיון ב-Full-Stack, AI ומובייל, המציג מוצרים founder-led ועבודת product engineering מקצה לקצה.'
+    : 'Product portfolio of a Berlin-based Senior Product Engineer with 10+ years across full-stack, AI and mobile, featuring founder-led products and end-to-end product engineering.';
 
   return {
     title,
@@ -67,8 +67,8 @@ export default async function PortfolioPage({ params }: Props) {
       name: isHebrew ? "יותם פרג'י" : 'Yotam Faraggi',
       jobTitle: 'Senior Product Engineer',
       description: isHebrew
-        ? 'Senior Product Engineer בברלין המתמחה במוצרי Full-Stack, מסחר, אינטגרציות ו-AI.'
-        : 'Senior Product Engineer in Berlin focused on full-stack products, commerce, integrations and AI.',
+        ? 'Senior Product Engineer בברלין המתמחה במוצרי Full-Stack, AI, מובייל ו-product engineering.'
+        : 'Senior Product Engineer in Berlin focused on full-stack products, AI, mobile and product engineering.',
       url: `${siteUrl}/${locale}/portfolio`,
       image: `${siteUrl}/images/portfolio-v2/hero-art.webp`,
       sameAs: [
@@ -87,8 +87,8 @@ export default async function PortfolioPage({ params }: Props) {
         'Next.js',
         'React',
         'TypeScript',
-        'Node.js',
-        'Shopify',
+        'Kotlin',
+        'Android',
         'AI-assisted Products',
         'APIs and Integrations',
       ],
@@ -102,7 +102,7 @@ export default async function PortfolioPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PortfolioV3 locale={locale} />
+      <PortfolioV4 locale={locale} />
     </>
   );
 }

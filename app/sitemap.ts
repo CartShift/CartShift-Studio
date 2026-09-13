@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/markdown';
 import { getAllCaseStudies } from '@/lib/case-studies';
+import { portfolioShowcaseSlugs } from '@/lib/portfolio-showcase';
 import { ANALYZER_INTENTS } from '@/lib/analyzer/funnel';
 import { adminDb } from '@/lib/firebase-admin';
 
@@ -47,6 +48,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const caseStudyUrls = caseStudies.flatMap(study =>
     createLocalizedUrls(baseUrl, `/work/${study.slug}`, now, 'monthly', 0.7)
+  );
+
+  const portfolioProjectUrls = portfolioShowcaseSlugs.flatMap(slug =>
+    createLocalizedUrls(baseUrl, `/portfolio/${slug}`, now, 'monthly', 0.8)
   );
 
   const approvedInsights = adminDb
@@ -106,5 +111,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     createLocalizedUrls(baseUrl, page.path, now, page.changeFrequency, page.priority)
   );
 
-  return [...staticUrls, ...blogUrls, ...caseStudyUrls, ...insightUrls];
+  return [...staticUrls, ...portfolioProjectUrls, ...blogUrls, ...caseStudyUrls, ...insightUrls];
 }
