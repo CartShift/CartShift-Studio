@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "יותם פרג'י | Senior Product Engineer בברלין"
     : 'Yotam Faraggi | Senior Product Engineer in Berlin';
   const description = validLocale === 'he'
-    ? 'Senior Product Engineer בברלין עם 10+ שנות ניסיון ב-Full-Stack, מסחר, אינטגרציות, AI ומערכות פרודקשן מורכבות.'
-    : 'Berlin-based Senior Product Engineer with 10+ years across full-stack products, commerce, integrations, AI and production software.';
+    ? 'Senior Product Engineer בברלין עם 10+ שנות ניסיון בהנדסת תוכנה, מוצרי Full-Stack, מסחר, אינטגרציות ומערכות פרודקשן, לצד עבודה עדכנית במוצרים בסיוע AI.'
+    : 'Berlin-based Senior Product Engineer with 10+ years in software engineering across full-stack products, commerce, integrations and production systems, plus recent AI-assisted product work.';
 
   return {
     title,
@@ -60,8 +60,8 @@ export default async function CVPage({ params }: Props) {
   const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const description = validLocale === 'he'
-    ? 'Senior Product Engineer בברלין עם ניסיון ב-Full-Stack, מסחר, אינטגרציות ו-AI.'
-    : 'Senior Product Engineer in Berlin building full-stack products, commerce systems, AI-assisted software and integration-heavy platforms.';
+    ? 'Senior Product Engineer בברלין עם יותר מעשור בהנדסת תוכנה, מוצרי Full-Stack, מסחר ואינטגרציות, ועבודה עדכנית במוצרים בסיוע AI.'
+    : 'Senior Product Engineer in Berlin with more than a decade in software engineering across full-stack products, commerce and integrations, with recent AI-assisted product work.';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -102,6 +102,7 @@ export default async function CVPage({ params }: Props) {
         'APIs and Integrations',
         'AI-assisted Product Workflows',
         'Cloud Infrastructure',
+        'Production Reliability',
       ],
     },
   };
