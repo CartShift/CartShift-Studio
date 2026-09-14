@@ -113,7 +113,14 @@ export default async function CVPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <CVV3 />
+      <style>{`
+        .cv-page-contrast :is(h1, h2, h3, h4, h5, h6)[class*='text-[#1d1d1f]'] {
+          color: #1d1d1f !important;
+        }
+      `}</style>
+      <div className="cv-page-contrast">
+        <CVV3 />
+      </div>
     </>
   );
 }
