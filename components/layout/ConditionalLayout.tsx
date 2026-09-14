@@ -14,7 +14,11 @@ export function ConditionalLayout({
   isPortalSubdomain: isPortalSubdomainProp,
 }: ConditionalLayoutProps) {
   const pathname = usePathname();
-  const isCvRoute = pathname === '/cv' || pathname?.endsWith('/cv');
+  const isRecruiterProfileRoute =
+    pathname === '/cv' ||
+    pathname?.endsWith('/cv') ||
+    pathname === '/yotam' ||
+    pathname?.endsWith('/yotam');
   const isProposalRoute = pathname?.includes('/proposal/');
 
   // On portal subdomain, never render MainLayout — all routes are portal routes
@@ -29,8 +33,8 @@ export function ConditionalLayout({
     return <>{children}</>;
   }
 
-  // CV routes use their own recruiter-focused shell instead of the marketing site chrome.
-  if (isCvRoute || isProposalRoute) {
+  // Recruiter-facing profile routes use their own focused shell instead of marketing site chrome.
+  if (isRecruiterProfileRoute || isProposalRoute) {
     return <>{children}</>;
   }
 
