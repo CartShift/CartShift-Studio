@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { motion, useReducedMotion, type MotionProps } from 'framer-motion';
-import { ArrowDown, ArrowUpRight, Download, MapPin } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Download, Mail, MapPin } from 'lucide-react';
 import { getPortfolioShowcases, type PortfolioShowcaseProject, type ShowcaseMedia } from '@/lib/portfolio-showcase';
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -165,38 +165,55 @@ export default function PortfolioV4({ locale }: { locale: string }) {
   const reduceMotion = useReducedMotion();
   const cvHref = `/${locale}/cv`;
   const pdfHref = `/${locale}/cv/render?variant=default`;
+  const email = 'yotamon@gmail.com';
 
   const copy = isHebrew
     ? {
-        navWork: 'מוצרים', navApproach: 'גישה', navCv: 'קורות חיים', kicker: 'Senior Product Engineer · ברלין',
+        navWork: 'מוצרים', navApproach: 'גישה', navCv: 'קורות חיים', kicker: "יותם פרג'י · Senior Product Engineer · ברלין",
         headline: 'אני הופך רעיונות למוצרים שאפשר לראות ולהשתמש בהם.',
         intro: 'מוצר, UX והנדסה באותה יד. אני אוהב לקחת רעיון לא מסודר, לתת לו צורה, לבנות אותו ולהביא אותו למצב שמרגיש כמו מוצר אמיתי.',
         primaryCta: 'לצפייה במוצרים', secondaryCta: 'הורדת CV', proofYears: '10+ שנים', proofYearsLabel: 'תוכנה בפרודקשן',
         proofProducts: '5 מוצרים', proofProductsLabel: 'בפורטפוליו הנבחר', proofBreadth: 'Web · AI · Mobile', proofBreadthLabel: 'טווח מוצרי',
         proofOwnership: 'End-to-end', proofOwnershipLabel: 'ownership', workEyebrow: 'מוצרים נבחרים', workTitle: 'חמישה מוצרים. חמש בעיות שונות.',
         workIntro: 'במקום להכניס כל מוצר לאותה תבנית, כל אחד מוצג דרך הדבר שמגדיר אותו: מרחב, workflow, lifecycle, רגע שימוש או מערכת תפעול.',
-        explore: 'פתיחת הפרויקט', approachEyebrow: 'איך אני עובד', approachTitle: 'רעיון טוב צריך להגיע עד למסך שעובד.',
+        explore: 'פתיחת הפרויקט', impactEyebrow: 'השפעה בפרודקשן', impactTitle: 'לפני מוצרי ה-founder, שנים של אחריות על מערכות אמיתיות.',
+        impactIntro: 'המוצרים העצמאיים מראים איך אני חושב ובונה מאפס. הניסיון ב-Curalife ובמערכות enterprise מראה איך אותה ownership נראית כשאמינות, הכנסות ותפעול תלויים בקוד.',
+        impactItems: [
+          { value: '85%-', label: 'כשלי סנכרון', text: 'תכנון שכבת אינטגרציה עמידה בין Shopify ל-HubSpot ששיפרה משמעותית את האמינות בין commerce, CRM ותפעול.' },
+          { value: '60%+', label: 'ביצועים', text: 'הובלת מודרניזציית frontend במסלולי מסחר ורכישה מרכזיים תוך מעבר ל-Next.js, React ו-TypeScript.' },
+          { value: 'HIPAA', label: 'מוצר מקצה לקצה', text: 'הגדרה, ארכיטקטורה ובנייה של מוצר acquisition לטלרפואה שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של Curalife.' },
+          { value: '10+ שנים', label: 'מערכות פרודקשן', text: 'ניסיון שנע ממערכות enterprise ואינטגרציות קריטיות ועד e-commerce, מוצרי Web ועבודה founder-led.' },
+        ],
+        approachEyebrow: 'איך אני עובד', approachTitle: 'רעיון טוב צריך להגיע עד למסך שעובד.',
         approachIntro: 'אני מחבר product sense, עיצוב מערכת ויכולת full-stack כדי לקצר את המרחק בין רעיון לבין מוצר שאפשר לשים מול משתמשים.',
         principleProduct: 'רעיון למוצר', principleProductText: 'לזקק מה באמת צריך להתקיים, למי ולמה, לפני שהמוצר נהיה אוסף של פיצ׳רים.',
         principleDesign: 'מערכת ולא מסך', principleDesignText: 'לבנות חוויה קוהרנטית עם שפה ויזואלית, היררכיה ו-UX שעובדים יחד.',
         principleBuild: 'לסגור את הלופ', principleBuildText: 'להיות מספיק hands-on כדי לקחת את המוצר מהקונספט, דרך הקוד, ועד שימוש אמיתי.',
-        contactEyebrow: 'ברלין · אזרח האיחוד האירופי', contactTitle: 'מחפש את המוצר הבא ששווה לבנות.', viewCv: 'ל-CV המלא',
+        contactEyebrow: 'ברלין · אזרח האיחוד האירופי', contactTitle: 'מחפש את המוצר הבא ששווה לבנות.', contactCta: 'דברו איתי', viewCv: 'ל-CV המלא',
         location: 'ברלין, גרמניה', roleLine: 'Senior Product Engineer · Full-stack · AI · Product', scroll: 'מוצרים',
       }
     : {
-        navWork: 'Products', navApproach: 'Approach', navCv: 'CV', kicker: 'Senior Product Engineer · Berlin',
+        navWork: 'Products', navApproach: 'Approach', navCv: 'CV', kicker: 'Yotam Faraggi · Senior Product Engineer · Berlin',
         headline: 'I turn ideas into products you can actually see and use.',
         intro: 'Product, UX and engineering in one loop. I like taking an unclear idea, giving it shape, building it, and pushing it until it feels like a real product.',
         primaryCta: 'View products', secondaryCta: 'Download CV', proofYears: '10+ yrs', proofYearsLabel: 'production software',
         proofProducts: '5 products', proofProductsLabel: 'in selected work', proofBreadth: 'Web · AI · Mobile', proofBreadthLabel: 'product range',
         proofOwnership: 'End-to-end', proofOwnershipLabel: 'ownership', workEyebrow: 'Selected products', workTitle: 'Five products. Five different problems.',
         workIntro: 'Instead of forcing every product into the same case-study template, each one is introduced through what defines it: a space, workflow, lifecycle, moment of use, or operating system.',
-        explore: 'Explore project', approachEyebrow: 'How I work', approachTitle: 'A good idea should make it all the way to a working screen.',
+        explore: 'Explore project', impactEyebrow: 'Production impact', impactTitle: 'Before the founder products, years of owning real production systems.',
+        impactIntro: 'The independent products show how I think and build from zero. My work at Curalife and in enterprise systems shows the same ownership when reliability, revenue and operations depend on the software.',
+        impactItems: [
+          { value: '−85%', label: 'sync failures', text: 'Designed a resilient Shopify-HubSpot integration layer that materially improved reliability across commerce, CRM and internal operations.' },
+          { value: '+60%', label: 'performance', text: 'Led frontend modernization across key commerce and acquisition journeys while moving core experiences to Next.js, React and TypeScript.' },
+          { value: 'HIPAA', label: 'end-to-end product', text: 'Defined, architected and built a telemedicine acquisition product that became one of Curalife’s primary customer-acquisition and revenue funnels.' },
+          { value: '10+ yrs', label: 'production systems', text: 'Experience spanning enterprise integrations and reliability-critical systems through e-commerce, web products and founder-led software.' },
+        ],
+        approachEyebrow: 'How I work', approachTitle: 'A good idea should make it all the way to a working screen.',
         approachIntro: 'I combine product sense, system design and full-stack execution to shorten the distance between an idea and something real people can use.',
         principleProduct: 'Idea to product', principleProductText: 'Clarify what should exist, for whom and why before the product turns into a list of features.',
         principleDesign: 'System, not screen', principleDesignText: 'Build a coherent experience where visual language, hierarchy and UX reinforce each other.',
         principleBuild: 'Close the loop', principleBuildText: 'Stay hands-on enough to take the product from concept through code and into real use.',
-        contactEyebrow: 'Berlin · EU citizen', contactTitle: 'Looking for the next product worth building.', viewCv: 'View full CV',
+        contactEyebrow: 'Berlin · EU citizen', contactTitle: 'Looking for the next product worth building.', contactCta: 'Email me', viewCv: 'View full CV',
         location: 'Berlin, Germany', roleLine: 'Senior Product Engineer · Full-stack · AI · Product', scroll: 'Products',
       };
 
@@ -236,16 +253,40 @@ export default function PortfolioV4({ locale }: { locale: string }) {
         </div>
       </section>
 
+      <section id="impact" className="bg-[#d9d5cc] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
+        <div className="mx-auto max-w-[1680px]">
+          <motion.div {...sectionReveal} className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-black/52 sm:text-[10px]">02 / {copy.impactEyebrow}</p>
+            <div>
+              <h2 className="max-w-[15ch] text-balance text-[clamp(3rem,11.5vw,6.1rem)] font-medium leading-[0.86] tracking-[-0.065em] text-[#1d1d1f]">{copy.impactTitle}</h2>
+              <p className="mt-10 max-w-3xl text-xl leading-[1.3] tracking-[-0.025em] text-black/66 sm:text-2xl lg:ms-[20%] lg:text-3xl">{copy.impactIntro}</p>
+            </div>
+          </motion.div>
+          <div className="mt-20 grid gap-px bg-black/15 lg:ms-[22%] lg:grid-cols-2 lg:mt-28">
+            {copy.impactItems.map((item, index) => (
+              <motion.div key={item.label} {...featureMotion(index)} className="bg-[#eceae5] p-7 sm:p-9 lg:min-h-[19rem] lg:p-10">
+                <div className="flex items-start justify-between gap-6">
+                  <p className="text-[clamp(2.8rem,10vw,5.4rem)] font-medium leading-none tracking-[-0.07em] text-[#6257d8]">{item.value}</p>
+                  <span className="pt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-black/38">0{index + 1}</span>
+                </div>
+                <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.15em] text-black/52">{item.label}</p>
+                <p className="mt-6 max-w-xl text-sm leading-7 text-black/66 sm:text-base">{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="approach" className="bg-[#19191b] px-5 py-24 text-white sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
-          <motion.div {...sectionReveal} className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/52 sm:text-[10px]">02 / {copy.approachEyebrow}</p><div><h2 className="max-w-[14ch] text-balance text-[clamp(3rem,11.5vw,6.1rem)] font-medium leading-[0.86] tracking-[-0.065em] text-white">{copy.approachTitle}</h2><p className="mt-10 max-w-2xl text-xl leading-[1.25] tracking-[-0.025em] text-white/68 sm:text-2xl lg:ms-[28%] lg:text-3xl">{copy.approachIntro}</p></div></motion.div>
+          <motion.div {...sectionReveal} className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/52 sm:text-[10px]">03 / {copy.approachEyebrow}</p><div><h2 className="max-w-[14ch] text-balance text-[clamp(3rem,11.5vw,6.1rem)] font-medium leading-[0.86] tracking-[-0.065em] text-white">{copy.approachTitle}</h2><p className="mt-10 max-w-2xl text-xl leading-[1.25] tracking-[-0.025em] text-white/68 sm:text-2xl lg:ms-[28%] lg:text-3xl">{copy.approachIntro}</p></div></motion.div>
           <div className="mt-20 border-t border-white/16 lg:ms-[22%] lg:mt-28">{[[copy.principleProduct, copy.principleProductText], [copy.principleDesign, copy.principleDesignText], [copy.principleBuild, copy.principleBuildText]].map(([title, text], index) => <div key={title} className="grid gap-4 border-b border-white/16 py-7 sm:grid-cols-[0.1fr_0.5fr_0.8fr] sm:items-start sm:gap-7 sm:py-9"><p className="text-[9px] font-semibold uppercase tracking-[0.17em] text-white/42">0{index + 1}</p><h3 className="text-balance text-[clamp(2rem,8vw,3rem)] font-medium leading-[0.94] tracking-[-0.05em] text-white">{title}</h3><p className="max-w-xl text-[13px] leading-6 text-white/64 sm:text-base sm:leading-7">{text}</p></div>)}</div>
         </div>
       </section>
 
       <footer className="bg-[#6257d8] px-5 pb-8 pt-24 text-white sm:px-8 sm:pb-10 sm:pt-32 lg:px-12 lg:pt-36">
         <div className="mx-auto max-w-[1680px]">
-          <div className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/72 sm:text-[10px]">{copy.contactEyebrow}</p><div><h2 className="max-w-[12ch] text-balance text-[clamp(3.2rem,12vw,7rem)] font-medium leading-[0.84] tracking-[-0.07em] text-white">{copy.contactTitle}</h2><div className="mt-10 flex flex-col gap-8 border-t border-white/30 pt-7 sm:flex-row sm:items-end sm:justify-between"><a href={cvHref} className="inline-flex size-32 items-center justify-center rounded-full bg-[#19191b] text-center text-[10px] font-semibold uppercase leading-4 tracking-[0.15em] transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:size-40">{copy.viewCv}</a><div className="flex flex-wrap gap-6 text-[9px] font-semibold uppercase tracking-[0.15em] sm:justify-end sm:text-[10px]"><a href={cvHref} className="border-b border-white/55 pb-1">CV</a><a href="https://github.com/yotamon" target="_blank" rel="noreferrer" className="border-b border-white/55 pb-1">GitHub</a><a href="https://linkedin.com/in/yotam-faraggi" target="_blank" rel="noreferrer" className="border-b border-white/55 pb-1">LinkedIn</a></div></div></div></div>
+          <div className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/72 sm:text-[10px]">{copy.contactEyebrow}</p><div><h2 className="max-w-[12ch] text-balance text-[clamp(3.2rem,12vw,7rem)] font-medium leading-[0.84] tracking-[-0.07em] text-white">{copy.contactTitle}</h2><div className="mt-10 flex flex-col gap-8 border-t border-white/30 pt-7 sm:flex-row sm:items-end sm:justify-between"><a href={`mailto:${email}`} aria-label={copy.contactCta} className="inline-flex size-32 items-center justify-center rounded-full bg-[#19191b] text-center text-[10px] font-semibold uppercase leading-4 tracking-[0.15em] transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:size-40"><span className="flex flex-col items-center gap-2"><Mail className="size-4" />{copy.contactCta}</span></a><div className="flex flex-wrap gap-6 text-[9px] font-semibold uppercase tracking-[0.15em] sm:justify-end sm:text-[10px]"><a href={`mailto:${email}`} className="border-b border-white/55 pb-1">Email</a><a href={cvHref} className="border-b border-white/55 pb-1">CV</a><a href="https://github.com/yotamon" target="_blank" rel="noreferrer" className="border-b border-white/55 pb-1">GitHub</a><a href="https://linkedin.com/in/yotam-faraggi" target="_blank" rel="noreferrer" className="border-b border-white/55 pb-1">LinkedIn</a></div></div></div></div>
           <div className="mt-20 flex items-center justify-between border-t border-white/30 pt-5 text-[8px] font-semibold uppercase tracking-[0.15em] text-white/72 sm:mt-28 sm:text-[9px]"><span>Yotam Faraggi © 2026</span><a href="#top">{copy.navWork} ↑</a></div>
         </div>
       </footer>
