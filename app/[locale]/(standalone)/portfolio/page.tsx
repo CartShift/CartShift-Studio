@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { setRequestLocale } from 'next-intl/server';
+import { StandaloneLocaleSwitch } from '@/components/ui/StandaloneLocaleSwitch';
 import PortfolioV4 from '../portfolio-v4/PortfolioV4';
 
 type Props = {
@@ -104,7 +105,8 @@ export default async function PortfolioPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PortfolioV4 locale={locale} />
+      <StandaloneLocaleSwitch locale={validLocale} path="/portfolio" />
+      <PortfolioV4 locale={validLocale} />
     </>
   );
 }
