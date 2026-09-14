@@ -1,11 +1,11 @@
 {
   "cv": {
-    "title": "יותם פרג'י - קורות חיים Senior Full-Stack Engineer",
+    "title": "יותם פרג'י - קורות חיים Senior Product Engineer",
     "name": "יותם פרג'י",
-    "subtitle": "Senior Full-Stack Engineer | E-commerce, Shopify & Integrations",
+    "subtitle": "Senior Product Engineer | Full-Stack, Commerce & Integrations",
     "location": "ברלין, גרמניה",
     "workAuthorization": "אזרח האיחוד האירופי · מורשה לעבוד בגרמניה",
-    "phone": "+972503591552",
+    "phone": "+4915776211298",
     "email": "yotamon@gmail.com",
     "linkedin": "לינקדאין",
     "github": "GitHub",
@@ -34,14 +34,14 @@
       "education": "השכלה"
     },
     "portfolio": {
-      "intro": "עבודות נבחרות שמציגות אחריות מעשית על e-commerce, פיתוח ממוקד Shopify, מוצרים עתירי אינטגרציות ואפליקציות Full Stack מודרניות.",
+      "intro": "עבודות נבחרות שמציגות ownership מקצה לקצה במוצרי founder-led, מסחר, מערכות עתירות אינטגרציות ואפליקציות Full-Stack מודרניות.",
       "liveLabel": "פרויקט חי",
       "featuredLabel": "בהובלת מייסד",
       "visitProject": "לצפייה בפרויקט",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "סטודיו עצמאי ל-e-commerce ופיתוח Web עם דגש על Shopify, אפליקציות Full Stack, אינטגרציות, אוטומציה ומסירה ללקוחות בפרודקשן.",
+          "description": "סטודיו עצמאי למוצר, e-commerce ופיתוח Web המשלב מסירת פרויקטים ללקוחות עם בנייה מעשית של מוצרי Full-Stack, אינטגרציות ואוטומציה.",
           "signals": [
             "E-commerce ו-Shopify",
             "אפליקציית Next.js"
@@ -80,17 +80,17 @@
       }
     },
     "summary": {
-      "text": "Senior Full-Stack Engineer בברלין עם יותר מ-10 שנות ניסיון בבנייה ותפעול של תוכנה לפרודקשן, עם ניסיון עמוק ב-e-commerce, Shopify, APIs, אינטגרציות ומוצרים ללקוחות. ב-Curalife הובלתי חלקים מרכזיים באקוסיסטם המסחר והדיגיטל-הלת' מבוסס Shopify, כולל מסעות לקוח, אינטגרציות Shopify-HubSpot, מודרניזציית Frontend, תשתיות ענן ומוצר רכישה לטלרפואה תואם HIPAA שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של החברה. ניסיון חזק ב-React, Next.js, TypeScript, Node.js, PostgreSQL ומערכות ענן, עם אחריות מקצה לקצה מארכיטקטורה ומימוש ועד פריסה ואיטרציה.",
-      "metaDescription": "Senior Full-Stack Engineer בברלין עם יותר מ-10 שנות ניסיון ב-e-commerce, Shopify, React, Next.js, TypeScript, Node.js, APIs, אינטגרציות ומערכות ענן."
+      "text": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בבנייה ותפעול של תוכנה לפרודקשן, כולל מוצרי Full-Stack, e-commerce, APIs, אינטגרציות ומערכות ענן. ב-Curalife הובלתי חלקים מרכזיים באקוסיסטם המסחר וה-digital health מבוסס Shopify, כולל מסעות לקוח, אינטגרציות Shopify-HubSpot, מודרניזציית Frontend, תשתיות ענן ומוצר acquisition לטלרפואה תואם HIPAA שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של החברה. ניסיון חזק ב-React, Next.js, TypeScript, Node.js, PostgreSQL ומערכות פרודקשן, עם ownership מקצה לקצה מהגדרת מוצר וארכיטקטורה ועד מימוש, פריסה ואיטרציה. העבודה העצמאית העדכנית כוללת גם מוצרים בסיוע AI ואוטומציית workflows.",
+      "metaDescription": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בהנדסת תוכנה, מוצרי Full-Stack, e-commerce, APIs, אינטגרציות, מערכות ענן ועבודה עדכנית במוצרים בסיוע AI."
     },
     "experience": {
       "cartshift": {
         "company": "CartShift Studio · עצמאי",
-        "title": "Founder & Senior Full-Stack Engineer",
+        "title": "Founder & Senior Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "פעילות עצמאית ב-Full Stack ו-e-commerce המשלבת מסירת פרויקטים ללקוחות עם פיתוח מעשי של מוצרי Web, מסחר ומוצרים בסיוע AI לפרודקשן.",
+        "description": "פעילות עצמאית ב-product engineering, Full-Stack ו-e-commerce המשלבת מסירת פרויקטים ללקוחות עם פיתוח מעשי של מוצרי Web, מסחר, workflow ומוצרים בסיוע AI לפרודקשן.",
         "highlights": [
           "בנייה והשקה של מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
           "מסירת עבודת e-commerce ו-Shopify הכוללת פיתוח Storefront, אינטגרציות, אופטימיזציית ביצועים, שיפורים ממוקדי Conversion ואוטומציית תהליכים.",
@@ -230,8 +230,8 @@
           "Claude API",
           "LangChain",
           "LLM-assisted workflows",
-          "Puppeteer",
-          "Playwright"
+          "AI SDK",
+          "MCP"
         ]
       },
       "cloudData": {
@@ -247,15 +247,15 @@
         ]
       },
       "legacyEnterprise": {
-        "category": "מערכות ארגוניות Legacy",
+        "category": "בדיקות ואיכות",
         "items": [
-          "Oracle OSB",
-          "WebLogic",
-          "IBM WebSphere ESB",
-          "IBM Integration Bus",
-          "IBM DataPower",
-          "JMS",
-          "C++"
+          "Jest",
+          "Vitest",
+          "React Testing Library",
+          "Playwright",
+          "Puppeteer",
+          "Unit & integration testing",
+          "End-to-end testing"
         ]
       }
     },
