@@ -1,6 +1,6 @@
 type StandaloneLocaleSwitchProps = {
   locale: string;
-  path: '/cv' | '/portfolio';
+  path: '/cv' | '/portfolio' | '/yotam';
 };
 
 export function StandaloneLocaleSwitch({ locale, path }: StandaloneLocaleSwitchProps) {
