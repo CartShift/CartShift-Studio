@@ -66,6 +66,15 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     image: '/images/portfolio-v2/hero-art.webp',
   });
 
+  const adiSchema = generatePersonSchema({
+    name: 'Adi Zelter',
+    jobTitle: 'Co-Founder, Business Strategy & Web Development',
+    description:
+      'CartShift Studio co-founder connecting web development with business strategy, project leadership, client relations and audience experience.',
+    url: `${siteUrl}/${locale}/about`,
+    image: '/images/yotam-and-adi.png',
+  });
+
   return (
     <>
       <Script
@@ -82,6 +91,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         id="yotam-person-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(yotamSchema) }}
+      />
+      <Script
+        id="adi-person-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(adiSchema) }}
       />
       <AboutTemplate />
     </>
