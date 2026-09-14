@@ -15,20 +15,26 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHebrew = locale === 'he';
+
   return genMeta(
     {
-      title: 'About CartShift Studio | Yotam Faraggi & Team',
-      description:
-        'Meet Yotam Faraggi, a Berlin-based Senior Product Engineer and co-founder of CartShift Studio, and the team building high-quality Shopify, WordPress, and custom web products.',
+      title: isHebrew
+        ? "אודות CartShift Studio | יותם פרג'י ועדי זלטר"
+        : 'About CartShift Studio | Yotam Faraggi & Adi Zelter',
+      description: isHebrew
+        ? 'הכירו את CartShift Studio: יותם פרג׳י, Senior Product Engineer בברלין עם 10+ שנות ניסיון, ועדי זלטר, שמחברת פיתוח עם אסטרטגיה עסקית וחוויית לקוח.'
+        : 'Meet CartShift Studio: Yotam Faraggi, a Berlin-based Senior Product Engineer with 10+ years in production software, and Adi Zelter, connecting development with business strategy and client experience.',
       url: '/about',
       keywords: [
         'Yotam Faraggi',
         'Senior Product Engineer Berlin',
-        'about us',
-        'e-commerce team',
+        'Adi Zelter',
+        'CartShift Studio',
+        'product engineering',
+        'e-commerce development',
         'Shopify developers',
-        'WordPress experts',
-        'CartShift Studio team',
+        'WordPress development',
       ],
     },
     locale as 'en' | 'he'
@@ -37,23 +43,25 @@ export async function generateMetadata({
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  const validLocale = locale as 'en' | 'he';
+  const isHebrew = validLocale === 'he';
+  setRequestLocale(validLocale);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const orgSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'About', url: '/about' },
+      { name: isHebrew ? 'בית' : 'Home', url: '/' },
+      { name: isHebrew ? 'אודות' : 'About', url: '/about' },
     ],
-    locale as 'en' | 'he'
+    validLocale
   );
 
   const yotamSchema = generatePersonSchema({
     name: 'Yotam Faraggi',
     jobTitle: 'Co-Founder & Senior Product Engineer',
     description:
-      'Berlin-based Senior Product Engineer with 10+ years of experience building full-stack products, e-commerce systems, integrations, and AI-assisted software.',
+      'Berlin-based Senior Product Engineer with 10+ years building and operating production software across full-stack products, commerce, APIs, integrations and cloud systems, with recent work in AI-assisted products.',
     url: `${siteUrl}/${locale}/cv`,
     image: '/images/portfolio-v2/hero-art.webp',
   });
