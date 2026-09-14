@@ -1,6 +1,7 @@
 /* Project showcase typography should follow the color of the surface it sits on.
    The global site heading rule otherwise forces a dark heading color even inside
-   editorial dark sections. Keep this scoped to project showcase pages. */
+   editorial dark sections. Keep this scoped to project showcase pages and preserve
+   predictable contrast and wrapping across narrow mobile widths. */
 main[style*='--project-accent'] h1,
 main[style*='--project-accent'] h2,
 main[style*='--project-accent'] h3,
