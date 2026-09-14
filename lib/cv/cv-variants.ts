@@ -1,4 +1,5 @@
 import {
+  CV_PDF_FILENAME,
   getEnglishCVData,
   type CVData,
   type CVExperienceItem,
@@ -101,7 +102,7 @@ export const cvVariants: Record<CVVariantId, CVVariantConfig> = {
   default: {
     id: 'default',
     label: 'Default public CV',
-    filename: 'yotam-faraggi-senior-full-stack-engineer-cv.pdf',
+    filename: CV_PDF_FILENAME,
   },
   'product-frontend': {
     id: 'product-frontend',
