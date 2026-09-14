@@ -12,7 +12,7 @@ const USER_LOCALE_PREFERENCE_KEY = 'user_locale_preference';
 const GEO_CACHE_DURATION = 7 * 24 * 60 * 60 * 1000;
 
 export function isExplicitCvPath(pathname: string) {
-  return pathname === '/cv' || /^\/(en|he)\/cv(?:\/|$)/.test(pathname);
+  return pathname === '/cv' || pathname === '/yotam' || /^\/(en|he)\/(?:cv|yotam)(?:\/|$)/.test(pathname);
 }
 
 /**
@@ -42,7 +42,7 @@ export function GeoLocaleRedirect() {
     const currentLocale = localeRef.current;
     const currentRouter = routerRef.current;
 
-    // Explicit CV locale URLs are recruiter-facing and must never be geo-swapped.
+    // Explicit recruiter-facing locale URLs must never be geo-swapped.
     if (isExplicitCvPath(currentPathname)) {
       return;
     }
