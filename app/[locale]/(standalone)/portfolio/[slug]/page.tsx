@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import ProjectShowcase from './ProjectShowcase';
+import './project-showcase.css';
 import {
   getNextPortfolioShowcase,
   getPortfolioShowcase,
