@@ -202,13 +202,6 @@ export interface RawCVMessages {
   >;
 }
 
-function productizeIdentity(value: string) {
-  return value
-    .replace(/Senior Full-Stack Engineer/g, 'Senior Product Engineer')
-    .replace(/Senior full-stack developer/gi, 'Senior Product Engineer')
-    .replace(/מפתח Full Stack בכיר/g, 'Senior Product Engineer');
-}
-
 export function buildCVData(cv: RawCVMessages): CVData {
   const experiences = experienceKeys.map(key => ({
     key,
@@ -216,12 +209,12 @@ export function buildCVData(cv: RawCVMessages): CVData {
   }));
 
   return {
-    title: productizeIdentity(cv.title),
+    title: cv.title,
     name: cv.name,
-    headline: productizeIdentity(cv.subtitle),
+    headline: cv.subtitle,
     location: cv.location,
     workAuthorization: cv.workAuthorization,
-    phone: cv.phone.startsWith('+972') ? '+4915776211298' : cv.phone,
+    phone: cv.phone,
     email: cv.email,
     contact: {
       linkedinLabel: cv.linkedin,
@@ -238,10 +231,7 @@ export function buildCVData(cv: RawCVMessages): CVData {
       earlierExperience: cv.labels.earlierExperience,
     },
     sections: cv.sections,
-    summary: {
-      text: productizeIdentity(cv.summary.text),
-      metaDescription: productizeIdentity(cv.summary.metaDescription),
-    },
+    summary: cv.summary,
     portfolio: {
       intro: cv.portfolio.intro,
       liveLabel: cv.portfolio.liveLabel,
