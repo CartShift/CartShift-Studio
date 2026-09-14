@@ -67,7 +67,6 @@ describe('CV PDF export', () => {
     [
       'Yotam Faraggi',
       'Senior Product Engineer',
-      'Senior Full-Stack Engineer',
       'EU citizen',
       '+4915776211298',
       'Professional Experience',
@@ -93,6 +92,7 @@ describe('CV PDF export', () => {
     ].forEach(expected => expectPdfTextIncludes(text, expected));
 
     [
+      'Senior Full-Stack Engineer',
       'CartShift Studio CV',
       'R&D Lead & Senior Full Stack Developer',
       'Professional Summary',
