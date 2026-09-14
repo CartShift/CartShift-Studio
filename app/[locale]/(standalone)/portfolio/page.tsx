@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "יותם פרג'י - Senior Product Engineer | פורטפוליו"
     : 'Yotam Faraggi - Senior Product Engineer | Portfolio';
   const description = isHebrew
-    ? 'פורטפוליו מוצרי של Senior Product Engineer בברלין עם 10+ שנות ניסיון ב-Full-Stack, AI ומובייל, המציג מוצרים founder-led ועבודת product engineering מקצה לקצה.'
-    : 'Product portfolio of a Berlin-based Senior Product Engineer with 10+ years across full-stack, AI and mobile, featuring founder-led products and end-to-end product engineering.';
+    ? 'פורטפוליו של Senior Product Engineer בברלין עם 10+ שנות ניסיון בהנדסת תוכנה, ממערכות Full-Stack ומסחר ועד מוצרים עדכניים ב-AI ובמובייל, כולל ownership מקצה לקצה והשפעה מוכחת בפרודקשן.'
+    : 'Portfolio of a Berlin-based Senior Product Engineer with 10+ years in software engineering, from full-stack and commerce systems to recent AI and mobile products, with end-to-end ownership and proven production impact.';
 
   return {
     title,
@@ -67,8 +67,8 @@ export default async function PortfolioPage({ params }: Props) {
       name: isHebrew ? "יותם פרג'י" : 'Yotam Faraggi',
       jobTitle: 'Senior Product Engineer',
       description: isHebrew
-        ? 'Senior Product Engineer בברלין המתמחה במוצרי Full-Stack, AI, מובייל ו-product engineering.'
-        : 'Senior Product Engineer in Berlin focused on full-stack products, AI, mobile and product engineering.',
+        ? 'Senior Product Engineer בברלין עם יותר מעשור בהנדסת תוכנה, מוצרי Full-Stack, מסחר ואינטגרציות, ועבודה עדכנית במוצרי AI ומובייל.'
+        : 'Senior Product Engineer in Berlin with more than a decade in software engineering across full-stack products, commerce and integrations, with recent work in AI and mobile products.',
       url: `${siteUrl}/${locale}/portfolio`,
       image: `${siteUrl}/images/portfolio-v2/hero-art.webp`,
       sameAs: [
@@ -91,6 +91,8 @@ export default async function PortfolioPage({ params }: Props) {
         'Android',
         'AI-assisted Products',
         'APIs and Integrations',
+        'E-commerce Systems',
+        'Production Reliability',
       ],
     },
   };
