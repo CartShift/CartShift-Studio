@@ -2,8 +2,8 @@ import type { CVExperienceKey } from './cv-data';
 
 export const CV_PROFILE_IMAGE = '/images/yotam-programmer.png';
 
-export const CV_LIVE_CV_URL = 'https://cart-shift.com/en/cv';
-export const CV_LIVE_CV_DISPLAY = 'cart-shift.com/en/cv';
+export const CV_LIVE_CV_URL = 'https://cart-shift.com/en/yotam';
+export const CV_LIVE_CV_DISPLAY = 'cart-shift.com/en/yotam';
 
 export const companyLogos: Partial<Record<CVExperienceKey, string>> = {
   cartshift: '/images/cv/cart_shift_logo.jpg',
