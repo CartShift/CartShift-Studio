@@ -17,7 +17,7 @@ vi.mock('next-intl', () => ({
   useLocale: () => mockLocale,
 }));
 
-describe('GeoLocaleRedirect CV behavior', () => {
+describe('GeoLocaleRedirect recruiter profile behavior', () => {
   beforeEach(() => {
     mockReplace.mockClear();
     localStorage.clear();
@@ -26,13 +26,16 @@ describe('GeoLocaleRedirect CV behavior', () => {
     localStorage.setItem('geo_locale_timestamp', Date.now().toString());
   });
 
-  it.each(['/en/cv', '/he/cv'])('does not geo-redirect explicit CV path %s', path => {
-    mockPathname = path;
-    mockLocale = path.startsWith('/he') ? 'he' : 'en';
+  it.each(['/en/cv', '/he/cv', '/en/yotam', '/he/yotam'])(
+    'does not geo-redirect explicit recruiter path %s',
+    path => {
+      mockPathname = path;
+      mockLocale = path.startsWith('/he') ? 'he' : 'en';
 
-    render(<GeoLocaleRedirect />);
+      render(<GeoLocaleRedirect />);
 
-    expect(isExplicitCvPath(path)).toBe(true);
-    expect(mockReplace).not.toHaveBeenCalled();
-  });
+      expect(isExplicitCvPath(path)).toBe(true);
+      expect(mockReplace).not.toHaveBeenCalled();
+    }
+  );
 });
