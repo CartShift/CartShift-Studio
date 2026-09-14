@@ -1,8 +1,8 @@
 {
   "cv": {
-    "title": "Yotam Faraggi - Senior Full-Stack Engineer CV",
+    "title": "Yotam Faraggi - Senior Product Engineer CV",
     "name": "Yotam Faraggi",
-    "subtitle": "Senior Full-Stack Engineer | E-commerce, Shopify & Integrations",
+    "subtitle": "Senior Product Engineer | Full-Stack, Commerce & Integrations",
     "location": "Berlin, Germany",
     "workAuthorization": "EU citizen · Authorized to work in Germany",
     "phone": "+4915776211298",
@@ -34,14 +34,14 @@
       "education": "Education"
     },
     "portfolio": {
-      "intro": "Selected work showing hands-on ownership across e-commerce, Shopify-focused delivery, integration-heavy products, and modern full-stack applications.",
+      "intro": "Selected work showing end-to-end ownership across founder-led products, commerce, integration-heavy systems, and modern full-stack applications.",
       "liveLabel": "Live project",
       "featuredLabel": "Founder-led",
       "visitProject": "Visit project",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "Independent e-commerce and web engineering studio focused on Shopify, full-stack applications, integrations, automation, and production-grade client delivery.",
+          "description": "Independent product, e-commerce and web engineering studio combining client delivery with hands-on development of full-stack products, integrations and automation.",
           "signals": [
             "E-commerce & Shopify",
             "Next.js application"
@@ -80,17 +80,17 @@
       }
     },
     "summary": {
-      "text": "Berlin-based Senior Full-Stack Engineer with 10+ years of experience building and operating production software, with deep experience in e-commerce, Shopify, APIs, integrations, and customer-facing products. At Curalife, owned major parts of the Shopify-based commerce and digital-health ecosystem, including customer journeys, Shopify-HubSpot integrations, frontend modernization, cloud infrastructure, and a HIPAA-compliant telemedicine acquisition product that became one of the company’s primary customer-acquisition and revenue funnels. Strong across React, Next.js, TypeScript, Node.js, PostgreSQL, and cloud systems, with end-to-end ownership from architecture and implementation through deployment and iteration.",
-      "metaDescription": "Berlin-based Senior Full-Stack Engineer with 10+ years of experience across e-commerce, Shopify, React, Next.js, TypeScript, Node.js, APIs, integrations, and cloud systems."
+      "text": "Berlin-based Senior Product Engineer with 10+ years building and operating production software across full-stack products, e-commerce, APIs, integrations, and cloud systems. At Curalife, owned major parts of the Shopify-based commerce and digital-health ecosystem, including customer journeys, Shopify-HubSpot integrations, frontend modernization, cloud infrastructure, and a HIPAA-compliant telemedicine acquisition product that became one of the company’s primary customer-acquisition and revenue funnels. Strong across React, Next.js, TypeScript, Node.js, PostgreSQL, and production systems, with end-to-end ownership from product definition and architecture through implementation, deployment, and iteration. Recent independent work also includes AI-assisted products and workflow automation.",
+      "metaDescription": "Berlin-based Senior Product Engineer with 10+ years in software engineering across full-stack products, e-commerce, APIs, integrations, cloud systems, and recent AI-assisted product work."
     },
     "experience": {
       "cartshift": {
         "company": "CartShift Studio · Self-Employed",
-        "title": "Founder & Senior Full-Stack Engineer",
+        "title": "Founder & Senior Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "Independent full-stack and e-commerce engineering practice combining client delivery with hands-on development of production web, commerce, and AI-assisted products.",
+        "description": "Independent product, full-stack and e-commerce engineering practice combining client delivery with hands-on development of production web, commerce, workflow and AI-assisted products.",
         "highlights": [
           "Build and ship full-stack products and client systems using Next.js, React, TypeScript, Node.js, APIs, PostgreSQL, and modern cloud tooling, with automated unit, integration, and end-to-end testing.",
           "Deliver e-commerce and Shopify-focused work spanning storefront development, integrations, performance optimization, conversion-oriented improvements, and workflow automation.",
