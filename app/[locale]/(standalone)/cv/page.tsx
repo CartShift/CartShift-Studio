@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { StandaloneLocaleSwitch } from '@/components/ui/StandaloneLocaleSwitch';
 import CVV3 from '../cv-v3/CVV3';
 
 type Props = {
@@ -119,6 +120,7 @@ export default async function CVPage({ params }: Props) {
           color: #1d1d1f !important;
         }
       `}</style>
+      <StandaloneLocaleSwitch locale={validLocale} path="/cv" />
       <div className="cv-page-contrast">
         <CVV3 />
       </div>
