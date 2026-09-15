@@ -2,10 +2,11 @@ import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
 const IGNORED_PREFIXES = [".github/", "docs/", "tests/"];
+const IGNORED_EXACT = new Set(["README.md", "DESIGN.md"]);
 
 export function isDeploymentNeutralPath(path) {
   if (!path) return true;
-  if (/\.md$/i.test(path)) return true;
+  if (IGNORED_EXACT.has(path)) return true;
   return IGNORED_PREFIXES.some((prefix) => path.startsWith(prefix));
 }
 
