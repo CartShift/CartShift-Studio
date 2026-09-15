@@ -175,6 +175,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | [messages/README.md](./messages/README.md) | i18n source → merge workflow |
 | [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Deploy guide |
 | [docs/STORE_ANALYZER_SETUP.md](./docs/STORE_ANALYZER_SETUP.md) | Analyzer setup & diagnostics |
+| [docs/LIQUID_LOOM_LANDING_PAGE.md](./docs/LIQUID_LOOM_LANDING_PAGE.md) | Liquid Loom landing page product & design specification |
 | [docs/TESTING.md](./docs/TESTING.md) | Testing notes |
 | [DESIGN.md](./DESIGN.md) | Design tokens & visual system |
 
