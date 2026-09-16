@@ -1,4 +1,4 @@
-import type { CVData, CVExperienceItem, CVExperienceKey } from './cv-data';
+import type { CVData, CVExperienceItem, CVExperienceKey, CVSkillKey } from './cv-data';
 import { CV_PROFILE_IMAGE, companyLogos } from './cv-media';
 
 type ResolvedAssets = Record<string, string>;
@@ -12,6 +12,15 @@ const earlierExperienceKeys: readonly CVExperienceKey[] = [
   'elbit',
   'airforce',
 ];
+
+const printSkillLimits: Partial<Record<CVSkillKey, number>> = {
+  productEngineering: 4,
+  frontendFullStack: 5,
+  commerceIntegrations: 6,
+  cloudData: 6,
+  aiAutomation: 5,
+  legacyEnterprise: 5,
+};
 
 const earlierSummaries: Partial<Record<CVExperienceKey, string>> = {
   ecommerce_venture:
@@ -140,7 +149,10 @@ function projectLogo(key: (typeof printProjects)[number]['key']): string {
 function companyLogo(experience: CVExperienceItem, resolvedAssets: ResolvedAssets): string {
   const path = companyLogos[experience.key];
   if (!path || experience.key === 'airforce') {
-    const label = experience.key === 'airforce' ? '&lt;/&gt;' : escapeHtml(experience.company.charAt(0).toUpperCase());
+    const label =
+      experience.key === 'airforce'
+        ? '&lt;/&gt;'
+        : escapeHtml(experience.company.charAt(0).toUpperCase());
     return `<div class="mini-logo fallback">${label}</div>`;
   }
   const src = assetUrl(path, resolvedAssets);
@@ -154,13 +166,17 @@ function companyLogo(experience: CVExperienceItem, resolvedAssets: ResolvedAsset
   return `<div class="${classes}"><img src="${escapeAttr(src)}" alt="${escapeAttr(experience.company)}"/></div>`;
 }
 
-function renderFeaturedExperience(experience: CVExperienceItem, resolvedAssets: ResolvedAssets): string {
+function renderFeaturedExperience(
+  experience: CVExperienceItem,
+  resolvedAssets: ResolvedAssets
+): string {
   const logoPath = companyLogos[experience.key];
   const logo = logoPath
     ? `<div class="job-logo"><img src="${escapeAttr(assetUrl(logoPath, resolvedAssets))}" alt="${escapeAttr(experience.company)}"/></div>`
     : '<div class="job-logo fallback">S</div>';
   const location = compactLocation(experience.location);
-  const badge = experience.key === 'cartshift' ? '<span class="badge">INDEPENDENT VENTURE</span>' : '';
+  const badge =
+    experience.key === 'cartshift' ? '<span class="badge">INDEPENDENT VENTURE</span>' : '';
   const highlights = experience.highlights
     .slice(0, experience.key === 'paragonex' ? 2 : 3)
     .map(highlight => `<li>${escapeHtml(highlight)}</li>`)
@@ -181,7 +197,10 @@ function renderFeaturedExperience(experience: CVExperienceItem, resolvedAssets: 
   </article>`;
 }
 
-function renderEarlierExperience(experience: CVExperienceItem, resolvedAssets: ResolvedAssets): string {
+function renderEarlierExperience(
+  experience: CVExperienceItem,
+  resolvedAssets: ResolvedAssets
+): string {
   const description = earlierSummaries[experience.key] ?? experience.highlights[0] ?? '';
   return `<div class="earlier-row">
     ${companyLogo(experience, resolvedAssets)}
@@ -218,17 +237,23 @@ export function renderCvHtml(cv: CVData, resolvedAssets: ResolvedAssets = {}): s
   const phoneHref = cv.phone.replace(/\s+/g, '');
 
   const skills = cv.skills
-    .map(
-      skill => `<div class="skill"><div class="skill-name">${escapeHtml(skill.category)}</div><div class="skill-list">${skill.items.map(escapeHtml).join(' · ')}</div></div>`
-    )
+    .map(skill => {
+      const limit = printSkillLimits[skill.key] ?? skill.items.length;
+      const visibleItems = skill.items.slice(0, limit);
+      return `<div class="skill"><div class="skill-name">${escapeHtml(skill.category)}</div><div class="skill-list">${visibleItems.map(escapeHtml).join(' · ')}</div></div>`;
+    })
     .join('');
   const education = cv.education
     .map(
-      item => `<div class="edu"><div class="edu-name">${escapeHtml(item.institution)}</div><div class="edu-desc">${escapeHtml(item.program)}${item.years ? ` · ${escapeHtml(item.years)}` : ''}</div></div>`
+      item =>
+        `<div class="edu"><div class="edu-name">${escapeHtml(item.institution)}</div><div class="edu-desc">${escapeHtml(item.program)}${item.years ? ` · ${escapeHtml(item.years)}` : ''}</div></div>`
     )
     .join('');
   const languages = cv.languages
-    .map(item => `<div class="language"><span class="l">${escapeHtml(item.name)}</span><span class="v">${escapeHtml(item.level)}</span></div>`)
+    .map(
+      item =>
+        `<div class="language"><span class="l">${escapeHtml(item.name)}</span><span class="v">${escapeHtml(item.level)}</span></div>`
+    )
     .join('');
 
   return `<!doctype html>
