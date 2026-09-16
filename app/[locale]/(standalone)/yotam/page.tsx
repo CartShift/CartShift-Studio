@@ -14,11 +14,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const title = validLocale === 'he'
-    ? "יותם פרג'י | Senior Full-Stack & Product Engineer בברלין"
-    : 'Yotam Faraggi | Senior Full-Stack & Product Engineer in Berlin';
+    ? "יותם פרג'י | Senior Product Engineer בברלין"
+    : 'Yotam Faraggi | Senior Product Engineer in Berlin';
   const description = validLocale === 'he'
-    ? 'פרופיל מקצועי של יותם פרג׳י, Senior Full-Stack & Product Engineer בברלין עם 10+ שנות ניסיון: ניסיון מקצועי, מוצרים נבחרים, React, Next.js, TypeScript, APIs, אינטגרציות, מסחר ו-AI.'
-    : 'Professional profile of Yotam Faraggi, a Berlin-based Senior Full-Stack & Product Engineer with 10+ years in production software, selected products, React, Next.js, TypeScript, APIs, integrations, commerce and AI.';
+    ? 'פרופיל מקצועי של יותם פרג׳י, Senior Product Engineer בברלין עם 10+ שנות ניסיון בתוכנה לפרודקשן, Full-Stack, מסחר, APIs, אינטגרציות, cloud ומוצר.'
+    : 'Professional profile of Yotam Faraggi, a Berlin-based Senior Product Engineer with 10+ years in production software across full-stack products, commerce, APIs, integrations, cloud and product engineering.';
 
   return {
     title,
@@ -37,18 +37,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: 'profile',
       url: `${siteUrl}/${locale}/yotam`,
-      images: [
-        {
-          url: '/images/portfolio-v2/hero-art.webp',
-          alt: t('name'),
-        },
-      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/images/portfolio-v2/hero-art.webp'],
     },
   };
 }
@@ -61,8 +54,8 @@ export default async function YotamProfilePage({ params }: Props) {
   const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const description = validLocale === 'he'
-    ? 'Senior Full-Stack & Product Engineer בברלין עם יותר מעשור בהנדסת תוכנה, מוצרי Full-Stack, מערכות מסחר, APIs, אינטגרציות ופרודקשן, לצד עבודה עדכנית במוצרי AI.'
-    : 'Senior Full-Stack & Product Engineer in Berlin with more than a decade in production software across full-stack products, commerce, APIs and integrations, plus recent AI product work.';
+    ? 'Senior Product Engineer בברלין עם יותר מעשור בהנדסת תוכנה, מוצרי Full-Stack, מסחר, APIs, אינטגרציות ופרודקשן, לצד עבודה עדכנית במוצרי AI.'
+    : 'Senior Product Engineer in Berlin with more than a decade in production software across full-stack products, commerce, APIs and integrations, plus recent AI product work.';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -71,7 +64,7 @@ export default async function YotamProfilePage({ params }: Props) {
     mainEntity: {
       '@type': 'Person',
       name: t('name'),
-      jobTitle: 'Senior Full-Stack & Product Engineer',
+      jobTitle: 'Senior Product Engineer',
       description,
       email: t('email'),
       url: `${siteUrl}/${locale}/yotam`,
