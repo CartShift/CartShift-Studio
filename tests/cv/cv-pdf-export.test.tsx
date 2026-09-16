@@ -67,6 +67,6 @@ describe('CV PDF export source', () => {
     expect(html).toContain('class="meta-date"');
     expect(html).toContain('class="meta-place"');
     expect(html).toContain('flex:0 0 31mm');
-    expect(html).not.toContain('position:absolute; right:0');
+    expect(html).not.toContain('.job-meta { position:absolute');
   });
 });
