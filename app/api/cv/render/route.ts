@@ -1,10 +1,14 @@
-import { createElement } from 'react';
 import { inflateRawSync } from 'node:zlib';
-import type { Readable } from 'node:stream';
-import { pdf } from '@react-pdf/renderer';
-import { CVDocument } from '@/app/[locale]/(standalone)/cv/CVDocument';
+import { launchAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
+import { renderCvHtml } from '@/lib/cv/cv-print-html';
 import { resolveCvPdfAssets } from '@/lib/cv/cv-media';
-import { cvVariantIds, listCVVariants, resolveCVVariant, type CVVariantId } from '@/lib/cv/cv-variants';
+import {
+  cvVariantIds,
+  listCVVariants,
+  resolveCVVariant,
+  type CVVariantId,
+  type ResolvedCVVariant,
+} from '@/lib/cv/cv-variants';
 import { parseCVTailoringInput, resolveTailoredCV } from '@/lib/cv/cv-tailoring';
 
 export const runtime = 'nodejs';
@@ -20,6 +24,8 @@ interface RateLimitEntry {
   count: number;
   resetAt: number;
 }
+
+class CVRenderError extends Error {}
 
 const rateLimitEntries = new Map<string, RateLimitEntry>();
 
@@ -74,20 +80,45 @@ function decodeCompressedPayload(encoded: string) {
   return JSON.parse(inflated.toString('utf8')) as unknown;
 }
 
-async function renderPdfBuffer(cv: ReturnType<typeof resolveCVVariant>['cv']) {
-  const resolvedAssets = await resolveCvPdfAssets();
-  const document = createElement(CVDocument, { cv, resolvedAssets });
-  const stream = (await pdf(document as Parameters<typeof pdf>[0]).toBuffer()) as Readable;
-
-  return new Promise<Buffer>((resolve, reject) => {
-    const chunks: Buffer[] = [];
-
-    stream.on('data', (chunk: Buffer | Uint8Array | string) => {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    });
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-    stream.on('error', reject);
+async function renderPdfBuffer(resolved: ResolvedCVVariant) {
+  const browser = await launchAnalyzerBrowser(25_000).catch(error => {
+    throw new CVRenderError(
+      `Unable to launch CV PDF browser: ${error instanceof Error ? error.message : 'unknown error'}`
+    );
   });
+
+  try {
+    const resolvedAssets = await resolveCvPdfAssets();
+    const html = renderCvHtml(resolved.cv, resolvedAssets);
+    const page = await browser.newPage();
+
+    try {
+      await page.setContent(html, { waitUntil: 'load', timeout: 15_000 });
+      await page.emulateMediaType('print');
+      await page.evaluate(async () => {
+        if ('fonts' in document) await document.fonts.ready;
+      });
+
+      const pdf = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        preferCSSPageSize: true,
+        displayHeaderFooter: false,
+        margin: { top: 0, right: 0, bottom: 0, left: 0 },
+      });
+
+      return Buffer.from(pdf);
+    } finally {
+      await page.close().catch(() => undefined);
+    }
+  } catch (error) {
+    if (error instanceof CVRenderError) throw error;
+    throw new CVRenderError(
+      `Unable to render CV PDF: ${error instanceof Error ? error.message : 'unknown error'}`
+    );
+  } finally {
+    await browser.close().catch(() => undefined);
+  }
 }
 
 function sanitizeFilename(filename: string) {
@@ -95,10 +126,10 @@ function sanitizeFilename(filename: string) {
 }
 
 async function pdfResponse(
-  resolved: ReturnType<typeof resolveCVVariant>,
+  resolved: ResolvedCVVariant,
   options: { inline?: boolean; cache?: boolean } = {}
 ) {
-  const buffer = await renderPdfBuffer(resolved.cv);
+  const buffer = await renderPdfBuffer(resolved);
   const disposition = options.inline ? 'inline' : 'attachment';
   const filename = sanitizeFilename(resolved.filename);
 
@@ -112,8 +143,16 @@ async function pdfResponse(
         ? 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800'
         : 'private, no-store',
       'X-Robots-Tag': 'noindex, nofollow, noarchive',
+      'X-CV-Renderer': 'chromium-html',
     },
   });
+}
+
+function errorResponse(error: unknown) {
+  return jsonResponse(
+    { error: error instanceof Error ? error.message : 'Invalid CV render request' },
+    error instanceof CVRenderError ? 500 : 400
+  );
 }
 
 export async function GET(request: Request) {
@@ -145,6 +184,7 @@ export async function GET(request: Request) {
 
     return jsonResponse({
       endpoint: '/api/cv/render',
+      renderer: 'chromium-html',
       variants: listCVVariants(),
       usage: {
         namedVariant: '/api/cv/render?variant=fullstack-healthcare',
@@ -160,10 +200,7 @@ export async function GET(request: Request) {
       ],
     });
   } catch (error) {
-    return jsonResponse(
-      { error: error instanceof Error ? error.message : 'Invalid CV render request' },
-      400
-    );
+    return errorResponse(error);
   }
 }
 
@@ -181,9 +218,6 @@ export async function POST(request: Request) {
     const input = parseCVTailoringInput(JSON.parse(text) as unknown);
     return pdfResponse(resolveTailoredCV(input), { cache: false });
   } catch (error) {
-    return jsonResponse(
-      { error: error instanceof Error ? error.message : 'Invalid CV render request' },
-      400
-    );
+    return errorResponse(error);
   }
 }
