@@ -11,7 +11,6 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const validLocale = locale as 'en' | 'he';
-  const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const title = validLocale === 'he'
     ? "יותם פרג'י | Senior Product Engineer בברלין"

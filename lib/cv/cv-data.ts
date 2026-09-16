@@ -1,6 +1,6 @@
 import enMessages from '@/messages/src/en/cv.json';
 
-export const CV_PDF_FILENAME = 'yotam-faraggi-senior-product-engineer-cv.pdf';
+export const CV_PDF_FILENAME = 'yotam-faraggi-senior-full-stack-product-engineer-cv.pdf';
 
 export const experienceKeys = [
   'cartshift',
@@ -14,14 +14,10 @@ export const experienceKeys = [
   'airforce',
 ] as const;
 
-export const recentExperienceKeys = [
-  'cartshift',
-  'curalife',
-  'paragonex',
-  'ecommerce_venture',
-] as const;
+export const recentExperienceKeys = ['cartshift', 'curalife', 'paragonex'] as const;
 
 export const earlierExperienceKeys = [
+  'ecommerce_venture',
   'hot',
   'leumi',
   'entrepreneurship',
@@ -222,8 +218,8 @@ export function buildCVData(cv: RawCVMessages): CVData {
       portfolioLabel: cv.portfolioLink,
       linkedinUrl: 'https://linkedin.com/in/yotam-faraggi',
       githubUrl: 'https://github.com/yotamon',
-      portfolioUrl: 'https://cart-shift.com/en/portfolio',
-      portfolioDisplayUrl: 'cart-shift.com/en/portfolio',
+      portfolioUrl: 'https://cart-shift.com/en/cv',
+      portfolioDisplayUrl: 'cart-shift.com/en/cv',
     },
     labels: {
       saveAsPdf: cv.saveAsPdf,
