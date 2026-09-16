@@ -1,11 +1,11 @@
 {
   "cv": {
-    "title": "Yotam Faraggi - Senior Product Engineer CV",
+    "title": "Yotam Faraggi - Senior Full-Stack Product Engineer CV",
     "name": "Yotam Faraggi",
-    "subtitle": "Senior Product Engineer | Full-Stack, Commerce & Integrations",
+    "subtitle": "Senior Full-Stack Product Engineer",
     "location": "Berlin, Germany",
     "workAuthorization": "EU citizen · Authorized to work in Germany",
-    "phone": "+4915776211298",
+    "phone": "+49 157 76211298",
     "email": "yotamon@gmail.com",
     "linkedin": "LinkedIn",
     "github": "GitHub",
@@ -16,35 +16,35 @@
       "openToWork": "Open to work"
     },
     "labels": {
-      "earlierExperience": "Earlier Engineering Experience"
+      "earlierExperience": "Earlier Experience"
     },
     "sections": {
       "summary": "Professional Summary",
-      "portfolio": "Selected Portfolio",
+      "portfolio": "Selected Products",
       "experience": "Professional Experience",
-      "skills": "Technical Skills",
+      "skills": "Core Skills",
       "education": "Education",
       "languages": "Languages"
     },
     "sectionsShort": {
       "summary": "Summary",
-      "portfolio": "Portfolio",
+      "portfolio": "Products",
       "experience": "Experience",
       "skills": "Skills",
       "education": "Education"
     },
     "portfolio": {
-      "intro": "Selected work showing end-to-end ownership across founder-led products, commerce, integration-heavy systems, and modern full-stack applications.",
+      "intro": "Selected work showing end-to-end ownership across independent products, commerce, integrations, and modern full-stack applications.",
       "liveLabel": "Live project",
-      "featuredLabel": "Founder-led",
+      "featuredLabel": "Independent",
       "visitProject": "Visit project",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "Independent product, e-commerce and web engineering studio combining client delivery with hands-on development of full-stack products, integrations and automation.",
+          "description": "Independent product and engineering work across full-stack web products, e-commerce systems, and AI-assisted workflows.",
           "signals": [
-            "E-commerce & Shopify",
-            "Next.js application"
+            "Independent venture",
+            "Full-stack product engineering"
           ]
         },
         "atlasIrwin": {
@@ -57,18 +57,18 @@
         },
         "starlinker": {
           "eyebrow": "StarLinker",
-          "description": "Visual planning product for mapping goals, tasks, habits, and notes on a connected canvas with AI-assisted next-step suggestions.",
+          "description": "AI-assisted planning product with a real-time voice agent, permissioned actions, live UI updates, and undoable agent-driven changes.",
           "signals": [
-            "Productivity UI",
-            "AI-assisted workflow"
+            "AI-assisted product",
+            "Real-time voice workflow"
           ]
         },
         "rightflow": {
           "eyebrow": "RightFlow",
-          "description": "Document review and verification platform for pension and payroll contribution checks, including structured review flows and report export.",
+          "description": "Full-stack workflow and automation product owned from definition through production, with integrations and AI-assisted workflows.",
           "signals": [
-            "Document workflows",
-            "Sensitive financial data"
+            "Workflow automation",
+            "End-to-end product ownership"
           ]
         }
       },
@@ -80,21 +80,21 @@
       }
     },
     "summary": {
-      "text": "Berlin-based Senior Product Engineer with 10+ years building and operating production software across full-stack products, e-commerce, APIs, integrations, and cloud systems. At Curalife, owned major parts of the Shopify-based commerce and digital-health ecosystem, including customer journeys, Shopify-HubSpot integrations, frontend modernization, cloud infrastructure, and a HIPAA-compliant telemedicine acquisition product that became one of the company’s primary customer-acquisition and revenue funnels. Strong across React, Next.js, TypeScript, Node.js, PostgreSQL, and production systems, with end-to-end ownership from product definition and architecture through implementation, deployment, and iteration. Recent independent work also includes AI-assisted products and workflow automation.",
-      "metaDescription": "Berlin-based Senior Product Engineer with 10+ years in software engineering across full-stack products, e-commerce, APIs, integrations, cloud systems, and recent AI-assisted product work."
+      "text": "Senior Full-Stack Product Engineer with 10+ years building customer-facing software across healthcare, e-commerce, fintech, and enterprise systems. End-to-end ownership from product definition and architecture through full-stack implementation, integrations, deployment, and iteration.",
+      "metaDescription": "Berlin-based Senior Full-Stack Product Engineer with 10+ years of experience across customer-facing products, APIs, integrations, cloud systems, e-commerce, healthcare, fintech, and AI-assisted product work."
     },
     "experience": {
       "cartshift": {
-        "company": "CartShift Studio · Self-Employed",
-        "title": "Founder & Senior Product Engineer",
+        "company": "CartShift Studio",
+        "title": "Independent Full-Stack Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "Independent product, full-stack and e-commerce engineering practice combining client delivery with hands-on development of production web, commerce, workflow and AI-assisted products.",
+        "description": "Self-directed product engineering work across full-stack web products, e-commerce systems, and AI-assisted workflows.",
         "highlights": [
-          "Build and ship full-stack products and client systems using Next.js, React, TypeScript, Node.js, APIs, PostgreSQL, and modern cloud tooling, with automated unit, integration, and end-to-end testing.",
-          "Deliver e-commerce and Shopify-focused work spanning storefront development, integrations, performance optimization, conversion-oriented improvements, and workflow automation.",
-          "Created products including StarLinker and RightFlow, owning product definition, architecture, implementation, deployment, and iteration."
+          "Own product definition, UX, architecture, implementation, integrations, deployment, and continuous iteration across independent products.",
+          "Build with Next.js, React, TypeScript, Node.js, APIs, data services, cloud tooling, and AI-assisted development workflows.",
+          "Explore and validate new product ideas with a focus on real user needs and impact."
         ]
       },
       "curalife": {
@@ -103,12 +103,11 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv",
-        "description": "Owned major customer-facing product and platform work across Shopify commerce and digital health, spanning storefronts, acquisition funnels, frontend, backend, integrations, cloud infrastructure, and production operations.",
+        "description": "Owned business-critical customer-facing product work across telemedicine and e-commerce, from product definition through production.",
         "highlights": [
-          "Owned the technical evolution of Curalife’s Shopify-based e-commerce ecosystem, building and improving customer journeys, storefront experiences, Shopify-HubSpot integrations, and supporting operational workflows.",
-          "Designed a resilient Shopify-HubSpot integration layer that reduced sync failures by 85%, improving reliability between commerce, CRM, and internal operations.",
-          "Led frontend modernization across key commerce and acquisition journeys, improving page performance by 60% while moving core experiences to Next.js, React, and TypeScript.",
-          "Defined, architected, and built Curalife’s HIPAA-compliant telemedicine acquisition product end-to-end; it became one of the company’s primary customer-acquisition and revenue funnels."
+          "Defined, architected, and built a HIPAA-compliant telemedicine acquisition product end-to-end, including patient UX, backend logic, integrations, operational tooling, and GCP infrastructure.",
+          "Designed an insurance-eligibility integration layer for complex healthcare APIs, normalizing dynamic responses and failure cases while protecting sensitive health data.",
+          "The product became the company's primary customer-acquisition funnel and a core revenue channel, also leading to the modernization of Shopify/HubSpot customer systems."
         ]
       },
       "paragonex": {
@@ -116,12 +115,11 @@
         "title": "Software & Integration Developer",
         "duration": "August 2019 - July 2021",
         "durationYears": "2 years",
-        "location": "Tel Aviv Area",
-        "description": "Built and maintained production integrations and high-traffic web systems for fintech affiliate operations.",
+        "location": "Tel Aviv",
+        "description": "Built high-traffic web products and production integrations for fintech affiliate operations.",
         "highlights": [
-          "Built integrations between affiliate systems and core fintech platform services.",
-          "Developed and optimized high-traffic web applications using Laravel, Sage, and WordPress with a focus on performance and maintainability.",
-          "Improved frontend build and page-loading performance across production web properties."
+          "Developed and optimized WordPress solutions using Sage and Laravel, and built integrations between affiliate systems and core platform services.",
+          "Improved frontend build processes and loading performance across production websites."
         ]
       },
       "ecommerce_venture": {
@@ -130,8 +128,7 @@
         "duration": "April 2018 - July 2019",
         "durationYears": "1 year 4 months",
         "highlights": [
-          "Built and operated direct-to-consumer systems spanning storefronts, payments, fulfillment, analytics, integrations, and day-to-day operations.",
-          "Gained hands-on product and commercial experience across Shopify, WordPress, customer acquisition, conversion, and e-commerce operations."
+          "Built and operated DTC storefronts, payments, fulfillment, analytics, acquisition, and conversion."
         ]
       },
       "hot": {
@@ -141,8 +138,7 @@
         "durationYears": "1 year 2 months",
         "location": "Israel",
         "highlights": [
-          "Built enterprise integrations and high-throughput web services using Oracle OSB, WebLogic, IBM DataPower, and JMS queues.",
-          "Used asynchronous messaging to connect production services and operational systems with a focus on reliability."
+          "Built enterprise integrations and high-throughput services using Oracle OSB, WebLogic, IBM DataPower, and JMS."
         ]
       },
       "leumi": {
@@ -152,8 +148,7 @@
         "durationYears": "10 months",
         "location": "Lod",
         "highlights": [
-          "Developed and maintained high-availability banking integrations using IBM WebSphere ESB, IBM Integration Bus, and IBM DataPower.",
-          "Worked on production services connecting banking systems with a focus on reliability and operational continuity."
+          "Developed high-availability banking integrations using IBM WebSphere ESB, IBM Integration Bus, and IBM DataPower."
         ]
       },
       "entrepreneurship": {
@@ -162,7 +157,7 @@
         "duration": "October 2014 - February 2016",
         "durationYears": "1 year 5 months",
         "highlights": [
-          "Delivered freelance web and integration projects for small businesses while taking independent product ideas from requirements through launch."
+          "Delivered web and integration projects while building independent product ideas from requirements through launch."
         ]
       },
       "elbit": {
@@ -171,16 +166,16 @@
         "duration": "December 2013 - September 2014",
         "durationYears": "10 months",
         "highlights": [
-          "Contributed to real-time command-and-control software for helicopter systems using C++, COM, and VB."
+          "Contributed to real-time C++ command-and-control software for complex operational systems."
         ]
       },
       "airforce": {
-        "company": "IDF / Mamram",
+        "company": "Mamram / Technical Systems Unit",
         "title": "Software Programmer",
         "duration": "March 2011 - September 2014",
         "durationYears": "3 years 7 months",
         "highlights": [
-          "Worked on integration systems connecting airborne and ground-control infrastructure, including modernization of legacy services."
+          "Worked on distributed integration systems and modernization of legacy operational services."
         ]
       }
     },
@@ -188,83 +183,70 @@
       "productEngineering": {
         "category": "Product Engineering",
         "items": [
-          "Technical scoping",
+          "Product definition",
           "System design",
           "API design",
-          "Product ownership",
-          "Web application architecture",
-          "Reliability",
-          "Performance optimization"
+          "Reliability"
         ]
       },
       "frontendFullStack": {
-        "category": "Primary Stack",
+        "category": "Full-Stack",
         "items": [
           "React",
           "Next.js",
           "TypeScript",
-          "JavaScript",
           "Node.js",
-          "Tailwind CSS",
-          "Framer Motion"
+          "Tailwind CSS"
         ]
       },
       "commerceIntegrations": {
-        "category": "E-commerce, Shopify & Integrations",
+        "category": "APIs & Commerce",
         "items": [
-          "Shopify",
-          "Shopify APIs",
-          "Shopify storefronts",
-          "HubSpot",
-          "Stripe",
-          "REST APIs",
+          "REST",
           "GraphQL",
           "Webhooks",
-          "WordPress"
+          "Shopify APIs",
+          "HubSpot",
+          "Stripe"
         ]
       },
       "aiAutomation": {
-        "category": "AI & Automation",
+        "category": "AI-Assisted Products",
         "items": [
-          "OpenAI API",
-          "Claude API",
-          "LangChain",
-          "LLM-assisted workflows",
-          "AI SDK",
-          "MCP"
+          "LLM APIs",
+          "OpenAI",
+          "Claude",
+          "Voice/agent workflows",
+          "AI tooling"
         ]
       },
       "cloudData": {
         "category": "Cloud & Data",
         "items": [
-          "Google Cloud Platform",
           "PostgreSQL",
+          "GCP",
           "Firebase",
-          "Firestore",
-          "Docker",
           "Vercel",
+          "Docker",
           "GitHub Actions"
         ]
       },
       "legacyEnterprise": {
-        "category": "Testing & Quality",
+        "category": "Enterprise Integration",
         "items": [
-          "Jest",
-          "Vitest",
-          "React Testing Library",
-          "Playwright",
-          "Puppeteer",
-          "Unit & integration testing",
-          "End-to-end testing"
+          "IBM Integration Bus",
+          "WebSphere",
+          "Oracle OSB",
+          "DataPower",
+          "JMS"
         ]
       }
     },
     "education": {
       "entries": [
         {
-          "institution": "Basmach / Mamram",
-          "program": "Software Development Program",
-          "description": "Intensive software development training.",
+          "institution": "Basmach",
+          "program": "Programming Course (Mamram)",
           "years": "2011"
         },
         {
