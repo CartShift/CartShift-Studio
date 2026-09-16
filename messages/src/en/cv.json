@@ -107,7 +107,8 @@
         "highlights": [
           "Defined, architected, and built a HIPAA-compliant telemedicine acquisition product end-to-end, including patient UX, backend logic, integrations, operational tooling, and GCP infrastructure.",
           "Designed an insurance-eligibility integration layer for complex healthcare APIs, normalizing dynamic responses and failure cases while protecting sensitive health data.",
-          "The product became the company's primary customer-acquisition funnel and a core revenue channel, also leading to the modernization of Shopify/HubSpot customer systems."
+          "The product became the company's primary customer-acquisition funnel and a core revenue channel, also leading to the modernization of Shopify/HubSpot customer systems.",
+          "Led frontend modernization across key commerce and acquisition journeys, improving maintainability and production workflows."
         ]
       },
       "paragonex": {
@@ -119,7 +120,8 @@
         "description": "Built high-traffic web products and production integrations for fintech affiliate operations.",
         "highlights": [
           "Developed and optimized WordPress solutions using Sage and Laravel, and built integrations between affiliate systems and core platform services.",
-          "Improved frontend build processes and loading performance across production websites."
+          "Improved frontend build processes and loading performance across production websites.",
+          "Built integrations between affiliate systems and core fintech platform services."
         ]
       },
       "ecommerce_venture": {
@@ -128,7 +130,8 @@
         "duration": "April 2018 - July 2019",
         "durationYears": "1 year 4 months",
         "highlights": [
-          "Built and operated DTC storefronts, payments, fulfillment, analytics, acquisition, and conversion."
+          "Built and operated DTC storefronts, payments, fulfillment, analytics, acquisition, and conversion.",
+          "Gained hands-on product and commercial experience across Shopify, WordPress, customer acquisition, conversion, and e-commerce operations."
         ]
       },
       "hot": {
@@ -138,7 +141,8 @@
         "durationYears": "1 year 2 months",
         "location": "Israel",
         "highlights": [
-          "Built enterprise integrations and high-throughput services using Oracle OSB, WebLogic, IBM DataPower, and JMS."
+          "Built enterprise integrations and high-throughput services using Oracle OSB, WebLogic, IBM DataPower, and JMS.",
+          "Used asynchronous messaging to connect production services and operational systems with a focus on reliability."
         ]
       },
       "leumi": {
@@ -148,7 +152,8 @@
         "durationYears": "10 months",
         "location": "Lod",
         "highlights": [
-          "Developed high-availability banking integrations using IBM WebSphere ESB, IBM Integration Bus, and IBM DataPower."
+          "Developed high-availability banking integrations using IBM WebSphere ESB, IBM Integration Bus, and IBM DataPower.",
+          "Worked on production services connecting banking systems with a focus on reliability and operational continuity."
         ]
       },
       "entrepreneurship": {
@@ -186,7 +191,10 @@
           "Product definition",
           "System design",
           "API design",
-          "Reliability"
+          "Reliability",
+          "Product ownership",
+          "Web application architecture",
+          "Performance optimization"
         ]
       },
       "frontendFullStack": {
@@ -196,7 +204,9 @@
           "Next.js",
           "TypeScript",
           "Node.js",
-          "Tailwind CSS"
+          "Tailwind CSS",
+          "JavaScript",
+          "Framer Motion"
         ]
       },
       "commerceIntegrations": {
@@ -207,7 +217,10 @@
           "Webhooks",
           "Shopify APIs",
           "HubSpot",
-          "Stripe"
+          "Stripe",
+          "WordPress",
+          "Shopify storefronts",
+          "E-commerce integrations"
         ]
       },
       "aiAutomation": {
@@ -217,7 +230,8 @@
           "OpenAI",
           "Claude",
           "Voice/agent workflows",
-          "AI tooling"
+          "AI tooling",
+          "MCP"
         ]
       },
       "cloudData": {
@@ -228,7 +242,8 @@
           "Firebase",
           "Vercel",
           "Docker",
-          "GitHub Actions"
+          "GitHub Actions",
+          "Firestore"
         ]
       },
       "legacyEnterprise": {
@@ -238,7 +253,9 @@
           "WebSphere",
           "Oracle OSB",
           "DataPower",
-          "JMS"
+          "JMS",
+          "Playwright",
+          "Puppeteer"
         ]
       }
     },
@@ -247,6 +264,7 @@
         {
           "institution": "Basmach",
           "program": "Programming Course (Mamram)",
+          "description": "Intensive software development training.",
           "years": "2011"
         },
         {
