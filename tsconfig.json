@@ -42,5 +42,5 @@
     "build_out/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "tailwind.config.backup.ts", "functions"]
+  "exclude": ["node_modules", "tailwind.config.backup.ts", "functions", "tests/scripts/**/*.mjs"]
 }
