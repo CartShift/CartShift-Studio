@@ -107,7 +107,7 @@
         "highlights": [
           "Defined, architected, and built a HIPAA-compliant telemedicine acquisition product end-to-end, including patient UX, backend logic, integrations, operational tooling, and GCP infrastructure.",
           "Designed an insurance-eligibility integration layer for complex healthcare APIs, normalizing dynamic responses and failure cases while protecting sensitive health data.",
-          "The product became the company's primary customer-acquisition funnel and a core revenue channel, also leading to the modernization of Shopify/HubSpot customer systems.",
+          "The product became a major customer-acquisition funnel and led to modernization of Shopify/HubSpot customer systems.",
           "Led frontend modernization across key commerce and acquisition journeys, improving maintainability and production workflows."
         ]
       },
@@ -253,9 +253,7 @@
           "WebSphere",
           "Oracle OSB",
           "DataPower",
-          "JMS",
-          "Playwright",
-          "Puppeteer"
+          "JMS"
         ]
       }
     },
