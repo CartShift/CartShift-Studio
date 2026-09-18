@@ -489,9 +489,9 @@
       "education": "השכלה"
     },
     "portfolio": {
-      "intro": "עבודות נבחרות שמציגות ownership מקצה לקצה במוצרי founder-led, מסחר, מערכות עתירות אינטגרציות ואפליקציות Full-Stack מודרניות.",
+      "intro": "עבודות נבחרות שמציגות ownership מקצה לקצה במוצרים עצמאיים, מסחר, מערכות עתירות אינטגרציות ואפליקציות Full-Stack מודרניות.",
       "liveLabel": "פרויקט חי",
-      "featuredLabel": "בהובלת מייסד",
+      "featuredLabel": "עצמאי",
       "visitProject": "לצפייה בפרויקט",
       "projects": {
         "cartshift": {
@@ -535,17 +535,17 @@
       }
     },
     "summary": {
-      "text": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בבנייה ותפעול של תוכנה לפרודקשן, כולל מוצרי Full-Stack, e-commerce, APIs, אינטגרציות ומערכות ענן. ב-Curalife הובלתי חלקים מרכזיים באקוסיסטם המסחר וה-digital health מבוסס Shopify, כולל מסעות לקוח, אינטגרציות Shopify-HubSpot, מודרניזציית Frontend, תשתיות ענן ומוצר acquisition לטלרפואה תואם HIPAA שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של החברה. ניסיון חזק ב-React, Next.js, TypeScript, Node.js, PostgreSQL ומערכות פרודקשן, עם ownership מקצה לקצה מהגדרת מוצר וארכיטקטורה ועד מימוש, פריסה ואיטרציה. העבודה העצמאית העדכנית כוללת גם מוצרים בסיוע AI ואוטומציית workflows.",
+      "text": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בבניית תוכנה לפרודקשן במוצרי Full-Stack, e-commerce, APIs, אינטגרציות ומערכות cloud. ניסיון חזק ב-React, Next.js, TypeScript, Node.js ו-PostgreSQL, עם ownership מקצה לקצה מהגדרת מוצר וארכיטקטורה דרך מימוש, deployment ואיטרציה. העבודה העצמאית העדכנית כוללת גם מוצרי AI-assisted ואוטומציית workflows.",
       "metaDescription": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בהנדסת תוכנה, מוצרי Full-Stack, e-commerce, APIs, אינטגרציות, מערכות ענן ועבודה עדכנית במוצרים בסיוע AI."
     },
     "experience": {
       "cartshift": {
-        "company": "CartShift Studio · עצמאי",
-        "title": "Founder & Senior Product Engineer",
+        "company": "CartShift Studio",
+        "title": "Independent Full-Stack Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "פעילות עצמאית ב-product engineering, Full-Stack ו-e-commerce המשלבת מסירת פרויקטים ללקוחות עם פיתוח מעשי של מוצרי Web, מסחר, workflow ומוצרים בסיוע AI לפרודקשן.",
+        "description": "עבודת product engineering עצמאית במוצרי Full-Stack, מערכות e-commerce ו-workflows בסיוע AI, לצד מסירת מערכות ללקוחות.",
         "highlights": [
           "בנייה והשקה של מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
           "מסירת עבודת e-commerce ו-Shopify הכוללת פיתוח Storefront, אינטגרציות, אופטימיזציית ביצועים, שיפורים ממוקדי Conversion ואוטומציית תהליכים.",
