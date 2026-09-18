@@ -457,10 +457,10 @@
   "cv": {
     "title": "יותם פרג'י - קורות חיים Senior Product Engineer",
     "name": "יותם פרג'י",
-    "subtitle": "Senior Product Engineer | Full-Stack, Commerce & Integrations",
+    "subtitle": "Senior Product Engineer | Full-Stack Web Products",
     "location": "ברלין, גרמניה",
     "workAuthorization": "אזרח האיחוד האירופי · מורשה לעבוד בגרמניה",
-    "phone": "+4915776211298",
+    "phone": "+972503591552",
     "email": "yotamon@gmail.com",
     "linkedin": "לינקדאין",
     "github": "GitHub",
@@ -489,17 +489,17 @@
       "education": "השכלה"
     },
     "portfolio": {
-      "intro": "עבודות נבחרות שמציגות ownership מקצה לקצה במוצרים עצמאיים, מסחר, מערכות עתירות אינטגרציות ואפליקציות Full-Stack מודרניות.",
+      "intro": "פרויקטי מוצר ו-Web נבחרים שמציגים עבודה מעשית במסחר, כלי עבודה, אתרי אמנים ואפליקציות עתירות מסמכים.",
       "liveLabel": "פרויקט חי",
-      "featuredLabel": "עצמאי",
+      "featuredLabel": "בהובלת מייסד",
       "visitProject": "לצפייה בפרויקט",
       "projects": {
         "cartshift": {
           "eyebrow": "CartShift Studio",
-          "description": "סטודיו עצמאי למוצר, e-commerce ופיתוח Web המשלב מסירת פרויקטים ללקוחות עם בנייה מעשית של מוצרי Full-Stack, אינטגרציות ואוטומציה.",
+          "description": "אתר סטודיו ציבורי ופורטל לקוחות לעבודת e-commerce ופיתוח Web, סביב גילוי שירותים, קליטת פרויקטים ושיתוף פעולה עם לקוחות.",
           "signals": [
-            "E-commerce ו-Shopify",
-            "אפליקציית Next.js"
+            "אפליקציית Next.js",
+            "פורטל לקוחות ואתר ציבורי"
           ]
         },
         "atlasIrwin": {
@@ -529,27 +529,27 @@
       },
       "clients": {
         "kicker": "עבודות לקוחות",
-        "title": "מסירת פרויקטי E-commerce ו-Full Stack",
-        "description": "עמוד העבודות כולל בניות Shopify ו-e-commerce, רידיזיינים, אינטגרציות, שיפורי ביצועים ואפליקציות Web מותאמות שנמסרו במסגרת פרילנס והסטודיו.",
+        "title": "פרויקטי פרילנס ולקוחות",
+        "description": "עמוד העבודות כולל פרויקטים ללקוחות, רידיזיינים ובניות e-commerce שבוצעו במסגרת פרילנס וסטודיו.",
         "cta": "לצפייה בעבודות לקוחות"
       }
     },
     "summary": {
-      "text": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בבניית תוכנה לפרודקשן במוצרי Full-Stack, e-commerce, APIs, אינטגרציות ומערכות cloud. ניסיון חזק ב-React, Next.js, TypeScript, Node.js ו-PostgreSQL, עם ownership מקצה לקצה מהגדרת מוצר וארכיטקטורה דרך מימוש, deployment ואיטרציה. העבודה העצמאית העדכנית כוללת גם מוצרי AI-assisted ואוטומציית workflows.",
-      "metaDescription": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בהנדסת תוכנה, מוצרי Full-Stack, e-commerce, APIs, אינטגרציות, מערכות ענן ועבודה עדכנית במוצרים בסיוע AI."
+      "text": "מפתח Full Stack בכיר עם יותר מ-10 שנות ניסיון בבניית מוצרי Web ומערכות פנימיות בתחומי e-commerce, בריאות, פינטק ותוכנה ארגונית. הניסיון כולל Frontend, Backend, אינטגרציות ותשתיות, עם דגש על הפיכת צרכים מוצריים מעשיים לתוכנה אמינה. העבודה האחרונה כללה זרימות טלרפואה ו-e-commerce ללקוחות, אינטגרציות Shopify ו-HubSpot, אפליקציות React ו-Next.js מודרניות וכלי עבודה בסיוע AI.",
+      "metaDescription": "Senior Product Engineer ומפתח Full Stack בברלין הבונה מוצרי Web, אינטגרציות, מערכות e-commerce וכלי עבודה בסיוע AI."
     },
     "experience": {
       "cartshift": {
         "company": "CartShift Studio",
-        "title": "Independent Full-Stack Product Engineer",
+        "title": "מייסד ו-Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "עבודת product engineering עצמאית במוצרי Full-Stack, מערכות e-commerce ו-workflows בסיוע AI, לצד מסירת מערכות ללקוחות.",
+        "description": "סטודיו עצמאי לפיתוח מוצרי Web המתמקד ב-e-commerce, פלטפורמות Web ואוטומציית תהליכי עבודה ללקוחות בינלאומיים.",
         "highlights": [
-          "בנייה והשקה של מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
-          "מסירת עבודת e-commerce ו-Shopify הכוללת פיתוח Storefront, אינטגרציות, אופטימיזציית ביצועים, שיפורים ממוקדי Conversion ואוטומציית תהליכים.",
-          "יצירת מוצרים ובהם StarLinker ו-RightFlow, עם אחריות על הגדרת המוצר, ארכיטקטורה, מימוש, פריסה ואיטרציה."
+          "בניית חנויות Shopify וחוויות e-commerce headless עם Next.js, React, TypeScript וכלי Web מודרניים.",
+          "פיתוח כלי עבודה בסיוע AI וכלים פנימיים למשימות תפעוליות.",
+          "ניהול פרויקטים משלב דרישות ותכנון טכני דרך מימוש, פריסה ושיפורים שוטפים."
         ]
       },
       "curalife": {
@@ -558,12 +558,12 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv, Israel",
-        "description": "אחריות על מוצרי telemedicine ו-e-commerce ללקוחות, משלב הגדרת המוצר והארכיטקטורה דרך Frontend, Backend, אינטגרציות, תשתיות cloud ותפעול production.",
+        "description": "עבודה על מערכות טלרפואה ו-e-commerce ללקוחות, אינטגרציות, מודרניזציית Frontend ותשתיות ענן.",
         "highlights": [
-          "הגדרה, ארכיטקטורה ובנייה מקצה לקצה של מוצר רכישה לטלרפואה תואם HIPAA, כולל חוויית המטופל, לוגיקת Backend, אינטגרציות, כלי תפעול ותשתיות GCP.",
-          "תכנון שכבת אינטגרציה לבדיקת זכאות ביטוחית מול APIs מורכבים, כולל נרמול תשובות דינמיות, טיפול בכשלים והגנה על מידע רפואי רגיש.",
-          "המוצר הפך ל-Funnel משמעותי לגיוס לקוחות והוביל גם למודרניזציה של מערכות Shopify ו-HubSpot.",
-          "הובלת מודרניזציית Frontend במסלולי commerce ו-acquisition מרכזיים, עם דגש על תחזוקתיות ותהליכי production."
+          "בנייה ותחזוקה של Funnel טלרפואה תואם HIPAA באמצעות Next.js, React, TypeScript ו-Google Cloud Platform.",
+          "עבודה על אינטגרציות Shopify ו-HubSpot שתמכו בזרימות לקוח ותפעול.",
+          "הובלת עבודת מעבר לסטאק Frontend מודרני ושיפור זרימות מרכזיות ללקוחות.",
+          "בנייה ופריסה של תשתיות ענן עם דגש על פרטיות, אמינות ותחזוקה."
         ]
       },
       "paragonex": {
@@ -585,8 +585,8 @@
         "duration": "April 2018 - July 2019",
         "durationYears": "1 year 4 months",
         "highlights": [
-          "בנייה והפעלה של מערכות e-commerce ישירות לצרכן, כולל Storefronts, תשלומים, Fulfillment, אנליטיקה, אינטגרציות ותפעול יומיומי.",
-          "צבירת ניסיון מעשי ומסחרי ב-Shopify, WordPress, גיוס לקוחות, Conversion ותפעול e-commerce."
+          "בנייה והפעלה של ניסויי e-commerce ישירים לצרכן, כולל הקמת Storefront, תפעול, תשלומים, Fulfillment, אנליטיקה ועבודת Conversion.",
+          "צבירת ניסיון מעשי עם Shopify, WordPress, גיוס לקוחות ותפעול מסחר יומיומי."
         ]
       },
       "hot": {
@@ -596,8 +596,7 @@
         "durationYears": "1 year 2 months",
         "location": "Israel",
         "highlights": [
-          "בניית אינטגרציות ארגוניות ושירותי Web בעלי תפוקה גבוהה באמצעות Oracle OSB, WebLogic, IBM DataPower ו-JMS queues.",
-          "שימוש בהודעות אסינכרוניות לחיבור בין שירותי פרודקשן למערכות תפעוליות, עם דגש על אמינות."
+          "בניית אינטגרציות ארגוניות ושירותי Web בעלי תפוקה גבוהה באמצעות Oracle OSB, WebLogic, IBM DataPower ו-JMS queues."
         ]
       },
       "leumi": {
@@ -607,8 +606,7 @@
         "durationYears": "10 months",
         "location": "Lod, Israel",
         "highlights": [
-          "פיתוח ותחזוקה של אינטגרציות בנקאיות ושירותים בזמינות גבוהה באמצעות IBM WebSphere ESB, IBM Integration Bus ו-DataPower.",
-          "עבודה על שירותי פרודקשן שחיברו בין מערכות בנקאיות, עם דגש על אמינות והמשכיות תפעולית."
+          "פיתוח ותחזוקה של אינטגרציות בנקאיות ושירותים בזמינות גבוהה באמצעות IBM WebSphere ESB, IBM Integration Bus ו-DataPower."
         ]
       },
       "entrepreneurship": {
@@ -630,12 +628,12 @@
         ]
       },
       "airforce": {
-        "company": "IDF / Mamram",
+        "company": "חיל האוויר הישראלי / ממרם (שירות צבאי)",
         "title": "מתכנת תוכנה",
         "duration": "March 2011 - September 2014",
         "durationYears": "3 years 7 months",
         "highlights": [
-          "עבודה על מערכות אינטגרציה שחיברו בין תשתיות מוטסות ובקרת קרקע, כולל מודרניזציה של שירותי Legacy."
+          "עבודה על מערכות אינטגרציה שחיברו בין מטוסים לתשתיות בקרה קרקעית, כולל מודרניזציה של שירותים Legacy."
         ]
       }
     },
@@ -646,10 +644,10 @@
           "Technical scoping",
           "System design",
           "API design",
-          "Product ownership",
-          "Web application architecture",
+          "Performance optimization",
           "Reliability",
-          "Performance optimization"
+          "Web application architecture",
+          "Customer-facing product development"
         ]
       },
       "frontendFullStack": {
@@ -665,17 +663,15 @@
         ]
       },
       "commerceIntegrations": {
-        "category": "E-commerce, Shopify ואינטגרציות",
+        "category": "איקומרס ואינטגרציות",
         "items": [
           "Shopify",
           "Shopify APIs",
-          "Shopify storefronts",
           "HubSpot",
           "Stripe",
-          "REST APIs",
+          "WordPress",
           "GraphQL",
-          "Webhooks",
-          "WordPress"
+          "REST APIs"
         ]
       },
       "aiAutomation": {
@@ -684,31 +680,33 @@
           "OpenAI API",
           "Claude API",
           "LangChain",
-          "LLM-assisted workflows",
-          "AI SDK",
-          "MCP"
+          "Webhooks",
+          "Puppeteer",
+          "Playwright"
         ]
       },
       "cloudData": {
         "category": "ענן ונתונים",
         "items": [
           "Google Cloud Platform",
-          "PostgreSQL",
           "Firebase",
           "Firestore",
-          "Docker",
+          "PostgreSQL",
           "Vercel",
+          "Docker",
           "GitHub Actions"
         ]
       },
       "legacyEnterprise": {
-        "category": "Enterprise Integration",
+        "category": "מערכות ארגוניות Legacy",
         "items": [
-          "IBM Integration Bus",
-          "WebSphere",
           "Oracle OSB",
-          "DataPower",
-          "JMS"
+          "WebLogic",
+          "IBM WebSphere ESB",
+          "IBM Integration Bus",
+          "IBM DataPower",
+          "JMS",
+          "C++"
         ]
       }
     },
