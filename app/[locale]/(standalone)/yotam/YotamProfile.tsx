@@ -272,7 +272,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="profile" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
+      <section id="profile" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <motion.div
           {...sectionReveal}
           className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
@@ -306,7 +306,7 @@ export default function YotamProfile() {
 
       <section
         id="experience"
-        className="bg-[#19191b] px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-30"
+        className="bg-[#19191b] px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-28"
       >
         <div className="mx-auto max-w-[1680px]">
           <motion.div
@@ -405,7 +405,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="work" className="bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
+      <section id="work" className="bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1680px]">
           <motion.div
             {...sectionReveal}
@@ -533,7 +533,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="capabilities" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
+      <section id="capabilities" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1680px]">
           <motion.div
             {...sectionReveal}
@@ -574,7 +574,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section className="bg-[#f4f1ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
+      <section className="bg-[#f4f1ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <div className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
           <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
             05 / {copy.foundation}
@@ -631,7 +631,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <footer className="bg-[#6257d8] px-5 pb-8 pt-20 text-white sm:px-8 sm:pb-10 sm:pt-28 lg:px-12 lg:pt-30">
+      <footer className="bg-[#6257d8] px-5 pb-8 pt-20 text-white sm:px-8 sm:pb-10 sm:pt-28 lg:px-12 lg:pt-28">
         <div className="mx-auto max-w-[1680px]">
           <div className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
             <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/72 sm:text-[11px]">
