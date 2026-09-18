@@ -218,8 +218,8 @@ export function buildCVData(cv: RawCVMessages): CVData {
       portfolioLabel: cv.portfolioLink,
       linkedinUrl: 'https://linkedin.com/in/yotam-faraggi',
       githubUrl: 'https://github.com/yotamon',
-      portfolioUrl: 'https://cart-shift.com/en/cv',
-      portfolioDisplayUrl: 'cart-shift.com/en/cv',
+      portfolioUrl: 'https://cart-shift.com/en/yotam',
+      portfolioDisplayUrl: 'cart-shift.com/en/yotam',
     },
     labels: {
       saveAsPdf: cv.saveAsPdf,

@@ -82,6 +82,44 @@ function Label({ children, light = false }: { children: ReactNode; light?: boole
   );
 }
 
+function EngineeringDecisions({
+  isHebrew,
+  items,
+  dark = false,
+}: {
+  isHebrew: boolean;
+  items: Array<[string, string]>;
+  dark?: boolean;
+}) {
+  return (
+    <section className={`${dark ? 'bg-[#171719] text-white' : 'bg-[#eceae5] text-[#171719]'} px-5 py-16 sm:px-8 sm:py-20 lg:px-12`}>
+      <div className="mx-auto max-w-[1680px]">
+        <div className="grid gap-8 lg:grid-cols-[.28fr_1fr] lg:gap-20">
+          <div>
+            <Label light={dark}>{isHebrew ? 'החלטות הנדסיות' : 'Engineering decisions'}</Label>
+            <p className={`mt-4 max-w-xs text-sm leading-6 ${dark ? 'text-white/62' : 'text-black/58'}`}>
+              {isHebrew
+                ? 'כמה מהבחירות שמחזיקות את המוצר אמין, ניתן להבנה וניתן לשינוי.'
+                : 'A few of the choices that keep the product reliable, understandable and changeable.'}
+            </p>
+          </div>
+          <div className={`grid gap-px ${dark ? 'bg-white/14' : 'bg-black/14'} lg:grid-cols-3`}>
+            {items.map(([title, body], index) => (
+              <div key={title} className={`${dark ? 'bg-[#1f1f22]' : 'bg-[#f6f3ed]'} p-6 sm:p-7`}>
+                <span className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${dark ? 'text-white/44' : 'text-black/42'}`}>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 className="mt-7 text-2xl font-medium tracking-[-0.04em]">{title}</h3>
+                <p className={`mt-4 text-sm leading-6 ${dark ? 'text-white/66' : 'text-black/62'}`}>{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SharedHeader({ project, locale, isHebrew }: { project: PortfolioShowcaseProject; locale: string; isHebrew: boolean }) {
   const portfolioHref = `/${locale}/portfolio`;
   const cvHref = `/${locale}/cv`;
@@ -182,6 +220,35 @@ function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <EngineeringDecisions
+        isHebrew={isHebrew}
+        items={[
+          [
+            copy(isHebrew, 'פעולות מפורשות לסוכן', 'Explicit agent actions'),
+            copy(
+              isHebrew,
+              'פעולות AI עוברות דרך פעולות מוגדרות והרשאות במקום לאפשר לסוכן לשנות את הממשק בצורה חופשית.',
+              'AI changes go through defined, permissioned actions instead of letting the agent mutate the interface freely.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'ה-State נשאר מקור האמת', 'State stays authoritative'),
+            copy(
+              isHebrew,
+              'פעולות הסוכן מתעדכנות דרך מצב האפליקציה ומופיעות מיד ב-UI, כך שהמוצר והסוכן נשארים מסונכרנים.',
+              'Agent actions flow through application state and surface as live UI updates, keeping the product and agent in sync.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'AI שניתן לבטל', 'Reversible AI'),
+            copy(
+              isHebrew,
+              'שינויים שמגיעים מהסוכן ניתנים ל-undo כדי שמשתמשים יוכלו לבדוק פעולה, לשנות כיוון ולשמור שליטה.',
+              'Agent-driven changes are undoable so users can inspect an action, change direction and stay in control.'
+            ),
+          ],
+        ]}
+      />
       <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'מוצר founder-led שנבנה מהרעיון ועד הקוד.', 'A founder-led product built from concept through code.')} />
     </>
   );
@@ -259,6 +326,36 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <EngineeringDecisions
+        isHebrew={isHebrew}
+        dark
+        items={[
+          [
+            copy(isHebrew, 'הפרדה בין קליטה לאימות', 'Separate ingest from verification'),
+            copy(
+              isHebrew,
+              'המסמכים נכנסים קודם למבנה עקבי לפני שלוגיקת האימות פועלת, כדי ששינוי בפורמט מקור לא ישבור את כל ה-workflow.',
+              'Documents are normalized into a consistent structure before verification logic runs, so source-format changes do not destabilize the whole workflow.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'חריגות הן חלק מהמודל', 'Exceptions are first-class'),
+            copy(
+              isHebrew,
+              'מקרים שלא עוברים בדיקה לא מוסתרים. הם נשמרים כחריגות מפורשות שדורשות סקירה או החלטה.',
+              'Failed or ambiguous checks are not hidden. They remain explicit exceptions that require review or a decision.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'ממצא שניתן להסביר', 'Explainable findings'),
+            copy(
+              isHebrew,
+              'המערכת שומרת את מסלול הבדיקה ברור מספיק כדי שהבודק יבין מה נבדק ולמה הממצא הגיע לדוח.',
+              'The review trail stays clear enough for the operator to understand what was checked and why a finding reaches the report.'
+            ),
+          ],
+        ]}
+      />
       <ProjectCredits project={project} isHebrew={isHebrew} tone="dark" lead={copy(isHebrew, 'Workflow product שנבנה סביב אמינות והסבריות.', 'A workflow product built around reliability and explainability.')} />
     </>
   );
@@ -409,6 +506,36 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <EngineeringDecisions
+        isHebrew={isHebrew}
+        dark
+        items={[
+          [
+            copy(isHebrew, 'נתיב alarm native', 'Native alarm path'),
+            copy(
+              isHebrew,
+              'ההשכמה הקריטית נשענת על יכולות Android native ו-AlarmManager במקום על scheduler בענן או תהליך AI.',
+              'The critical wake path relies on native Android capabilities and AlarmManager rather than a cloud scheduler or AI process.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'Local-first לשלב הקריטי', 'Local-first critical path'),
+            copy(
+              isHebrew,
+              'Speech והלוגיקה של ההשכמה נשארים ככל האפשר על המכשיר, כדי שחיבור רשת לא יהיה תנאי לשעון שעובד.',
+              'Speech and wake logic stay on-device where possible so network availability is not a prerequisite for a working alarm.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'בדיקות לממשק native', 'Native UI regression checks'),
+            copy(
+              isHebrew,
+              'Roborazzi ו-GitHub Actions משמשים כדי לתפוס שינויים בממשק וב-build לפני שהם מגיעים לנתיב ההשכמה.',
+              'Roborazzi and GitHub Actions help catch UI and build regressions before they reach the wake flow.'
+            ),
+          ],
+        ]}
+      />
       <ProjectCredits project={project} isHebrew={isHebrew} tone="dark" lead={copy(isHebrew, 'Native Android, local-first, ונבנה קודם כל לשימוש אמיתי.', 'Native Android, local-first, and designed first for real daily use.')} />
     </>
   );
@@ -486,6 +613,35 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <EngineeringDecisions
+        isHebrew={isHebrew}
+        items={[
+          [
+            copy(isHebrew, 'מערכת אחת במקום אוסף כלים', 'One system, not a tool pile'),
+            copy(
+              isHebrew,
+              'Acquisition, proposals, client workflows וכלים פנימיים חיים באותו מוצר מתפתח במקום להיפרד למערכות שלא חולקות הקשר.',
+              'Acquisition, proposals, client workflows and internal tools live in one evolving product instead of disconnected systems that lose context.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'State משותף לאורך ה-funnel', 'Shared workflow state'),
+            copy(
+              isHebrew,
+              'המעבר מליד להצעה, תשלום ו-delivery מתוכנן כרצף אחד, כדי לצמצם העתקת מידע ידנית בין שלבים.',
+              'The path from lead to proposal, payment and delivery is treated as one workflow, reducing manual handoffs between stages.'
+            ),
+          ],
+          [
+            copy(isHebrew, 'Dogfooding כמשוב הנדסי', 'Dogfooding as engineering feedback'),
+            copy(
+              isHebrew,
+              'הפלטפורמה מופעלת על עבודת לקוחות אמיתית, כך שחיכוך תפעולי הופך ישירות לקלט עבור שינויי architecture ו-workflow.',
+              'The platform runs real client work, turning operational friction directly into input for architecture and workflow changes.'
+            ),
+          ],
+        ]}
+      />
       <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'פלטפורמה פנימית וחיצונית שאני מפעיל עליה את העסק בפועל.', 'An internal and client-facing platform I actually run the business on.')} />
     </>
   );

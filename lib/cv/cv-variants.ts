@@ -93,7 +93,7 @@ const defenseSkillOrder: readonly CVSkillKey[] = [
 
 const curalifeOwnershipHighlights = [
   'Defined, architected, and built Curalife’s HIPAA-compliant telemedicine acquisition product end-to-end, spanning the patient-facing flow, backend logic, integrations, cloud infrastructure, and production operations.',
-  'The telemedicine product became one of Curalife’s main customer-acquisition and revenue funnels.',
+  'The telemedicine product became a major customer-acquisition funnel within Curalife.',
   'Built and evolved customer-facing healthcare experiences with Next.js, React, TypeScript, and Google Cloud Platform, integrating healthcare, commerce, and operational systems.',
   'Led modernization of frontend architecture and production workflows with a focus on privacy, reliability, and maintainability.',
 ];

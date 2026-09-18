@@ -14,7 +14,7 @@ describe('CV PDF export source', () => {
     expect(html).toContain('tel:+4915776211298');
     expect(html).toContain('https://linkedin.com/in/yotam-faraggi');
     expect(html).toContain('https://github.com/yotamon');
-    expect(html).toContain('https://cart-shift.com/en/cv');
+    expect(html).toContain('https://cart-shift.com/en/yotam');
   });
 
   it('contains the approved master CV hierarchy and content', () => {

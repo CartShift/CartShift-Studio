@@ -34,9 +34,9 @@
       "education": "השכלה"
     },
     "portfolio": {
-      "intro": "עבודות נבחרות שמציגות ownership מקצה לקצה במוצרי founder-led, מסחר, מערכות עתירות אינטגרציות ואפליקציות Full-Stack מודרניות.",
+      "intro": "עבודות נבחרות שמציגות ownership מקצה לקצה במוצרים עצמאיים, מסחר, מערכות עתירות אינטגרציות ואפליקציות Full-Stack מודרניות.",
       "liveLabel": "פרויקט חי",
-      "featuredLabel": "בהובלת מייסד",
+      "featuredLabel": "עצמאי",
       "visitProject": "לצפייה בפרויקט",
       "projects": {
         "cartshift": {
@@ -80,17 +80,17 @@
       }
     },
     "summary": {
-      "text": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בבנייה ותפעול של תוכנה לפרודקשן, כולל מוצרי Full-Stack, e-commerce, APIs, אינטגרציות ומערכות ענן. ב-Curalife הובלתי חלקים מרכזיים באקוסיסטם המסחר וה-digital health מבוסס Shopify, כולל מסעות לקוח, אינטגרציות Shopify-HubSpot, מודרניזציית Frontend, תשתיות ענן ומוצר acquisition לטלרפואה תואם HIPAA שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של החברה. ניסיון חזק ב-React, Next.js, TypeScript, Node.js, PostgreSQL ומערכות פרודקשן, עם ownership מקצה לקצה מהגדרת מוצר וארכיטקטורה ועד מימוש, פריסה ואיטרציה. העבודה העצמאית העדכנית כוללת גם מוצרים בסיוע AI ואוטומציית workflows.",
+      "text": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בבניית תוכנה לפרודקשן במוצרי Full-Stack, e-commerce, APIs, אינטגרציות ומערכות cloud. ניסיון חזק ב-React, Next.js, TypeScript, Node.js ו-PostgreSQL, עם ownership מקצה לקצה מהגדרת מוצר וארכיטקטורה דרך מימוש, deployment ואיטרציה. העבודה העצמאית העדכנית כוללת גם מוצרי AI-assisted ואוטומציית workflows.",
       "metaDescription": "Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בהנדסת תוכנה, מוצרי Full-Stack, e-commerce, APIs, אינטגרציות, מערכות ענן ועבודה עדכנית במוצרים בסיוע AI."
     },
     "experience": {
       "cartshift": {
-        "company": "CartShift Studio · עצמאי",
-        "title": "Founder & Senior Product Engineer",
+        "company": "CartShift Studio",
+        "title": "Independent Full-Stack Product Engineer",
         "duration": "November 2025 - Present",
         "durationYears": "Current",
         "location": "Berlin, Germany",
-        "description": "פעילות עצמאית ב-product engineering, Full-Stack ו-e-commerce המשלבת מסירת פרויקטים ללקוחות עם פיתוח מעשי של מוצרי Web, מסחר, workflow ומוצרים בסיוע AI לפרודקשן.",
+        "description": "עבודת product engineering עצמאית במוצרי Full-Stack, מערכות e-commerce ו-workflows בסיוע AI, לצד מסירת מערכות ללקוחות.",
         "highlights": [
           "בנייה והשקה של מוצרי Full Stack ומערכות ללקוחות עם Next.js, React, TypeScript, Node.js, APIs, PostgreSQL וכלי ענן מודרניים.",
           "מסירת עבודת e-commerce ו-Shopify הכוללת פיתוח Storefront, אינטגרציות, אופטימיזציית ביצועים, שיפורים ממוקדי Conversion ואוטומציית תהליכים.",
@@ -103,12 +103,12 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv, Israel",
-        "description": "אחריות על עבודת מוצר ופלטפורמה מרכזית ב-Shopify commerce וב-digital health, כולל Storefronts, פאנלי רכישה, Frontend, Backend, אינטגרציות, תשתיות ענן ותפעול פרודקשן.",
+        "description": "אחריות על מוצרי telemedicine ו-e-commerce ללקוחות, משלב הגדרת המוצר והארכיטקטורה דרך Frontend, Backend, אינטגרציות, תשתיות cloud ותפעול production.",
         "highlights": [
-          "הובלת ההתפתחות הטכנולוגית של אקוסיסטם ה-e-commerce מבוסס Shopify של Curalife, כולל מסעות לקוח, חוויות Storefront, אינטגרציות Shopify-HubSpot ותהליכים תפעוליים תומכים.",
-          "תכנון שכבת אינטגרציה עמידה בין Shopify ל-HubSpot שהפחיתה תקלות סנכרון ב-85% ושיפרה את האמינות בין המסחר, ה-CRM והתפעול הפנימי.",
-          "הובלת מודרניזציית Frontend במסלולי מסחר ורכישה מרכזיים, עם שיפור של 60% בביצועי העמודים ומעבר חוויות ליבה ל-Next.js, React ו-TypeScript.",
-          "הגדרה, ארכיטקטורה ובנייה מקצה לקצה של מוצר רכישה לטלרפואה תואם HIPAA, שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של Curalife."
+          "הגדרה, ארכיטקטורה ובנייה מקצה לקצה של מוצר רכישה לטלרפואה תואם HIPAA, כולל חוויית המטופל, לוגיקת Backend, אינטגרציות, כלי תפעול ותשתיות GCP.",
+          "תכנון שכבת אינטגרציה לבדיקת זכאות ביטוחית מול APIs מורכבים, כולל נרמול תשובות דינמיות, טיפול בכשלים והגנה על מידע רפואי רגיש.",
+          "המוצר הפך ל-Funnel משמעותי לגיוס לקוחות והוביל גם למודרניזציה של מערכות Shopify ו-HubSpot.",
+          "הובלת מודרניזציית Frontend במסלולי commerce ו-acquisition מרכזיים, עם דגש על תחזוקתיות ותהליכי production."
         ]
       },
       "paragonex": {
@@ -247,15 +247,13 @@
         ]
       },
       "legacyEnterprise": {
-        "category": "בדיקות ואיכות",
+        "category": "Enterprise Integration",
         "items": [
-          "Jest",
-          "Vitest",
-          "React Testing Library",
-          "Playwright",
-          "Puppeteer",
-          "Unit & integration testing",
-          "End-to-end testing"
+          "IBM Integration Bus",
+          "WebSphere",
+          "Oracle OSB",
+          "DataPower",
+          "JMS"
         ]
       }
     },
