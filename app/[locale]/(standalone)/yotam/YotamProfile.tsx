@@ -10,7 +10,7 @@ import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { hidden: { opacity: 0, y: 26 }, visible: { opacity: 1, y: 0 } };
-const selectedProjectOrder = ['cartshift-studio', 'starlinker', 'rightflow', 'wakemyway'];
+const selectedProjectOrder = ['starlinker', 'rightflow', 'cartshift-studio', 'wakemyway'];
 
 export default function YotamProfile() {
   const locale = useLocale();
@@ -49,12 +49,16 @@ export default function YotamProfile() {
           'יותר מעשור בהנדסת תוכנה בחברות מוצר, מערכות enterprise, מסחר ומוצרים עצמאיים. אני עובד לאורך כל המערכת, מ-frontend ו-backend דרך APIs, אינטגרציות ו-cloud, מדרישות לא מסודרות ועד מוצר אמין בפרודקשן.',
         profileTitle: 'מוצר, ארכיטקטורה והוצאה לפועל באותה יד.',
         profileBody:
-          'אני חזק במיוחד במוצרים שבהם החלטות מוצריות ועומק טכני חייבים להתקדם יחד. אני נכנס לבעיה, מבין את המערכת כולה, מקבל ownership על ההחלטות החשובות ונשאר עד שהפתרון עובד אצל משתמשים אמיתיים.',
+          'אני עובד הכי טוב במוצרים שבהם שיקול דעת מוצרי ועומק הנדסי צריכים להתקדם יחד. הניסיון שלי משתרע על מוצרי web ללקוחות, APIs ואינטגרציות, מערכות cloud ו-production ownership בתחומי healthcare, commerce, fintech ו-enterprise.',
+        signalExperience: 'תוכנה בפרודקשן',
+        signalOwnership: 'Product · architecture · implementation · deployment',
+        signalAuthorization: 'אזרח האיחוד האירופי · מורשה לעבוד בגרמניה',
+        signalAvailability: 'ברלין · האיחוד האירופי',
         locationLabel: 'מיקום',
         authorizationLabel: 'אישור עבודה',
         emailLabel: 'אימייל',
         statusLabel: 'סטטוס',
-        openToWork: 'פתוח לתפקידי Senior Product / Full-Stack Engineering',
+        openToWork: 'פתוח לתפקיד Full-time Senior Product / Full-Stack Engineering',
         recentTitle: 'הניסיון שמגדיר את העבודה שלי היום.',
         earlierTitle: 'ניסיון הנדסי מוקדם',
         earlierIntro: 'Enterprise integrations, software development ויזמות טכנולוגית משנת 2011.',
@@ -71,7 +75,7 @@ export default function YotamProfile() {
         skillsTitle: 'היכולות שעליהן אני נשען הכי הרבה.',
         foundationTitle: 'בסיס מקצועי ותקשורת.',
         contactTitle: 'מחפש את הבעיה הבאה ששווה לקחת עליה אחריות.',
-        availability: 'פתוח לתפקידי Senior · ברלין / האיחוד האירופי',
+        availability: 'פתוח לתפקידי Full-time Senior · ברלין / האיחוד האירופי',
       }
     : {
         experience: 'Experience',
@@ -88,12 +92,16 @@ export default function YotamProfile() {
           '10+ years in software engineering across product companies, enterprise systems, commerce and founder-led software. I work across the full system, from frontend and backend to APIs, integrations and cloud, taking ambiguous requirements through production and iteration.',
         profileTitle: 'Product, architecture and execution in one loop.',
         profileBody:
-          'I am strongest where product decisions and technical depth have to move together. I get into the problem, understand the whole system, take ownership of the important decisions and stay with the work until it is reliable for real users.',
+          'I work best on products where product judgment and engineering depth have to move together. My experience spans customer-facing web products, APIs and integrations, cloud systems, and production ownership across healthcare, commerce, fintech and enterprise software.',
+        signalExperience: 'Production software',
+        signalOwnership: 'Product · architecture · implementation · deployment',
+        signalAuthorization: 'EU citizen · Authorized to work in Germany',
+        signalAvailability: 'Berlin · EU',
         locationLabel: 'Location',
         authorizationLabel: 'Authorization',
         emailLabel: 'Email',
         statusLabel: 'Status',
-        openToWork: 'Open to Senior Product / Full-Stack Engineering roles',
+        openToWork: 'Open to full-time Senior Product / Full-Stack Engineering roles',
         recentTitle: 'The experience that defines how I work today.',
         earlierTitle: 'Earlier engineering',
         earlierIntro: 'Enterprise integrations, software development and entrepreneurship from 2011 onward.',
@@ -110,7 +118,7 @@ export default function YotamProfile() {
         skillsTitle: 'The capabilities I rely on most.',
         foundationTitle: 'Foundation & communication.',
         contactTitle: 'Looking for the next problem worth owning.',
-        availability: 'Open to senior roles · Berlin / EU',
+        availability: 'Open to full-time senior roles · Berlin / EU',
       };
 
   const sectionReveal = reduceMotion
@@ -123,11 +131,11 @@ export default function YotamProfile() {
         transition: { duration: 0.58, ease },
       };
 
-  const profileMeta = [
-    [copy.locationLabel, cv.location],
-    [copy.authorizationLabel, cv.workAuthorization],
-    [copy.emailLabel, cv.email],
-    [copy.statusLabel, copy.openToWork],
+  const profileSignals = [
+    ['10+ years', copy.signalExperience],
+    ['End-to-end', copy.signalOwnership],
+    ['EU citizen', copy.signalAuthorization],
+    ['Full-time', copy.signalAvailability],
   ];
 
   return (
@@ -159,8 +167,15 @@ export default function YotamProfile() {
               {copy.capabilities}
             </a>
             <a
+              href={`mailto:${cv.email}`}
+              className="hidden items-center gap-2 text-white/78 transition-colors hover:text-white sm:inline-flex"
+            >
+              <Mail className="size-3.5" />
+              {copy.contact}
+            </a>
+            <a
               href={pdfHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/30 px-4 py-2.5 transition-colors hover:bg-white hover:text-[#1d1d1f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex items-center gap-2 rounded-full border border-white/35 px-4 py-2.5 transition-colors hover:bg-white hover:text-[#1d1d1f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <Download className="size-3.5" />
               <span className="hidden sm:inline">{copy.download}</span>
@@ -190,7 +205,7 @@ export default function YotamProfile() {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(23,23,25,.08)_0%,rgba(23,23,25,.24)_45%,rgba(23,23,25,.94)_100%),linear-gradient(90deg,rgba(23,23,25,.58)_0%,rgba(23,23,25,.08)_58%,rgba(23,23,25,.32)_100%)]" />
 
         <div className="relative mx-auto flex min-h-[calc(100svh-7rem)] max-w-[1680px] flex-col">
-          <div className="flex items-start justify-between text-[10px] font-semibold uppercase tracking-[0.16em] text-white/62 sm:text-[11px]">
+          <div className="flex items-start justify-between text-[11px] font-semibold uppercase tracking-[0.14em] text-white/72 sm:text-xs">
             <span className="flex items-center gap-2">
               <MapPin className="size-3" />
               {cv.location}
@@ -257,7 +272,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="profile" className="px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-36">
+      <section id="profile" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
         <motion.div
           {...sectionReveal}
           className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
@@ -269,25 +284,18 @@ export default function YotamProfile() {
             <h2 className="max-w-[16ch] text-balance text-[clamp(2.75rem,10vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
               {copy.profileTitle}
             </h2>
-            <div className="mt-10 grid gap-8 border-t border-black/20 pt-7 sm:grid-cols-2 lg:mt-14">
-              <p className="max-w-2xl text-lg leading-7 tracking-[-0.02em] text-black/72 sm:text-2xl sm:leading-9">
+            <div className="mt-9 border-t border-black/20 pt-7 lg:mt-11">
+              <p className="max-w-4xl text-lg leading-7 tracking-[-0.02em] text-black/74 sm:text-2xl sm:leading-9">
                 {copy.profileBody}
               </p>
-              <div className="grid content-start border-t border-black/20 sm:border-t-0">
-                {profileMeta.map(([label, value]) => (
+              <div className="mt-9 grid border-y border-black/20 sm:grid-cols-2 lg:grid-cols-4">
+                {profileSignals.map(([value, label]) => (
                   <div
-                    key={label}
-                    className="grid grid-cols-[0.38fr_0.62fr] gap-4 border-b border-black/20 py-4 text-xs leading-5 sm:text-[13px]"
+                    key={value}
+                    className="border-b border-black/20 py-5 sm:px-5 sm:[&:nth-child(odd)]:border-e lg:border-b-0 lg:border-e lg:first:ps-0 lg:last:border-e-0"
                   >
-                    <span className="font-semibold uppercase tracking-[0.11em] text-black/50">
-                      {label}
-                    </span>
-                    <span
-                      className="text-black/72"
-                      dir={label === copy.emailLabel ? 'ltr' : undefined}
-                    >
-                      {value}
-                    </span>
+                    <p className="text-2xl font-medium tracking-[-0.045em] text-[#1d1d1f]">{value}</p>
+                    <p className="mt-2 max-w-[17rem] text-xs leading-5 text-black/62 sm:text-[13px]">{label}</p>
                   </div>
                 ))}
               </div>
@@ -298,7 +306,7 @@ export default function YotamProfile() {
 
       <section
         id="experience"
-        className="bg-[#19191b] px-5 py-24 text-white sm:px-8 sm:py-32 lg:px-12 lg:py-36"
+        className="bg-[#19191b] px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-30"
       >
         <div className="mx-auto max-w-[1680px]">
           <motion.div
@@ -328,7 +336,7 @@ export default function YotamProfile() {
                     })}
                 className="grid gap-5 border-b border-white/18 py-7 sm:grid-cols-[0.18fr_0.5fr_0.9fr] sm:gap-8 sm:py-9"
               >
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/48 sm:text-[11px]">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/62 sm:text-xs">
                   <p>{String(index + 1).padStart(2, '0')}</p>
                   <p className="mt-2 leading-5">{item.duration}</p>
                 </div>
@@ -339,7 +347,7 @@ export default function YotamProfile() {
                   >
                     {item.company}
                   </h3>
-                  <p className="mt-2 text-[11px] font-semibold uppercase leading-5 tracking-[0.12em] text-white/58">
+                  <p className="mt-2 text-[11px] font-semibold uppercase leading-5 tracking-[0.12em] text-white/70">
                     {item.title}
                   </p>
                   {item.location ? (
@@ -356,7 +364,7 @@ export default function YotamProfile() {
                     {item.highlights.map(highlight => (
                       <li
                         key={highlight}
-                        className="grid grid-cols-[auto_1fr] gap-3 text-[13px] leading-6 text-white/68 sm:text-sm"
+                        className="grid grid-cols-[auto_1fr] gap-3 text-[13px] leading-6 text-white/76 sm:text-[15px]"
                       >
                         <span className="mt-[0.72rem] h-px w-4 bg-[#776be6]" />
                         <span>{highlight}</span>
@@ -389,7 +397,7 @@ export default function YotamProfile() {
                   <h3 className="text-xl font-medium tracking-[-0.035em] text-white" dir="ltr">
                     {item.company}
                   </h3>
-                  <p className="text-[13px] leading-5 text-white/58">{item.title}</p>
+                  <p className="text-[13px] leading-5 text-white/70">{item.title}</p>
                 </div>
               ))}
             </div>
@@ -397,7 +405,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="work" className="bg-[#d9d5cc] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-36">
+      <section id="work" className="bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
         <div className="mx-auto max-w-[1680px]">
           <motion.div
             {...sectionReveal}
@@ -506,7 +514,7 @@ export default function YotamProfile() {
             {...sectionReveal}
             className="group mt-10 grid gap-6 border-y border-black/20 py-8 lg:ms-[10%] lg:grid-cols-[0.28fr_1fr_auto] lg:items-center lg:gap-10"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/48 sm:text-[11px]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/60 sm:text-xs">
               {copy.clientWorkEyebrow}
             </p>
             <div>
@@ -525,7 +533,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="capabilities" className="px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-36">
+      <section id="capabilities" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
         <div className="mx-auto max-w-[1680px]">
           <motion.div
             {...sectionReveal}
@@ -566,7 +574,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section className="bg-[#f4f1ec] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-36">
+      <section className="bg-[#f4f1ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-30">
         <div className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
           <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
             05 / {copy.foundation}
@@ -593,7 +601,7 @@ export default function YotamProfile() {
                     </h3>
                     <p className="mt-1 text-sm text-black/67">{item.program}</p>
                     {item.years ? (
-                      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-black/48 sm:text-[11px]">
+                      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-black/60 sm:text-xs">
                         {item.years}
                       </p>
                     ) : null}
@@ -623,7 +631,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <footer className="bg-[#6257d8] px-5 pb-8 pt-24 text-white sm:px-8 sm:pb-10 sm:pt-32 lg:px-12 lg:pt-36">
+      <footer className="bg-[#6257d8] px-5 pb-8 pt-20 text-white sm:px-8 sm:pb-10 sm:pt-28 lg:px-12 lg:pt-30">
         <div className="mx-auto max-w-[1680px]">
           <div className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
             <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/72 sm:text-[11px]">
