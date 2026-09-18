@@ -103,12 +103,12 @@
         "duration": "July 2021 - November 2025",
         "durationYears": "4 years 5 months",
         "location": "Tel Aviv, Israel",
-        "description": "אחריות על עבודת מוצר ופלטפורמה מרכזית ב-Shopify commerce וב-digital health, כולל Storefronts, פאנלי רכישה, Frontend, Backend, אינטגרציות, תשתיות ענן ותפעול פרודקשן.",
+        "description": "אחריות על מוצרי telemedicine ו-e-commerce ללקוחות, משלב הגדרת המוצר והארכיטקטורה דרך Frontend, Backend, אינטגרציות, תשתיות cloud ותפעול production.",
         "highlights": [
-          "הובלת ההתפתחות הטכנולוגית של אקוסיסטם ה-e-commerce מבוסס Shopify של Curalife, כולל מסעות לקוח, חוויות Storefront, אינטגרציות Shopify-HubSpot ותהליכים תפעוליים תומכים.",
-          "תכנון שכבת אינטגרציה עמידה בין Shopify ל-HubSpot שהפחיתה תקלות סנכרון ב-85% ושיפרה את האמינות בין המסחר, ה-CRM והתפעול הפנימי.",
-          "הובלת מודרניזציית Frontend במסלולי מסחר ורכישה מרכזיים, עם שיפור של 60% בביצועי העמודים ומעבר חוויות ליבה ל-Next.js, React ו-TypeScript.",
-          "הגדרה, ארכיטקטורה ובנייה מקצה לקצה של מוצר רכישה לטלרפואה תואם HIPAA, שהפך לאחד מערוצי גיוס הלקוחות וההכנסות המרכזיים של Curalife."
+          "הגדרה, ארכיטקטורה ובנייה מקצה לקצה של מוצר רכישה לטלרפואה תואם HIPAA, כולל חוויית המטופל, לוגיקת Backend, אינטגרציות, כלי תפעול ותשתיות GCP.",
+          "תכנון שכבת אינטגרציה לבדיקת זכאות ביטוחית מול APIs מורכבים, כולל נרמול תשובות דינמיות, טיפול בכשלים והגנה על מידע רפואי רגיש.",
+          "המוצר הפך ל-Funnel משמעותי לגיוס לקוחות והוביל גם למודרניזציה של מערכות Shopify ו-HubSpot.",
+          "הובלת מודרניזציית Frontend במסלולי commerce ו-acquisition מרכזיים, עם דגש על תחזוקתיות ותהליכי production."
         ]
       },
       "paragonex": {
@@ -247,15 +247,13 @@
         ]
       },
       "legacyEnterprise": {
-        "category": "בדיקות ואיכות",
+        "category": "Enterprise Integration",
         "items": [
-          "Jest",
-          "Vitest",
-          "React Testing Library",
-          "Playwright",
-          "Puppeteer",
-          "Unit & integration testing",
-          "End-to-end testing"
+          "IBM Integration Bus",
+          "WebSphere",
+          "Oracle OSB",
+          "DataPower",
+          "JMS"
         ]
       }
     },
