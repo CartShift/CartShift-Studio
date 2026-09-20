@@ -10,23 +10,12 @@ import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { hidden: { opacity: 0, y: 26 }, visible: { opacity: 1, y: 0 } };
-const selectedProjectOrder = ['starlinker', 'rightflow', 'ensemblis', 'wakemyway', 'cartshift-studio'];
-
 export default function YotamProfile() {
   const locale = useLocale();
   const messages = useMessages() as { cv: RawCVMessages };
   const cv = useMemo(() => buildCVData(messages.cv), [messages]);
   const projects = useMemo(() => getPortfolioShowcases(locale), [locale]);
-  const selectedProjects = useMemo(
-    () =>
-      projects
-        .filter(project => selectedProjectOrder.includes(project.slug))
-        .sort(
-          (a, b) =>
-            selectedProjectOrder.indexOf(a.slug) - selectedProjectOrder.indexOf(b.slug)
-        ),
-    [projects]
-  );
+  const selectedProjects = projects;
   const reduceMotion = useReducedMotion();
   const isHebrew = locale === 'he';
   const profileHref = `/${locale}/yotam`;
