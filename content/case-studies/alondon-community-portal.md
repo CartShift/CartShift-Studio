@@ -20,7 +20,7 @@ hero:
 overview:
   title: 'Refreshing a legacy community portal without losing its voice'
   summary: 'We approached Alondon as an editorial product rather than a generic website redesign, focusing on hierarchy, readability, navigation, and a stronger structure for the breadth of content the publication carries.'
-summary: "Strategic redesign of London's premier Hebrew community portal, transforming a legacy magazine into a modern digital content hub focused on engagement and readability."
+summary: "Strategic redesign of a long-running Hebrew community portal, reframing a legacy magazine as a modern digital publication with clearer navigation and reading flow."
 cta:
   title: 'Running a content-heavy WordPress platform that needs clearer structure?'
   description: 'We can reorganize navigation, editorial hierarchy, and mobile reading without flattening the character of the publication.'
@@ -102,7 +102,7 @@ he:
     title: 'מנהלים אתר WordPress עשיר בתוכן שצריך מבנה ברור יותר?'
     description: 'אפשר לארגן מחדש ניווט, היררכיה עריכתית וקריאה במובייל בלי לאבד את האופי של המגזין.'
   title: 'Alondon - פורטל קהילה ישראלי בלונדון'
-  summary: 'עיצוב מחדש אסטרטגי של פורטל הקהילה הישראלית המוביל בלונדון, הפיכת מגזין ותיק למרכז תוכן דיגיטלי מודרני המתמקד במעורבות וקריאות.'
+  summary: 'עיצוב מחדש אסטרטגי של פורטל קהילה ותיק בעברית, שהפך מגזין ותיק לפרסום דיגיטלי מודרני עם ניווט וזרימת קריאה ברורים יותר.'
   industry: 'הוצאה לאור ודיגיטל'
   duration: '8 שבועות'
   hero:
