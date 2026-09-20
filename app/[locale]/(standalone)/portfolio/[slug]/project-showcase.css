@@ -2,34 +2,34 @@
    The global site heading rule otherwise forces a dark heading color even inside
    editorial dark sections. Keep this scoped to project showcase pages and preserve
    predictable contrast and wrapping across narrow mobile widths. */
-main[style*='--project-accent'] h1,
-main[style*='--project-accent'] h2,
-main[style*='--project-accent'] h3,
-main[style*='--project-accent'] h4,
-main[style*='--project-accent'] h5,
-main[style*='--project-accent'] h6 {
+main[data-project] h1,
+main[data-project] h2,
+main[data-project] h3,
+main[data-project] h4,
+main[data-project] h5,
+main[data-project] h6 {
   color: inherit;
 }
 
-main[style*='--project-accent'] h1,
-main[style*='--project-accent'] h2 {
+main[data-project] h1,
+main[data-project] h2 {
   text-wrap: balance;
 }
 
 /* These are single-word product names. The old manual break was purely
    decorative and becomes awkward on narrow screens. */
-main[style*='--project-accent:#7367f0'] h1 br,
-main[style*='--project-accent:#ff8b5f'] h1 br {
+main[data-project='starlinker'] h1 br,
+main[data-project='wakemyway'] h1 br {
   display: none;
 }
 
 @media (max-width: 639px) {
-  main[style*='--project-accent'] h1,
-  main[style*='--project-accent'] h2 {
+  main[data-project] h1,
+  main[data-project] h2 {
     line-height: 0.86;
   }
 
-  main[style*='--project-accent'] h1 {
+  main[data-project] h1 {
     overflow-wrap: normal;
     word-break: normal;
   }

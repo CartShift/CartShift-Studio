@@ -15,6 +15,7 @@ export type PortfolioShowcaseProject = {
   title: string;
   descriptor: string;
   year: string;
+  updatedAt: string;
   status?: string;
   summary: string;
   audience: string;
@@ -40,6 +41,18 @@ type LocalizedProject = {
   he: Pick<PortfolioShowcaseProject, 'descriptor' | 'summary' | 'audience' | 'role' | 'highlights' | 'status'>;
 };
 
+export const portfolioShowcaseOrder = [
+  'starlinker',
+  'rightflow',
+  'wakemyway',
+  'cartshift-studio',
+  'ensemblis',
+] as const;
+
+const portfolioShowcaseRank = new Map<string, number>(
+  portfolioShowcaseOrder.map((slug, index) => [slug, index])
+);
+
 const projects: LocalizedProject[] = [
   {
     base: {
@@ -47,7 +60,8 @@ const projects: LocalizedProject[] = [
       number: '01',
       title: 'StarLinker',
       year: '2026',
-      technologies: ['Next.js', 'React', 'TypeScript', 'PostgreSQL', 'Supabase', 'AI SDK'],
+      updatedAt: '2026-09-20',
+      technologies: ['Next.js', 'React', 'TypeScript', 'PostgreSQL', 'Drizzle', 'Replicache', 'Supabase', 'AI SDK'],
       accent: '#7367f0',
       accentSoft: '#d8d3ff',
       liveUrl: 'https://starlinker.io',
@@ -80,7 +94,7 @@ const projects: LocalizedProject[] = [
       summary: 'A visual planning product that brings goals, projects, tasks, habits and notes into one connected workspace, with an AI agent that can understand and act inside it.',
       audience: 'People who think spatially and want one place to plan work, life and long-term goals without reducing everything to disconnected lists.',
       role: 'Founder · Product concept · UX · Architecture · Full-stack · AI',
-      highlights: ['Connected visual planning', 'AI assistant with workspace actions', 'Goals, projects, tasks and habits in one system'],
+      highlights: ['Graph-first workspace with offline-capable sync', 'Permission-aware AI actions with undo', 'Realtime collaboration, billing and operational tooling'],
     },
     he: {
       descriptor: 'פרודוקטיביות AI-native',
@@ -88,7 +102,7 @@ const projects: LocalizedProject[] = [
       summary: 'מוצר תכנון ויזואלי שמחבר מטרות, פרויקטים, משימות, הרגלים והערות לסביבת עבודה אחת, עם סוכן AI שמבין את המרחב ויכול לפעול בתוכו.',
       audience: 'לאנשים שחושבים בצורה ויזואלית ורוצים מקום אחד לתכנן עבודה, חיים ומטרות ארוכות טווח בלי להפוך הכל לרשימות מנותקות.',
       role: 'Founder · קונספט מוצר · UX · ארכיטקטורה · Full-stack · AI',
-      highlights: ['תכנון ויזואלי מחובר', 'עוזר AI שפועל בתוך סביבת העבודה', 'מטרות, פרויקטים, משימות והרגלים במערכת אחת'],
+      highlights: ['סביבת graph עם sync שתומך בעבודה offline', 'פעולות AI עם הרשאות ו-undo', 'שיתוף בזמן אמת, billing וכלים תפעוליים'],
     },
   },
   {
@@ -97,6 +111,7 @@ const projects: LocalizedProject[] = [
       number: '02',
       title: 'RightFlow',
       year: '2025-26',
+      updatedAt: '2026-09-20',
       technologies: ['Next.js', 'React', 'TypeScript', 'Python', 'FastAPI', 'Firebase'],
       accent: '#2563eb',
       accentSoft: '#cbdcfb',
@@ -150,7 +165,7 @@ const projects: LocalizedProject[] = [
       summary: 'A document review and verification platform for pension and payroll contribution checks, turning sensitive multi-document work into a structured, repeatable workflow.',
       audience: 'Finance, payroll and operations teams that need to review contribution documents consistently, explain findings clearly and export a usable report.',
       role: 'Founder · Product · Workflow design · Automation · Full-stack',
-      highlights: ['Structured document review', 'Verification and exception handling', 'Repeatable report-ready workflow'],
+      highlights: ['Normalized multi-document review cases', 'Explicit exceptions and traceable findings', 'Repeatable report-ready verification workflow'],
     },
     he: {
       descriptor: 'Document intelligence',
@@ -158,15 +173,16 @@ const projects: LocalizedProject[] = [
       summary: 'פלטפורמת בדיקה ואימות מסמכים להפקדות פנסיה ושכר, שהופכת עבודה רגישה ורבת מסמכים לתהליך מובנה, עקבי וניתן לחזרה.',
       audience: 'לצוותי כספים, שכר ותפעול שצריכים לבדוק מסמכי הפקדות באופן עקבי, להסביר ממצאים בצורה ברורה ולהפיק דוח שימושי.',
       role: 'Founder · מוצר · תכנון workflow · אוטומציה · Full-stack',
-      highlights: ['סקירת מסמכים מובנית', 'אימות וטיפול בחריגות', 'תהליך עקבי שמוביל לדוח'],
+      highlights: ['תיקי בדיקה מנורמלים ממספר מסמכים', 'חריגות מפורשות וממצאים ניתנים למעקב', 'תהליך אימות עקבי שמוביל לדוח'],
     },
   },
   {
     base: {
       slug: 'ensemblis',
-      number: '03',
+      number: '05',
       title: 'Ensemblis',
       year: '2026',
+      updatedAt: '2026-09-20',
       technologies: ['Next.js', 'React', 'TypeScript', 'AI workflows', 'Media APIs', 'Automation'],
       accent: '#9b72f2',
       accentSoft: '#ddd0ff',
@@ -176,7 +192,7 @@ const projects: LocalizedProject[] = [
     },
     en: {
       descriptor: 'Artist operating system',
-      status: 'In development',
+      status: 'Product in development',
       summary: 'An AI-assisted operating system for independent artists that brings release planning, content creation, media intelligence, marketing workflows and distribution operations into one product.',
       audience: 'Independent artists and small teams who currently run releases, content, media and distribution across too many disconnected tools.',
       role: 'Founder · Product concept · Product design · AI systems · Full-stack',
@@ -184,7 +200,7 @@ const projects: LocalizedProject[] = [
     },
     he: {
       descriptor: 'מערכת הפעלה לאמנים',
-      status: 'בפיתוח',
+      status: 'מוצר בפיתוח',
       summary: 'מערכת הפעלה בסיוע AI לאמנים עצמאיים שמחברת תכנון ריליסים, יצירת תוכן, מודיעין מדיה, תהליכי שיווק ותפעול הפצה למוצר אחד.',
       audience: 'לאמנים עצמאיים וצוותים קטנים שמנהלים כיום ריליסים, תוכן, מדיה והפצה בין יותר מדי כלים מנותקים.',
       role: 'Founder · קונספט מוצר · Product design · מערכות AI · Full-stack',
@@ -194,10 +210,11 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'wakemyway',
-      number: '04',
+      number: '03',
       title: 'WakeMyWay',
       year: '2026',
-      technologies: ['Kotlin', 'Jetpack Compose', 'AlarmManager', 'On-device Speech', 'Roborazzi', 'GitHub Actions'],
+      updatedAt: '2026-09-20',
+      technologies: ['Kotlin', 'Jetpack Compose', 'AlarmManager', 'Direct Boot', 'On-device Speech', 'Roborazzi', 'GitHub Actions'],
       accent: '#ff8b5f',
       accentSoft: '#ffd7c6',
       repositoryUrl: 'https://github.com/yotamon/WakeMyWay',
@@ -242,27 +259,28 @@ const projects: LocalizedProject[] = [
     },
     en: {
       descriptor: 'Adaptive Android alarm',
-      status: 'Founder dogfood',
+      status: 'Active personal product',
       summary: 'A local-first conversational Android alarm designed to help people move through sleep inertia into action, then learn which wake strategy works best for them.',
       audience: 'People who genuinely want to get up at a chosen time but need something smarter than a louder sound or another generic alarm challenge.',
       role: 'Founder · Product · Android architecture · UX · Kotlin',
-      highlights: ['Reliability-first native alarm', 'Local conversational wake', 'Physical activation signals and local learning'],
+      highlights: ['Exact native alarm with Direct Boot recovery', 'Deterministic local wake runtime with voice and motion', 'Local learning isolated from the critical alarm path'],
     },
     he: {
       descriptor: 'שעון מעורר אדפטיבי ל-Android',
-      status: 'Founder dogfood',
+      status: 'מוצר אישי פעיל',
       summary: 'שעון מעורר שיחתי local-first ל-Android שנועד לעזור לעבור מאינרציית שינה לפעולה, ובהמשך ללמוד איזו אסטרטגיית השכמה עובדת הכי טוב לכל אדם.',
       audience: 'לאנשים שבאמת רוצים לקום בשעה שבחרו, אבל צריכים משהו חכם יותר מצליל חזק יותר או עוד משימת השכמה גנרית.',
       role: 'Founder · מוצר · ארכיטקטורת Android · UX · Kotlin',
-      highlights: ['Alarm native עם עדיפות לאמינות', 'השכמה שיחתית מקומית', 'אותות תנועה ולמידה מקומית'],
+      highlights: ['Alarm native מדויק עם Direct Boot recovery', 'Wake runtime דטרמיניסטי עם קול ותנועה', 'למידה מקומית שמופרדת מנתיב ההשכמה הקריטי'],
     },
   },
   {
     base: {
       slug: 'cartshift-studio',
-      number: '05',
+      number: '04',
       title: 'CartShift Studio',
       year: '2025-26',
+      updatedAt: '2026-09-20',
       technologies: ['Next.js', 'React', 'TypeScript', 'Firebase', 'PayPal', 'Puppeteer'],
       accent: '#6157d8',
       accentSoft: '#d7d2ff',
@@ -314,38 +332,44 @@ const projects: LocalizedProject[] = [
     en: {
       descriptor: 'Commerce + product engineering',
       status: 'Active product',
-      summary: 'The operating platform behind my web and commerce studio, combining the public site, lead generation, project proposals, client workflows, automation and internal tools.',
+      summary: 'The operating platform behind the web and commerce studio I co-founded, combining the public site, lead generation, project proposals, client workflows, automation and internal tools.',
       audience: 'Clients buying digital product work and the studio team managing acquisition, proposals, delivery and ongoing relationships.',
-      role: 'Founder · Product · UX · Architecture · Full-stack',
-      highlights: ['Lead and store analysis funnels', 'Proposals and client workflows', 'Commerce, automation and studio operations'],
+      role: 'Co-founder · Lead engineer · Product architecture · Full-stack',
+      highlights: ['Lead and store-analysis funnels', 'Proposals, payments and client workflows', 'Client portal, automation and studio operations'],
     },
     he: {
       descriptor: 'Commerce + product engineering',
       status: 'מוצר פעיל',
-      summary: 'הפלטפורמה התפעולית מאחורי סטודיו ה-web וה-commerce שלי, שמחברת אתר ציבורי, יצירת לידים, הצעות עבודה, תהליכי לקוח, אוטומציות וכלים פנימיים.',
+      summary: 'הפלטפורמה התפעולית מאחורי סטודיו ה-web וה-commerce שהקמתי יחד עם שותפה, שמחברת אתר ציבורי, יצירת לידים, הצעות עבודה, תהליכי לקוח, אוטומציות וכלים פנימיים.',
       audience: 'ללקוחות שרוכשים עבודת מוצר דיגיטלית ולצוות הסטודיו שמנהל acquisition, הצעות, delivery וקשר מתמשך.',
-      role: 'Founder · מוצר · UX · ארכיטקטורה · Full-stack',
-      highlights: ['פאנלים ללידים וניתוח חנויות', 'הצעות עבודה ותהליכי לקוח', 'Commerce, אוטומציה ותפעול סטודיו'],
+      role: 'Co-founder · Lead engineer · ארכיטקטורת מוצר · Full-stack',
+      highlights: ['פאנלים ללידים וניתוח חנויות', 'הצעות, תשלומים ותהליכי לקוח', 'פורטל לקוחות, אוטומציה ותפעול סטודיו'],
     },
   },
 ];
 
-export const portfolioShowcaseSlugs = projects.map(project => project.base.slug);
+export const portfolioShowcaseSlugs = [...portfolioShowcaseOrder];
 
 export function getPortfolioShowcases(locale: string): PortfolioShowcaseProject[] {
   const resolvedLocale: PortfolioLocale = locale === 'he' ? 'he' : 'en';
 
-  return projects.map(project => {
-    const copy = project[resolvedLocale];
-    const media = project.base.media[resolvedLocale] ?? project.base.media.en;
+  return [...projects]
+    .sort(
+      (a, b) =>
+        (portfolioShowcaseRank.get(a.base.slug) ?? Number.MAX_SAFE_INTEGER) -
+        (portfolioShowcaseRank.get(b.base.slug) ?? Number.MAX_SAFE_INTEGER)
+    )
+    .map(project => {
+      const copy = project[resolvedLocale];
+      const media = project.base.media[resolvedLocale] ?? project.base.media.en;
 
-    return {
-      ...project.base,
-      ...copy,
-      hero: media.hero,
-      gallery: media.gallery,
-    };
-  });
+      return {
+        ...project.base,
+        ...copy,
+        hero: media.hero,
+        gallery: media.gallery,
+      };
+    });
 }
 
 export function getPortfolioShowcase(slug: string, locale: string): PortfolioShowcaseProject | null {

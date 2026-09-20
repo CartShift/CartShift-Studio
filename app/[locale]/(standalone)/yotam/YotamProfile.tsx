@@ -10,28 +10,17 @@ import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { hidden: { opacity: 0, y: 26 }, visible: { opacity: 1, y: 0 } };
-const selectedProjectOrder = ['starlinker', 'rightflow', 'cartshift-studio', 'wakemyway'];
-
 export default function YotamProfile() {
   const locale = useLocale();
   const messages = useMessages() as { cv: RawCVMessages };
   const cv = useMemo(() => buildCVData(messages.cv), [messages]);
   const projects = useMemo(() => getPortfolioShowcases(locale), [locale]);
-  const selectedProjects = useMemo(
-    () =>
-      projects
-        .filter(project => selectedProjectOrder.includes(project.slug))
-        .sort(
-          (a, b) =>
-            selectedProjectOrder.indexOf(a.slug) - selectedProjectOrder.indexOf(b.slug)
-        ),
-    [projects]
-  );
+  const selectedProjects = projects;
   const reduceMotion = useReducedMotion();
   const isHebrew = locale === 'he';
   const profileHref = `/${locale}/yotam`;
   const pdfHref = `/${locale}/cv/render?variant=default`;
-  const portfolioHref = `/${locale}/portfolio`;
+  const clientWorkHref = `/${locale}/work`;
 
   const copy = isHebrew
     ? {
@@ -510,7 +499,7 @@ export default function YotamProfile() {
           </div>
 
           <motion.a
-            href={portfolioHref}
+            href={clientWorkHref}
             {...sectionReveal}
             className="group mt-10 grid gap-6 border-y border-black/20 py-8 lg:ms-[10%] lg:grid-cols-[0.28fr_1fr_auto] lg:items-center lg:gap-10"
           >

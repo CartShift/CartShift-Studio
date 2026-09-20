@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type MotionProps } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, X } from 'lucide-react';
 import type { PortfolioShowcaseProject, ShowcaseMedia } from '@/lib/portfolio-showcase';
@@ -60,7 +60,7 @@ function Screen({
       type="button"
       onClick={onOpen}
       className={`group relative block w-full overflow-hidden text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#111113] ${shell} ${className}`}
-      aria-label={`Open ${media.label}`}
+      aria-label={media.alt}
     >
       <ProductImage
         media={media}
@@ -79,6 +79,91 @@ function Label({ children, light = false }: { children: ReactNode; light?: boole
     <p className={`text-[9px] font-semibold uppercase tracking-[0.18em] sm:text-[10px] ${light ? 'text-white/62' : 'text-black/55'}`}>
       {children}
     </p>
+  );
+}
+
+function ProjectSnapshot({ project, isHebrew }: { project: PortfolioShowcaseProject; isHebrew: boolean }) {
+  const labels = isHebrew
+    ? { status: 'סטטוס', period: 'תקופה', ownership: 'אחריות', scope: 'תחום המוצר', stack: 'טכנולוגיות' }
+    : { status: 'Status', period: 'Period', ownership: 'Ownership', scope: 'Product scope', stack: 'Stack' };
+
+  return (
+    <section className="border-y border-black/12 bg-[#f7f5f0] px-5 py-8 text-[#171719] sm:px-8 sm:py-10 lg:px-12">
+      <div className="mx-auto max-w-[1680px]">
+        <div className="grid gap-px bg-black/12 lg:grid-cols-[.7fr_.55fr_1.35fr_1.7fr]">
+          {[
+            [labels.status, project.status ?? (isHebrew ? 'פעיל' : 'Active')],
+            [labels.period, project.year],
+            [labels.ownership, project.role],
+          ].map(([label, value]) => (
+            <div key={label} className="bg-[#f7f5f0] p-5 sm:p-6">
+              <Label>{label}</Label>
+              <p className="mt-3 text-sm leading-6 text-black/68 sm:text-[15px]">{value}</p>
+            </div>
+          ))}
+          <div className="bg-[#f7f5f0] p-5 sm:p-6">
+            <Label>{labels.scope}</Label>
+            <ul className="mt-3 space-y-2">
+              {project.highlights.map(item => (
+                <li key={item} className="grid grid-cols-[auto_1fr] gap-2 text-sm leading-6 text-black/68">
+                  <span className="mt-[.72rem] h-px w-3 bg-black/38" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="mt-px flex flex-wrap items-center gap-x-4 gap-y-2 bg-[#ece9e2] px-5 py-4 sm:px-6">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/42">{labels.stack}</span>
+          {project.technologies.map(technology => (
+            <span key={technology} className="text-[10px] font-semibold uppercase tracking-[0.1em] text-black/58">{technology}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TechnicalEvidence({
+  isHebrew,
+  eyebrow,
+  title,
+  body,
+  steps,
+  dark = false,
+}: {
+  isHebrew: boolean;
+  eyebrow: string;
+  title: string;
+  body: string;
+  steps: string[];
+  dark?: boolean;
+}) {
+  return (
+    <section className={`${dark ? 'bg-[#171719] text-white' : 'bg-white text-[#171719]'} px-5 py-20 sm:px-8 sm:py-28 lg:px-12`}>
+      <div className="mx-auto max-w-[1680px]">
+        <div className="grid gap-10 lg:grid-cols-[.34fr_1fr] lg:gap-20">
+          <div>
+            <Label light={dark}>{eyebrow}</Label>
+            <p className={`mt-5 max-w-sm text-sm leading-6 ${dark ? 'text-white/62' : 'text-black/58'}`}>{body}</p>
+          </div>
+          <div>
+            <h2 className="max-w-[12ch] text-[12vw] font-medium leading-[.84] tracking-[-.065em] sm:text-[6.5vw] lg:text-[4.8vw] xl:text-[4.8rem]">{title}</h2>
+            <div className={`mt-12 grid gap-px ${dark ? 'bg-white/14' : 'bg-black/14'} sm:grid-cols-2 lg:grid-cols-5`}>
+              {steps.map((step, index) => (
+                <div key={step} className={`${dark ? 'bg-[#1f1f22]' : 'bg-[#f4f1eb]'} min-h-32 p-5 sm:p-6`}>
+                  <span className={`text-[9px] font-semibold uppercase tracking-[0.16em] ${dark ? 'text-white/38' : 'text-black/38'}`}>{String(index + 1).padStart(2, '0')}</span>
+                  <p className="mt-8 text-base font-medium leading-6 tracking-[-0.02em]">{step}</p>
+                </div>
+              ))}
+            </div>
+            <p className={`mt-5 text-[10px] font-semibold uppercase tracking-[0.12em] ${dark ? 'text-white/38' : 'text-black/38'}`}>
+              {isHebrew ? 'תרשים מפושט של גבולות המערכת' : 'Simplified system boundary'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -121,8 +206,8 @@ function EngineeringDecisions({
 }
 
 function SharedHeader({ project, locale, isHebrew }: { project: PortfolioShowcaseProject; locale: string; isHebrew: boolean }) {
-  const portfolioHref = `/${locale}/portfolio`;
-  const cvHref = `/${locale}/cv`;
+  const portfolioHref = `/${locale}/yotam#work`;
+  const cvHref = `/${locale}/yotam#experience`;
 
   return (
     <header className="absolute inset-x-0 top-0 z-40 px-5 py-5 text-white sm:px-8 sm:py-7 lg:px-12">
@@ -176,6 +261,8 @@ function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </div>
       </section>
 
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+
       <section className="bg-[#eceae5] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.34fr_1fr] lg:gap-20">
@@ -219,6 +306,25 @@ function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'מתחת לממשק', 'Under the hood')}
+        title={copy(isHebrew, 'Graph אחד. נתיב mutation אחד.', 'One graph. One mutation path.')}
+        body={copy(
+          isHebrew,
+          'ה-UI עובד מול graph state מקומי. Replicache מנהל mutations ו-sync, PostgreSQL/Drizzle נשארים בסיס הנתונים, ו-Supabase משמש ל-auth, storage ואותות realtime. כלי ה-AI פועלים דרך פעולות domain עם הרשאות במקום לעקוף את המודל.',
+          'The UI works against local graph state. Replicache owns mutations and sync, PostgreSQL/Drizzle remain the database, and Supabase handles auth, storage and realtime signals. AI tools go through permission-aware domain actions instead of bypassing the model.'
+        )}
+        steps={[
+          'Graph UI + Zustand',
+          'Replicache mutations',
+          'Push / pull sync',
+          'PostgreSQL + Drizzle',
+          'Realtime + AI tools',
+        ]}
+        dark
+      />
 
       <EngineeringDecisions
         isHebrew={isHebrew}
@@ -287,12 +393,14 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </div>
       </section>
 
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+
       <section className="bg-white px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.28fr_1fr] lg:gap-20">
             <Label>{copy(isHebrew, 'הזרימה', 'The workflow')}</Label>
             <h2 className="max-w-[12ch] text-[13vw] font-medium leading-[.82] tracking-[-.068em] text-[#172033] sm:text-[7vw] lg:text-[5.8vw] xl:text-[5.8rem]">
-              {copy(isHebrew, 'ממסמך גולמי לממצא שאפשר להגן עליו.', 'From raw document to defensible finding.')}
+              {copy(isHebrew, 'ממסמך גולמי לממצא שאפשר לעקוב אחריו.', 'From raw document to traceable finding.')}
             </h2>
           </motion.div>
           <div className="mt-20 grid gap-5 lg:ms-[28%] lg:grid-cols-3">
@@ -325,6 +433,24 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'נתיב בדיקה', 'Review pipeline')}
+        title={copy(isHebrew, 'פורמט המסמך לא מנהל את הלוגיקה.', 'Document format does not own the logic.')}
+        body={copy(
+          isHebrew,
+          'המסמכים עוברים קודם לנרמול של תיק בדיקה עקבי. רק אחר כך מופעלות בדיקות, חריגות נשמרות במפורש, והממצא שיוצא לדוח נשאר ניתן למעקב ולסקירה אנושית.',
+          'Documents are first normalized into a consistent review case. Verification runs only after that boundary, exceptions remain explicit, and report findings stay traceable for human review.'
+        )}
+        steps={[
+          copy(isHebrew, 'מסמכי מקור', 'Source docs'),
+          copy(isHebrew, 'נרמול תיק', 'Normalize case'),
+          copy(isHebrew, 'בדיקות', 'Verify'),
+          copy(isHebrew, 'חריגה מפורשת', 'Exception'),
+          copy(isHebrew, 'ממצא לדוח', 'Report finding'),
+        ]}
+      />
 
       <EngineeringDecisions
         isHebrew={isHebrew}
@@ -396,6 +522,8 @@ function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
         </div>
       </section>
 
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+
       <section className="bg-[#f3eff8] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.28fr_1fr] lg:gap-20">
@@ -431,6 +559,25 @@ function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
         </motion.div>
       </section>
 
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'גבול המוצר', 'Product boundary')}
+        title={copy(isHebrew, 'ריליס אחד, קונטקסט אחד.', 'One release, one operating context.')}
+        body={copy(
+          isHebrew,
+          'זהו גבול המוצר שנבנה כרגע, לא טענה שכל surface כבר shipped. המטרה היא לשמור תכנון, נכסים, תוכן, מודיעין מדיה והפצה סביב אותו ריליס במקום לפצל אותם בין מערכות.',
+          'This is the product boundary currently being built, not a claim that every surface is already shipped. The goal is to keep planning, assets, content, media intelligence and distribution around the same release context.'
+        )}
+        steps={[
+          copy(isHebrew, 'תכנון ריליס', 'Release plan'),
+          copy(isHebrew, 'נכסים ומסרים', 'Assets + messaging'),
+          copy(isHebrew, 'תוכן', 'Content'),
+          copy(isHebrew, 'מודיעין מדיה', 'Media intelligence'),
+          copy(isHebrew, 'הפצה', 'Distribution'),
+        ]}
+        dark
+      />
+
       <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'כרגע בפיתוח. הכיוון המוצרי כבר מוגדר, ה־UI עדיין מתפתח.', 'Currently in development. The product direction is defined; the interface is still evolving.')} />
     </>
   );
@@ -463,6 +610,8 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </div>
       </section>
+
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
 
       <section className="bg-[#fff6ef] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
@@ -505,6 +654,25 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'גבול אמינות', 'Reliability boundary')}
+        title={copy(isHebrew, 'ה-AI יכול להיכשל. השעון לא.', 'Intelligence may fail. The alarm may not.')}
+        body={copy(
+          isHebrew,
+          'AlarmManager ו-Alarm Kernel אחראים למסירה הקריטית, כולל recovery לאחר Direct Boot ו-playback מקומי. רק אחרי שההשכמה התחילה מצטרף Wake Runtime דטרמיניסטי שמפעיל קול, תנועה ולמידה מקומית.',
+          'AlarmManager and the Alarm Kernel own critical delivery, including Direct Boot recovery and local playback. Only after wake delivery begins does a deterministic Wake Runtime add voice, motion and local learning.'
+        )}
+        steps={[
+          'AlarmManager',
+          'Alarm Kernel',
+          copy(isHebrew, 'אודיו מקומי קריטי', 'Critical local audio'),
+          'Wake Runtime',
+          copy(isHebrew, 'קול + תנועה', 'Voice + motion'),
+        ]}
+        dark
+      />
 
       <EngineeringDecisions
         isHebrew={isHebrew}
@@ -573,6 +741,8 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </div>
       </section>
 
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+
       <section className="bg-[#eceae5] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.28fr_1fr] lg:gap-20">
@@ -613,6 +783,24 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'המערכת בפועל', 'Operational spine')}
+        title={copy(isHebrew, 'מליד ל-delivery בלי לאבד קונטקסט.', 'From lead to delivery without losing context.')}
+        body={copy(
+          isHebrew,
+          'ה-analyzer והלידים מזינים הצעה, אישור ותשלום; משם אותו רצף ממשיך לפורטל הלקוח, בקשות, מסירה וכלים פנימיים. המערכת מפעילה עבודה אמיתית של הסטודיו ולא demo נפרד.',
+          'Analyzer and lead data feed proposal, approval and payment; the same workflow continues into the client portal, requests, delivery and internal tooling. The platform runs real studio work rather than a separate demo.'
+        )}
+        steps={[
+          copy(isHebrew, 'Analyzer / ליד', 'Analyzer / lead'),
+          copy(isHebrew, 'הצעה', 'Proposal'),
+          copy(isHebrew, 'אישור + תשלום', 'Approval + payment'),
+          copy(isHebrew, 'פורטל לקוח', 'Client portal'),
+          copy(isHebrew, 'Delivery + ops', 'Delivery + ops'),
+        ]}
+      />
+
       <EngineeringDecisions
         isHebrew={isHebrew}
         items={[
@@ -642,7 +830,7 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           ],
         ]}
       />
-      <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'פלטפורמה פנימית וחיצונית שאני מפעיל עליה את העסק בפועל.', 'An internal and client-facing platform I actually run the business on.')} />
+      <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'פלטפורמה פנימית וחיצונית שבניתי כדי להפעיל עליה עבודת סטודיו אמיתית.', 'An internal and client-facing platform I built to run real studio operations.')} />
     </>
   );
 }
@@ -699,19 +887,38 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
   const isHebrew = locale === 'he';
   const reduceMotion = useReducedMotion();
   const [activeMedia, setActiveMedia] = useState<ShowcaseMedia | null>(null);
-  const portfolioHref = `/${locale}/portfolio`;
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+  const portfolioHref = `/${locale}/yotam#work`;
 
   useEffect(() => {
     if (!activeMedia) return;
+
     const previousOverflow = document.body.style.overflow;
+    restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = 'hidden';
+
+    const focusCloseButton = window.requestAnimationFrame(() => closeButtonRef.current?.focus());
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setActiveMedia(null);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setActiveMedia(null);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        closeButtonRef.current?.focus();
+      }
     };
+
     window.addEventListener('keydown', onKeyDown);
     return () => {
+      window.cancelAnimationFrame(focusCloseButton);
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus();
+      restoreFocusRef.current = null;
     };
   }, [activeMedia]);
 
@@ -732,7 +939,7 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
   const storyProps = { project, isHebrew, reveal, onOpen: setActiveMedia };
 
   return (
-    <main dir={isHebrew ? 'rtl' : 'ltr'} style={themeStyle} className="overflow-x-clip bg-[#eceae5] text-[#171719] selection:bg-black selection:text-white">
+    <main data-project={project.slug} dir={isHebrew ? 'rtl' : 'ltr'} style={themeStyle} className="overflow-x-clip bg-[#eceae5] text-[#171719] selection:bg-black selection:text-white">
       <SharedHeader project={project} locale={locale} isHebrew={isHebrew} />
 
       {project.slug === 'starlinker' ? <StarLinkerStory {...storyProps} /> : null}
@@ -753,7 +960,7 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
       <AnimatePresence>
         {activeMedia ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/94 p-3 sm:p-8" role="dialog" aria-modal="true" aria-label={activeMedia.label} onClick={() => setActiveMedia(null)}>
-            <button type="button" onClick={() => setActiveMedia(null)} className="absolute end-4 top-4 z-10 flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:end-7 sm:top-7" aria-label={isHebrew ? 'סגירה' : 'Close'}><X className="size-5" /></button>
+            <button ref={closeButtonRef} type="button" onClick={() => setActiveMedia(null)} className="absolute end-4 top-4 z-10 flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:end-7 sm:top-7" aria-label={isHebrew ? 'סגירה' : 'Close'}><X className="size-5" /></button>
             <motion.div initial={reduceMotion ? false : { scale: 0.96, y: 18 }} animate={{ scale: 1, y: 0 }} exit={reduceMotion ? undefined : { scale: 0.98, y: 8 }} transition={{ duration: 0.35, ease }} className={`relative flex max-h-[90vh] max-w-[94vw] items-center justify-center ${activeMedia.aspect === 'portrait' ? 'h-[88vh] w-auto' : 'w-[94vw]'}`} onClick={event => event.stopPropagation()}>
               <ProductImage media={activeMedia} className="max-h-[90vh] max-w-full object-contain" />
             </motion.div>
