@@ -14,6 +14,7 @@ export const cvVariantIds = [
   'product-frontend',
   'fullstack-healthcare',
   'product-ai',
+  'ashby-product',
   'defense-tech',
 ] as const;
 
@@ -124,6 +125,78 @@ export const cvVariants: Record<CVVariantId, CVVariantConfig> = {
       },
     },
     skillOrder: productFirstSkillOrder,
+    portfolioProjectOrder: ['starlinker', 'rightflow', 'cartshift', 'atlasIrwin'],
+  },
+  'ashby-product': {
+    id: 'ashby-product',
+    label: 'Ashby / Product Engineering',
+    filename: 'Yotam-Faraggi-Ashby-Senior-Product-Engineer-CV.pdf',
+    title: 'Yotam Faraggi - Senior Product Engineer CV for Ashby',
+    headline: 'Senior Product Engineer | Full-Stack Product Systems',
+    summary: {
+      text: 'Senior Product Engineer with 10+ years building customer-facing software across healthcare, e-commerce, fintech, and enterprise systems. Strong in autonomous product engineering: turning ambiguous problems into clear product and technical decisions, then owning implementation across React, TypeScript, Node.js, GraphQL/REST APIs, PostgreSQL, integrations, cloud infrastructure, deployment, and iteration. Recent work includes end-to-end telemedicine, AI-assisted products, and independent full-stack systems.',
+      metaDescription:
+        'Senior Product Engineer in Berlin with 10+ years of full-stack product ownership across React, TypeScript, Node.js, APIs, PostgreSQL, cloud, and customer-facing systems.',
+    },
+    experienceOrder: allExperienceKeys,
+    experienceOverrides: {
+      cartshift: {
+        description:
+          'Independent product engineering across full-stack web products, workflow automation, e-commerce, and AI-assisted systems.',
+        highlights: [
+          'Own product definition, UX, architecture, implementation, integrations, deployment, and continuous iteration across independent products.',
+          'Build production applications with Next.js, React, TypeScript, Node.js, APIs, data services, cloud tooling, and AI-assisted engineering workflows.',
+          'Turn ambiguous product problems into scoped systems, ship them end-to-end, and iterate based on real usage and product needs.',
+        ],
+      },
+      curalife: {
+        description:
+          'Owned business-critical customer-facing product work across telemedicine and e-commerce, from product definition through production.',
+        highlights: [
+          'Defined, architected, and built a HIPAA-compliant telemedicine acquisition product end-to-end, including patient UX, backend logic, integrations, operational tooling, and GCP infrastructure.',
+          'Designed an insurance-eligibility normalization layer for complex healthcare APIs, turning variable responses and failure cases into stable product states while protecting sensitive health data.',
+          'The product became the company\'s primary customer-acquisition funnel and a core revenue channel, while driving modernization of Shopify and HubSpot customer systems.',
+        ],
+      },
+      paragonex: {
+        description:
+          'Built high-traffic web products and production integrations for fintech affiliate operations.',
+        highlights: [
+          'Developed and optimized high-traffic web experiences and built integrations between affiliate systems and core fintech platform services.',
+          'Improved frontend build processes and loading performance across production websites.',
+        ],
+      },
+    },
+    skillOrder: productFirstSkillOrder,
+    skillOverrides: {
+      productEngineering: {
+        category: 'Product Engineering',
+        items: [
+          'Product definition',
+          'System design',
+          'Product ownership',
+          'API design',
+          'Reliability',
+          'Web application architecture',
+        ],
+      },
+      frontendFullStack: {
+        category: 'Full-Stack',
+        items: ['React', 'TypeScript', 'Node.js', 'Next.js', 'JavaScript', 'Tailwind CSS'],
+      },
+      commerceIntegrations: {
+        category: 'APIs & Integrations',
+        items: ['GraphQL', 'REST', 'Webhooks', 'Shopify APIs', 'HubSpot', 'Stripe'],
+      },
+      cloudData: {
+        category: 'Cloud & Data',
+        items: ['PostgreSQL', 'GCP', 'Docker', 'GitHub Actions', 'Vercel', 'Firebase'],
+      },
+      aiAutomation: {
+        category: 'AI-Assisted Engineering',
+        items: ['LLM APIs', 'OpenAI', 'Claude', 'AI tooling', 'MCP'],
+      },
+    },
     portfolioProjectOrder: ['starlinker', 'rightflow', 'cartshift', 'atlasIrwin'],
   },
   'fullstack-healthcare': {
