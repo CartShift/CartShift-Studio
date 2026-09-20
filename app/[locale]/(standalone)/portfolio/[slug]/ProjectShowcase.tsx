@@ -887,19 +887,38 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
   const isHebrew = locale === 'he';
   const reduceMotion = useReducedMotion();
   const [activeMedia, setActiveMedia] = useState<ShowcaseMedia | null>(null);
-  const portfolioHref = `/${locale}/portfolio`;
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+  const portfolioHref = `/${locale}/yotam#work`;
 
   useEffect(() => {
     if (!activeMedia) return;
+
     const previousOverflow = document.body.style.overflow;
+    restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = 'hidden';
+
+    const focusCloseButton = window.requestAnimationFrame(() => closeButtonRef.current?.focus());
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setActiveMedia(null);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setActiveMedia(null);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        closeButtonRef.current?.focus();
+      }
     };
+
     window.addEventListener('keydown', onKeyDown);
     return () => {
+      window.cancelAnimationFrame(focusCloseButton);
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus();
+      restoreFocusRef.current = null;
     };
   }, [activeMedia]);
 
@@ -920,7 +939,7 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
   const storyProps = { project, isHebrew, reveal, onOpen: setActiveMedia };
 
   return (
-    <main dir={isHebrew ? 'rtl' : 'ltr'} style={themeStyle} className="overflow-x-clip bg-[#eceae5] text-[#171719] selection:bg-black selection:text-white">
+    <main data-project={project.slug} dir={isHebrew ? 'rtl' : 'ltr'} style={themeStyle} className="overflow-x-clip bg-[#eceae5] text-[#171719] selection:bg-black selection:text-white">
       <SharedHeader project={project} locale={locale} isHebrew={isHebrew} />
 
       {project.slug === 'starlinker' ? <StarLinkerStory {...storyProps} /> : null}
@@ -941,7 +960,7 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
       <AnimatePresence>
         {activeMedia ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/94 p-3 sm:p-8" role="dialog" aria-modal="true" aria-label={activeMedia.label} onClick={() => setActiveMedia(null)}>
-            <button type="button" onClick={() => setActiveMedia(null)} className="absolute end-4 top-4 z-10 flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:end-7 sm:top-7" aria-label={isHebrew ? 'סגירה' : 'Close'}><X className="size-5" /></button>
+            <button ref={closeButtonRef} type="button" onClick={() => setActiveMedia(null)} className="absolute end-4 top-4 z-10 flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:end-7 sm:top-7" aria-label={isHebrew ? 'סגירה' : 'Close'}><X className="size-5" /></button>
             <motion.div initial={reduceMotion ? false : { scale: 0.96, y: 18 }} animate={{ scale: 1, y: 0 }} exit={reduceMotion ? undefined : { scale: 0.98, y: 8 }} transition={{ duration: 0.35, ease }} className={`relative flex max-h-[90vh] max-w-[94vw] items-center justify-center ${activeMedia.aspect === 'portrait' ? 'h-[88vh] w-auto' : 'w-[94vw]'}`} onClick={event => event.stopPropagation()}>
               <ProductImage media={activeMedia} className="max-h-[90vh] max-w-full object-contain" />
             </motion.div>
