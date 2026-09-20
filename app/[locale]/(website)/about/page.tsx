@@ -62,8 +62,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     jobTitle: 'Co-Founder & Senior Product Engineer',
     description:
       'Berlin-based Senior Product Engineer with 10+ years building and operating production software across full-stack products, commerce, APIs, integrations and cloud systems, with recent work in AI-assisted products.',
-    url: `${siteUrl}/${locale}/cv`,
+    url: `${siteUrl}/${locale}/yotam`,
     image: '/images/portfolio-v2/hero-art.webp',
+    sameAs: [
+      'https://linkedin.com/in/yotam-faraggi',
+      'https://github.com/yotamon',
+    ],
   });
 
   const adiSchema = generatePersonSchema({

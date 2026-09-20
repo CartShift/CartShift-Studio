@@ -171,7 +171,7 @@ export function generateOrganizationSchema() {
     sameAs: [
       'https://twitter.com/cartshiftstudio',
       'https://linkedin.com/company/cartshift-studio',
-      'https://github.com/cartshift-studio',
+      'https://github.com/CartShift',
       'https://www.facebook.com/cartshiftstudio',
       'https://www.instagram.com/cartshiftstudio',
     ],

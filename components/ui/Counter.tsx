@@ -23,7 +23,10 @@ export const Counter: React.FC<CounterProps> = ({
     damping: 20,
     mass: 1,
   });
-  const [displayValue, setDisplayValue] = useState(0);
+  // Render the real value in the server HTML so crawlers and no-JS clients
+  // receive meaningful content. Once the section enters view, the spring
+  // takes over and animates from zero to the target value.
+  const [displayValue, setDisplayValue] = useState(value);
 
   useMotionValueEvent(motionValue, 'change', latest => {
     setDisplayValue(Math.round(latest));

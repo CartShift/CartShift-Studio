@@ -3824,9 +3824,9 @@
       "members": [
         {
           "name": "Yotam Faraggi",
-          "role": "Co-Founder & Developer",
-          "bio": "I started as a frontend developer and gradually fell in love with the full stack. These days, I build Shopify stores and WordPress sites that are fast, reliable, and actually fun to maintain. I'm a bit obsessed with clean code and performance – probably because I've seen too many slow sites lose customers. When I'm not coding, I'm usually exploring new e-commerce tools or figuring out how to solve tricky technical problems that most people avoid.",
-          "expertise": "Shopify, WordPress, Custom Development, Performance Optimization, Full-Stack Development, API Integration"
+          "role": "Co-Founder & Senior Product Engineer",
+          "bio": "Berlin-based Senior Product Engineer with 10+ years building and operating production software. I work best where product decisions and technical depth have to move together, across full-stack systems, commerce, APIs, integrations, data, cloud and AI. At CartShift, I bring that same end-to-end ownership to both client work and the products we build ourselves.",
+          "expertise": "Product Engineering, Full-Stack, Shopify, APIs & Integrations, AI-assisted Products, Performance & Reliability"
         },
         {
           "name": "Adi Zelter",
