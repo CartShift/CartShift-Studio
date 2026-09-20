@@ -84,7 +84,7 @@ function Label({ children, light = false }: { children: ReactNode; light?: boole
 
 function ProjectSnapshot({ project, isHebrew }: { project: PortfolioShowcaseProject; isHebrew: boolean }) {
   const labels = isHebrew
-    ? { status: 'סטטוס', period: 'תקופה', ownership: 'Ownership', scope: 'Scope מוכח', stack: 'Stack' }
+    ? { status: 'סטטוס', period: 'תקופה', ownership: 'Ownership', scope: 'Scope המוצר', stack: 'Stack' }
     : { status: 'Status', period: 'Period', ownership: 'Ownership', scope: 'Product scope', stack: 'Stack' };
 
   return (
@@ -400,7 +400,7 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.28fr_1fr] lg:gap-20">
             <Label>{copy(isHebrew, 'הזרימה', 'The workflow')}</Label>
             <h2 className="max-w-[12ch] text-[13vw] font-medium leading-[.82] tracking-[-.068em] text-[#172033] sm:text-[7vw] lg:text-[5.8vw] xl:text-[5.8rem]">
-              {copy(isHebrew, 'ממסמך גולמי לממצא שאפשר להגן עליו.', 'From raw document to defensible finding.')}
+              {copy(isHebrew, 'ממסמך גולמי לממצא שאפשר לעקוב אחריו.', 'From raw document to traceable finding.')}
             </h2>
           </motion.div>
           <div className="mt-20 grid gap-5 lg:ms-[28%] lg:grid-cols-3">
