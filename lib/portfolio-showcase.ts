@@ -41,6 +41,14 @@ type LocalizedProject = {
   he: Pick<PortfolioShowcaseProject, 'descriptor' | 'summary' | 'audience' | 'role' | 'highlights' | 'status'>;
 };
 
+export const portfolioShowcaseOrder = [
+  'starlinker',
+  'rightflow',
+  'wakemyway',
+  'cartshift-studio',
+  'ensemblis',
+] as const;
+
 const projects: LocalizedProject[] = [
   {
     base: {
@@ -167,7 +175,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'ensemblis',
-      number: '03',
+      number: '05',
       title: 'Ensemblis',
       year: '2026',
       updatedAt: '2026-09-20',
@@ -198,7 +206,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'wakemyway',
-      number: '04',
+      number: '03',
       title: 'WakeMyWay',
       year: '2026',
       updatedAt: '2026-09-20',
@@ -265,7 +273,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'cartshift-studio',
-      number: '05',
+      number: '04',
       title: 'CartShift Studio',
       year: '2025-26',
       updatedAt: '2026-09-20',
@@ -336,22 +344,28 @@ const projects: LocalizedProject[] = [
   },
 ];
 
-export const portfolioShowcaseSlugs = projects.map(project => project.base.slug);
+export const portfolioShowcaseSlugs = [...portfolioShowcaseOrder];
 
 export function getPortfolioShowcases(locale: string): PortfolioShowcaseProject[] {
   const resolvedLocale: PortfolioLocale = locale === 'he' ? 'he' : 'en';
 
-  return projects.map(project => {
+  return [...projects]
+    .sort(
+      (a, b) =>
+        portfolioShowcaseOrder.indexOf(a.base.slug as (typeof portfolioShowcaseOrder)[number]) -
+        portfolioShowcaseOrder.indexOf(b.base.slug as (typeof portfolioShowcaseOrder)[number])
+    )
+    .map(project => {
     const copy = project[resolvedLocale];
     const media = project.base.media[resolvedLocale] ?? project.base.media.en;
 
-    return {
-      ...project.base,
-      ...copy,
-      hero: media.hero,
-      gallery: media.gallery,
-    };
-  });
+      return {
+        ...project.base,
+        ...copy,
+        hero: media.hero,
+        gallery: media.gallery,
+      };
+    });
 }
 
 export function getPortfolioShowcase(slug: string, locale: string): PortfolioShowcaseProject | null {
