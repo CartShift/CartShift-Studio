@@ -10,7 +10,7 @@ import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { hidden: { opacity: 0, y: 26 }, visible: { opacity: 1, y: 0 } };
-const selectedProjectOrder = ['starlinker', 'rightflow', 'cartshift-studio', 'wakemyway'];
+const selectedProjectOrder = ['starlinker', 'rightflow', 'ensemblis', 'wakemyway', 'cartshift-studio'];
 
 export default function YotamProfile() {
   const locale = useLocale();
@@ -31,7 +31,7 @@ export default function YotamProfile() {
   const isHebrew = locale === 'he';
   const profileHref = `/${locale}/yotam`;
   const pdfHref = `/${locale}/cv/render?variant=default`;
-  const portfolioHref = `/${locale}/portfolio`;
+  const clientWorkHref = `/${locale}/work`;
 
   const copy = isHebrew
     ? {
@@ -510,7 +510,7 @@ export default function YotamProfile() {
           </div>
 
           <motion.a
-            href={portfolioHref}
+            href={clientWorkHref}
             {...sectionReveal}
             className="group mt-10 grid gap-6 border-y border-black/20 py-8 lg:ms-[10%] lg:grid-cols-[0.28fr_1fr_auto] lg:items-center lg:gap-10"
           >
