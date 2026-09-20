@@ -5,6 +5,7 @@ client: 'Carmel Faraggi'
 industry: 'Brand Identity, Art Direction & Graphic Design'
 platform: 'Next.js + Cloudflare'
 featured: true
+portfolioOrder: 5
 siteUrl: 'https://carmel-studio.com/'
 brand:
   primary: '#ed1c16'
@@ -19,6 +20,9 @@ overview:
   title: 'Turning a personal design practice into a memorable digital studio'
   summary: 'Carmel Faraggi needed a portfolio that could carry the confidence of the work without becoming a conventional agency template. The site uses a tightly controlled cream, black, and red system, expressive typography, and editorial compositions to make the studio recognizable while keeping work discovery and project inquiries direct.'
 summary: 'A bold Next.js portfolio for Carmel Faraggi, combining oversized typography, editorial project layouts, an artist-focused service path, and a clear inquiry flow in one responsive studio experience.'
+cta:
+  title: 'Need a portfolio that feels as distinctive as the work?'
+  description: 'We can turn a visual identity into a fast, focused website that helps the right clients understand the work and make contact.'
 deliverables:
   - title: 'Ownable studio identity'
     description: 'Translated the Carmel Faraggi name into a high-impact digital wordmark system, supported by a precise cream, black, and signal-red palette that remains consistent across every route.'
@@ -94,6 +98,9 @@ services:
   - 'Cloudflare Deployment'
 
 he:
+  cta:
+    title: 'צריכים פורטפוליו שמרגיש ייחודי כמו העבודות עצמן?'
+    description: 'אפשר להפוך זהות ויזואלית לאתר מהיר וממוקד שעוזר ללקוחות הנכונים להבין את העבודה וליצור קשר.'
   title: 'אתר הסטודיו העצמאי של Carmel Faraggi'
   summary: 'פורטפוליו Next.js נועז עבור Carmel Faraggi, שמחבר טיפוגרפיה גדולה, פריסות פרויקט עריכתיות, מסלול ייעודי לאמנים ותהליך פנייה ברור לחוויית סטודיו רספונסיבית אחת.'
   industry: 'זהות מותג, ארט דיירקשן ועיצוב גרפי'
