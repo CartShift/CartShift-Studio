@@ -5,6 +5,7 @@ client: 'Colbo-Tekk TLV'
 industry: 'Music, Events & Community'
 platform: 'WordPress + WooCommerce'
 featured: false
+portfolioOrder: 7
 siteUrl: 'https://colbotekk.com/'
 brand:
   primary: '#1ecfd0'
@@ -19,6 +20,9 @@ overview:
   title: 'Turning a scene identity into a connected digital platform'
   summary: 'Colbo-Tekk is not just a music page. The live site acts as a release archive, an event calendar, a radio surface, a merch storefront, and a community funnel. The work focused on making those worlds feel like one sharp experience instead of separate disconnected pages.'
 summary: 'A WordPress and WooCommerce platform for Colbo-Tekk that unifies music releases, artist discovery, events, radio, merch, and crew/community touchpoints under one rave-led visual system.'
+cta:
+  title: 'Need one platform for releases, events, community, and commerce?'
+  description: 'We can connect different audience journeys into one coherent site without forcing them into a generic template.'
 deliverables:
   - title: 'Unified release and commerce flow'
     description: 'Structured the music store around preview-first release cards and direct purchase paths so tracks can be discovered and supported without leaving the brand world.'
@@ -94,6 +98,9 @@ services:
   - 'Community Form Flows'
 
 he:
+  cta:
+    title: 'צריכים פלטפורמה אחת לריליסים, אירועים, קהילה ומסחר?'
+    description: 'אפשר לחבר מסעות קהל שונים לאתר אחד קוהרנטי בלי לדחוס אותם לתבנית גנרית.'
   title: 'פלטפורמת הלייבל והקולקטיב של Colbo-Tekk'
   summary: 'פלטפורמת WordPress ו-WooCommerce עבור Colbo-Tekk שמחברת בין ריליסים, גילוי אמנים, אירועים, רדיו, מרץ׳ ונקודות כניסה לקהילה תחת שפה ויזואלית אחת ומדויקת.'
   industry: 'מוזיקה, אירועים וקהילה'
