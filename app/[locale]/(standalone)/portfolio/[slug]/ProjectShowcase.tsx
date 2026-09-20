@@ -830,7 +830,7 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           ],
         ]}
       />
-      <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'פלטפורמה פנימית וחיצונית שאני מפעיל עליה את העסק בפועל.', 'An internal and client-facing platform I actually run the business on.')} />
+      <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'פלטפורמה פנימית וחיצונית שבניתי כדי להפעיל עליה עבודת סטודיו אמיתית.', 'An internal and client-facing platform I built to run real studio operations.')} />
     </>
   );
 }
