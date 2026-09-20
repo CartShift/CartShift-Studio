@@ -18,6 +18,9 @@ overview:
   title: 'Building a release page that feels like part listening room, part digital storefront'
   summary: 'Pedro Music centers the release itself as the visual product. The homepage acts as an immersive launch canvas, while WooCommerce handles the deeper product and checkout flows for tracks and album bundles. The result feels more like an artist environment than a generic music shop.'
 summary: 'A WordPress and WooCommerce release storefront for Pedro Music, combining immersive hero visuals, inline playback, single-track products, and full-album bundle sales.'
+cta:
+  title: 'Selling music directly without losing the artist experience?'
+  description: 'We can combine listening, release storytelling, and digital commerce so buying feels like part of the release rather than a separate shop.'
 deliverables:
   - title: 'Immersive launch landing page'
     description: 'Built the homepage as a strong visual campaign surface where artwork, title treatment, and playback controls all work together to frame the release.'
@@ -93,6 +96,9 @@ services:
   - 'Artist Brand Translation'
 
 he:
+  cta:
+    title: 'רוצים למכור מוזיקה ישירות בלי לאבד את חוויית האמן?'
+    description: 'אפשר לחבר האזנה, סיפור ריליס ומסחר דיגיטלי כך שהרכישה תרגיש חלק מהריליס ולא חנות נפרדת.'
   title: 'חנות הריליסים הדיגיטלית של Pedro Music'
   summary: 'חנות ריליסים ב-WordPress ו-WooCommerce עבור Pedro Music, שמחברת בין ויזואל אימרסיבי, נגן מובנה, מוצרים לטרקים בודדים ומכירת אלבום מלא.'
   industry: 'מוזיקה ומסחר דיגיטלי'
