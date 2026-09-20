@@ -5,6 +5,7 @@ client: 'Hands & Vision Collective'
 industry: 'Art, Events & Creative Production'
 platform: 'WordPress + WooCommerce'
 featured: true
+portfolioOrder: 6
 siteUrl: 'https://handsandvision.com/'
 brand:
   primary: '#254b61'
@@ -19,6 +20,9 @@ overview:
   title: 'Giving a multidisciplinary collective one coherent digital stage'
   summary: 'Hands & Vision spans live art, murals, digital work, industrial objects, stage design, artist representation, and collectible pieces. The platform turns that range into a navigable system without flattening the energy of the work, balancing strong imagery with clear service, artist, gallery, contact, and shop paths.'
 summary: 'A bilingual WordPress and WooCommerce platform for Hands & Vision, unifying artist discovery, creative services, gallery work, contact paths, and collectible commerce in a bold visual system.'
+cta:
+  title: 'Building a creative platform for multiple audiences?'
+  description: 'We can structure services, artists, content, and commerce so each audience gets a clear path without losing the creative identity.'
 deliverables:
   - title: 'Collective-first visual identity'
     description: 'Built the experience around high-impact artwork, a custom Hands & Vision mark, and a petrol, lilac, pink, and warm-yellow palette that lets very different disciplines still feel part of one collective.'
@@ -96,6 +100,9 @@ services:
   - 'Gallery Experience'
 
 he:
+  cta:
+    title: 'בונים פלטפורמה יצירתית לכמה קהלים שונים?'
+    description: 'אפשר לחבר שירותים, אמנים, תוכן ומסחר כך שלכל קהל יהיה מסלול ברור בלי לאבד את הזהות היצירתית.'
   title: 'פלטפורמת קולקטיב האמנים Hands & Vision'
   summary: 'פלטפורמת WordPress ו-WooCommerce דו-לשונית עבור Hands & Vision, שמחברת גילוי אמנים, שירותי קריאייטיב, גלריה, יצירת קשר ומסחר ביצירות למערכת ויזואלית אחת.'
   industry: 'אמנות, אירועים והפקה יצירתית'
