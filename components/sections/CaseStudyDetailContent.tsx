@@ -39,11 +39,17 @@ type WorkDetailTranslations = {
     getConsultation: string;
     viewMore: string;
     projectOverview: string;
+    overviewEyebrow: string;
     whatWeShipped: string;
+    deliveryEyebrow: string;
     selectedScreens: string;
     evidenceTitle: string;
+    evidenceEyebrow: string;
+    evidenceResultsTitle: string;
+    whatChangedTitle: string;
     clientQuote: string;
     projectNotes: string;
+    notesEyebrow: string;
     visitSite: string;
     galleryHint: string;
     openImage: string;
@@ -83,6 +89,10 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
   const heroStoryRotate = useTransform(heroProgress, [0, 1], [-6, -2]);
 
   const workT = t.raw('work' as never) as WorkDetailTranslations;
+  const hasMeasuredResults = caseStudy.evidence.some(item => item.tone === 'quantitative');
+  const evidenceHeading = hasMeasuredResults
+    ? workT.detail.evidenceResultsTitle
+    : workT.detail.whatChangedTitle;
 
   const breadcrumbItems = [
     { label: t('navigation.home'), href: '/' },
@@ -281,7 +291,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
           >
             <div>
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-surface-400">
-                {workT.detail.projectOverview}
+                {workT.detail.overviewEyebrow}
               </p>
               <h2 className="max-w-2xl text-3xl font-bold tracking-[-0.03em] text-surface-900 dark:text-white sm:text-4xl">
                 {caseStudy.overview.title}
@@ -289,6 +299,11 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
               <p className="mt-5 max-w-3xl text-lg leading-relaxed text-surface-600 dark:text-surface-300">
                 {caseStudy.overview.summary}
               </p>
+              {caseStudy.attribution && (
+                <p className="mt-5 max-w-3xl border-s-2 border-[rgba(var(--case-primary-rgb),0.4)] ps-4 text-sm leading-relaxed text-surface-500 dark:text-surface-400">
+                  {caseStudy.attribution}
+                </p>
+              )}
             </div>
 
             <div
@@ -353,9 +368,6 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                       <p className="text-sm font-semibold text-surface-900 dark:text-white">
                         {caseStudy.duration}
                       </p>
-                      <p className="text-sm text-surface-600 dark:text-surface-400">
-                        {caseStudy.hero.supportingCopy || caseStudy.summary}
-                      </p>
                     </div>
                   </div>
                 )}
@@ -379,7 +391,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
               <div className="mb-10 flex items-end justify-between gap-6">
                 <div>
                   <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-surface-400">
-                    {workT.detail.whatWeShipped}
+                    {workT.detail.deliveryEyebrow}
                   </p>
                   <h2 className="text-3xl font-bold tracking-[-0.03em] text-surface-900 dark:text-white sm:text-4xl">
                     {workT.detail.whatWeShipped}
@@ -441,10 +453,10 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
             <motion.div {...sectionReveal}>
               <div className="mb-10 max-w-3xl">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-surface-400">
-                  {workT.detail.evidenceTitle}
+                  {workT.detail.evidenceEyebrow}
                 </p>
                 <h2 className="text-3xl font-bold tracking-[-0.03em] text-surface-900 dark:text-white sm:text-4xl">
-                  {workT.detail.evidenceTitle}
+                  {evidenceHeading}
                 </h2>
               </div>
 
@@ -465,6 +477,11 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                         <p className="mt-3 text-base leading-relaxed text-surface-600 dark:text-surface-300">
                           {item.description}
                         </p>
+                        {item.context && (
+                          <p className="mt-3 text-xs leading-relaxed text-surface-500 dark:text-surface-400">
+                            {item.context}
+                          </p>
+                        )}
                         {(item.before || item.after) && (
                           <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
                             {item.before && (
@@ -549,7 +566,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-surface-500 dark:text-surface-400">
-                    {workT.detail.projectNotes}
+                    {workT.detail.notesEyebrow}
                   </p>
                   <h2 className="text-2xl font-bold tracking-[-0.03em] text-surface-900 dark:text-white">
                     {workT.detail.projectNotes}
@@ -581,10 +598,10 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                   {workT.cta.title}
                 </p>
                 <h2 className="text-3xl font-bold leading-tight tracking-[-0.03em] text-white sm:text-4xl lg:text-5xl">
-                  {workT.detail.wantResults}
+                  {caseStudy.cta?.title || workT.detail.wantResults}
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">
-                  {workT.detail.wantResultsDesc}
+                  {caseStudy.cta?.description || workT.detail.wantResultsDesc}
                 </p>
               </div>
 
