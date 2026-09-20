@@ -8,8 +8,8 @@ describe('case studies normalization', () => {
     expect(study).not.toBeNull();
     expect(study?.overview.title).toContain('לרענן פורטל');
     expect(study?.hero.alt).toContain('עלונדון');
-    expect(study?.gallery[0]?.image).toBe(study?.hero.image);
-    expect(study?.gallery[1]?.caption).toContain('עמודי כתבה');
+    expect(study?.gallery[0]?.image).not.toBe(study?.hero.image);
+    expect(study?.gallery[0]?.caption).toContain('עמודי כתבה');
     expect(study?.siteUrl).toBe('https://alondon.net/');
   });
 
@@ -45,7 +45,7 @@ describe('case studies normalization', () => {
     expect(study?.siteUrl).toBe('https://atlasirwin.com/');
     expect(study?.platform).toBe('Next.js + Vercel');
     expect(study?.thumbnail).toBe('/images/case-studies/atlas-irwin-music-identity/hero.jpg');
-    expect(study?.gallery[0]?.image).toBe(study?.hero.image);
+    expect(study?.gallery[0]?.image).not.toBe(study?.hero.image);
     expect(study?.evidence).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -63,7 +63,7 @@ describe('case studies normalization', () => {
     expect(englishStudy).not.toBeNull();
     expect(englishStudy?.siteUrl).toBe('https://handsandvision.com/');
     expect(englishStudy?.platform).toBe('WordPress + WooCommerce');
-    expect(englishStudy?.gallery).toHaveLength(4);
+    expect(englishStudy?.gallery).toHaveLength(3);
     expect(englishStudy?.evidence).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ value: '5 Service Verticals', tone: 'qualitative' }),
@@ -73,10 +73,10 @@ describe('case studies normalization', () => {
 
     expect(hebrewStudy?.title).toContain('Hands & Vision');
     expect(hebrewStudy?.hero.supportingCopy).toContain('דו-לשונית');
-    expect(hebrewStudy?.content).toContain('## על Hands & Vision');
+    expect(hebrewStudy?.content).toContain('## האתגר');
   });
 
-  it('keeps the homepage hero image as the first gallery item and default thumbnail', () => {
+  it('keeps the hero as the thumbnail without repeating it when dedicated gallery screens exist', () => {
     const normalized = normalizeCaseStudyRecord(
       {
         title: 'Homepage First',
@@ -110,11 +110,11 @@ describe('case studies normalization', () => {
 
     expect(normalized.thumbnail).toBe('/images/homepage-first/hero.jpg');
     expect(normalized.gallery[0]).toMatchObject({
-      image: '/images/homepage-first/hero.jpg',
-      alt: 'Homepage screenshot',
-      caption: 'Homepage first copy',
+      image: '/images/homepage-first/gallery-02.jpg',
+      alt: 'Secondary screen',
+      caption: 'Secondary screen caption',
     });
-    expect(normalized.gallery).toHaveLength(2);
+    expect(normalized.gallery).toHaveLength(1);
   });
 
   it('normalizes legacy result rows into evidence entries when evidence is missing', () => {
