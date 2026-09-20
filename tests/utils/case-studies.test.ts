@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCaseStudyBySlug, normalizeCaseStudyRecord } from '@/lib/case-studies';
+import { getAllCaseStudies, getCaseStudyBySlug, normalizeCaseStudyRecord } from '@/lib/case-studies';
 
 describe('case studies normalization', () => {
   it('loads localized structured fields from markdown frontmatter', () => {
@@ -22,12 +22,26 @@ describe('case studies normalization', () => {
       expect.arrayContaining([
         expect.objectContaining({
           value: '99.9% uptime',
+          context: expect.stringContaining('operational dashboards'),
         }),
         expect.objectContaining({
           value: '85% fewer failures',
+          context: expect.stringContaining('legacy Shopify–HubSpot sync path'),
         }),
       ])
     );
+    expect(study?.attribution).toContain('Full Stack Developer & R&D Lead');
+    expect(study?.cta?.title).toContain('complex Shopify');
+  });
+
+  it('uses explicit portfolio order for the Work narrative', () => {
+    const studies = getAllCaseStudies('en');
+
+    expect(studies.slice(0, 3).map(study => study.slug)).toEqual([
+      'curalife-metabolic-wellness-platform',
+      'i-love-my-honeypot-eco-ecommerce',
+      'stiletto-piercing-disposable-jewelry-supply',
+    ]);
   });
 
   it('supports case studies that omit duration metadata', () => {
