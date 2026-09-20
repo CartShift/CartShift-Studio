@@ -99,6 +99,7 @@ const projects: LocalizedProject[] = [
       number: '02',
       title: 'RightFlow',
       year: '2025-26',
+      updatedAt: '2026-09-20',
       technologies: ['Next.js', 'React', 'TypeScript', 'Python', 'FastAPI', 'Firebase'],
       accent: '#2563eb',
       accentSoft: '#cbdcfb',
@@ -152,7 +153,7 @@ const projects: LocalizedProject[] = [
       summary: 'A document review and verification platform for pension and payroll contribution checks, turning sensitive multi-document work into a structured, repeatable workflow.',
       audience: 'Finance, payroll and operations teams that need to review contribution documents consistently, explain findings clearly and export a usable report.',
       role: 'Founder · Product · Workflow design · Automation · Full-stack',
-      highlights: ['Structured document review', 'Verification and exception handling', 'Repeatable report-ready workflow'],
+      highlights: ['Normalized multi-document review cases', 'Explicit exceptions and traceable findings', 'Repeatable report-ready verification workflow'],
     },
     he: {
       descriptor: 'Document intelligence',
@@ -160,7 +161,7 @@ const projects: LocalizedProject[] = [
       summary: 'פלטפורמת בדיקה ואימות מסמכים להפקדות פנסיה ושכר, שהופכת עבודה רגישה ורבת מסמכים לתהליך מובנה, עקבי וניתן לחזרה.',
       audience: 'לצוותי כספים, שכר ותפעול שצריכים לבדוק מסמכי הפקדות באופן עקבי, להסביר ממצאים בצורה ברורה ולהפיק דוח שימושי.',
       role: 'Founder · מוצר · תכנון workflow · אוטומציה · Full-stack',
-      highlights: ['סקירת מסמכים מובנית', 'אימות וטיפול בחריגות', 'תהליך עקבי שמוביל לדוח'],
+      highlights: ['תיקי בדיקה מנורמלים ממספר מסמכים', 'חריגות מפורשות וממצאים ניתנים למעקב', 'תהליך אימות עקבי שמוביל לדוח'],
     },
   },
   {
@@ -169,6 +170,7 @@ const projects: LocalizedProject[] = [
       number: '03',
       title: 'Ensemblis',
       year: '2026',
+      updatedAt: '2026-09-20',
       technologies: ['Next.js', 'React', 'TypeScript', 'AI workflows', 'Media APIs', 'Automation'],
       accent: '#9b72f2',
       accentSoft: '#ddd0ff',
@@ -178,7 +180,7 @@ const projects: LocalizedProject[] = [
     },
     en: {
       descriptor: 'Artist operating system',
-      status: 'In development',
+      status: 'Product in development',
       summary: 'An AI-assisted operating system for independent artists that brings release planning, content creation, media intelligence, marketing workflows and distribution operations into one product.',
       audience: 'Independent artists and small teams who currently run releases, content, media and distribution across too many disconnected tools.',
       role: 'Founder · Product concept · Product design · AI systems · Full-stack',
@@ -186,7 +188,7 @@ const projects: LocalizedProject[] = [
     },
     he: {
       descriptor: 'מערכת הפעלה לאמנים',
-      status: 'בפיתוח',
+      status: 'מוצר בפיתוח',
       summary: 'מערכת הפעלה בסיוע AI לאמנים עצמאיים שמחברת תכנון ריליסים, יצירת תוכן, מודיעין מדיה, תהליכי שיווק ותפעול הפצה למוצר אחד.',
       audience: 'לאמנים עצמאיים וצוותים קטנים שמנהלים כיום ריליסים, תוכן, מדיה והפצה בין יותר מדי כלים מנותקים.',
       role: 'Founder · קונספט מוצר · Product design · מערכות AI · Full-stack',
