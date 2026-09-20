@@ -1,0 +1,41 @@
+name: Temporary Ashby CV export
+
+on:
+  push:
+    branches:
+      - tmp/ashby-cv-export-20260920
+    paths-ignore:
+      - 'tmp/generated/**'
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Render CV through production renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tmp/generated
+          curl --fail --location --retry 3 --retry-delay 2 'https://cart-shift.com/api/cv/render?payload=lVdNc9s2EP0rGB1yqWS319wUx0nUcRI3ct12OhkNCC5F2CDAAqBkJc1_71vwQ6TkZKYHRyQILHb3vX27-TrLZKB76bW0cfZyllMhGxNn81mhDVlZERb_clFWmzfSy-1Wb5ahzA6bNVnt_GbtiriXnjbXdqstkd_cepc3Kg4L2m43V_cXdV7AqJEZGVhMNsRCtFZEb0X0h-aiMyNGZnA-6mgGj0Tn0f-1I67uYaokmRsswVp3-nSr-Fe8aYxZrKNUj8PX9SFEqgIshKaqpD_MXn6dRXqKR0PPnBps7nUsxS8__yQOJH0QWaNNzj6pJkRXkV8UUvF76EORyrsQBNw1sVRYmQtaKFdhr8JzoW0kVc6FtLkgPPva60AitG5eiHX0Dva0FW5v2XLduYTfzGALTuWL6Bb4gTnvKgESaKujdjZZlV6VGpfEBu7E0rtmW4pPJFW8vDvUtFZe11HoqoY1eCD54Fwsb1dhLti7rU9LeMupNu7Am1p_YbX9dgF7Csti7_yjQHQZsoWgsSks4EbvM41QTJlcrhYyBI1Yc1jfkXF11dspjNuHCwBVUZSvKSQ_cRmAekUe2C-Y-7n4HvwnULlilClRMMYhYTw491TDM7JqAC0laS6OWZqLDy6niwfk4q2XdfnbDRjqQtx6WvPzc0lTxjV5j2ebt3HUo0i_zWdHHz76nPzs5d8zcCaGUhdc1Krx0uiC8Fhz8ThLT3imnk-bHZIHmLk-HB8w1FSad9joqfZkqfEwVvOSyTRvkdoXDmdnnyfX78h7nVPg8ji6gJd8gsSaTLHItQe9EMxzOHe5HCV8T1m_EwnpEyBkgwrq2Heapd7wiCPMjFJvS4O_GDhTH_d2tLGvgbn4_c_5pAjmZ2T_Mc2Vs1HbxjXhyPg-LG2xG4Ri0vYxsWevWBj6FX0sgdDS8gMEJ9HoRxRr2ZTLKEUgv9OKOv60lIrOoQi2fNv1EzxmscHHHRiCMzSkAijKgAS4Bl89dEg0MDfoxxyvjNNylSwG_IvgFBmOlFAVpJoUATvumii2esf7m3oC80OTb1tYPn8bEfWMMAAJeGZ8J4WwwJeoFXw6FdDe-6QoXbIjMWq5xoY21omSsvSdw_99CTyCc06l13ye8hFv0ovNk-JHIcW71e1yydfXhnvviW_qn0YHPQZ-ItPaKtOkvlGDTcwd5miG4mBtMm6r1SkpXd0xD7nqkG8dent1i62FlyH6JkXI4UAv9ZYzLS2-BsCBol4QItSZNjoexuaFkQcwIpYyCut8Bei-EPOey-Rp1LuYkqBQqOES9J2vL6Q2nFUleQVGHTYgJeDWEDrKPuLjvtTtIuczNUmynKQdJZKz23fl8VRGCvMLUl3JB-j7QJBxcovGWjLJEUNcEqJC9Xirv7SBQfTXpat1cbh812Tr2sXBztBice0NzoI_yAgMTS101Hukg-i51lJq5MWDa7ylQ0jC4l0qj0oiF_iTXbr5zEgORrLP9XJU87OCeZUIx_RcRC-LQquJgJ4aHrNGQNj7CUPwUeCCkh6oFJ4jfhLYRJwcO6OuEhfO7j-2itAJyFpu29TcIBhYmXeADzPSxLWM4p7Ijtzq8OgkF5SqjYyIoBrUj91dpQyP8cp6qcWOnpXGyba8iJtbJUdNfQwCZUCQEgYAITxqY4a-2-2bDrD9pTwipgmRm3JHi9UoPF5mkX4NXqceuxyaW-rKW6kO18O0x623vXzcdZ9xIPVi3OJ4bJ09P2PrNN4igNszLcTXdvzFGssD3rmgh5f-BCZN6seET6mYE4fx9geQlzUkT3XVMRLWROTzBE19Ps7WY1eP7S_diJaI365H8lPbEfH0q9zJYeMdpGePBiyu1uu26zyHxPR-7qnihTjBanCkm-rYi-v1XRtw6dwjb-qEJLVlvHZ6wh8iHGrDP4I-vfYqdewXouPDEaNheMQqlJyV26ELeDzccyiG13XEZWKpenffYN7i2TddOeHWSbCrxbKfoDpsJ9He3Lzvo_mIIWa5wsOVkU3OA-S9Q8ldoqbH4zgzZtX3H7y8h8updmrnUatGO9zzAD4MZeRZWvgs_48rSp7b2_DGc62MRoaVB5iw9h8' \
+            --output tmp/generated/Yotam_Faraggi_Ashby_Senior_Software_Engineer_Product_Engineering_CV.pdf
+          test "$(head -c 5 tmp/generated/Yotam_Faraggi_Ashby_Senior_Software_Engineer_Product_Engineering_CV.pdf)" = "%PDF-"
+          base64 -w0 tmp/generated/Yotam_Faraggi_Ashby_Senior_Software_Engineer_Product_Engineering_CV.pdf \
+            > tmp/generated/Yotam_Faraggi_Ashby_Senior_Software_Engineer_Product_Engineering_CV.pdf.b64
+          rm tmp/generated/Yotam_Faraggi_Ashby_Senior_Software_Engineer_Product_Engineering_CV.pdf
+
+      - name: Commit encoded export
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tmp/generated/Yotam_Faraggi_Ashby_Senior_Software_Engineer_Product_Engineering_CV.pdf.b64
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: export Ashby CV [skip ci]"
+          git push
