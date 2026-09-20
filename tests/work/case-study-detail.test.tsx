@@ -12,6 +12,11 @@ const baseCaseStudy: CaseStudy = {
   duration: '8 weeks',
   featured: true,
   siteUrl: 'https://example.com',
+  attribution: 'Work completed in an in-house product role.',
+  cta: {
+    title: 'Need a clearer Shopify buying journey?',
+    description: 'We can help connect UX, content, and implementation.',
+  },
   brand: {
     primary: '#8db43f',
     accent: '#f6df87',
@@ -56,6 +61,7 @@ const baseCaseStudy: CaseStudy = {
       title: 'Localization completed',
       value: 'RTL Complete',
       description: 'The storefront now supports Hebrew and RTL layouts end to end.',
+      context: 'Observed in the delivered storefront.',
       before: 'Partial',
       after: 'Complete',
       tone: 'qualitative',
@@ -77,8 +83,12 @@ describe('CaseStudyDetailContent', () => {
     expect(screen.getAllByText('Project Overview').length).toBeGreaterThan(0);
     expect(screen.getAllByText('What We Shipped').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Selected Screens').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Evidence & Outcomes').length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { name: 'What Changed' })).toBeInTheDocument();
     expect(screen.getByText('RTL Complete')).toBeInTheDocument();
+    expect(screen.getByText('Observed in the delivered storefront.')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Need a clearer Shopify buying journey?' })
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Visit Live Site/i })).toHaveAttribute(
       'href',
       'https://example.com'
@@ -98,7 +108,28 @@ describe('CaseStudyDetailContent', () => {
 
     expect(screen.getByRole('heading', { name: 'Test Case Study' })).toBeInTheDocument();
     expect(screen.queryByText('Client Quote')).not.toBeInTheDocument();
-    expect(screen.queryByText('Evidence & Outcomes')).not.toBeInTheDocument();
+    expect(screen.queryByText('What Changed')).not.toBeInTheDocument();
+    expect(screen.queryByText('Project Evidence')).not.toBeInTheDocument();
+  });
+
+  it('labels quantitative evidence as results', () => {
+    const measuredCaseStudy: CaseStudy = {
+      ...baseCaseStudy,
+      evidence: [
+        {
+          title: 'Integration stability',
+          value: '85% fewer failures',
+          description: 'The replacement integration path reduced sync failures.',
+          context: 'Relative comparison with the legacy sync path.',
+          tone: 'quantitative',
+        },
+      ],
+    };
+
+    render(<CaseStudyDetailContent caseStudy={measuredCaseStudy} />);
+
+    expect(screen.getByRole('heading', { name: 'Evidence & Results' })).toBeInTheDocument();
+    expect(screen.getByText('85% fewer failures')).toBeInTheDocument();
   });
 
   it('renders in RTL mode for Hebrew locale', () => {
