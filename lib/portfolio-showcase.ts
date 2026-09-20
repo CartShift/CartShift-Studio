@@ -320,7 +320,7 @@ const projects: LocalizedProject[] = [
     en: {
       descriptor: 'Commerce + product engineering',
       status: 'Active product',
-      summary: 'The operating platform behind my web and commerce studio, combining the public site, lead generation, project proposals, client workflows, automation and internal tools.',
+      summary: 'The operating platform behind the web and commerce studio I co-founded, combining the public site, lead generation, project proposals, client workflows, automation and internal tools.',
       audience: 'Clients buying digital product work and the studio team managing acquisition, proposals, delivery and ongoing relationships.',
       role: 'Co-founder · Lead engineer · Product architecture · Full-stack',
       highlights: ['Lead and store-analysis funnels', 'Proposals, payments and client workflows', 'Client portal, automation and studio operations'],
@@ -328,7 +328,7 @@ const projects: LocalizedProject[] = [
     he: {
       descriptor: 'Commerce + product engineering',
       status: 'מוצר פעיל',
-      summary: 'הפלטפורמה התפעולית מאחורי סטודיו ה-web וה-commerce שלי, שמחברת אתר ציבורי, יצירת לידים, הצעות עבודה, תהליכי לקוח, אוטומציות וכלים פנימיים.',
+      summary: 'הפלטפורמה התפעולית מאחורי סטודיו ה-web וה-commerce שהקמתי יחד עם שותפה, שמחברת אתר ציבורי, יצירת לידים, הצעות עבודה, תהליכי לקוח, אוטומציות וכלים פנימיים.',
       audience: 'ללקוחות שרוכשים עבודת מוצר דיגיטלית ולצוות הסטודיו שמנהל acquisition, הצעות, delivery וקשר מתמשך.',
       role: 'Co-founder · Lead engineer · ארכיטקטורת מוצר · Full-stack',
       highlights: ['פאנלים ללידים וניתוח חנויות', 'הצעות, תשלומים ותהליכי לקוח', 'פורטל לקוחות, אוטומציה ותפעול סטודיו'],
