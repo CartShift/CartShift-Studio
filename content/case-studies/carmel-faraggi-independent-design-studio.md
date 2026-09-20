@@ -184,39 +184,31 @@ he:
     - 'ניווט נגיש'
     - 'פריסה על Cloudflare'
   content: |
-    ## על Carmel Faraggi
-
-    Carmel Faraggi היא מעצבת גרפית וארט דיירקטורית עצמאית בלונדון, שפועלת בזהות מותג, עיצוב גרפי, קמפיינים וויז׳ואלים למוזיקאים. הפרקטיקה שלה מגיעה מאמנות, מוזיקה ואופנה, והאתר היה צריך להרגיש כמו המשך ישיר של נקודת המבט הזו.
-
     ## האתגר
-
-    פורטפוליו של מעצבת נדרש לעשות יותר מלהציג תמונות יפות. הוא צריך להוכיח טווח, לבסס קול מזוהה, לעזור ללקוחות להבין התאמה וליצור נתיב טבעי לפנייה, בלי שהממשק יתחרה בעבודות עצמן. בנוסף, הקהל של סטודיו עצמאי כולל גם מותגים וגם אמנים עם צרכים ושפה שונים.
-
-    ## הפתרון
-
-    בנינו מערכת ויזואלית שמרגישה כמו זהות בפני עצמה: טיפוגרפיה שחורה גדולה, רקע קרם חם ואדום חד שמופיע כשדה גאומטרי וכצבע פעולה. הקומפוזיציות שומרות על מתח עריכתי, אבל מבנה העמודים נשאר פשוט — עבודות, מסלול לאמנים, אודות ויצירת קשר.
-
-    אינדקס העבודות משתמש בתמונות רחבות ובמטא-דאטה תמציתי כדי לתת לכל פרויקט נוכחות ולשמור על סריקה מהירה. המסלול For Artists מדבר ישירות למוזיקאים ומחבר עטיפות, זהויות וויז׳ואלים לריליס להצעת מומחיות ברורה. עמוד האודות וטופס הפנייה משלימים את הסיפור ומעבירים את המבקר מהתרשמות לשיחה.
-
-    ## התוצאה
-
-    ל-Carmel Faraggi יש כעת סטודיו דיגיטלי עם קול שאי אפשר לבלבל: מספיק אקספרסיבי כדי לייצג את העבודה, מספיק מאופק כדי לתת לפרויקטים להוביל, ומספיק ברור כדי להפוך גילוי ויזואלי לפנייה אמיתית.
+    
+    Carmel Faraggi הייתה צריכה פורטפוליו שיכול לשאת זהות גרפית חזקה בלי להתחרות בעבודות עצמן. האתר גם היה צריך לדבר לשני קהלים קרובים אך שונים, מותגים שמחפשים עיצוב ומוזיקאים שמחפשים עבודה ויזואלית לאמנים, תוך שמירה על מסלול פשוט לפנייה.
+    
+    ## עיצוב ופיתוח
+    
+    תרגמנו את זהות הסטודיו למערכת ווב מאופקת שמבוססת על טיפוגרפיה גדולה, שדה קרם חם, גאומטריה אדומה חדה ותמונות פרויקט רחבות. אינדקס העבודות בנוי לסריקה ויזואלית מהירה, בעוד המסלול הייעודי לאמנים מציג הצעה ממוקדת יותר סביב עטיפות, זהויות, ויז׳ואלים לריליס וקמפיינים.
+    
+    המימוש ב-Next.js שומר על חוויה מהירה ורספונסיבית, וזרימת יצירת הקשר הופכת את הפורטפוליו מגלריה פסיבית לכלי עסקי שימושי.
+    
+    ## מה השתנה
+    
+    האתר המוגמר מרגיש כמו Carmel כבר מהמסך הראשון. במקביל, קטגוריות הפרויקטים, המסלולים לקהלים השונים ופעולות הפנייה נשארים ברורים מספיק כדי שהזהות הוויזואלית לא תפריע למציאת העבודה הרלוונטית או לפתיחת שיחה.
 ---
-
-## About Carmel Faraggi
-
-Carmel Faraggi is an independent London graphic designer and art director working across brand identity, graphic design, campaigns, and visual worlds for musicians. Her practice comes through art, music, and fashion, and the website needed to feel like a direct extension of that point of view.
 
 ## The Challenge
 
-A designer portfolio has to do more than display polished images. It needs to prove range, establish a recognizable voice, help prospective clients judge fit, and create a natural route into an inquiry without letting the interface compete with the work. An independent studio also speaks to different audiences, including brands and artists with distinct needs and language.
+Carmel Faraggi needed a portfolio that could carry a strong graphic identity without competing with the work itself. It also had to speak to two related audiences, brands looking for design and musicians looking for artist-focused visual work, while keeping the path to an inquiry simple.
 
-## The Solution
+## Design & Build
 
-We built a visual system that behaves like an identity in its own right: oversized black display typography, a warm cream field, and sharp red used as both geometry and action color. The compositions maintain editorial tension while the site structure stays simple: work, a dedicated artist offer, about, and contact.
+We translated the studio identity into a restrained web system built around oversized typography, a warm cream field, sharp red geometry, and large project imagery. The work index is optimized for fast visual scanning, while the dedicated artist route gives music clients a more specific proposition around cover art, identities, release visuals, and campaigns.
 
-The work index uses wide imagery and concise metadata to give each project presence while preserving fast scanning. The For Artists route speaks directly to musicians and connects cover art, identities, and release visuals to a clear specialist proposition. The about page and structured inquiry form complete the story and move visitors from recognition to conversation.
+The Next.js implementation keeps the experience fast and responsive, and the contact flow turns the portfolio from a passive gallery into a practical business tool.
 
-## The Result
+## What Changed
 
-Carmel Faraggi now has a digital studio with an unmistakable voice: expressive enough to represent the work, restrained enough to let each project lead, and clear enough to turn visual discovery into a real project inquiry.
+The finished site feels recognizably Carmel before a visitor reads a paragraph. At the same time, project categories, audience-specific routes, and inquiry actions stay clear enough that the visual identity never gets in the way of finding the right work or starting a conversation.
