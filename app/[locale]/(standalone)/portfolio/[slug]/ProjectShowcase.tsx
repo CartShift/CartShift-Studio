@@ -307,6 +307,25 @@ function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'מתחת לממשק', 'Under the hood')}
+        title={copy(isHebrew, 'Graph אחד. נתיב mutation אחד.', 'One graph. One mutation path.')}
+        body={copy(
+          isHebrew,
+          'ה-UI עובד מול graph state מקומי. Replicache מנהל mutations ו-sync, PostgreSQL/Drizzle נשארים בסיס הנתונים, ו-Supabase משמש ל-auth, storage ואותות realtime. כלי ה-AI פועלים דרך פעולות domain עם הרשאות במקום לעקוף את המודל.',
+          'The UI works against local graph state. Replicache owns mutations and sync, PostgreSQL/Drizzle remain the database, and Supabase handles auth, storage and realtime signals. AI tools go through permission-aware domain actions instead of bypassing the model.'
+        )}
+        steps={[
+          'Graph UI + Zustand',
+          'Replicache mutations',
+          'Push / pull sync',
+          'PostgreSQL + Drizzle',
+          'Realtime + AI tools',
+        ]}
+        dark
+      />
+
       <EngineeringDecisions
         isHebrew={isHebrew}
         items={[
@@ -415,6 +434,24 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'נתיב בדיקה', 'Review pipeline')}
+        title={copy(isHebrew, 'פורמט המסמך לא מנהל את הלוגיקה.', 'Document format does not own the logic.')}
+        body={copy(
+          isHebrew,
+          'המסמכים עוברים קודם לנרמול של תיק בדיקה עקבי. רק אחר כך מופעלות בדיקות, חריגות נשמרות במפורש, והממצא שיוצא לדוח נשאר ניתן למעקב ולסקירה אנושית.',
+          'Documents are first normalized into a consistent review case. Verification runs only after that boundary, exceptions remain explicit, and report findings stay traceable for human review.'
+        )}
+        steps={[
+          copy(isHebrew, 'מסמכי מקור', 'Source docs'),
+          copy(isHebrew, 'נרמול תיק', 'Normalize case'),
+          copy(isHebrew, 'בדיקות', 'Verify'),
+          copy(isHebrew, 'חריגה מפורשת', 'Exception'),
+          copy(isHebrew, 'ממצא לדוח', 'Report finding'),
+        ]}
+      />
+
       <EngineeringDecisions
         isHebrew={isHebrew}
         dark
@@ -522,6 +559,25 @@ function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
         </motion.div>
       </section>
 
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'גבול המוצר', 'Product boundary')}
+        title={copy(isHebrew, 'ריליס אחד, קונטקסט אחד.', 'One release, one operating context.')}
+        body={copy(
+          isHebrew,
+          'זהו גבול המוצר שנבנה כרגע, לא טענה שכל surface כבר shipped. המטרה היא לשמור תכנון, נכסים, תוכן, מודיעין מדיה והפצה סביב אותו ריליס במקום לפצל אותם בין מערכות.',
+          'This is the product boundary currently being built, not a claim that every surface is already shipped. The goal is to keep planning, assets, content, media intelligence and distribution around the same release context.'
+        )}
+        steps={[
+          copy(isHebrew, 'תכנון ריליס', 'Release plan'),
+          copy(isHebrew, 'נכסים ומסרים', 'Assets + messaging'),
+          copy(isHebrew, 'תוכן', 'Content'),
+          copy(isHebrew, 'מודיעין מדיה', 'Media intelligence'),
+          copy(isHebrew, 'הפצה', 'Distribution'),
+        ]}
+        dark
+      />
+
       <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'כרגע בפיתוח. הכיוון המוצרי כבר מוגדר, ה־UI עדיין מתפתח.', 'Currently in development. The product direction is defined; the interface is still evolving.')} />
     </>
   );
@@ -598,6 +654,25 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'גבול אמינות', 'Reliability boundary')}
+        title={copy(isHebrew, 'ה-AI יכול להיכשל. השעון לא.', 'Intelligence may fail. The alarm may not.')}
+        body={copy(
+          isHebrew,
+          'AlarmManager ו-Alarm Kernel אחראים למסירה הקריטית, כולל recovery לאחר Direct Boot ו-playback מקומי. רק אחרי שההשכמה התחילה מצטרף Wake Runtime דטרמיניסטי שמפעיל קול, תנועה ולמידה מקומית.',
+          'AlarmManager and the Alarm Kernel own critical delivery, including Direct Boot recovery and local playback. Only after wake delivery begins does a deterministic Wake Runtime add voice, motion and local learning.'
+        )}
+        steps={[
+          'AlarmManager',
+          'Alarm Kernel',
+          copy(isHebrew, 'אודיו מקומי קריטי', 'Critical local audio'),
+          'Wake Runtime',
+          copy(isHebrew, 'קול + תנועה', 'Voice + motion'),
+        ]}
+        dark
+      />
 
       <EngineeringDecisions
         isHebrew={isHebrew}
@@ -707,6 +782,24 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <TechnicalEvidence
+        isHebrew={isHebrew}
+        eyebrow={copy(isHebrew, 'המערכת בפועל', 'Operational spine')}
+        title={copy(isHebrew, 'מליד ל-delivery בלי לאבד קונטקסט.', 'From lead to delivery without losing context.')}
+        body={copy(
+          isHebrew,
+          'ה-analyzer והלידים מזינים הצעה, אישור ותשלום; משם אותו רצף ממשיך לפורטל הלקוח, בקשות, מסירה וכלים פנימיים. המערכת מפעילה עבודה אמיתית של הסטודיו ולא demo נפרד.',
+          'Analyzer and lead data feed proposal, approval and payment; the same workflow continues into the client portal, requests, delivery and internal tooling. The platform runs real studio work rather than a separate demo.'
+        )}
+        steps={[
+          copy(isHebrew, 'Analyzer / ליד', 'Analyzer / lead'),
+          copy(isHebrew, 'הצעה', 'Proposal'),
+          copy(isHebrew, 'אישור + תשלום', 'Approval + payment'),
+          copy(isHebrew, 'פורטל לקוח', 'Client portal'),
+          copy(isHebrew, 'Delivery + ops', 'Delivery + ops'),
+        ]}
+      />
 
       <EngineeringDecisions
         isHebrew={isHebrew}
