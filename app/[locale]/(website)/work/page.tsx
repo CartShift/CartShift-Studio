@@ -15,24 +15,37 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   const featured = getAllCaseStudies(locale)[0];
+
   return genMeta(
     {
-      title: 'Shopify, WordPress, and Web App Case Studies | CartShift Studio Work',
-      description:
-        'Explore recent CartShift projects across Shopify, WordPress, custom web apps, migrations, and performance optimization. See how we turn technical work into sharper digital products and clearer growth paths.',
+      title: isHe
+        ? 'פרויקטים ב-Shopify, WordPress ו-Web Apps | CartShift Studio'
+        : 'Shopify, WordPress, and Web App Case Studies | CartShift Studio Work',
+      description: isHe
+        ? 'פרויקטים נבחרים של CartShift ב-Shopify, WordPress, אפליקציות ווב, מיגרציות ואופטימיזציה, עם מסכים אמיתיים, החלטות פיתוח ותוצאות מדודות כשיש נתונים.'
+        : 'Explore CartShift projects across Shopify, WordPress, custom web apps, migrations, and performance optimization, with real screens, implementation decisions, and measured results where available.',
       url: '/work',
       image: featured?.hero.image,
-      keywords: [
-        'shopify case studies',
-        'wordpress case studies',
-        'web app case studies',
-        'next.js case studies',
-        'ecommerce migration case study',
-        'shopify performance optimization',
-        'client work',
-        'ecommerce project examples',
-      ],
+      keywords: isHe
+        ? [
+            'פרויקטים בשופיפיי',
+            'פרויקטים בוורדפרס',
+            'פיתוח אפליקציות ווב',
+            'מקרי בוחן מסחר אלקטרוני',
+            'מיגרציה לשופיפיי',
+            'אופטימיזציית ביצועים',
+          ]
+        : [
+            'shopify case studies',
+            'wordpress case studies',
+            'web app case studies',
+            'next.js case studies',
+            'ecommerce migration case study',
+            'shopify performance optimization',
+            'ecommerce project examples',
+          ],
     },
     locale as 'en' | 'he'
   );
@@ -43,18 +56,22 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale as 'en' | 'he');
   const caseStudies = getAllCaseStudies(locale);
 
+  const isHe = locale === 'he';
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Work', url: '/work' },
+      { name: isHe ? 'בית' : 'Home', url: '/' },
+      { name: isHe ? 'פרויקטים' : 'Work', url: '/work' },
     ],
     locale as 'en' | 'he'
   );
 
   const collectionSchema = generateCollectionPageSchema({
-    name: 'Our Work | Shopify, WordPress & Web App Projects',
-    description:
-      'Recent Shopify, WordPress, web app, migration, and optimization projects from CartShift Studio.',
+    name: isHe
+      ? 'הפרויקטים שלנו | Shopify, WordPress ואפליקציות ווב'
+      : 'Our Work | Shopify, WordPress & Web App Projects',
+    description: isHe
+      ? 'פרויקטים נבחרים של CartShift ב-Shopify, WordPress, אפליקציות ווב, מיגרציות ואופטימיזציה.'
+      : 'Recent Shopify, WordPress, web app, migration, and optimization projects from CartShift Studio.',
     url: '/work',
     locale: locale as 'en' | 'he',
     items: caseStudies.map(cs => ({

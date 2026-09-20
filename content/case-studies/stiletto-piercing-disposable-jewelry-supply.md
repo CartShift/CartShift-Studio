@@ -6,6 +6,7 @@ industry: 'Professional Beauty & Piercing'
 platform: 'Shopify'
 duration: ''
 featured: true
+portfolioOrder: 3
 siteUrl: 'https://stilettopiercing.co.il/'
 brand:
   primary: '#8728af'
@@ -20,6 +21,9 @@ overview:
   title: 'Giving a niche B2B catalog a stronger brand voice and clearer buying flow'
   summary: 'The goal was to make the storefront feel more deliberate than a generic product grid. We organized the experience around category context, cleaner merchandising, and stronger product storytelling so studio owners can understand what they are buying faster and trust the standards behind it.'
 summary: 'A brand-led Shopify storefront for disposable piercing tools and studio equipment, with clearer category framing, stronger product pages, and a more confident professional-facing experience.'
+cta:
+  title: 'Selling a technical B2B catalog on Shopify?'
+  description: 'We can make complex products, standards, and purchase policies easier for professional buyers to understand and act on.'
 deliverables:
   - title: 'B2B-first storefront framing'
     description: 'Surfaced the business-only purchasing context early so the commercial model feels clear from the first interaction.'
@@ -94,6 +98,9 @@ services:
   - 'Brand-Led Merchandising'
 
 he:
+  cta:
+    title: 'מוכרים קטלוג B2B טכני ב-Shopify?'
+    description: 'אפשר להפוך מוצרים מורכבים, תקנים ומדיניות רכישה לברורים יותר עבור קונים מקצועיים.'
   title: 'חנות האונליין של Stiletto Piercing Supply'
   summary: 'חוויית Shopify ממותגת עבור קטלוג ציוד פירסינג וציוד לסטודיו, עם מסגור קטגוריות ברור יותר, עמודי מוצר חזקים יותר, וחוויה מקצועית ובטוחה יותר לקונים עסקיים.'
   industry: 'ביוטי מקצועי ופירסינג'

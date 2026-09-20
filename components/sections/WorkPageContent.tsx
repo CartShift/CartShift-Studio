@@ -366,9 +366,7 @@ function PortfolioWorkTile({
   platformLabel: string;
 }) {
   const themeStyle = getCaseStudyThemeStyle(caseStudy.brand);
-  const metaLine = caseStudy.duration
-    ? `${caseStudy.client} / ${caseStudy.duration}`
-    : caseStudy.client;
+  const metaLine = caseStudy.duration || platformLabel;
 
   return (
     <motion.article

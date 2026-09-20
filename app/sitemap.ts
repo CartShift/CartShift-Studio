@@ -22,13 +22,13 @@ function generateAlternates(baseUrl: string, path: string): { languages: Record<
 function createLocalizedUrls(
   baseUrl: string,
   path: string,
-  lastModified: Date,
+  lastModified: Date | undefined,
   changeFrequency: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never',
   priority: number
 ) {
   return locales.map(locale => ({
     url: `${baseUrl}/${locale}${path}`,
-    lastModified,
+    ...(lastModified && { lastModified }),
     changeFrequency,
     priority,
     alternates: generateAlternates(baseUrl, path),
@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   const caseStudyUrls = caseStudies.flatMap(study =>
-    createLocalizedUrls(baseUrl, `/work/${study.slug}`, now, 'monthly', 0.7)
+    createLocalizedUrls(baseUrl, `/work/${study.slug}`, undefined, 'monthly', 0.7)
   );
 
   const portfolioProjectUrls = portfolioShowcaseSlugs.flatMap(slug =>

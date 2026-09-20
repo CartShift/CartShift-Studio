@@ -6,6 +6,7 @@ industry: 'Health & Wellness'
 platform: 'Shopify'
 duration: '10 weeks'
 featured: true
+portfolioOrder: 2
 siteUrl: 'https://ilovemyhoneypot.com/'
 brand:
   primary: '#d338a4'
@@ -20,6 +21,9 @@ overview:
   title: 'Turning a mission-led wellness catalog into a guided buying experience'
   summary: 'We redesigned the storefront around clarity, trust, and product education so customers could understand unfamiliar products, navigate Hebrew RTL content naturally, and find the right fit without feeling overwhelmed.'
 summary: 'Complete Shopify store development for an eco-friendly menstrual care brand, featuring product quiz integration, localized Hebrew content, and a cause-driven shopping experience.'
+cta:
+  title: 'Need a Shopify store that helps customers choose with confidence?'
+  description: 'We can turn product education, localization, and merchandising into a clearer buying journey.'
 deliverables:
   - title: 'Guided product matching'
     description: 'Planned and integrated a product quiz flow that helps shoppers navigate a sensitive, high-consideration product range with more confidence.'
@@ -41,7 +45,7 @@ gallery:
     caption: 'Product pages bring the media gallery, benefits, and buy actions into one tighter layout so fit and trust questions are answered closer to checkout.'
 evidence:
   - title: 'Product quiz launched'
-    value: 'New Capability'
+    value: 'Guided Quiz'
     description: 'The store now includes a guided quiz flow that helps customers narrow complex product choices through a more supportive decision journey.'
     before: 'No guided selection'
     after: 'Live quiz flow'
@@ -59,7 +63,7 @@ evidence:
     after: 'Guided content across the storefront'
     tone: 'qualitative'
   - title: 'Mobile experience was tightened up'
-    value: 'Refined'
+    value: 'Mobile-first'
     description: 'The browsing and product experience was reworked mobile-first so discovery, comparison, and trust cues remain clear on smaller screens.'
     before: 'Basic mobile handling'
     after: 'Mobile-first flow'
@@ -95,6 +99,9 @@ testimonial:
 
 # Hebrew Translations
 he:
+  cta:
+    title: 'צריכים חנות Shopify שעוזרת ללקוחות לבחור בביטחון?'
+    description: 'אפשר להפוך חינוך מוצרי, לוקליזציה ומרצ׳נדייזינג למסע קנייה ברור ומכוון יותר.'
   title: 'חנות מסחר אלקטרוני למוצרי מחזור ידידותיים לסביבה'
   summary: 'פיתוח חנות שופיפיי מלאה למותג מוצרי מחזור ידידותיים לסביבה, כולל שאלון התאמת מוצרים, תוכן בעברית וחוויית קנייה עם ערך חברתי.'
   industry: 'בריאות ואיכות חיים'
@@ -126,7 +133,7 @@ he:
       caption: 'עמודי המוצר מרכזים גלריה, יתרונות ופעולות רכישה לפריסה אחת מהודקת יותר, שעונה על שאלות התאמה ואמון קרוב יותר לרגע הקנייה.'
   evidence:
     - title: 'השאלון עלה לאוויר'
-      value: 'יכולת חדשה'
+      value: 'שאלון מונחה'
       description: 'החנות כוללת כיום זרימת התאמה מונחית שמסייעת ללקוחות לצמצם בחירות מורכבות בדרך תומכת וברורה יותר.'
       before: 'בלי התאמה מונחית'
       after: 'שאלון חי'
@@ -144,7 +151,7 @@ he:
       after: 'הדרכה משולבת בחוויה'
       tone: 'qualitative'
     - title: 'המובייל עבר הידוק משמעותי'
-      value: 'משופר'
+      value: 'Mobile-first'
       description: 'חוויית הגלישה והקנייה עוצבה מחדש בגישת mobile-first כך שגם במובייל נשמרים בהירות, השוואה וסימני אמון.'
       before: 'מובייל בסיסי'
       after: 'זרימה מותאמת מובייל'
@@ -179,223 +186,44 @@ he:
     role: 'מייסדת, I Love My Honeypot'
   content: |
     ## האתגר
-
-    I Love My Honeypot הוא מותג ישראלי חלוצי למוצרי מחזור ידידותיים לסביבה, המתמקד בחלופות בר-קיימא למוצרים חד-פעמיים. כשפנו אלינו, הם התמודדו עם מספר אתגרים מרכזיים:
-
-    - **פער בחינוך מוצרי** – לקוחות רבים לא הכירו מוצרי מחזור רב-פעמיים והזדקקו להכוונה לבחירת האופציה הנכונה
-    - **מבחר מוצרים מורכב** – עם גביעוני מחזור, דיסקיות, תחתונים לווסת ותחבושות רב-פעמיות, לקוחות הרגישו מוצפים מהאפשרויות
-    - **בניית אמון** – כמותג D2C שמקדם מוצרים ידידותיים לגוף, הם הזדקקו להוכחות חברתיות חזקות ותוכן חינוכי
-    - **אופטימיזציה לשוק המקומי** – השוק הישראלי דרש תוכן בעברית, תמחור בשקלים והתאמה תרבותית
-    - **שילוב מטרה חברתית** – המחויבות שלהם לתרום לעמותות סרטן צוואר הרחם נדרשה להיות משולבת בחוויית המותג
-
-    ## הגישה שלנו
-
-    פיתחנו אסטרטגיה מקיפה שמאזנת בין חינוך, קלות רכישה וערכי המותג.
-
-    ### שלב 1: גילוי ואסטרטגיית מותג
-
-    צלילה עמוקה לשוק מוצרי המחזור הבר-קיימא:
-    - ניתוח מיצוב מתחרים ופערים בשוק הישראלי
-    - מיפוי מסע הלקוח מהמודעות ועד לרכישה
-    - זיהוי חששות ושאלות מרכזיות של לקוחות פוטנציאליים
-    - פיתוח עמודי תוכן: בריאות, קיימות, העצמה, חינוך
-    - יצירת פרסונות משתמשים לקטגוריות מוצרים שונות
-
-    תובנה מרכזית: רוב הלקוחות הפוטנציאליים הזדקקו לחינוך לפני שהרגישו בטוחים מספיק לרכוש.
-
-    ### שלב 2: עיצוב UX וארכיטקטורת מוצרים
-
-    בניית חוויית משתמש המתמקדת בהכוונה ואמון:
-
-    **מערכת שאלון מוצרים**
-    - שאלון אינטראקטיבי להתאמת לקוחות למוצרים האידיאליים
-    - שאלות על אורח חיים, עוצמת זרימה, העדפות נוחות ורמת ניסיון
-    - המלצות מותאמות אישית עם הסברים ברורים
-    - אפשרות לשמור תוצאות ולחזור אליהן מאוחר יותר
-
-    **ארגון מוצרים ברור**
-    - ניווט מבוסס קטגוריות: גביעונים, דיסקיות, תחתונים, תחבושות, אביזרים
-    - דפי מוצר מפורטים עם מדריכי מידות והוראות שימוש
-    - סרטוני הדרכה משולבים בתיאורי המוצרים
-    - כלי השוואה למוצרים דומים
-
-    **אמון והוכחה חברתית**
-    - אינטגרציית ביקורות Judge.me עם תמונות לקוחות
-    - דירוגים ממוצעים מוצגים בבולטות
-    - עדויות לקוחות עם סיפורים אמיתיים
-    - הצגת תעודות ברורה: כותנה אורגנית, טבעוני, חומרים ממוחזרים
-
-    ### שלב 3: פיתוח ולוקליזציה
-
-    פיתוח שופיפיי מותאם עם תמיכה מלאה בעברית:
-
-    **יישום טכני**
-    - תבנית מותאמת עם תמיכה RTL (ימין לשמאל) בכל האתר
-    - פונקציונליות שאלון עם אינטגרציית Typeform
-    - סינון מתקדם לפי סוג מוצר, מידה ותכונות
-    - עיצוב רספונסיבי Mobile-First
-
-    **תוכן וחינוך**
-    - בלוג מקיף עם מדריכי מוצרים ותוכן לייף סטייל
-    - מדריכי How-To למשתמשים בפעם הראשונה
-    - מחשבון השפעה סביבתית
-    - מדורי שאלות נפוצות לכל קטגוריית מוצרים
-
-    **שילוב המטרה החברתית**
-    - מעקב תרומות גלוי באתר
-    - מדור מודעות לסרטן צוואר הרחם
-    - מסרים על השפעה לאורך תהליך הקנייה
-
-    ### שלב 4: השקה ואופטימיזציה
-
-    בדיקות קפדניות ואופטימיזציה לאחר ההשקה:
-    - בדיקת תוכן בעברית והתאמה תרבותית
-    - הגדרת שער תשלום לשוק הישראלי (כרטיסי אשראי, ביט)
-    - אינטגרציית משלוחים עם חברות שליחויות מקומיות
-    - אופטימיזציית SEO למונחי חיפוש בעברית
-    - הגדרת אוטומציית אימיילים לסדרות חינוכיות
-
-    ## התוצאות
-
-    **חוויית לקוח משופרת**
-    - שאלון מוצרים פעיל שעוזר ללקוחות למצוא את המוצר המתאים
-    - שיעור החזרות נמוך הודות להתאמה מדויקת
-    - זמן שהייה ארוך יותר באתר בזכות תוכן חינוכי
-
-    **נוכחות מותג חזקה**
-    - ביסוס כמותג מוביל במוצרי מחזור בר-קיימא בישראל
-    - קהילה גדלה של לקוחות נאמנים ושגרירי מותג
-    - שילוב מוצלח של נתינה צדקתית בזהות המותג
-
-    **יסודות טכניים איתנים**
-    - אתר מהיר ומותאם מובייל
-    - תמיכה מלאה בעברית ו-RTL
-    - תשתית SEO חזקה לצמיחה אורגנית
-
-    ## תובנות מרכזיות
-
-    הפרויקט הזה הדגים איך מסחר אלקטרוני יכול להיות יותר מעסקאות בלבד:
-
-    1. **חינוך מניע מכירות** – לקוחות שמבינים את המוצרים מבצעים רכישות בביטחון וכמעט לא מחזירים פריטים
-    2. **חוויות מונחות ממירות** – שאלוני מוצרים מבטלים שיתוק החלטות ובונים אמון
-    3. **ערכים חשובים** – שילוב אותנטי של מטרה חברתית מהדהד עם צרכנים מודעים
-    4. **לוקליזציה חיונית** – תמיכה מלאה בעברית והתאמה תרבותית היו קריטיות להצלחה בשוק
-
-    I Love My Honeypot ממשיכים לצמוח כמותג מהימן בשוק הישראלי, ומוכיחים שמוצרים בר-קיימא יכולים להצליח כשמשלבים אותם עם חוויית מסחר אלקטרוני נכונה.
+    
+    מוצרי מחזור רב-פעמיים הם קטגוריה שדורשת הרבה ביטחון והסבר לפני רכישה. לקוחות צריכות להבין פורמטים פחות מוכרים, להשוות התאמה ושימוש ולסמוך על המוצר לפני שהן מוכנות לקנות. החנות הישראלית גם הייתה צריכה לעבוד באופן טבעי בעברית וב-RTL, ולא להרגיש כמו גרסה מתורגמת של חנות באנגלית.
+    
+    ## הגישה
+    
+    ארגנו את החוויה סביב ארבע החלטות מעשיות:
+    
+    - **בחירה מונחית:** שאלון מוצרים נותן ללקוחות חדשות מסלול ברור יותר לגביעוניות, דיסקיות, תחתונים, תחבושות ואביזרים.
+    - **חינוך מוצרי:** מדריכים, שאלות נפוצות, מידע על מידות והסברי שימוש נמצאים קרוב למסע הקנייה.
+    - **לוקליזציה מלאה:** ניווט, פריסה, תוכן והתנהגות רספונסיבית נבנו לעברית ול-RTL.
+    - **אמון סמוך לרכישה:** ביקורות, תקנים, יתרונות והכוונה מוצרית מוצגים בנקודות שבהן מתקבלת החלטה.
+    
+    ## היישום
+    
+    חנות ה-Shopify משלבת תבנית מותאמת ל-RTL, אינטגרציית Typeform לשאלון, גלישה mobile-first, תוכן מקומי ומבנה תוכן שתומך בהדרכה וב-SEO לאורך זמן.
+    
+    ## מה השתנה
+    
+    החנות עברה מחוויה שמתחילה בקטלוג למסע קנייה מונחה. ללקוחות יש היום דרכים ברורות יותר להבין את הקטגוריה, לצמצם אפשרויות ולהגיע לעמוד מוצר רלוונטי בלי להסתמך על ניחוש. מקרה הבוחן מתמקד בכוונה בשינויים שאפשר לראות במוצר וב-UX, ולא בטענות המרה שאין להן נתונים מוצגים.
 ---
 
 ## The Challenge
 
-I Love My Honeypot is a pioneering Israeli eco-friendly menstrual care brand focused on sustainable alternatives to disposable products. When they approached us, they faced several key challenges:
+Reusable menstrual care is a high-consideration category. Customers need help understanding unfamiliar formats, comparing fit and usage, and trusting the product before they are ready to buy. The Israeli storefront also needed to work naturally in Hebrew and RTL rather than feeling like a translated version of an English store.
 
-- **Product Education Gap** – Many customers were unfamiliar with reusable menstrual products and needed guidance to choose the right option
-- **Complex Product Selection** – With menstrual cups, discs, period underwear, and reusable pads, customers felt overwhelmed by choices
-- **Trust Building** – As a direct-to-consumer brand promoting body-friendly products, they needed strong social proof and educational content
-- **Local Market Optimization** – The Israeli market required Hebrew content, shekel pricing, and culturally appropriate messaging
-- **Cause Integration** – Their commitment to donating to cervical cancer charities needed to be woven into the brand experience
+## The Approach
 
-## Our Approach
+We organized the experience around four practical decisions:
 
-We developed a comprehensive strategy that balanced education, ease of purchase, and brand values.
+- **Guided selection:** a product quiz gives first-time shoppers a clearer route into cups, discs, underwear, pads, and accessories.
+- **Product education:** guides, FAQs, size information, and usage content sit close to the shopping journey instead of in a separate knowledge layer.
+- **Full localization:** navigation, layout, content, and responsive behavior were built for Hebrew and RTL.
+- **Trust near purchase:** reviews, certifications, benefits, and product guidance are surfaced where customers are making decisions.
 
-### Phase 1: Discovery & Brand Strategy
+## The Implementation
 
-Deep dive into the sustainable menstrual care market:
+The Shopify storefront combines a custom RTL-aware theme, Typeform quiz integration, mobile-first product browsing, localized content, and a content structure that supports ongoing education and SEO.
 
-- Analyzed competitor positioning and gaps in the Israeli market
-- Mapped the customer journey from awareness to purchase
-- Identified key concerns and questions potential customers have
-- Developed content pillars: Health, Sustainability, Empowerment, Education
-- Created user personas for different product categories
+## What Changed
 
-Key insight: Most potential customers needed education before feeling confident enough to purchase.
-
-### Phase 2: UX Design & Product Architecture
-
-Built a user experience centered on guidance and trust:
-
-**Product Quiz System**
-
-- Interactive questionnaire to match customers with ideal products
-- Questions about lifestyle, flow, comfort preferences, and experience level
-- Personalized recommendations with clear explanations
-- Option to save results and revisit later
-
-**Clear Product Organization**
-
-- Category-based navigation: Cups, Discs, Underwear, Pads, Accessories
-- Detailed product pages with size guides and usage instructions
-- Video tutorials embedded in product descriptions
-- Comparison tools for similar products
-
-**Trust & Social Proof**
-
-- Judge.me review integration with photo reviews
-- Average ratings prominently displayed
-- Customer testimonials with real stories
-- Clear certifications: Organic cotton, vegan, recycled materials
-
-### Phase 3: Development & Localization
-
-Custom Shopify development with full Hebrew support:
-
-**Technical Implementation**
-
-- Custom theme with RTL (right-to-left) support throughout
-- Quiz functionality with Typeform integration
-- Advanced filtering by product type, size, and features
-- Mobile-first responsive design
-
-**Content & Education**
-
-- Comprehensive blog with product guides and lifestyle content
-- How-to guides for first-time users
-- Sustainability impact calculator
-- FAQ sections for each product category
-
-**Cause Integration**
-
-- Charitable donation tracker visible on site
-- Cervical cancer awareness section
-- Impact messaging throughout checkout flow
-
-### Phase 4: Launch & Optimization
-
-Rigorous testing and post-launch optimization:
-
-- Hebrew content review and cultural sensitivity check
-- Payment gateway setup for Israeli market (credit cards, bit)
-- Shipping integration with local carriers
-- SEO optimization for Hebrew search terms
-- Email automation setup for education sequences
-
-## The Results
-
-**Enhanced Customer Experience**
-
-- Active product quiz helping customers find the right product
-- Low return rate thanks to accurate matching
-- Longer time on site due to educational content
-
-**Strong Brand Presence**
-
-- Established as a leading sustainable menstrual care brand in Israel
-- Growing community of loyal customers and brand advocates
-- Successful integration of charitable giving into brand identity
-
-**Solid Technical Foundation**
-
-- Fast, mobile-optimized website
-- Full Hebrew and RTL support
-- Strong SEO foundation for organic growth
-
-## Key Takeaways
-
-This project demonstrated how e-commerce can be more than just transactions:
-
-1. **Education Drives Sales** – Customers who understand products make confident purchases and rarely return items
-2. **Guided Experiences Convert** – Product quizzes eliminate decision paralysis and build trust
-3. **Values Matter** – Authentic cause integration resonates with conscious consumers
-4. **Localization is Essential** – Full Hebrew support and cultural adaptation were crucial for market success
-
-I Love My Honeypot continues to grow as a trusted brand in the Israeli market, proving that sustainable products can succeed when paired with the right e-commerce experience.
+The store moved from a catalog-first experience to a guided buying journey. Customers now have clearer ways to understand the category, narrow their options, and reach a relevant product page without relying on guesswork. The case study intentionally focuses on observable product and UX changes rather than unsupported conversion claims.

@@ -4651,7 +4651,7 @@
     "hero": {
       "title": "Our Work",
       "subtitle": "Editorial case studies shaped around the brands behind the build.",
-      "description": "A curated look at the stores and websites we've designed, rebuilt, localized, and organized, using real visuals and verified project outcomes only.",
+      "description": "A curated look at the stores, platforms, and websites we designed or rebuilt, using real product screens, documented implementation decisions, and measured results where available.",
       "badge": "Selected Work",
       "featuredLabel": "Featured Project"
     },
@@ -4700,7 +4700,7 @@
       "projectOverview": "Project Overview",
       "whatWeShipped": "What We Shipped",
       "selectedScreens": "Selected Screens",
-      "evidenceTitle": "Evidence & Outcomes",
+      "evidenceTitle": "Evidence & Change",
       "clientQuote": "Client Quote",
       "projectNotes": "Project Notes",
       "visitSite": "Visit Live Site",
@@ -4714,7 +4714,13 @@
       "getConsultation": "Get a Free Consultation",
       "viewMore": "View More Projects",
       "noProjects": "No Projects Found",
-      "noProjectsDesc": "Try changing the filter to see more projects."
+      "noProjectsDesc": "Try changing the filter to see more projects.",
+      "overviewEyebrow": "The Brief",
+      "deliveryEyebrow": "Delivery",
+      "evidenceEyebrow": "Project Evidence",
+      "evidenceResultsTitle": "Evidence & Results",
+      "whatChangedTitle": "What Changed",
+      "notesEyebrow": "Deeper Context"
     }
   },
   "testimonials": {

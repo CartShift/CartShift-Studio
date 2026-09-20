@@ -10,6 +10,11 @@ export interface CaseStudyBrand {
   logo?: string;
 }
 
+export interface CaseStudyCTA {
+  title: string;
+  description?: string;
+}
+
 export interface CaseStudyHero {
   image: string;
   alt: string;
@@ -43,6 +48,7 @@ export interface CaseStudyEvidence {
   title: string;
   value?: string;
   description: string;
+  context?: string;
   before?: string;
   after?: string;
   tone?: 'qualitative' | 'quantitative';
@@ -62,7 +68,10 @@ export interface CaseStudyMeta {
   platform: string;
   duration?: string;
   featured: boolean;
+  portfolioOrder?: number;
   siteUrl?: string;
+  attribution?: string;
+  cta?: CaseStudyCTA;
   brand: CaseStudyBrand;
   hero: CaseStudyHero;
   overview: CaseStudyOverview;
@@ -87,6 +96,8 @@ interface HebrewTranslation {
   summary?: string;
   industry?: string;
   duration?: string;
+  attribution?: string;
+  cta?: CaseStudyCTA;
   hero?: Partial<CaseStudyHero>;
   overview?: Partial<CaseStudyOverview>;
   results?: CaseStudyResult[];
@@ -106,7 +117,10 @@ interface CaseStudyFrontmatter {
   platform?: string;
   duration?: string;
   featured?: boolean;
+  portfolioOrder?: number;
   siteUrl?: string;
+  attribution?: string;
+  cta?: CaseStudyCTA;
   brand?: Partial<CaseStudyBrand>;
   hero?: Partial<CaseStudyHero>;
   overview?: Partial<CaseStudyOverview>;
@@ -129,8 +143,14 @@ function normalizeGalleryWithHero(
 ): CaseStudyGalleryItem[] {
   const dedupedGallery = gallery.filter(item => item.image && item.image !== hero.image);
 
-  if (!hero.image) {
+  // When dedicated gallery screens exist, keep the hero out of the gallery.
+  // The hero is already the dominant visual at the top of the case study.
+  if (dedupedGallery.length > 0) {
     return dedupedGallery;
+  }
+
+  if (!hero.image) {
+    return [];
   }
 
   return [
@@ -139,7 +159,6 @@ function normalizeGalleryWithHero(
       alt: hero.alt,
       caption: hero.supportingCopy || fallbackCaption || hero.alt,
     },
-    ...dedupedGallery,
   ];
 }
 
@@ -205,6 +224,8 @@ export function normalizeCaseStudyRecord(
   const services = (isHebrew && heTranslations.services) || data.services || [];
   const results = (isHebrew && heTranslations.results) || data.results || [];
   const testimonial = (isHebrew && heTranslations.testimonial) || data.testimonial;
+  const attribution = (isHebrew && heTranslations.attribution) || data.attribution || '';
+  const cta = (isHebrew && heTranslations.cta) || data.cta;
   const hero = mergeLocalizedObject<CaseStudyHero>(
     data.hero as CaseStudyHero | undefined,
     isHebrew ? heTranslations.hero : undefined
@@ -243,7 +264,11 @@ export function normalizeCaseStudyRecord(
     platform: data.platform || '',
     duration,
     featured: data.featured || false,
+    portfolioOrder:
+      typeof data.portfolioOrder === 'number' ? data.portfolioOrder : undefined,
     siteUrl: data.siteUrl || '',
+    attribution,
+    cta,
     brand,
     hero: resolvedHero,
     overview: resolvedOverview,
@@ -307,7 +332,11 @@ export function getAllCaseStudies(locale: string = 'en'): CaseStudyMeta[] {
     .filter((study): study is CaseStudyMeta => study !== null);
 
   return caseStudies.sort(
-    (a, b) => Number(b.featured) - Number(a.featured) || a.title.localeCompare(b.title, locale)
+    (a, b) =>
+      (a.portfolioOrder ?? Number.MAX_SAFE_INTEGER) -
+        (b.portfolioOrder ?? Number.MAX_SAFE_INTEGER) ||
+      Number(b.featured) - Number(a.featured) ||
+      a.title.localeCompare(b.title, locale)
   );
 }
 

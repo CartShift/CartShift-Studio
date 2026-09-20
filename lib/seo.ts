@@ -355,7 +355,7 @@ export function generateSoftwareApplicationSchema(config: SoftwareApplicationSch
 export function generateArticleSchema(post: {
   title: string;
   description: string;
-  date: string;
+  date?: string;
   url: string;
   locale?: 'en' | 'he';
   author?: string;
@@ -376,8 +376,10 @@ export function generateArticleSchema(post: {
     '@id': `${articleUrl}/#article`,
     headline: post.title,
     description: post.description,
-    datePublished: post.date,
-    dateModified: post.modifiedDate || post.date,
+    ...(post.date && { datePublished: post.date }),
+    ...((post.modifiedDate || post.date) && {
+      dateModified: post.modifiedDate || post.date,
+    }),
     author: {
       '@type': 'Organization',
       '@id': `${siteUrl}/#organization`,
@@ -405,7 +407,7 @@ export function generateArticleSchema(post: {
       '@type': 'Organization',
       name: 'CartShift Studio',
     },
-    copyrightYear: new Date(post.date).getFullYear(),
+    ...(post.date && { copyrightYear: new Date(post.date).getFullYear() }),
     ...(post.category && { articleSection: post.category }),
     ...(post.wordCount && { wordCount: post.wordCount }),
     ...(post.readingTime && { timeRequired: `PT${post.readingTime}M` }),
