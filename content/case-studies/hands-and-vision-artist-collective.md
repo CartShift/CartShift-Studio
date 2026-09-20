@@ -188,51 +188,35 @@ he:
     - 'אינדקס אמנים'
     - 'חוויית גלריה'
   content: |
-    ## על Hands & Vision
-
-    Hands & Vision הוא קולקטיב אמנים רב-תחומי שפועל באובייקטים תעשייתיים, אמנות לייב באירועים, ציורי קיר ומיצבים מרחביים, אמנות דיגיטלית, עיצוב במות, ייצוג אמנים ויצירות לאספנות.
-
-    האתר נדרש לבצע כמה תפקידים במקביל: להציג את הקולקטיב, לאפשר גילוי של אמנים יחידים, להסביר שירותים שניתן להזמין, להוכיח את איכות העבודה בצורה ויזואלית, לתמוך במבקרים בעברית ובאנגלית וליצור מסלול טבעי גם לפניות וגם למסחר.
-
     ## האתגר
-
-    פורטפוליו מגוון כל כך עלול להפוך במהירות לעמוס ולא ברור. לקוח שמחפש שירות צריך בהירות, מבקר שמגיע בגלל האמנות רוצה חוויה, כל אמן צריך ייצוג משמעותי ואספן צריך מסלול מסחרי ישיר. האתגר היה להחזיק את כל הכוונות האלה יחד בלי להפוך את האתר לגריד סוכנות גנרי או לגלריה שאין בה ניווט שימושי.
-
-    ## הפתרון
-
-    החוויה מאורגנת בהיררכיה פשוטה: קודם הזהות הקולקטיבית, אחריה חמישה תחומי שירות, ואז אמנים, עבודות מהגלריה והזמנה ישירה ליצור משהו יחד. הדימויים החזקים נושאים את המשקל הרגשי, בזמן שטיפוגרפיה, צבע וניווט עקביים שומרים על שימושיות.
-
-    מערכת WordPress המותאמת נותנת לכל סוג תוכן תפקיד ברור. עמודי השירות מסבירים מה ניתן להזמין, פרופילי האמנים מציגים את הנבחרת, הגלריה מספקת הוכחה ויזואלית, עמוד יצירת הקשר מטפל בכוונת הפרויקט ו-WooCommerce יוצר תשתית לעבודות לאספנות.
-
-    ## פלטפורמה יצירתית דו-לשונית
-
-    העברית מטופלת כחוויה ראשית ולא כתרגום משני. פריסה לוגית תומכת ב-RTL וב-LTR, ומחליף השפה שומר את הקולקטיב נגיש לקהל מקומי ובינלאומי מאותו ממשק.
-
-    ## התוצאה
-
-    ל-Hands & Vision יש כעת פלטפורמה אחת ובעלת נוכחות לפרקטיקה יצירתית רחבה: חזקה ויזואלית מספיק כדי להרגיש כמו העבודות, מובנית מספיק כדי לתמוך בגילוי שירותים וגמישה מספיק כדי לחבר ייצוג אמנים, הזמנות עבודה, סיפור גלריה ומסחר.
+    
+    Hands & Vision מחבר שירותים יצירתיים שניתן להזמין, ייצוג אמנים, עבודות גלריה, תוכן דו-לשוני ומסחר. הסיכון היה לקבל אתר מרשים ויזואלית אך חלש בניווט, או אתר מסודר מדי שמוחק את האופי של הקולקטיב.
+    
+    ## מבנה הפלטפורמה
+    
+    ארגנו את החוויה בהיררכיה ברורה: זהות הקולקטיב, חמישה תחומי שירות, פרופילי אמנים, עבודות גלריה, יצירת קשר ומסחר. לכל סוג תוכן יש תפקיד מוגדר, כך שלקוחות שירות יכולים להבין מה ניתן להזמין בזמן שמבקרים שמגיעים בגלל האמנות עדיין יכולים לגלוש בעבודות בלי להיכנס למשפך של סוכנות.
+    
+    ## מערכת דו-לשונית
+    
+    עברית ואנגלית חולקות את אותה ארכיטקטורת תוכן עם התנהגות לוגית ב-RTL וב-LTR. החלפת השפה לא יוצרת אתר שני ומנותק, והמסלולים לאמנים, שירותים ומסחר נשארים עקביים בשני הכיוונים.
+    
+    ## מה השתנה
+    
+    לקולקטיב יש עכשיו פלטפורמה אחת לכמה כוונות שונות. קל יותר לגלות שירותים, לכל אמן מיוצג יש יעד משלו, הגלריה מספקת הוכחה ויזואלית ו-WooCommerce יכול לתמוך בעבודות לאספנות בלי להפוך את כל האתר לחנות.
 ---
-
-## About Hands & Vision
-
-Hands & Vision is a multidisciplinary artist collective working across industrial objects, live event art, murals and spatial installations, digital art, stage design, artist representation, and collectible work.
-
-The site needed to do several jobs at once: introduce the collective, make individual artists discoverable, explain commissionable services, prove the work visually, support Hebrew and English visitors, and create a natural route into both inquiries and commerce.
 
 ## The Challenge
 
-A portfolio this visually diverse can become chaotic quickly. A service buyer needs clarity, an art-led visitor wants immersion, an artist needs meaningful representation, and a collector needs a direct commercial path. The challenge was to hold those intents together without turning the site into a generic agency grid or a gallery with no useful navigation.
+Hands & Vision combines commissioned creative services, artist representation, gallery work, bilingual content, and commerce. The risk was either a visually impressive site with weak navigation or a highly structured site that flattened the character of the collective.
 
-## The Solution
+## Platform Structure
 
-The experience is organized around a simple hierarchy: collective identity first, five service verticals second, then artists, gallery work, and a direct invitation to create something together. Strong artwork carries the emotional weight while consistent typography, color, and navigation keep the experience usable.
+We organized the experience around a clear hierarchy: collective identity, five service verticals, individual artist profiles, gallery work, contact, and commerce. Each content type has a defined role, so service buyers can understand what is commissionable while art-led visitors can still browse the work without being pushed through an agency-style funnel.
 
-The custom WordPress system gives each content type a clear role. Services explain what can be commissioned, artist profiles introduce the roster, the gallery supplies visual proof, contact handles project intent, and WooCommerce provides a foundation for collectible work.
+## Bilingual System
 
-## A Bilingual Creative Platform
+Hebrew and English share the same content architecture with logical RTL and LTR behavior. The language switch does not create a second, disconnected experience, and artist, service, and commerce routes remain consistent across both directions.
 
-Hebrew is treated as a first-class experience rather than a translated afterthought. Logical layout behavior supports RTL and LTR presentation, while the language switcher keeps the collective accessible to local and international audiences from the same interface.
+## What Changed
 
-## The Result
-
-Hands & Vision now has one expressive platform for a broad creative practice: visually strong enough to feel like the work, structured enough to support service discovery, and flexible enough to connect artist representation, commissions, gallery storytelling, and commerce.
+The collective now has one platform for several different intents. Services are easier to discover, represented artists have dedicated destinations, the gallery provides visual proof, and WooCommerce can support collectible work without turning the whole site into a store.
