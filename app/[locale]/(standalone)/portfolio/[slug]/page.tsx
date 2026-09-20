@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import ProjectShowcase from './ProjectShowcase';
@@ -29,8 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isHebrew = locale === 'he';
   const title = `${project.title} - ${project.descriptor} | Yotam Faraggi`;
   const description = project.summary;
-  const image = project.hero?.src.startsWith('/') ? project.hero.src : '/images/portfolio-v2/hero-art.webp';
-
   return {
     title,
     description,
@@ -48,14 +47,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: 'website',
       url: `${siteUrl}/${locale}/portfolio/${slug}`,
-      images: [{ url: image, alt: project.hero?.alt ?? project.title }],
       locale: isHebrew ? 'he_IL' : 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
     },
   };
 }
@@ -69,6 +66,31 @@ export default async function PortfolioProjectPage({ params }: Props) {
   if (!project) notFound();
 
   const nextProject = getNextPortfolioShowcase(slug, validLocale);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: project.title,
+    description: project.summary,
+    url: project.liveUrl ?? `${siteUrl}/${validLocale}/portfolio/${project.slug}`,
+    dateModified: project.updatedAt,
+    creator: {
+      '@type': 'Person',
+      name: 'Yotam Faraggi',
+      url: `${siteUrl}/${validLocale}/yotam`,
+    },
+    applicationCategory: project.descriptor,
+    sameAs: [project.liveUrl, project.repositoryUrl].filter(Boolean),
+  };
 
-  return <ProjectShowcase project={project} nextProject={nextProject} locale={validLocale} />;
+  return (
+    <>
+      <Script
+        id={`project-${project.slug}-jsonld`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProjectShowcase project={project} nextProject={nextProject} locale={validLocale} />
+    </>
+  );
 }
