@@ -6,9 +6,9 @@ describe('personal portfolio showcase data', () => {
     expect(getPortfolioShowcases('en').map(project => project.slug)).toEqual([
       'starlinker',
       'rightflow',
-      'ensemblis',
       'wakemyway',
       'cartshift-studio',
+      'ensemblis',
     ]);
   });
 
