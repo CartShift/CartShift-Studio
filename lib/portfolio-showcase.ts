@@ -15,6 +15,7 @@ export type PortfolioShowcaseProject = {
   title: string;
   descriptor: string;
   year: string;
+  updatedAt: string;
   status?: string;
   summary: string;
   audience: string;
@@ -47,7 +48,8 @@ const projects: LocalizedProject[] = [
       number: '01',
       title: 'StarLinker',
       year: '2026',
-      technologies: ['Next.js', 'React', 'TypeScript', 'PostgreSQL', 'Supabase', 'AI SDK'],
+      updatedAt: '2026-09-20',
+      technologies: ['Next.js', 'React', 'TypeScript', 'PostgreSQL', 'Drizzle', 'Replicache', 'Supabase', 'AI SDK'],
       accent: '#7367f0',
       accentSoft: '#d8d3ff',
       liveUrl: 'https://starlinker.io',
@@ -80,7 +82,7 @@ const projects: LocalizedProject[] = [
       summary: 'A visual planning product that brings goals, projects, tasks, habits and notes into one connected workspace, with an AI agent that can understand and act inside it.',
       audience: 'People who think spatially and want one place to plan work, life and long-term goals without reducing everything to disconnected lists.',
       role: 'Founder · Product concept · UX · Architecture · Full-stack · AI',
-      highlights: ['Connected visual planning', 'AI assistant with workspace actions', 'Goals, projects, tasks and habits in one system'],
+      highlights: ['Graph-first workspace with offline-capable sync', 'Permission-aware AI actions with undo', 'Realtime collaboration, billing and operational tooling'],
     },
     he: {
       descriptor: 'פרודוקטיביות AI-native',
@@ -88,7 +90,7 @@ const projects: LocalizedProject[] = [
       summary: 'מוצר תכנון ויזואלי שמחבר מטרות, פרויקטים, משימות, הרגלים והערות לסביבת עבודה אחת, עם סוכן AI שמבין את המרחב ויכול לפעול בתוכו.',
       audience: 'לאנשים שחושבים בצורה ויזואלית ורוצים מקום אחד לתכנן עבודה, חיים ומטרות ארוכות טווח בלי להפוך הכל לרשימות מנותקות.',
       role: 'Founder · קונספט מוצר · UX · ארכיטקטורה · Full-stack · AI',
-      highlights: ['תכנון ויזואלי מחובר', 'עוזר AI שפועל בתוך סביבת העבודה', 'מטרות, פרויקטים, משימות והרגלים במערכת אחת'],
+      highlights: ['סביבת graph עם sync שתומך בעבודה offline', 'פעולות AI עם הרשאות ו-undo', 'שיתוף בזמן אמת, billing וכלים תפעוליים'],
     },
   },
   {
