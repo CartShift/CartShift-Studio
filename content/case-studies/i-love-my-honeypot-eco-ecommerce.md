@@ -6,6 +6,7 @@ industry: 'Health & Wellness'
 platform: 'Shopify'
 duration: '10 weeks'
 featured: true
+portfolioOrder: 2
 siteUrl: 'https://ilovemyhoneypot.com/'
 brand:
   primary: '#d338a4'
@@ -20,6 +21,9 @@ overview:
   title: 'Turning a mission-led wellness catalog into a guided buying experience'
   summary: 'We redesigned the storefront around clarity, trust, and product education so customers could understand unfamiliar products, navigate Hebrew RTL content naturally, and find the right fit without feeling overwhelmed.'
 summary: 'Complete Shopify store development for an eco-friendly menstrual care brand, featuring product quiz integration, localized Hebrew content, and a cause-driven shopping experience.'
+cta:
+  title: 'Need a Shopify store that helps customers choose with confidence?'
+  description: 'We can turn product education, localization, and merchandising into a clearer buying journey.'
 deliverables:
   - title: 'Guided product matching'
     description: 'Planned and integrated a product quiz flow that helps shoppers navigate a sensitive, high-consideration product range with more confidence.'
@@ -41,7 +45,7 @@ gallery:
     caption: 'Product pages bring the media gallery, benefits, and buy actions into one tighter layout so fit and trust questions are answered closer to checkout.'
 evidence:
   - title: 'Product quiz launched'
-    value: 'New Capability'
+    value: 'Guided Quiz'
     description: 'The store now includes a guided quiz flow that helps customers narrow complex product choices through a more supportive decision journey.'
     before: 'No guided selection'
     after: 'Live quiz flow'
@@ -59,7 +63,7 @@ evidence:
     after: 'Guided content across the storefront'
     tone: 'qualitative'
   - title: 'Mobile experience was tightened up'
-    value: 'Refined'
+    value: 'Mobile-first'
     description: 'The browsing and product experience was reworked mobile-first so discovery, comparison, and trust cues remain clear on smaller screens.'
     before: 'Basic mobile handling'
     after: 'Mobile-first flow'
@@ -95,6 +99,9 @@ testimonial:
 
 # Hebrew Translations
 he:
+  cta:
+    title: 'צריכים חנות Shopify שעוזרת ללקוחות לבחור בביטחון?'
+    description: 'אפשר להפוך חינוך מוצרי, לוקליזציה ומרצ׳נדייזינג למסע קנייה ברור ומכוון יותר.'
   title: 'חנות מסחר אלקטרוני למוצרי מחזור ידידותיים לסביבה'
   summary: 'פיתוח חנות שופיפיי מלאה למותג מוצרי מחזור ידידותיים לסביבה, כולל שאלון התאמת מוצרים, תוכן בעברית וחוויית קנייה עם ערך חברתי.'
   industry: 'בריאות ואיכות חיים'
@@ -126,7 +133,7 @@ he:
       caption: 'עמודי המוצר מרכזים גלריה, יתרונות ופעולות רכישה לפריסה אחת מהודקת יותר, שעונה על שאלות התאמה ואמון קרוב יותר לרגע הקנייה.'
   evidence:
     - title: 'השאלון עלה לאוויר'
-      value: 'יכולת חדשה'
+      value: 'שאלון מונחה'
       description: 'החנות כוללת כיום זרימת התאמה מונחית שמסייעת ללקוחות לצמצם בחירות מורכבות בדרך תומכת וברורה יותר.'
       before: 'בלי התאמה מונחית'
       after: 'שאלון חי'
@@ -144,7 +151,7 @@ he:
       after: 'הדרכה משולבת בחוויה'
       tone: 'qualitative'
     - title: 'המובייל עבר הידוק משמעותי'
-      value: 'משופר'
+      value: 'Mobile-first'
       description: 'חוויית הגלישה והקנייה עוצבה מחדש בגישת mobile-first כך שגם במובייל נשמרים בהירות, השוואה וסימני אמון.'
       before: 'מובייל בסיסי'
       after: 'זרימה מותאמת מובייל'
