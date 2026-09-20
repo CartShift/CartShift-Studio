@@ -49,6 +49,10 @@ export const portfolioShowcaseOrder = [
   'ensemblis',
 ] as const;
 
+const portfolioShowcaseRank = new Map<string, number>(
+  portfolioShowcaseOrder.map((slug, index) => [slug, index])
+);
+
 const projects: LocalizedProject[] = [
   {
     base: {
@@ -352,12 +356,12 @@ export function getPortfolioShowcases(locale: string): PortfolioShowcaseProject[
   return [...projects]
     .sort(
       (a, b) =>
-        portfolioShowcaseOrder.indexOf(a.base.slug as (typeof portfolioShowcaseOrder)[number]) -
-        portfolioShowcaseOrder.indexOf(b.base.slug as (typeof portfolioShowcaseOrder)[number])
+        (portfolioShowcaseRank.get(a.base.slug) ?? Number.MAX_SAFE_INTEGER) -
+        (portfolioShowcaseRank.get(b.base.slug) ?? Number.MAX_SAFE_INTEGER)
     )
     .map(project => {
-    const copy = project[resolvedLocale];
-    const media = project.base.media[resolvedLocale] ?? project.base.media.en;
+      const copy = project[resolvedLocale];
+      const media = project.base.media[resolvedLocale] ?? project.base.media.en;
 
       return {
         ...project.base,
