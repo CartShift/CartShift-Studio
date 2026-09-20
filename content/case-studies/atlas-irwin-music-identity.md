@@ -18,6 +18,9 @@ overview:
   title: 'Turning an artist identity into a release-ready digital home'
   summary: 'Atlas Irwin needed a website that felt less like a generic link hub and more like a branded listening environment. The experience centers the artist name, visual world, release momentum, and clear paths into music, story, contact, and fan conversion.'
 summary: 'A Next.js artist website for Atlas Irwin, pairing bold music branding, release-led navigation, platform links, contact paths, and newsletter capture in a fast Vercel-hosted experience.'
+cta:
+  title: 'Need an artist site that turns identity into a release-ready digital home?'
+  description: 'We can connect music, story, contact, and audience capture in one focused experience built around the artist.'
 deliverables:
   - title: 'Immersive homepage identity'
     description: 'Built the first viewport around large artist typography, cosmic artwork, a direct music CTA, and a strong visual rhythm so the brand lands immediately.'
@@ -93,6 +96,9 @@ services:
   - 'Newsletter Capture'
 
 he:
+  cta:
+    title: 'צריכים אתר אמן שהופך זהות לבית דיגיטלי מוכן לריליס?'
+    description: 'אפשר לחבר מוזיקה, סיפור, יצירת קשר ואיסוף קהל לחוויה אחת ממוקדת סביב האמן.'
   title: 'אתר האמן של Atlas Irwin'
   summary: 'אתר אמן ב-Next.js עבור Atlas Irwin, שמחבר מיתוג מוזיקלי חזק, ניווט סביב ריליס, לינקים לפלטפורמות, יצירת קשר והרשמה לעדכונים לחוויה מהירה על Vercel.'
   industry: 'מוזיקה ומיתוג אמן'
