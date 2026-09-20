@@ -23,13 +23,16 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
+  const isHe = locale === 'he';
   const caseStudy = getCaseStudyBySlug(slug, locale);
 
   if (!caseStudy) {
     return genMeta(
       {
-        title: 'Case Study Not Found',
-        description: 'The requested case study could not be found.',
+        title: isHe ? 'הפרויקט לא נמצא' : 'Case Study Not Found',
+        description: isHe
+          ? 'הפרויקט המבוקש לא נמצא.'
+          : 'The requested case study could not be found.',
         url: `/work/${slug}`,
         noindex: true,
       },
@@ -40,14 +43,14 @@ export async function generateMetadata({
   const keywords = [
     caseStudy.platform.toLowerCase(),
     caseStudy.industry.toLowerCase(),
-    'case study',
-    'e-commerce success',
-    `${caseStudy.platform} development`,
+    isHe ? 'מקרה בוחן' : 'case study',
+    isHe ? 'פיתוח מסחר אלקטרוני' : 'e-commerce development',
+    `${caseStudy.platform} ${isHe ? 'פיתוח' : 'development'}`,
   ];
 
   return genMeta(
     {
-      title: `${caseStudy.title} | Case Study`,
+      title: `${caseStudy.title} | ${isHe ? 'מקרה בוחן' : 'Case Study'}`,
       description: caseStudy.summary,
       url: `/work/${slug}`,
       type: 'article',
@@ -73,10 +76,11 @@ export default async function CaseStudyPage({
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
+  const isHe = locale === 'he';
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Work', url: '/work' },
+      { name: isHe ? 'בית' : 'Home', url: '/' },
+      { name: isHe ? 'פרויקטים' : 'Work', url: '/work' },
       { name: caseStudy.title, url: `/work/${slug}` },
     ],
     locale as 'en' | 'he'
@@ -85,7 +89,6 @@ export default async function CaseStudyPage({
   const articleSchema = generateArticleSchema({
     title: caseStudy.title,
     description: caseStudy.summary,
-    date: new Date().toISOString(),
     url: `${siteUrl}/${locale}/work/${slug}`,
     locale: locale as 'en' | 'he',
     category: caseStudy.industry,
