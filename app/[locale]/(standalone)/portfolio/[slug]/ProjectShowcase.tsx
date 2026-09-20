@@ -84,7 +84,7 @@ function Label({ children, light = false }: { children: ReactNode; light?: boole
 
 function ProjectSnapshot({ project, isHebrew }: { project: PortfolioShowcaseProject; isHebrew: boolean }) {
   const labels = isHebrew
-    ? { status: 'סטטוס', period: 'תקופה', ownership: 'Ownership', scope: 'Scope המוצר', stack: 'Stack' }
+    ? { status: 'סטטוס', period: 'תקופה', ownership: 'אחריות', scope: 'תחום המוצר', stack: 'טכנולוגיות' }
     : { status: 'Status', period: 'Period', ownership: 'Ownership', scope: 'Product scope', stack: 'Stack' };
 
   return (
