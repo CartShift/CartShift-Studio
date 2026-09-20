@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type MotionProps } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, X } from 'lucide-react';
 import type { PortfolioShowcaseProject, ShowcaseMedia } from '@/lib/portfolio-showcase';
@@ -60,7 +60,7 @@ function Screen({
       type="button"
       onClick={onOpen}
       className={`group relative block w-full overflow-hidden text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#111113] ${shell} ${className}`}
-      aria-label={`Open ${media.label}`}
+      aria-label={media.alt}
     >
       <ProductImage
         media={media}
@@ -79,6 +79,91 @@ function Label({ children, light = false }: { children: ReactNode; light?: boole
     <p className={`text-[9px] font-semibold uppercase tracking-[0.18em] sm:text-[10px] ${light ? 'text-white/62' : 'text-black/55'}`}>
       {children}
     </p>
+  );
+}
+
+function ProjectSnapshot({ project, isHebrew }: { project: PortfolioShowcaseProject; isHebrew: boolean }) {
+  const labels = isHebrew
+    ? { status: 'סטטוס', period: 'תקופה', ownership: 'Ownership', scope: 'Scope מוכח', stack: 'Stack' }
+    : { status: 'Status', period: 'Period', ownership: 'Ownership', scope: 'Product scope', stack: 'Stack' };
+
+  return (
+    <section className="border-y border-black/12 bg-[#f7f5f0] px-5 py-8 text-[#171719] sm:px-8 sm:py-10 lg:px-12">
+      <div className="mx-auto max-w-[1680px]">
+        <div className="grid gap-px bg-black/12 lg:grid-cols-[.7fr_.55fr_1.35fr_1.7fr]">
+          {[
+            [labels.status, project.status ?? (isHebrew ? 'פעיל' : 'Active')],
+            [labels.period, project.year],
+            [labels.ownership, project.role],
+          ].map(([label, value]) => (
+            <div key={label} className="bg-[#f7f5f0] p-5 sm:p-6">
+              <Label>{label}</Label>
+              <p className="mt-3 text-sm leading-6 text-black/68 sm:text-[15px]">{value}</p>
+            </div>
+          ))}
+          <div className="bg-[#f7f5f0] p-5 sm:p-6">
+            <Label>{labels.scope}</Label>
+            <ul className="mt-3 space-y-2">
+              {project.highlights.map(item => (
+                <li key={item} className="grid grid-cols-[auto_1fr] gap-2 text-sm leading-6 text-black/68">
+                  <span className="mt-[.72rem] h-px w-3 bg-black/38" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="mt-px flex flex-wrap items-center gap-x-4 gap-y-2 bg-[#ece9e2] px-5 py-4 sm:px-6">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/42">{labels.stack}</span>
+          {project.technologies.map(technology => (
+            <span key={technology} className="text-[10px] font-semibold uppercase tracking-[0.1em] text-black/58">{technology}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TechnicalEvidence({
+  isHebrew,
+  eyebrow,
+  title,
+  body,
+  steps,
+  dark = false,
+}: {
+  isHebrew: boolean;
+  eyebrow: string;
+  title: string;
+  body: string;
+  steps: string[];
+  dark?: boolean;
+}) {
+  return (
+    <section className={`${dark ? 'bg-[#171719] text-white' : 'bg-white text-[#171719]'} px-5 py-20 sm:px-8 sm:py-28 lg:px-12`}>
+      <div className="mx-auto max-w-[1680px]">
+        <div className="grid gap-10 lg:grid-cols-[.34fr_1fr] lg:gap-20">
+          <div>
+            <Label light={dark}>{eyebrow}</Label>
+            <p className={`mt-5 max-w-sm text-sm leading-6 ${dark ? 'text-white/62' : 'text-black/58'}`}>{body}</p>
+          </div>
+          <div>
+            <h2 className="max-w-[12ch] text-[12vw] font-medium leading-[.84] tracking-[-.065em] sm:text-[6.5vw] lg:text-[4.8vw] xl:text-[4.8rem]">{title}</h2>
+            <div className={`mt-12 grid gap-px ${dark ? 'bg-white/14' : 'bg-black/14'} sm:grid-cols-2 lg:grid-cols-5`}>
+              {steps.map((step, index) => (
+                <div key={step} className={`${dark ? 'bg-[#1f1f22]' : 'bg-[#f4f1eb]'} min-h-32 p-5 sm:p-6`}>
+                  <span className={`text-[9px] font-semibold uppercase tracking-[0.16em] ${dark ? 'text-white/38' : 'text-black/38'}`}>{String(index + 1).padStart(2, '0')}</span>
+                  <p className="mt-8 text-base font-medium leading-6 tracking-[-0.02em]">{step}</p>
+                </div>
+              ))}
+            </div>
+            <p className={`mt-5 text-[10px] font-semibold uppercase tracking-[0.12em] ${dark ? 'text-white/38' : 'text-black/38'}`}>
+              {isHebrew ? 'תרשים מפושט של גבולות המערכת' : 'Simplified system boundary'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -121,8 +206,8 @@ function EngineeringDecisions({
 }
 
 function SharedHeader({ project, locale, isHebrew }: { project: PortfolioShowcaseProject; locale: string; isHebrew: boolean }) {
-  const portfolioHref = `/${locale}/portfolio`;
-  const cvHref = `/${locale}/cv`;
+  const portfolioHref = `/${locale}/yotam#work`;
+  const cvHref = `/${locale}/yotam#experience`;
 
   return (
     <header className="absolute inset-x-0 top-0 z-40 px-5 py-5 text-white sm:px-8 sm:py-7 lg:px-12">
@@ -175,6 +260,8 @@ function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           ) : null}
         </div>
       </section>
+
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
 
       <section className="bg-[#eceae5] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
@@ -287,6 +374,8 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </div>
       </section>
 
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+
       <section className="bg-white px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.28fr_1fr] lg:gap-20">
@@ -396,6 +485,8 @@ function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
         </div>
       </section>
 
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+
       <section className="bg-[#f3eff8] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
           <motion.div {...reveal} className="grid gap-10 lg:grid-cols-[.28fr_1fr] lg:gap-20">
@@ -463,6 +554,8 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </div>
       </section>
+
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
 
       <section className="bg-[#fff6ef] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
@@ -572,6 +665,8 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           ) : null}
         </div>
       </section>
+
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
 
       <section className="bg-[#eceae5] px-5 py-24 sm:px-8 sm:py-32 lg:px-12 lg:py-40">
         <div className="mx-auto max-w-[1680px]">
