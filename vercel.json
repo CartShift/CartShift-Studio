@@ -6,5 +6,11 @@
       "source": "/__/auth/:path*",
       "destination": "https://cartshiftstudio.firebaseapp.com/__/auth/:path*"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "**": false,
+      "main": true
+    }
+  }
 }
