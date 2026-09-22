@@ -219,7 +219,7 @@ export default function YotamProfile() {
               initial={reduceMotion ? false : { opacity: 0, y: 44 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.82, ease }}
-              className="max-w-[14ch] text-balance text-[clamp(3.1rem,11.5vw,7.2rem)] font-medium leading-[0.87] tracking-[-0.07em] text-white"
+              className="max-w-[14ch] text-balance text-[clamp(2.75rem,8.5vw,6rem)] font-medium leading-[0.87] tracking-[-0.07em] text-white"
             >
               {copy.headline}
             </motion.h1>
@@ -270,7 +270,7 @@ export default function YotamProfile() {
             01 / {copy.profile}
           </p>
           <div>
-            <h2 className="max-w-[16ch] text-balance text-[clamp(2.75rem,10vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
+            <h2 className="max-w-[16ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
               {copy.profileTitle}
             </h2>
             <div className="mt-9 border-t border-black/20 pt-7 lg:mt-11">
@@ -305,7 +305,7 @@ export default function YotamProfile() {
             <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/55 sm:text-[11px]">
               02 / {copy.experience}
             </p>
-            <h2 className="max-w-[14ch] text-balance text-[clamp(2.75rem,10vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.06em] text-white">
+            <h2 className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-white">
               {copy.recentTitle}
             </h2>
           </motion.div>
@@ -331,7 +331,7 @@ export default function YotamProfile() {
                 </div>
                 <div>
                   <h3
-                    className="text-[clamp(2rem,8vw,2.5rem)] font-medium leading-[0.94] tracking-[-0.05em] text-white"
+                    className="text-[clamp(1.75rem,5.5vw,2.2rem)] font-medium leading-[0.94] tracking-[-0.05em] text-white"
                     dir="ltr"
                   >
                     {item.company}
@@ -404,7 +404,7 @@ export default function YotamProfile() {
               03 / {copy.work}
             </p>
             <div className="grid gap-7 lg:grid-cols-[1fr_.6fr] lg:items-end">
-              <h2 className="max-w-[14ch] text-balance text-[clamp(2.75rem,10vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
+              <h2 className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
                 {copy.workTitle}
               </h2>
               <p className="max-w-xl text-sm leading-6 text-black/62 sm:text-base sm:leading-7">
@@ -460,7 +460,7 @@ export default function YotamProfile() {
                         {project.descriptor}
                       </p>
                       <h3
-                        className="mt-2 text-[clamp(2.2rem,8vw,3.4rem)] font-medium leading-[0.9] tracking-[-0.055em] text-[#1d1d1f]"
+                        className="mt-2 text-[clamp(1.9rem,5vw,2.8rem)] font-medium leading-[0.9] tracking-[-0.055em] text-[#1d1d1f]"
                         dir="ltr"
                       >
                         {project.title}
@@ -531,7 +531,7 @@ export default function YotamProfile() {
             <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
               04 / {copy.capabilities}
             </p>
-            <h2 className="max-w-[14ch] text-balance text-[clamp(2.75rem,10vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
+            <h2 className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
               {copy.skillsTitle}
             </h2>
           </motion.div>
@@ -544,7 +544,7 @@ export default function YotamProfile() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45 sm:text-[11px]">
                   {String(index + 1).padStart(2, '0')}
                 </p>
-                <h3 className="text-[clamp(1.8rem,7vw,3rem)] font-medium leading-none tracking-[-0.05em] text-[#1d1d1f]">
+                <h3 className="text-[clamp(1.65rem,4.5vw,2.5rem)] font-medium leading-none tracking-[-0.05em] text-[#1d1d1f]">
                   {skill.category}
                 </h3>
                 <div className="flex flex-wrap gap-x-3 gap-y-2 text-[13px] leading-5 text-black/66 sm:text-sm sm:leading-6">
@@ -571,7 +571,7 @@ export default function YotamProfile() {
           <div>
             <motion.h2
               {...sectionReveal}
-              className="max-w-[14ch] text-balance text-[clamp(2.75rem,10vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]"
+              className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]"
             >
               {copy.foundationTitle}
             </motion.h2>
@@ -627,7 +627,7 @@ export default function YotamProfile() {
               {copy.availability}
             </p>
             <div>
-              <h2 className="max-w-[12ch] text-balance text-[clamp(3.2rem,12vw,7rem)] font-medium leading-[0.84] tracking-[-0.07em] text-white">
+              <h2 className="max-w-[12ch] text-balance text-[clamp(2.75rem,8vw,5.6rem)] font-medium leading-[0.84] tracking-[-0.07em] text-white">
                 {copy.contactTitle}
               </h2>
               <div className="mt-10 flex flex-col gap-8 border-t border-white/30 pt-7 sm:flex-row sm:items-end sm:justify-between">
