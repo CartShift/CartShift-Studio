@@ -224,10 +224,6 @@ export function generateServiceSchema(
       '@type': 'GeoShape',
       name: 'Worldwide',
     },
-    serviceOutput: {
-      '@type': 'Product',
-      name: `${serviceName} deliverables`,
-    },
     hasOfferCatalog: config?.offers
       ? {
           '@type': 'OfferCatalog',
