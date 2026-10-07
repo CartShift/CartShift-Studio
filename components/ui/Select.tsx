@@ -73,6 +73,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
     ref
   ) => {
     const state = propState || (error ? 'error' : success ? 'success' : 'default');
+    const triggerRef = React.useRef<HTMLButtonElement | null>(null);
     const generatedId = useId();
     const selectId = id || `select-${generatedId}`;
     const errorId = `${selectId}-error`;
@@ -94,8 +95,36 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             ];
           });
 
+    const setTriggerRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        triggerRef.current = node;
+
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref]
+    );
+
+    React.useEffect(() => {
+      const explicitValue = value ?? defaultValue;
+      if (triggerRef.current && explicitValue !== undefined) {
+        triggerRef.current.value = String(explicitValue);
+      }
+    }, [value, defaultValue]);
+
     const emitValue = (nextValue: string) => {
       const denormalizedValue = nextValue === EMPTY_VALUE ? '' : nextValue;
+
+      // Keep the trigger's native value in sync with Radix. react-hook-form's
+      // register() reads the referenced element again on blur; without this,
+      // the button's default empty value can overwrite a valid selection.
+      if (triggerRef.current) {
+        triggerRef.current.value = denormalizedValue;
+      }
+
       onValueChange?.(denormalizedValue);
 
       if (onChange) {
@@ -124,7 +153,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         >
           <SelectPrimitive.Trigger
             {...triggerProps}
-            ref={ref}
+            ref={setTriggerRef}
             id={selectId}
             name={name}
             onBlur={onBlur}
