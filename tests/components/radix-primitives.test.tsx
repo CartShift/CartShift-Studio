@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useForm } from 'react-hook-form';
 import { RadixProvider } from '@/components/providers/RadixProvider';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { ModalBackdrop, ModalContent } from '@/components/ui/ModalBackdrop';
@@ -115,6 +116,38 @@ describe('Radix-backed UI primitives', () => {
     await user.click(trigger);
     await user.click(screen.getByRole('option', { name: 'Israeli Shekel' }));
     expect(onValueChange).toHaveBeenCalledWith('ILS');
+  });
+
+  it('preserves react-hook-form registered values when the select trigger blurs', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+
+    function ReactHookFormSelectHarness() {
+      const { register, handleSubmit } = useForm<{ type: string }>();
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Select
+            label="Request type"
+            options={[
+              { value: 'feature', label: 'Feature' },
+              { value: 'bug', label: 'Bug' },
+            ]}
+            {...register('type')}
+          />
+          <button type="submit">Submit request</button>
+        </form>
+      );
+    }
+
+    renderWithRadix(<ReactHookFormSelectHarness />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Request type' }));
+    await user.click(screen.getByRole('option', { name: 'Bug' }));
+    await user.click(screen.getByRole('button', { name: 'Submit request' }));
+
+    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ type: 'bug' });
   });
 
   it('renders select options above modal layers', async () => {
