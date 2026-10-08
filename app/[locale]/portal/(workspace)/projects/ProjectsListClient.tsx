@@ -46,7 +46,7 @@ export default function ProjectsListClient() {
     if (!title.trim() || !selectedOrg || creating) return;
     setCreating(true);
     try {
-      const id = await createClientProject({ title, orgId: selectedOrg, template });
+      const id = await createClientProject({ title, orgId: selectedOrg, template, locale: locale === 'he' ? 'he' : 'en' });
       await cache.invalidateQueries({ queryKey: ['client-projects'] });
       setShowCreate(false);
       setTitle('');

@@ -36,12 +36,13 @@ export async function createClientProject(input: {
   orgId: string;
   title: string;
   template: ProjectTemplate;
+  locale?: 'en' | 'he';
   summary?: string;
 }): Promise<string> {
   await waitForAuth();
   const user = getFirebaseAuth().currentUser;
   if (!user || !input.orgId || !input.title.trim()) throw new Error('Missing project details');
-  const initial = buildProjectTemplate(input.template);
+  const initial = buildProjectTemplate(input.template, input.locale || 'en');
   const reference = await addDoc(collection(getFirestoreDb(), COLLECTION), {
     orgId: input.orgId,
     title: input.title.trim(),

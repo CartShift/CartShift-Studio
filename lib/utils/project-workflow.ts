@@ -19,39 +19,55 @@ export const PROJECT_TEMPLATES: Record<ProjectTemplate, {
   stages: string[];
   checks: string[];
   inputs: string[];
+  stagesHe: string[];
+  checksHe: string[];
+  inputsHe: string[];
 }> = {
   shopify_theme: {
     en: 'Shopify theme / redesign', he: 'שדרוג ועיצוב חנות Shopify',
     stages: ['Discovery & scope', 'Design and development', 'Client review', 'QA & launch'],
     checks: ['Mobile and desktop QA', 'Navigation, cart and checkout tested', 'Client sign-off', 'Rollback plan documented'],
     inputs: ['Shopify collaborator access', 'Brand assets and content'],
+    stagesHe: ['אבחון והגדרת היקף', 'עיצוב ופיתוח', 'בדיקת הלקוח', 'בדיקות והשקה'],
+    checksHe: ['בדיקה במובייל ובדסקטופ', 'בדיקת ניווט, סל ותשלום', 'אישור הלקוח', 'תוכנית חזרה לגרסה קודמת'],
+    inputsHe: ['גישת שותף לחנות Shopify', 'לוגו, מדיה ותכני מותג'],
   },
   catalog_launch: {
     en: 'New product catalog', he: 'השקת קטלוג מוצרים',
     stages: ['Catalog and source files', 'Products and collections', 'Review and revisions', 'Operational testing', 'Go live'],
     checks: ['Product and variant data verified', 'Inventory locations validated', 'Mixed orders and fulfillment tested', 'Payment integrations tested', 'Client sign-off'],
     inputs: ['Product spreadsheet and variants', 'Nutrition/content and approved media', 'Fulfillment provider access'],
+    stagesHe: ['איסוף קבצי קטלוג', 'הקמת מוצרים וקולקציות', 'בדיקת הלקוח ותיקונים', 'בדיקות תפעוליות', 'עלייה לאוויר'],
+    checksHe: ['בדיקת מוצרים ווריאציות', 'אימות Locations ומלאי', 'בדיקת הזמנות מעורבות וליקוט', 'בדיקת אינטגרציות תשלום', 'אישור הלקוח'],
+    inputsHe: ['טבלת מוצרים ווריאציות', 'מידע מקצועי, תוכן ומדיה מאושרת', 'גישה לספק הפולפילמנט'],
   },
   seo: {
     en: 'SEO improvements', he: 'פרויקט SEO',
     stages: ['Audit', 'Prioritization', 'Implementation', 'Verification & handoff'],
     checks: ['Metadata and indexing verified', 'Redirects and internal links tested', 'Client handoff'],
     inputs: ['Search Console access', 'Priority categories and markets'],
+    stagesHe: ['אודיט', 'תעדוף', 'מימוש', 'אימות ומסירה'],
+    checksHe: ['אימות מטא-דאטה ואינדוקס', 'בדיקת הפניות וקישורים פנימיים', 'מסירה ללקוח'],
+    inputsHe: ['גישה ל-Search Console', 'קטגוריות ושווקי יעד'],
   },
   custom: {
     en: 'Custom project', he: 'פרויקט מותאם',
     stages: ['Planning', 'Implementation', 'Review', 'Delivery'],
     checks: ['QA completed', 'Client approval'],
     inputs: [],
+    stagesHe: ['תכנון', 'מימוש', 'סקירה', 'מסירה'],
+    checksHe: ['בדיקות איכות הושלמו', 'אישור הלקוח'],
+    inputsHe: [],
   },
 };
 
-export function buildProjectTemplate(template: ProjectTemplate) {
+export function buildProjectTemplate(template: ProjectTemplate, locale: 'en' | 'he' = 'en') {
   const value = PROJECT_TEMPLATES[template];
+  const isHe = locale === 'he';
   return {
-    stages: value.stages.map(stage),
-    launchChecks: value.checks.map(check),
-    inputs: value.inputs.map((title, index) => ({
+    stages: (isHe ? value.stagesHe : value.stages).map(stage),
+    launchChecks: (isHe ? value.checksHe : value.checks).map(check),
+    inputs: (isHe ? value.inputsHe : value.inputs).map((title, index) => ({
       id: 'input-' + index, title, done: false, required: true,
     })),
   };

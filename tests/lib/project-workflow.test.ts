@@ -42,6 +42,7 @@ describe('project workflows', () => {
     expect(input.stages.every(s => s.status === 'pending')).toBe(true);
     expect(input.launchChecks.every(s => !s.done && s.required)).toBe(true);
     expect(input.inputs.length).toBeGreaterThan(0);
+    expect(buildProjectTemplate('catalog_launch', 'he').stages[0].title).toContain('קטלוג');
   });
   it('blocks release until blockers, inputs, checks and current reviews are clear', () => {
     const p = project();
