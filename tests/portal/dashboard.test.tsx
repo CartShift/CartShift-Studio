@@ -161,7 +161,7 @@ describe('Dashboard Page', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('pinned-requests')).toBeInTheDocument();
-      expect(screen.getByTestId('project-highlights')).toBeInTheDocument();
+      expect(screen.queryByTestId('project-highlights')).not.toBeInTheDocument();
     });
   });
 });
