@@ -226,6 +226,12 @@ export interface Organization {
   // Agency Responsibility
   responsibleAgencyUserId?: string; // ID of the agency user responsible for this client
 
+  // Non-permission-bearing CRM contact (not a portal member or invitation)
+  primaryContactName?: string;
+  primaryContactRole?: string;
+  primaryContactEmail?: string;
+  primaryContactPhone?: string;
+
   // Billing details used on payment documents
   billingName?: string;
   billingEmail?: string;
