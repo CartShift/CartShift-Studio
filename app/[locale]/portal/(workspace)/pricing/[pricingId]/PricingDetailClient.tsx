@@ -116,7 +116,8 @@ export default function PricingDetailClient() {
           </Link>
           {isAgency &&
             (pricingRequest.status === PRICING_STATUS.DRAFT ||
-              pricingRequest.status === PRICING_STATUS.SENT) && (
+              pricingRequest.status === PRICING_STATUS.SENT ||
+              pricingRequest.status === PRICING_STATUS.CLIENT_EDITED) && (
               <Link href={getPortalPath(`/pricing/${pricingId}/edit`)}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Pencil size={18} />
