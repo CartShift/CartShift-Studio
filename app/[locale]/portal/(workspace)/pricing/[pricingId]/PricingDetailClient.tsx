@@ -19,6 +19,7 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedPricingId } from '@/lib/hooks/useResolvedPricingId';
 import { usePricingRequest } from '@/lib/hooks/usePricingRequest';
 import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
+import { ProposalRequirementsPanel } from '@/components/portal/pricing/ProposalRequirementsPanel';
 import {
   getPricingStatusBadgeVariant,
   getStatusBadgeVariant,
@@ -324,6 +325,7 @@ export default function PricingDetailClient() {
             </div>
           )}
         </Card>
+        {pricingRequest.proposalContent?.requirements?.length ? <ProposalRequirementsPanel request={pricingRequest} isAgency={isAgency} /> : null}
         {isAgency && <ProposalPaymentPanel proposal={pricingRequest} locale={locale} />}
       </div>
   );
