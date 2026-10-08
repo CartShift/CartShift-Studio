@@ -1,4 +1,4 @@
-import { MCP_ORIGIN, MCP_RESOURCE, MCP_SCOPES, requireMcpToken } from '@/lib/mcp/connection';
+import { MCP_ORIGIN, requireMcpToken } from '@/lib/mcp/connection';
 import { TOOL_DEFS, callTool } from '@/lib/mcp/tools';
 
 export const runtime = 'nodejs';
