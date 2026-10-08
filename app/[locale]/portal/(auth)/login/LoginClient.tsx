@@ -61,7 +61,11 @@ function LoginForm() {
       await signInWithGoogle();
       toast.success(t('auth.login.success'));
       const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
-      window.location.assign(getPortalPathnameForRedirect(targetPath, locale));
+      // Allow only the CartShift OAuth callback route to resume on the same origin.
+      const isMcpOAuthReturn = targetPath.startsWith('/api/cartshift-mcp/oauth/authorize?');
+      window.location.assign(
+        isMcpOAuthReturn ? targetPath : getPortalPathnameForRedirect(targetPath, locale)
+      );
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =
@@ -88,7 +92,11 @@ function LoginForm() {
       await loginWithEmail(data.email, data.password);
       toast.success(t('auth.login.success'));
       const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
-      window.location.assign(getPortalPathnameForRedirect(targetPath, locale));
+      // Allow only the CartShift OAuth callback route to resume on the same origin.
+      const isMcpOAuthReturn = targetPath.startsWith('/api/cartshift-mcp/oauth/authorize?');
+      window.location.assign(
+        isMcpOAuthReturn ? targetPath : getPortalPathnameForRedirect(targetPath, locale)
+      );
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       const errorMessage =

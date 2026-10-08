@@ -29,19 +29,19 @@ describe('CV recruiter optimization', () => {
   it('renders recruiter-focused skill groups and filled independent roles', () => {
     renderWithMessages(<CVPageContent />);
 
-    expect(screen.getByText('Primary Stack')).toBeInTheDocument();
-    expect(screen.getByText('E-Commerce & Integrations')).toBeInTheDocument();
-    expect(screen.getByText('AI & Automation')).toBeInTheDocument();
+    expect(screen.getByText('Full-Stack')).toBeInTheDocument();
+    expect(screen.getByText('APIs & Commerce')).toBeInTheDocument();
+    expect(screen.getByText('AI-Assisted Products')).toBeInTheDocument();
     expect(screen.getByText('Cloud & Data')).toBeInTheDocument();
-    expect(screen.getByText('Legacy Enterprise')).toBeInTheDocument();
+    expect(screen.getByText('Enterprise Integration')).toBeInTheDocument();
 
     expect(screen.getByText('E-Commerce Founder & Developer')).toBeInTheDocument();
     expect(
-      screen.getByText(/Built and operated direct-to-consumer e-commerce experiments/)
+      screen.getByText(/Built and operated DTC storefronts, payments, fulfillment/)
     ).toBeInTheDocument();
     expect(screen.getByText('Entrepreneur & Freelance Developer')).toBeInTheDocument();
     expect(
-      screen.getByText(/Delivered freelance web and integration projects/)
+      screen.getByText(/Delivered web and integration projects while building independent product ideas/)
     ).toBeInTheDocument();
   }, 10000);
 
@@ -49,7 +49,7 @@ describe('CV recruiter optimization', () => {
     renderWithMessages(<CVPageContent />, 'he');
 
     expect(screen.getByText('סטאק מרכזי')).toBeInTheDocument();
-    expect(screen.getByText('איקומרס ואינטגרציות')).toBeInTheDocument();
+    expect(screen.getByText('E-commerce, Shopify ואינטגרציות')).toBeInTheDocument();
     expect(screen.getByText('ענן ונתונים')).toBeInTheDocument();
     expect(screen.getAllByText('פתוח להזדמנויות').length).toBeGreaterThan(0);
   });

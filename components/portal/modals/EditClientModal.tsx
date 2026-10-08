@@ -40,6 +40,10 @@ const editOrgSchema = (t: TranslationFunction) =>
       .or(z.literal('')),
     responsibleAgencyUserId: z.string().optional(),
     status: z.enum(['active', 'inactive', 'suspended']).optional(),
+    primaryContactName: z.string().max(160).optional(),
+    primaryContactRole: z.string().max(160).optional(),
+    primaryContactEmail: z.string().email().optional().or(z.literal('')),
+    primaryContactPhone: z.string().max(50).optional(),
     billingName: z.string().max(160).optional(),
     billingEmail: z.string().email().optional().or(z.literal('')),
     billingTaxId: z.string().max(80).optional(),
@@ -84,6 +88,10 @@ export const EditClientModal = ({
       industry: organization.industry || '',
       responsibleAgencyUserId: organization.responsibleAgencyUserId || '',
       status: organization.status || 'active',
+      primaryContactName: organization.primaryContactName || '',
+      primaryContactRole: organization.primaryContactRole || '',
+      primaryContactEmail: organization.primaryContactEmail || '',
+      primaryContactPhone: organization.primaryContactPhone || '',
       billingName: organization.billingName || '',
       billingEmail: organization.billingEmail || '',
       billingTaxId: organization.billingTaxId || '',
@@ -103,6 +111,10 @@ export const EditClientModal = ({
       industry: organization.industry || '',
       responsibleAgencyUserId: organization.responsibleAgencyUserId || '',
       status: organization.status || 'active',
+      primaryContactName: organization.primaryContactName || '',
+      primaryContactRole: organization.primaryContactRole || '',
+      primaryContactEmail: organization.primaryContactEmail || '',
+      primaryContactPhone: organization.primaryContactPhone || '',
       billingName: organization.billingName || '',
       billingEmail: organization.billingEmail || '',
       billingTaxId: organization.billingTaxId || '',
@@ -139,6 +151,10 @@ export const EditClientModal = ({
         website: data.website || undefined,
         industry: data.industry || undefined,
         responsibleAgencyUserId: data.responsibleAgencyUserId || null,
+        primaryContactName: data.primaryContactName,
+        primaryContactRole: data.primaryContactRole,
+        primaryContactEmail: data.primaryContactEmail,
+        primaryContactPhone: data.primaryContactPhone,
         billingName: data.billingName,
         billingEmail: data.billingEmail,
         billingTaxId: data.billingTaxId,
@@ -190,6 +206,16 @@ export const EditClientModal = ({
               {...register('industry')}
               className="font-outfit"
             />
+
+            <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
+              <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">{t('organization.primaryContact.title')}</p>
+              <div className="space-y-3">
+                <Input label={t('organization.primaryContact.name')} {...register('primaryContactName')} />
+                <Input label={t('organization.primaryContact.role')} {...register('primaryContactRole')} />
+                <Input label={t('organization.primaryContact.email')} type="email" error={errors.primaryContactEmail?.message} {...register('primaryContactEmail')} />
+                <Input label={t('organization.primaryContact.phone')} type="tel" {...register('primaryContactPhone')} />
+              </div>
+            </div>
 
             <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
               <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">

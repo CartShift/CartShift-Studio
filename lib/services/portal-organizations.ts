@@ -180,6 +180,10 @@ export async function updateOrganization(
     shopifyAccessRequestedAt?: import('firebase/firestore').Timestamp;
     shopifyConnectedAt?: import('firebase/firestore').Timestamp;
     responsibleAgencyUserId?: string | null;
+    primaryContactName?: string;
+    primaryContactRole?: string;
+    primaryContactEmail?: string;
+    primaryContactPhone?: string;
     billingName?: string;
     billingEmail?: string;
     billingTaxId?: string;
