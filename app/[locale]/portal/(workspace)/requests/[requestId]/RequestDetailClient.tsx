@@ -32,6 +32,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useSearchParams } from 'next/navigation';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
+import { ProposalRequirementsPanel } from '@/components/portal/pricing/ProposalRequirementsPanel';
 import EditPricingForm from '../../pricing/[pricingId]/edit/EditPricingForm';
 import {
   getStatusTranslationKey,
@@ -339,7 +340,7 @@ export default function RequestDetailClient({
             onStatusChange={handleStatusChange}
             className="w-full"
           />
-          {(request.status === 'DRAFT' || request.status === 'QUOTED') && request.isBillable && (
+          {(request.status === 'DRAFT' || request.status === 'QUOTED' || request.status === 'CHANGES_REQUESTED') && request.isBillable && (
             <Button
               className="mt-4"
               leftIcon={<Send size={16} />}
@@ -380,6 +381,7 @@ export default function RequestDetailClient({
                 priorityLabel={priorityLabel}
                 recentlyLabel={t('common.recently')}
               />
+              {request.proposalContent?.requirements?.length ? <ProposalRequirementsPanel request={request} isAgency={isAgency} /> : null}
               {isAgency && request.isBillable && request.totalAmount !== undefined && (
                 <ProposalPaymentPanel proposal={request as PricingRequest} locale={locale} />
               )}
