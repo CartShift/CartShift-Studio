@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { CheckCircle2, Loader2, LockKeyhole, Printer } from 'lucide-react';
+import { CheckCircle2, Loader2, LockKeyhole, Printer, MessageCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PublicProposalSummary } from '@/components/proposals/PublicProposalSummary';
 import { ProposalPaymentCheckout } from '@/components/proposals/ProposalPaymentCheckout';
@@ -24,6 +24,11 @@ export default function ProposalPublicClient({ token }: { token: string }) {
   const [acceptedByEmail, setAcceptedByEmail] = useState('');
   const [signatureText, setSignatureText] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [feedbackName, setFeedbackName] = useState('');
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [feedbackSending, setFeedbackSending] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -58,6 +63,31 @@ export default function ProposalPublicClient({ token }: { token: string }) {
       setError(submitError instanceof Error ? submitError.message : t('error'));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const sendFeedback = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!proposal) return;
+    setFeedbackSending(true);
+    setFeedbackError(null);
+    try {
+      const response = await fetch(`/api/proposals/${encodeURIComponent(token)}/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: feedbackName,
+          message: feedbackMessage,
+          proposalVersion: proposal.proposalVersion ?? 0,
+        }),
+      });
+      if (!response.ok) throw new Error(t('error'));
+      setFeedbackSent(true);
+      await load();
+    } catch (e) {
+      setFeedbackError(e instanceof Error ? e.message : t('error'));
+    } finally {
+      setFeedbackSending(false);
     }
   };
 
@@ -104,7 +134,28 @@ export default function ProposalPublicClient({ token }: { token: string }) {
           <PublicProposalSummary proposal={proposal} />
         </div>
 
-        <div className="print:hidden">{isAccepted ? (
+        <div className="print:hidden">
+          {feedbackSent && <p role="status" className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-4 text-sm text-emerald-100">{t('details.feedbackSent')}</p>}
+          {proposal.status === 'QUOTED' && !feedbackSent && (
+            <details className="mb-5 rounded-2xl border border-white/10 bg-white/[0.035] p-5">
+              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-400">
+                <MessageCircle size={18}/>{t('details.feedback')}
+              </summary>
+              <form onSubmit={sendFeedback} className="mt-5 space-y-4">
+                <PortalFormField label={t('details.feedbackName')} required>
+                  <Input required minLength={2} maxLength={160} value={feedbackName} onChange={e => setFeedbackName(e.target.value)}/>
+                </PortalFormField>
+                <PortalFormField label={t('details.feedbackMessage')} required>
+                  <textarea required minLength={3} maxLength={2000} rows={4} value={feedbackMessage}
+                    onChange={e => setFeedbackMessage(e.target.value)}
+                    className="w-full rounded-xl border border-white/20 bg-surface-900 p-3 text-sm text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-400"/>
+                </PortalFormField>
+                {feedbackError && <p role="alert" className="text-sm text-rose-300">{feedbackError}</p>}
+                <Button type="submit" loading={feedbackSending}>{t('details.feedbackSubmit')}</Button>
+              </form>
+            </details>
+          )}
+          {isAccepted ? (
           <div className="space-y-5">
             <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-5">
               <CheckCircle2 className="h-7 w-7 text-emerald-300" />
