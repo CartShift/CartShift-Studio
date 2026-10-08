@@ -121,6 +121,34 @@ export async function listProjectReviews(projectId: string): Promise<ProjectRevi
   return snapshot.docs.map(item => ({ id: item.id, ...item.data() }) as ProjectReview);
 }
 
+// Project change-order decisions reuse the same versioned, audited review collection.
+export async function submitChangeOrderDecision(input: {
+  project: ClientProject;
+  changeId: string;
+  decision: ProjectReviewDecision;
+  comment: string;
+}): Promise<void> {
+  await waitForAuth();
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('Authentication required');
+  if (!input.project.changes.some(change => change.id === input.changeId)) {
+    throw new Error('Change request no longer exists');
+  }
+  const deliverableId = 'change:' + input.changeId;
+  const ref = doc(getFirestoreDb(), COLLECTION, input.project.id, 'reviews',
+    deliverableId + '_' + user.uid);
+  await setDoc(ref, {
+    projectId: input.project.id,
+    orgId: input.project.orgId,
+    deliverableId,
+    reviewerId: user.uid,
+    revision: 1,
+    decision: input.decision,
+    comment: input.comment.trim().slice(0, 3000),
+    updatedAt: serverTimestamp(),
+  });
+}
+
 export async function submitProjectReview(input: {
   project: ClientProject;
   deliverableId: string;
