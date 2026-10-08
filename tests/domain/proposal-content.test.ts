@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateDeposit,
+  canStartProposalWork,
   calculateEstimate,
   emptyProposalContent,
   shopifyProjectTemplate,
@@ -30,6 +31,29 @@ describe('structured work proposals', () => {
 
   it('never turns a fixed quote into an unrequested time estimate', () => {
     expect(calculateEstimate(emptyProposalContent())).toBeNull();
+  });
+
+  it('prevents project execution before signature, deposit and mandatory materials', () => {
+    const content = shopifyProjectTemplate();
+    const quote = {
+      publicToken: 'token',
+      status: 'ACCEPTED',
+      paymentRequired: true,
+      depositAmount: 236_000,
+      amountPaid: 236_000,
+      proposalContent: content,
+      proposalRequirementStatuses: Object.fromEntries(
+        content.requirements.map(req => [req.id, 'approved' as const])
+      ),
+    };
+    expect(canStartProposalWork(quote)).toBe(true);
+    expect(canStartProposalWork({ ...quote, amountPaid: 0 })).toBe(false);
+    expect(canStartProposalWork({ ...quote, status: 'QUOTED' })).toBe(false);
+    expect(canStartProposalWork({
+      ...quote,
+      proposalRequirementStatuses: { ...quote.proposalRequirementStatuses, 'store-access': 'pending' },
+    })).toBe(false);
+    expect(canStartProposalWork({ status: 'NEW' })).toBe(true);
   });
 
   it('rejects unsafe ranges and inconsistent content', () => {
