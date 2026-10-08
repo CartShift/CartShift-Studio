@@ -3786,7 +3786,8 @@
       "publishUpdate": "Publish update",
       "noUpdates": "No updates yet.",
       "copyUpdate": "Copy update",
-      "copied": "Copied"
+      "copied": "Copied",
+      "viewAll": "View all"
     }
   },
   "proposal": {
