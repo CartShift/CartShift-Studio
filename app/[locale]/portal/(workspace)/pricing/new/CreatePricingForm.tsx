@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useForm, useFieldArray, FieldArrayWithId } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ import {
   PortalFormGrid,
   PortalFormSection,
 } from '@/components/portal/ui/PortalFormField';
-import { getRequestsByOrg } from '@/lib/services/portal-requests';
+import { getRequestsByOrg, getRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
@@ -83,6 +83,8 @@ export default function CreatePricingForm() {
   const { orgId, loading: org, fullOrganizations } = useOrg();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const relatedRequestId = searchParams.get('relatedRequestId');
+  const initializedRelatedId = useRef<string | null>(null);
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
@@ -215,6 +217,17 @@ export default function CreatePricingForm() {
       proposalContent: emptyProposalContent(),
     },
   });
+
+  // A change order creates a NEW offer; it never edits an accepted request.
+  useEffect(() => {
+    if (!relatedRequestId || !orgId || initializedRelatedId.current === relatedRequestId) return;
+    initializedRelatedId.current = relatedRequestId;
+    void getRequest(relatedRequestId).then(source => {
+      if (!source || source.orgId !== orgId) return;
+      setValue('title', `Change order: ${source.title}`);
+      setValue('description', `Additional work related to: ${source.title}. Only the scope in this new proposal is included.`);
+    });
+  }, [relatedRequestId, orgId, setValue]);
 
   // Prefill known client details without overwriting edits or drafts.
   useEffect(() => {
@@ -414,6 +427,7 @@ export default function CreatePricingForm() {
           requestIds: selectedRequestIds.length > 0 ? selectedRequestIds : undefined,
           proposalType: 'work_proposal',
           proposalContent: data.proposalContent,
+          relatedRequestId: relatedRequestId || undefined,
           terms: data.terms,
           publicAccessEnabled: true,
           taxRate: data.includeTax ? TAX_RATE : 0,
@@ -540,7 +554,7 @@ export default function CreatePricingForm() {
           />
 
           {/* Request Selection & Pricing Calculator */}
-          <RequestPricingCalculator
+          {!relatedRequestId && <RequestPricingCalculator
             availableRequests={availableRequests}
             selectedRequestIds={selectedRequestIds}
             onSelectionChange={setSelectedRequestIds}
@@ -549,7 +563,7 @@ export default function CreatePricingForm() {
             error={requestsError}
             onQuickAddRequest={() => router.push(getPortalPath('/requests/new'))}
             orgId={orgId!}
-          />
+          />}
 
           {/* Manual Line Items - For additional items or when no requests selected */}
           {(!lineItemsFromCalculator || selectedRequestIds.length === 0) && (
