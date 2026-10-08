@@ -24,7 +24,8 @@
       "common": {
         "noRequests": "No requests found",
         "dragToMove": "Drag cards to move them"
-      }
+      },
+      "invalidTransition": "This move skips a required approval step. Update the request status through its normal workflow."
     }
   }
 }

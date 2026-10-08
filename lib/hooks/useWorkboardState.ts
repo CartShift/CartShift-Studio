@@ -27,6 +27,7 @@ import {
   REQUEST_TYPE,
 } from '@/lib/types/portal';
 import type { EnhancedOrganization } from '@/lib/hooks/useAgencyClients';
+import { WORKBOARD_STATUS_GROUPS, canTransitionRequest } from '@/lib/utils/request-lifecycle';
 import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
 
 /**
@@ -146,35 +147,35 @@ export function useWorkboardState({
       {
         id: 'backlog',
         title: t('workboard.columns.backlog'),
-        status: [REQUEST_STATUS.DRAFT, REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO, REQUEST_STATUS.QUEUED, REQUEST_STATUS.QUOTED, REQUEST_STATUS.CHANGES_REQUESTED, REQUEST_STATUS.ACCEPTED],
+        status: WORKBOARD_STATUS_GROUPS.backlog,
         color: 'slate',
         defaultNewStatus: REQUEST_STATUS.NEW,
       },
       {
         id: 'in_progress',
         title: t('workboard.columns.inProgress'),
-        status: [REQUEST_STATUS.IN_PROGRESS],
+        status: WORKBOARD_STATUS_GROUPS.in_progress,
         color: 'blue',
         defaultNewStatus: REQUEST_STATUS.IN_PROGRESS,
       },
       {
         id: 'review',
         title: t('workboard.columns.review'),
-        status: [REQUEST_STATUS.IN_REVIEW],
+        status: WORKBOARD_STATUS_GROUPS.review,
         color: 'amber',
         defaultNewStatus: REQUEST_STATUS.IN_REVIEW,
       },
       {
         id: 'delivered',
         title: t('workboard.columns.delivered'),
-        status: [REQUEST_STATUS.DELIVERED, REQUEST_STATUS.PAID, REQUEST_STATUS.CLOSED],
+        status: WORKBOARD_STATUS_GROUPS.delivered,
         color: 'emerald',
         defaultNewStatus: REQUEST_STATUS.DELIVERED,
       },
       {
         id: 'archived',
         title: t('workboard.columns.archived'),
-        status: [REQUEST_STATUS.CANCELED, REQUEST_STATUS.DECLINED, REQUEST_STATUS.EXPIRED],
+        status: WORKBOARD_STATUS_GROUPS.archived,
         color: 'slate',
         defaultNewStatus: REQUEST_STATUS.CANCELED,
       },
@@ -272,6 +273,11 @@ export function useWorkboardState({
   const handleBulkMove = async (newStatus: RequestStatus) => {
     if (selectedRequests.size === 0) return;
 
+    if (requests.some(req => selectedRequests.has(req.id) && !canTransitionRequest(req.status, newStatus))) {
+      showError(t('workboard.moveError'), t('workboard.invalidTransition'));
+      return;
+    }
+
     try {
       await Promise.all(Array.from(selectedRequests).map(id => updateRequestStatus(id, newStatus)));
       setRequests(prev =>
@@ -366,6 +372,10 @@ export function useWorkboardState({
       if (!column.status.includes(request.status)) {
         const oldStatus = request.status;
         const newStatus = column.defaultNewStatus;
+        if (!canTransitionRequest(oldStatus, newStatus)) {
+          showError(t('workboard.moveError'), t('workboard.invalidTransition'));
+          return;
+        }
 
         // Optimistic update — update UI immediately
         setRequests(prev => prev.map(r => (r.id === requestId ? { ...r, status: newStatus } : r)));

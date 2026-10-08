@@ -103,7 +103,7 @@ export default function AgencyWorkboardClient() {
           itemCount={columnRequests.length}
           color={column.color}
           emptyMessage={t('workboard.emptyColumn')}
-          onAddClick={column.id === 'archived' ? undefined : () => setCreatingInColumnId(column.id)}
+          onAddClick={['backlog', 'in_progress'].includes(column.id) ? () => setCreatingInColumnId(column.id) : undefined}
           isAdding={creatingInColumnId === column.id}
         >
           {creatingInColumnId === column.id && (

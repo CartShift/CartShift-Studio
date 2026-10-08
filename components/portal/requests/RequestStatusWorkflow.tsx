@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { RequestStatus, REQUEST_STATUS } from '@/lib/types/portal';
 import { useTranslations } from 'next-intl';
 import { getStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
+import { REQUEST_ALLOWED_TRANSITIONS } from '@/lib/utils/request-lifecycle';
 
 // Define the workflow stages with their allowed transitions
 const WORKFLOW_STAGES: {
@@ -156,9 +157,7 @@ const WORKFLOW_STAGES: {
 
 // Get available transitions from current status
 function getAvailableTransitions(currentStatus: RequestStatus): RequestStatus[] {
-  return WORKFLOW_STAGES.filter(stage => stage.allowedFrom.includes(currentStatus)).map(
-    stage => stage.status
-  );
+  return [...REQUEST_ALLOWED_TRANSITIONS[currentStatus]];
 }
 
 // Get stage info for a status
