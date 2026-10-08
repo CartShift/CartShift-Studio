@@ -101,6 +101,7 @@ export interface CreatePricingRequestData {
   requestIds?: string[]; // Optional: link to existing requests
   proposalType?: ProposalType;
   proposalContent?: ProposalContent;
+  relatedRequestId?: string;
   terms?: string;
   publicAccessEnabled?: boolean;
   paymentRequired?: boolean;
