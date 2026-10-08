@@ -80,7 +80,7 @@ interface PricingFormData {
 }
 
 export default function CreatePricingForm() {
-  const { orgId, loading: org } = useOrg();
+  const { orgId, loading: org, fullOrganizations } = useOrg();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userData } = usePortalAuth();
@@ -223,6 +223,14 @@ export default function CreatePricingForm() {
       proposalContent: emptyProposalContent(),
     },
   });
+
+  // Prefill known client details without overwriting edits or drafts.
+  useEffect(() => {
+    const client = fullOrganizations.find(organization => organization.id === orgId);
+    if (!client) return;
+    if (!watch('clientName')) setValue('clientName', client.name);
+    if (!watch('clientEmail') && client.billingEmail) setValue('clientEmail', client.billingEmail);
+  }, [orgId, fullOrganizations, setValue, watch]);
 
   // Load calculator data from session storage
   useEffect(() => {
