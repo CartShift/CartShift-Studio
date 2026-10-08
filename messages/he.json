@@ -3680,7 +3680,8 @@
       "common": {
         "noRequests": "לא נמצאו בקשות",
         "dragToMove": "גרור כרטיסים כדי להעביר אותם"
-      }
+      },
+      "invalidTransition": "לא ניתן לדלג על שלב האישור. יש לעדכן את סטטוס הקריאה בהתאם לתהליך העבודה."
     },
     "projects": {
       "title": "פרויקטים",
@@ -3787,7 +3788,11 @@
       "noUpdates": "עדיין אין עדכונים.",
       "copyUpdate": "העתקת עדכון",
       "copied": "הועתק",
-      "viewAll": "כל הפרויקטים"
+      "viewAll": "כל הפרויקטים",
+      "nextAction": "מה הפעולה הבאה",
+      "awaitingApproval": "ממתין לאישור הרחבת העבודה",
+      "approveScope": "אישור תוספת העבודה",
+      "prepareUpdateDraft": "הכנת טיוטת עדכון"
     }
   },
   "proposal": {

@@ -223,7 +223,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
   const locale = useLocale();
   const cache = useQueryClient();
   const { isAgency, loading: authLoading, user } = usePortalAuth();
-  const key = ['client-project', id];
+  const key = useMemo(() => ['client-project', id], [id]);
   const { data: project, isLoading, error } = useQuery({
     queryKey: key, queryFn: () => getClientProject(id), enabled: !authLoading && Boolean(user),
     staleTime: 30_000,
@@ -258,7 +258,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     const stop = observeClientProject(id, value => cache.setQueryData(key, value),
       () => toast.error(t('loadError')));
     return () => stop();
-  }, [authLoading, cache, id, t, user]);
+  }, [authLoading, cache, id, key, t, user]);
 
   const refresh = async () => {
     await cache.invalidateQueries({ queryKey: key });

@@ -3680,7 +3680,8 @@
       "common": {
         "noRequests": "No requests found",
         "dragToMove": "Drag cards to move them"
-      }
+      },
+      "invalidTransition": "This move skips a required approval step. Update the request status through its normal workflow."
     },
     "projects": {
       "title": "Projects",
@@ -3787,7 +3788,11 @@
       "noUpdates": "No updates yet.",
       "copyUpdate": "Copy update",
       "copied": "Copied",
-      "viewAll": "View all"
+      "viewAll": "View all",
+      "nextAction": "Next follow-up action",
+      "awaitingApproval": "Awaiting change-order approval",
+      "approveScope": "Approve additional scope",
+      "prepareUpdateDraft": "Prepare update draft"
     }
   },
   "proposal": {
