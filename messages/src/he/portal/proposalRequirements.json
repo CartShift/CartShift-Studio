@@ -15,7 +15,8 @@
       "approval": "אישור הצעה",
       "approvedOffer": "ההצעה אושרה",
       "awaitingOffer": "ההצעה ממתינה לאישור",
-      "updateFailed": "לא ניתן לעדכן את מצב הדרישה."
+      "updateFailed": "לא ניתן לעדכן את מצב הדרישה.",
+      "paymentNotRequired": "מקדמה אינה נדרשת"
     }
   }
 }
