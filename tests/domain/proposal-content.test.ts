@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateDeposit,
+  validateProposalCap,
   canStartProposalWork,
   calculateEstimate,
   emptyProposalContent,
@@ -21,6 +22,14 @@ describe('structured work proposals', () => {
       minMinor: 300_000,
       maxMinor: 400_000,
     });
+  });
+
+  it('requires capped hourly proposals to cover their upper estimate', () => {
+    const content = shopifyProjectTemplate();
+    expect(() => validateProposalCap(content, [{ quantity: 1, unitPrice: 400_000 }])).not.toThrow();
+    expect(() => validateProposalCap(content, [{ quantity: 1, unitPrice: 300_000 }])).toThrow('cap');
+    content.pricing.mode = 'hourly_estimate';
+    expect(() => validateProposalCap(content, [{ quantity: 1, unitPrice: 300_000 }])).not.toThrow();
   });
 
   it('supports zero deposits and reliably rounds half of the approved gross amount', () => {
