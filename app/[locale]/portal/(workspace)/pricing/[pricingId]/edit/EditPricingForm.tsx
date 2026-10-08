@@ -541,6 +541,10 @@ export default function EditPricingForm() {
           <ProposalContentEditor
             value={watchedProposalContent}
             currency={watchedCurrency}
+            onTemplateApplied={() => {
+              setValue('paymentRequired', true, { shouldDirty: true });
+              setValue('depositAmount', 0, { shouldDirty: true });
+            }}
             onChange={proposalContent => setValue('proposalContent', proposalContent, { shouldDirty: true, shouldValidate: true })}
           />
 
