@@ -15,7 +15,8 @@
       "approval": "Proposal approval",
       "approvedOffer": "Proposal accepted",
       "awaitingOffer": "Awaiting acceptance",
-      "updateFailed": "Could not update this requirement."
+      "updateFailed": "Could not update this requirement.",
+      "paymentNotRequired": "No deposit required"
     }
   }
 }
