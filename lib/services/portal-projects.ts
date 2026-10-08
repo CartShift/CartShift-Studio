@@ -56,6 +56,7 @@ export async function createClientProject(input: {
     workLogs: [],
     changes: [],
     updates: [],
+    reviewRevisions: {},
     scope: { minHours: 0, maxHours: 0, rateCents: 0, currency: 'ILS' } satisfies ProjectScope,
     createdBy: user.uid,
     createdAt: serverTimestamp(),
@@ -84,10 +85,16 @@ export async function addProjectItem<K extends ProjectCollectionField>(
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists()) throw new Error('Project not found');
     const items = (snapshot.data()[field] || []) as ProjectCollectionItem[K][];
-    transaction.update(ref, {
+    const fields: Record<string, unknown> = {
       [field]: [...items, item],
       updatedAt: serverTimestamp(),
-    });
+    };
+    if (field === 'deliverables' || field === 'changes') {
+      const registry = (snapshot.data().reviewRevisions || {}) as Record<string, number>;
+      const reviewId = field === 'changes' ? 'change:' + item.id : item.id;
+      fields.reviewRevisions = { ...registry, [reviewId]: field === 'changes' ? 1 : (item as ProjectCollectionItem['deliverables']).revision };
+    }
+    transaction.update(ref, fields);
   });
 }
 
@@ -101,10 +108,17 @@ export async function editProjectItem<K extends ProjectCollectionField>(
     if (!snapshot.exists()) throw new Error('Project not found');
     const items = (snapshot.data()[field] || []) as ProjectCollectionItem[K][];
     if (!items.some(item => item.id === itemId)) throw new Error('Item not found');
-    transaction.update(ref, {
-      [field]: items.map(item => item.id === itemId ? edit(item) : item),
+    const updated = items.map(item => item.id === itemId ? edit(item) : item);
+    const fields: Record<string, unknown> = {
+      [field]: updated,
       updatedAt: serverTimestamp(),
-    });
+    };
+    if (field === 'deliverables') {
+      const registry = (snapshot.data().reviewRevisions || {}) as Record<string, number>;
+      const changed = updated.find(item => item.id === itemId) as ProjectCollectionItem['deliverables'];
+      fields.reviewRevisions = { ...registry, [itemId]: changed.revision };
+    }
+    transaction.update(ref, fields);
   });
 }
 

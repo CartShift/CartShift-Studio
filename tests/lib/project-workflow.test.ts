@@ -18,6 +18,7 @@ const project = (): ClientProject => ({
   workLogs: [],
   changes: [],
   updates: [],
+  reviewRevisions: {home: 1},
   scope: { minHours: 12, maxHours: 16, rateCents: 25000, currency: 'ILS' },
   createdBy: 'agency',
   createdAt: {} as ClientProject['createdAt'],

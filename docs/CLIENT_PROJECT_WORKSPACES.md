@@ -9,7 +9,8 @@ Templates: Shopify theme, product catalog, SEO and custom, with Hebrew and Engli
 ## Data, security and privacy
 
 - Firestore collection: portal_projects, with project records keyed by project ID.
-- Nested review collection per project stores per-user decisions.
+- Nested review collection per project stores per-user decisions. The reviewRevisions registry records current deliverable/change versions and Firestore rules check revision equality before client approval.
+- Agency access is protected against self-promotion: accountType/isAgency/agencyRole changes require a pending agency invite, and org membership creation requires an authorized matching invite or an existing organization admin.
 - Existing portal_requests optionally contain projectId; old records work without migration.
 - Agency may edit projects. Clients can read only their organization and submit their own review decisions.
 - The full shared project record is client-visible, including notes and logged work. Never store passwords, third-party tokens, or confidential internal notes there.

@@ -77,6 +77,7 @@ export interface ClientProject {
   workLogs: ProjectWorkLog[];
   updates: ProjectUpdate[];
   changes: ProjectChangeRequest[];
+  reviewRevisions: Record<string, number>;
   scope: ProjectScope;
   createdBy: string;
   createdAt: Timestamp;
