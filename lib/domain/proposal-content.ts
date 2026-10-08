@@ -153,3 +153,18 @@ export function canStartProposalWork(request: {
   return requirements.filter(item => item.required)
     .every(item => request.proposalRequirementStatuses?.[item.id] === 'approved');
 }
+
+/** Capped hourly proposals must authorize at least the estimated upper bound.
+ * Fixed-price and uncapped estimates intentionally have different semantics.
+ */
+export function validateProposalCap(
+  content: ProposalContent | undefined,
+  lineItems: Array<{ quantity: number; unitPrice: number }>
+): void {
+  const estimate = calculateEstimate(content);
+  if (estimate?.mode !== 'hourly_capped') return;
+  const cap = lineItems.reduce((total, item) => total + item.quantity * item.unitPrice, 0);
+  if (!Number.isSafeInteger(cap) || cap < estimate.maxMinor) {
+    throw new Error('The approved hourly cap must cover the maximum estimated cost');
+  }
+}
