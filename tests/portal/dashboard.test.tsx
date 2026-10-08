@@ -78,6 +78,9 @@ vi.mock('@/components/portal/skeletons', () => ({
 vi.mock('@/components/portal/PinnedRequests', () => ({
   PinnedRequests: () => <div data-testid="pinned-requests">Pinned Requests</div>,
 }));
+vi.mock('@/components/portal/projects/ProjectHighlights', () => ({
+  ProjectHighlights: () => <div data-testid="project-highlights">Project Highlights</div>,
+}));
 // Mock ActivityTimeline module so lazy import works
 vi.mock('@/components/portal/ActivityTimeline', () => ({
   ActivityTimeline: () => <div data-testid="activity-timeline">Activity Timeline</div>,
@@ -158,6 +161,7 @@ describe('Dashboard Page', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('pinned-requests')).toBeInTheDocument();
+      expect(screen.getByTestId('project-highlights')).toBeInTheDocument();
     });
   });
 });
