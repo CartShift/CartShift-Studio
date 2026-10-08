@@ -16,7 +16,7 @@ import {
 } from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { deepClean } from '@/lib/utils';
-import { validateProposalContent } from '@/lib/domain/proposal-content';
+import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
 import {
   PricingRequest,
   CreatePricingRequestData,
@@ -60,6 +60,7 @@ export async function createPricingRequest(
   data: CreatePricingRequestData
 ): Promise<PricingRequest> {
   validateProposalContent(data.proposalContent);
+  validateProposalCap(data.proposalContent, data.lineItems);
   // Add IDs to line items
   const lineItems: PricingLineItem[] = data.lineItems.map(item => ({
     ...item,
@@ -306,6 +307,7 @@ export async function updatePricingRequest(
   }
 
   const existing = existingSnapshot.data() as PricingRequest;
+  validateProposalCap(data.proposalContent ?? existing.proposalContent, data.lineItems ?? existing.lineItems);
   if (existing.status === PRICING_STATUS.ACCEPTED || existing.status === PRICING_STATUS.PAID) {
     throw new Error('Accepted or paid proposals are locked');
   }
