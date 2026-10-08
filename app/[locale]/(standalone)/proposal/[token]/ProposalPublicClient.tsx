@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { CheckCircle2, Loader2, LockKeyhole, Printer, MessageCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { CheckCircle2, Loader2, LockKeyhole, Printer, MessageCircle, Download } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { PublicProposalSummary } from '@/components/proposals/PublicProposalSummary';
 import { ProposalPaymentCheckout } from '@/components/proposals/ProposalPaymentCheckout';
 import {
@@ -16,6 +16,7 @@ import { PortalFormField, PortalFormGrid } from '@/components/portal/ui/PortalFo
 
 export default function ProposalPublicClient({ token }: { token: string }) {
   const t = useTranslations('proposal');
+  const locale = useLocale();
   const [proposal, setProposal] = useState<PublicPricingProposal | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -116,14 +117,20 @@ export default function ProposalPublicClient({ token }: { token: string }) {
   const isAccepted = proposal.status === 'ACCEPTED' || proposal.status === 'PAID';
 
   return (
-    <main className="proposal-document min-h-screen bg-surface-950 px-4 py-10 text-white sm:px-6">
+    <main data-proposal-document-loaded className="proposal-document min-h-screen bg-surface-950 px-4 py-10 text-white sm:px-6">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center justify-between gap-3 print:hidden">
           <span className="text-xs text-surface-400">{t('details.version', { number: proposal.proposalVersion || 1 })}</span>
-          <button type="button" onClick={() => window.print()}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:border-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-400">
-            <Printer size={17}/>{t('details.print')}
-          </button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <a href={`/api/proposals/${encodeURIComponent(token)}/pdf?locale=${locale}`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-400">
+              <Download size={17}/>{t('details.downloadPdf')}
+            </a>
+            <button type="button" onClick={() => window.print()}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:border-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-400">
+              <Printer size={17}/>{t('details.print')}
+            </button>
+          </div>
         </div>
         {proposal.isPreview && (
           <div className="rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-100">
