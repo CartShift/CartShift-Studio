@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import type { ProposalContent } from '@/lib/domain/proposal-content';
 import type { RequestProfitSplitResponsibility } from '@/lib/types/profit-split';
 
 // Re-export Timestamp for use in components (avoids direct firebase imports)
@@ -527,6 +528,9 @@ export interface Request {
   timeframe?: string;
 
   // Commercial document fields. A quote/proposal is a view of this request.
+  proposalContent?: ProposalContent;
+  proposalVersion?: number;
+  publishedProposal?: Record<string, unknown>;
   terms?: string;
   publicToken?: string;
   publicAccessEnabled?: boolean;
