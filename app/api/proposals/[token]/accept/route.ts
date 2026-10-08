@@ -12,6 +12,7 @@ const acceptanceSchema = z.object({
   acceptedByName: z.string().trim().min(2).max(160),
   acceptedByEmail: z.string().trim().email().max(320).optional().or(z.literal('')),
   signatureText: z.string().trim().min(2).max(160),
+  proposalVersion: z.number().int().min(0).optional(),
 });
 
 export async function POST(
