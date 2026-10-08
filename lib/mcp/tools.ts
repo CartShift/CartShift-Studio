@@ -103,7 +103,6 @@ export const TOOL_DEFS = [
   },
 ] as const;
 
-type ToolName = (typeof TOOL_DEFS)[number]['name'];
 function serialize(value: unknown) {
   return JSON.parse(JSON.stringify(value));
 }
