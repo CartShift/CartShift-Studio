@@ -22,7 +22,7 @@ const id = () => (typeof crypto !== 'undefined' && crypto.randomUUID
   ? crypto.randomUUID()
   : `item_${Date.now()}_${Math.random().toString(36).slice(2)}`);
 const numeric = (value: string) => value === '' ? undefined : Number(value);
-const lines = (value: string) => value.split('\n').map(s => s.trim()).filter(Boolean);
+const lines = (value: string) => value.split('\n').filter(s => s.length > 0);
 const commonInput = 'w-full rounded-xl border border-surface-200 bg-white px-3 py-2.5 text-sm text-surface-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-surface-700 dark:bg-surface-900 dark:text-white';
 const labelClass = 'mb-1 block text-xs font-semibold text-surface-600 dark:text-surface-300';
 const sectionClass = 'space-y-4 rounded-2xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-950';
