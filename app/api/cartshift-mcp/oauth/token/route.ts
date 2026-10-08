@@ -1,3 +1,5 @@
+import { NextRequest } from 'next/server';
+import { enforceApiRateLimit } from '@/lib/utils/api-rate-limit';
 import { createHash } from 'node:crypto';
 import {
   CODES, MCP_RESOURCE, REFRESH, TOKENS, TokenGrant,
@@ -27,10 +29,12 @@ async function createTokens(grant: Omit<TokenGrant, 'expiresAt'>) {
   });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   if (Number(request.headers.get('content-length') || 0) > 8192) {
     return oauthError('invalid_request', 413);
   }
+  const rate = await enforceApiRateLimit(request, 'mcp-oauth-token', { maxRequests: 120, windowMs: 3600_000 });
+  if ('response' in rate) return rate.response;
   const body = await request.formData().catch(() => null);
   if (!body) return oauthError('invalid_request');
   const text = (name: string) => String(body.get(name) || '');
