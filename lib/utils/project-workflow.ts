@@ -88,3 +88,28 @@ export function projectBudget(project: Pick<ClientProject, 'scope'>) {
     maxCents: Math.round(project.scope.maxHours * project.scope.rateCents),
   };
 }
+
+/** Prepare an editable, factual client update without sending anything. */
+export function buildProjectUpdateDraft(
+  project: Pick<ClientProject, 'title' | 'stages' | 'blockers' | 'nextStep'>,
+  locale: string
+): string {
+  const he = locale === 'he';
+  const completed = project.stages.filter(stage => stage.status === 'completed').map(stage => stage.title);
+  const active = project.stages.filter(stage => stage.status === 'in_progress').map(stage => stage.title);
+  const blockers = project.blockers.filter(blocker => !blocker.resolved).map(blocker => blocker.title);
+  return [
+    he ? 'עדכון פרויקט: ' + project.title : 'Project update: ' + project.title,
+    '',
+    he ? 'מה הושלם:' : 'Completed:',
+    completed.length ? completed.map(name => '• ' + name).join('\n') : (he ? '• טרם סומנו שלבים שהושלמו' : '• No milestones marked complete yet'),
+    '',
+    he ? 'במה אנחנו מטפלים:' : 'In progress:',
+    active.length ? active.map(name => '• ' + name).join('\n') : (he ? '• לא הוגדר שלב פעיל' : '• No active milestone recorded'),
+    '',
+    he ? 'מה עדיין מעכב:' : 'Open dependencies:',
+    blockers.length ? blockers.map(name => '• ' + name).join('\n') : (he ? '• אין חסמים פתוחים' : '• No open blockers'),
+    '',
+    he ? 'השלב הבא: ' + (project.nextStep || 'טרם הוגדר') : 'Next step: ' + (project.nextStep || 'To be confirmed'),
+  ].join('\n');
+}
