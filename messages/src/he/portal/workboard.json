@@ -12,7 +12,8 @@
         "backlog": "משימות",
         "inProgress": "בטיפול",
         "review": "בבדיקה",
-        "delivered": "נמסר"
+        "delivered": "נמסר",
+        "archived": "בוטל / פג תוקף"
       },
       "emptyColumn": "אין בקשות בעמודה זו",
       "moveError": "ההעברה נכשלה",

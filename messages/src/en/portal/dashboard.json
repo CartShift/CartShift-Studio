@@ -37,8 +37,8 @@
         }
       },
       "secondaryPanel": {
-        "show": "Show tips & service status",
-        "hide": "Hide tips & service status"
+        "show": "Show tips & work overview",
+        "hide": "Hide tips & work overview"
       },
       "insight": {
         "title": "Insight",
@@ -115,6 +115,12 @@
       "ecommerceSubtitle": "Monitor your conversion roadmap, performance metrics, and active project lifecycles.",
       "pipeline": {
         "emptyDescription": "No requests match your current filters. Try adjusting your search or filter criteria."
+      },
+      "projectWork": {
+        "title": "Current work",
+        "open": "Open requests",
+        "action": "Action or approval needed",
+        "review": "In client review"
       }
     }
   }

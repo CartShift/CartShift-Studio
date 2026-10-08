@@ -12,7 +12,8 @@
         "backlog": "Backlog",
         "inProgress": "In Progress",
         "review": "In Review",
-        "delivered": "Delivered"
+        "delivered": "Delivered",
+        "archived": "Archived"
       },
       "emptyColumn": "No requests in this column",
       "moveError": "Failed to move item",
