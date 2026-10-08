@@ -44,13 +44,10 @@ function DashboardClientContent() {
 
   const [isSecondaryOpen, setIsSecondaryOpen] = useState(false);
 
-
   useEffect(() => {
     const savedSecondary = localStorage.getItem('cartshift_dashboard_secondary_open');
     if (savedSecondary !== null) {
       setIsSecondaryOpen(savedSecondary === 'true');
-    }
-    if (savedService !== null) {
     }
   }, []);
 

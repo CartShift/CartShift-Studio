@@ -64,9 +64,9 @@ function ReviewRow({ project, deliverable, reviews, canReview, t, onReviewed }: 
   deliverable: ClientProject['deliverables'][number];
   reviews: ProjectReview[];
   canReview: boolean;
-  t: ReturnType<typeof useTranslations<'portal.projects'>>;
   onReviewed: () => Promise<unknown>;
 }) {
+  const t = useTranslations('portal.projects');
   const [comment, setComment] = useState('');
   const [busy, setBusy] = useState(false);
   const relevant = reviews.filter(item =>
@@ -134,8 +134,8 @@ function ReviewRow({ project, deliverable, reviews, canReview, t, onReviewed }: 
 
 function ScopeEditor({ project, save, t }: {
   project: ClientProject; save: (scope: ProjectScope) => Promise<void>;
-  t: ReturnType<typeof useTranslations<'portal.projects'>>;
 }) {
+  const t = useTranslations('portal.projects');
   const [draft, setDraft] = useState<ProjectScope>(project.scope);
   const [busy, setBusy] = useState(false);
   const change = (key: keyof ProjectScope, value: string) =>
@@ -354,7 +354,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.deliverables.length === 0 && <p className="text-sm text-surface-500">{t('noDeliverables')}</p>}
         {project.deliverables.map(deliverable => <div key={deliverable.id}>
           <ReviewRow project={project} deliverable={deliverable} reviews={reviews} canReview={!isAgency}
-            t={t} onReviewed={refreshReviews}/>
+            onReviewed={refreshReviews}/>
           {isAgency && <button type="button" disabled={saving}
             onClick={() => void edit('deliverables', deliverable.id, old => ({
               ...old, revision: old.revision + 1,
@@ -419,7 +419,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <p className="mt-1 font-bold">{hours.toLocaleString(locale)}h / {project.scope.maxHours}h</p>
           </div>
         </div>
-        {isAgency && <ScopeEditor key={project.id} project={project} t={t}
+        {isAgency && <ScopeEditor key={project.id} project={project}
           save={scope => execute(() => updateClientProject(id, { scope }))}/>}
         {isAgency && <form onSubmit={e => {
           e.preventDefault();
