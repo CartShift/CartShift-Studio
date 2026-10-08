@@ -153,7 +153,16 @@ service cloud.firestore {
                  'paymentAllocations',
                  'paymentId',
                  'paymentMethod',
-                 'paidAt'
+                 'paidAt',
+                 // Only server transactions may publish a commercial version,
+                 // finalize acceptance evidence or alter material readiness.
+                 'publishedProposal',
+                 'proposalVersion',
+                 'proposalRequirementStatuses',
+                 'quoteEmailQueueId',
+                 'quoteEmailRecipient',
+                 'sentAt',
+                 'lastSentAt'
                ]);
       }
 
@@ -172,6 +181,8 @@ service cloud.firestore {
           'taxAmount',
           'currency',
           'terms',
+          'proposalContent',
+          'relatedRequestId',
           'depositAmount',
           'paymentRequired',
           'balanceDue',
