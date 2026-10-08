@@ -18,6 +18,7 @@ import {
   formatCurrency,
 } from '@/lib/types/pricing';
 import { getRequestRole } from '@/lib/domain/request-commercial';
+import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
 
 const PROPOSALS_COLLECTION = 'portal_requests';
 const LEGACY_PROPOSALS_COLLECTION = 'portal_pricing_requests';
@@ -434,7 +435,8 @@ async function syncProposalDerivedState(proposalId: string): Promise<void> {
 
 export async function getPublicProposal(token: string): Promise<PublicPricingProposal | null> {
   const proposal = await findProposalByToken(token);
-  if (!proposal || proposal.data()?.publicAccessEnabled !== true) {
+  if (!proposal || proposal.data()?.publicAccessEnabled !== true ||
+      proposal.data()?.status === 'DRAFT') {
     return null;
   }
   return sanitizeProposal(proposal);
@@ -604,6 +606,19 @@ export async function queueProposalOfferEmail(
     if (!proposal) throw new Error('NOT_FOUND');
     if (!['DRAFT', 'QUOTED', 'CHANGES_REQUESTED'].includes(proposal.status)) {
       throw new Error('NOT_SENDABLE');
+    }
+
+    // Revalidate on the trusted publishing path, not only in the browser editor.
+    // Legacy unstructured proposals continue to use their existing rules.
+    if (proposal.proposalContent) {
+      validateProposalContent(proposal.proposalContent);
+      validateProposalCap(proposal.proposalContent, proposal.lineItems || []);
+      if (proposal.paymentRequired &&
+          (!Number.isSafeInteger(proposal.depositAmount) ||
+           (proposal.depositAmount ?? 0) <= 0 ||
+           (proposal.depositAmount ?? 0) > proposal.totalAmount)) {
+        throw new Error('INVALID_DEPOSIT');
+      }
     }
 
     const recipient = proposal.clientEmail?.trim().toLowerCase();
