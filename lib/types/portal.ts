@@ -529,6 +529,7 @@ export interface Request {
 
   // Commercial document fields. A quote/proposal is a view of this request.
   proposalContent?: ProposalContent;
+  proposalRequirementStatuses?: Record<string, 'pending' | 'received' | 'approved'>;
   proposalVersion?: number;
   publishedProposal?: Record<string, unknown>;
   terms?: string;
