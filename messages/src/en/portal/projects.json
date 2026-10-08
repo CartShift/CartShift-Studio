@@ -105,7 +105,11 @@
       "noUpdates": "No updates yet.",
       "copyUpdate": "Copy update",
       "copied": "Copied",
-      "viewAll": "View all"
+      "viewAll": "View all",
+      "nextAction": "Next follow-up action",
+      "awaitingApproval": "Awaiting change-order approval",
+      "approveScope": "Approve additional scope",
+      "prepareUpdateDraft": "Prepare update draft"
     }
   }
 }
