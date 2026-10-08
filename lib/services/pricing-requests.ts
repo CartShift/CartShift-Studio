@@ -96,6 +96,7 @@ export async function createPricingRequest(
     isBillable: true,
     terms: data.terms?.trim() || null,
     proposalContent: data.proposalContent ? deepClean(data.proposalContent) : null,
+    relatedRequestId: data.relatedRequestId ?? null,
     publicToken: generatePublicToken(),
     publicAccessEnabled: data.publicAccessEnabled ?? true,
     clientName: data.clientName?.trim() || null,
@@ -133,6 +134,15 @@ export async function createPricingRequest(
       Boolean(existing.lockedAt || existing.parentRequestId);
   });
   if (invalidLinked) throw new Error('Choose only unquoted requests from this client');
+  if (data.relatedRequestId) {
+    if (linkedRequestIds.length > 0) throw new Error('Change orders cannot reprice existing requests');
+    const sourceSnapshot = await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, data.relatedRequestId));
+    const source = sourceSnapshot.data() as PricingRequest | undefined;
+    if (!source || source.orgId !== orgId ||
+        !['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED'].includes(source.status)) {
+      throw new Error('The source work is not eligible for a change order');
+    }
+  }
   const existingRequestId = linkedRequestIds.length === 1 ? linkedRequestIds[0] : null;
   const existingSnapshot = existingRequestId
     ? await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, existingRequestId))
