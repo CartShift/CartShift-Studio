@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { CheckCircle2, Loader2, LockKeyhole } from 'lucide-react';
+import { CheckCircle2, Loader2, LockKeyhole, Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PublicProposalSummary } from '@/components/proposals/PublicProposalSummary';
 import { ProposalPaymentCheckout } from '@/components/proposals/ProposalPaymentCheckout';
@@ -51,6 +51,7 @@ export default function ProposalPublicClient({ token }: { token: string }) {
           acceptedByName,
           acceptedByEmail: acceptedByEmail || undefined,
           signatureText,
+          proposalVersion: proposal?.proposalVersion,
         })
       );
     } catch (submitError) {
@@ -85,8 +86,15 @@ export default function ProposalPublicClient({ token }: { token: string }) {
   const isAccepted = proposal.status === 'ACCEPTED' || proposal.status === 'PAID';
 
   return (
-    <main className="min-h-screen bg-surface-950 px-4 py-10 text-white sm:px-6">
+    <main className="proposal-document min-h-screen bg-surface-950 px-4 py-10 text-white sm:px-6">
       <div className="mx-auto max-w-4xl space-y-8">
+        <div className="flex items-center justify-between gap-3 print:hidden">
+          <span className="text-xs text-surface-400">{t('details.version', { number: proposal.proposalVersion || 1 })}</span>
+          <button type="button" onClick={() => window.print()}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:border-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-400">
+            <Printer size={17}/>{t('details.print')}
+          </button>
+        </div>
         {proposal.isPreview && (
           <div className="rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-100">
             {t('preview')}
@@ -96,7 +104,7 @@ export default function ProposalPublicClient({ token }: { token: string }) {
           <PublicProposalSummary proposal={proposal} />
         </div>
 
-        {isAccepted ? (
+        <div className="print:hidden">{isAccepted ? (
           <div className="space-y-5">
             <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-5">
               <CheckCircle2 className="h-7 w-7 text-emerald-300" />
@@ -169,7 +177,7 @@ export default function ProposalPublicClient({ token }: { token: string }) {
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-surface-300">
             {t('unavailable')}
           </div>
-        )}
+        )}</div>
       </div>
     </main>
   );
