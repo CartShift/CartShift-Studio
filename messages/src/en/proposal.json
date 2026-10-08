@@ -62,7 +62,8 @@
       "feedbackMessage": "What would you like to change or clarify?",
       "feedbackSubmit": "Send request",
       "feedbackSent": "Your request was received. We will review it and send a revised proposal.",
-      "feedbackName": "Full name"
+      "feedbackName": "Full name",
+      "downloadPdf": "Download PDF"
     }
   }
 }
