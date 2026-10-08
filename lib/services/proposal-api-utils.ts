@@ -36,7 +36,7 @@ export function mapProposalError(error: unknown): NextResponse {
         ? 401
         : message === 'FORBIDDEN'
           ? 403
-          : ['NOT_SIGNABLE', 'NOT_SENDABLE', 'NOT_ACCEPTED', 'NOT_PAYABLE', 'EXPIRED', 'INVALID_SIGNATURE', 'INVALID_AMOUNT', 'INVALID_LABEL', 'INVALID_CLIENT_EMAIL', 'STALE_VERSION', 'INVALID_FEEDBACK'].includes(
+          : ['NOT_SIGNABLE', 'NOT_SENDABLE', 'NOT_ACCEPTED', 'NOT_PAYABLE', 'EXPIRED', 'INVALID_SIGNATURE', 'INVALID_AMOUNT', 'INVALID_LABEL', 'INVALID_CLIENT_EMAIL', 'STALE_VERSION', 'INVALID_FEEDBACK', 'INVALID_REQUIREMENT'].includes(
                 message
               )
             ? 400
