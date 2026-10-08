@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { useTranslations, NextIntlClientProvider } from 'next-intl';
 import { QuickActions } from '@/components/portal/QuickActions';
 import { ProjectHighlights } from '@/components/portal/projects/ProjectHighlights';
+import { PORTAL_PROJECTS_ENABLED } from '@/lib/config/portal-features';
 import { TipsCard } from '@/components/portal/TipsCard';
 import { DashboardSkeleton } from '@/components/portal/skeletons';
 import { PinnedRequests } from '@/components/portal/PinnedRequests';
@@ -105,7 +106,7 @@ function DashboardClientContent() {
         />
       </motion.div>
 
-      <ProjectHighlights />
+      {PORTAL_PROJECTS_ENABLED && <ProjectHighlights />}
 
       <PinnedRequests
         requests={requests}

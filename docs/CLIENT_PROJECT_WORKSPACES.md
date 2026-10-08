@@ -32,3 +32,12 @@ Templates: Shopify theme, product catalog, SEO and custom, with Hebrew and Engli
 - Generated update drafts use deterministic project facts, not an external AI model.
 - High-volume work logs and long-running activity streams should eventually move from project arrays to subcollections.
 - Arava must be created as an actual client project only after rollout and checking that client-visible data is appropriate.
+
+## Safe feature activation
+
+Project routes, navigation and client dashboard widgets are disabled by default behind
+`NEXT_PUBLIC_PORTAL_PROJECTS_ENABLED=true`. Merging this branch alone does not expose
+unusable project pages on existing installations. After the new `firestore.rules`
+are deployed to the correct Firebase project and security/RTL smoke tests pass,
+set the variable in the correct Vercel environment and redeploy deliberately.
+Never enable first and deploy rules later.

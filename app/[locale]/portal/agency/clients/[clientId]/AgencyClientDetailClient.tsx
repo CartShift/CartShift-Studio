@@ -46,6 +46,7 @@ import { getDateLocale, getDateLocaleString } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { PORTAL_PROJECTS_ENABLED } from '@/lib/config/portal-features';
 import {
   getAgencyClientBadgeKey,
   getAgencyClientPlanKey,
@@ -383,6 +384,7 @@ export default function AgencyClientDetailClient({
                   <ExternalLink size={16} />
                   {t('agency.clients.detail.viewDashboard')}
                 </Button>
+                {PORTAL_PROJECTS_ENABLED && (
                 <Button
                   variant="outline"
                   onClick={() => router.push(getPortalPath('/projects/') + '?client=' + encodeURIComponent(clientId))}
@@ -390,6 +392,7 @@ export default function AgencyClientDetailClient({
                   <FolderKanban size={16} />
                   {t('sidebar.nav.projects')}
                 </Button>
+                )}
                 <Button
                   className="shadow-lg shadow-primary-500/20"
                   onClick={() => {
