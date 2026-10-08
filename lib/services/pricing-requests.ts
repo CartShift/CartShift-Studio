@@ -95,7 +95,7 @@ export async function createPricingRequest(
     commentCount: 0,
     isBillable: true,
     terms: data.terms?.trim() || null,
-    proposalContent: data.proposalContent ?? null,
+    proposalContent: data.proposalContent ? deepClean(data.proposalContent) : null,
     publicToken: generatePublicToken(),
     publicAccessEnabled: data.publicAccessEnabled ?? true,
     clientName: data.clientName?.trim() || null,
