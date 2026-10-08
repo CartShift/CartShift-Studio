@@ -15,6 +15,7 @@ import { CURRENCY_CONFIG, type Currency } from '@/lib/types/pricing';
 type Props = {
   value?: ProposalContent;
   onChange: (value: ProposalContent) => void;
+  onTemplateApplied?: () => void;
   currency: Currency;
 };
 
@@ -27,7 +28,7 @@ const commonInput = 'w-full rounded-xl border border-surface-200 bg-white px-3 p
 const labelClass = 'mb-1 block text-xs font-semibold text-surface-600 dark:text-surface-300';
 const sectionClass = 'space-y-4 rounded-2xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-950';
 
-export function ProposalContentEditor({ value, onChange, currency }: Props) {
+export function ProposalContentEditor({ value, onChange, onTemplateApplied, currency }: Props) {
   const t = useTranslations('portal.proposalBuilder');
   const content = value ?? emptyProposalContent();
   const change = (patch: Partial<ProposalContent>) => onChange({ ...content, ...patch });
@@ -48,7 +49,7 @@ export function ProposalContentEditor({ value, onChange, currency }: Props) {
           <h2 className="text-xl font-bold text-surface-900 dark:text-white">{t('title')}</h2>
           <p className="mt-1 text-sm text-surface-500">{t('preview')}</p>
         </div>
-        <button type="button" onClick={() => onChange(shopifyProjectTemplate())}
+        <button type="button" onClick={() => { onChange(shopifyProjectTemplate()); onTemplateApplied?.(); }}
           className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-primary-300 px-3 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-50 dark:border-primary-700 dark:text-primary-300 dark:hover:bg-primary-950">
           <Sparkles size={16}/>{t('template')}
         </button>
