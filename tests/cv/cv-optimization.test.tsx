@@ -29,11 +29,11 @@ describe('CV recruiter optimization', () => {
   it('renders recruiter-focused skill groups and filled independent roles', () => {
     renderWithMessages(<CVPageContent />);
 
-    expect(screen.getByText('Primary Stack')).toBeInTheDocument();
-    expect(screen.getByText('E-Commerce & Integrations')).toBeInTheDocument();
-    expect(screen.getByText('AI & Automation')).toBeInTheDocument();
+    expect(screen.getByText('Full-Stack')).toBeInTheDocument();
+    expect(screen.getByText('APIs & Commerce')).toBeInTheDocument();
+    expect(screen.getByText('AI-Assisted Products')).toBeInTheDocument();
     expect(screen.getByText('Cloud & Data')).toBeInTheDocument();
-    expect(screen.getByText('Legacy Enterprise')).toBeInTheDocument();
+    expect(screen.getByText('Enterprise Integration')).toBeInTheDocument();
 
     expect(screen.getByText('E-Commerce Founder & Developer')).toBeInTheDocument();
     expect(
@@ -49,7 +49,7 @@ describe('CV recruiter optimization', () => {
     renderWithMessages(<CVPageContent />, 'he');
 
     expect(screen.getByText('סטאק מרכזי')).toBeInTheDocument();
-    expect(screen.getByText('איקומרס ואינטגרציות')).toBeInTheDocument();
+    expect(screen.getByText('E-commerce, Shopify ואינטגרציות')).toBeInTheDocument();
     expect(screen.getByText('ענן ונתונים')).toBeInTheDocument();
     expect(screen.getAllByText('פתוח להזדמנויות').length).toBeGreaterThan(0);
   });
