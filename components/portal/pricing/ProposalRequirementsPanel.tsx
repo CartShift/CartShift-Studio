@@ -8,7 +8,9 @@ import { useProposalRequirements } from '@/lib/hooks/useProposalRequirements';
 
 const editableStatuses = new Set(['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED']);
 
-export function ProposalRequirementsPanel({ request, isAgency }: { request: Request; isAgency: boolean }) {
+type RequirementsRequest = Pick<Request, 'id' | 'status' | 'proposalContent' | 'proposalRequirementStatuses' | 'paymentRequired' | 'depositAmount' | 'amountPaid'>;
+
+export function ProposalRequirementsPanel({ request, isAgency }: { request: RequirementsRequest; isAgency: boolean }) {
   const t = useTranslations('portal.proposalRequirements');
   const mutation = useProposalRequirements(request.id);
   const requirements = request.proposalContent?.requirements ?? [];
