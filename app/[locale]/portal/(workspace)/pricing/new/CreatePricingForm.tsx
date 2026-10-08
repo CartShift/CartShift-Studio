@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
+import { ProposalContentEditor } from '@/components/portal/pricing/ProposalContentEditor';
+import { emptyProposalContent, type ProposalContent } from '@/lib/domain/proposal-content';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -74,6 +76,7 @@ interface PricingFormData {
   terms: string;
   paymentRequired: boolean;
   depositAmount: number;
+  proposalContent?: ProposalContent;
 }
 
 export default function CreatePricingForm() {
@@ -187,6 +190,7 @@ export default function CreatePricingForm() {
         terms: z.string().min(1),
         paymentRequired: z.boolean(),
         depositAmount: z.number().min(0),
+        proposalContent: z.custom<ProposalContent>().optional(),
       }),
     [t]
   );
@@ -216,6 +220,7 @@ export default function CreatePricingForm() {
       terms: t('pricing.form.defaultTerms'),
       paymentRequired: false,
       depositAmount: 0,
+      proposalContent: emptyProposalContent(),
     },
   });
 
@@ -354,14 +359,15 @@ export default function CreatePricingForm() {
     return { totalAmount, subtotal, taxAmount };
   }, [watchedLineItems, watchedIncludeTax]);
 
+  const watchedProposalContent = watch('proposalContent');
   const watchedPaymentRequired = watch('paymentRequired');
   const watchedDepositAmount = watch('depositAmount');
 
   useEffect(() => {
     if (watchedPaymentRequired && !watchedDepositAmount && totalAmount > 0) {
-      setValue('depositAmount', totalAmount / 100);
+      setValue('depositAmount', Math.round(totalAmount * (watchedProposalContent?.pricing.depositPercent ?? 50) / 100) / 100);
     }
-  }, [watchedPaymentRequired, watchedDepositAmount, totalAmount, setValue]);
+  }, [watchedPaymentRequired, watchedDepositAmount, totalAmount, watchedProposalContent?.pricing.depositPercent, setValue]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (!userData?.id || !orgId || typeof orgId !== 'string') {
@@ -407,6 +413,7 @@ export default function CreatePricingForm() {
           agencyNotes: data.agencyNotes,
           requestIds: selectedRequestIds.length > 0 ? selectedRequestIds : undefined,
           proposalType: 'work_proposal',
+          proposalContent: data.proposalContent,
           terms: data.terms,
           publicAccessEnabled: true,
           taxRate: data.includeTax ? TAX_RATE : 0,
@@ -511,6 +518,12 @@ export default function CreatePricingForm() {
               </PortalFormField>
             </PortalFormSection>
           </Card>
+
+          <ProposalContentEditor
+            value={watchedProposalContent}
+            currency={watchedCurrency}
+            onChange={proposalContent => setValue('proposalContent', proposalContent, { shouldDirty: true, shouldValidate: true })}
+          />
 
           {/* Request Selection & Pricing Calculator */}
           <RequestPricingCalculator
