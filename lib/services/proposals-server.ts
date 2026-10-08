@@ -517,6 +517,48 @@ export async function acceptPublicProposal(
   return sanitizeProposal(accepted);
 }
 
+/**
+ * Client feedback is part of the commercial negotiation, not an authorization
+ * to perform extra work. Only the agency can publish a revised proposal.
+ */
+export async function submitPublicProposalFeedback(
+  token: string,
+  input: { name: string; message: string; proposalVersion: number }
+): Promise<void> {
+  const db = getDb();
+  const proposalSnapshot = await findProposalByToken(token);
+  if (!proposalSnapshot || proposalSnapshot.data()?.publicAccessEnabled !== true) {
+    throw new Error('NOT_FOUND');
+  }
+  const commentRef = db.collection('portal_comments').doc();
+  await db.runTransaction(async transaction => {
+    const fresh = await transaction.get(proposalSnapshot.ref);
+    const proposal = fresh.data() as ProposalDocument | undefined;
+    if (!proposal || proposal.status !== 'QUOTED') throw new Error('NOT_SIGNABLE');
+    if ((proposal.proposalVersion ?? 0) !== input.proposalVersion) throw new Error('STALE_VERSION');
+    if (input.name.trim().length < 2 || input.message.trim().length < 3) {
+      throw new Error('INVALID_FEEDBACK');
+    }
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    transaction.create(commentRef, {
+      orgId: proposal.orgId,
+      requestId: fresh.id,
+      userId: 'public_proposal_client',
+      userName: input.name.trim().slice(0, 160),
+      content: input.message.trim().slice(0, 2000),
+      attachmentIds: [],
+      isInternal: false,
+      createdAt: now,
+    });
+    transaction.update(fresh.ref, {
+      status: 'CHANGES_REQUESTED',
+      clientNotes: input.message.trim().slice(0, 2000),
+      commentCount: (proposal.commentCount ?? 0) + 1,
+      updatedAt: now,
+    });
+  });
+}
+
 export async function ensureProposalPublicToken(proposalId: string): Promise<string> {
   const db = getDb();
   const ref = await resolveRequestRef(proposalId);
@@ -560,7 +602,7 @@ export async function queueProposalOfferEmail(
     const snapshot = await transaction.get(proposalRef);
     const proposal = snapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
-    if (proposal.status !== 'DRAFT' && proposal.status !== 'QUOTED') {
+    if (!['DRAFT', 'QUOTED', 'CHANGES_REQUESTED'].includes(proposal.status)) {
       throw new Error('NOT_SENDABLE');
     }
 
