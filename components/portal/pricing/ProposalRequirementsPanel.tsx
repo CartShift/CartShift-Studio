@@ -70,7 +70,7 @@ export function ProposalRequirementsPanel({ request, isAgency }: { request: Requ
         </div>
         <div className="flex items-start gap-2">
           <Wallet className={depositReady ? 'shrink-0 text-emerald-600' : 'shrink-0 text-amber-600'} size={18}/>
-          <span>{depositReady ? t('paymentComplete') : t('paymentPending')}</span>
+          <span>{!request.paymentRequired ? t('paymentNotRequired') : depositReady ? t('paymentComplete') : t('paymentPending')}</span>
         </div>
         <div className="flex items-start gap-2">
           <ShieldCheck className={materialsReady ? 'shrink-0 text-emerald-600' : 'shrink-0 text-amber-600'} size={18}/>
