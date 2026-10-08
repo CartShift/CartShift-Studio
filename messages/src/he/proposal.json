@@ -62,7 +62,8 @@
       "feedbackMessage": "מה תרצו לשנות או לשאול?",
       "feedbackSubmit": "שליחת בקשה",
       "feedbackSent": "בקשתכם התקבלה. נעדכן את ההצעה ונשלח גרסה חדשה.",
-      "feedbackName": "שם מלא"
+      "feedbackName": "שם מלא",
+      "downloadPdf": "הורדת PDF"
     }
   }
 }
