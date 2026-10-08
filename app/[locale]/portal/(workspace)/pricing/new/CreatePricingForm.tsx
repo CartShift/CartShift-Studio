@@ -8,7 +8,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { ProposalContentEditor } from '@/components/portal/pricing/ProposalContentEditor';
-import { emptyProposalContent, type ProposalContent } from '@/lib/domain/proposal-content';
+import { calculateEstimate, emptyProposalContent, type ProposalContent } from '@/lib/domain/proposal-content';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -522,7 +522,21 @@ export default function CreatePricingForm() {
           <ProposalContentEditor
             value={watchedProposalContent}
             currency={watchedCurrency}
-            onChange={proposalContent => setValue('proposalContent', proposalContent, { shouldDirty: true, shouldValidate: true })}
+            onChange={proposalContent => {
+              setValue('proposalContent', proposalContent, { shouldDirty: true, shouldValidate: true });
+              const estimate = calculateEstimate(proposalContent);
+              const lineItems = watch('lineItems');
+              // Only prefill an untouched pricing row. Existing custom amounts are never overridden.
+              if (estimate && estimate.mode === 'hourly_capped' &&
+                  lineItems.length === 1 && !lineItems[0].description && lineItems[0].unitPrice === 0) {
+                setValue('lineItems', [{
+                  description: 'Hourly development up to the approved cap',
+                  quantity: 1,
+                  unitPrice: estimate.maxMinor / 100,
+                  pricingType: 'hourly',
+                }], { shouldDirty: true, shouldValidate: true });
+              }
+            }}
           />
 
           {/* Request Selection & Pricing Calculator */}
