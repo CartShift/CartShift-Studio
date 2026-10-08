@@ -23,6 +23,8 @@ export type RequestStatusTranslationKey =
 
 export const CLIENT_STATUS_KEYS = {
   submitted: 'requests.clientStatus.submitted',
+  action_required: 'requests.clientStatus.action_required',
+  canceled: 'requests.clientStatus.canceled',
   in_progress: 'requests.clientStatus.in_progress',
   in_review: 'requests.clientStatus.in_review',
   completed: 'requests.clientStatus.completed',

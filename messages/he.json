@@ -1845,6 +1845,12 @@
       "ecommerceSubtitle": "עקבו אחר מפת הדרכים להמרה, מדדי ביצועים ומחזורי חיים של פרויקטים פעילים.",
       "pipeline": {
         "emptyDescription": "אין בקשות התואמות לסינון הנוכחי שלך. נסה לשנות את החיפוש או קריטריוני הסינון."
+      },
+      "projectWork": {
+        "title": "מצב העבודה",
+        "open": "בקשות פתוחות",
+        "action": "נדרשת פעולה או אישור",
+        "review": "בבדיקת הלקוח"
       }
     },
     "emptyState": {
@@ -2807,7 +2813,9 @@
         "submitted": "הוגש",
         "in_progress": "בטיפול",
         "in_review": "בסקירה",
-        "completed": "הושלם"
+        "completed": "הושלם",
+        "action_required": "נדרשת פעולה",
+        "canceled": "נסגר ללא מסירה"
       },
       "priority": {
         "low": "נמוכה",
@@ -3659,7 +3667,8 @@
         "backlog": "משימות",
         "inProgress": "בטיפול",
         "review": "בבדיקה",
-        "delivered": "נמסר"
+        "delivered": "נמסר",
+        "archived": "בוטל / פג תוקף"
       },
       "emptyColumn": "אין בקשות בעמודה זו",
       "moveError": "ההעברה נכשלה",

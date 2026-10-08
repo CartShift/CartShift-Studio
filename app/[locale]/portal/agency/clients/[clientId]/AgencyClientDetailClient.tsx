@@ -140,20 +140,20 @@ export default function AgencyClientDetailClient({
 
   // Calculate stats
   const activeRequests = requests.filter(r =>
-    ['NEW', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW'].includes(r.status)
+    !['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'].includes(r.status)
   ).length;
-  const completedRequests = requests.filter(r => ['DELIVERED', 'CLOSED'].includes(r.status)).length;
+  const completedRequests = requests.filter(r => ['DELIVERED', 'PAID', 'CLOSED'].includes(r.status)).length;
 
   const completedRequestsWithDates = requests.filter(
-    r => ['DELIVERED', 'CLOSED'].includes(r.status) && r.createdAt && r.updatedAt
+    r => ['DELIVERED', 'PAID', 'CLOSED'].includes(r.status) && r.createdAt && r.closedAt
   );
 
   const avgResolution =
     completedRequestsWithDates.length > 0
       ? Math.round(
           completedRequestsWithDates.reduce((sum, r) => {
-            if (r.createdAt?.toDate && r.updatedAt?.toDate) {
-              const diff = r.updatedAt.toDate().getTime() - r.createdAt.toDate().getTime();
+            if (r.createdAt?.toDate && r.closedAt?.toDate) {
+              const diff = r.closedAt.toDate().getTime() - r.createdAt.toDate().getTime();
               return sum + diff / (1000 * 60 * 60 * 24); // Convert to days
             }
             return sum;

@@ -1845,6 +1845,12 @@
       "ecommerceSubtitle": "Monitor your conversion roadmap, performance metrics, and active project lifecycles.",
       "pipeline": {
         "emptyDescription": "No requests match your current filters. Try adjusting your search or filter criteria."
+      },
+      "projectWork": {
+        "title": "Current work",
+        "open": "Open requests",
+        "action": "Action or approval needed",
+        "review": "In client review"
       }
     },
     "emptyState": {
@@ -2807,7 +2813,9 @@
         "submitted": "Submitted",
         "in_progress": "In Progress",
         "in_review": "In Review",
-        "completed": "Completed"
+        "completed": "Completed",
+        "action_required": "Action required",
+        "canceled": "Closed without delivery"
       },
       "priority": {
         "low": "Low",
@@ -3659,7 +3667,8 @@
         "backlog": "Backlog",
         "inProgress": "In Progress",
         "review": "In Review",
-        "delivered": "Delivered"
+        "delivered": "Delivered",
+        "archived": "Archived"
       },
       "emptyColumn": "No requests in this column",
       "moveError": "Failed to move item",

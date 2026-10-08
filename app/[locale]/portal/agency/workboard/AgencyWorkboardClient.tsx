@@ -103,7 +103,7 @@ export default function AgencyWorkboardClient() {
           itemCount={columnRequests.length}
           color={column.color}
           emptyMessage={t('workboard.emptyColumn')}
-          onAddClick={() => setCreatingInColumnId(column.id)}
+          onAddClick={column.id === 'archived' ? undefined : () => setCreatingInColumnId(column.id)}
           isAdding={creatingInColumnId === column.id}
         >
           {creatingInColumnId === column.id && (
@@ -235,7 +235,7 @@ export default function AgencyWorkboardClient() {
       </div>
 
       {/* Columns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 min-[1040px]:grid-cols-4 gap-4 items-start pb-20 mt-4 md:mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[1040px]:grid-cols-3 min-[1440px]:grid-cols-5 gap-4 items-start pb-20 mt-4 md:mt-6">
         {columns.map(column => renderColumn(column, activeMobileTab !== column.id))}
       </div>
 

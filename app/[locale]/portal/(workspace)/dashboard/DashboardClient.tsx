@@ -43,16 +43,14 @@ function DashboardClientContent() {
   }, [t, userData?.name]);
 
   const [isSecondaryOpen, setIsSecondaryOpen] = useState(false);
-  const [isServiceStatusOpen, setIsServiceStatusOpen] = useState(false);
+
 
   useEffect(() => {
     const savedSecondary = localStorage.getItem('cartshift_dashboard_secondary_open');
-    const savedService = localStorage.getItem('cartshift_service_status_open');
     if (savedSecondary !== null) {
       setIsSecondaryOpen(savedSecondary === 'true');
     }
     if (savedService !== null) {
-      setIsServiceStatusOpen(savedService === 'true');
     }
   }, []);
 
@@ -62,11 +60,6 @@ function DashboardClientContent() {
     localStorage.setItem('cartshift_dashboard_secondary_open', String(next));
   };
 
-  const toggleServiceStatus = () => {
-    const next = !isServiceStatusOpen;
-    setIsServiceStatusOpen(next);
-    localStorage.setItem('cartshift_service_status_open', String(next));
-  };
 
   if (loading) {
     return (
@@ -185,73 +178,23 @@ function DashboardClientContent() {
               <TipsCard />
 
               <Card variant="elevated" accent="primary" className="shadow-sm">
-                <button
-                  type="button"
-                  onClick={toggleServiceStatus}
-                  className="portal-focus-ring w-full flex items-center justify-between group touch-target-sm"
-                  aria-expanded={isServiceStatusOpen}
-                >
-                  <CardSectionTitle
-                    as="h4"
-                    icon={Clock}
-                    iconClassName="text-primary-500"
-                    className="mb-0 group-hover:text-primary-600 transition-colors"
-                  >
-                    {t('dashboard.serviceStatus.title')}
-                  </CardSectionTitle>
-                  <ChevronDown
-                    className={cn(
-                      'w-5 h-5 text-surface-400 transition-transform duration-200',
-                      isServiceStatusOpen && 'rotate-180'
-                    )}
-                    aria-hidden
-                  />
-                </button>
-
-                {isServiceStatusOpen && (
-                  <div className="pt-6 space-y-5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                        {t('dashboard.serviceStatus.design')}
-                      </span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-2 text-xs">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full motion-safe:animate-pulse" />
-                        {t('dashboard.serviceStatus.active')}
-                      </span>
-                    </div>
-                    <Card variant="glass" padding="lg">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                          {t('dashboard.serviceStatus.dev')}
-                        </span>
-                        <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-2 text-xs">
-                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full motion-safe:animate-pulse" />
-                          {t('dashboard.serviceStatus.peak')}
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-amber-500"
-                          initial={{ width: 0 }}
-                          animate={{ width: '92%' }}
-                          transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
-                        />
-                      </div>
-                      <p className="mt-3 text-xs text-surface-400 font-medium">
-                        {t('dashboard.serviceStatus.etaLabel')}: 4-6{' '}
-                        {t('dashboard.serviceStatus.days')}
-                      </p>
-                    </Card>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-surface-600 dark:text-surface-400 font-bold font-outfit">
-                        {t('dashboard.serviceStatus.avgResponse')}
-                      </span>
-                      <span className="text-surface-900 dark:text-white font-semibold text-xs">
-                        {t('dashboard.serviceStatus.responseTime')}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                <CardSectionTitle as="h4" icon={Clock} className="mb-3">
+                  {t('dashboard.projectWork.title')}
+                </CardSectionTitle>
+                <div className="space-y-2 text-sm">
+                  <p className="flex justify-between gap-3">
+                    <span className="text-surface-600 dark:text-surface-300">{t('dashboard.projectWork.open')}</span>
+                    <strong>{requests.filter(r => !['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'].includes(r.status)).length}</strong>
+                  </p>
+                  <p className="flex justify-between gap-3">
+                    <span className="text-surface-600 dark:text-surface-300">{t('dashboard.projectWork.action')}</span>
+                    <strong>{requests.filter(r => ['NEEDS_INFO', 'CHANGES_REQUESTED', 'QUOTED'].includes(r.status)).length}</strong>
+                  </p>
+                  <p className="flex justify-between gap-3">
+                    <span className="text-surface-600 dark:text-surface-300">{t('dashboard.projectWork.review')}</span>
+                    <strong>{requests.filter(r => r.status === 'IN_REVIEW').length}</strong>
+                  </p>
+                </div>
               </Card>
             </motion.div>
           )}

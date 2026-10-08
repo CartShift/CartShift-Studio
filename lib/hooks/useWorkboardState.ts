@@ -146,21 +146,21 @@ export function useWorkboardState({
       {
         id: 'backlog',
         title: t('workboard.columns.backlog'),
-        status: [REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO, REQUEST_STATUS.QUEUED],
+        status: [REQUEST_STATUS.DRAFT, REQUEST_STATUS.NEW, REQUEST_STATUS.NEEDS_INFO, REQUEST_STATUS.QUEUED, REQUEST_STATUS.QUOTED, REQUEST_STATUS.CHANGES_REQUESTED, REQUEST_STATUS.ACCEPTED],
         color: 'slate',
         defaultNewStatus: REQUEST_STATUS.NEW,
       },
       {
         id: 'in_progress',
         title: t('workboard.columns.inProgress'),
-        status: [REQUEST_STATUS.IN_PROGRESS, REQUEST_STATUS.ACCEPTED],
+        status: [REQUEST_STATUS.IN_PROGRESS],
         color: 'blue',
         defaultNewStatus: REQUEST_STATUS.IN_PROGRESS,
       },
       {
         id: 'review',
         title: t('workboard.columns.review'),
-        status: [REQUEST_STATUS.IN_REVIEW, REQUEST_STATUS.QUOTED],
+        status: [REQUEST_STATUS.IN_REVIEW],
         color: 'amber',
         defaultNewStatus: REQUEST_STATUS.IN_REVIEW,
       },
@@ -170,6 +170,13 @@ export function useWorkboardState({
         status: [REQUEST_STATUS.DELIVERED, REQUEST_STATUS.PAID, REQUEST_STATUS.CLOSED],
         color: 'emerald',
         defaultNewStatus: REQUEST_STATUS.DELIVERED,
+      },
+      {
+        id: 'archived',
+        title: t('workboard.columns.archived'),
+        status: [REQUEST_STATUS.CANCELED, REQUEST_STATUS.DECLINED, REQUEST_STATUS.EXPIRED],
+        color: 'slate',
+        defaultNewStatus: REQUEST_STATUS.CANCELED,
       },
     ],
     [t]

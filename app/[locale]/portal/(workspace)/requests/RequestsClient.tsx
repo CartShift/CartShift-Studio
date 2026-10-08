@@ -139,7 +139,7 @@ export default function RequestsClient() {
   const [isDeleting, setIsDeleting] = useState(false);
   const isDeletingCombined = isDeleting || isDeletingRequest;
 
-  const clientFilters: ClientStatus[] = ['SUBMITTED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED'];
+  const clientFilters: ClientStatus[] = ['SUBMITTED', 'ACTION_REQUIRED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED', 'CANCELED'];
   const filters = isAgency
     ? [
         'All',
