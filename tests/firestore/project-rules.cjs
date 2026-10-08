@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+/* global require, console, process */
 // Firestore Emulator security tests: no production Firebase credentials used.
 const fs = require('node:fs');
-const assert = require('node:assert/strict');
 const {
   initializeTestEnvironment,
   assertSucceeds,
