@@ -100,6 +100,7 @@ export default function EditPricingForm() {
   const [pricingRequest, setPricingRequest] = useState<PricingRequest | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [lastAction, setLastAction] = useState<'saved' | 'queued'>('saved');
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -389,6 +390,7 @@ export default function EditPricingForm() {
         await sendPricingRequest(pricingId);
       }
 
+      setLastAction(shouldSend ? 'queued' : 'saved');
       setSubmitStatus('success');
 
       setTimeout(() => {
@@ -404,7 +406,6 @@ export default function EditPricingForm() {
     }
   };
 
-  const isSent = pricingRequest?.status === PRICING_STATUS.SENT;
 
   if (isLoading) {
     return (
@@ -471,12 +472,10 @@ export default function EditPricingForm() {
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-            {isSent ? 'Offer Sent!' : 'Changes Saved!'}
+            {t(lastAction === 'queued' ? 'pricing.form.queuedTitle' : 'pricing.form.changesSavedTitle')}
           </h2>
           <p className="text-surface-500 dark:text-surface-400 max-w-sm">
-            {isSent
-              ? 'Your pricing offer has been sent to the client.'
-              : 'Your changes have been saved successfully.'}
+            {t(lastAction === 'queued' ? 'pricing.form.queuedDescription' : 'pricing.form.changesSavedDescription')}
           </p>
         </Card>
       </div>
