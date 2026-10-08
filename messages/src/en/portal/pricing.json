@@ -97,7 +97,13 @@
           "fixed": "Fixed price",
           "hourly": "Hourly",
           "estimate": "Estimate"
-        }
+        },
+        "queuedTitle": "Proposal queued for email",
+        "queuedDescription": "The proposal version is published and its email is queued. Delivery has not yet been confirmed.",
+        "savedDraftTitle": "Draft saved",
+        "savedDraftDescription": "Your proposal draft is saved and has not been published to the client.",
+        "changesSavedTitle": "Changes saved",
+        "changesSavedDescription": "Your changes are saved. They will not be visible to the client until you resend the proposal."
       },
       "detail": {
         "breakdown": "Pricing Breakdown",
@@ -250,7 +256,8 @@
         "title": "Why Price Right",
         "description": "Accurate estimates build trust and reduce negotiation time. Use this calculator to align expectations early."
       },
-      "newChangeOrder": "New change order"
+      "newChangeOrder": "New change order",
+      "sendSuccess": "Proposal email queued. Delivery is not yet confirmed."
     }
   }
 }
