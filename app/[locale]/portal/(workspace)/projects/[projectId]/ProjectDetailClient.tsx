@@ -59,7 +59,7 @@ function Panel({ title, children, icon: Icon }: {
   </section>;
 }
 
-function ReviewRow({ project, deliverable, reviews, canReview, t, onReviewed }: {
+function ReviewRow({ project, deliverable, reviews, canReview, onReviewed }: {
   project: ClientProject;
   deliverable: ClientProject['deliverables'][number];
   reviews: ProjectReview[];
@@ -132,7 +132,7 @@ function ReviewRow({ project, deliverable, reviews, canReview, t, onReviewed }: 
   );
 }
 
-function ScopeEditor({ project, save, t }: {
+function ScopeEditor({ project, save }: {
   project: ClientProject; save: (scope: ProjectScope) => Promise<void>;
 }) {
   const t = useTranslations('portal.projects');
