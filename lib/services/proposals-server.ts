@@ -30,6 +30,31 @@ type ProposalDocument = Omit<PricingRequest, 'id'> & {
   pendingAmount?: number;
 };
 
+function getPublishedFields(proposal: ProposalDocument) {
+  return {
+    title: proposal.title,
+    description: proposal.description ?? null,
+    lineItems: proposal.lineItems || [],
+    totalAmount: proposal.totalAmount,
+    currency: proposal.currency,
+    taxRate: proposal.taxRate ?? 0,
+    terms: proposal.terms ?? null,
+    clientName: proposal.clientName ?? null,
+    validUntil: proposal.validUntil ?? null,
+    timeframe: proposal.timeframe ?? null,
+    workDeadline: proposal.workDeadline ?? null,
+    paymentRequired: proposal.paymentRequired ?? false,
+    depositAmount: proposal.depositAmount ?? 0,
+    proposalContent: proposal.proposalContent ?? null,
+  };
+}
+
+/** Return the last sent content, not unpublished edits made to the working request. */
+function effectiveProposal(proposal: ProposalDocument): ProposalDocument {
+  if (proposal.status === 'DRAFT' || !proposal.publishedProposal) return proposal;
+  return { ...proposal, ...proposal.publishedProposal } as ProposalDocument;
+}
+
 type PaymentDocument = {
   requestId: string;
   orgId: string;
@@ -160,7 +185,8 @@ function sanitizeAgencyPayment(
 async function sanitizeProposal(
   snapshot: admin.firestore.QueryDocumentSnapshot | admin.firestore.DocumentSnapshot
 ): Promise<PublicPricingProposal> {
-  const data = snapshot.data() as ProposalDocument;
+  const request = snapshot.data() as ProposalDocument;
+  const data = effectiveProposal(request);
   const payments = await listPaymentDocs(snapshot.id);
   const validUntil = toIso(data.validUntil);
   const isExpired = Boolean(validUntil && new Date(validUntil).getTime() < Date.now());
@@ -178,6 +204,8 @@ async function sanitizeProposal(
     currency: data.currency,
     status,
     proposalType: 'work_proposal',
+    proposalContent: data.proposalContent,
+    proposalVersion: request.proposalVersion ?? 0,
     terms: data.terms,
     clientName: data.clientName,
     validUntil,
@@ -425,8 +453,12 @@ export async function acceptPublicProposal(
 
   await db.runTransaction(async transaction => {
     const fresh = await transaction.get(proposalSnapshot.ref);
-    const proposal = fresh.data() as ProposalDocument | undefined;
-    if (!proposal) throw new Error('NOT_FOUND');
+    const working = fresh.data() as ProposalDocument | undefined;
+    if (!working) throw new Error('NOT_FOUND');
+    const proposal = effectiveProposal(working);
+    if (working.publishedProposal && payload.proposalVersion !== working.proposalVersion) {
+      throw new Error('STALE_VERSION');
+    }
 
     if (proposal.status === 'ACCEPTED' || proposal.status === 'PAID') {
       return;
@@ -443,6 +475,8 @@ export async function acceptPublicProposal(
 
     const now = admin.firestore.FieldValue.serverTimestamp();
     const updates: Record<string, unknown> = {
+      // Lock the actual published commercial terms and totals at the time of signature.
+      ...(working.publishedProposal || {}),
       status: 'ACCEPTED',
       acceptedAt: now,
       termsAcceptedAt: now,
@@ -537,6 +571,16 @@ export async function queueProposalOfferEmail(
 
     const now = admin.firestore.FieldValue.serverTimestamp();
     const publicToken = proposal.publicToken || randomUUID();
+    const nextVersion = (proposal.proposalVersion ?? 0) + 1;
+    const publishedProposal = getPublishedFields(proposal);
+    transaction.create(proposalRef.collection('versions').doc(String(nextVersion)), {
+      ...publishedProposal,
+      version: nextVersion,
+      locale,
+      createdAt: now,
+      orgId: proposal.orgId,
+      requestId: proposalRef.id,
+    });
     const totalAmount = formatCurrency(proposal.totalAmount, proposal.currency);
     const actionUrl = getProposalPublicUrl(publicToken, locale);
     const subject =
@@ -570,6 +614,8 @@ export async function queueProposalOfferEmail(
     });
     transaction.update(proposalRef, {
       status: 'QUOTED',
+      proposalVersion: nextVersion,
+      publishedProposal,
       publicToken,
       publicAccessEnabled: true,
       sentAt: proposal.sentAt ?? now,
