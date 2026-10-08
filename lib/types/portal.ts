@@ -442,6 +442,7 @@ export const MILESTONE_STATUS_CONFIG: Record<
 export interface Request {
   id: string;
   orgId: string;
+  projectId?: string;
   title: string;
   description: string;
   type: RequestType;
@@ -761,6 +762,7 @@ export interface CreateRequestData {
 }
 
 export interface UpdateRequestData {
+  projectId?: string | null;
   title?: string;
   description?: string;
   type?: RequestType;

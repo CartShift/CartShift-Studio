@@ -137,6 +137,49 @@ service cloud.firestore {
       allow delete: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
     }
 
+    // Shared projects are readable by the owning organization; only agency users
+    // may edit project scope, launch checks, blockers and client-facing updates.
+    match /portal_projects/{projectId} {
+      allow get, list: if resource != null && canAccessOrg(resource.data.get('orgId', ''));
+      allow create: if isAgencyUser() &&
+        request.resource.data.get('orgId', '') is string &&
+        exists(/databases/$(database)/documents/portal_organizations/$(request.resource.data.orgId));
+      allow update: if isAgencyUser() &&
+        request.resource.data.get('orgId', '') == resource.data.get('orgId', '');
+      allow delete: if false;
+
+      match /reviews/{reviewId} {
+        function projectOrg() {
+          return get(/databases/$(database)/documents/portal_projects/$(projectId)).data.get('orgId', '');
+        }
+        function validReview() {
+          return exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
+            request.resource.data.keys().hasOnly([
+              'projectId', 'orgId', 'deliverableId', 'reviewerId',
+              'revision', 'decision', 'comment', 'updatedAt'
+            ]) &&
+            request.resource.data.get('projectId', '') == projectId &&
+            request.resource.data.get('orgId', '') == projectOrg() &&
+            request.resource.data.get('reviewerId', '') == request.auth.uid &&
+            reviewId == request.resource.data.get('deliverableId', '') + '_' + request.auth.uid &&
+            request.resource.data.get('deliverableId', '') is string &&
+            request.resource.data.get('revision', 0) is int &&
+            request.resource.data.get('revision', 0) > 0 &&
+            request.resource.data.get('decision', '') in ['approved', 'changes_requested'] &&
+            request.resource.data.get('comment', '') is string &&
+            request.resource.data.get('comment', '').size() <= 3000;
+        }
+        allow read: if isAuthenticated() && canAccessOrg(projectOrg());
+        allow create: if isAuthenticated() && canAccessOrg(projectOrg()) && validReview();
+        allow update: if isAuthenticated() && canAccessOrg(projectOrg()) &&
+          resource.data.get('reviewerId', '') == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'revision', 'decision', 'comment', 'updatedAt'
+          ]) && validReview();
+        allow delete: if false;
+      }
+    }
+
     match /portal_requests/{requestId} {
       function changesServerManagedCommercialFields() {
         return request.resource.data.diff(resource.data).affectedKeys().hasAny([
@@ -165,6 +208,7 @@ service cloud.firestore {
           'parentRequestId',
           'childRequestIds',
           'legacyProposalId',
+          'projectId',
           'lineItems',
           'totalAmount',
           'subtotal',

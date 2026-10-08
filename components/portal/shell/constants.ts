@@ -4,6 +4,7 @@ import {
   ClipboardList,
   Users,
   FolderOpen,
+  FolderKanban,
   Kanban,
   Calendar,
   Star,
@@ -19,6 +20,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 type NavTranslationKey =
   | 'sidebar.nav.dashboard'
   | 'sidebar.nav.requests'
+  | 'sidebar.nav.projects'
   | 'sidebar.nav.files'
   | 'sidebar.nav.settings'
   | 'sidebar.nav.team'
@@ -99,6 +101,11 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           roles: PERMISSIONS.MANAGE_CLIENTS,
         },
         {
+          label: t('sidebar.nav.projects'),
+          icon: FolderKanban,
+          href: getPortalPath('/projects/'),
+        },
+        {
           label: t('sidebar.nav.requests'),
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
@@ -166,6 +173,11 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
           label: t('sidebar.nav.requests'),
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
+        },
+        {
+          label: t('sidebar.nav.projects'),
+          icon: FolderKanban,
+          href: getPortalPath('/projects/'),
         },
       ],
     },
