@@ -32,7 +32,7 @@ jobs:
       - name: Install rules test dependencies
         run: |
           mkdir -p /tmp/cartshift-rules-test
-          npm install --prefix /tmp/cartshift-rules-test --no-audit --no-fund --save=false @firebase/rules-unit-testing@5 firebase@11
+          npm install --prefix /tmp/cartshift-rules-test --no-audit --no-fund --save=false @firebase/rules-unit-testing@5 firebase@12
           npm install --global --no-audit --no-fund firebase-tools@14
       - name: Validate rules and exercise tenant boundaries
         env:
