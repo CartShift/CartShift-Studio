@@ -37,11 +37,11 @@ describe('CV recruiter optimization', () => {
 
     expect(screen.getByText('E-Commerce Founder & Developer')).toBeInTheDocument();
     expect(
-      screen.getByText(/Built and operated direct-to-consumer e-commerce experiments/)
+      screen.getByText(/Built and operated DTC storefronts, payments, fulfillment/)
     ).toBeInTheDocument();
     expect(screen.getByText('Entrepreneur & Freelance Developer')).toBeInTheDocument();
     expect(
-      screen.getByText(/Delivered freelance web and integration projects/)
+      screen.getByText(/Delivered web and integration projects while building independent product ideas/)
     ).toBeInTheDocument();
   }, 10000);
 
