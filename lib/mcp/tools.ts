@@ -20,6 +20,10 @@ const clientFields = z.object({
   industry: tinyText.optional(),
   bio: text.optional(),
   shopifyDomain: z.string().trim().regex(/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/).optional(),
+  primaryContactName: tinyText.optional(),
+  primaryContactRole: tinyText.optional(),
+  primaryContactEmail: z.string().email().max(240).optional(),
+  primaryContactPhone: z.string().trim().max(50).optional(),
   billingName: tinyText.optional(),
   billingEmail: z.string().email().max(240).optional(),
   billingTaxId: z.string().trim().max(80).optional(),
@@ -58,7 +62,10 @@ export const TOOL_DEFS = [
         org_id: { type: 'string' },
         patch: { type: 'object', properties: {
           name: { type: 'string' }, website: { type: 'string' }, industry: { type: 'string' },
-          bio: { type: 'string' }, shopifyDomain: { type: 'string' }, billingName: { type: 'string' },
+          bio: { type: 'string' }, shopifyDomain: { type: 'string' },
+          primaryContactName: { type: 'string' }, primaryContactRole: { type: 'string' },
+          primaryContactEmail: { type: 'string' }, primaryContactPhone: { type: 'string' },
+          billingName: { type: 'string' },
           billingEmail: { type: 'string' }, billingTaxId: { type: 'string' },
           billingAddressLine1: { type: 'string' }, billingAddressLine2: { type: 'string' },
           billingCity: { type: 'string' }, billingCountry: { type: 'string' },
@@ -155,7 +162,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     const doc = await orgExists(org_id);
     const data = doc.data() || {};
     const allowed = ['name', 'slug', 'website', 'industry', 'bio', 'shopifyDomain', 'shopifyAccessStatus',
-      'responsibleAgencyUserId', 'billingName', 'billingEmail', 'billingTaxId',
+      'responsibleAgencyUserId', 'primaryContactName', 'primaryContactRole',
+      'primaryContactEmail', 'primaryContactPhone', 'billingName', 'billingEmail', 'billingTaxId',
       'billingAddressLine1', 'billingAddressLine2', 'billingCity', 'billingCountry', 'billingPostalCode', 'updatedAt'];
     return { id: doc.id, ...Object.fromEntries(allowed.filter(k => data[k] !== undefined).map(k => [k, serialize(data[k])])) };
   }
