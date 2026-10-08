@@ -14,7 +14,7 @@ import { PROJECT_TEMPLATES } from '@/lib/utils/project-workflow';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { toast } from 'sonner';
 
-export default function ProjectsListClient() {
+export default function ProjectsListClient({ initialClientFilter = 'all' }: { initialClientFilter?: string }) {
   const t = useTranslations('portal.projects');
   const locale = useLocale();
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function ProjectsListClient() {
   const orgId = useResolvedOrgId();
   const { organizations } = useAgencyClients();
   const [filter, setFilter] = useState('');
-  const [clientFilter, setClientFilter] = useState('all');
+  const [clientFilter, setClientFilter] = useState(initialClientFilter);
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState('');
   const [selectedOrg, setSelectedOrg] = useState('');

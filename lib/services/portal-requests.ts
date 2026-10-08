@@ -324,6 +324,14 @@ export async function updateRequest(requestId: string, data: UpdateRequestData):
       updatedAt: serverTimestamp(),
     };
 
+    // Record the actual first delivery event rather than using the last edit as completion time.
+    if (data.status === REQUEST_STATUS.DELIVERED) {
+      const existing = await getDoc(docRef);
+      if (existing.exists() && !existing.data().deliveredAt) {
+        updateData.deliveredAt = serverTimestamp();
+      }
+    }
+
     // Handle status change to closed
     if (data.status === REQUEST_STATUS.CLOSED || data.status === REQUEST_STATUS.CANCELED) {
       updateData.closedAt = serverTimestamp();

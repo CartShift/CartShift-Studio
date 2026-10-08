@@ -459,6 +459,7 @@ export interface Request {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   closedAt?: Timestamp;
+  deliveredAt?: Timestamp;
 
   // Hierarchy. Existing records without requestRole are treated as standalone.
   requestRole?: RequestRole;
