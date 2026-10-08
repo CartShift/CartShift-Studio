@@ -13,7 +13,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getRequestsByOrg, updateRequest } from '@/lib/services/portal-requests';
 import {
   addProjectItem, editProjectItem, getClientProject, listProjectReviews,
-  observeClientProject, submitProjectReview, updateClientProject,
+  observeClientProject, submitProjectReview, submitChangeOrderDecision, updateClientProject,
 } from '@/lib/services/portal-projects';
 import {
   PROJECT_STATUS_LABELS,
@@ -21,7 +21,7 @@ import {
   type ProjectStatus, type ProjectScope, type ProjectCollectionField,
   type ProjectCollectionItem,
 } from '@/lib/types/project';
-import { getProjectHealth, loggedHours, projectBudget } from '@/lib/utils/project-workflow';
+import { buildProjectUpdateDraft, getProjectHealth, loggedHours, projectBudget } from '@/lib/utils/project-workflow';
 import { toast } from 'sonner';
 
 function AddItem({ label, placeholder, onAdd, disabled }: {
@@ -132,6 +132,50 @@ function ReviewRow({ project, deliverable, reviews, canReview, onReviewed }: {
   );
 }
 
+
+function ChangeOrderDecision({ project, changeId, reviews, canReview, onReviewed }: {
+  project: ClientProject;
+  changeId: string;
+  reviews: ProjectReview[];
+  canReview: boolean;
+  onReviewed: () => Promise<unknown>;
+}) {
+  const t = useTranslations('portal.projects');
+  const [comment, setComment] = useState('');
+  const [busy, setBusy] = useState(false);
+  const current = reviews.filter(review => review.deliverableId === 'change:' + changeId && review.revision === 1);
+  const isApproved = current.length > 0 && current.every(review => review.decision === 'approved');
+  const needsChanges = current.some(review => review.decision === 'changes_requested');
+  const submit = async (decision: ProjectReviewDecision) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await submitChangeOrderDecision({project, changeId, decision, comment});
+      await onReviewed();
+      setComment('');
+      toast.success(t('reviewSaved'));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('saveError'));
+    } finally { setBusy(false); }
+  };
+  return <div className="mt-3 border-t border-surface-100 pt-3 dark:border-surface-700">
+    <p className="mb-2 text-xs font-semibold text-surface-600 dark:text-surface-300">
+      {needsChanges ? t('changesRequested') : isApproved ? t('approved') : t('awaitingApproval')}
+    </p>
+    {current.filter(review => review.comment).map(review => <p className="mb-2 text-xs text-surface-500" key={review.id}>{review.comment}</p>)}
+    {canReview && <>
+      <textarea aria-label={t('reviewComment')} maxLength={3000} value={comment} onChange={e => setComment(e.target.value)}
+        placeholder={t('reviewComment')} className="portal-focus-ring min-h-14 w-full rounded-lg border border-surface-200 bg-transparent p-2 text-sm dark:border-surface-700" />
+      <div className="mt-2 flex flex-wrap gap-2">
+        <button type="button" disabled={busy} onClick={() => void submit('approved')}
+          className="portal-focus-ring rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{t('approveScope')}</button>
+        <button type="button" disabled={busy || !comment.trim()} onClick={() => void submit('changes_requested')}
+          className="portal-focus-ring rounded-lg border border-amber-400 px-3 py-2 text-xs font-semibold text-amber-800 disabled:opacity-50 dark:text-amber-300">{t('requestChanges')}</button>
+      </div>
+    </>}
+  </div>;
+}
+
 function ScopeEditor({ project, save }: {
   project: ClientProject; save: (scope: ProjectScope) => Promise<void>;
 }) {
@@ -143,7 +187,7 @@ function ScopeEditor({ project, save }: {
   return <form onSubmit={async e => {
     e.preventDefault();
     if (busy) return;
-    if (draft.minHours < 0 || draft.maxHours < draft.minHours || draft.rateCents < 0) {
+    if (!Number.isFinite(draft.minHours) || !Number.isFinite(draft.maxHours) || !Number.isFinite(draft.rateCents) || draft.minHours < 0 || draft.maxHours < draft.minHours || draft.rateCents < 0) {
       toast.error(t('invalidScope')); return;
     }
     setBusy(true);
@@ -326,6 +370,13 @@ export default function ProjectDetailClient({ id }: { id: string }) {
                 <p className="text-sm font-semibold">{blocker.title}</p>
                 <p className="mt-1 text-xs text-surface-500">{t(blocker.owner)}</p>
                 {blocker.nextAction && <p className="mt-2 text-sm">{blocker.nextAction}</p>}
+                {isAgency && <input aria-label={t('nextAction')} defaultValue={blocker.nextAction}
+                  placeholder={t('nextAction')} maxLength={250}
+                  onBlur={event => {
+                    const nextAction = event.currentTarget.value.trim();
+                    if (nextAction !== blocker.nextAction) void edit('blockers', blocker.id, old => ({ ...old, nextAction }));
+                  }}
+                  className="portal-focus-ring mt-2 min-h-9 w-full rounded-lg border border-surface-200 bg-transparent px-2 text-xs dark:border-surface-700" />}
               </div>
               {isAgency && <button type="button" disabled={saving}
                 onClick={() => void edit('blockers', blocker.id, old => ({ ...old, resolved: !old.resolved }))}
@@ -452,6 +503,8 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <span className="text-xs text-surface-500">{change.estimatedHours}h · {t(change.status)}</span>
           </div>
           <p className="mt-2 text-xs text-surface-500">{change.description}</p>
+          <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
+            canReview={!isAgency} onReviewed={refreshReviews} />
         </div>)}
         {isAgency && <>
           <div className="mt-4 flex gap-2">
@@ -501,6 +554,10 @@ export default function ProjectDetailClient({ id }: { id: string }) {
 
       <Panel title={t('clientUpdates')} icon={FileCheck2}>
         <p className="mb-3 text-sm text-surface-500">{t('updatesHelp')}</p>
+        {isAgency && <div className="mb-3 flex justify-end">
+          <button type="button" onClick={() => setUpdateText(buildProjectUpdateDraft(project, locale))}
+            className="portal-focus-ring rounded-lg border border-primary-300 px-3 py-2 text-xs font-semibold text-primary-700 dark:border-primary-700 dark:text-primary-300">{t('prepareUpdateDraft')}</button>
+        </div>}
         {isAgency && <form onSubmit={e => {
           e.preventDefault();
           if (!updateText.trim()) return;
