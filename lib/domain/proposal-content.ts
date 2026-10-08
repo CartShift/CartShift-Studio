@@ -132,3 +132,24 @@ export function validateProposalContent(value?: ProposalContent) {
   if (ids.length !== new Set(ids).size) throw new Error('Duplicate proposal section');
   if (value.scope.some(item => !item.title.trim())) throw new Error('Each scope item needs a title');
 }
+
+/** Agency work cannot start before an offer is accepted, its deposit is recorded,
+ * and all mandatory client materials have been approved. Existing non-quote
+ * requests keep their original workflow.
+ */
+export function canStartProposalWork(request: {
+  publicToken?: string;
+  status: string;
+  paymentRequired?: boolean;
+  depositAmount?: number;
+  amountPaid?: number;
+  proposalContent?: ProposalContent;
+  proposalRequirementStatuses?: Record<string, 'pending' | 'received' | 'approved'>;
+}): boolean {
+  if (!request.publicToken) return true;
+  if (!['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS'].includes(request.status)) return false;
+  if (request.paymentRequired && (request.amountPaid ?? 0) < (request.depositAmount ?? 0)) return false;
+  const requirements = request.proposalContent?.requirements ?? [];
+  return requirements.filter(item => item.required)
+    .every(item => request.proposalRequirementStatuses?.[item.id] === 'approved');
+}
