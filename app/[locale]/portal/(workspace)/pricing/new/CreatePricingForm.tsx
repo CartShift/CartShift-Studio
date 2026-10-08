@@ -115,15 +115,7 @@ export default function CreatePricingForm() {
       try {
         const requests = await getRequestsByOrg(orgId);
         // Filter to requests that are eligible for pricing (not already paid, not in active offer)
-        const eligibleStatuses: RequestStatus[] = [
-          'NEW',
-          'NEEDS_INFO',
-          'QUOTED',
-          'ACCEPTED',
-          'IN_PROGRESS',
-          'IN_REVIEW',
-          'DELIVERED',
-        ];
+        const eligibleStatuses: RequestStatus[] = ['NEW', 'NEEDS_INFO'];
         const eligible = requests.filter(
           r =>
             eligibleStatuses.includes(r.status) &&
