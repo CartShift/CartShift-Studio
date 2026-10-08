@@ -121,6 +121,18 @@ export async function createPricingRequest(
 
   await waitForAuth();
   const db = getFirestoreDb();
+  // Reusing a request for a quote is only safe before any commercial commitment.
+  // Never overwrite an accepted, active or paid request with a new proposal.
+  const linkedSnapshots = await Promise.all(linkedRequestIds.map(id =>
+    getDoc(doc(db, PRICING_REQUESTS_COLLECTION, id))
+  ));
+  const invalidLinked = linkedSnapshots.some(snapshot => {
+    const existing = snapshot.data() as PricingRequest | undefined;
+    return !existing || existing.orgId !== orgId ||
+      !['NEW', 'NEEDS_INFO'].includes(existing.status) ||
+      Boolean(existing.lockedAt || existing.parentRequestId);
+  });
+  if (invalidLinked) throw new Error('Choose only unquoted requests from this client');
   const existingRequestId = linkedRequestIds.length === 1 ? linkedRequestIds[0] : null;
   const existingSnapshot = existingRequestId
     ? await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, existingRequestId))
