@@ -2931,3 +2931,26 @@ body {
     }
   }
 }
+
+
+/* Public proposals: browser Print / Save as PDF must be readable on paper in RTL or LTR. */
+@media print {
+  @page { size: A4; margin: 17mm; }
+  body:has(.proposal-document) { background: #fff !important; }
+  .proposal-document,
+  .proposal-document * {
+    color: #17202e !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .proposal-document { padding: 0 !important; min-height: auto !important; }
+  .proposal-document [data-proposal-structured] > section,
+  .proposal-document [data-proposal-structured] > section > div {
+    break-inside: avoid;
+  }
+  .proposal-document [data-proposal-structured] {
+    break-before: auto;
+  }
+  .proposal-document .print\\:hidden { display: none !important; }
+}

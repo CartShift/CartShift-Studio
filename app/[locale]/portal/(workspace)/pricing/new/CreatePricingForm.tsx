@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useForm, useFieldArray, FieldArrayWithId } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
+import { ProposalContentEditor } from '@/components/portal/pricing/ProposalContentEditor';
+import { calculateEstimate, emptyProposalContent, type ProposalContent } from '@/lib/domain/proposal-content';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -16,7 +18,7 @@ import {
   PortalFormGrid,
   PortalFormSection,
 } from '@/components/portal/ui/PortalFormField';
-import { getRequestsByOrg } from '@/lib/services/portal-requests';
+import { getRequestsByOrg, getRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
@@ -74,18 +76,22 @@ interface PricingFormData {
   terms: string;
   paymentRequired: boolean;
   depositAmount: number;
+  proposalContent?: ProposalContent;
 }
 
 export default function CreatePricingForm() {
-  const { orgId, loading: org } = useOrg();
+  const { orgId, loading: org, fullOrganizations } = useOrg();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const relatedRequestId = searchParams.get('relatedRequestId');
+  const initializedRelatedId = useRef<string | null>(null);
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
   const t = usePortalTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [lastAction, setLastAction] = useState<'saved' | 'queued'>('saved');
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -112,15 +118,7 @@ export default function CreatePricingForm() {
       try {
         const requests = await getRequestsByOrg(orgId);
         // Filter to requests that are eligible for pricing (not already paid, not in active offer)
-        const eligibleStatuses: RequestStatus[] = [
-          'NEW',
-          'NEEDS_INFO',
-          'QUOTED',
-          'ACCEPTED',
-          'IN_PROGRESS',
-          'IN_REVIEW',
-          'DELIVERED',
-        ];
+        const eligibleStatuses: RequestStatus[] = ['NEW', 'NEEDS_INFO'];
         const eligible = requests.filter(
           r =>
             eligibleStatuses.includes(r.status) &&
@@ -187,6 +185,7 @@ export default function CreatePricingForm() {
         terms: z.string().min(1),
         paymentRequired: z.boolean(),
         depositAmount: z.number().min(0),
+        proposalContent: z.custom<ProposalContent>().optional(),
       }),
     [t]
   );
@@ -216,8 +215,28 @@ export default function CreatePricingForm() {
       terms: t('pricing.form.defaultTerms'),
       paymentRequired: false,
       depositAmount: 0,
+      proposalContent: emptyProposalContent(),
     },
   });
+
+  // A change order creates a NEW offer; it never edits an accepted request.
+  useEffect(() => {
+    if (!relatedRequestId || !orgId || initializedRelatedId.current === relatedRequestId) return;
+    initializedRelatedId.current = relatedRequestId;
+    void getRequest(relatedRequestId).then(source => {
+      if (!source || source.orgId !== orgId) return;
+      setValue('title', `Change order: ${source.title}`);
+      setValue('description', `Additional work related to: ${source.title}. Only the scope in this new proposal is included.`);
+    });
+  }, [relatedRequestId, orgId, setValue]);
+
+  // Prefill known client details without overwriting edits or drafts.
+  useEffect(() => {
+    const client = fullOrganizations.find(organization => organization.id === orgId);
+    if (!client) return;
+    if (!watch('clientName')) setValue('clientName', client.name);
+    if (!watch('clientEmail') && client.billingEmail) setValue('clientEmail', client.billingEmail);
+  }, [orgId, fullOrganizations, setValue, watch]);
 
   // Load calculator data from session storage
   useEffect(() => {
@@ -354,14 +373,15 @@ export default function CreatePricingForm() {
     return { totalAmount, subtotal, taxAmount };
   }, [watchedLineItems, watchedIncludeTax]);
 
+  const watchedProposalContent = watch('proposalContent');
   const watchedPaymentRequired = watch('paymentRequired');
   const watchedDepositAmount = watch('depositAmount');
 
   useEffect(() => {
     if (watchedPaymentRequired && !watchedDepositAmount && totalAmount > 0) {
-      setValue('depositAmount', totalAmount / 100);
+      setValue('depositAmount', Math.round(totalAmount * (watchedProposalContent?.pricing.depositPercent ?? 50) / 100) / 100);
     }
-  }, [watchedPaymentRequired, watchedDepositAmount, totalAmount, setValue]);
+  }, [watchedPaymentRequired, watchedDepositAmount, totalAmount, watchedProposalContent?.pricing.depositPercent, setValue]);
 
   const onSubmit = async (data: PricingFormData, shouldSend: boolean) => {
     if (!userData?.id || !orgId || typeof orgId !== 'string') {
@@ -407,6 +427,8 @@ export default function CreatePricingForm() {
           agencyNotes: data.agencyNotes,
           requestIds: selectedRequestIds.length > 0 ? selectedRequestIds : undefined,
           proposalType: 'work_proposal',
+          proposalContent: data.proposalContent,
+          relatedRequestId: relatedRequestId || undefined,
           terms: data.terms,
           publicAccessEnabled: true,
           taxRate: data.includeTax ? TAX_RATE : 0,
@@ -421,6 +443,7 @@ export default function CreatePricingForm() {
         await sendPricingRequest(request.id);
       }
 
+      setLastAction(shouldSend ? 'queued' : 'saved');
       setSubmitStatus('success');
 
       setTimeout(() => {
@@ -454,12 +477,10 @@ export default function CreatePricingForm() {
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-            {isSending ? 'Offer Sent!' : 'Draft Saved!'}
+            {t(lastAction === 'queued' ? 'pricing.form.queuedTitle' : 'pricing.form.savedDraftTitle')}
           </h2>
           <p className="text-surface-500 dark:text-surface-400 max-w-sm">
-            {isSending
-              ? 'Your pricing offer has been sent to the client.'
-              : 'Your draft has been saved. You can send it when ready.'}
+            {t(lastAction === 'queued' ? 'pricing.form.queuedDescription' : 'pricing.form.savedDraftDescription')}
           </p>
         </Card>
       </div>
@@ -512,8 +533,32 @@ export default function CreatePricingForm() {
             </PortalFormSection>
           </Card>
 
+          <ProposalContentEditor
+            value={watchedProposalContent}
+            currency={watchedCurrency}
+            onTemplateApplied={() => {
+              setValue('paymentRequired', true, { shouldDirty: true });
+              setValue('depositAmount', 0, { shouldDirty: true });
+            }}
+            onChange={proposalContent => {
+              setValue('proposalContent', proposalContent, { shouldDirty: true, shouldValidate: true });
+              const estimate = calculateEstimate(proposalContent);
+              const lineItems = watch('lineItems');
+              // Only prefill an untouched pricing row. Existing custom amounts are never overridden.
+              if (estimate && estimate.mode === 'hourly_capped' &&
+                  lineItems.length === 1 && !lineItems[0].description && lineItems[0].unitPrice === 0) {
+                setValue('lineItems', [{
+                  description: 'Hourly development up to the approved cap',
+                  quantity: 1,
+                  unitPrice: estimate.maxMinor / 100,
+                  pricingType: 'hourly',
+                }], { shouldDirty: true, shouldValidate: true });
+              }
+            }}
+          />
+
           {/* Request Selection & Pricing Calculator */}
-          <RequestPricingCalculator
+          {!relatedRequestId && <RequestPricingCalculator
             availableRequests={availableRequests}
             selectedRequestIds={selectedRequestIds}
             onSelectionChange={setSelectedRequestIds}
@@ -522,7 +567,7 @@ export default function CreatePricingForm() {
             error={requestsError}
             onQuickAddRequest={() => router.push(getPortalPath('/requests/new'))}
             orgId={orgId!}
-          />
+          />}
 
           {/* Manual Line Items - For additional items or when no requests selected */}
           {(!lineItemsFromCalculator || selectedRequestIds.length === 0) && (

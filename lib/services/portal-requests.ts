@@ -1,3 +1,4 @@
+import { canStartProposalWork } from '@/lib/domain/proposal-content';
 import {
   collection,
   doc,
@@ -337,7 +338,10 @@ export async function updateRequest(requestId: string, data: UpdateRequestData):
 }
 
 export async function updateRequestStatus(requestId: string, status: RequestStatus): Promise<void> {
-  console.log('[updateRequestStatus] Called with:', { requestId, status });
+  if (status === 'IN_PROGRESS' || status === 'QUEUED') {
+    const current = await getRequest(requestId);
+    if (!current || !canStartProposalWork(current)) throw new Error('PROPOSAL_PREREQUISITES_NOT_MET');
+  }
   return updateRequest(requestId, { status });
 }
 
@@ -766,6 +770,8 @@ export async function startRequestWork(
   userName: string
 ): Promise<void> {
   await waitForAuth();
+  const current = await getRequest(requestId);
+  if (!current || !canStartProposalWork(current)) throw new Error('PROPOSAL_PREREQUISITES_NOT_MET');
   const db = getFirestoreDb();
   await updateDoc(doc(db, REQUESTS_COLLECTION, requestId), {
     status: REQUEST_STATUS.IN_PROGRESS,

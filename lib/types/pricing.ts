@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import type { ProposalContent } from '@/lib/domain/proposal-content';
 import type {
   Currency,
   PricingLineItem,
@@ -99,6 +100,8 @@ export interface CreatePricingRequestData {
   agencyNotes?: string;
   requestIds?: string[]; // Optional: link to existing requests
   proposalType?: ProposalType;
+  proposalContent?: ProposalContent;
+  relatedRequestId?: string;
   terms?: string;
   publicAccessEnabled?: boolean;
   paymentRequired?: boolean;
@@ -124,6 +127,7 @@ export interface UpdatePricingRequestData {
   status?: PricingStatus;
   requestIds?: string[];
   proposalType?: ProposalType;
+  proposalContent?: ProposalContent;
   terms?: string;
   publicAccessEnabled?: boolean;
   paymentRequired?: boolean;
@@ -136,6 +140,7 @@ export interface AcceptPricingRequestPayload {
   acceptedByName: string;
   acceptedByEmail?: string;
   signatureText: string;
+  proposalVersion?: number;
 }
 
 export interface ProposalPaymentRecord {
@@ -190,6 +195,8 @@ export interface PublicPricingProposal {
   currency: Currency;
   status: PricingStatus;
   proposalType: ProposalType;
+  proposalContent?: ProposalContent;
+  proposalVersion?: number;
   terms?: string;
   clientName?: string;
   validUntil?: string;

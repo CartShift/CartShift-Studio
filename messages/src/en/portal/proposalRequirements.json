@@ -1,0 +1,22 @@
+{
+  "portal": {
+    "proposalRequirements": {
+      "title": "Materials & approvals before work",
+      "subtitle": "Track the prerequisites of the accepted proposal",
+      "pending": "Pending",
+      "received": "Received",
+      "approved": "Approved",
+      "required": "Required",
+      "ready": "All start conditions are met",
+      "waiting": "Work can start after the offer, deposit and required materials are approved.",
+      "payment": "Deposit",
+      "paymentPending": "Deposit not recorded yet",
+      "paymentComplete": "Deposit received",
+      "approval": "Proposal approval",
+      "approvedOffer": "Proposal accepted",
+      "awaitingOffer": "Awaiting acceptance",
+      "updateFailed": "Could not update this requirement.",
+      "paymentNotRequired": "No deposit required"
+    }
+  }
+}

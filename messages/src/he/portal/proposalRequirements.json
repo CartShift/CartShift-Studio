@@ -1,0 +1,22 @@
+{
+  "portal": {
+    "proposalRequirements": {
+      "title": "חומרים ואישורים לפני תחילת העבודה",
+      "subtitle": "מעקב אחרי הדרישות שהוגדרו בהצעה המאושרת",
+      "pending": "ממתין",
+      "received": "התקבל",
+      "approved": "אושר",
+      "required": "נדרש",
+      "ready": "כל תנאי ההתחלה הושלמו",
+      "waiting": "העבודה תוכל להתחיל אחרי אישור ההצעה, קבלת המקדמה והחומרים הנדרשים.",
+      "payment": "מקדמה",
+      "paymentPending": "המקדמה טרם נרשמה",
+      "paymentComplete": "מקדמה התקבלה",
+      "approval": "אישור הצעה",
+      "approvedOffer": "ההצעה אושרה",
+      "awaitingOffer": "ההצעה ממתינה לאישור",
+      "updateFailed": "לא ניתן לעדכן את מצב הדרישה.",
+      "paymentNotRequired": "מקדמה אינה נדרשת"
+    }
+  }
+}

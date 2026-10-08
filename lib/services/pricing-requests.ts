@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { deepClean } from '@/lib/utils';
+import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
 import {
   PricingRequest,
   CreatePricingRequestData,
@@ -58,6 +59,8 @@ export async function createPricingRequest(
   userName: string,
   data: CreatePricingRequestData
 ): Promise<PricingRequest> {
+  validateProposalContent(data.proposalContent);
+  validateProposalCap(data.proposalContent, data.lineItems);
   // Add IDs to line items
   const lineItems: PricingLineItem[] = data.lineItems.map(item => ({
     ...item,
@@ -93,8 +96,11 @@ export async function createPricingRequest(
     commentCount: 0,
     isBillable: true,
     terms: data.terms?.trim() || null,
+    proposalContent: data.proposalContent ? deepClean(data.proposalContent) : null,
+    relatedRequestId: data.relatedRequestId ?? null,
     publicToken: generatePublicToken(),
-    publicAccessEnabled: data.publicAccessEnabled ?? true,
+    // A draft is private until the agency publishes and queues its first version.
+    publicAccessEnabled: data.proposalContent ? false : (data.publicAccessEnabled ?? true),
     clientName: data.clientName?.trim() || null,
     clientEmail: data.clientEmail?.trim().toLowerCase() || null,
     agencyNotes: data.agencyNotes?.trim() || null,
@@ -118,6 +124,27 @@ export async function createPricingRequest(
 
   await waitForAuth();
   const db = getFirestoreDb();
+  // Reusing a request for a quote is only safe before any commercial commitment.
+  // Never overwrite an accepted, active or paid request with a new proposal.
+  const linkedSnapshots = await Promise.all(linkedRequestIds.map(id =>
+    getDoc(doc(db, PRICING_REQUESTS_COLLECTION, id))
+  ));
+  const invalidLinked = linkedSnapshots.some(snapshot => {
+    const existing = snapshot.data() as PricingRequest | undefined;
+    return !existing || existing.orgId !== orgId ||
+      !['NEW', 'NEEDS_INFO'].includes(existing.status) ||
+      Boolean(existing.lockedAt || existing.parentRequestId);
+  });
+  if (invalidLinked) throw new Error('Choose only unquoted requests from this client');
+  if (data.relatedRequestId) {
+    if (linkedRequestIds.length > 0) throw new Error('Change orders cannot reprice existing requests');
+    const sourceSnapshot = await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, data.relatedRequestId));
+    const source = sourceSnapshot.data() as PricingRequest | undefined;
+    if (!source || source.orgId !== orgId ||
+        !['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED'].includes(source.status)) {
+      throw new Error('The source work is not eligible for a change order');
+    }
+  }
   const existingRequestId = linkedRequestIds.length === 1 ? linkedRequestIds[0] : null;
   const existingSnapshot = existingRequestId
     ? await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, existingRequestId))
@@ -271,6 +298,7 @@ export async function updatePricingRequest(
   requestId: string,
   data: UpdatePricingRequestData
 ): Promise<void> {
+  validateProposalContent(data.proposalContent);
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, PRICING_REQUESTS_COLLECTION, requestId);
@@ -280,6 +308,7 @@ export async function updatePricingRequest(
   }
 
   const existing = existingSnapshot.data() as PricingRequest;
+  validateProposalCap(data.proposalContent ?? existing.proposalContent, data.lineItems ?? existing.lineItems);
   if (existing.status === PRICING_STATUS.ACCEPTED || existing.status === PRICING_STATUS.PAID) {
     throw new Error('Accepted or paid proposals are locked');
   }
@@ -329,6 +358,7 @@ export async function updatePricingRequest(
       data.requestIds.length > 1 ? 'bundle' : (existing.requestRole ?? 'standalone');
   }
   if (data.terms !== undefined) updateData.terms = data.terms?.trim() || null;
+  if (data.proposalContent !== undefined) updateData.proposalContent = data.proposalContent;
   if (data.publicAccessEnabled !== undefined) {
     updateData.publicAccessEnabled = data.publicAccessEnabled;
   }

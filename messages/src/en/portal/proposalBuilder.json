@@ -1,0 +1,43 @@
+{
+  "portal": {
+    "proposalBuilder": {
+      "title": "Proposal scope & content",
+      "template": "Use Shopify project template",
+      "objective": "Project objective",
+      "objectiveHint": "What outcome should this project achieve?",
+      "scope": "Scope of work",
+      "addScope": "Add scope item",
+      "itemTitle": "Item title",
+      "itemDescription": "Exactly what will be done?",
+      "deliverable": "Deliverable / acceptance criteria",
+      "minHours": "Min. hours",
+      "maxHours": "Max. hours",
+      "remove": "Remove",
+      "requirements": "What we need from the client",
+      "addRequirement": "Add requirement",
+      "requirementTitle": "Material or access required",
+      "requirementDetails": "Explain what is needed",
+      "required": "Required",
+      "assumptions": "Assumptions",
+      "exclusions": "Out of scope",
+      "deliverables": "Deliverables",
+      "onePerLine": "One item per line",
+      "pricing": "Pricing & effort",
+      "fixed": "Fixed price",
+      "hourly_estimate": "Hourly estimate",
+      "hourly_capped": "Hourly with approved cap",
+      "hourlyRate": "Hourly rate (before tax)",
+      "hoursMin": "Min. estimated hours",
+      "hoursMax": "Max. estimated hours",
+      "depositPercent": "Deposit (%)",
+      "estimatedRange": "Estimated cost range before tax",
+      "capInfo": "Set the binding total or approved cap in the pricing line items below.",
+      "schedule": "Timeline",
+      "minBusinessDays": "Min. business days",
+      "maxBusinessDays": "Max. business days",
+      "startsAfter": "Timeline starts after",
+      "paymentTerms": "Additional payment terms",
+      "preview": "This content is shown to clients and preserved in each sent version."
+    }
+  }
+}

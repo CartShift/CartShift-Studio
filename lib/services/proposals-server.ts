@@ -18,6 +18,7 @@ import {
   formatCurrency,
 } from '@/lib/types/pricing';
 import { getRequestRole } from '@/lib/domain/request-commercial';
+import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
 
 const PROPOSALS_COLLECTION = 'portal_requests';
 const LEGACY_PROPOSALS_COLLECTION = 'portal_pricing_requests';
@@ -29,6 +30,31 @@ const REQUESTS_COLLECTION = 'portal_requests';
 type ProposalDocument = Omit<PricingRequest, 'id'> & {
   pendingAmount?: number;
 };
+
+function getPublishedFields(proposal: ProposalDocument) {
+  return {
+    title: proposal.title,
+    description: proposal.description ?? null,
+    lineItems: proposal.lineItems || [],
+    totalAmount: proposal.totalAmount,
+    currency: proposal.currency,
+    taxRate: proposal.taxRate ?? 0,
+    terms: proposal.terms ?? null,
+    clientName: proposal.clientName ?? null,
+    validUntil: proposal.validUntil ?? null,
+    timeframe: proposal.timeframe ?? null,
+    workDeadline: proposal.workDeadline ?? null,
+    paymentRequired: proposal.paymentRequired ?? false,
+    depositAmount: proposal.depositAmount ?? 0,
+    proposalContent: proposal.proposalContent ?? null,
+  };
+}
+
+/** Return the last sent content, not unpublished edits made to the working request. */
+function effectiveProposal(proposal: ProposalDocument): ProposalDocument {
+  if (proposal.status === 'DRAFT' || !proposal.publishedProposal) return proposal;
+  return { ...proposal, ...proposal.publishedProposal } as ProposalDocument;
+}
 
 type PaymentDocument = {
   requestId: string;
@@ -160,7 +186,8 @@ function sanitizeAgencyPayment(
 async function sanitizeProposal(
   snapshot: admin.firestore.QueryDocumentSnapshot | admin.firestore.DocumentSnapshot
 ): Promise<PublicPricingProposal> {
-  const data = snapshot.data() as ProposalDocument;
+  const request = snapshot.data() as ProposalDocument;
+  const data = effectiveProposal(request);
   const payments = await listPaymentDocs(snapshot.id);
   const validUntil = toIso(data.validUntil);
   const isExpired = Boolean(validUntil && new Date(validUntil).getTime() < Date.now());
@@ -178,6 +205,8 @@ async function sanitizeProposal(
     currency: data.currency,
     status,
     proposalType: 'work_proposal',
+    proposalContent: data.proposalContent,
+    proposalVersion: request.proposalVersion ?? 0,
     terms: data.terms,
     clientName: data.clientName,
     validUntil,
@@ -406,7 +435,8 @@ async function syncProposalDerivedState(proposalId: string): Promise<void> {
 
 export async function getPublicProposal(token: string): Promise<PublicPricingProposal | null> {
   const proposal = await findProposalByToken(token);
-  if (!proposal || proposal.data()?.publicAccessEnabled !== true) {
+  if (!proposal || proposal.data()?.publicAccessEnabled !== true ||
+      proposal.data()?.status === 'DRAFT') {
     return null;
   }
   return sanitizeProposal(proposal);
@@ -425,8 +455,12 @@ export async function acceptPublicProposal(
 
   await db.runTransaction(async transaction => {
     const fresh = await transaction.get(proposalSnapshot.ref);
-    const proposal = fresh.data() as ProposalDocument | undefined;
-    if (!proposal) throw new Error('NOT_FOUND');
+    const working = fresh.data() as ProposalDocument | undefined;
+    if (!working) throw new Error('NOT_FOUND');
+    const proposal = effectiveProposal(working);
+    if (working.publishedProposal && payload.proposalVersion !== working.proposalVersion) {
+      throw new Error('STALE_VERSION');
+    }
 
     if (proposal.status === 'ACCEPTED' || proposal.status === 'PAID') {
       return;
@@ -443,6 +477,8 @@ export async function acceptPublicProposal(
 
     const now = admin.firestore.FieldValue.serverTimestamp();
     const updates: Record<string, unknown> = {
+      // Lock the actual published commercial terms and totals at the time of signature.
+      ...(working.publishedProposal || {}),
       status: 'ACCEPTED',
       acceptedAt: now,
       termsAcceptedAt: now,
@@ -481,6 +517,48 @@ export async function acceptPublicProposal(
   const accepted = await findProposalByToken(token);
   if (!accepted) throw new Error('NOT_FOUND');
   return sanitizeProposal(accepted);
+}
+
+/**
+ * Client feedback is part of the commercial negotiation, not an authorization
+ * to perform extra work. Only the agency can publish a revised proposal.
+ */
+export async function submitPublicProposalFeedback(
+  token: string,
+  input: { name: string; message: string; proposalVersion: number }
+): Promise<void> {
+  const db = getDb();
+  const proposalSnapshot = await findProposalByToken(token);
+  if (!proposalSnapshot || proposalSnapshot.data()?.publicAccessEnabled !== true) {
+    throw new Error('NOT_FOUND');
+  }
+  const commentRef = db.collection('portal_comments').doc();
+  await db.runTransaction(async transaction => {
+    const fresh = await transaction.get(proposalSnapshot.ref);
+    const proposal = fresh.data() as ProposalDocument | undefined;
+    if (!proposal || proposal.status !== 'QUOTED') throw new Error('NOT_SIGNABLE');
+    if ((proposal.proposalVersion ?? 0) !== input.proposalVersion) throw new Error('STALE_VERSION');
+    if (input.name.trim().length < 2 || input.message.trim().length < 3) {
+      throw new Error('INVALID_FEEDBACK');
+    }
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    transaction.create(commentRef, {
+      orgId: proposal.orgId,
+      requestId: fresh.id,
+      userId: 'public_proposal_client',
+      userName: input.name.trim().slice(0, 160),
+      content: input.message.trim().slice(0, 2000),
+      attachmentIds: [],
+      isInternal: false,
+      createdAt: now,
+    });
+    transaction.update(fresh.ref, {
+      status: 'CHANGES_REQUESTED',
+      clientNotes: input.message.trim().slice(0, 2000),
+      commentCount: (proposal.commentCount ?? 0) + 1,
+      updatedAt: now,
+    });
+  });
 }
 
 export async function ensureProposalPublicToken(proposalId: string): Promise<string> {
@@ -526,8 +604,21 @@ export async function queueProposalOfferEmail(
     const snapshot = await transaction.get(proposalRef);
     const proposal = snapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
-    if (proposal.status !== 'DRAFT' && proposal.status !== 'QUOTED') {
+    if (!['DRAFT', 'QUOTED', 'CHANGES_REQUESTED'].includes(proposal.status)) {
       throw new Error('NOT_SENDABLE');
+    }
+
+    // Revalidate on the trusted publishing path, not only in the browser editor.
+    // Legacy unstructured proposals continue to use their existing rules.
+    if (proposal.proposalContent) {
+      validateProposalContent(proposal.proposalContent);
+      validateProposalCap(proposal.proposalContent, proposal.lineItems || []);
+      if (proposal.paymentRequired &&
+          (!Number.isSafeInteger(proposal.depositAmount) ||
+           (proposal.depositAmount ?? 0) <= 0 ||
+           (proposal.depositAmount ?? 0) > proposal.totalAmount)) {
+        throw new Error('INVALID_DEPOSIT');
+      }
     }
 
     const recipient = proposal.clientEmail?.trim().toLowerCase();
@@ -537,6 +628,16 @@ export async function queueProposalOfferEmail(
 
     const now = admin.firestore.FieldValue.serverTimestamp();
     const publicToken = proposal.publicToken || randomUUID();
+    const nextVersion = (proposal.proposalVersion ?? 0) + 1;
+    const publishedProposal = getPublishedFields(proposal);
+    transaction.create(proposalRef.collection('versions').doc(String(nextVersion)), {
+      ...publishedProposal,
+      version: nextVersion,
+      locale,
+      createdAt: now,
+      orgId: proposal.orgId,
+      requestId: proposalRef.id,
+    });
     const totalAmount = formatCurrency(proposal.totalAmount, proposal.currency);
     const actionUrl = getProposalPublicUrl(publicToken, locale);
     const subject =
@@ -570,6 +671,8 @@ export async function queueProposalOfferEmail(
     });
     transaction.update(proposalRef, {
       status: 'QUOTED',
+      proposalVersion: nextVersion,
+      publishedProposal,
       publicToken,
       publicAccessEnabled: true,
       sentAt: proposal.sentAt ?? now,

@@ -2,6 +2,7 @@
 
 import { calculateSubtotal, calculateTaxAmount, formatCurrency, PublicPricingProposal } from '@/lib/types/pricing';
 import { useTranslations } from 'next-intl';
+import { PublicProposalContent } from '@/components/proposals/PublicProposalContent';
 
 export function PublicProposalSummary({ proposal }: { proposal: PublicPricingProposal }) {
   const t = useTranslations('proposal');
@@ -29,9 +30,11 @@ export function PublicProposalSummary({ proposal }: { proposal: PublicPricingPro
         )}
       </div>
 
+      <PublicProposalContent content={proposal.proposalContent} currency={proposal.currency} capMinor={calculateSubtotal(proposal.lineItems)} />
+
       <section aria-labelledby="proposal-items">
         <h2 id="proposal-items" className="font-outfit text-lg font-bold text-white">
-          {t('scope')}
+          {proposal.proposalContent?.scope.length ? t('details.priceBreakdown') : t('scope')}
         </h2>
         <div className="mt-3 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
           {proposal.lineItems.map(item => (

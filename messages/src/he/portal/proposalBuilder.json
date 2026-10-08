@@ -1,0 +1,43 @@
+{
+  "portal": {
+    "proposalBuilder": {
+      "title": "תוכן והיקף ההצעה",
+      "template": "מלא מתבנית פרויקט Shopify",
+      "objective": "מטרת הפרויקט",
+      "objectiveHint": "מה אנחנו רוצים להשיג עבור הלקוח?",
+      "scope": "פירוט העבודה",
+      "addScope": "הוסף שלב עבודה",
+      "itemTitle": "שם השלב",
+      "itemDescription": "מה בדיוק מבצעים?",
+      "deliverable": "תוצר / תנאי מסירה",
+      "minHours": "מינימום שעות",
+      "maxHours": "מקסימום שעות",
+      "remove": "הסר",
+      "requirements": "מה צריך מהלקוח",
+      "addRequirement": "הוסף דרישה",
+      "requirementTitle": "שם החומר או הגישה",
+      "requirementDetails": "הסבר ללקוח",
+      "required": "חובה",
+      "assumptions": "הנחות עבודה",
+      "exclusions": "מה לא כלול",
+      "deliverables": "תוצרים",
+      "onePerLine": "פריט אחד בכל שורה",
+      "pricing": "מודל תמחור ותכנון",
+      "fixed": "מחיר קבוע",
+      "hourly_estimate": "הערכת שעות",
+      "hourly_capped": "חיוב שעתי עד לתקרה",
+      "hourlyRate": "תעריף לשעה (לפני מע״מ)",
+      "hoursMin": "הערכת שעות מינימלית",
+      "hoursMax": "הערכת שעות מקסימלית",
+      "depositPercent": "מקדמה (%)",
+      "estimatedRange": "טווח עלות מחושב לפני מע״מ",
+      "capInfo": "הסכום המחייב או התקרה מוגדרים בשורות התמחור הקיימות בהמשך.",
+      "schedule": "לוח זמנים",
+      "minBusinessDays": "ימי עסקים לפחות",
+      "maxBusinessDays": "ימי עסקים לכל היותר",
+      "startsAfter": "מתי מתחילים לספור?",
+      "paymentTerms": "תנאי תשלום נוספים",
+      "preview": "תוכן זה יוצג בהצעה הציבורית וישמר בגרסה שנשלחה."
+    }
+  }
+}

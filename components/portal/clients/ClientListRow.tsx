@@ -10,9 +10,10 @@ import {
   PortalTableCell,
   PortalTableRow,
 } from '@/components/portal/ui/PortalTable';
-import { MoreVertical, ArrowUpRight, Eye, Trash2, ShieldCheck } from 'lucide-react';
+import { MoreVertical, ArrowUpRight, Eye, Trash2, ShieldCheck, FilePlus2 } from 'lucide-react';
 import { Organization } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { useOrg } from '@/lib/context/OrgContext';
 import { formatCompactCurrency } from '@/lib/utils/format-compact-currency';
 
 export interface AgencyClient extends Organization {
@@ -35,6 +36,7 @@ export function ClientListRow({
 }: ClientListRowProps) {
   const t = useTranslations('portal');
   const router = useRouter();
+  const { switchOrg } = useOrg();
 
   return (
     <PortalTableRow>
@@ -117,6 +119,14 @@ export function ClientListRow({
               label: t('agency.clients.detail.overview'),
               icon: <ArrowUpRight size={14} />,
               onClick: () => router.push(getPortalPath(`/agency/clients/${client.id}/`)),
+            },
+            {
+              label: t('pricing.newOffer'),
+              icon: <FilePlus2 size={14} />,
+              onClick: () => {
+                switchOrg(client.id);
+                router.push(getPortalPath('/pricing/new/'));
+              },
             },
             {
               label: t('agency.clients.viewAsClient'),

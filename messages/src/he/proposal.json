@@ -37,6 +37,33 @@
       "complete": "התשלום הושלם",
       "amount": "סכום לתשלום: {amount}",
       "unavailable": "התשלום המקוון אינו זמין כרגע. יש ליצור קשר עם הסוכנות לקבלת סיוע."
+    },
+    "details": {
+      "objective": "מטרת העבודה",
+      "deliverable": "תוצר",
+      "itemHours": "הערכת זמן לסעיף: {min}–{max} שעות",
+      "deliverables": "מה מקבלים בסיום",
+      "requirements": "מה נדרש מהלקוח",
+      "required": "נדרש לפני התחלה",
+      "estimate": "הערכת עלות לפי שעות, לפני מע״מ",
+      "hours": "{min}–{max} שעות עבודה",
+      "cap": "מסגרת החיוב המרבית שאושרה לפני מע״מ: {amount}",
+      "schedule": "לוח זמנים",
+      "businessDays": "{min}–{max} ימי עסקים",
+      "after": "הספירה מתחילה לאחר",
+      "conditions": "הנחות והחרגות",
+      "assumptions": "הנחות העבודה",
+      "exclusions": "מה לא כלול",
+      "paymentTerms": "תנאי תשלום",
+      "priceBreakdown": "פירוט התמחור",
+      "print": "הדפסה / שמירה כ-PDF",
+      "version": "גרסה {number}",
+      "feedback": "יש שאלה או בקשה לשינוי?",
+      "feedbackMessage": "מה תרצו לשנות או לשאול?",
+      "feedbackSubmit": "שליחת בקשה",
+      "feedbackSent": "בקשתכם התקבלה. נעדכן את ההצעה ונשלח גרסה חדשה.",
+      "feedbackName": "שם מלא",
+      "downloadPdf": "הורדת PDF"
     }
   }
 }

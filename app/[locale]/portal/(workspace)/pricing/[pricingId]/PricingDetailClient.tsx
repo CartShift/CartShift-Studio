@@ -19,6 +19,7 @@ import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useResolvedPricingId } from '@/lib/hooks/useResolvedPricingId';
 import { usePricingRequest } from '@/lib/hooks/usePricingRequest';
 import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
+import { ProposalRequirementsPanel } from '@/components/portal/pricing/ProposalRequirementsPanel';
 import {
   getPricingStatusBadgeVariant,
   getStatusBadgeVariant,
@@ -116,7 +117,8 @@ export default function PricingDetailClient() {
           </Link>
           {isAgency &&
             (pricingRequest.status === PRICING_STATUS.DRAFT ||
-              pricingRequest.status === PRICING_STATUS.SENT) && (
+              pricingRequest.status === PRICING_STATUS.SENT ||
+              pricingRequest.status === PRICING_STATUS.CLIENT_EDITED) && (
               <Link href={getPortalPath(`/pricing/${pricingId}/edit`)}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Pencil size={18} />
@@ -323,6 +325,7 @@ export default function PricingDetailClient() {
             </div>
           )}
         </Card>
+        {pricingRequest.proposalContent?.requirements?.length ? <ProposalRequirementsPanel request={pricingRequest} isAgency={isAgency} /> : null}
         {isAgency && <ProposalPaymentPanel proposal={pricingRequest} locale={locale} />}
       </div>
   );

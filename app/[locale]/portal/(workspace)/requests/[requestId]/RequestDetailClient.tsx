@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from '@/lib/motion';
-import { AlertCircle, Clock, Send } from 'lucide-react';
+import { AlertCircle, Clock, Send, FilePlus2 } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -32,6 +32,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useSearchParams } from 'next/navigation';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { ProposalPaymentPanel } from '@/components/portal/pricing/ProposalPaymentPanel';
+import { ProposalRequirementsPanel } from '@/components/portal/pricing/ProposalRequirementsPanel';
 import EditPricingForm from '../../pricing/[pricingId]/edit/EditPricingForm';
 import {
   getStatusTranslationKey,
@@ -339,7 +340,15 @@ export default function RequestDetailClient({
             onStatusChange={handleStatusChange}
             className="w-full"
           />
-          {(request.status === 'DRAFT' || request.status === 'QUOTED') && request.isBillable && (
+          {isAgency && request.isBillable &&
+            ['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED'].includes(request.status) && (
+            <Button variant="outline" className="mt-4"
+              leftIcon={<FilePlus2 size={16}/>}
+              onClick={() => router.push(getPortalPath(`/pricing/new/?relatedRequestId=${encodeURIComponent(request.id)}`))}>
+              {t('pricing.newChangeOrder')}
+            </Button>
+          )}
+          {(request.status === 'DRAFT' || request.status === 'QUOTED' || request.status === 'CHANGES_REQUESTED') && request.isBillable && (
             <Button
               className="mt-4"
               leftIcon={<Send size={16} />}
@@ -380,6 +389,7 @@ export default function RequestDetailClient({
                 priorityLabel={priorityLabel}
                 recentlyLabel={t('common.recently')}
               />
+              {request.proposalContent?.requirements?.length ? <ProposalRequirementsPanel request={request} isAgency={isAgency} /> : null}
               {isAgency && request.isBillable && request.totalAmount !== undefined && (
                 <ProposalPaymentPanel proposal={request as PricingRequest} locale={locale} />
               )}
