@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { deepClean } from '@/lib/utils';
+import { validateProposalContent } from '@/lib/domain/proposal-content';
 import {
   PricingRequest,
   CreatePricingRequestData,
@@ -58,6 +59,7 @@ export async function createPricingRequest(
   userName: string,
   data: CreatePricingRequestData
 ): Promise<PricingRequest> {
+  validateProposalContent(data.proposalContent);
   // Add IDs to line items
   const lineItems: PricingLineItem[] = data.lineItems.map(item => ({
     ...item,
@@ -93,6 +95,7 @@ export async function createPricingRequest(
     commentCount: 0,
     isBillable: true,
     terms: data.terms?.trim() || null,
+    proposalContent: data.proposalContent ?? null,
     publicToken: generatePublicToken(),
     publicAccessEnabled: data.publicAccessEnabled ?? true,
     clientName: data.clientName?.trim() || null,
@@ -271,6 +274,7 @@ export async function updatePricingRequest(
   requestId: string,
   data: UpdatePricingRequestData
 ): Promise<void> {
+  validateProposalContent(data.proposalContent);
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, PRICING_REQUESTS_COLLECTION, requestId);
@@ -329,6 +333,7 @@ export async function updatePricingRequest(
       data.requestIds.length > 1 ? 'bundle' : (existing.requestRole ?? 'standalone');
   }
   if (data.terms !== undefined) updateData.terms = data.terms?.trim() || null;
+  if (data.proposalContent !== undefined) updateData.proposalContent = data.proposalContent;
   if (data.publicAccessEnabled !== undefined) {
     updateData.publicAccessEnabled = data.publicAccessEnabled;
   }
