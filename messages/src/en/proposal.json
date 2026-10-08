@@ -37,6 +37,32 @@
       "complete": "Payment complete",
       "amount": "Amount due: {amount}",
       "unavailable": "Online payment is temporarily unavailable. Please contact the agency for assistance."
+    },
+    "details": {
+      "objective": "Project objective",
+      "deliverable": "Deliverable",
+      "itemHours": "Estimated effort: {min}–{max} hours",
+      "deliverables": "Deliverables",
+      "requirements": "What we need from you",
+      "required": "Required before work starts",
+      "estimate": "Hourly cost estimate before tax",
+      "hours": "{min}–{max} work hours",
+      "cap": "Approved maximum billing cap before tax: {amount}",
+      "schedule": "Timeline",
+      "businessDays": "{min}–{max} business days",
+      "after": "Timeline begins after",
+      "conditions": "Assumptions & exclusions",
+      "assumptions": "Assumptions",
+      "exclusions": "Not included",
+      "paymentTerms": "Payment terms",
+      "priceBreakdown": "Price breakdown",
+      "print": "Print / Save as PDF",
+      "version": "Version {number}",
+      "feedback": "Question or change request?",
+      "feedbackMessage": "What would you like to change or clarify?",
+      "feedbackSubmit": "Send request",
+      "feedbackSent": "Your request was received. We will review it and send a revised proposal.",
+      "feedbackName": "Full name"
     }
   }
 }
