@@ -231,7 +231,7 @@ export default function EditPricingForm() {
         setPricingRequest(request);
 
         // Check if agency can edit this (only DRAFT or SENT status)
-        if (request.status !== PRICING_STATUS.DRAFT && request.status !== PRICING_STATUS.SENT) {
+        if (request.status !== PRICING_STATUS.DRAFT && request.status !== PRICING_STATUS.SENT && request.status !== PRICING_STATUS.CLIENT_EDITED) {
           setErrorMessage('This pricing offer cannot be edited in its current status');
           setIsLoading(false);
           return;
@@ -385,7 +385,7 @@ export default function EditPricingForm() {
       });
 
       // If sending, update status to SENT
-      if (shouldSend && pricingRequest?.status === PRICING_STATUS.DRAFT) {
+      if (shouldSend) {
         await sendPricingRequest(pricingId);
       }
 
