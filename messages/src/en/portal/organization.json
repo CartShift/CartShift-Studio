@@ -24,6 +24,13 @@
           "auth": "You must be logged in to create an organization",
           "generic": "Failed to create organization. Please try again."
         }
+      },
+      "primaryContact": {
+        "title": "Primary contact (CRM only)",
+        "name": "Name",
+        "role": "Role / title",
+        "email": "Email",
+        "phone": "Phone"
       }
     }
   }
