@@ -91,6 +91,7 @@ export default function CreatePricingForm() {
   const t = usePortalTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [lastAction, setLastAction] = useState<'saved' | 'queued'>('saved');
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -442,6 +443,7 @@ export default function CreatePricingForm() {
         await sendPricingRequest(request.id);
       }
 
+      setLastAction(shouldSend ? 'queued' : 'saved');
       setSubmitStatus('success');
 
       setTimeout(() => {
@@ -475,12 +477,10 @@ export default function CreatePricingForm() {
             <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white font-outfit mb-2">
-            {isSending ? 'Offer Sent!' : 'Draft Saved!'}
+            {t(lastAction === 'queued' ? 'pricing.form.queuedTitle' : 'pricing.form.savedDraftTitle')}
           </h2>
           <p className="text-surface-500 dark:text-surface-400 max-w-sm">
-            {isSending
-              ? 'Your pricing offer has been sent to the client.'
-              : 'Your draft has been saved. You can send it when ready.'}
+            {t(lastAction === 'queued' ? 'pricing.form.queuedDescription' : 'pricing.form.savedDraftDescription')}
           </p>
         </Card>
       </div>
