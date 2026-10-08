@@ -99,7 +99,8 @@ export async function createPricingRequest(
     proposalContent: data.proposalContent ? deepClean(data.proposalContent) : null,
     relatedRequestId: data.relatedRequestId ?? null,
     publicToken: generatePublicToken(),
-    publicAccessEnabled: data.publicAccessEnabled ?? true,
+    // A draft is private until the agency publishes and queues its first version.
+    publicAccessEnabled: data.proposalContent ? false : (data.publicAccessEnabled ?? true),
     clientName: data.clientName?.trim() || null,
     clientEmail: data.clientEmail?.trim().toLowerCase() || null,
     agencyNotes: data.agencyNotes?.trim() || null,
