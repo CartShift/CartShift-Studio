@@ -76,7 +76,7 @@ describe('shared proposal line items', () => {
 
     await user.click(screen.getByRole('button', { name: 'Add item' }));
     expect(screen.getAllByRole('spinbutton')).toHaveLength(4);
-    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
 
     await user.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
