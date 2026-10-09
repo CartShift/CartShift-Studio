@@ -147,8 +147,9 @@ export default function RequestsClient() {
   const filters = isAgency ? ['All', ...Object.keys(AGENCY_REQUEST_VIEWS)] : ['All', ...clientFilters];
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('focus') === 'attention') {
-      setActiveFilter('attention');
+    const focus = new URLSearchParams(window.location.search).get('focus');
+    if (focus && Object.hasOwn(AGENCY_REQUEST_VIEWS, focus)) {
+      setActiveFilter(focus);
     }
   }, []);
 

@@ -65,7 +65,7 @@ export default function SalesDashboardClient() {
     anchor.href = href;
     anchor.download = 'cartshift-sales-summary.csv';
     anchor.click();
-    URL.revokeObjectURL(href);
+    window.setTimeout(() => URL.revokeObjectURL(href), 1000);
   };
 
   const hasData =

@@ -67,7 +67,7 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
       ...requestMatches,
       ...proposals.filter(proposal => matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name)).slice(0, 4).map(proposal => ({
         id: 'proposal-' + proposal.id, title: proposal.title, description: t('proposal'),
-        type: 'proposal' as const, href: getPortalPath('/pricing/' + proposal.id + '/'), icon: FileText,
+        type: 'proposal' as const, href: getPortalPath('/requests/' + proposal.id + '/'), icon: FileText,
       })),
     ].slice(0, 14);
   }, [term, requests, isAgency, clients, projects, proposals, t]);

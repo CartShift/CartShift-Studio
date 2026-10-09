@@ -300,7 +300,7 @@ export default function AgencyClientDetailClient({
                             ? 'red'
                             : 'green'
                       }
-                      className="text-[9px] font-black uppercase tracking-widest"
+                      className="text-xs font-black uppercase tracking-widest"
                     >
                       {organization.status
                         ? t(getAgencyClientBadgeKey(organization.status))
@@ -309,7 +309,7 @@ export default function AgencyClientDetailClient({
                     {members.length === 0 && (
                       <Badge
                         variant="yellow"
-                        className="text-[9px] font-black uppercase tracking-widest"
+                        className="text-xs font-black uppercase tracking-widest"
                       >
                         {t('agency.clients.badge.pendingInvitation') || 'Pending Invitation'}
                       </Badge>
@@ -463,7 +463,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.totalRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -482,7 +482,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.activeRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -501,7 +501,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.completedRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -520,7 +520,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.avgResolution')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -588,11 +588,11 @@ export default function AgencyClientDetailClient({
                                       ? 'yellow'
                                       : 'gray'
                               }
-                              className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter"
+                              className="text-xs px-2 h-5 font-black uppercase tracking-tighter"
                             >
                               {request.status}
                             </Badge>
-                            <span className="text-[10px] font-bold text-surface-400 font-mono">
+                            <span className="text-xs font-bold text-surface-400 font-mono">
                               #ID-{request.id.slice(0, 6).toUpperCase()}
                             </span>
                           </div>
@@ -606,7 +606,7 @@ export default function AgencyClientDetailClient({
                         {request.createdAt?.toDate && (
                           <div className="flex items-center gap-1.5 text-surface-400">
                             <Clock size={12} />
-                            <span className="text-[10px] font-bold uppercase tracking-tighter">
+                            <span className="text-xs font-bold uppercase tracking-tighter">
                               {isMounted
                                 ? formatDistanceToNow(request.createdAt.toDate(), {
                                     addSuffix: true,
@@ -679,7 +679,7 @@ export default function AgencyClientDetailClient({
                       {activity.createdAt?.toDate && (
                         <div className="flex items-center gap-1.5 text-surface-400 flex-shrink-0">
                           <Clock size={12} />
-                          <span className="text-[10px] font-bold uppercase tracking-tighter">
+                          <span className="text-xs font-bold uppercase tracking-tighter">
                             {isMounted
                               ? formatDistanceToNow(activity.createdAt.toDate(), {
                                   addSuffix: true,
@@ -749,7 +749,7 @@ export default function AgencyClientDetailClient({
               <div className="space-y-5">
                 {organization.website && (
                   <div>
-                    <p className="portal-label-sm text-[10px] mb-2">
+                    <p className="portal-label-sm text-xs mb-2">
                       {t('agency.clients.detail.info.website')}
                     </p>
                     <a
@@ -772,7 +772,7 @@ export default function AgencyClientDetailClient({
 
                 {organization.industry && (
                   <div>
-                    <p className="portal-label-sm text-[10px] mb-2">
+                    <p className="portal-label-sm text-xs mb-2">
                       {t('agency.clients.detail.info.industry')}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white">
@@ -782,7 +782,7 @@ export default function AgencyClientDetailClient({
                 )}
 
                 <div>
-                  <p className="portal-label-sm text-[10px] mb-2">
+                  <p className="portal-label-sm text-xs mb-2">
                     {t('agency.clients.detail.info.plan')}
                   </p>
                   <div className="flex items-center gap-2">
@@ -801,7 +801,7 @@ export default function AgencyClientDetailClient({
                 </div>
 
                 <div>
-                  <p className="portal-label-sm text-[10px] mb-2">
+                  <p className="portal-label-sm text-xs mb-2">
                     {t('agency.clients.detail.info.status')}
                   </p>
                   <Badge
@@ -812,7 +812,7 @@ export default function AgencyClientDetailClient({
                           ? 'red'
                           : 'green'
                     }
-                    className="text-[9px] font-black uppercase tracking-widest"
+                    className="text-xs font-black uppercase tracking-widest"
                   >
                     {organization.status
                       ? t(getAgencyClientBadgeKey(organization.status))
@@ -821,7 +821,7 @@ export default function AgencyClientDetailClient({
                 </div>
 
                 <div>
-                  <p className="portal-label-sm text-[10px] mb-2">
+                  <p className="portal-label-sm text-xs mb-2">
                     {t('agency.clients.detail.info.responsibleAgent')}
                   </p>
                   {responsibleAgent ? (
@@ -904,7 +904,7 @@ export default function AgencyClientDetailClient({
                       </div>
                       <Badge
                         variant="blue"
-                        className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
+                        className="text-xs px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
                       >
                         {member.role || 'member'}
                       </Badge>
@@ -937,7 +937,7 @@ export default function AgencyClientDetailClient({
                       </div>
                       <Badge
                         variant="yellow"
-                        className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
+                        className="text-xs px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
                       >
                         Invited
                       </Badge>
@@ -974,7 +974,7 @@ export default function AgencyClientDetailClient({
                   <h3 className="text-xs font-bold text-surface-900 dark:text-white mb-1">
                     {t('agency.clients.detail.team.emptyTitle')}
                   </h3>
-                  <p className="text-[10px] text-surface-500">
+                  <p className="text-xs text-surface-500">
                     {t('agency.clients.detail.team.emptyDesc')}
                   </p>
                 </div>

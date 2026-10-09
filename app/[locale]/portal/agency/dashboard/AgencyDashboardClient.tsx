@@ -22,7 +22,7 @@ import { getStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
 import type { Request } from '@/lib/types/portal';
 
 const attentionStatuses = new Set(['NEW', 'NEEDS_INFO', 'CHANGES_REQUESTED', 'IN_REVIEW']);
-const waitingStatuses = new Set(['QUOTED', 'ACCEPTED']);
+const waitingStatuses = new Set(['QUOTED']);
 const activeProjectStatuses = new Set(['planning', 'in_progress', 'client_review', 'blocked', 'ready_to_launch']);
 const priorityWeight: Record<string, number> = { URGENT: 4, HIGH: 3, NORMAL: 2, LOW: 1 };
 
