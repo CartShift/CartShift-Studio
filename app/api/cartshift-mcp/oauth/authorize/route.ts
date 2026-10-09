@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
     '</form></body></html>';
   const response = new NextResponse(html, { headers: htmlHeaders });
   response.cookies.set('cartshift_mcp_csrf', csrf, {
-    httpOnly: true, secure: true, sameSite: 'lax', maxAge: 300, path: ROUTE,
+    httpOnly: true, secure: true, sameSite: 'lax', maxAge: 300, path: '/',
   });
   return response;
 }
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
   }
   const response = NextResponse.redirect(callback, 303);
   response.cookies.set('cartshift_mcp_csrf', '', {
-    path: ROUTE, httpOnly: true, secure: true, sameSite: 'lax', maxAge: 0,
+    path: '/', httpOnly: true, secure: true, sameSite: 'lax', maxAge: 0,
   });
   return response;
 }
