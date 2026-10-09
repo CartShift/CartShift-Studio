@@ -8,6 +8,7 @@ import {
 
 describe('CartShift MCP OAuth guardrails', () => {
   it('accepts the Codex desktop loopback callback with an ephemeral port', () => {
+    expect(redirectAllowed('http://127.0.0.1:53005/callback')).toBe(true);
     expect(redirectAllowed('http://127.0.0.1:62237/callback/Rl9gvy_2jad-')).toBe(true);
     expect(redirectAllowed('http://127.0.0.1:49152/callback/AbCdEf0123_-')).toBe(true);
   });
@@ -22,6 +23,11 @@ describe('CartShift MCP OAuth guardrails', () => {
     'http://user:password@127.0.0.1:62237/callback/Rl9gvy_2jad-',
     'http://127.0.0.1:62237/elsewhere/Rl9gvy_2jad-',
     'http://127.0.0.1:62237/callback/short',
+    'http://127.0.0.1:53005/callback/',
+    'http://127.0.0.1:53005/callback?next=https://evil.example',
+    'http://127.0.0.1:53005/callback#token',
+    'http://127.0.0.1/callback',
+    'http://127.0.0.1.evil.example:53005/callback',
     'http://127.0.0.1:62237/callback/Rl9gvy_2jad-/extra',
     'http://127.0.0.1:62237/callback/Rl9gvy_2jad-?next=https://evil.example',
     'http://127.0.0.1:62237/callback/Rl9gvy_2jad-#token',

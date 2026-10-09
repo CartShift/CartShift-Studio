@@ -20,8 +20,10 @@ import { POST } from '@/app/api/cartshift-mcp/oauth/register/route';
 import { GET } from '@/app/api/cartshift-mcp/oauth/authorize/route';
 
 describe('CartShift Codex OAuth registration', () => {
-  it('registers the desktop callback and carries the PKCE request to sign-in', async () => {
-    const redirect = 'http://127.0.0.1:62237/callback/Rl9gvy_2jad-';
+  it.each([
+    'http://127.0.0.1:53005/callback',
+    'http://127.0.0.1:62237/callback/Rl9gvy_2jad-',
+  ])('registers the desktop callback and carries the PKCE request to sign-in: %s', async redirect => {
     const registration = await POST(new NextRequest('https://portal.cart-shift.com/api/cartshift-mcp/oauth/register', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ client_name: 'Codex', redirect_uris: [redirect], token_endpoint_auth_method: 'none' }),
