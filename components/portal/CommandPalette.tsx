@@ -24,6 +24,9 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getHelpPath } from '@/lib/portal/help-topics';
+import { activeItem, moveActiveIndex } from '@/lib/utils/list-navigation';
+import { matchesPortalQuery, requestSearchPool } from '@/lib/portal/search-model';
+import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 
 interface CommandItemProps {
   icon: React.ElementType;
@@ -86,42 +89,29 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   const router = useRouter();
   const t = usePortalTranslations();
   const orgId = useResolvedOrgId();
-  const { isAgency } = usePortalAuth();
+  const { isAgency, userData } = usePortalAuth();
+  const agencyRole = userData?.agencyRole;
+  const canCreateRequest = !isAgency || canAccessNav(agencyRole, PERMISSIONS.CREATE_REQUEST);
+  const canManageClients = isAgency && canAccessNav(agencyRole, PERMISSIONS.MANAGE_CLIENTS);
+  const canManagePricing = isAgency && canAccessNav(agencyRole, PERMISSIONS.MANAGE_PRICING);
+  const canViewSales = isAgency && canAccessNav(agencyRole, PERMISSIONS.VIEW_SALES_DASHBOARD);
   const { requests } = useRequests();
   const { openRequest } = useOpenRequest();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Toggle on Ctrl+K / Cmd+K
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        handleOpenChange(!isOpen);
-        setQuery('');
-        setActiveIndex(0);
-      }
-
-      if (e.key === 'Escape') {
-        handleOpenChange(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleOpenChange, isOpen]);
-
   const commands = useMemo(() => {
     if (!orgId && !isAgency) return [];
 
-    const actionItems = [
-      {
+    const actionItems = [];
+    if (canCreateRequest) {
+      actionItems.push({
         icon: Plus,
         label: t('quickActions.newRequest'),
         path: getPortalPath('/requests/new/'),
         keywords: ['new', 'create', 'request'],
-      },
-    ];
-    if (isAgency) {
+      });
+    }
+    if (canManageClients) {
       actionItems.push({
         icon: Users,
         label: t('commandPalette.items.addClient'),
@@ -160,24 +150,24 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
           path: getPortalPath('/agency/workboard'),
           keywords: ['kanban', 'requests', 'tasks'],
         },
-        {
+        ...(canManageClients ? [{
           icon: Users,
           label: t('commandPalette.items.clients'),
           path: getPortalPath('/agency/clients'),
           keywords: ['customers', 'agency'],
-        },
-        {
+        }] : []),
+        ...(canManagePricing ? [{
           icon: FileText,
           label: t('sidebar.nav.pricing'),
           path: getPortalPath('/requests/?focus=proposals'),
           keywords: ['pricing', 'proposals', 'quote'],
-        },
-        {
+        }] : []),
+        ...(canViewSales ? [{
           icon: CreditCard,
           label: t('commandPalette.items.salesRevenue'),
           path: getPortalPath('/agency/sales'),
           keywords: ['analytics', 'money', 'finance'],
-        }
+        }] : [])
       );
     } else {
       navItems.splice(
@@ -202,7 +192,11 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
       { heading: t('commandPalette.headings.actions'), items: actionItems },
       {
         heading: t('commandPalette.headings.requests'),
-        items: requests.map(req => ({
+        items: requestSearchPool(requests, {
+          isAgency,
+          canViewCommercial: canManagePricing,
+          kind: 'all',
+        }).map(req => ({
           icon: FileText,
           label: req.title,
           path: getPortalPath(`/requests/${req.id}`),
@@ -213,7 +207,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
       },
       { heading: t('commandPalette.headings.navigation'), items: navItems },
     ];
-  }, [orgId, t, requests, isAgency]);
+  }, [orgId, t, requests, isAgency, canCreateRequest, canManageClients, canManagePricing, canViewSales]);
 
   const filteredCommands = useMemo(() => {
     if (!query) return commands;
@@ -222,9 +216,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
       .map(group => ({
         ...group,
         items: group.items.filter(
-          item =>
-            item.label.toLowerCase().includes(query.toLowerCase()) ||
-            item.keywords.some(k => k.toLowerCase().includes(query.toLowerCase()))
+          item => matchesPortalQuery(query, item.label, ...item.keywords)
         ),
       }))
       .filter(group => group.items.length > 0);
@@ -245,27 +237,6 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
     [handleOpenChange, openRequest, router]
   );
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setActiveIndex(prev => (prev + 1) % flatItems.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setActiveIndex(prev => (prev - 1 + flatItems.length) % flatItems.length);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (flatItems[activeIndex]) {
-          navigateTo(flatItems[activeIndex]);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, activeIndex, flatItems, navigateTo]);
 
   // Reset index when query changes
   useEffect(() => setActiveIndex(0), [query]);
@@ -286,6 +257,21 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
                 placeholder={t('header.searchPlaceholder')}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
+                onKeyDown={event => {
+                  if (event.nativeEvent.isComposing) return;
+                  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    setActiveIndex(prev =>
+                      moveActiveIndex(prev, flatItems.length, event.key === 'ArrowDown' ? 1 : -1)
+                    );
+                  } else if (event.key === 'Enter') {
+                    const selected = activeItem(flatItems, activeIndex);
+                    if (selected) {
+                      event.preventDefault();
+                      navigateTo(selected);
+                    }
+                  }
+                }}
                 className="flex-1 bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder-surface-400 text-base"
               />
               <div className="flex items-center gap-1">

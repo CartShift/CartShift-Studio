@@ -84,33 +84,46 @@ export interface Toast {
   action?: ToastAction;
 }
 
+/**
+ * The single CartShift notification implementation. Both the portal utility
+ * and the legacy hook delegate here, preserving branded custom Sonner UI.
+ */
+export function showBrandedToast(
+  type: ToastType,
+  title: string,
+  message?: string,
+  action?: ToastAction,
+  duration?: number
+): string {
+  const toastDuration = duration ?? (type === 'error' ? 8000 : 5000);
+  const id = toast.custom(
+    id => (
+      <ToastItem
+        id={id}
+        type={type}
+        title={title}
+        message={message}
+        action={action}
+        onDismiss={() => toast.dismiss(id)}
+        duration={toastDuration}
+      />
+    ),
+    { duration: toastDuration }
+  );
+  return String(id);
+}
+
+/** Canonical portal-facing API; presentation always uses the branded toast. */
+export const portalToast = {
+  success: (title: string, message?: string) => showBrandedToast('success', title, message),
+  error: (title: string, message?: string) => showBrandedToast('error', title, message),
+  warning: (title: string, message?: string) => showBrandedToast('warning', title, message),
+  info: (title: string, message?: string) => showBrandedToast('info', title, message),
+};
+
 // Re-export this hook with the same API surface as before
 export function useToast() {
-  const showToast = useCallback(
-    (type: ToastType, title: string, message?: string, action?: ToastAction, duration?: number) => {
-      const toastDuration = duration ?? (type === 'error' ? 8000 : 5000);
-
-      const id = toast.custom(
-        t => (
-          <ToastItem
-            id={t}
-            type={type}
-            title={title}
-            message={message}
-            action={action}
-            onDismiss={() => toast.dismiss(t)}
-            duration={toastDuration}
-          />
-        ),
-        {
-          duration: toastDuration,
-        }
-      );
-
-      return String(id);
-    },
-    []
-  );
+  const showToast = useCallback(showBrandedToast, []);
 
   return {
     toasts: [], // No longer accessible/needed with sonner, return empty or mock if strictly typed elsewhere

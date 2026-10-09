@@ -18,17 +18,9 @@ import { Badge } from '@/components/ui/Badge';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
-import type { Request } from '@/lib/types/portal';
+import { summarizeAgencyRequests } from '@/lib/domain/agency-dashboard-requests';
 
-const attentionStatuses = new Set(['NEW', 'NEEDS_INFO', 'CHANGES_REQUESTED', 'IN_REVIEW']);
-const waitingStatuses = new Set(['QUOTED']);
 const activeProjectStatuses = new Set(['planning', 'in_progress', 'client_review', 'blocked', 'ready_to_launch']);
-const priorityWeight: Record<string, number> = { URGENT: 4, HIGH: 3, NORMAL: 2, LOW: 1 };
-
-function priorityScore(request: Request): number {
-  return (attentionStatuses.has(request.status) ? 20 : 0) + (priorityWeight[request.priority] || 0);
-}
-
 export default function AgencyDashboardClient() {
   const t = useTranslations('portal.agencyHome');
   const portal = useTranslations('portal');
@@ -51,20 +43,13 @@ export default function AgencyDashboardClient() {
   });
 
   const orgNames = useMemo(() => new Map(organizations.map(org => [org.id, org.name])), [organizations]);
-  const attention = useMemo(() => requests.filter(request =>
-    attentionStatuses.has(request.status) && request.requestRole !== 'bundle_item'
-  ).sort((a, b) => priorityScore(b) - priorityScore(a) ||
-    (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0)
-  ), [requests]);
-
-  const waiting = requests.filter(request => waitingStatuses.has(request.status) && request.requestRole !== 'bundle_item').length;
+  const { attention, waiting, openProposals } = useMemo(
+    () => summarizeAgencyRequests(requests),
+    [requests]
+  );
   const activeProjects = projects.filter(project => activeProjectStatuses.has(project.status));
   const blockedProjects = activeProjects.filter(project => project.blockers?.some(blocker => !blocker.resolved));
-  // Proposals are canonical portal requests, not a second collection.
-  const openProposals = requests.filter(request =>
-    Boolean(request.isBillable || request.publicToken || request.requestRole === 'bundle') &&
-    ['DRAFT', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED'].includes(request.status)
-  );
+
   const proposalStateLabels: Record<string, string> = {
     DRAFT: t('proposalState.DRAFT'),
     QUOTED: t('proposalState.QUOTED'),

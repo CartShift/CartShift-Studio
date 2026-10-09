@@ -36,6 +36,7 @@ import {
 } from '@/lib/types/portal';
 import { logActivity } from './portal-activities';
 import { withRetry } from '@/lib/utils/retry';
+import { getPortalRequestCountStats } from '@/lib/services/portal-request-pages';
 
 const REQUESTS_COLLECTION = 'portal_requests';
 
@@ -578,22 +579,7 @@ export async function getRequestStats(orgId: string): Promise<{
   inReview: number;
   completed: number;
 }> {
-  const requests = await getRequestsByOrg(orgId);
-
-  return {
-    total: requests.length,
-    active: requests.filter(r =>
-      (
-        [REQUEST_STATUS.NEW, REQUEST_STATUS.QUEUED, REQUEST_STATUS.IN_PROGRESS] as RequestStatus[]
-      ).includes(r.status)
-    ).length,
-    inReview: requests.filter(r => r.status === REQUEST_STATUS.IN_REVIEW).length,
-    completed: requests.filter(r =>
-      (
-        [REQUEST_STATUS.DELIVERED, REQUEST_STATUS.CLOSED, REQUEST_STATUS.PAID] as RequestStatus[]
-      ).includes(r.status)
-    ).length,
-  };
+  return getPortalRequestCountStats(orgId);
 }
 
 // ============================================

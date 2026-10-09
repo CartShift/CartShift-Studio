@@ -14,9 +14,14 @@ on:
       - "README.md"
       - "DESIGN.md"
 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 env:
   NEXT_PUBLIC_FIREBASE_API_KEY: ci-stub-api-key
@@ -25,10 +30,83 @@ env:
   NEXT_PUBLIC_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000000000
   NEXT_PUBLIC_FIREBASE_FUNCTION_URL: https://us-central1-ci-stub.cloudfunctions.net/contactForm
   NEXT_PUBLIC_SITE_URL: https://example.com
+  NEXT_TELEMETRY_DISABLED: '1'
 
 jobs:
+
+  # Keep the existing 'quality' check name for any branch protection rules.
   quality:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate translations
+        run: pnpm i18n:merge
+
+      - name: Find previous revision
+        id: changes
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE_SHA: ${{ github.event.before }}
+        run: |
+          BASE="${PR_BASE_SHA:-$PUSH_BASE_SHA}"
+          if [ -n "$BASE" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          else
+            echo 'base=' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Lint changed code
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.changes.outputs.base }}
+        run: |
+          if [ -z "$BASE_SHA" ] || git diff --name-only "$BASE_SHA" HEAD -- package.json pnpm-lock.yaml eslint.config.mjs tsconfig.json | grep -q .; then
+            echo 'Shared tooling changed (or no base revision): linting entire repository.'
+            pnpm exec eslint . --ext .ts,.tsx,.js,.jsx
+          else
+            mapfile -d '' files < <(git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs')
+            if [ "${#files[@]}" -eq 0 ]; then
+              echo 'No changed JS/TS files to lint.'
+            else
+              printf 'Linting %s changed source files.\n' "${#files[@]}"
+              pnpm exec eslint "${files[@]}"
+            fi
+          fi
+
+      - name: Test affected code
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.changes.outputs.base }}
+        run: |
+          if [ -n "$BASE_SHA" ]; then
+            pnpm exec vitest run --changed "$BASE_SHA" --passWithNoTests
+          else
+            pnpm test:run
+          fi
+
+  # Full checks are deliberately opt-in while CartShift is in active development.
+  full:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -45,11 +123,11 @@ jobs:
       - name: Generate translations
         run: pnpm i18n:merge
 
-      - name: Lint
+      - name: Full lint and TypeScript
         run: pnpm lint
 
-      - name: Test
+      - name: All tests
         run: pnpm test:run
 
-      - name: Build
+      - name: Production build
         run: pnpm build

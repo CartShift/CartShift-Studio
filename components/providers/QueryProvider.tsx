@@ -18,7 +18,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuthInstance(), user => {
       const nextUid = user?.uid ?? null;
-      if (previousUid.current !== undefined && previousUid.current !== nextUid) {
+      // Unknown cache ownership (first observer after a remount) is not safe
+      // to reuse, even when Firebase has just resolved an authenticated user.
+      if (previousUid.current === undefined || previousUid.current !== nextUid) {
         queryClient.clear();
       }
       previousUid.current = nextUid;

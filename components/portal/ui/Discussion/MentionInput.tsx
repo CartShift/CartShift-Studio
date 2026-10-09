@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { User } from 'lucide-react';
 
 import { useTranslations } from 'next-intl';
+import { mentionAtCursor } from '@/lib/utils/mentions';
+import { moveActiveIndex, activeItem } from '@/lib/utils/list-navigation';
 
 interface MentionInputProps {
   value: string;
@@ -40,34 +42,29 @@ export const MentionInput = ({
     .slice(0, 5);
 
   useEffect(() => {
-    const textBeforeCursor = value.slice(0, cursorPosition);
-    const lastAtPos = textBeforeCursor.lastIndexOf('@');
-
-    if (lastAtPos !== -1) {
-      const query = textBeforeCursor.slice(lastAtPos + 1);
-      // Only show suggestions if no space after @ OR if we want to support spaces in names (more complex)
-      // For now, let's allow it but stop if there's a newline
-      if (!query.includes('\n')) {
-        setMentionQuery(query);
-        setShowSuggestions(true);
-        setSuggestionIndex(0);
-        return;
-      }
+    const mention = mentionAtCursor(value, cursorPosition);
+    if (mention) {
+      setMentionQuery(mention.query);
+      setShowSuggestions(true);
+      setSuggestionIndex(0);
+      return;
     }
     setShowSuggestions(false);
   }, [value, cursorPosition]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing) return;
     if (showSuggestions && filteredUsers.length > 0) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSuggestionIndex(prev => (prev + 1) % filteredUsers.length);
+        setSuggestionIndex(prev => moveActiveIndex(prev, filteredUsers.length, 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setSuggestionIndex(prev => (prev - 1 + filteredUsers.length) % filteredUsers.length);
+        setSuggestionIndex(prev => moveActiveIndex(prev, filteredUsers.length, -1));
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault();
-        insertMention(filteredUsers[suggestionIndex]);
+        const selected = activeItem(filteredUsers, suggestionIndex);
+        if (selected) insertMention(selected);
       } else if (e.key === 'Escape') {
         setShowSuggestions(false);
       }
@@ -78,11 +75,9 @@ export const MentionInput = ({
   };
 
   const insertMention = (user: PortalUser) => {
-    const textBeforeCursor = value.slice(0, cursorPosition);
-    const lastAtPos = textBeforeCursor.lastIndexOf('@');
-
-    if (lastAtPos !== -1) {
-      const before = value.slice(0, lastAtPos);
+    const mention = mentionAtCursor(value, cursorPosition);
+    if (mention) {
+      const before = value.slice(0, mention.start);
       const after = value.slice(cursorPosition);
       const mentionName = user.name || user.email;
       const newValue = `${before}@${mentionName} ${after}`;
@@ -92,7 +87,7 @@ export const MentionInput = ({
       // Reset cursor position after insert
       setTimeout(() => {
         if (textareaRef.current) {
-          const newPos = lastAtPos + mentionName.length + 2;
+          const newPos = mention.start + mentionName.length + 2;
           textareaRef.current.selectionStart = newPos;
           textareaRef.current.selectionEnd = newPos;
           textareaRef.current.focus();
