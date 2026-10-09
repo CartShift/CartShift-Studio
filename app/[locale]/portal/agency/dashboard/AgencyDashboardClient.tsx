@@ -59,6 +59,12 @@ export default function AgencyDashboardClient() {
     Boolean(request.isBillable || request.publicToken || request.requestRole === 'bundle') &&
     ['DRAFT', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED'].includes(request.status)
   );
+  const proposalStateLabels: Record<string, string> = {
+    DRAFT: t('proposalState.DRAFT'),
+    QUOTED: t('proposalState.QUOTED'),
+    CHANGES_REQUESTED: t('proposalState.CHANGES_REQUESTED'),
+    ACCEPTED: t('proposalState.ACCEPTED'),
+  };
   const loading = authLoading || requestsLoading || clientsLoading || projectsLoading;
 
   if (!authLoading && !isAgency) return <p className="p-8 text-surface-600 dark:text-surface-300">{portal('common.accessDenied')}</p>;
@@ -154,7 +160,7 @@ export default function AgencyDashboardClient() {
                     <p className="truncate text-xs text-surface-500">{orgNames.get(proposal.orgId) || t('clientFallback')}</p>
                     <p className="truncate text-sm font-semibold">{proposal.title}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-surface-500">{t('proposalState.' + proposal.status as 'proposalState.DRAFT' | 'proposalState.QUOTED' | 'proposalState.CHANGES_REQUESTED' | 'proposalState.ACCEPTED')}</span>
+                  <span className="shrink-0 text-xs text-surface-500">{proposalStateLabels[proposal.status] || proposal.status}</span>
                 </Link>
               ))}
               {openProposals.length === 0 && <p className="p-5 text-sm text-surface-500">{loading ? t('loading') : t('noProposals')}</p>}
