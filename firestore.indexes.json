@@ -474,22 +474,10 @@
       "collectionGroup": "portal_requests",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "orgId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" }
       ],
       "density": "SPARSE_ALL"
     },
@@ -511,57 +499,9 @@
       "collectionGroup": "portal_payments",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "requestId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "paymentToken",
-          "order": "ASCENDING"
-        }
+        { "fieldPath": "requestId", "order": "ASCENDING" },
+        { "fieldPath": "paymentToken", "order": "ASCENDING" }
       ]
-    },
-    {
-      "collectionGroup": "portal_comments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "requestId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "isInternal",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ],
-      "density": "SPARSE_ALL"
-    },
-    {
-      "collectionGroup": "portal_comments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "orgId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "requestId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "isInternal",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ],
-      "density": "SPARSE_ALL"
     }
   ],
   "fieldOverrides": [
