@@ -322,8 +322,8 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
     const items = snap.docs.map(doc => ({ id: doc.id, ...pick(doc.data(), [
       'orgId', 'requestId', 'userId', 'userName', 'action', 'details', 'createdAt',
     ]) })).sort((a, b) => {
-      const aTime = (a.createdAt as { seconds?: number } | undefined)?.seconds || 0;
-      const bTime = (b.createdAt as { seconds?: number } | undefined)?.seconds || 0;
+      const aTime = ((a as Record<string, unknown>).createdAt as { seconds?: number } | undefined)?.seconds || 0;
+      const bTime = ((b as Record<string, unknown>).createdAt as { seconds?: number } | undefined)?.seconds || 0;
       return bTime - aTime;
     });
     return { activities: items.slice(0, limit), truncated: snap.size === 200 };
@@ -337,8 +337,8 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
     return { comments: snap.docs.map(doc => ({ id: doc.id, ...pick(doc.data(), [
       'requestId', 'userName', 'content', 'isInternal', 'createdAt', 'updatedAt',
     ]) })).sort((a, b) => {
-      const aTime = (a.createdAt as { seconds?: number } | undefined)?.seconds || 0;
-      const bTime = (b.createdAt as { seconds?: number } | undefined)?.seconds || 0;
+      const aTime = ((a as Record<string, unknown>).createdAt as { seconds?: number } | undefined)?.seconds || 0;
+      const bTime = ((b as Record<string, unknown>).createdAt as { seconds?: number } | undefined)?.seconds || 0;
       return aTime - bTime;
     }), truncated: snap.size === 150 };
   }
