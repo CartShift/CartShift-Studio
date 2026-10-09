@@ -165,9 +165,21 @@ service cloud.firestore {
          request.resource.data.get('userId', '') == getUserId() &&
          validMemberInvite())
       );
-      allow update: if resource != null && canAdminOrg(resource.data.get('orgId', '')) &&
-        request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
-        request.resource.data.get('userId', '') == resource.data.get('userId', '');
+      allow update: if resource != null && (
+        // Existing administrators may manage role and membership state.
+        (canAdminOrg(resource.data.get('orgId', '')) &&
+         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+         request.resource.data.get('userId', '') == resource.data.get('userId', '')) ||
+        // A revoked member may rejoin only with a fresh, matching pending invite.
+        // Ordinary profile repair must never silently restore a revoked member.
+        (isAuthenticated() &&
+         resource.data.get('removedAt', null) != null &&
+         request.resource.data.get('removedAt', null) == null &&
+         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+         request.resource.data.get('userId', '') == resource.data.get('userId', '') &&
+         memberId == (resource.data.get('orgId', '') + '_' + getUserId()) &&
+         validMemberInvite())
+      );
       allow delete: if false;
     }
 
