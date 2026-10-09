@@ -287,14 +287,12 @@ export function subscribeToRequestComments(
     .then(() => {
       if (isUnsubscribed) return;
       const db = getFirestoreDb();
-      let q;
-
       // Security rules forbid client reads of internal comments. Restrict the
       // Firestore query itself: filtering the snapshot in JS is not sufficient.
       const constraints = [where('requestId', '==', requestId)];
       if (orgId) constraints.push(where('orgId', '==', orgId));
       if (!showInternalComments) constraints.push(where('isInternal', '==', false));
-      q = query(collection(db, COMMENTS_COLLECTION), ...constraints);
+      const q = query(collection(db, COMMENTS_COLLECTION), ...constraints);
 
       unsubscribe = onSnapshot(
         q,
