@@ -11,7 +11,7 @@ import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 import { useRequests } from '@/lib/hooks/useRequests';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { listClientProjects } from '@/lib/services/portal-projects';
-import { getOrganizationsWithStats } from '@/lib/services/portal-organizations';
+import { getAllOrganizations } from '@/lib/services/portal-organizations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { Input } from '@/components/ui/Input';
@@ -23,7 +23,7 @@ type Result = { id: string; title: string; description: string; type: 'request' 
 export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSearchProps) {
   const t = useTranslations('portal.globalSearch');
   const router = useRouter();
-  const { loading: authLoading, isAuthenticated, user, userData } = usePortalAuth();
+  const { loading: authLoading, isAuthenticated, userData } = usePortalAuth();
   const { requests } = useRequests();
   const { openRequest } = useOpenRequest();
   const { recentSearches, addSearch, clearSearches } = useRecentSearches();
@@ -37,10 +37,10 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
   const canViewClients = isAgency && canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_CLIENTS);
   const canViewCommercial = isAgency && canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_PRICING);
   const { data: clients = [], isFetching: loadingClients } = useQuery({
-    queryKey: ['portal-search', 'clients', user?.uid], queryFn: getOrganizationsWithStats, enabled: loadAgency && canViewClients, staleTime: 60_000,
+    queryKey: ['studio-client-directory', userData?.id], queryFn: getAllOrganizations, enabled: loadAgency && canViewClients, staleTime: 60_000,
   });
   const { data: projects = [], isFetching: loadingProjects } = useQuery({
-    queryKey: ['portal-search', 'projects', user?.uid], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
+    queryKey: ['portal-search', 'projects', userData?.id], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
   });
   const pending = loadAgency && ((canViewClients && loadingClients) || loadingProjects);
 
@@ -48,7 +48,8 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
     if (!term) return [];
     const matches = (value?: string) => (value || '').toLocaleLowerCase().includes(term);
     const requestMatches: Result[] = requests.filter(request =>
-      matches(request.title) || matches(request.id) || matches(request.description)
+      (!isAgency || !(request.isBillable || request.publicToken || request.requestRole === 'bundle')) &&
+      (matches(request.title) || matches(request.id) || matches(request.description))
     ).slice(0, 5).map(request => ({
       id: 'request-' + request.id, title: request.title, description: t('request'),
       type: 'request', orgId: request.orgId, href: request.id, icon: ClipboardList,
