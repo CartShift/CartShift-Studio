@@ -327,26 +327,37 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
+      // Internal notes are agency-only. Client-side UI filtering is NOT an access control.
+      // Non-agency queries must constrain isInternal == false to satisfy these rules.
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
-        resource == null ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        resource.data.get('userId', '') == getUserId()
+        (resource != null &&
+         resource.data.get('isInternal', false) == false &&
+         (canAccessOrg(resource.data.get('orgId', '')) ||
+          resource.data.get('userId', '') == getUserId()))
       );
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
-        isMemberOfOrg(getRequestOrgIdFromRequest()) ||
-        isOrgOwner(getRequestOrgIdFromRequest())
+        (request.resource.data.get('isInternal', false) == false &&
+         request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
+         (isMemberOfOrg(getRequestOrgIdFromRequest()) ||
+          isOrgOwner(getRequestOrgIdFromRequest())))
       );
       allow update: if isAuthenticated() && (
-        resource == null ||
-        resource.data.get('userId', '') == getUserId() ||
-        isAgencyUser()
+        isAgencyUser() ||
+        (resource != null &&
+         resource.data.get('isInternal', false) == false &&
+         request.resource.data.get('isInternal', false) == false &&
+         resource.data.get('userId', '') == getUserId() &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+           'content', 'updatedAt', 'reactions'
+         ]))
       );
       allow delete: if isAuthenticated() && (
-        resource == null ||
-        resource.data.get('userId', '') == getUserId() ||
-        isAgencyUser()
+        isAgencyUser() ||
+        (resource != null &&
+         resource.data.get('isInternal', false) == false &&
+         resource.data.get('userId', '') == getUserId())
       );
     }
 
