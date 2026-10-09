@@ -1,12 +1,14 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 import { getOrganizationsWithStats } from '@/lib/services/portal-organizations';
 import { getClientRevenueData } from '@/lib/services/portal-sales';
 import { Organization, ClientRevenueData } from '@/lib/types/portal';
 import { queryKeys } from '@/lib/utils/query-keys';
+import { mergeAgencyClientRevenue } from '@/lib/domain/agency-client-revenue';
 
 export type EnhancedOrganization = Organization & {
   memberCount: number;
@@ -39,17 +41,10 @@ export function useAgencyClients() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const enhancedOrganizations: EnhancedOrganization[] = organizations.map(org => {
-    const revenue = revenueData.find(r => r.orgId === org.id);
-    return {
-      ...org,
-      totalRevenue: revenue?.totalRevenue || 0,
-      pendingRevenue: revenue?.pendingRevenue || 0,
-      paidCount: revenue?.paidCount || 0,
-    };
-  });
-
-  enhancedOrganizations.sort((a, b) => (b.totalRevenue || 0) - (a.totalRevenue || 0));
+  const enhancedOrganizations: EnhancedOrganization[] = useMemo(
+    () => mergeAgencyClientRevenue(organizations, revenueData),
+    [organizations, revenueData]
+  );
 
   return {
     organizations: enhancedOrganizations,
