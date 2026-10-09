@@ -47,7 +47,6 @@ describe('cursor paging of portal requests', () => {
   });
 
   it('fetches one lookahead record and emits a tie-safe timestamp/id cursor', async () => {
-    const make = (id: string) => ({ id, data: () => ({ title: id, createdAt: { seconds: 100, nanoseconds: 0 } }) });
     // A real Firestore Timestamp is needed for the cursor check.
     const { Timestamp } = await import('firebase/firestore');
     const docs = ['a','b','c'].map(id => ({
