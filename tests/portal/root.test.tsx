@@ -58,7 +58,7 @@ describe('Portal Root', () => {
     });
   });
 
-  it('redirects agency users to requests', async () => {
+  it('redirects agency users to agency home', async () => {
     mockUsePortalAuth.mockReturnValue({
       userData: mockUserData({ isAgency: true, accountType: 'AGENCY' }),
       loading: false,
@@ -68,7 +68,7 @@ describe('Portal Root', () => {
     render(<PortalRootClient />);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('/portal/requests/');
+      expect(mockReplace).toHaveBeenCalledWith('/portal/agency/dashboard/');
     });
   });
 
