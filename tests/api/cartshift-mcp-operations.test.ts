@@ -45,10 +45,10 @@ describe('CartShift expanded MCP operations', () => {
       'add_project_blocker', 'resolve_project_blocker', 'add_project_update',
       'link_work_item_to_project', 'list_proposals', 'get_proposal',
       'list_consultations', 'get_consultation', 'list_client_activity',
-      'list_work_item_comments', 'add_internal_work_comment']) {
+      'list_work_item_comments']) {
       expect(TOOL_DEFS.find(tool => tool.name === name)?.scope).toMatch(/^work:(read|write)$/);
     }
-    expect(TOOL_DEFS).toHaveLength(22);
+    expect(TOOL_DEFS).toHaveLength(21);
   });
 
   it('rejects reading a project from a different client', async () => {
