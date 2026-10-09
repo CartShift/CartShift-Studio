@@ -230,7 +230,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
   const isLastStep = currentStep === steps.length - 1;
   const isFirstStep = currentStep === 0;
   const isAnchored = Boolean(highlightRect);
-  const cardStyle = isAnchored
+  const cardStyle = highlightRect
     ? {
         position: 'fixed' as const,
         ...positionTourCard(highlightRect, window.innerWidth, window.innerHeight),
