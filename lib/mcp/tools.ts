@@ -50,6 +50,20 @@ export const TOOL_DEFS = [
     inputSchema: { type: 'object', properties: { query: { type: 'string' } }, additionalProperties: false },
   },
   {
+    name: 'create_client', description: 'Create a new agency client organization without invitations or membership grants. Search first; duplicate names, websites and Shopify domains are rejected.',
+    scope: 'clients:write',
+    inputSchema: {
+      type: 'object', required: ['name'],
+      properties: {
+        name: { type: 'string' }, website: { type: 'string' },
+        industry: { type: 'string' }, bio: { type: 'string' },
+        shopifyDomain: { type: 'string' },
+        primaryContactName: { type: 'string' }, primaryContactRole: { type: 'string' },
+        primaryContactEmail: { type: 'string' }, primaryContactPhone: { type: 'string' },
+      }, additionalProperties: false,
+    },
+  },
+  {
     name: 'get_client', description: 'Get one CartShift client by canonical organization ID.',
     scope: 'clients:read',
     inputSchema: { type: 'object', properties: { org_id: { type: 'string' } }, required: ['org_id'], additionalProperties: false },
@@ -160,6 +174,46 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
         shopifyDomain: doc.data().shopifyDomain || null, status: doc.data().status || 'active',
       }));
     return { clients: result, truncated: matches.size === 500 };
+  }
+
+
+  if (name === 'create_client') {
+    const fields = clientFields.pick({
+      name: true, website: true, industry: true, bio: true, shopifyDomain: true,
+      primaryContactName: true, primaryContactRole: true,
+      primaryContactEmail: true, primaryContactPhone: true,
+    }).extend({ name: tinyText });
+    const data = fields.parse(args);
+    const normalizeDomain = (value: string) => value.toLowerCase().replace(/^https?:\/\//, '')
+      .replace(/^www\./, '').replace(/\/+$/, '');
+    const expectedWebsite = data.website ? normalizeDomain(data.website) : '';
+    const expectedShopify = data.shopifyDomain?.toLowerCase() || '';
+    const matches = await orgs.orderBy('name').limit(500).get();
+    if (matches.size === 500) throw new Error('Client list is too large to safely deduplicate');
+    const duplicate = matches.docs.find(doc => {
+      const current = doc.data();
+      if (current.removedAt || current.status === 'inactive') return false;
+      return normalize(String(current.name || '')) === normalize(data.name) ||
+        Boolean(expectedWebsite && normalizeDomain(String(current.website || '')) === expectedWebsite) ||
+        Boolean(expectedShopify && String(current.shopifyDomain || '').toLowerCase() === expectedShopify);
+    });
+    if (duplicate) return { created: false, duplicate: true, org_id: duplicate.id, name: duplicate.data().name };
+    const key = expectedShopify || expectedWebsite || normalize(data.name);
+    const ref = orgs.doc('mcp_client_' + tokenHash(key).slice(0, 32));
+    const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') ||
+      'client-' + tokenHash(data.name).slice(0, 10);
+    let created = false;
+    await db.runTransaction(async tx => {
+      const prior = await tx.get(ref);
+      if (prior.exists) return;
+      tx.create(ref, {
+        ...data, slug, status: 'active', createdBy: grant.uid,
+        createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp(),
+      });
+      tx.create(audits.doc(), auditRow(grant.uid, 'create_client', ref.id));
+      created = true;
+    });
+    return { created, duplicate: !created, org_id: ref.id, name: data.name, invitations_sent: false };
   }
 
   if (name === 'get_client') {
