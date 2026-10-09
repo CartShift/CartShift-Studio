@@ -3,9 +3,8 @@ import {
   doc,
   writeBatch,
   updateDoc,
-  deleteDoc,
+  runTransaction,
   getDocs,
-  getDoc,
   query,
   where,
   onSnapshot,
@@ -46,21 +45,6 @@ function sanitizeContent(content: string): string {
     .replace(/'/g, '&#x27;');
 }
 
-/**
- * Decrements comment count on a request
- */
-async function decrementCommentCount(requestId: string): Promise<void> {
-  const db = getFirestoreDb();
-  const docRef = doc(db, 'portal_requests', requestId);
-  await updateDoc(docRef, {
-    commentCount: increment(-1),
-    updatedAt: serverTimestamp(),
-  });
-}
-
-/**
- * Updates the parent request with the latest comment info
- */
 // ============================================
 // CREATE
 // ============================================
@@ -265,24 +249,24 @@ export async function removeReaction(
 export async function deleteComment(commentId: string): Promise<void> {
   await waitForAuth();
   const db = getFirestoreDb();
-  const docRef = doc(db, COMMENTS_COLLECTION, commentId);
+  const commentRef = doc(db, COMMENTS_COLLECTION, commentId);
 
-  // Fetch the comment first to get requestId for count decrement
-  const commentSnap = await getDoc(docRef);
-  if (!commentSnap.exists()) {
-    throw new Error('Comment not found');
-  }
+  // Transactions retry safely on contention: the comment can only be deleted
+  // and its counter decremented together, never as independent writes.
+  await runTransaction(db, async transaction => {
+    const snapshot = await transaction.get(commentRef);
+    if (!snapshot.exists()) throw new Error('Comment not found');
 
-  const commentData = commentSnap.data();
-  const requestId = commentData?.requestId;
+    const requestId = snapshot.data()?.requestId;
+    transaction.delete(commentRef);
 
-  // Delete the comment
-  await deleteDoc(docRef);
-
-  // Decrement the comment count on the parent request
-  if (requestId) {
-    await decrementCommentCount(requestId);
-  }
+    if (typeof requestId === 'string' && requestId) {
+      transaction.update(doc(db, 'portal_requests', requestId), {
+        commentCount: increment(-1),
+        updatedAt: serverTimestamp(),
+      });
+    }
+  });
 }
 
 // ============================================
