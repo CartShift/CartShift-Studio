@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/server-auth';
 import {
-  CODES, MCP_ORIGIN, MCP_RESOURCE, MCP_SCOPES, agencyActor, constantEquals,
+  CODES, MCP_ORIGIN, MCP_RESOURCE, MCP_SCOPES, agencyActor,
   escapeHtml, firestore, getOAuthClient, randomToken, tokenHash, validScopes,
 } from '@/lib/mcp/connection';
 
@@ -37,7 +37,7 @@ const htmlHeaders = {
   'X-Content-Type-Options': 'nosniff',
 };
 
-function rejectedConsent(reason: 'invalid authorization details' | 'missing verification cookie' | 'verification cookie mismatch') {
+function rejectedConsent(reason: 'invalid authorization details' | 'missing verification token') {
   console.warn('[CartShift MCP] OAuth consent rejected', { reason });
   return new Response('Invalid OAuth consent (' + reason + '). Restart Authenticate and submit the new consent page.', {
     status: 400, headers: { 'Cache-Control': 'no-store' },
@@ -78,11 +78,7 @@ export async function GET(request: NextRequest) {
     '<button type="submit" name="decision" value="allow" style="background:#6355e9;color:white;border:0;border-radius:8px;padding:12px 24px;cursor:pointer">Authorize connection</button>' +
     ' <button type="submit" name="decision" value="deny" style="border:1px solid #888;border-radius:8px;padding:12px 24px;cursor:pointer">Deny</button>' +
     '</form></body></html>';
-  const response = new NextResponse(html, { headers: htmlHeaders });
-  response.cookies.set('cartshift_mcp_csrf', csrf, {
-    httpOnly: true, secure: true, sameSite: 'none', maxAge: 300, path: '/',
-  });
-  return response;
+  return new NextResponse(html, { headers: htmlHeaders });
 }
 
 export async function POST(request: NextRequest) {
@@ -95,10 +91,9 @@ export async function POST(request: NextRequest) {
     if (typeof value === 'string') params.set(key, value);
   }
   const auth = await validate(params);
-  const csrf = request.cookies.get('cartshift_mcp_csrf')?.value || '';
+  const csrf = params.get('csrf') || '';
   if (!auth) return rejectedConsent('invalid authorization details');
-  if (!csrf) return rejectedConsent('missing verification cookie');
-  if (!constantEquals(csrf, params.get('csrf') || '')) return rejectedConsent('verification cookie mismatch');
+  if (!/^[A-Za-z0-9_-]{43}$/.test(csrf)) return rejectedConsent('missing verification token');
   const session = await getServerSession(request);
   if (!session) return new Response('Session expired; restart connection', { status: 401 });
   try { await agencyActor(session.uid); }
@@ -119,9 +114,5 @@ export async function POST(request: NextRequest) {
     });
     callback.searchParams.set('code', code);
   }
-  const response = NextResponse.redirect(callback, 303);
-  response.cookies.set('cartshift_mcp_csrf', '', {
-    path: '/', httpOnly: true, secure: true, sameSite: 'none', maxAge: 0,
-  });
-  return response;
+  return NextResponse.redirect(callback, 303);
 }

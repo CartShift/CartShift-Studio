@@ -57,11 +57,10 @@ async function openConsent() {
     fields.set(match[1], value);
   }
   fields.set('decision', 'allow');
-  const cookie = page.headers.get('set-cookie')!.split(';')[0];
-  return { fields, cookie, client };
+  return { fields, client };
 }
 
-function submit(fields: URLSearchParams, cookie: string) {
+function submit(fields: URLSearchParams, cookie = '') {
   return consent(new NextRequest(origin + '/api/cartshift-mcp/oauth/authorize', {
     method: 'POST', headers: { Origin: origin, Cookie: cookie, 'Content-Type': 'application/x-www-form-urlencoded' },
     body: fields.toString(),
@@ -75,8 +74,8 @@ beforeEach(() => {
 
 describe('CartShift complete OAuth consent flow', () => {
   it('submits the rendered form, exchanges the code once and discovers authenticated MCP tools', async () => {
-    const { fields, cookie, client } = await openConsent();
-    const approved = await submit(fields, cookie);
+    const { fields, client } = await openConsent();
+    const approved = await submit(fields);
     expect(approved.status).toBe(303);
     const callback = new URL(approved.headers.get('location')!);
     expect(callback.searchParams.get('iss')).toBe(origin);
@@ -101,24 +100,26 @@ describe('CartShift complete OAuth consent flow', () => {
     expect((await exchange(tokenRequest())).status).toBe(400);
   });
 
-  it('rejects a consent POST missing its security cookie', async () => {
+  it('rejects a consent POST missing its verification token', async () => {
     const { fields } = await openConsent();
-    const response = await submit(fields, '');
+    fields.delete('csrf');
+    const response = await submit(fields);
     expect(response.status).toBe(400);
-    expect(await response.text()).toContain('missing verification cookie');
+    expect(await response.text()).toContain('missing verification token');
   });
 
-  it('rejects a consent POST whose security cookie does not match the rendered form', async () => {
+  it('rejects a consent POST with a malformed verification token', async () => {
     const { fields } = await openConsent();
-    const response = await submit(fields, 'cartshift_mcp_csrf=other-value');
+    fields.set('csrf', 'other-value');
+    const response = await submit(fields);
     expect(response.status).toBe(400);
-    expect(await response.text()).toContain('verification cookie mismatch');
+    expect(await response.text()).toContain('missing verification token');
   });
 
   it('distinguishes invalid authorization fields from a missing cookie', async () => {
-    const { fields, cookie } = await openConsent();
+    const { fields } = await openConsent();
     fields.set('resource', 'https://evil.example/mcp');
-    const response = await submit(fields, cookie);
+    const response = await submit(fields);
     expect(response.status).toBe(400);
     expect(await response.text()).toContain('invalid authorization details');
   });
