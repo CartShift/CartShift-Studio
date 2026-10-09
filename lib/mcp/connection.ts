@@ -37,9 +37,9 @@ export function redirectAllowed(redirect: string): boolean {
   try {
     const url = new URL(redirect);
     if (url.username || url.password || url.hash) return false;
-    // Codex desktop binds an ephemeral loopback port and a random callback path.
+    // Codex uses a stable callback with issuer identification, otherwise a random path.
     if (url.protocol === 'http:' && url.hostname === '127.0.0.1') {
-      return Boolean(url.port) && !url.search && /^\/callback\/[A-Za-z0-9_-]{12}$/.test(url.pathname);
+      return Boolean(url.port) && !url.search && /^\/callback(?:\/[A-Za-z0-9_-]{12})?$/.test(url.pathname);
     }
     return (
       url.protocol === 'https:' &&
