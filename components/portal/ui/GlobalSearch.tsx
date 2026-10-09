@@ -7,6 +7,7 @@ import { useRouter } from '@/i18n/navigation';
 import { Search, ClipboardList, Users, FolderKanban, FileText, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 import { useRequests } from '@/lib/hooks/useRequests';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { listClientProjects } from '@/lib/services/portal-projects';
@@ -22,7 +23,7 @@ type Result = { id: string; title: string; description: string; type: 'request' 
 export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSearchProps) {
   const t = useTranslations('portal.globalSearch');
   const router = useRouter();
-  const { loading: authLoading, isAuthenticated, user } = usePortalAuth();
+  const { loading: authLoading, isAuthenticated, user, userData } = usePortalAuth();
   const { requests } = useRequests();
   const { openRequest } = useOpenRequest();
   const { recentSearches, addSearch, clearSearches } = useRecentSearches();
@@ -33,13 +34,15 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
   const inputRef = useRef<HTMLInputElement>(null);
   const term = query.trim().toLocaleLowerCase();
   const loadAgency = isAgency && isAuthenticated && !authLoading && isOpen && term.length >= 2;
+  const canViewClients = isAgency && canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_CLIENTS);
+  const canViewCommercial = isAgency && canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_PRICING);
   const { data: clients = [], isFetching: loadingClients } = useQuery({
-    queryKey: ['portal-search', 'clients', user?.uid], queryFn: getOrganizationsWithStats, enabled: loadAgency, staleTime: 60_000,
+    queryKey: ['portal-search', 'clients', user?.uid], queryFn: getOrganizationsWithStats, enabled: loadAgency && canViewClients, staleTime: 60_000,
   });
   const { data: projects = [], isFetching: loadingProjects } = useQuery({
     queryKey: ['portal-search', 'projects', user?.uid], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
   });
-  const pending = loadAgency && (loadingClients || loadingProjects);
+  const pending = loadAgency && ((canViewClients && loadingClients) || loadingProjects);
 
   const results = useMemo<Result[]>(() => {
     if (!term) return [];
@@ -52,7 +55,7 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
     }));
     if (!isAgency) return requestMatches;
     return [
-      ...clients.filter(client => matches(client.name) || matches(client.website)).slice(0, 4).map(client => ({
+      ...clients.filter(client => canViewClients && (matches(client.name) || matches(client.website))).slice(0, 4).map(client => ({
         id: 'client-' + client.id, title: client.name, description: t('client'),
         type: 'client' as const, href: getPortalPath('/agency/clients/' + client.id + '/'), icon: Users,
       })),
@@ -61,12 +64,12 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
         type: 'project' as const, href: getPortalPath('/projects/' + project.id + '/'), icon: FolderKanban,
       })),
       ...requestMatches,
-      ...requests.filter(proposal => Boolean(proposal.isBillable || proposal.publicToken || proposal.requestRole === 'bundle') && (matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name))).slice(0, 4).map(proposal => ({
+      ...requests.filter(proposal => canViewCommercial && Boolean(proposal.isBillable || proposal.publicToken || proposal.requestRole === 'bundle') && (matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name))).slice(0, 4).map(proposal => ({
         id: 'proposal-' + proposal.id, title: proposal.title, description: t('proposal'),
         type: 'proposal' as const, href: getPortalPath('/requests/' + proposal.id + '/'), icon: FileText,
       })),
     ].slice(0, 14);
-  }, [term, requests, isAgency, clients, projects, t]);
+  }, [term, requests, isAgency, clients, projects, t, canViewClients, canViewCommercial]);
 
   useEffect(() => setActiveIndex(0), [term]);
   useEffect(() => {
