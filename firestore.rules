@@ -174,7 +174,7 @@ service cloud.firestore {
       allow get, list: if isAuthenticated() && (
         isAgencyUser() ||
         resource.data.get('email', '') == request.auth.token.email ||
-        canAdminOrg(resource.data.get('orgId', ''))
+        canAccessOrg(resource.data.get('orgId', ''))
       );
       allow create: if isAuthenticated() && (
         isAgencyUser() ||

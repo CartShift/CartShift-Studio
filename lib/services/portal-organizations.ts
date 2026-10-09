@@ -516,8 +516,6 @@ export async function createInvite(
 
   const docRef = await addDoc(collection(db, INVITES_COLLECTION), inviteData);
 
-  console.log(`[Invite] Created invite ${docRef.id} with code ${inviteCode} for ${data.email}`);
-
   return {
     id: docRef.id,
     ...inviteData,
