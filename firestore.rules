@@ -327,15 +327,17 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
-      // Internal notes are agency-only. Client-side UI filtering is NOT an access control.
-      // Non-agency queries must constrain isInternal == false to satisfy these rules.
-      allow read: if isAuthenticated() && (
+      // Deny client list queries entirely. Emulator tests proved clients could
+      // enumerate confidential notes even with a resource-level predicate.
+      // Clients read only through /api/portal/public-comments (authenticated + filtered).
+      allow get: if isAuthenticated() && (
         isAgencyUser() ||
         (resource != null &&
          resource.data.get('isInternal', false) == false &&
          (canAccessOrg(resource.data.get('orgId', '')) ||
           resource.data.get('userId', '') == getUserId()))
       );
+      allow list: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         (request.resource.data.get('isInternal', false) == false &&
