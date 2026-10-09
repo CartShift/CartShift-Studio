@@ -40,7 +40,7 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
     queryKey: ['studio-client-directory', userData?.id], queryFn: getAllOrganizations, enabled: loadAgency && canViewClients, staleTime: 60_000,
   });
   const { data: projects = [], isFetching: loadingProjects } = useQuery({
-    queryKey: ['portal-search', 'projects', user?.uid], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
+    queryKey: ['portal-search', 'projects', userData?.id], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
   });
   const pending = loadAgency && ((canViewClients && loadingClients) || loadingProjects);
 
