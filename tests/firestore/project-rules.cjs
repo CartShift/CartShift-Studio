@@ -24,11 +24,14 @@ async function main() {
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
         db.doc('portal_users/revoked').set({ accountType: 'CLIENT', isAgency: false, email: 'revoked@example.com' }),
+        db.doc('portal_users/orgadmin').set({ accountType: 'CLIENT', isAgency: false, email: 'admin@example.com' }),
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
         db.doc('portal_members/orgA_revoked').set({ orgId: 'orgA', userId: 'revoked', role: 'member', removedAt: new Date() }),
+        db.doc('portal_members/orgA_orgadmin').set({ orgId: 'orgA', userId: 'orgadmin', role: 'admin' }),
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', createdBy: 'revoked', clientEmail: 'revoked@example.com', title: 'Existing request' }),
+        db.doc('portal_requests/reqClient').set({ orgId: 'orgA', createdBy: 'client', title: 'Editable request', status: 'NEW' }),
         db.doc('portal_activities/logA').set({ orgId: 'orgA', userId: 'revoked', action: 'CREATED_REQUEST' }),
         db.doc('portal_billing_profiles/agency').set({ businessName: 'CartShift' }),
         db.doc('portal_projects/prjA').set({
@@ -46,6 +49,7 @@ async function main() {
     const outsider = context('outsider', 'outsider@example.com');
     const anonymous = env.unauthenticatedContext().firestore();
     const revoked = context('revoked', 'revoked@example.com');
+    const orgadmin = context('orgadmin', 'admin@example.com');
 
     await assertSucceeds(client.doc('portal_projects/prjA').get());
     await assertFails(outsider.doc('portal_projects/prjA').get());
@@ -63,6 +67,18 @@ async function main() {
     await assertFails(revoked.doc('portal_activities/logA').get());
     await assertFails(revoked.collection('portal_activities').add({ orgId: 'orgA', userId: 'revoked', action: 'CREATED_REQUEST' }));
     await assertFails(client.doc('portal_billing_profiles/agency').get());
+
+    // Immutable tenant identifiers and server-managed payment state.
+    await assertSucceeds(client.doc('portal_requests/reqClient').update({ title: 'Updated title' }));
+    await assertFails(client.doc('portal_requests/reqClient').update({ orgId: 'orgB' }));
+    await assertFails(client.doc('portal_requests/reqClient').update({ createdBy: 'outsider' }));
+    await assertFails(client.doc('portal_requests/reqClient').update({ isBillable: true }));
+    await assertFails(client.collection('portal_requests').add({
+      orgId: 'orgA', createdBy: 'client', title: 'Fake paid request', amountPaid: 1000,
+    }));
+    await assertSucceeds(orgadmin.doc('portal_organizations/orgA').update({ name: 'New name' }));
+    await assertFails(orgadmin.doc('portal_organizations/orgA').update({ createdBy: 'orgadmin' }));
+    await assertFails(orgadmin.doc('portal_members/orgA_client').update({ orgId: 'orgB' }));
     await assertSucceeds(agency.doc('portal_billing_profiles/agency').get());
     await assertSucceeds(client.collection('portal_activities').add({ orgId: 'orgA', userId: 'client', action: 'CREATED_REQUEST' }));
     await assertFails(client.collection('portal_activities').add({ orgId: 'orgB', userId: 'client', action: 'CREATED_REQUEST' }));

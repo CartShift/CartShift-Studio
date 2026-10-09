@@ -132,7 +132,8 @@ service cloud.firestore {
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
       // Only admins/owners can update (security fix - was allowing any member)
-      allow update: if canAdminOrg(orgId);
+      allow update: if canAdminOrg(orgId) &&
+        request.resource.data.get('createdBy', '') == resource.data.get('createdBy', '');
       allow delete: if false;
     }
 
@@ -164,7 +165,9 @@ service cloud.firestore {
          request.resource.data.get('userId', '') == getUserId() &&
          validMemberInvite())
       );
-      allow update: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
+      allow update: if resource != null && canAdminOrg(resource.data.get('orgId', '')) &&
+        request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+        request.resource.data.get('userId', '') == resource.data.get('userId', '');
       allow delete: if false;
     }
 
@@ -288,6 +291,7 @@ service cloud.firestore {
           'childRequestIds',
           'legacyProposalId',
           'projectId',
+          'isBillable',
           'lineItems',
           'totalAmount',
           'subtotal',
@@ -316,8 +320,17 @@ service cloud.firestore {
       ) && (isAgencyUser() || resource == null || !hasRevokedMembership(resource.data.get('orgId', '')));
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
-        isMemberOfOrg(request.resource.data.get('orgId', '')) ||
-        isOrgOwner(request.resource.data.get('orgId', ''))
+        (
+          (isMemberOfOrg(request.resource.data.get('orgId', '')) ||
+           isOrgOwner(request.resource.data.get('orgId', ''))) &&
+          request.resource.data.get('createdBy', '') == getUserId() &&
+          !request.resource.data.keys().hasAny([
+            'isBillable', 'publicToken', 'publicAccessEnabled', 'publishedProposal',
+            'lockedAt', 'paymentStatus', 'amountPaid', 'balanceDue',
+            'paymentIds', 'paymentAllocations', 'paymentId', 'paidAt',
+            'termsAcceptedAt', 'acceptedByEmail'
+          ])
+        )
       );
       allow update: if isAuthenticated() && (
         resource == null ||
@@ -326,6 +339,8 @@ service cloud.firestore {
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
+      request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+      request.resource.data.get('createdBy', '') == resource.data.get('createdBy', '') &&
       !changesServerManagedCommercialFields() &&
       (isAgencyUser() || !hasRevokedMembership(resource.data.get('orgId', ''))) &&
       (isAgencyUser() || (!changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
