@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { NavGroup } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-import { PORTAL_PROJECTS_ENABLED } from '@/lib/config/portal-features';
 
 // Define valid navigation translation keys
 type NavTranslationKey =
@@ -101,13 +100,11 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           href: getPortalPath('/agency/clients/'),
           roles: PERMISSIONS.MANAGE_CLIENTS,
         },
-        ...(PORTAL_PROJECTS_ENABLED
-          ? [{
-              label: t('sidebar.nav.projects'),
-              icon: FolderKanban,
-              href: getPortalPath('/projects/'),
-            }]
-          : []),
+        {
+          label: t('sidebar.nav.projects'),
+          icon: FolderKanban,
+          href: getPortalPath('/projects/'),
+        },
         {
           label: t('sidebar.nav.requests'),
           icon: ClipboardList,
@@ -177,13 +174,11 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
         },
-        ...(PORTAL_PROJECTS_ENABLED
-          ? [{
-              label: t('sidebar.nav.projects'),
-              icon: FolderKanban,
-              href: getPortalPath('/projects/'),
-            }]
-          : []),
+        {
+          label: t('sidebar.nav.projects'),
+          icon: FolderKanban,
+          href: getPortalPath('/projects/'),
+        },
       ],
     },
     {

@@ -8,6 +8,7 @@ import { isPortalSubdomain, isMainDomain, isBrowser } from './subdomain';
 export const PORTAL_PATHS = [
   '/dashboard',
   '/requests',
+  '/projects',
   '/team',
   '/files',
   '/pricing',
