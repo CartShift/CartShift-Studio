@@ -45,6 +45,7 @@ describe('cursor paging of portal requests', () => {
     expect(normalizeRequestPageSize()).toBe(30);
     expect(() => normalizeRequestPageSize(101)).toThrow('INVALID_PAGE_SIZE');
     expect(() => assertRequestCursor({ id: '../secret', seconds: 1, nanoseconds: 0 })).toThrow('INVALID_REQUEST_CURSOR');
+    expect(() => assertRequestCursor({ id: 'legacy.request.2025', seconds: 1, nanoseconds: 0 })).not.toThrow();
   });
 
   it('fetches one lookahead record and emits a tie-safe timestamp/id cursor', async () => {
