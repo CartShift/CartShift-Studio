@@ -430,22 +430,28 @@ export async function updateMemberRole(memberId: string, role: UserRole): Promis
   await updateDoc(docRef, { role });
 }
 
+/**
+ * Removal is a server-side transaction. It must revoke the membership and
+ * remove the organization from the user's profile together.
+ */
 export async function removeMember(memberId: string, orgId: string, userId: string): Promise<void> {
-  const db = getFirestoreDb();
-  // Remove from members
-  const memberRef = doc(db, MEMBERS_COLLECTION, memberId);
-  await updateDoc(memberRef, { removedAt: serverTimestamp() });
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('UNAUTHENTICATED');
 
-  // Remove org from user's list
-  const userRef = doc(db, USERS_COLLECTION, userId);
-  await setDoc(
-    userRef,
-    {
-      organizations: arrayRemove(orgId),
-      updatedAt: serverTimestamp(),
+  const idToken = await user.getIdToken();
+  const response = await fetch('/api/portal/members/remove', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
     },
-    { merge: true }
-  );
+    body: JSON.stringify({ memberId, orgId, userId }),
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    throw new Error(payload?.error || 'Unable to remove member');
+  }
 }
 
 // ============================================
