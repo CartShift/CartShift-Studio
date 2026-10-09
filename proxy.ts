@@ -107,7 +107,11 @@ export function proxy(request: NextRequest) {
     const portalPath = getPortalPathFromRequest(pathname, true) || '/';
     const hasSession = request.cookies.has(SESSION_COOKIE);
 
-    if (shouldRedirectAuthenticatedPortalUser(portalPath) && hasSession) {
+    // Do not swallow an OAuth login continuation. The cookie may also be stale;
+    // the authorization route verifies it using Firebase Admin after login.
+    const resumingMcpOAuth = request.nextUrl.searchParams.get('redirect')
+      ?.startsWith('/api/cartshift-mcp/oauth/authorize?') ?? false;
+    if (shouldRedirectAuthenticatedPortalUser(portalPath) && hasSession && !resumingMcpOAuth) {
       return NextResponse.redirect(new URL(`/${locale}/`, request.url));
     }
 
