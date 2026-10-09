@@ -95,3 +95,9 @@ export async function serverGetOrgInvites(orgId: string): Promise<Invite[]> {
 
   return snapshot.docs.map(doc => serializeFirestoreDoc<Invite>(doc.id, doc.data()) as Invite);
 }
+
+// Authorization helper for Admin SDK prefetch. Rules do not apply to Admin reads.
+export async function serverHasRevokedMembership(orgId: string, uid: string): Promise<boolean> {
+  const snapshot = await getDb().collection(MEMBERS_COLLECTION).doc(`${orgId}_${uid}`).get();
+  return snapshot.exists && Boolean(snapshot.data()?.removedAt);
+}
