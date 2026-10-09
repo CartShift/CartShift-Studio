@@ -362,22 +362,27 @@ service cloud.firestore {
         resource == null ||
         canAccessOrg(resource.data.get('orgId', '')) ||
         resource.data.get('userId', '') == getUserId()
-      );
+      ) && (isAgencyUser() || resource == null || !hasRevokedMembership(resource.data.get('orgId', '')));
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
-        isMemberOfOrg(getRequestOrgIdFromRequest()) ||
-        isOrgOwner(getRequestOrgIdFromRequest())
+        ((isMemberOfOrg(getRequestOrgIdFromRequest()) ||
+          isOrgOwner(getRequestOrgIdFromRequest())) &&
+         request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
+         request.resource.data.get('userId', '') == getUserId())
       );
       allow update: if isAuthenticated() && (
-        resource == null ||
         resource.data.get('userId', '') == getUserId() ||
         isAgencyUser()
-      );
+      ) && (isAgencyUser() || (
+        !hasRevokedMembership(resource.data.get('orgId', '')) &&
+        request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+        request.resource.data.get('userId', '') == resource.data.get('userId', '') &&
+        request.resource.data.get('requestId', '') == resource.data.get('requestId', '')
+      ));
       allow delete: if isAuthenticated() && (
-        resource == null ||
         resource.data.get('userId', '') == getUserId() ||
         isAgencyUser()
-      );
+      ) && (isAgencyUser() || !hasRevokedMembership(resource.data.get('orgId', '')));
     }
 
     match /portal_files/{fileId} {
@@ -386,31 +391,39 @@ service cloud.firestore {
         resource == null ||
         canAccessOrg(resource.data.get('orgId', '')) ||
         resource.data.get('uploadedBy', '') == getUserId()
-      );
+      ) && (isAgencyUser() || resource == null || !hasRevokedMembership(resource.data.get('orgId', '')));
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
-        isMemberOfOrg(request.resource.data.get('orgId', '')) ||
-        isOrgOwner(request.resource.data.get('orgId', ''))
+        ((isMemberOfOrg(request.resource.data.get('orgId', '')) ||
+          isOrgOwner(request.resource.data.get('orgId', ''))) &&
+         request.resource.data.get('uploadedBy', '') == getUserId())
       );
-      allow update, delete: if isAuthenticated() && (
-        resource == null ||
+      allow update: if isAuthenticated() && (
         resource.data.get('uploadedBy', '') == getUserId() ||
         isAgencyUser()
-      );
+      ) && (isAgencyUser() || (
+        !hasRevokedMembership(resource.data.get('orgId', '')) &&
+        request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+        request.resource.data.get('uploadedBy', '') == resource.data.get('uploadedBy', '')
+      ));
+      allow delete: if isAuthenticated() && (
+        resource.data.get('uploadedBy', '') == getUserId() ||
+        isAgencyUser()
+      ) && (isAgencyUser() || !hasRevokedMembership(resource.data.get('orgId', '')));
     }
 
     match /portal_notifications/{notificationId} {
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
-        resource == null ||
         resource.data.get('userId', '') == getUserId()
       );
-      allow write: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource == null ||
-        resource.data.get('userId', '') == getUserId() ||
-        request.resource.data.get('userId', '') == getUserId()
-      );
+      allow create, delete: if isAgencyUser();
+      // A client can acknowledge a notification, never forge or transfer one.
+      allow update: if isAgencyUser() ||
+        (isAuthenticated() &&
+         resource.data.get('userId', '') == getUserId() &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) &&
+         request.resource.data.get('read', false) == true);
     }
 
     match /portal_pricing_requests/{requestId} {

@@ -33,6 +33,9 @@ async function main() {
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', createdBy: 'revoked', clientEmail: 'revoked@example.com', title: 'Existing request' }),
         db.doc('portal_requests/reqClient').set({ orgId: 'orgA', createdBy: 'client', title: 'Editable request', status: 'NEW' }),
         db.doc('portal_activities/logA').set({ orgId: 'orgA', userId: 'revoked', action: 'CREATED_REQUEST' }),
+        db.doc('portal_notifications/notifyClient').set({ userId: 'client', read: false, title: 'Notice' }),
+        db.doc('portal_files/fileClient').set({ orgId: 'orgA', uploadedBy: 'client', name: 'Attached' }),
+        db.doc('portal_comments/commentClient').set({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', text: 'Note' }),
         db.doc('portal_billing_profiles/agency').set({ businessName: 'CartShift' }),
         db.doc('portal_projects/prjA').set({
           orgId: 'orgA',
@@ -79,6 +82,17 @@ async function main() {
     await assertSucceeds(orgadmin.doc('portal_organizations/orgA').update({ name: 'New name' }));
     await assertFails(orgadmin.doc('portal_organizations/orgA').update({ createdBy: 'orgadmin' }));
     await assertFails(orgadmin.doc('portal_members/orgA_client').update({ orgId: 'orgB' }));
+
+    await assertSucceeds(client.doc('portal_notifications/notifyClient').update({ read: true }));
+    await assertFails(client.doc('portal_notifications/notifyClient').update({ userId: 'outsider' }));
+    await assertFails(outsider.doc('portal_notifications/notifyClient').get());
+    await assertFails(client.collection('portal_notifications').add({ userId: 'outsider', read: false }));
+
+    await assertSucceeds(client.doc('portal_comments/commentClient').update({ text: 'Edited' }));
+    await assertFails(client.doc('portal_comments/commentClient').update({ orgId: 'orgB' }));
+    await assertFails(client.doc('portal_files/fileClient').update({ orgId: 'orgB' }));
+    await assertFails(outsider.doc('portal_files/fileClient').get());
+
     await assertSucceeds(agency.doc('portal_billing_profiles/agency').get());
     await assertSucceeds(client.collection('portal_activities').add({ orgId: 'orgA', userId: 'client', action: 'CREATED_REQUEST' }));
     await assertFails(client.collection('portal_activities').add({ orgId: 'orgB', userId: 'client', action: 'CREATED_REQUEST' }));
