@@ -53,6 +53,7 @@ import {
   getPortalActivityActionKey,
 } from '@/lib/i18n/portal-translation-keys';
 import { toast } from 'sonner';
+import { summarizeClientRequests } from '@/lib/domain/client-request-metrics';
 
 export default function AgencyClientDetailClient({
   clientId: initialClientId,
@@ -147,29 +148,10 @@ export default function AgencyClientDetailClient({
     setIsMounted(true);
   }, []);
 
-  // Calculate stats
-  const activeRequests = requests.filter(r =>
-    !['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'].includes(r.status)
-  ).length;
-  const completedRequests = requests.filter(r => ['DELIVERED', 'PAID', 'CLOSED'].includes(r.status)).length;
-
-  const completedRequestsWithDates = requests.filter(
-    r => ['DELIVERED', 'PAID', 'CLOSED'].includes(r.status) && r.createdAt && (r.closedAt || r.deliveredAt)
+  const { activeRequests, completedRequests, avgResolution } = useMemo(
+    () => summarizeClientRequests(requests),
+    [requests]
   );
-
-  const avgResolution =
-    completedRequestsWithDates.length > 0
-      ? Math.round(
-          completedRequestsWithDates.reduce((sum, r) => {
-            const finishedAt = r.closedAt || r.deliveredAt;
-            if (r.createdAt?.toDate && finishedAt?.toDate) {
-              const diff = finishedAt.toDate().getTime() - r.createdAt.toDate().getTime();
-              return sum + diff / (1000 * 60 * 60 * 24); // Convert to days
-            }
-            return sum;
-          }, 0) / completedRequestsWithDates.length
-        )
-      : 0;
 
   const recentActivities = activities.slice(0, 8);
   const openProjects = clientProjects.filter(project => !['completed', 'archived'].includes(project.status));
