@@ -76,6 +76,26 @@ describe('authenticated invitation lookup', () => {
     });
   });
 
+  it('preserves linked request metadata for a legitimate client invitation', async () => {
+    mocks.listInvites.mockResolvedValueOnce({
+      docs: [{
+        id: 'invite-client',
+        data: () => ({
+          ...invite.data(),
+          isClientInvite: true,
+          linkedRequestIds: ['request-one', 'request-two'],
+        }),
+      }],
+    });
+    const response = await GET(req('valid'));
+    expect(response.status).toBe(200);
+    expect((await response.json()).invite).toMatchObject({
+      id: 'invite-client',
+      isClientInvite: true,
+      linkedRequestIds: ['request-one', 'request-two'],
+    });
+  });
+
   it('permits authorized agency staff to look up organization invitations', async () => {
     mocks.verifyToken.mockResolvedValue({ uid: 'staff', email: 'staff@example.com' });
     mocks.getUser.mockResolvedValue({ data: () => ({ accountType: 'AGENCY', isAgency: true }) });
