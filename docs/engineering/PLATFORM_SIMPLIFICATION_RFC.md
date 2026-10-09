@@ -1,6 +1,6 @@
 # CartShift Platform Simplification — Engineering RFC
 
-**Status:** Proposed, implementation not started  
+**Status:** Incremental implementation PRs open; not fully validated or merged  
 **Baseline:** `main` at `4aebac6ba2f75eca6d72046fa70020fae7f4a0ae`, inspected 2026-10-09  
 **Scope:** CartShift Studio portal, reusable UI and frontend infrastructure  
 **Owner:** CartShift Studio  
@@ -146,6 +146,8 @@ Do not create a generic framework around simple code. Prefer a narrowly named re
 
 ### WS-5 — Complex tables without replacing the visual system (P2)
 
+**2026-10-09 current-code update:** RequestsClient now calls §filterAndSortRequests§ in §lib/domain/request-list-filter.ts§. A simple paging bug was found instead and is addressed in PR #40. Do not adopt TanStack Table just for this screen.
+
 **Existing:** `PortalTable.tsx`, `RequestsClient.tsx`, `AgencyPricingClient.tsx`, `PricingListClient.tsx`, `MarketingLeadsClient.tsx`.
 
 **Candidate:** `@tanstack/react-table` for state/row models, retaining PortalTable rendering/CVA.
@@ -181,7 +183,7 @@ Do not create a generic framework around simple code. Prefer a narrowly named re
 
 **Versioning rule:** Review a library's current maintained release **at implementation time**, pin via `pnpm-lock.yaml`, and document the chosen version + rationale in that workstream PR. Do not silently adopt the newest major.
 
-Official research: [cmdk](https://github.com/dip/cmdk), [cmdk selection/ARIA issue](https://github.com/dip/cmdk/issues/413), [Driver.js](https://driverjs.com/docs/configuration), [TanStack Table v8 sorting](https://tanstack.com/table/v8/docs/guide/sorting), [TanStack Table v8 pagination](https://tanstack.com/table/v8/docs/guide/pagination), [Floating UI React](https://floating-ui.com/docs/react).
+Official research: [cmdk](https://github.com/dip/cmdk), [cmdk selection/ARIA issue](https://github.com/dip/cmdk/issues/413), [Driver.js](https://driverjs.com/docs/configuration), [TanStack Table (current, version-sensitive)](https://tanstack.com/table/latest/docs/framework/react/quick-start), [Floating UI React](https://floating-ui.com/docs/react).
 
 ## 7. Atomic PR sequence and dependency graph
 
@@ -273,4 +275,4 @@ Before coding a workstream, answer and document:
 5. What specific tests catch its most expensive business regression?
 6. Does it protect client/org boundaries at both UI and data access layers?
 
-**Next action:** execute **S0** (baseline + typed regression fixtures + dependency spikes), then split S1/S2 into separate targeted implementation PRs. Do not begin with a broad dependency installation or visual replacement.
+**Current progress:** Read [Static baseline & implementation tracker](PLATFORM_SIMPLIFICATION_BASELINE.md). PRs #36–#41 cover focused parts of S1–S6. Full regression/browser verification and any remaining library evaluation are still required before merging or declaring the roadmap complete. Do not begin with a broad dependency installation or visual replacement.
