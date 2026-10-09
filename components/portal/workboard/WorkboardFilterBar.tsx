@@ -56,7 +56,7 @@ export function WorkboardFilterBar({
           variant={isSelectionMode ? 'primary' : 'ghost'}
           onClick={onToggleSelectionMode}
           className={cn('whitespace-nowrap gap-2', !isSelectionMode && 'text-surface-500')}
-          title="Bulk Actions"
+          title={t('common.select')}
         >
           {isSelectionMode ? <X size={14} /> : <CheckSquare size={14} />}
           <span className="hidden sm:inline">
@@ -80,7 +80,7 @@ export function WorkboardFilterBar({
         {/* Priority Filter */}
         <Dropdown
           trigger={
-            <span
+            <button type="button" aria-label={t('requests.field.priority')}
               className={cn(
                 'portal-focus-ring inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer',
                 priorityFilter
@@ -94,7 +94,7 @@ export function WorkboardFilterBar({
                   {priorityFilter}
                 </span>
               )}
-            </span>
+            </button>
           }
           items={[
             {
@@ -128,9 +128,9 @@ export function WorkboardFilterBar({
         {/* Sort */}
         <Dropdown
           trigger={
-            <span className="portal-focus-ring inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+            <button type="button" aria-label={t('common.sort')} className="portal-focus-ring inline-flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors whitespace-nowrap cursor-pointer">
               <SortAsc size={14} />
-            </span>
+            </button>
           }
           items={[
             {

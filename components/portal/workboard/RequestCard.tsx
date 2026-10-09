@@ -20,6 +20,7 @@ interface RequestCardProps {
   selectable?: boolean;
   selected?: boolean;
   onSelect?: () => void;
+  clientName?: string;
 }
 
 export function RequestCard({
@@ -30,6 +31,7 @@ export function RequestCard({
   selectable,
   selected,
   onSelect,
+  clientName,
 }: RequestCardProps) {
   const t = useTranslations('portal');
 
@@ -47,18 +49,19 @@ export function RequestCard({
         <div
           className={cn(
             'absolute top-3 start-3 z-20 transition-opacity',
-            selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            'opacity-100'
           )}
         >
           <button
             type="button"
             aria-pressed={selected}
+            aria-label={t('common.select') + ': ' + req.title}
             onClick={e => {
               e.stopPropagation();
               onSelect?.();
             }}
             className={cn(
-              'portal-focus-ring w-6 h-6 rounded border flex items-center justify-center transition-colors touch-manipulation',
+              'portal-focus-ring min-w-8 min-h-8 rounded border flex items-center justify-center transition-colors touch-manipulation',
               selected
                 ? 'bg-primary-600 border-primary-600 text-white'
                 : 'bg-white dark:bg-surface-800 border-surface-300 dark:border-surface-600 hover:border-primary-400'
@@ -97,6 +100,7 @@ export function RequestCard({
         </div>
       )}
 
+      {clientName && <p className="mb-2 truncate pe-10 text-xs font-semibold text-primary-600 dark:text-primary-400">{clientName}</p>}
       {/* Header: Priority & ID/Date */}
       <div className={cn('flex items-center justify-between gap-2 mb-2', selectable && 'ps-7')}>
         <Badge
@@ -107,12 +111,12 @@ export function RequestCard({
                 ? 'yellow'
                 : 'blue'
           }
-          className="text-[9px] px-1.5 h-4 font-black uppercase tracking-tighter shrink-0"
+          className="text-[11px] px-2 min-h-5 font-black uppercase tracking-tighter shrink-0"
         >
           {t(getPriorityTranslationKey(req.priority))}
         </Badge>
 
-        <span className="text-[10px] text-surface-400 font-medium">
+        <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">
           {isMounted && req.createdAt?.toDate
             ? formatDistanceToNow(req.createdAt.toDate(), {
                 addSuffix: true,
@@ -151,7 +155,7 @@ export function RequestCard({
         <div className="flex items-center gap-3 text-surface-400">
           <div className="flex items-center gap-1" title="Comments">
             <MessageSquare size={12} />
-            <span className="text-[10px] font-bold">{req.commentCount || 0}</span>
+            <span className="text-xs font-bold">{req.commentCount || 0}</span>
           </div>
           {req.attachmentIds && req.attachmentIds.length > 0 && (
             <div className="flex items-center gap-1" title="Attachments">
