@@ -83,7 +83,11 @@ export async function POST(request: Request) {
       return fail(body.id, -32601, 'Method not found');
   }
 }
-export async function GET() {
+export async function GET(request: Request) {
+  // A discovery GET can be the first request ChatGPT sends. Advertise OAuth
+  // instead of returning an unhelpful 405 before the user can connect.
+  try { await requireMcpToken(request.headers.get('authorization')); }
+  catch { return unauthorized(); }
   return new Response('MCP uses POST JSON-RPC', { status: 405, headers: { Allow: 'POST' } });
 }
 export async function DELETE() {
