@@ -44,6 +44,7 @@ async function main() {
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
+    const anonymous = env.unauthenticatedContext().firestore();
     const revoked = context('revoked', 'revoked@example.com');
 
     await assertSucceeds(client.doc('portal_projects/prjA').get());
@@ -97,6 +98,9 @@ async function main() {
       email: 'outsider@example.com', invitedBy: 'agency',
       expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
     }));
+    await assertFails(anonymous.collection('portal_invites').get());
+    await assertFails(outsider.collection('portal_invites').get());
+    await assertSucceeds(outsider.collection('portal_invites').where('email', '==', 'outsider@example.com').get());
     await assertFails(outsider.doc('portal_invites/staff-invite').update({ role: 'owner' }));
     await assertSucceeds(outsider.doc('portal_users/outsider').update({
       accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',

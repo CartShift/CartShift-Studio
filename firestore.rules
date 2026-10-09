@@ -169,10 +169,13 @@ service cloud.firestore {
     }
 
     match /portal_invites/{inviteId} {
-      // PUBLIC READ: Required for unauthenticated invite acceptance flow.
-      // Security rationale: Invite codes are cryptographically random UUIDs,
-      // documents contain no PII - only orgId, email, role, and expiry.
-      allow read: if true;
+      // Invitations include email addresses. Never expose the collection publicly.
+      // Legacy invite codes are resolved through the authenticated server endpoint.
+      allow get, list: if isAuthenticated() && (
+        isAgencyUser() ||
+        resource.data.get('email', '') == request.auth.token.email ||
+        canAdminOrg(resource.data.get('orgId', ''))
+      );
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         (request.resource.data.get('isAgency', false) == false &&

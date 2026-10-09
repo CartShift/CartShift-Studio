@@ -496,9 +496,10 @@ export async function createInvite(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7); // 7 day expiry
 
-  // Generate unique invite code
-  const inviteCode =
-    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // Use a cryptographically secure bearer code (unlike Math.random).
+  const inviteBytes = new Uint8Array(24);
+  crypto.getRandomValues(inviteBytes);
+  const inviteCode = Array.from(inviteBytes, byte => byte.toString(16).padStart(2, '0')).join('');
 
   const inviteData = {
     orgId: orgId || null,
@@ -529,37 +530,30 @@ export async function createInvite(
  * First tries to fetch by code (for invite URLs), then falls back to ID.
  */
 export async function getInvite(codeOrId: string): Promise<Invite | null> {
-  const db = getFirestoreDb();
+  await waitForAuth();
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('UNAUTHENTICATED');
 
-  // Try fetching by code first (for invite URLs)
-  const qByCode = query(
-    collection(db, INVITES_COLLECTION),
-    where('code', '==', codeOrId),
-    limit(1)
-  );
+  const token = await user.getIdToken();
+  const response = await fetch(`/api/portal/invite/lookup?code=${encodeURIComponent(codeOrId)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
 
-  const codeSnapshot = await getDocs(qByCode);
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error('Unable to load invitation');
 
-  if (!codeSnapshot.empty) {
-    const docSnap = codeSnapshot.docs[0];
-    return {
-      id: docSnap.id,
-      ...docSnap.data(),
-    } as Invite;
-  }
-
-  // Fallback: try fetching by document ID
-  const docRef = doc(db, INVITES_COLLECTION, codeOrId);
-  const docSnap = await getDoc(docRef);
-
-  if (!docSnap.exists()) {
-    return null;
-  }
+  const payload = await response.json();
+  const invite = payload.invite as Omit<Invite, 'createdAt' | 'expiresAt'> & {
+    createdAtMillis: number;
+    expiresAtMillis: number;
+  };
 
   return {
-    id: docSnap.id,
-    ...docSnap.data(),
-  } as Invite;
+    ...invite,
+    createdAt: Timestamp.fromMillis(invite.createdAtMillis),
+    expiresAt: Timestamp.fromMillis(invite.expiresAtMillis),
+  };
 }
 
 export async function getPendingInviteByEmail(

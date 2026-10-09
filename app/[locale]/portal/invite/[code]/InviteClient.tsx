@@ -71,7 +71,7 @@ export default function InviteClient() {
           // Update expired status if user is authenticated, otherwise just show error
           if (isAuthenticated) {
             try {
-              await cancelInvite(code);
+              await cancelInvite(inviteData.id);
             } catch (err) {
               console.error('Error updating invite status:', err);
             }
