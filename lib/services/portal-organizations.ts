@@ -319,7 +319,7 @@ export async function getMemberByUserId(
     const memberRef = doc(db, MEMBERS_COLLECTION, memberId);
     const memberSnap = await getDoc(memberRef);
 
-    if (!memberSnap.exists()) {
+    if (!memberSnap.exists() || memberSnap.data()?.removedAt) {
       return null;
     }
 
@@ -350,6 +350,12 @@ export async function ensureMembership(
 
   if (member) {
     return member;
+  }
+
+  // A revocation is intentional, not a missing membership to be auto-repaired.
+  const previousMembership = await getDoc(doc(getFirestoreDb(), MEMBERS_COLLECTION, `${orgId}_${userId}`));
+  if (previousMembership.exists() && previousMembership.data()?.removedAt) {
+    return null;
   }
 
   let org: Organization | null = null;

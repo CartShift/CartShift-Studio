@@ -12,17 +12,28 @@ service cloud.firestore {
       return request.auth.uid;
     }
 
+    // Soft-deleted membership records must never grant organization access.
     function isMemberOfOrg(orgId) {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
-             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId()));
+             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) &&
+             get(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) == null;
+    }
+
+    // A removed member must not regain access via legacy creator/email grants.
+    function hasRevokedMembership(orgId) {
+      return isAuthenticated() &&
+             orgId != null && orgId != '' &&
+             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) &&
+             get(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) != null;
     }
 
     function isOrgOwner(orgId) {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
              exists(/databases/$(database)/documents/portal_organizations/$(orgId)) &&
-             get(/databases/$(database)/documents/portal_organizations/$(orgId)).data.createdBy == getUserId();
+             get(/databases/$(database)/documents/portal_organizations/$(orgId)).data.createdBy == getUserId() &&
+             !hasRevokedMembership(orgId);
     }
 
     function isAgencyUser() {
@@ -116,8 +127,8 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
         resource == null ||
-        exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) ||
-        resource.data.createdBy == getUserId()
+        isMemberOfOrg(orgId) ||
+        isOrgOwner(orgId)
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
       // Only admins/owners can update (security fix - was allowing any member)
@@ -299,7 +310,7 @@ service cloud.firestore {
         resource.data.get('clientEmail', '') == request.auth.token.email ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
-      );
+      ) && (isAgencyUser() || resource == null || !hasRevokedMembership(resource.data.get('orgId', '')));
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
@@ -313,12 +324,13 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
       !changesServerManagedCommercialFields() &&
+      (isAgencyUser() || !hasRevokedMembership(resource.data.get('orgId', ''))) &&
       (isAgencyUser() || (!changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
         resource.data.get('createdBy', '') == getUserId() ||
         isOrgOwner(resource.data.get('orgId', ''))
-      );
+      ) && (isAgencyUser() || !hasRevokedMembership(resource.data.get('orgId', '')));
     }
 
     match /portal_comments/{commentId} {
@@ -412,7 +424,8 @@ service cloud.firestore {
     }
 
     match /portal_billing_profiles/{profileId} {
-      allow read: if isAuthenticated();
+      // Public/client billing views use the authenticated server API, not raw profiles.
+      allow read: if isAgencyUser();
       allow write: if false;
     }
 
@@ -440,11 +453,16 @@ service cloud.firestore {
     match /portal_activities/{activityId} {
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
-        resource == null ||
-        resource.data.get('userId', '') == getUserId() ||
-        canAccessOrg(resource.data.get('orgId', ''))
+        (resource == null || !hasRevokedMembership(resource.data.get('orgId', ''))) &&
+        (resource == null ||
+         resource.data.get('userId', '') == getUserId() ||
+         canAccessOrg(resource.data.get('orgId', '')))
       );
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        isAgencyUser() ||
+        (canAccessOrg(request.resource.data.get('orgId', '')) &&
+         request.resource.data.get('userId', '') == getUserId())
+      );
       allow update, delete: if false;
     }
 

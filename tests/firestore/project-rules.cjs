@@ -23,9 +23,14 @@ async function main() {
         db.doc('portal_users/agency').set({ accountType: 'AGENCY', isAgency: true, email: 'staff@example.com' }),
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
+        db.doc('portal_users/revoked').set({ accountType: 'CLIENT', isAgency: false, email: 'revoked@example.com' }),
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
+        db.doc('portal_members/orgA_revoked').set({ orgId: 'orgA', userId: 'revoked', role: 'member', removedAt: new Date() }),
+        db.doc('portal_requests/reqA').set({ orgId: 'orgA', createdBy: 'revoked', clientEmail: 'revoked@example.com', title: 'Existing request' }),
+        db.doc('portal_activities/logA').set({ orgId: 'orgA', userId: 'revoked', action: 'CREATED_REQUEST' }),
+        db.doc('portal_billing_profiles/agency').set({ businessName: 'CartShift' }),
         db.doc('portal_projects/prjA').set({
           orgId: 'orgA',
           title: 'Theme review',
@@ -39,6 +44,7 @@ async function main() {
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
+    const revoked = context('revoked', 'revoked@example.com');
 
     await assertSucceeds(client.doc('portal_projects/prjA').get());
     await assertFails(outsider.doc('portal_projects/prjA').get());
@@ -46,6 +52,20 @@ async function main() {
     await assertFails(client.collection('portal_projects').add({ orgId: 'orgA', title: 'Injected' }));
     await assertSucceeds(agency.collection('portal_projects').add({ orgId: 'orgA', title: 'Legitimate' }));
     await assertFails(outsider.collection('portal_projects').where('orgId', '==', 'orgA').get());
+
+    // A soft-deleted membership revokes access even for request creators/email recipients.
+    await assertFails(revoked.doc('portal_projects/prjA').get());
+    await assertFails(revoked.doc('portal_organizations/orgA').get());
+    await assertFails(revoked.doc('portal_requests/reqA').get());
+    await assertFails(revoked.doc('portal_requests/reqA').update({ title: 'Forbidden' }));
+    await assertFails(revoked.collection('portal_requests').add({ orgId: 'orgA', title: 'Forbidden' }));
+    await assertFails(revoked.doc('portal_activities/logA').get());
+    await assertFails(revoked.collection('portal_activities').add({ orgId: 'orgA', userId: 'revoked', action: 'CREATED_REQUEST' }));
+    await assertFails(client.doc('portal_billing_profiles/agency').get());
+    await assertSucceeds(agency.doc('portal_billing_profiles/agency').get());
+    await assertSucceeds(client.collection('portal_activities').add({ orgId: 'orgA', userId: 'client', action: 'CREATED_REQUEST' }));
+    await assertFails(client.collection('portal_activities').add({ orgId: 'orgB', userId: 'client', action: 'CREATED_REQUEST' }));
+    await assertFails(client.collection('portal_activities').add({ orgId: 'orgA', userId: 'outsider', action: 'CREATED_REQUEST' }));
 
     await assertFails(client.doc('portal_users/client').update({ isAgency: true, accountType: 'AGENCY' }));
     await assertFails(client.doc('portal_users/client').update({ agencyRole: 'owner' }));

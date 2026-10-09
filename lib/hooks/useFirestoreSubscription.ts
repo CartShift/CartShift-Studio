@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Bridges Firestore onSnapshot listeners with TanStack Query cache.
+ * Subscription identity is based on key value, not a new array on every render.
  */
 export function useFirestoreSubscription<T>(
   queryKey: readonly unknown[],
@@ -12,32 +13,20 @@ export function useFirestoreSubscription<T>(
   enabled: boolean = true
 ) {
   const queryClient = useQueryClient();
-  const unsubRef = useRef<(() => void) | null>(null);
-  const keyRef = useRef(JSON.stringify(queryKey));
+  const keyRef = useRef(queryKey);
   const subscribeRef = useRef(subscribe);
+  const serializedKey = JSON.stringify(queryKey);
+  keyRef.current = queryKey;
   subscribeRef.current = subscribe;
 
-  const serializedKey = JSON.stringify(queryKey);
-
   useEffect(() => {
-    if (!enabled || !subscribeRef.current) {
-      unsubRef.current?.();
-      unsubRef.current = null;
-      return;
-    }
+    const startSubscription = subscribeRef.current;
+    if (!enabled || !startSubscription) return;
 
-    if (unsubRef.current && keyRef.current === serializedKey) return;
-
-    unsubRef.current?.();
-    keyRef.current = serializedKey;
-
-    unsubRef.current = subscribeRef.current((data: T) => {
-      queryClient.setQueryData(queryKey, data);
+    const unsubscribe = startSubscription((data: T) => {
+      queryClient.setQueryData(keyRef.current, data);
     });
 
-    return () => {
-      unsubRef.current?.();
-      unsubRef.current = null;
-    };
-  }, [serializedKey, enabled, queryClient, queryKey]);
+    return () => unsubscribe();
+  }, [serializedKey, enabled, queryClient]);
 }
