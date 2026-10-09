@@ -17,6 +17,7 @@ import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { Input } from '@/components/ui/Input';
 import type { LucideIcon } from 'lucide-react';
 import { activeItem, moveActiveIndex } from '@/lib/utils/list-navigation';
+import { matchesPortalQuery, requestSearchPool } from '@/lib/portal/search-model';
 
 interface GlobalSearchProps { orgId?: string; isAgency?: boolean; className?: string; onSelect?: () => void }
 type Result = { id: string; title: string; description: string; type: 'request' | 'client' | 'project' | 'proposal'; href: string; orgId?: string; icon: LucideIcon };
@@ -35,8 +36,8 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
   const inputRef = useRef<HTMLInputElement>(null);
   const term = query.trim().toLocaleLowerCase();
   const loadAgency = isAgency && isAuthenticated && !authLoading && isOpen && term.length >= 2;
-  const canViewClients = isAgency && canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_CLIENTS);
-  const canViewCommercial = isAgency && canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_PRICING);
+  const canViewClients = isAgency && canAccessNav(userData?.agencyRole, PERMISSIONS.MANAGE_CLIENTS);
+  const canViewCommercial = isAgency && canAccessNav(userData?.agencyRole, PERMISSIONS.MANAGE_PRICING);
   const { data: clients = [], isFetching: loadingClients } = useQuery({
     queryKey: ['studio-client-directory', userData?.id], queryFn: getAllOrganizations, enabled: loadAgency && canViewClients, staleTime: 60_000,
   });
@@ -47,10 +48,9 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
 
   const results = useMemo<Result[]>(() => {
     if (!term) return [];
-    const matches = (value?: string) => (value || '').toLocaleLowerCase().includes(term);
-    const requestMatches: Result[] = requests.filter(request =>
-      (!isAgency || !(request.isBillable || request.publicToken || request.requestRole === 'bundle')) &&
-      (matches(request.title) || matches(request.id) || matches(request.description))
+    const matches = (value?: string) => matchesPortalQuery(term, value);
+    const requestMatches: Result[] = requestSearchPool(requests, { isAgency, canViewCommercial, kind: 'regular' }).filter(request =>
+      matches(request.title) || matches(request.id) || matches(request.description)
     ).slice(0, 5).map(request => ({
       id: 'request-' + request.id, title: request.title, description: t('request'),
       type: 'request', orgId: request.orgId, href: request.id, icon: ClipboardList,
@@ -66,7 +66,9 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
         type: 'project' as const, href: getPortalPath('/projects/' + project.id + '/'), icon: FolderKanban,
       })),
       ...requestMatches,
-      ...requests.filter(proposal => canViewCommercial && Boolean(proposal.isBillable || proposal.publicToken || proposal.requestRole === 'bundle') && (matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name))).slice(0, 4).map(proposal => ({
+      ...requestSearchPool(requests, { isAgency, canViewCommercial, kind: 'commercial' }).filter(proposal =>
+        matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name)
+      ).slice(0, 4).map(proposal => ({
         id: 'proposal-' + proposal.id, title: proposal.title, description: t('proposal'),
         type: 'proposal' as const, href: getPortalPath('/requests/' + proposal.id + '/'), icon: FileText,
       })),
