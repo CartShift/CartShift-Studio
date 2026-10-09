@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { paginateRows } from '@/lib/utils/table-pagination';
 import { Badge } from '@/components/ui/Badge';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { PRICING_STATUS_CONFIG, PRICING_STATUS, formatCurrency } from '@/lib/types/pricing';
@@ -111,14 +112,14 @@ export default function PricingListClient() {
     return matchesFilter && matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
-  const paginatedRequests = filteredRequests.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const { items: paginatedRequests, page: visiblePage, totalPages } = paginateRows(
+    filteredRequests,
+    currentPage,
+    itemsPerPage
   );
 
-  const handlePrevPage = () => setCurrentPage(p => Math.max(1, p - 1));
-  const handleNextPage = () => setCurrentPage(p => Math.min(totalPages, p + 1));
+  const handlePrevPage = () => setCurrentPage(Math.max(1, visiblePage - 1));
+  const handleNextPage = () => setCurrentPage(Math.min(totalPages, visiblePage + 1));
 
   if (error) {
     return (
@@ -485,7 +486,7 @@ export default function PricingListClient() {
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
                 onClick={handlePrevPage}
-                disabled={currentPage === 1}
+                disabled={visiblePage <= 1}
               >
                 {t('common.prev')}
               </Button>
@@ -494,7 +495,7 @@ export default function PricingListClient() {
                 size="sm"
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest"
                 onClick={handleNextPage}
-                disabled={currentPage === totalPages}
+                disabled={visiblePage >= totalPages}
               >
                 {t('common.next')}
               </Button>
