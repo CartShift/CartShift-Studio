@@ -306,17 +306,14 @@ export function subscribeToRequestComments(
     .then(() => {
       if (isUnsubscribed) return;
       const db = getFirestoreDb();
-      let q;
-
-      if (orgId) {
-        q = query(
-          collection(db, COMMENTS_COLLECTION),
-          where('requestId', '==', requestId),
-          where('orgId', '==', orgId)
-        );
-      } else {
-        q = query(collection(db, COMMENTS_COLLECTION), where('requestId', '==', requestId));
-      }
+      // Firestore rules prevent clients from reading internal agency comments.
+      // Apply the filter at the database, not only after receiving the snapshot.
+      const q = query(
+        collection(db, COMMENTS_COLLECTION),
+        where('requestId', '==', requestId),
+        ...(orgId ? [where('orgId', '==', orgId)] : []),
+        ...(!showInternalComments ? [where('isInternal', '==', false)] : [])
+      );
 
       unsubscribe = onSnapshot(
         q,
