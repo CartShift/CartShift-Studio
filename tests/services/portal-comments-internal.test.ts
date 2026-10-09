@@ -93,7 +93,7 @@ describe('private agency comments', () => {
       exists: () => true,
       data: () => ({ requestId: 'request-a' }),
     }), delete: vi.fn(), update: vi.fn() };
-    firestore.runTransaction.mockImplementation(async (_db: unknown, perform: (tx: typeof tx) => Promise<void>) =>
+    firestore.runTransaction.mockImplementation(async (_db: unknown, perform: (transaction: typeof tx) => Promise<void>) =>
       perform(tx)
     );
 
@@ -107,7 +107,7 @@ describe('private agency comments', () => {
 
   it('does not decrement a counter when a comment has already been removed', async () => {
     const tx = { get: vi.fn().mockResolvedValue({ exists: () => false }), delete: vi.fn(), update: vi.fn() };
-    firestore.runTransaction.mockImplementation(async (_db: unknown, perform: (tx: typeof tx) => Promise<void>) =>
+    firestore.runTransaction.mockImplementation(async (_db: unknown, perform: (transaction: typeof tx) => Promise<void>) =>
       perform(tx)
     );
     await expect(deleteComment('comment-a')).rejects.toThrow('Comment not found');
