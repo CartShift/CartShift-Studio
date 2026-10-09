@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { randomUUID } from 'node:crypto';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 import { AUDIT, type TokenGrant, agencyActor, firestore, may, tokenHash } from '@/lib/mcp/connection';
 import { buildProjectTemplate } from '@/lib/utils/project-workflow';
