@@ -45,6 +45,7 @@
     "normalize-db": "tsx scripts/normalize-db.ts",
     "migrate:proposals": "tsx scripts/migrate-proposals-to-requests.ts",
     "migrate:proposals:apply": "tsx scripts/migrate-proposals-to-requests.ts --apply",
+    "audit:portal:private-previews": "tsx scripts/audit-internal-comment-previews.ts",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
