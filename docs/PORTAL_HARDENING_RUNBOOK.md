@@ -17,10 +17,10 @@ Old portal code could copy an internal agency comment into a request's `lastComm
 A read-only, bounded auditor is available:
 
 ```bash
-pnpm audit:portal:private-previews --max-docs=1000
+pnpm audit:portal:private-previews --project=<staging-project-id> --max-docs=1000
 ```
 
-It uses Application Default Credentials or `FIREBASE_SERVICE_ACCOUNT_KEY`. The report includes only counts and shortened hashes of candidate request IDs, never comments, email addresses or raw identifiers. The audit checks for exact/truncated preview matches; a match is a **candidate for review**, not proof that the text was exposed. A capped run reports `incomplete: true` and is not a comprehensive historical audit. The script has **no write mode**.
+It requires an explicit Firebase project ID and validates it against configured environment project ID when present. Use a designated staging project first. It uses Application Default Credentials or `FIREBASE_SERVICE_ACCOUNT_KEY`. The report includes only counts and shortened hashes of candidate request IDs, never comments, email addresses or raw identifiers. The audit checks for exact/truncated preview matches; a match is a **candidate for review**, not proof that the text was exposed. A capped run reports `incomplete: true` and is not a comprehensive historical audit. The script has **no write mode**.
 
 For any remediation, first confirm the candidate and the intended public preview, back up affected request documents, write a separately reviewed dry-run plan, and preserve all original client-authored content. Never run a bulk write in Production as part of this audit.
 
