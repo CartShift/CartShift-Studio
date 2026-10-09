@@ -39,7 +39,9 @@ jobs:
           cache-dependency-path: functions/pnpm-lock.yaml
       - name: Install frozen Functions dependencies
         run: pnpm install --frozen-lockfile
-      - name: Lint Firebase Functions
-        run: pnpm lint
+      - name: Lint Firebase Functions entrypoint
+        # Functions still uses ESLint 8 + legacy .eslintrc.json.
+        # Explicitly select legacy config and lint JS; TypeScript is checked by tsc.
+        run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js
       - name: Compile Firebase Functions TypeScript
         run: pnpm build
