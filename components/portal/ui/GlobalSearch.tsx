@@ -23,7 +23,7 @@ type Result = { id: string; title: string; description: string; type: 'request' 
 export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps) {
   const t = useTranslations('portal.globalSearch');
   const router = useRouter();
-  const { loading: authLoading, isAuthenticated } = usePortalAuth();
+  const { loading: authLoading, isAuthenticated, user } = usePortalAuth();
   const { requests } = useRequests();
   const { openRequest } = useOpenRequest();
   const { recentSearches, addSearch, clearSearches } = useRecentSearches();
@@ -35,13 +35,13 @@ export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps)
   const term = query.trim().toLocaleLowerCase();
   const loadAgency = isAgency && isAuthenticated && !authLoading && isOpen && term.length >= 2;
   const { data: clients = [], isFetching: loadingClients } = useQuery({
-    queryKey: ['portal-search', 'clients'], queryFn: getOrganizationsWithStats, enabled: loadAgency, staleTime: 60_000,
+    queryKey: ['portal-search', 'clients', user?.uid], queryFn: getOrganizationsWithStats, enabled: loadAgency, staleTime: 60_000,
   });
   const { data: projects = [], isFetching: loadingProjects } = useQuery({
-    queryKey: ['portal-search', 'projects'], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
+    queryKey: ['portal-search', 'projects', user?.uid], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
   });
   const { data: proposals = [], isFetching: loadingProposals } = useQuery({
-    queryKey: ['portal-search', 'proposals'], queryFn: getAllPricingRequests, enabled: loadAgency, staleTime: 30_000,
+    queryKey: ['portal-search', 'proposals', user?.uid], queryFn: getAllPricingRequests, enabled: loadAgency, staleTime: 30_000,
   });
   const pending = loadAgency && (loadingClients || loadingProjects || loadingProposals);
 

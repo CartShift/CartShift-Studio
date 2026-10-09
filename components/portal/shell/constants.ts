@@ -19,6 +19,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 // Define valid navigation translation keys
 type NavTranslationKey =
   | 'sidebar.nav.dashboard'
+  | 'sidebar.nav.pricing'
   | 'sidebar.nav.requests'
   | 'sidebar.nav.projects'
   | 'sidebar.nav.files'

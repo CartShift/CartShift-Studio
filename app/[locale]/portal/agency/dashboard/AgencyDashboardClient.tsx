@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { AlertCircle, ArrowUpRight, CheckCircle2, ClipboardList, Clock3, FileText, FolderKanban, Plus, Users } from 'lucide-react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
@@ -32,7 +32,6 @@ function priorityScore(request: Request): number {
 export default function AgencyDashboardClient() {
   const t = useTranslations('portal.agencyHome');
   const portal = useTranslations('portal');
-  const locale = useLocale();
   const { isAgency, loading: authLoading } = usePortalAuth();
   const { requests, loading: requestsLoading, error: requestsError } = useRequests();
   const { organizations, loading: clientsLoading } = useAgencyClients();

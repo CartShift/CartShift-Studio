@@ -59,7 +59,7 @@ export function WorkboardFilterBar({
           title={t('common.select')}
         >
           {isSelectionMode ? <X size={14} /> : <CheckSquare size={14} />}
-          <span className="hidden sm:inline">
+          <span>
             {isSelectionMode ? t('common.cancel') : t('common.select')}
           </span>
         </Button>
@@ -128,7 +128,7 @@ export function WorkboardFilterBar({
         {/* Sort */}
         <Dropdown
           trigger={
-            <button type="button" aria-label={t('common.sort')} className="portal-focus-ring inline-flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+            <button type="button" aria-label={t('workboard.filters.newest')} className="portal-focus-ring inline-flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors whitespace-nowrap cursor-pointer">
               <SortAsc size={14} />
             </button>
           }
