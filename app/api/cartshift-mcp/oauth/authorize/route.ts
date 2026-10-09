@@ -37,6 +37,13 @@ const htmlHeaders = {
   'X-Content-Type-Options': 'nosniff',
 };
 
+function rejectedConsent(reason: 'invalid authorization details' | 'missing verification cookie' | 'verification cookie mismatch') {
+  console.warn('[CartShift MCP] OAuth consent rejected', { reason });
+  return new Response('Invalid OAuth consent (' + reason + '). Restart Authenticate and submit the new consent page.', {
+    status: 400, headers: { 'Cache-Control': 'no-store' },
+  });
+}
+
 export async function GET(request: NextRequest) {
   const auth = await validate(request.nextUrl.searchParams);
   if (!auth) return new Response('Invalid OAuth authorization request', { status: 400 });
@@ -89,9 +96,9 @@ export async function POST(request: NextRequest) {
   }
   const auth = await validate(params);
   const csrf = request.cookies.get('cartshift_mcp_csrf')?.value || '';
-  if (!auth || !csrf || !constantEquals(csrf, params.get('csrf') || '')) {
-    return new Response('Invalid OAuth consent', { status: 400 });
-  }
+  if (!auth) return rejectedConsent('invalid authorization details');
+  if (!csrf) return rejectedConsent('missing verification cookie');
+  if (!constantEquals(csrf, params.get('csrf') || '')) return rejectedConsent('verification cookie mismatch');
   const session = await getServerSession(request);
   if (!session) return new Response('Session expired; restart connection', { status: 401 });
   try { await agencyActor(session.uid); }
