@@ -26,6 +26,15 @@ async function main() {
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
+        db.doc('portal_requests/reqA').set({ orgId: 'orgA', title: 'Request', status: 'NEW' }),
+        db.doc('portal_comments/publicA').set({
+          orgId: 'orgA', requestId: 'reqA', isInternal: false,
+          userId: 'client', content: 'Public comment',
+        }),
+        db.doc('portal_comments/internalA').set({
+          orgId: 'orgA', requestId: 'reqA', isInternal: true,
+          userId: 'agency', content: 'Agency confidential information',
+        }),
         db.doc('portal_projects/prjA').set({
           orgId: 'orgA',
           title: 'Theme review',
@@ -40,6 +49,24 @@ async function main() {
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
 
+    // Internal comments must be protected by Firestore rules, not client-side filtering.
+    await assertSucceeds(client.doc('portal_comments/publicA').get());
+    await assertFails(client.doc('portal_comments/internalA').get());
+    await assertFails(outsider.doc('portal_comments/publicA').get());
+    await assertSucceeds(agency.doc('portal_comments/internalA').get());
+    await assertFails(client.collection('portal_comments')
+      .where('orgId', '==', 'orgA').where('requestId', '==', 'reqA')
+      .where('isInternal', '==', false).get());
+    await assertFails(client.collection('portal_comments')
+      .where('orgId', '==', 'orgA').where('requestId', '==', 'reqA').get());
+    await assertSucceeds(agency.collection('portal_comments')
+      .where('orgId', '==', 'orgA').get());
+    await assertFails(client.doc('portal_comments/publicA').update({ isInternal: true }));
+    await assertFails(client.doc('portal_comments/internalA').update({ content: 'Tampered' }));
+    await assertFails(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'reqA', userId: 'client', isInternal: true,
+      content: 'Forged confidential note',
+    }));
     await assertSucceeds(client.doc('portal_projects/prjA').get());
     await assertFails(outsider.doc('portal_projects/prjA').get());
     await assertFails(client.doc('portal_projects/prjA').update({ title: 'Forged' }));

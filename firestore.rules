@@ -327,26 +327,39 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
-      allow read: if isAuthenticated() && (
+      // Deny client list queries entirely. Emulator tests proved clients could
+      // enumerate confidential notes even with a resource-level predicate.
+      // Clients read only through /api/portal/public-comments (authenticated + filtered).
+      allow get: if isAuthenticated() && (
         isAgencyUser() ||
-        resource == null ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        resource.data.get('userId', '') == getUserId()
+        (resource != null &&
+         resource.data.get('isInternal', false) == false &&
+         (canAccessOrg(resource.data.get('orgId', '')) ||
+          resource.data.get('userId', '') == getUserId()))
       );
+      allow list: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
-        isMemberOfOrg(getRequestOrgIdFromRequest()) ||
-        isOrgOwner(getRequestOrgIdFromRequest())
+        (request.resource.data.get('isInternal', false) == false &&
+         request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
+         (isMemberOfOrg(getRequestOrgIdFromRequest()) ||
+          isOrgOwner(getRequestOrgIdFromRequest())))
       );
       allow update: if isAuthenticated() && (
-        resource == null ||
-        resource.data.get('userId', '') == getUserId() ||
-        isAgencyUser()
+        isAgencyUser() ||
+        (resource != null &&
+         resource.data.get('isInternal', false) == false &&
+         request.resource.data.get('isInternal', false) == false &&
+         resource.data.get('userId', '') == getUserId() &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+           'content', 'updatedAt', 'reactions'
+         ]))
       );
       allow delete: if isAuthenticated() && (
-        resource == null ||
-        resource.data.get('userId', '') == getUserId() ||
-        isAgencyUser()
+        isAgencyUser() ||
+        (resource != null &&
+         resource.data.get('isInternal', false) == false &&
+         resource.data.get('userId', '') == getUserId())
       );
     }
 

@@ -2,16 +2,17 @@ import 'server-only';
 import { z } from 'zod';
 import { FieldValue } from 'firebase-admin/firestore';
 import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connection';
+import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
 const tinyText = z.string().trim().min(1).max(240);
 const enumPriority = z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']);
 const enumType = z.enum(['feature', 'bug', 'optimization', 'content', 'design', 'other']);
+// MCP work-item updates cannot impersonate client quote acceptance, alter payment state,
+// or bypass the protected commercial workflow.
 const enumStatus = z.enum([
-  'DRAFT', 'NEW', 'NEEDS_INFO', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED',
-  'DECLINED', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'PAID',
-  'CLOSED', 'CANCELED', 'EXPIRED',
+  'NEW', 'NEEDS_INFO', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED',
 ]);
 const tags = z.array(z.string().trim().min(1).max(50)).max(12);
 const clientFields = z.object({
@@ -47,6 +48,20 @@ export const TOOL_DEFS = [
     name: 'list_clients', description: 'List authorized agency client organizations. Search by name, website or Shopify domain.',
     scope: 'clients:read',
     inputSchema: { type: 'object', properties: { query: { type: 'string' } }, additionalProperties: false },
+  },
+  {
+    name: 'create_client', description: 'Create a new agency client organization without invitations or membership grants. Search first; duplicate names, websites and Shopify domains are rejected.',
+    scope: 'clients:write',
+    inputSchema: {
+      type: 'object', required: ['name'],
+      properties: {
+        name: { type: 'string' }, website: { type: 'string' },
+        industry: { type: 'string' }, bio: { type: 'string' },
+        shopifyDomain: { type: 'string' },
+        primaryContactName: { type: 'string' }, primaryContactRole: { type: 'string' },
+        primaryContactEmail: { type: 'string' }, primaryContactPhone: { type: 'string' },
+      }, additionalProperties: false,
+    },
   },
   {
     name: 'get_client', description: 'Get one CartShift client by canonical organization ID.',
@@ -108,6 +123,7 @@ export const TOOL_DEFS = [
       }, additionalProperties: false },
     }, additionalProperties: false },
   },
+  ...EXTENDED_TOOL_DEFS,
 ] as const;
 
 function serialize(value: unknown) {
@@ -136,6 +152,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (!tool) throw new Error('Unknown tool');
   may(grant, tool.scope);
   const args = getArgs(input);
+  if (EXTENDED_TOOL_DEFS.some(item => item.name === name)) {
+    return callExtendedTool(name, args, grant);
+  }
   const db = firestore();
   const orgs = db.collection('portal_organizations');
   const requests = db.collection('portal_requests');
@@ -155,6 +174,46 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
         shopifyDomain: doc.data().shopifyDomain || null, status: doc.data().status || 'active',
       }));
     return { clients: result, truncated: matches.size === 500 };
+  }
+
+
+  if (name === 'create_client') {
+    const fields = clientFields.pick({
+      name: true, website: true, industry: true, bio: true, shopifyDomain: true,
+      primaryContactName: true, primaryContactRole: true,
+      primaryContactEmail: true, primaryContactPhone: true,
+    }).extend({ name: tinyText });
+    const data = fields.parse(args);
+    const normalizeDomain = (value: string) => value.toLowerCase().replace(/^https?:\/\//, '')
+      .replace(/^www\./, '').replace(/\/+$/, '');
+    const expectedWebsite = data.website ? normalizeDomain(data.website) : '';
+    const expectedShopify = data.shopifyDomain?.toLowerCase() || '';
+    const matches = await orgs.orderBy('name').limit(500).get();
+    if (matches.size === 500) throw new Error('Client list is too large to safely deduplicate');
+    const duplicate = matches.docs.find(doc => {
+      const current = doc.data();
+      if (current.removedAt || current.status === 'inactive') return false;
+      return normalize(String(current.name || '')) === normalize(data.name) ||
+        Boolean(expectedWebsite && normalizeDomain(String(current.website || '')) === expectedWebsite) ||
+        Boolean(expectedShopify && String(current.shopifyDomain || '').toLowerCase() === expectedShopify);
+    });
+    if (duplicate) return { created: false, duplicate: true, org_id: duplicate.id, name: duplicate.data().name };
+    const key = expectedShopify || expectedWebsite || normalize(data.name);
+    const ref = orgs.doc('mcp_client_' + tokenHash(key).slice(0, 32));
+    const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') ||
+      'client-' + tokenHash(data.name).slice(0, 10);
+    let created = false;
+    await db.runTransaction(async tx => {
+      const prior = await tx.get(ref);
+      if (prior.exists) return;
+      tx.create(ref, {
+        ...data, slug, status: 'active', createdBy: grant.uid,
+        createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp(),
+      });
+      tx.create(audits.doc(), auditRow(grant.uid, 'create_client', ref.id));
+      created = true;
+    });
+    return { created, duplicate: !created, org_id: ref.id, name: data.name, invitations_sent: false };
   }
 
   if (name === 'get_client') {
@@ -188,7 +247,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     return { items: snap.docs.map(doc => ({
       id: doc.id, title: doc.data().title, description: doc.data().description,
       status: doc.data().status, type: doc.data().type, priority: doc.data().priority,
-      tags: doc.data().tags || [],
+      tags: doc.data().tags || [], projectId: doc.data().projectId || null,
+      isCommercial: Boolean(doc.data().isBillable || doc.data().publicToken || doc.data().requestRole === 'bundle'),
     })), truncated: snap.size === 500 };
   }
 
@@ -200,6 +260,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     const data = doc.data() || {};
     return { id: doc.id, orgId: data.orgId, title: data.title, description: data.description,
       type: data.type, status: data.status, priority: data.priority, tags: data.tags,
+      projectId: data.projectId || null,
+      isCommercial: Boolean(data.isBillable || data.publicToken || data.requestRole === 'bundle'),
       createdAt: serialize(data.createdAt), updatedAt: serialize(data.updatedAt) };
   }
 
@@ -242,6 +304,11 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     await db.runTransaction(async tx => {
       const doc = await tx.get(ref);
       if (!doc.exists || doc.data()?.orgId !== org_id) throw new Error('Work item not found for this client');
+      const current = doc.data() || {};
+      if (current.isBillable || current.publicToken || current.lockedAt ||
+        current.requestRole === 'bundle' || current.parentRequestId) {
+        throw new Error('Commercial work items must use the proposal workflow');
+      }
       tx.update(ref, { ...patch, updatedAt: FieldValue.serverTimestamp() });
       tx.create(audits.doc(), auditRow(grant.uid, 'update_work_item', work_item_id));
     });
