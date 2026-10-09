@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { FormError } from '@/components/ui/FormError';
 import { ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
-import { loginWithEmail, signInWithGoogle } from '@/lib/services/auth';
+import { loginWithEmail, signInWithGoogle, syncSessionCookie } from '@/lib/services/auth';
 import { Suspense, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -58,11 +58,12 @@ function LoginForm() {
     setGoogle(true);
     setError(null);
     try {
-      await signInWithGoogle();
-      toast.success(t('auth.login.success'));
+      const user = await signInWithGoogle();
       const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
       // Allow only the CartShift OAuth callback route to resume on the same origin.
       const isMcpOAuthReturn = targetPath.startsWith('/api/cartshift-mcp/oauth/authorize?');
+      if (isMcpOAuthReturn) await syncSessionCookie(user, { required: true });
+      toast.success(t('auth.login.success'));
       window.location.assign(
         isMcpOAuthReturn ? targetPath : getPortalPathnameForRedirect(targetPath, locale)
       );
@@ -89,11 +90,12 @@ function LoginForm() {
     set(true);
     setError(null);
     try {
-      await loginWithEmail(data.email, data.password);
-      toast.success(t('auth.login.success'));
+      const user = await loginWithEmail(data.email, data.password);
       const targetPath = redirectPath?.includes('/invite/') ? '/dashboard/' : redirectPath || '/';
       // Allow only the CartShift OAuth callback route to resume on the same origin.
       const isMcpOAuthReturn = targetPath.startsWith('/api/cartshift-mcp/oauth/authorize?');
+      if (isMcpOAuthReturn) await syncSessionCookie(user, { required: true });
+      toast.success(t('auth.login.success'));
       window.location.assign(
         isMcpOAuthReturn ? targetPath : getPortalPathnameForRedirect(targetPath, locale)
       );
