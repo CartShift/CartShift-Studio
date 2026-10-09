@@ -4,7 +4,7 @@ import { ACCOUNT_TYPE } from '@/lib/types/portal';
 import { PortalErrorCode } from '@/lib/constants/error-codes';
 import { useFirebaseAuth } from './useFirebaseAuth';
 import { useFirestoreUser, type UserData } from './useFirestoreUser';
-import { useUserCache, getInitialCachedUserData } from './useUserCache';
+import { useUserCache } from './useUserCache';
 
 // Re-export UserData type for backward compatibility
 export type { UserData } from './useFirestoreUser';
@@ -33,10 +33,7 @@ export function usePortalAuth(): UsePortalAuthResult {
   // 2. Get user cache utilities
   const { updateCache, clearCache } = useUserCache();
 
-  // 3. Get cached data for initial render (prevents flicker)
-  const initialCachedData = useMemo(() => getInitialCachedUserData(), []);
-
-  // 4. Cache update callback
+  // 3. Cache update callback
   const handleUserData = useCallback(
     (data: UserData) => {
       updateCache(data);
@@ -72,8 +69,10 @@ export function usePortalAuth(): UsePortalAuthResult {
   // 9. Combine loading states
   const loading = auth || firestore;
 
-  // 10. Use Firestore data or fall back to cached data
-  const userData: UserData | null = firestoreUserData || (initialCachedData as UserData | null);
+  // Cached user metadata is a display optimization, never authentication/authorization.
+  // A late Firestore snapshot from a previous account must not leak into this session.
+  const userData: UserData | null =
+    user && firestoreUserData?.id === user.uid ? firestoreUserData : null;
 
   // 11. Get error (prefer Firestore error as it's more specific)
   const error = firestoreError || (authError ? PortalErrorCode.UNKNOWN_ERROR : null);
@@ -103,7 +102,7 @@ export function usePortalAuth(): UsePortalAuthResult {
     user,
     userData: finalUserData,
     loading,
-    isAuthenticated: !!user || !!userData,
+    isAuthenticated: !!user,
     isAgency: finalIsAgency,
     accountType: finalAccountType,
     error,

@@ -1,0 +1,47 @@
+name: Firebase Functions QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/functions-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/functions-qa.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: functions-qa-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  functions:
+    name: Functions lint + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: functions/pnpm-lock.yaml
+      - name: Install frozen Functions dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint Firebase Functions entrypoint
+        # Functions still uses ESLint 8 + legacy .eslintrc.json.
+        # Explicitly select legacy config and lint JS; TypeScript is checked by tsc.
+        run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js
+      - name: Compile Firebase Functions TypeScript
+        run: pnpm build

@@ -22,14 +22,16 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { paginateRows } from '@/lib/utils/table-pagination';
 import { Badge } from '@/components/ui/Badge';
 import { SkeletonTable } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useRequests } from '@/lib/hooks/useRequests';
-import { AGENCY_REQUEST_VIEWS, matchesAgencyRequestView } from '@/lib/utils/request-views';
+import { AGENCY_REQUEST_VIEWS } from '@/lib/utils/request-views';
+import { filterAndSortRequests } from '@/lib/domain/request-list-filter';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
-import { CLIENT_STATUS_MAP, ClientStatus, Organization } from '@/lib/types/portal';
+import { ClientStatus, Organization } from '@/lib/types/portal';
 import { format } from 'date-fns';
 import { getDateLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
@@ -237,51 +239,15 @@ export default function RequestsClient() {
     }
   };
 
-  // Filter and sort requests - pinned items appear at the top
-  const filteredRequests = requests
-    .filter(req => {
-      // Bundle items are rendered beneath their parent instead of as duplicate top-level rows.
-      if (
-        req.requestRole === 'bundle_item' &&
-        req.parentRequestId &&
-        requests.some(parent => parent.id === req.parentRequestId)
-      ) {
-        return false;
-      }
-      // Organization filter (agency only)
-      if (isAgency && selectedOrgFilter !== 'all' && req.orgId !== selectedOrgFilter) {
-        return false;
-      }
-
-      let matchesFilter = activeFilter === 'All';
-      if (!matchesFilter) {
-        if (isAgency) {
-          matchesFilter = matchesAgencyRequestView(req, activeFilter);
-        } else {
-          matchesFilter = CLIENT_STATUS_MAP[req.status] === activeFilter;
-        }
-      }
-
-      const query = debouncedSearchQuery.trim().toLowerCase();
-      const matchesSearch =
-        !query ||
-        (req.title?.toLowerCase() || '').includes(query) ||
-        (req.id?.toLowerCase() || '').includes(query) ||
-        (req.description?.toLowerCase() || '').includes(query) ||
-        (req.type?.toLowerCase() || '').includes(query) ||
-        (req.createdByName?.toLowerCase() || '').includes(query) ||
-        // Also search org name for agency users
-        (isAgency && organizations[req.orgId]?.name?.toLowerCase().includes(query));
-      return matchesFilter && matchesSearch;
-    })
-    .sort((a, b) => {
-      // Sort pinned requests to the top
-      const aPinned = pinnedIds.includes(a.id);
-      const bPinned = pinnedIds.includes(b.id);
-      if (aPinned && !bPinned) return -1;
-      if (!aPinned && bPinned) return 1;
-      return 0; // Maintain original order within pinned/unpinned groups
-    });
+  // One indexed pass; avoids quadratic parent lookups for bundle items.
+  const filteredRequests = useMemo(() => filterAndSortRequests(requests, {
+    isAgency,
+    orgFilter: selectedOrgFilter,
+    activeFilter,
+    searchQuery: debouncedSearchQuery,
+    pinnedIds,
+    orgNames: organizations,
+  }), [requests, isAgency, selectedOrgFilter, activeFilter, debouncedSearchQuery, pinnedIds, organizations]);
 
   const requestsById = useMemo(
     () => new Map(requests.map(request => [request.id, request])),
@@ -302,9 +268,10 @@ export default function RequestsClient() {
     });
   };
 
-  const paginatedRequests = filteredRequests.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const { items: paginatedRequests, page: visiblePage, totalPages } = paginateRows(
+    filteredRequests,
+    currentPage,
+    itemsPerPage
   );
 
   // Multi-select helpers
@@ -1048,7 +1015,28 @@ export default function RequestsClient() {
             )}
           </AnimatePresence>
         </div>
-        {/* Footer info ... */}
+        {filteredRequests.length > 0 && (
+          <nav aria-label={t('requests.title')} className="flex flex-wrap items-center justify-between gap-3 border-t border-surface-100 p-4 dark:border-surface-800">
+            <span className="text-xs text-surface-500" aria-live="polite">
+              {t('common.showing', { count: paginatedRequests.length, total: filteredRequests.length })}
+            </span>
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="outline" size="sm" disabled={visiblePage <= 1}
+                  onClick={() => setCurrentPage(Math.max(1, visiblePage - 1))}>
+                  {t('common.prev')}
+                </Button>
+                <span className="px-2 text-xs tabular-nums text-surface-500" aria-live="polite">
+                  {visiblePage} / {totalPages}
+                </span>
+                <Button type="button" variant="outline" size="sm" disabled={visiblePage >= totalPages}
+                  onClick={() => setCurrentPage(Math.min(totalPages, visiblePage + 1))}>
+                  {t('common.next')}
+                </Button>
+              </div>
+            )}
+          </nav>
+        )}
       </Card>
     </div>
   );
