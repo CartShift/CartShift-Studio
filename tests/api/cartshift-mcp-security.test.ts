@@ -7,6 +7,28 @@ import {
 } from '@/lib/mcp/connection';
 
 describe('CartShift MCP OAuth guardrails', () => {
+  it('accepts the Codex desktop loopback callback with an ephemeral port', () => {
+    expect(redirectAllowed('http://127.0.0.1:62237/callback/Rl9gvy_2jad-')).toBe(true);
+    expect(redirectAllowed('http://127.0.0.1:49152/callback/AbCdEf0123_-')).toBe(true);
+  });
+
+  it.each([
+    'http://127.0.0.1.evil.example:62237/callback/Rl9gvy_2jad-',
+    'http://192.168.1.2:62237/callback/Rl9gvy_2jad-',
+    'http://0.0.0.0:62237/callback/Rl9gvy_2jad-',
+    'http://localhost:62237/callback/Rl9gvy_2jad-',
+    'https://127.0.0.1:62237/callback/Rl9gvy_2jad-',
+    'http://127.0.0.1/callback/Rl9gvy_2jad-',
+    'http://user:password@127.0.0.1:62237/callback/Rl9gvy_2jad-',
+    'http://127.0.0.1:62237/elsewhere/Rl9gvy_2jad-',
+    'http://127.0.0.1:62237/callback/short',
+    'http://127.0.0.1:62237/callback/Rl9gvy_2jad-/extra',
+    'http://127.0.0.1:62237/callback/Rl9gvy_2jad-?next=https://evil.example',
+    'http://127.0.0.1:62237/callback/Rl9gvy_2jad-#token',
+  ])('rejects destinations outside the Codex callback contract: %s', redirect => {
+    expect(redirectAllowed(redirect)).toBe(false);
+  });
+
   it('only registers ChatGPT HTTPS OAuth callback destinations', () => {
     expect(redirectAllowed('https://chatgpt.com/connector_platform_oauth_redirect')).toBe(true);
     expect(redirectAllowed('https://chatgpt.com/connector/oauth/callback-123')).toBe(true);
