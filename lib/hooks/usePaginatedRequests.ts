@@ -28,7 +28,7 @@ export function usePaginatedRequests({
   const { loading: authLoading, isAuthenticated, isAgency } = usePortalAuth();
   const sortedStatuses = useMemo(
     () => [...new Set(statuses ?? [])].sort(),
-    [JSON.stringify(statuses ?? [])]
+    [statuses]
   );
   const canFetch = enabled && !authLoading && isAuthenticated && (Boolean(orgId) || isAgency);
 
