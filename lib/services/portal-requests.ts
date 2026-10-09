@@ -2,7 +2,7 @@ import { canStartProposalWork } from '@/lib/domain/proposal-content';
 import {
   collection,
   doc,
-  addDoc,
+  writeBatch,
   updateDoc,
   deleteDoc,
   getDoc,
@@ -44,55 +44,80 @@ const REQUESTS_COLLECTION = 'portal_requests';
 // CREATE
 // ============================================
 
+/**
+ * Create a request and its activity log atomically. The document IDs stay
+ * stable across transient retries so no duplicate request can be created.
+ */
+async function createRequestRecord(
+  orgId: string,
+  userId: string,
+  userName: string,
+  data: CreateRequestData,
+  clientEmail?: string
+): Promise<Request> {
+  await waitForAuth();
+  const db = getFirestoreDb();
+  const requestData = {
+    orgId,
+    title: data.title.trim(),
+    description: data.description.trim(),
+    type: data.type,
+    status: REQUEST_STATUS.NEW as RequestStatus,
+    priority: data.priority,
+    requestRole: 'standalone' as const,
+    createdBy: userId,
+    createdByName: userName,
+    ...(clientEmail ? { clientEmail } : {}),
+    tags: data.tags || [],
+    attachmentIds: [],
+    commentCount: 0,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+
+  const requestRef = doc(collection(db, REQUESTS_COLLECTION));
+  const activityRef = doc(collection(db, 'portal_activities'));
+
+  await withRetry(async () => {
+    // A Firestore WriteBatch can only be committed once; construct a fresh
+    // batch on every attempt while retaining the same document references.
+    const batch = writeBatch(db);
+    batch.set(requestRef, requestData);
+    batch.set(activityRef, {
+      orgId,
+      requestId: requestRef.id,
+      userId,
+      userName,
+      action: 'CREATED_REQUEST',
+      details: {
+        title: data.title,
+        ...(clientEmail ? { clientEmail } : {}),
+      },
+      createdAt: serverTimestamp(),
+    });
+    await batch.commit();
+  });
+
+  return {
+    id: requestRef.id,
+    ...requestData,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  } as Request;
+}
+
 export async function createRequest(
   orgId: string,
   userId: string,
   userName: string,
   data: CreateRequestData
 ): Promise<Request> {
-  return withRetry(async () => {
-    await waitForAuth();
-    const db = getFirestoreDb();
-    const requestData = {
-      orgId,
-      title: data.title.trim(),
-      description: data.description.trim(),
-      type: data.type,
-      status: REQUEST_STATUS.NEW as RequestStatus,
-      priority: data.priority,
-      requestRole: 'standalone' as const,
-      createdBy: userId,
-      createdByName: userName,
-      tags: data.tags || [],
-      attachmentIds: [],
-      commentCount: 0,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
-
-    const docRef = await addDoc(collection(db, REQUESTS_COLLECTION), requestData);
-
-    await logActivity({
-      orgId,
-      requestId: docRef.id,
-      userId,
-      userName,
-      action: 'CREATED_REQUEST',
-      details: { title: data.title },
-    });
-
-    return {
-      id: docRef.id,
-      ...requestData,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    } as Request;
-  });
+  return createRequestRecord(orgId, userId, userName, data);
 }
 
 /**
- * Create a request for a client who doesn't have an account yet.
- * The clientEmail will be used to auto-link the request when they register.
+ * Create a request for a client who does not have an account yet.
+ * The email is later used to link the request after registration.
  */
 export async function createRequestForClient(
   orgId: string,
@@ -101,52 +126,11 @@ export async function createRequestForClient(
   clientEmail: string,
   data: CreateRequestData
 ): Promise<Request> {
-  return withRetry(async () => {
-    await waitForAuth();
-    const db = getFirestoreDb();
-
-    // Validate email
-    const email = clientEmail.toLowerCase().trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      throw new Error('Invalid client email address');
-    }
-
-    const requestData = {
-      orgId,
-      title: data.title.trim(),
-      description: data.description.trim(),
-      type: data.type,
-      status: REQUEST_STATUS.NEW as RequestStatus,
-      priority: data.priority,
-      requestRole: 'standalone' as const,
-      createdBy: userId,
-      createdByName: userName,
-      clientEmail: email, // Store client email for auto-linking
-      tags: data.tags || [],
-      attachmentIds: [],
-      commentCount: 0,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
-
-    const docRef = await addDoc(collection(db, REQUESTS_COLLECTION), requestData);
-
-    await logActivity({
-      orgId,
-      requestId: docRef.id,
-      userId,
-      userName,
-      action: 'CREATED_REQUEST',
-      details: { title: data.title, clientEmail: email },
-    });
-
-    return {
-      id: docRef.id,
-      ...requestData,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    } as Request;
-  });
+  const email = clientEmail.toLowerCase().trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Invalid client email address');
+  }
+  return createRequestRecord(orgId, userId, userName, data, email);
 }
 
 /**

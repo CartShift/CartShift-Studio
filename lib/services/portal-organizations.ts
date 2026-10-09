@@ -6,6 +6,7 @@ import {
   updateDoc,
   getDoc,
   getDocs,
+  getCountFromServer,
   query,
   where,
   orderBy,
@@ -14,7 +15,6 @@ import {
   serverTimestamp,
   Timestamp,
   arrayUnion,
-  arrayRemove,
 } from 'firebase/firestore';
 import { getFirestoreDb, getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
@@ -223,33 +223,27 @@ export async function getOrganizationsWithStats(): Promise<
 > {
   const db = getFirestoreDb();
   const orgs = await getAllOrganizations();
+  const result: (Organization & { memberCount: number; requestCount: number })[] = [];
 
-  // Get all members and requests to count them
-  const requestsSnap = await getDocs(collection(db, 'portal_requests'));
-  const membersSnap = await getDocs(collection(db, MEMBERS_COLLECTION));
+  // Avoid downloading every tenant's requests and memberships into the browser.
+  // Bound concurrency instead of firing hundreds of aggregate queries at once.
+  for (let index = 0; index < orgs.length; index += 6) {
+    const page = orgs.slice(index, index + 6);
+    const counts = await Promise.all(page.map(async org => {
+      const [requestCount, members] = await Promise.all([
+        getCountFromServer(query(collection(db, 'portal_requests'), where('orgId', '==', org.id))),
+        getDocs(query(collection(db, MEMBERS_COLLECTION), where('orgId', '==', org.id))),
+      ]);
+      return {
+        ...org,
+        requestCount: requestCount.data().count,
+        memberCount: members.docs.filter(member => !member.data().removedAt).length,
+      };
+    }));
+    result.push(...counts);
+  }
 
-  const requestCounts: Record<string, number> = {};
-  requestsSnap.forEach(doc => {
-    const orgId = doc.data().orgId;
-    if (orgId) {
-      requestCounts[orgId] = (requestCounts[orgId] || 0) + 1;
-    }
-  });
-
-  const memberCounts: Record<string, number> = {};
-  membersSnap.forEach(doc => {
-    const data = doc.data();
-    const orgId = data.orgId;
-    if (orgId && !data.removedAt) {
-      memberCounts[orgId] = (memberCounts[orgId] || 0) + 1;
-    }
-  });
-
-  return orgs.map(org => ({
-    ...org,
-    memberCount: memberCounts[org.id] || 0,
-    requestCount: requestCounts[org.id] || 0,
-  }));
+  return result;
 }
 
 // ============================================
@@ -319,7 +313,7 @@ export async function getMemberByUserId(
     const memberRef = doc(db, MEMBERS_COLLECTION, memberId);
     const memberSnap = await getDoc(memberRef);
 
-    if (!memberSnap.exists()) {
+    if (!memberSnap.exists() || memberSnap.data()?.removedAt) {
       return null;
     }
 
@@ -350,6 +344,12 @@ export async function ensureMembership(
 
   if (member) {
     return member;
+  }
+
+  // A revocation is intentional, not a missing membership to be auto-repaired.
+  const previousMembership = await getDoc(doc(getFirestoreDb(), MEMBERS_COLLECTION, `${orgId}_${userId}`));
+  if (previousMembership.exists() && previousMembership.data()?.removedAt) {
+    return null;
   }
 
   let org: Organization | null = null;
@@ -429,22 +429,28 @@ export async function updateMemberRole(memberId: string, role: UserRole): Promis
   await updateDoc(docRef, { role });
 }
 
+/**
+ * Removal is a server-side transaction. It must revoke the membership and
+ * remove the organization from the user's profile together.
+ */
 export async function removeMember(memberId: string, orgId: string, userId: string): Promise<void> {
-  const db = getFirestoreDb();
-  // Remove from members
-  const memberRef = doc(db, MEMBERS_COLLECTION, memberId);
-  await updateDoc(memberRef, { removedAt: serverTimestamp() });
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('UNAUTHENTICATED');
 
-  // Remove org from user's list
-  const userRef = doc(db, USERS_COLLECTION, userId);
-  await setDoc(
-    userRef,
-    {
-      organizations: arrayRemove(orgId),
-      updatedAt: serverTimestamp(),
+  const idToken = await user.getIdToken();
+  const response = await fetch('/api/portal/members/remove', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
     },
-    { merge: true }
-  );
+    body: JSON.stringify({ memberId, orgId, userId }),
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    throw new Error(payload?.error || 'Unable to remove member');
+  }
 }
 
 // ============================================
@@ -490,9 +496,10 @@ export async function createInvite(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7); // 7 day expiry
 
-  // Generate unique invite code
-  const inviteCode =
-    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // Use a cryptographically secure bearer code (unlike Math.random).
+  const inviteBytes = new Uint8Array(24);
+  crypto.getRandomValues(inviteBytes);
+  const inviteCode = Array.from(inviteBytes, byte => byte.toString(16).padStart(2, '0')).join('');
 
   const inviteData = {
     orgId: orgId || null,
@@ -509,8 +516,6 @@ export async function createInvite(
 
   const docRef = await addDoc(collection(db, INVITES_COLLECTION), inviteData);
 
-  console.log(`[Invite] Created invite ${docRef.id} with code ${inviteCode} for ${data.email}`);
-
   return {
     id: docRef.id,
     ...inviteData,
@@ -523,37 +528,30 @@ export async function createInvite(
  * First tries to fetch by code (for invite URLs), then falls back to ID.
  */
 export async function getInvite(codeOrId: string): Promise<Invite | null> {
-  const db = getFirestoreDb();
+  await waitForAuth();
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('UNAUTHENTICATED');
 
-  // Try fetching by code first (for invite URLs)
-  const qByCode = query(
-    collection(db, INVITES_COLLECTION),
-    where('code', '==', codeOrId),
-    limit(1)
-  );
+  const token = await user.getIdToken();
+  const response = await fetch(`/api/portal/invite/lookup?code=${encodeURIComponent(codeOrId)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
 
-  const codeSnapshot = await getDocs(qByCode);
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error('Unable to load invitation');
 
-  if (!codeSnapshot.empty) {
-    const docSnap = codeSnapshot.docs[0];
-    return {
-      id: docSnap.id,
-      ...docSnap.data(),
-    } as Invite;
-  }
-
-  // Fallback: try fetching by document ID
-  const docRef = doc(db, INVITES_COLLECTION, codeOrId);
-  const docSnap = await getDoc(docRef);
-
-  if (!docSnap.exists()) {
-    return null;
-  }
+  const payload = await response.json();
+  const invite = payload.invite as Omit<Invite, 'createdAt' | 'expiresAt'> & {
+    createdAtMillis: number;
+    expiresAtMillis: number;
+  };
 
   return {
-    id: docSnap.id,
-    ...docSnap.data(),
-  } as Invite;
+    ...invite,
+    createdAt: Timestamp.fromMillis(invite.createdAtMillis),
+    expiresAt: Timestamp.fromMillis(invite.expiresAtMillis),
+  };
 }
 
 export async function getPendingInviteByEmail(
