@@ -45,7 +45,10 @@ export function mapProposalError(error: unknown): NextResponse {
                 message === 'PayPal server credentials are not configured'
               ? 503
               : 500;
-  return NextResponse.json(createErrorResponse(message.replaceAll('_', ' ').toLowerCase(), status), {
-    status,
-  });
+  // Never serialize arbitrary provider/Firestore exception messages to a
+  // public response; these can include customer data or credentials.
+  const safeMessage = status >= 500
+    ? 'Unable to process this request right now.'
+    : message.replaceAll('_', ' ').toLowerCase();
+  return NextResponse.json(createErrorResponse(safeMessage, status), { status });
 }
