@@ -41,7 +41,7 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
     queryKey: ['portal-search', 'projects', user?.uid], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
   });
   const { data: proposals = [], isFetching: loadingProposals } = useQuery({
-    queryKey: ['portal-search', 'proposals', user?.uid], queryFn: getAllPricingRequests, enabled: loadAgency, staleTime: 30_000,
+    queryKey: ['portal-search', 'proposals', user?.uid], queryFn: () => getAllPricingRequests(), enabled: loadAgency, staleTime: 30_000,
   });
   const pending = loadAgency && (loadingClients || loadingProjects || loadingProposals);
 

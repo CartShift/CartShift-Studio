@@ -31,7 +31,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
         description: t('sales.insights.growth.description', {
           percent: metrics.revenueGrowth.toFixed(1),
         }),
-        action: t('sales.insights.growth.action'),
+        action: undefined,
       });
     } else if (metrics.revenueGrowth < 0) {
       insights.push({
@@ -39,7 +39,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
         icon: TrendingDown,
         title: t('sales.insights.decline.title'),
         description: t('sales.insights.decline.description'),
-        action: t('sales.insights.decline.action'),
+        action: undefined,
       });
     }
 
@@ -53,7 +53,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
         icon: Lightbulb,
         title: t('sales.insights.conversion.high.title'),
         description: t('sales.insights.conversion.high.description'),
-        action: t('sales.insights.conversion.high.action'),
+        action: undefined,
       });
     } else {
       insights.push({
