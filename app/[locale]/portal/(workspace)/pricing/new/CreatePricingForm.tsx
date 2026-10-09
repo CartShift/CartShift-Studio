@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useForm, useFieldArray, FieldArrayWithId } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { ProposalContentEditor } from '@/components/portal/pricing/ProposalContentEditor';
+import { ProposalLineItemsCard } from '@/components/portal/pricing/ProposalLineItemsCard';
 import { sharedProposalFields, sharedProposalLineItemFields } from '@/components/portal/pricing/proposal-form-fields';
 import { calculateEstimate, emptyProposalContent, type ProposalContent } from '@/lib/domain/proposal-content';
 import { Button } from '@/components/ui/Button';
@@ -27,8 +28,6 @@ import { useOrg } from '@/lib/context/OrgContext';
 import {
   AlertCircle,
   CheckCircle2,
-  Plus,
-  Trash2,
   Send,
   Save,
   Loader2,
@@ -582,167 +581,37 @@ export default function CreatePricingForm() {
           )}
 
           {/* Line Items (Editable) */}
-          <Card padding="none">
-            <div className="p-6 pb-0">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit">
-                    {t('pricing.form.lineItems')}
-                  </h3>
-                  {lineItemsFromCalculator && selectedRequestIds.length > 0 && (
-                    <p className="text-xs text-surface-500 mt-1">
-                      {t('pricing.form.lineItemsFromCalculator' as never) ||
-                        ' from selected requests - edit as needed'}
-                    </p>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    append({ description: '', quantity: 1, unitPrice: 0 });
-                    setLineItemsFromCalculator(false);
-                  }}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
-                >
-                  <Plus size={16} />
-                  {t('pricing.form.addItem')}
-                </button>
-              </div>
-            </div>
-
-            <div className="px-6 space-y-3">
-              {/* Header - Hidden on mobile, visible on larger screens */}
-              <div className="hidden sm:grid grid-cols-12 gap-3 px-1 text-xs font-black text-surface-400 uppercase tracking-wider">
-                <div className="col-span-5 md:col-span-6">
-                  {t('pricing.form.itemDescription')}
-                </div>
-                <div className="col-span-2 text-center">{t('pricing.form.quantity')}</div>
-                <div className="col-span-3 md:col-span-2">{t('pricing.form.unitPrice')}</div>
-                <div className="col-span-2"></div>
-              </div>
-
-              {fields.map(
-                (field: FieldArrayWithId<PricingFormData, 'lineItems', 'id'>, index: number) => (
-                  <div
-                    key={field.id}
-                    className="flex flex-col sm:grid sm:grid-cols-12 gap-3 items-start p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl"
-                  >
-                    {/* Description - Full width on mobile */}
-                    <div className="w-full sm:col-span-5 md:col-span-6">
-                      <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
-                        {t('pricing.form.itemDescription')}
-                      </label>
-                      <Input
-                        {...register(`lineItems.${index}.description`)}
-                        type="text"
-                        placeholder={
-                          t('pricing.form.itemDescriptionPlaceholder' as never) ||
-                          'Service or product...'
-                        }
-                        error={errors.lineItems?.[index]?.description?.message}
-                        className="text-sm"
-                      />
-                      <Select
-                        {...register(`lineItems.${index}.pricingType`)}
-                        options={pricingTypeOptions}
-                        className="mt-2 text-xs"
-                      />
-                    </div>
-                    {/* Quantity and Price row on mobile */}
-                    <div className="flex gap-3 w-full sm:contents">
-                      <div className="flex-1 sm:col-span-2">
-                        <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
-                          {t('pricing.form.quantity')}
-                        </label>
-                        <Input
-                          {...register(`lineItems.${index}.quantity`, {
-                            valueAsNumber: true,
-                          })}
-                          type="number"
-                          min={1}
-                          className="text-sm text-center"
-                        />
-                      </div>
-                      <div className="flex-1 sm:col-span-3 md:col-span-2">
-                        <label className="block text-xs font-semibold text-surface-500 mb-1 sm:hidden">
-                          {t('pricing.form.unitPrice')}
-                        </label>
-                        <Input
-                          {...register(`lineItems.${index}.unitPrice`, {
-                            valueAsNumber: true,
-                          })}
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          placeholder="0.00"
-                          leftIcon={
-                            <span className="text-sm">
-                              {CURRENCY_CONFIG[watchedCurrency]?.symbol || '$'}
-                            </span>
-                          }
-                          className="text-sm"
-                        />
-                      </div>
-                      {/* Delete button */}
-                      <div className="sm:col-span-2 flex items-end sm:items-start justify-end">
-                        {fields.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => remove(index)}
-                            aria-label={t('common.delete')}
-                            className="portal-focus-ring min-w-[44px] min-h-[44px] flex items-center justify-center  p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )
-              )}
-
-              {errors.lineItems && (
-                <p className="text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle size={14} />
-                  {typeof errors.lineItems.message === 'string'
-                    ? errors.lineItems.message
-                    : t('pricing.form.errors.checkLineItems')}
-                </p>
-              )}
-            </div>
-
-            {/* Total */}
-            {/* Subtotal, Tax, Total */}
-            <div className="mx-6 mt-6 pt-6 border-t border-surface-200 dark:border-surface-800 space-y-3">
-              <div className="flex items-center justify-between text-sm text-surface-500">
-                <span>{t('pricing.form.subtotal') || 'Subtotal'}</span>
-                <span>{formatCurrency(subtotal, watchedCurrency)}</span>
-              </div>
-
-              <div className="flex items-center justify-between text-sm text-surface-500">
-                <div className="flex items-center gap-2">
-                  <span>{t('pricing.form.tax') || 'VAT (17%)'}</span>
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-4 w-4 text-primary-600 rounded border-gray-300 focus-visible:ring-primary-500/40"
-                      {...register('includeTax')}
-                    />
-                  </label>
-                </div>
-                <span>{formatCurrency(taxAmount, watchedCurrency)}</span>
-              </div>
-
-              <div className="flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800/50">
-                <span className="text-lg font-bold text-surface-700 dark:text-surface-300">
-                  {t('pricing.form.total')}
-                </span>
-                <span className="text-2xl font-black text-surface-900 dark:text-white font-outfit">
-                  {formatCurrency(totalAmount, watchedCurrency)}
-                </span>
-              </div>
-            </div>
-          </Card>
+          <ProposalLineItemsCard
+            rows={fields.map((field, index) => ({
+              key: field.id,
+              descriptionRegistration: register(`lineItems.${index}.description`),
+              pricingTypeRegistration: register(`lineItems.${index}.pricingType`),
+              quantityRegistration: register(`lineItems.${index}.quantity`, { valueAsNumber: true }),
+              unitPriceRegistration: register(`lineItems.${index}.unitPrice`, { valueAsNumber: true }),
+              descriptionError: errors.lineItems?.[index]?.description?.message,
+              quantityError: errors.lineItems?.[index]?.quantity?.message,
+              priceError: errors.lineItems?.[index]?.unitPrice?.message,
+            }))}
+            currency={watchedCurrency}
+            pricingTypeOptions={pricingTypeOptions}
+            subtitle={lineItemsFromCalculator && selectedRequestIds.length > 0
+              ? t('pricing.form.lineItemsFromCalculator' as never)
+              : undefined}
+            subtotal={subtotal}
+            taxAmount={taxAmount}
+            totalAmount={totalAmount}
+            includeTaxRegistration={register('includeTax')}
+            lineItemsError={errors.lineItems
+              ? (typeof errors.lineItems.message === 'string'
+                  ? errors.lineItems.message
+                  : t('pricing.form.errors.checkLineItems'))
+              : undefined}
+            onAdd={() => {
+              append({ description: '', quantity: 1, unitPrice: 0 });
+              setLineItemsFromCalculator(false);
+            }}
+            onRemove={remove}
+          />
         </div>
 
         {/* Sidebar */}
