@@ -143,6 +143,26 @@ async function main() {
       accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',
       agencyInviteId: 'staff-invite',
     }));
+
+    // A removed member cannot self-repair their membership or claim higher
+    // privileges, but can return with an explicit new invitation.
+    await assertFails(revoked.doc('portal_members/orgA_revoked').set({
+      orgId: 'orgA', userId: 'revoked', email: 'revoked@example.com', role: 'member',
+    }));
+    await assertSucceeds(agency.doc('portal_invites/rejoin-invite').set({
+      orgId: 'orgA', isAgency: false, role: 'member', status: 'pending',
+      email: 'revoked@example.com', invitedBy: 'agency',
+      expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
+    }));
+    await assertFails(revoked.doc('portal_members/orgA_revoked').set({
+      orgId: 'orgA', userId: 'revoked', email: 'revoked@example.com',
+      role: 'admin', inviteId: 'rejoin-invite',
+    }));
+    await assertSucceeds(revoked.doc('portal_members/orgA_revoked').set({
+      orgId: 'orgA', userId: 'revoked', email: 'revoked@example.com',
+      role: 'member', inviteId: 'rejoin-invite', invitedBy: 'agency',
+    }));
+    await assertSucceeds(revoked.doc('portal_projects/prjA').get());
     console.log('Firestore security scenarios passed');
   } finally {
     await env.cleanup();
