@@ -43,7 +43,6 @@ import {
   CURRENCY,
   Currency,
   CURRENCY_CONFIG,
-  formatCurrency,
   calculateTotalAmount,
   PricingLineItem,
 } from '@/lib/types/pricing';
