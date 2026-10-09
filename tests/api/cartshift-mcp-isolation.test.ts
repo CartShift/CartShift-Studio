@@ -21,7 +21,7 @@ vi.mock('@/lib/firebase-admin', () => ({
 
 import { callTool } from '@/lib/mcp/tools';
 import { agencyActor } from '@/lib/mcp/connection';
-import { POST } from '@/app/api/cartshift-mcp/mcp/route';
+import { GET, POST } from '@/app/api/cartshift-mcp/mcp/route';
 
 const grant = {
   uid: 'agency-user',
@@ -55,6 +55,15 @@ describe('CartShift MCP tenant isolation', () => {
       exists: true, data: () => ({ accountType: 'AGENCY', agencyRole: 'owner', status: 'suspended' }),
     });
     await expect(agencyActor('agency-user')).rejects.toThrow('FORBIDDEN');
+  });
+
+  it('advertises OAuth to unauthenticated MCP discovery GET requests', async () => {
+    const response = await GET(new Request('https://portal.cart-shift.com/api/cartshift-mcp/mcp'));
+    expect(response.status).toBe(401);
+    const challenge = response.headers.get('www-authenticate');
+    expect(challenge).toContain('Bearer');
+    expect(challenge).toContain('resource_metadata="https://portal.cart-shift.com/.well-known/oauth-protected-resource"');
+    expect(response.headers.get('cache-control')).toBe('no-store');
   });
 
   it('challenges unauthenticated MCP traffic before processing JSON-RPC', async () => {
