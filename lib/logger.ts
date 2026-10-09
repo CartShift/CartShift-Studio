@@ -2,6 +2,7 @@
  * Client-side logger that respects environment settings
  * In production, only errors are logged. In development, all levels are logged.
  */
+import { createSafeErrorEvent } from '@/lib/observability/safe-error-event';
 
 export interface LogContext {
   [key: string]: unknown;
@@ -23,23 +24,28 @@ export class Logger {
   static error(message: string, error?: unknown, context?: LogContext): void {
     if (!this.shouldLog('error')) return;
 
-    const logData = {
-      message,
-      error: error instanceof Error ? error.message : error,
-      stack: error instanceof Error ? error.stack : undefined,
-      context,
-      timestamp: new Date().toISOString(),
-      url: typeof window !== 'undefined' ? window.location.href : undefined,
-      userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,
-    };
-
-    // In production, send to error tracking service
     if (process.env.NODE_ENV === 'production') {
-      // TODO: Integrate with error tracking service (Sentry, LogRocket, etc.)
-      console.error(JSON.stringify(logData));
-    } else {
-      console.error(message, error, context);
+      // No stack, URL, user agent, context, raw exception or arbitrary message.
+      const payload = createSafeErrorEvent(error);
+      console.error('[portal-client-error]', JSON.stringify(payload));
+      try {
+        const encoded = JSON.stringify(payload);
+        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+          navigator.sendBeacon('/api/portal/telemetry', new Blob([encoded], { type: 'application/json' }));
+        } else {
+          void fetch('/api/portal/telemetry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: encoded,
+            keepalive: true,
+          }).catch(() => {});
+        }
+      } catch {
+        // Error reporting must never crash the original user action.
+      }
+      return;
     }
+    console.error(message, error, context);
   }
 
   static warn(message: string, context?: LogContext): void {
