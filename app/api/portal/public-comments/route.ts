@@ -67,11 +67,11 @@ export async function GET(request: NextRequest) {
     const comments = await adminDb.collection('portal_comments')
       .where('requestId', '==', requestId)
       .where('orgId', '==', organizationId)
-      .where('isInternal', '==', false).limit(250).get();
+      .limit(250).get();
 
     const results = comments.docs.filter(doc => {
       const data = doc.data();
-      return data.isInternal === false && data.orgId === organizationId && data.requestId === requestId;
+      return data.isInternal !== true && data.orgId === organizationId && data.requestId === requestId;
     }).map(doc => {
       const c = doc.data();
       return {
