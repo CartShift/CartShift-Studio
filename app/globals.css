@@ -2952,5 +2952,5 @@ body {
   .proposal-document [data-proposal-structured] {
     break-before: auto;
   }
-  .proposal-document .print\\:hidden { display: none !important; }
+  .proposal-document [class~="print:hidden"] { display: none !important; }
 }
