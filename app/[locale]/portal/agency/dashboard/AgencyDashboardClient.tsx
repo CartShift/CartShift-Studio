@@ -8,7 +8,6 @@ import { AlertCircle, ArrowUpRight, CheckCircle2, ClipboardList, Clock3, FileTex
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useRequests } from '@/lib/hooks/useRequests';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
-import { useAllPricingRequests } from '@/lib/hooks/usePricingRequests';
 import { listClientProjects } from '@/lib/services/portal-projects';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
@@ -37,7 +36,6 @@ export default function AgencyDashboardClient() {
   const canManagePricing = canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_PRICING);
   const { requests, loading: requestsLoading, error: requestsError } = useRequests();
   const { organizations, loading: clientsLoading } = useAgencyClients();
-  const { requests: proposals, loading: proposalsLoading } = useAllPricingRequests();
   const { openRequest } = useOpenRequest();
   const { data: projects = [], isLoading: projectsLoading, error: projectsError } = useQuery({
     queryKey: ['client-projects', 'all'],
@@ -56,8 +54,12 @@ export default function AgencyDashboardClient() {
   const waiting = requests.filter(request => waitingStatuses.has(request.status) && request.requestRole !== 'bundle_item').length;
   const activeProjects = projects.filter(project => activeProjectStatuses.has(project.status));
   const blockedProjects = activeProjects.filter(project => project.blockers?.some(blocker => !blocker.resolved));
-  const openProposals = proposals.filter(proposal => ['DRAFT', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED'].includes(proposal.status));
-  const loading = authLoading || requestsLoading || clientsLoading || proposalsLoading || projectsLoading;
+  // Proposals are canonical portal requests, not a second collection.
+  const openProposals = requests.filter(request =>
+    Boolean(request.isBillable || request.publicToken || request.requestRole === 'bundle') &&
+    ['DRAFT', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED'].includes(request.status)
+  );
+  const loading = authLoading || requestsLoading || clientsLoading || projectsLoading;
 
   if (!authLoading && !isAgency) return <p className="p-8 text-surface-600 dark:text-surface-300">{portal('common.accessDenied')}</p>;
 

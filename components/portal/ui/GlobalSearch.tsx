@@ -11,7 +11,6 @@ import { useRequests } from '@/lib/hooks/useRequests';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { listClientProjects } from '@/lib/services/portal-projects';
 import { getOrganizationsWithStats } from '@/lib/services/portal-organizations';
-import { getAllPricingRequests } from '@/lib/services/pricing-requests';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { Input } from '@/components/ui/Input';
@@ -40,10 +39,7 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
   const { data: projects = [], isFetching: loadingProjects } = useQuery({
     queryKey: ['portal-search', 'projects', user?.uid], queryFn: () => listClientProjects(), enabled: loadAgency, staleTime: 30_000,
   });
-  const { data: proposals = [], isFetching: loadingProposals } = useQuery({
-    queryKey: ['portal-search', 'proposals', user?.uid], queryFn: () => getAllPricingRequests(), enabled: loadAgency, staleTime: 30_000,
-  });
-  const pending = loadAgency && (loadingClients || loadingProjects || loadingProposals);
+  const pending = loadAgency && (loadingClients || loadingProjects);
 
   const results = useMemo<Result[]>(() => {
     if (!term) return [];
@@ -65,12 +61,12 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
         type: 'project' as const, href: getPortalPath('/projects/' + project.id + '/'), icon: FolderKanban,
       })),
       ...requestMatches,
-      ...proposals.filter(proposal => matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name)).slice(0, 4).map(proposal => ({
+      ...requests.filter(proposal => Boolean(proposal.isBillable || proposal.publicToken || proposal.requestRole === 'bundle') && (matches(proposal.title) || matches(proposal.description) || matches(clients.find(c => c.id === proposal.orgId)?.name))).slice(0, 4).map(proposal => ({
         id: 'proposal-' + proposal.id, title: proposal.title, description: t('proposal'),
         type: 'proposal' as const, href: getPortalPath('/requests/' + proposal.id + '/'), icon: FileText,
       })),
     ].slice(0, 14);
-  }, [term, requests, isAgency, clients, projects, proposals, t]);
+  }, [term, requests, isAgency, clients, projects, t]);
 
   useEffect(() => setActiveIndex(0), [term]);
   useEffect(() => {
