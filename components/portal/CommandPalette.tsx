@@ -111,7 +111,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   }, [handleOpenChange, isOpen]);
 
   const commands = useMemo(() => {
-    if (!orgId) return [];
+    if (!orgId && !isAgency) return [];
 
     const actionItems = [
       {
@@ -134,13 +134,13 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
       {
         icon: LayoutDashboard,
         label: t('commandPalette.items.dashboard'),
-        path: getPortalPath('/dashboard'),
+        path: getPortalPath(isAgency ? '/agency/dashboard' : '/dashboard'),
         keywords: ['home', 'main'],
       },
       {
         icon: Settings,
         label: t('commandPalette.items.settings'),
-        path: getPortalPath('/settings/profile'),
+        path: getPortalPath(isAgency ? '/agency/settings?tab=profile' : '/settings?tab=profile'),
         keywords: ['profile', 'account', 'preferences'],
       },
       {
@@ -165,6 +165,12 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
           label: t('commandPalette.items.clients'),
           path: getPortalPath('/agency/clients'),
           keywords: ['customers', 'agency'],
+        },
+        {
+          icon: FileText,
+          label: t('sidebar.nav.pricing'),
+          path: getPortalPath('/agency/pricing'),
+          keywords: ['pricing', 'proposals', 'quote'],
         },
         {
           icon: CreditCard,

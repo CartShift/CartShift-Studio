@@ -1,0 +1,17 @@
+{
+  "portal": {
+    "globalSearch": {
+      "search": "Search clients, projects, requests…",
+      "results": "Search results",
+      "request": "Request",
+      "client": "Client",
+      "project": "Project",
+      "proposal": "Proposal",
+      "loading": "Searching across the studio…",
+      "empty": "No matching results",
+      "hint": "Type at least 2 characters to search the entire studio",
+      "recent": "Recent searches",
+      "clear": "Clear"
+    }
+  }
+}
