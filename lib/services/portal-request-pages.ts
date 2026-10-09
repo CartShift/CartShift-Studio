@@ -86,7 +86,9 @@ export function assertRequestCursor(cursor: RequestPageCursor): void {
   if (!Number.isSafeInteger(cursor.seconds) ||
       !Number.isInteger(cursor.nanoseconds) || cursor.nanoseconds < 0 ||
       cursor.nanoseconds >= 1_000_000_000 ||
-      !/^[A-Za-z0-9_-]{1,1500}$/.test(cursor.id)) {
+      typeof cursor.id !== 'string' || !cursor.id ||
+      cursor.id.length > 1500 || cursor.id.includes('/') ||
+      cursor.id === '.' || cursor.id === '..') {
     throw new Error('INVALID_REQUEST_CURSOR');
   }
 }
