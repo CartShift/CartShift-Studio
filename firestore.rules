@@ -79,13 +79,35 @@ service cloud.firestore {
       );
     }
 
+    // Role grants must originate from an authorized, still-pending agency invite.
+    // Profile fields are self-service; role/status fields are not.
+    function validAgencyPromotion() {
+      let inviteId = request.resource.data.get('agencyInviteId', '');
+      return inviteId is string && inviteId != '' &&
+        exists(/databases/$(database)/documents/portal_invites/$(inviteId)) &&
+        get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('isAgency', false) == true &&
+        get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('status', '') == 'pending' &&
+        get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('expiresAt', request.time) > request.time &&
+        get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('email', '') == request.auth.token.email &&
+        get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('role', '') == request.resource.data.get('agencyRole', '') &&
+        resource.data.get('accountType', 'CLIENT') != 'AGENCY' &&
+        request.resource.data.get('accountType', '') == 'AGENCY' &&
+        request.resource.data.get('isAgency', false) == true;
+    }
+
     match /portal_users/{userId} {
       allow read: if isAuthenticated() && (
-        getUserId() == userId ||
-        isAgencyUser()
+        getUserId() == userId || isAgencyUser()
       );
-      allow create: if isAuthenticated() && getUserId() == userId;
-      allow update: if isAuthenticated() && getUserId() == userId;
+      allow create: if isAuthenticated() && getUserId() == userId &&
+        request.resource.data.get('accountType', 'CLIENT') == 'CLIENT' &&
+        request.resource.data.get('isAgency', false) == false &&
+        !request.resource.data.keys().hasAny(['agencyRole', 'agencyInviteId']);
+      allow update: if isAuthenticated() && getUserId() == userId && (
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'isAgency', 'accountType', 'agencyRole', 'agencyInviteId', 'status', 'createdAt'
+        ]) || validAgencyPromotion()
+      );
       allow delete: if false;
     }
 
@@ -110,9 +132,26 @@ service cloud.firestore {
         memberId == (resource.data.get('orgId', '') + '_' + getUserId()) ||
         canAccessOrg(resource.data.get('orgId', ''))
       );
+      // Self-joining someone else's org or self-assigning owner/admin is forbidden.
+      // Invitee may join only when the inviter-granted role and organization match.
+      function validMemberInvite() {
+        let inviteId = request.resource.data.get('inviteId', '');
+        return inviteId is string && inviteId != '' &&
+          exists(/databases/$(database)/documents/portal_invites/$(inviteId)) &&
+          get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('orgId', '') == request.resource.data.get('orgId', '') &&
+          get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('email', '') == request.auth.token.email &&
+          get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('role', '') == request.resource.data.get('role', '') &&
+          get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('status', '') == 'pending' &&
+          get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('expiresAt', request.time) > request.time &&
+          get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('isAgency', false) == false;
+      }
       allow create: if isAuthenticated() && (
-        memberId == (request.resource.data.get('orgId', '') + '_' + getUserId()) ||
-        isOrgOwner(request.resource.data.get('orgId', ''))
+        isAgencyUser() ||
+        isOrgOwner(request.resource.data.get('orgId', '')) ||
+        isOrgAdmin(request.resource.data.get('orgId', '')) ||
+        (memberId == (request.resource.data.get('orgId', '') + '_' + getUserId()) &&
+         request.resource.data.get('userId', '') == getUserId() &&
+         validMemberInvite())
       );
       allow update: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
       allow delete: if false;
@@ -125,16 +164,68 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
-        isOrgOwner(request.resource.data.orgId) ||
-        isOrgAdmin(request.resource.data.orgId)
-      );
+        (request.resource.data.get('isAgency', false) == false &&
+         canAdminOrg(request.resource.data.get('orgId', '')))
+      ) && request.resource.data.get('invitedBy', '') == getUserId();
+      // Invitation recipients can acknowledge an invite, but cannot change
+      // the invited role, email, organization, or agency flag.
       allow update: if isAuthenticated() && (
-        resource == null ||
-        resource.data.get('email', '') == request.auth.token.email ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        isAgencyUser()
+        isAgencyUser() ||
+        canAdminOrg(resource.data.get('orgId', '')) ||
+        (resource.data.get('email', '') == request.auth.token.email &&
+         resource.data.get('status', '') == 'pending' &&
+         request.resource.data.get('status', '') in ['accepted', 'expired'] &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedAt']))
       );
       allow delete: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
+    }
+
+    // Shared projects are readable by the owning organization; only agency users
+    // may edit project scope, launch checks, blockers and client-facing updates.
+    match /portal_projects/{projectId} {
+      allow get, list: if resource != null && canAccessOrg(resource.data.get('orgId', ''));
+      allow create: if isAgencyUser() &&
+        request.resource.data.get('orgId', '') is string &&
+        exists(/databases/$(database)/documents/portal_organizations/$(request.resource.data.orgId));
+      allow update: if isAgencyUser() &&
+        request.resource.data.get('orgId', '') == resource.data.get('orgId', '');
+      allow delete: if false;
+
+      match /reviews/{reviewId} {
+        function projectOrg() {
+          return get(/databases/$(database)/documents/portal_projects/$(projectId)).data.get('orgId', '');
+        }
+        function validReview() {
+          let project = get(/databases/$(database)/documents/portal_projects/$(projectId)).data;
+          let deliverableId = request.resource.data.get('deliverableId', '');
+          return exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
+            !isAgencyUser() &&
+            project.get('reviewRevisions', {}).get(deliverableId, 0) == request.resource.data.get('revision', 0) &&
+            request.resource.data.get('updatedAt', request.time) == request.time &&
+            request.resource.data.keys().hasOnly([
+              'projectId', 'orgId', 'deliverableId', 'reviewerId',
+              'revision', 'decision', 'comment', 'updatedAt'
+            ]) &&
+            request.resource.data.get('projectId', '') == projectId &&
+            request.resource.data.get('orgId', '') == projectOrg() &&
+            request.resource.data.get('reviewerId', '') == request.auth.uid &&
+            reviewId == request.resource.data.get('deliverableId', '') + '_' + request.auth.uid &&
+            request.resource.data.get('deliverableId', '') is string &&
+            request.resource.data.get('revision', 0) is int &&
+            request.resource.data.get('revision', 0) > 0 &&
+            request.resource.data.get('decision', '') in ['approved', 'changes_requested'] &&
+            request.resource.data.get('comment', '') is string &&
+            request.resource.data.get('comment', '').size() <= 3000;
+        }
+        allow read: if isAuthenticated() && canAccessOrg(projectOrg());
+        allow create: if isAuthenticated() && canAccessOrg(projectOrg()) && validReview();
+        allow update: if isAuthenticated() && canAccessOrg(projectOrg()) &&
+          resource.data.get('reviewerId', '') == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'revision', 'decision', 'comment', 'updatedAt'
+          ]) && validReview();
+        allow delete: if false;
+      }
     }
 
     match /portal_requests/{requestId} {
@@ -182,6 +273,7 @@ service cloud.firestore {
           'parentRequestId',
           'childRequestIds',
           'legacyProposalId',
+          'projectId',
           'lineItems',
           'totalAmount',
           'subtotal',

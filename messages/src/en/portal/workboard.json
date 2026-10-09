@@ -12,7 +12,8 @@
         "backlog": "Backlog",
         "inProgress": "In Progress",
         "review": "In Review",
-        "delivered": "Delivered"
+        "delivered": "Delivered",
+        "archived": "Archived"
       },
       "emptyColumn": "No requests in this column",
       "moveError": "Failed to move item",
@@ -23,7 +24,8 @@
       "common": {
         "noRequests": "No requests found",
         "dragToMove": "Drag cards to move them"
-      }
+      },
+      "invalidTransition": "This move skips a required approval step. Update the request status through its normal workflow."
     }
   }
 }

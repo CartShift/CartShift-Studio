@@ -654,6 +654,7 @@ export async function acceptInvite(
         accountType: ACCOUNT_TYPE.AGENCY,
         isAgency: true,
         agencyRole: invite.role, // Save the role assigned in the invite
+        agencyInviteId: inviteId, // Firestore rules verify pending invite before granting staff rights
         updatedAt: serverTimestamp(),
       },
       { merge: true }

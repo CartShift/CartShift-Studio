@@ -449,6 +449,7 @@ export const MILESTONE_STATUS_CONFIG: Record<
 export interface Request {
   id: string;
   orgId: string;
+  projectId?: string;
   title: string;
   description: string;
   type: RequestType;
@@ -465,6 +466,7 @@ export interface Request {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   closedAt?: Timestamp;
+  deliveredAt?: Timestamp;
 
   // Hierarchy. Existing records without requestRole are treated as standalone.
   requestRole?: RequestRole;
@@ -773,6 +775,7 @@ export interface CreateRequestData {
 }
 
 export interface UpdateRequestData {
+  projectId?: string | null;
   title?: string;
   description?: string;
   type?: RequestType;
@@ -922,17 +925,17 @@ export const TYPE_CONFIG: Record<RequestType, { label: string; icon: string }> =
 // CLIENT-FACING STATUS CONFIGURATION
 // ============================================
 
-export type ClientStatus = 'SUBMITTED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED';
+export type ClientStatus = 'SUBMITTED' | 'ACTION_REQUIRED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED' | 'CANCELED';
 
 export const CLIENT_STATUS_MAP: Record<RequestStatus, ClientStatus> = {
   // Phase 1: Submitted / Received
   DRAFT: 'SUBMITTED',
   NEW: 'SUBMITTED',
-  NEEDS_INFO: 'SUBMITTED', // Or 'ACTION_REQUIRED' if we want to be more specific, but simplified to Submitted for now
-  QUOTED: 'SUBMITTED',
-  CHANGES_REQUESTED: 'SUBMITTED',
+  NEEDS_INFO: 'ACTION_REQUIRED',
+  QUOTED: 'ACTION_REQUIRED',
+  CHANGES_REQUESTED: 'IN_PROGRESS',
   ACCEPTED: 'SUBMITTED',
-  DECLINED: 'SUBMITTED',
+  DECLINED: 'CANCELED',
   QUEUED: 'SUBMITTED',
 
   // Phase 2: In Progress
@@ -945,11 +948,13 @@ export const CLIENT_STATUS_MAP: Record<RequestStatus, ClientStatus> = {
   DELIVERED: 'COMPLETED', // Or Review? Usually delivered means done from agency side
   PAID: 'COMPLETED',
   CLOSED: 'COMPLETED',
-  CANCELED: 'COMPLETED', // Shows as completed/archived
-  EXPIRED: 'COMPLETED',
+  CANCELED: 'CANCELED',
+  EXPIRED: 'CANCELED',
 };
 
 export const CLIENT_STATUS_CONFIG: Record<ClientStatus, StatusConfig> = {
+  ACTION_REQUIRED: { label: 'Action required', color: 'yellow', bgClass: 'bg-amber-100 dark:bg-amber-500/20', textClass: 'text-amber-700 dark:text-amber-300' },
+  CANCELED: { label: 'Closed without delivery', color: 'gray', bgClass: 'bg-surface-100 dark:bg-surface-800', textClass: 'text-surface-600 dark:text-surface-400' },
   SUBMITTED: {
     label: 'Submitted',
     color: 'blue',

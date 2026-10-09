@@ -48,7 +48,9 @@
         "submitted": "Submitted",
         "in_progress": "In Progress",
         "in_review": "In Review",
-        "completed": "Completed"
+        "completed": "Completed",
+        "action_required": "Action required",
+        "canceled": "Closed without delivery"
       },
       "priority": {
         "low": "Low",

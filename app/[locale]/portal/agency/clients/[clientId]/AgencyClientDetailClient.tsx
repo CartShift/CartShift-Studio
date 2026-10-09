@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Activity,
   FileText,
+  FolderKanban,
   Loader2,
   BarChart3,
   Trash2,
@@ -45,6 +46,7 @@ import { getDateLocale, getDateLocaleString } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { ShopifyStoreIntegration } from '@/components/portal/integrations';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { PORTAL_PROJECTS_ENABLED } from '@/lib/config/portal-features';
 import {
   getAgencyClientBadgeKey,
   getAgencyClientPlanKey,
@@ -140,20 +142,21 @@ export default function AgencyClientDetailClient({
 
   // Calculate stats
   const activeRequests = requests.filter(r =>
-    ['NEW', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW'].includes(r.status)
+    !['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'].includes(r.status)
   ).length;
-  const completedRequests = requests.filter(r => ['DELIVERED', 'CLOSED'].includes(r.status)).length;
+  const completedRequests = requests.filter(r => ['DELIVERED', 'PAID', 'CLOSED'].includes(r.status)).length;
 
   const completedRequestsWithDates = requests.filter(
-    r => ['DELIVERED', 'CLOSED'].includes(r.status) && r.createdAt && r.updatedAt
+    r => ['DELIVERED', 'PAID', 'CLOSED'].includes(r.status) && r.createdAt && (r.closedAt || r.deliveredAt)
   );
 
   const avgResolution =
     completedRequestsWithDates.length > 0
       ? Math.round(
           completedRequestsWithDates.reduce((sum, r) => {
-            if (r.createdAt?.toDate && r.updatedAt?.toDate) {
-              const diff = r.updatedAt.toDate().getTime() - r.createdAt.toDate().getTime();
+            const finishedAt = r.closedAt || r.deliveredAt;
+            if (r.createdAt?.toDate && finishedAt?.toDate) {
+              const diff = finishedAt.toDate().getTime() - r.createdAt.toDate().getTime();
               return sum + diff / (1000 * 60 * 60 * 24); // Convert to days
             }
             return sum;
@@ -381,6 +384,15 @@ export default function AgencyClientDetailClient({
                   <ExternalLink size={16} />
                   {t('agency.clients.detail.viewDashboard')}
                 </Button>
+                {PORTAL_PROJECTS_ENABLED && (
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(getPortalPath('/projects/') + '?client=' + encodeURIComponent(clientId))}
+                >
+                  <FolderKanban size={16} />
+                  {t('sidebar.nav.projects')}
+                </Button>
+                )}
                 <Button
                   className="shadow-lg shadow-primary-500/20"
                   onClick={() => {

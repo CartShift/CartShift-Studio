@@ -48,7 +48,9 @@
         "submitted": "הוגש",
         "in_progress": "בטיפול",
         "in_review": "בסקירה",
-        "completed": "הושלם"
+        "completed": "הושלם",
+        "action_required": "נדרשת פעולה",
+        "canceled": "נסגר ללא מסירה"
       },
       "priority": {
         "low": "נמוכה",

@@ -4,6 +4,7 @@ import {
   ClipboardList,
   Users,
   FolderOpen,
+  FolderKanban,
   Kanban,
   Calendar,
   Star,
@@ -14,11 +15,13 @@ import {
 } from 'lucide-react';
 import { NavGroup } from './types';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { PORTAL_PROJECTS_ENABLED } from '@/lib/config/portal-features';
 
 // Define valid navigation translation keys
 type NavTranslationKey =
   | 'sidebar.nav.dashboard'
   | 'sidebar.nav.requests'
+  | 'sidebar.nav.projects'
   | 'sidebar.nav.files'
   | 'sidebar.nav.settings'
   | 'sidebar.nav.team'
@@ -98,6 +101,13 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
           href: getPortalPath('/agency/clients/'),
           roles: PERMISSIONS.MANAGE_CLIENTS,
         },
+        ...(PORTAL_PROJECTS_ENABLED
+          ? [{
+              label: t('sidebar.nav.projects'),
+              icon: FolderKanban,
+              href: getPortalPath('/projects/'),
+            }]
+          : []),
         {
           label: t('sidebar.nav.requests'),
           icon: ClipboardList,
@@ -167,6 +177,13 @@ export function getClientNavGroups(t: NavTranslationFunction): NavGroup[] {
           icon: ClipboardList,
           href: getPortalPath('/requests/'),
         },
+        ...(PORTAL_PROJECTS_ENABLED
+          ? [{
+              label: t('sidebar.nav.projects'),
+              icon: FolderKanban,
+              href: getPortalPath('/projects/'),
+            }]
+          : []),
       ],
     },
     {
