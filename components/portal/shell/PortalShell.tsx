@@ -73,7 +73,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
 
   useEffect(() => {
     const handleCommandPaletteShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      if (!event.defaultPrevented && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setIsCommandPaletteOpen(open => !open);
       }
