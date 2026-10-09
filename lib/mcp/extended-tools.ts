@@ -61,8 +61,6 @@ export const EXTENDED_TOOL_DEFS = [
     'work:read', { ...org, limit: { type: 'integer', minimum: 1, maximum: 100 } }, ['org_id']),
   definition('list_work_item_comments', 'Read a client request comment thread including internal agency notes.',
     'work:read', work, ['org_id', 'work_item_id']),
-  definition('add_internal_work_comment', 'Add an internal-only agency comment to a request. Never posts client-visible messages or sends notifications.',
-    'work:write', { ...work, content: { type: 'string' } }, ['org_id', 'work_item_id', 'content']),
 ] as const;
 
 const normalize = (s: string) => s.toLocaleLowerCase().replace(/\s+/g, ' ').trim();
@@ -341,31 +339,6 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       const bTime = ((b as Record<string, unknown>).createdAt as { seconds?: number } | undefined)?.seconds || 0;
       return aTime - bTime;
     }), truncated: snap.size === 150 };
-  }
-
-  if (name === 'add_internal_work_comment') {
-    const { org_id, work_item_id, content } = z.object({
-      org_id: id, work_item_id: id, content: note,
-    }).strict().parse(input);
-    await requestExists(org_id, work_item_id);
-    const actor = await agencyActor(grant.uid);
-    const ref = requests.doc(work_item_id);
-    const comment = database.collection('portal_comments').doc();
-    // Match the portal comment sanitizer; never write client-visible lastComment for internal notes.
-    const escaped = content.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
-    await database.runTransaction(async tx => {
-      const snap = await tx.get(ref);
-      if (!snap.exists || snap.data()?.orgId !== org_id) throw new Error('Work item not found for this client');
-      tx.create(comment, {
-        orgId: org_id, requestId: work_item_id, userId: grant.uid, userName: actor.name,
-        content: escaped, isInternal: true, attachmentIds: [], parentId: null,
-        mentions: [], reactions: {}, createdAt: FieldValue.serverTimestamp(),
-      });
-      tx.update(ref, { commentCount: FieldValue.increment(1), updatedAt: FieldValue.serverTimestamp() });
-      tx.create(audits.doc(), audit(grant.uid, 'add_internal_work_comment', work_item_id));
-    });
-    return { created: true, comment_id: comment.id, work_item_id, is_internal: true };
   }
 
   throw new Error('Unknown tool');
