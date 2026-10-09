@@ -24,6 +24,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getHelpPath } from '@/lib/portal/help-topics';
+import { activeItem, moveActiveIndex } from '@/lib/utils/list-navigation';
 
 interface CommandItemProps {
   icon: React.ElementType;
@@ -90,25 +91,6 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
   const { requests } = useRequests();
   const { openRequest } = useOpenRequest();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Toggle on Ctrl+K / Cmd+K
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        handleOpenChange(!isOpen);
-        setQuery('');
-        setActiveIndex(0);
-      }
-
-      if (e.key === 'Escape') {
-        handleOpenChange(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleOpenChange, isOpen]);
 
   const commands = useMemo(() => {
     if (!orgId && !isAgency) return [];
@@ -245,27 +227,6 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
     [handleOpenChange, openRequest, router]
   );
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setActiveIndex(prev => (prev + 1) % flatItems.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setActiveIndex(prev => (prev - 1 + flatItems.length) % flatItems.length);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (flatItems[activeIndex]) {
-          navigateTo(flatItems[activeIndex]);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, activeIndex, flatItems, navigateTo]);
 
   // Reset index when query changes
   useEffect(() => setActiveIndex(0), [query]);
@@ -286,6 +247,21 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
                 placeholder={t('header.searchPlaceholder')}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
+                onKeyDown={event => {
+                  if (event.nativeEvent.isComposing) return;
+                  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    setActiveIndex(prev =>
+                      moveActiveIndex(prev, flatItems.length, event.key === 'ArrowDown' ? 1 : -1)
+                    );
+                  } else if (event.key === 'Enter') {
+                    const selected = activeItem(flatItems, activeIndex);
+                    if (selected) {
+                      event.preventDefault();
+                      navigateTo(selected);
+                    }
+                  }
+                }}
                 className="flex-1 bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder-surface-400 text-base"
               />
               <div className="flex items-center gap-1">
