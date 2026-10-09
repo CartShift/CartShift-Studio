@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { paginateRows } from '@/lib/utils/table-pagination';
 import { Badge } from '@/components/ui/Badge';
 import { SkeletonTable } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -267,9 +268,10 @@ export default function RequestsClient() {
     });
   };
 
-  const paginatedRequests = filteredRequests.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const { items: paginatedRequests, page: visiblePage, totalPages } = paginateRows(
+    filteredRequests,
+    currentPage,
+    itemsPerPage
   );
 
   // Multi-select helpers
@@ -1013,7 +1015,28 @@ export default function RequestsClient() {
             )}
           </AnimatePresence>
         </div>
-        {/* Footer info ... */}
+        {filteredRequests.length > 0 && (
+          <nav aria-label={t('requests.title')} className="flex flex-wrap items-center justify-between gap-3 border-t border-surface-100 p-4 dark:border-surface-800">
+            <span className="text-xs text-surface-500" aria-live="polite">
+              {t('common.showing', { count: paginatedRequests.length, total: filteredRequests.length })}
+            </span>
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="outline" size="sm" disabled={visiblePage <= 1}
+                  onClick={() => setCurrentPage(Math.max(1, visiblePage - 1))}>
+                  {t('common.prev')}
+                </Button>
+                <span className="px-2 text-xs tabular-nums text-surface-500" aria-live="polite">
+                  {visiblePage} / {totalPages}
+                </span>
+                <Button type="button" variant="outline" size="sm" disabled={visiblePage >= totalPages}
+                  onClick={() => setCurrentPage(Math.min(totalPages, visiblePage + 1))}>
+                  {t('common.next')}
+                </Button>
+              </div>
+            )}
+          </nav>
+        )}
       </Card>
     </div>
   );
