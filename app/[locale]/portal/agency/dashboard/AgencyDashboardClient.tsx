@@ -7,7 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { AlertCircle, ArrowUpRight, CheckCircle2, ClipboardList, Clock3, FileText, FolderKanban, Plus, Users } from 'lucide-react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useRequests } from '@/lib/hooks/useRequests';
-import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
+import { getAllOrganizations } from '@/lib/services/portal-organizations';
 import { listClientProjects } from '@/lib/services/portal-projects';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
@@ -34,8 +34,14 @@ export default function AgencyDashboardClient() {
   const portal = useTranslations('portal');
   const { isAgency, loading: authLoading, userData } = usePortalAuth();
   const canManagePricing = canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_PRICING);
+  const canViewClients = canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_CLIENTS);
   const { requests, loading: requestsLoading, error: requestsError } = useRequests();
-  const { organizations, loading: clientsLoading } = useAgencyClients();
+  const { data: organizations = [], isLoading: clientsLoading, error: clientsError } = useQuery({
+    queryKey: ['studio-client-directory', userData?.id],
+    queryFn: getAllOrganizations,
+    enabled: !authLoading && isAgency && canViewClients,
+    staleTime: 60_000,
+  });
   const { openRequest } = useOpenRequest();
   const { data: projects = [], isLoading: projectsLoading, error: projectsError } = useQuery({
     queryKey: ['client-projects', 'all'],
@@ -67,7 +73,7 @@ export default function AgencyDashboardClient() {
   };
   const loading = authLoading || requestsLoading || clientsLoading || projectsLoading;
 
-  if (!authLoading && !isAgency) return <p className="p-8 text-surface-600 dark:text-surface-300">{portal('common.accessDenied')}</p>;
+  if (!authLoading && !isAgency) return <p className="p-8 text-surface-600 dark:text-surface-300">{portal('access.restrictedMessage')}</p>;
 
   return (
     <div className="space-y-6">
@@ -87,13 +93,13 @@ export default function AgencyDashboardClient() {
         }
       />
 
-      {(requestsError || projectsError) && (
+      {(requestsError || projectsError || clientsError) && (
         <div role="alert" className="flex items-center gap-2 rounded-xl border border-rose-500/30 p-4 text-sm text-rose-600 dark:text-rose-300">
           <AlertCircle size={18} /> {t('partialError')}
         </div>
       )}
 
-      <div aria-busy={loading} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div aria-busy={loading} className={'grid grid-cols-2 gap-3 ' + (canManagePricing ? 'lg:grid-cols-4' : 'lg:grid-cols-3')}>
         <PortalMetricCard icon={AlertCircle} label={t('attention')} value={loading ? '…' : attention.length} tone="warning" />
         <PortalMetricCard icon={FolderKanban} label={t('activeProjects')} value={loading ? '…' : activeProjects.length} tone="primary" />
         <PortalMetricCard icon={Clock3} label={t('waitingClient')} value={loading ? '…' : waiting} tone="neutral" />

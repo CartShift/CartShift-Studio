@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 import { getOrganizationsWithStats } from '@/lib/services/portal-organizations';
 import { getClientRevenueData } from '@/lib/services/portal-sales';
 import { Organization, ClientRevenueData } from '@/lib/types/portal';
@@ -18,6 +19,7 @@ export type EnhancedOrganization = Organization & {
 export function useAgencyClients() {
   const { loading: auth, isAgency, userData } = usePortalAuth();
   const shouldFetch = !auth && isAgency;
+  const canViewRevenue = canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.VIEW_SALES_DASHBOARD);
 
   const {
     data: organizations = [],
@@ -33,7 +35,7 @@ export function useAgencyClients() {
   const { data: revenueData = [], isLoading: isLoadingRevenue } = useQuery<ClientRevenueData[]>({
     queryKey: queryKeys.sales.clientRevenue,
     queryFn: getClientRevenueData,
-    enabled: Boolean(shouldFetch),
+    enabled: Boolean(shouldFetch && canViewRevenue),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -51,7 +53,7 @@ export function useAgencyClients() {
 
   return {
     organizations: enhancedOrganizations,
-    loading: auth || (shouldFetch && (isLoadingOrgs || isLoadingRevenue)),
+    loading: auth || (shouldFetch && (isLoadingOrgs || (canViewRevenue && isLoadingRevenue))),
     error: orgsError instanceof Error ? orgsError.message : (orgsError as string | null),
     userData,
   };
