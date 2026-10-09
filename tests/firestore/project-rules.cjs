@@ -94,7 +94,7 @@ async function main() {
     await assertFails(client.doc('portal_comments/commentClient').update({ isInternal: true }));
     await assertFails(client.doc('portal_comments/internalAgency').get());
     await assertSucceeds(agency.doc('portal_comments/internalAgency').get());
-    await assertSucceeds(client.collection('portal_comments').where('requestId', '==', 'reqClient').where('isInternal', '==', false).get());
+    await assertSucceeds(client.collection('portal_comments').where('orgId', '==', 'orgA').where('requestId', '==', 'reqClient').where('isInternal', '==', false).get());
     await assertFails(client.collection('portal_comments').add({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', isInternal: true, content: 'Forged note' }));
     await assertSucceeds(client.collection('portal_comments').add({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', isInternal: false, content: 'Public note' }));
     await assertFails(client.doc('portal_files/fileClient').update({ orgId: 'orgB' }));
