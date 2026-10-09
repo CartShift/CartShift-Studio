@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from '@/lib/motion';
 import {
@@ -21,6 +21,7 @@ import { usePortalTranslations } from '@/lib/i18n/translations';
 import { isRTLLocale } from '@/lib/locale-config';
 import { cn } from '@/lib/utils';
 import { updateOnboardingStatus } from '@/lib/services/portal-users';
+import { positionTourCard } from '@/lib/portal/tour-position';
 
 interface TourStep {
   id: string;
@@ -40,18 +41,30 @@ interface OnboardingTourProps {
 export const OnboardingTour: React.FC<OnboardingTourProps> = ({ userId, onComplete, onSkip }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const finishingRef = useRef(false);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const initialFocusRef = useRef<HTMLElement | null>(null);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const t = usePortalTranslations();
   const locale = useLocale();
   const isRTL = isRTLLocale(locale);
 
   useEffect(() => {
-    setMounted(true);
+    initialFocusRef.current = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    setMounted(true);
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      initialFocusRef.current?.focus();
     };
   }, []);
+
+  // The active button owns Enter/Space activation. Focusing each step avoids
+  // triggering actions twice via document-level keyboard handlers.
+  useEffect(() => {
+    if (mounted) nextButtonRef.current?.focus();
+  }, [mounted, currentStep]);
 
 const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
 
@@ -112,26 +125,29 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
       return;
     }
 
-    const updateHighlight = () => {
-      const target = document.querySelector(step.highlight!);
-      if (!target) {
-        setHighlightRect(null);
-        return;
-      }
-      target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      setHighlightRect(target.getBoundingClientRect());
-    };
+    const target = document.querySelector(step.highlight);
+    if (!target) {
+      setHighlightRect(null);
+      return;
+    }
 
+    target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const updateHighlight = () => setHighlightRect(target.getBoundingClientRect());
     updateHighlight();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateHighlight) : null;
+    observer?.observe(target);
     window.addEventListener('resize', updateHighlight);
-    return () => window.removeEventListener('resize', updateHighlight);
+    window.addEventListener('scroll', updateHighlight, true);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', updateHighlight);
+      window.removeEventListener('scroll', updateHighlight, true);
+    };
   }, [currentStep, step.highlight]);
 
   const handleComplete = useCallback(async () => {
-    if (typeof window === 'undefined') {
-      console.warn('handleComplete called on server side, skipping');
-      return;
-    }
+    if (finishingRef.current) return;
+    finishingRef.current = true;
 
     try {
       await updateOnboardingStatus(userId, {
@@ -159,11 +175,8 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
   }, [currentStep]);
 
   const handleSkip = useCallback(async () => {
-    // Ensure we're on client side
-    if (typeof window === 'undefined') {
-      console.warn('handleSkip called on server side, skipping');
-      return;
-    }
+    if (finishingRef.current) return;
+    finishingRef.current = true;
 
     try {
       await updateOnboardingStatus(userId, {
@@ -176,21 +189,41 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
     onSkip();
   }, [userId, onSkip]);
 
-  // Keyboard navigation
+  // RTL arrow keys follow the reading direction. Tab stays inside the tour.
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === 'Enter') {
-        handleNext();
-      } else if (e.key === 'ArrowLeft') {
-        handlePrev();
-      } else if (e.key === 'Escape') {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.isComposing) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
         handleSkip();
+      } else if (event.key === (isRTL ? 'ArrowLeft' : 'ArrowRight')) {
+        event.preventDefault();
+        handleNext();
+      } else if (event.key === (isRTL ? 'ArrowRight' : 'ArrowLeft')) {
+        event.preventDefault();
+        handlePrev();
+      } else if (event.key === 'Tab') {
+        const dialog = document.getElementById('cartshift-onboarding-dialog');
+        if (!dialog) return;
+        const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        ));
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, handleSkip]);
+  }, [handleNext, handlePrev, handleSkip, isRTL]);
 
   if (!mounted) return null;
 
@@ -200,15 +233,8 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
   const cardStyle = isAnchored
     ? {
         position: 'fixed' as const,
-        top: Math.min(
-          highlightRect!.bottom + 16,
-          window.innerHeight - 420
-        ),
-        left: Math.min(
-          Math.max(highlightRect!.left, 16),
-          window.innerWidth - 420
-        ),
-        width: 'min(100vw - 2rem, 28rem)',
+        ...positionTourCard(highlightRect, window.innerWidth, window.innerHeight),
+        width: 'min(calc(100vw - 2rem), 28rem)',
         zIndex: 101,
       }
     : undefined;
@@ -247,13 +273,18 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
 
         <motion.div
           key={step.id}
+          id="cartshift-onboarding-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cartshift-onboarding-title"
+          aria-describedby="cartshift-onboarding-description"
           initial={{ opacity: 0, scale: 0.96, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: -12 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           style={cardStyle}
           className={cn(
-            'relative bg-white dark:bg-surface-900 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto',
+            'relative bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto pointer-events-auto',
             !isAnchored && 'w-full max-w-lg'
           )}
         >
@@ -303,6 +334,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
 
             {/* Title */}
             <motion.h2
+              id="cartshift-onboarding-title"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -313,6 +345,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
 
             {/* Description */}
             <motion.p
+              id="cartshift-onboarding-description"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
@@ -360,6 +393,7 @@ const tourIconClass = 'w-8 h-8 text-primary-500 dark:text-primary-400';
 
               {/* Next/Complete Button */}
               <Button
+                ref={nextButtonRef}
                 onClick={handleNext}
                 className="flex items-center gap-2 shadow-lg shadow-primary-500/20"
               >
