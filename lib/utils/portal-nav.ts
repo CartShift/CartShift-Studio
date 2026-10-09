@@ -10,6 +10,7 @@ export function normalizePortalPath(path: string): string {
 
 const ROOT_NAV_PATHS = new Set([
   normalizePortalPath(getPortalPath('/dashboard')),
+  normalizePortalPath(getPortalPath('/agency/dashboard')),
   normalizePortalPath(getPortalPath('/agency/workboard')),
 ]);
 

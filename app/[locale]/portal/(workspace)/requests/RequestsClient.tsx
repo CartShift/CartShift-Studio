@@ -27,6 +27,7 @@ import { SkeletonTable } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useRequests } from '@/lib/hooks/useRequests';
+import { AGENCY_REQUEST_VIEWS, matchesAgencyRequestView } from '@/lib/utils/request-views';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { CLIENT_STATUS_MAP, ClientStatus, Organization } from '@/lib/types/portal';
 import { format } from 'date-fns';
@@ -124,6 +125,8 @@ export default function RequestsClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedBundleIds, setExpandedBundleIds] = useState<Set<string>>(new Set());
   const itemsPerPage = 8;
+
+  useEffect(() => { setCurrentPage(1); }, [activeFilter, selectedOrgFilter, debouncedSearchQuery]);
   const locale = useLocale();
 
   // Multi-select for pricing offers (agency only)
@@ -141,14 +144,7 @@ export default function RequestsClient() {
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'ACTION_REQUIRED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED', 'CANCELED'];
   const detailedAgencyStatuses = ['DRAFT', 'NEW', 'NEEDS_INFO', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'];
-  const viewGroups: Record<string, string[]> = {
-    attention: ['NEW', 'NEEDS_INFO', 'CHANGES_REQUESTED', 'IN_REVIEW'],
-    working: ['ACCEPTED', 'QUEUED', 'IN_PROGRESS'],
-    waiting: ['QUOTED'],
-    done: ['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'],
-    proposals: [],
-  };
-  const filters = isAgency ? ['All', ...Object.keys(viewGroups)] : ['All', ...clientFilters];
+  const filters = isAgency ? ['All', ...Object.keys(AGENCY_REQUEST_VIEWS)] : ['All', ...clientFilters];
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('focus') === 'attention') {
@@ -260,9 +256,7 @@ export default function RequestsClient() {
       let matchesFilter = activeFilter === 'All';
       if (!matchesFilter) {
         if (isAgency) {
-          matchesFilter = activeFilter === 'proposals'
-            ? Boolean(req.isBillable || req.publicToken || req.requestRole === 'bundle' || req.tags?.includes('quote'))
-            : viewGroups[activeFilter] ? viewGroups[activeFilter].includes(req.status) : req.status === activeFilter;
+          matchesFilter = matchesAgencyRequestView(req, activeFilter);
         } else {
           matchesFilter = CLIENT_STATUS_MAP[req.status] === activeFilter;
         }
@@ -815,7 +809,7 @@ export default function RequestsClient() {
                                             aria-pressed={isSelected}
                                             aria-label={`${t('common.select')}: ${req.title}`}
                                             className={cn(
-                                              'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
+                                              'portal-focus-ring min-w-10 min-h-10 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
                                               isSelected
                                                 ? 'bg-primary-600 border-primary-600 text-white'
                                                 : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'

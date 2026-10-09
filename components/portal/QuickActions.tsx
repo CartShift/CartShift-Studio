@@ -65,7 +65,7 @@ export function QuickActions() {
     {
       icon: FilePlus,
       label: t('quickActions.createProposal'),
-      href: getPortalPath('/requests/new'),
+      href: getPortalPath('/requests/new?mode=quote'),
       tone: 'accent',
     },
     {

@@ -11,6 +11,7 @@ import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { useAllPricingRequests } from '@/lib/hooks/usePricingRequests';
 import { listClientProjects } from '@/lib/services/portal-projects';
 import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
+import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
 import { PortalMetricCard } from '@/components/portal/ui/PortalMetricCard';
 import { Card } from '@/components/ui/Card';
@@ -32,7 +33,8 @@ function priorityScore(request: Request): number {
 export default function AgencyDashboardClient() {
   const t = useTranslations('portal.agencyHome');
   const portal = useTranslations('portal');
-  const { isAgency, loading: authLoading } = usePortalAuth();
+  const { isAgency, loading: authLoading, userData } = usePortalAuth();
+  const canManagePricing = canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.MANAGE_PRICING);
   const { requests, loading: requestsLoading, error: requestsError } = useRequests();
   const { organizations, loading: clientsLoading } = useAgencyClients();
   const { requests: proposals, loading: proposalsLoading } = useAllPricingRequests();
@@ -67,9 +69,9 @@ export default function AgencyDashboardClient() {
         className="mb-0"
         action={
           <div className="flex flex-wrap gap-2">
-            <Link href={getPortalPath('/requests/new/?mode=quote')} className="portal-focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-200 px-4 text-sm font-semibold text-surface-800 hover:bg-surface-100 dark:border-surface-700 dark:text-white dark:hover:bg-surface-800">
+            {canManagePricing && <Link href={getPortalPath('/requests/new/?mode=quote')} className="portal-focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-200 px-4 text-sm font-semibold text-surface-800 hover:bg-surface-100 dark:border-surface-700 dark:text-white dark:hover:bg-surface-800">
               <FileText size={16} /> {t('newProposal')}
-            </Link>
+            </Link>}
             <Link href={getPortalPath('/requests/new/')} className="portal-focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-700">
               <Plus size={16} /> {t('newRequest')}
             </Link>
@@ -87,7 +89,7 @@ export default function AgencyDashboardClient() {
         <PortalMetricCard icon={AlertCircle} label={t('attention')} value={loading ? '…' : attention.length} tone="warning" />
         <PortalMetricCard icon={FolderKanban} label={t('activeProjects')} value={loading ? '…' : activeProjects.length} tone="primary" />
         <PortalMetricCard icon={Clock3} label={t('waitingClient')} value={loading ? '…' : waiting} tone="neutral" />
-        <PortalMetricCard icon={FileText} label={t('openProposals')} value={loading ? '…' : openProposals.length} tone="success" />
+        {canManagePricing && <PortalMetricCard icon={FileText} label={t('openProposals')} value={loading ? '…' : openProposals.length} tone="success" />}
       </div>
 
       <div className="grid gap-5 min-[1100px]:grid-cols-[minmax(0,1.55fr)_minmax(290px,1fr)]">
@@ -138,7 +140,7 @@ export default function AgencyDashboardClient() {
               {activeProjects.length === 0 && <p className="p-5 text-sm text-surface-500">{loading ? t('loading') : t('noProjects')}</p>}
             </div>
           </Card>
-          <Card noPadding className="overflow-hidden">
+          {canManagePricing && <Card noPadding className="overflow-hidden">
             <div className="flex items-center justify-between border-b border-surface-200 px-5 py-4 dark:border-surface-800">
               <h2 className="text-lg font-semibold">{t('proposalsTitle')}</h2>
               <Link href={getPortalPath('/requests/?focus=proposals')} className="portal-focus-ring rounded-lg text-sm font-semibold text-primary-600 dark:text-primary-400">{t('viewAll')}</Link>
@@ -155,7 +157,7 @@ export default function AgencyDashboardClient() {
               ))}
               {openProposals.length === 0 && <p className="p-5 text-sm text-surface-500">{loading ? t('loading') : t('noProposals')}</p>}
             </div>
-          </Card>
+          </Card>}
         </div>
       </div>
 
