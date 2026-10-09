@@ -19,6 +19,7 @@ import {
 } from '@/lib/types/pricing';
 import { getRequestRole } from '@/lib/domain/request-commercial';
 import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
+import { shouldApplyPaymentEvent } from '@/lib/domain/payment-reconciliation';
 
 const PROPOSALS_COLLECTION = 'portal_requests';
 const LEGACY_PROPOSALS_COLLECTION = 'portal_pricing_requests';
@@ -918,7 +919,7 @@ export async function reconcileProposalPayment(input: {
       ).docs[0]?.ref;
   if (!paymentRef) throw new Error('NOT_FOUND');
 
-  await db.runTransaction(async transaction => {
+  const changed = await db.runTransaction(async transaction => {
     const paymentSnapshot = await transaction.get(paymentRef);
     const payment = paymentSnapshot.data() as PaymentDocument | undefined;
     if (!payment) throw new Error('NOT_FOUND');
@@ -926,6 +927,10 @@ export async function reconcileProposalPayment(input: {
     const proposalSnapshot = await transaction.get(proposalRef);
     const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
+
+    // PayPal retries and out-of-order webhook delivery must not undo a
+    // confirmed capture/refund. Transactional guard prevents balance drift.
+    if (!shouldApplyPaymentEvent(payment.status, input.status)) return false;
 
     const wasPaid = payment.status === 'paid';
     const now = admin.firestore.FieldValue.serverTimestamp();
@@ -988,7 +993,9 @@ export async function reconcileProposalPayment(input: {
 
     transaction.update(paymentRef, paymentUpdates);
     transaction.update(proposalRef, proposalUpdates);
+    return true;
   });
+  if (!changed) return;
   const payment = (await paymentRef.get()).data() as PaymentDocument | undefined;
   if (payment) await syncProposalDerivedState(payment.requestId);
 }
