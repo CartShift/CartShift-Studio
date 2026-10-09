@@ -71,6 +71,11 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       labelKey: 'sidebar.groups.operations',
       items: [
         {
+          label: t('sidebar.nav.dashboard'),
+          icon: LayoutDashboard,
+          href: getPortalPath('/agency/dashboard/'),
+        },
+        {
           label: t('sidebar.nav.workboard'),
           icon: Kanban,
           href: getPortalPath('/agency/workboard/'),
@@ -123,6 +128,12 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       id: 'agency-growth',
       labelKey: 'sidebar.groups.growth',
       items: [
+        {
+          label: t('sidebar.nav.pricing'),
+          icon: ClipboardList,
+          href: getPortalPath('/agency/pricing/'),
+          roles: PERMISSIONS.MANAGE_PRICING,
+        },
         {
           label: t('sidebar.nav.calculator'),
           icon: Calculator,

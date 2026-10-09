@@ -10,5 +10,5 @@ export default async function PortalAgencyRoot({
 }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  redirect(getPortalPath('/requests/'));
+  redirect(getPortalPath('/agency/dashboard/'));
 }
