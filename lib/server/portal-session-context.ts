@@ -18,11 +18,12 @@ export async function getPortalSessionContext(): Promise<PortalSessionContext | 
     return undefined;
   }
 
-  if (session === null || !adminDb) {
+  const db = adminDb;
+  if (session === null || !db) {
     return null;
   }
 
-  const userSnapshot = await adminDb.collection('portal_users').doc(session.uid).get();
+  const userSnapshot = await db.collection('portal_users').doc(session.uid).get();
   if (!userSnapshot.exists) {
     return null;
   }
@@ -36,11 +37,11 @@ export async function getPortalSessionContext(): Promise<PortalSessionContext | 
       ))]
     : [];
   const checked = await Promise.all(storedOrganizations.map(async orgId => {
-    const membership = await adminDb.collection('portal_members').doc(`${orgId}_${session.uid}`).get();
+    const membership = await db.collection('portal_members').doc(`${orgId}_${session.uid}`).get();
     if (membership.exists) return membership.data()?.removedAt ? null : orgId;
 
     // Preserve creator access when initial membership has not yet been created.
-    const org = await adminDb.collection('portal_organizations').doc(orgId).get();
+    const org = await db.collection('portal_organizations').doc(orgId).get();
     return org.data()?.createdBy === session.uid ? orgId : null;
   }));
   const organizations = checked.filter((id): id is string => Boolean(id));
