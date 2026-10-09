@@ -10,9 +10,11 @@ import {
   serverGetOrganization,
   serverGetRequest,
   serverGetRequestActivities,
+  serverHasRevokedMembership,
   serverGetRequestsByOrg,
 } from '@/lib/server/portal-data';
 import { getPortalSessionContext } from '@/lib/server/portal-session-context';
+import { canPrefetchPortalRequest } from '@/lib/domain/prefetch-authorization';
 import { queryKeys } from '@/lib/utils/query-keys';
 
 export type PortalPrefetchScope =
@@ -102,7 +104,10 @@ async function prefetchPortalQueries(
   if (scope === 'request-detail' && options?.requestId) {
     const requestId = options.requestId;
     const request = await serverGetRequest(requestId);
-    if (request) {
+    const revoked = request && !context.isAgency
+      ? await serverHasRevokedMembership(request.orgId, context.uid)
+      : false;
+    if (request && canPrefetchPortalRequest(context, request, revoked)) {
       await queryClient.prefetchQuery({
         queryKey: queryKeys.requests.detail(requestId),
         queryFn: () => Promise.resolve(request),

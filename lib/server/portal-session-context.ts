@@ -28,9 +28,22 @@ export async function getPortalSessionContext(): Promise<PortalSessionContext | 
   }
 
   const user = userSnapshot.data() ?? {};
-  const organizations = Array.isArray(user.organizations)
-    ? user.organizations.filter((orgId): orgId is string => typeof orgId === 'string')
+  // User profile arrays are UI metadata, not authorization. Verify each
+  // organization against current membership so removed users never get SSR data.
+  const storedOrganizations: string[] = Array.isArray(user.organizations)
+    ? [...new Set<string>(user.organizations.filter(
+        (id: unknown): id is string => typeof id === 'string' && id.length > 0 && !id.includes('/')
+      ))]
     : [];
+  const checked = await Promise.all(storedOrganizations.map(async orgId => {
+    const membership = await adminDb.collection('portal_members').doc(`${orgId}_${session.uid}`).get();
+    if (membership.exists) return membership.data()?.removedAt ? null : orgId;
+
+    // Preserve creator access when initial membership has not yet been created.
+    const org = await adminDb.collection('portal_organizations').doc(orgId).get();
+    return org.data()?.createdBy === session.uid ? orgId : null;
+  }));
+  const organizations = checked.filter((id): id is string => Boolean(id));
   const isAgency = user.isAgency === true || user.accountType === 'AGENCY';
 
   return {
