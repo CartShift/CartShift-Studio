@@ -6,6 +6,7 @@ import {
   updateDoc,
   getDoc,
   getDocs,
+  getCountFromServer,
   query,
   where,
   orderBy,
@@ -223,33 +224,27 @@ export async function getOrganizationsWithStats(): Promise<
 > {
   const db = getFirestoreDb();
   const orgs = await getAllOrganizations();
+  const result: (Organization & { memberCount: number; requestCount: number })[] = [];
 
-  // Get all members and requests to count them
-  const requestsSnap = await getDocs(collection(db, 'portal_requests'));
-  const membersSnap = await getDocs(collection(db, MEMBERS_COLLECTION));
+  // Avoid downloading every tenant's requests and memberships into the browser.
+  // Bound concurrency instead of firing hundreds of aggregate queries at once.
+  for (let index = 0; index < orgs.length; index += 6) {
+    const page = orgs.slice(index, index + 6);
+    const counts = await Promise.all(page.map(async org => {
+      const [requestCount, members] = await Promise.all([
+        getCountFromServer(query(collection(db, 'portal_requests'), where('orgId', '==', org.id))),
+        getDocs(query(collection(db, MEMBERS_COLLECTION), where('orgId', '==', org.id))),
+      ]);
+      return {
+        ...org,
+        requestCount: requestCount.data().count,
+        memberCount: members.docs.filter(member => !member.data().removedAt).length,
+      };
+    }));
+    result.push(...counts);
+  }
 
-  const requestCounts: Record<string, number> = {};
-  requestsSnap.forEach(doc => {
-    const orgId = doc.data().orgId;
-    if (orgId) {
-      requestCounts[orgId] = (requestCounts[orgId] || 0) + 1;
-    }
-  });
-
-  const memberCounts: Record<string, number> = {};
-  membersSnap.forEach(doc => {
-    const data = doc.data();
-    const orgId = data.orgId;
-    if (orgId && !data.removedAt) {
-      memberCounts[orgId] = (memberCounts[orgId] || 0) + 1;
-    }
-  });
-
-  return orgs.map(org => ({
-    ...org,
-    memberCount: memberCounts[org.id] || 0,
-    requestCount: requestCounts[org.id] || 0,
-  }));
+  return result;
 }
 
 // ============================================

@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   addDoc,
+  writeBatch,
   updateDoc,
   deleteDoc,
   getDoc,
@@ -49,8 +50,7 @@ export async function createRequest(
   userName: string,
   data: CreateRequestData
 ): Promise<Request> {
-  return withRetry(async () => {
-    await waitForAuth();
+  await waitForAuth();
     const db = getFirestoreDb();
     const requestData = {
       orgId,
@@ -69,24 +69,28 @@ export async function createRequest(
       updatedAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, REQUESTS_COLLECTION), requestData);
-
-    await logActivity({
+    // Stable document IDs + one atomic batch prevent duplicates if commit is retried.
+    const requestRef = doc(collection(db, REQUESTS_COLLECTION));
+    const activityRef = doc(collection(db, 'portal_activities'));
+    const batch = writeBatch(db);
+    batch.set(requestRef, requestData);
+    batch.set(activityRef, {
       orgId,
-      requestId: docRef.id,
+      requestId: requestRef.id,
       userId,
       userName,
       action: 'CREATED_REQUEST',
       details: { title: data.title },
+      createdAt: serverTimestamp(),
     });
+    await withRetry(() => batch.commit());
 
     return {
-      id: docRef.id,
+      id: requestRef.id,
       ...requestData,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     } as Request;
-  });
 }
 
 /**
@@ -100,8 +104,7 @@ export async function createRequestForClient(
   clientEmail: string,
   data: CreateRequestData
 ): Promise<Request> {
-  return withRetry(async () => {
-    await waitForAuth();
+  await waitForAuth();
     const db = getFirestoreDb();
 
     // Validate email
@@ -128,24 +131,27 @@ export async function createRequestForClient(
       updatedAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, REQUESTS_COLLECTION), requestData);
-
-    await logActivity({
+    const requestRef = doc(collection(db, REQUESTS_COLLECTION));
+    const activityRef = doc(collection(db, 'portal_activities'));
+    const batch = writeBatch(db);
+    batch.set(requestRef, requestData);
+    batch.set(activityRef, {
       orgId,
-      requestId: docRef.id,
+      requestId: requestRef.id,
       userId,
       userName,
       action: 'CREATED_REQUEST',
       details: { title: data.title, clientEmail: email },
+      createdAt: serverTimestamp(),
     });
+    await withRetry(() => batch.commit());
 
     return {
-      id: docRef.id,
+      id: requestRef.id,
       ...requestData,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     } as Request;
-  });
 }
 
 /**
