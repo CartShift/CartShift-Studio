@@ -126,7 +126,6 @@ export default function RequestsClient() {
   const [expandedBundleIds, setExpandedBundleIds] = useState<Set<string>>(new Set());
   const itemsPerPage = 8;
 
-  useEffect(() => { setCurrentPage(1); }, [activeFilter, selectedOrgFilter, debouncedSearchQuery]);
   const locale = useLocale();
 
   // Multi-select for pricing offers (agency only)
@@ -174,7 +173,7 @@ export default function RequestsClient() {
   // Reset to page 1 when filter or search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeFilter, debouncedSearchQuery]);
+  }, [activeFilter, selectedOrgFilter, debouncedSearchQuery]);
 
   // Track newly pinned items for animation
   useEffect(() => {
