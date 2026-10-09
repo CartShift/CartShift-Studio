@@ -2,16 +2,17 @@ import 'server-only';
 import { z } from 'zod';
 import { FieldValue } from 'firebase-admin/firestore';
 import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connection';
+import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
 const tinyText = z.string().trim().min(1).max(240);
 const enumPriority = z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']);
 const enumType = z.enum(['feature', 'bug', 'optimization', 'content', 'design', 'other']);
+// MCP work-item updates cannot impersonate client quote acceptance, alter payment state,
+// or bypass the protected commercial workflow.
 const enumStatus = z.enum([
-  'DRAFT', 'NEW', 'NEEDS_INFO', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED',
-  'DECLINED', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'PAID',
-  'CLOSED', 'CANCELED', 'EXPIRED',
+  'NEW', 'NEEDS_INFO', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED',
 ]);
 const tags = z.array(z.string().trim().min(1).max(50)).max(12);
 const clientFields = z.object({
@@ -108,6 +109,7 @@ export const TOOL_DEFS = [
       }, additionalProperties: false },
     }, additionalProperties: false },
   },
+  ...EXTENDED_TOOL_DEFS,
 ] as const;
 
 function serialize(value: unknown) {
@@ -136,6 +138,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (!tool) throw new Error('Unknown tool');
   may(grant, tool.scope);
   const args = getArgs(input);
+  if (EXTENDED_TOOL_DEFS.some(item => item.name === name)) {
+    return callExtendedTool(name, args, grant);
+  }
   const db = firestore();
   const orgs = db.collection('portal_organizations');
   const requests = db.collection('portal_requests');
@@ -188,7 +193,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     return { items: snap.docs.map(doc => ({
       id: doc.id, title: doc.data().title, description: doc.data().description,
       status: doc.data().status, type: doc.data().type, priority: doc.data().priority,
-      tags: doc.data().tags || [],
+      tags: doc.data().tags || [], projectId: doc.data().projectId || null,
+      isCommercial: Boolean(doc.data().isBillable || doc.data().publicToken || doc.data().requestRole === 'bundle'),
     })), truncated: snap.size === 500 };
   }
 
@@ -200,6 +206,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     const data = doc.data() || {};
     return { id: doc.id, orgId: data.orgId, title: data.title, description: data.description,
       type: data.type, status: data.status, priority: data.priority, tags: data.tags,
+      projectId: data.projectId || null,
+      isCommercial: Boolean(data.isBillable || data.publicToken || data.requestRole === 'bundle'),
       createdAt: serialize(data.createdAt), updatedAt: serialize(data.updatedAt) };
   }
 
@@ -242,6 +250,11 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     await db.runTransaction(async tx => {
       const doc = await tx.get(ref);
       if (!doc.exists || doc.data()?.orgId !== org_id) throw new Error('Work item not found for this client');
+      const current = doc.data() || {};
+      if (current.isBillable || current.publicToken || current.lockedAt ||
+        current.requestRole === 'bundle' || current.parentRequestId) {
+        throw new Error('Commercial work items must use the proposal workflow');
+      }
       tx.update(ref, { ...patch, updatedAt: FieldValue.serverTimestamp() });
       tx.create(audits.doc(), auditRow(grant.uid, 'update_work_item', work_item_id));
     });
