@@ -58,7 +58,7 @@ export function ClientListRow({
             <div className="flex items-center gap-2 mt-1">
               <Badge
                 variant={client.status === 'inactive' ? 'gray' : 'green'}
-                className="text-[9px] font-black uppercase tracking-widest h-4 px-1.5"
+                className="text-xs font-black uppercase tracking-widest min-h-5 px-2"
               >
                 {client.status
                   ? t(`agency.clients.badge.${client.status}` as Parameters<typeof t>[0])
@@ -67,7 +67,7 @@ export function ClientListRow({
               {isMyClient ? (
                 <Badge
                   variant="blue"
-                  className="text-[9px] font-black uppercase tracking-widest h-4 px-1.5"
+                  className="text-xs font-black uppercase tracking-widest min-h-5 px-2"
                 >
                   {t('agency.clients.you')}
                 </Badge>

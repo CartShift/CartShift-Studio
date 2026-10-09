@@ -1,5 +1,7 @@
 'use client';
 
+import { Link } from '@/i18n/navigation';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { SalesMetrics } from '@/lib/types/portal';
 import { Lightbulb, TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
@@ -29,7 +31,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
         description: t('sales.insights.growth.description', {
           percent: metrics.revenueGrowth.toFixed(1),
         }),
-        action: t('sales.insights.growth.action'),
+        action: undefined,
       });
     } else if (metrics.revenueGrowth < 0) {
       insights.push({
@@ -37,7 +39,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
         icon: TrendingDown,
         title: t('sales.insights.decline.title'),
         description: t('sales.insights.decline.description'),
-        action: t('sales.insights.decline.action'),
+        action: undefined,
       });
     }
 
@@ -51,7 +53,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
         icon: Lightbulb,
         title: t('sales.insights.conversion.high.title'),
         description: t('sales.insights.conversion.high.description'),
-        action: t('sales.insights.conversion.high.action'),
+        action: undefined,
       });
     } else {
       insights.push({
@@ -139,7 +141,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
                 </p>
 
                 {insight.action && (
-                  <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider hover:underline transition-all">
+                  <Link href={getPortalPath('/requests/?focus=proposals')} className="portal-focus-ring inline-flex min-h-10 items-center gap-1.5 rounded text-xs font-bold hover:underline transition-all">
                     <span
                       className={cn(
                         insight.type === 'positive' && 'text-emerald-600 dark:text-emerald-400',
@@ -158,7 +160,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
                         insight.type === 'neutral' && 'text-primary-600 dark:text-primary-400'
                       )}
                     />
-                  </button>
+                  </Link>
                 )}
               </div>
             </div>

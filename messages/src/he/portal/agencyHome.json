@@ -1,0 +1,38 @@
+{
+  "portal": {
+    "agencyHome": {
+      "title": "סקירת הסטודיו",
+      "subtitle": "מה דורש טיפול, מה מתקדם אצל הלקוחות ואילו הצעות מחכות להמשך.",
+      "newRequest": "קריאה חדשה",
+      "newProposal": "הצעת מחיר חדשה",
+      "attention": "דורש טיפול",
+      "activeProjects": "פרויקטים פעילים",
+      "waitingClient": "ממתין ללקוח",
+      "openProposals": "הצעות פתוחות",
+      "attentionTitle": "דורש את תשומת הלב שלך",
+      "attentionHint": "קריאות שצריך להתחיל, להשלים פרטים או לבדוק",
+      "viewAll": "לצפייה בכל",
+      "loading": "טוען עבודה עדכנית…",
+      "noAttention": "אין קריאות שדורשות טיפול כרגע.",
+      "noProjects": "אין עדיין פרויקטים פעילים.",
+      "noProposals": "אין כרגע הצעות פתוחות.",
+      "clientFallback": "לקוח",
+      "unassigned": "ללא אחראי",
+      "projectsTitle": "פרויקטים פעילים",
+      "proposalsTitle": "מעקב הצעות מחיר",
+      "nextStep": "הצעד הבא",
+      "blocked": "יש חסם שמצריך טיפול",
+      "blockersSummary": "{count, plural, one {בפרויקט אחד יש חסם פתוח} other {ב־# פרויקטים יש חסמים פתוחים}}",
+      "partialError": "חלק מהנתונים לא נטענו. אפשר לרענן ולנסות שוב.",
+      "workboard": "ללוח העבודה",
+      "clients": "לכל הלקוחות",
+      "sales": "סקירת מכירות",
+      "proposalState": {
+        "DRAFT": "טיוטה",
+        "QUOTED": "נשלחה",
+        "CHANGES_REQUESTED": "התבקשו שינויים",
+        "ACCEPTED": "אושרה"
+      }
+    }
+  }
+}

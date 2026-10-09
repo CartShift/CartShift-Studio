@@ -18,6 +18,12 @@ describe('portal-nav utils', () => {
     expect(isPortalNavActive(`${dashboard}/reports`, dashboard)).toBe(false);
   });
 
+  it('treats agency home as an exact root route', () => {
+    const home = getPortalPath('/agency/dashboard');
+    expect(isPortalNavActive(home, home)).toBe(true);
+    expect(isPortalNavActive(home + '/other', home)).toBe(false);
+  });
+
   it('matches nested routes with prefix', () => {
     const requests = getPortalPath('/requests');
     expect(isPortalNavActive(`${requests}/abc`, requests)).toBe(true);

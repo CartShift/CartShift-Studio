@@ -38,7 +38,7 @@ export default function PortalRootClient() {
     if (userData) {
       if (userData.isAgency) {
         hasRedirectedRef.current = true;
-        navigateToPortal('/requests/', { replace: true });
+        navigateToPortal('/agency/dashboard/', { replace: true });
         return;
       }
 

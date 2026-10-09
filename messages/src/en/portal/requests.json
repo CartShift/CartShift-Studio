@@ -307,6 +307,14 @@
           "wordpress": "WordPress Project",
           "maintenance": "Maintenance Task"
         }
+      },
+      "views": {
+        "attention": "Needs attention",
+        "working": "In progress",
+        "waiting": "Awaiting client",
+        "done": "Done",
+        "specificStatus": "Specific status",
+        "proposals": "Proposals"
       }
     }
   }

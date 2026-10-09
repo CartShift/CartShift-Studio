@@ -36,6 +36,7 @@ import { useOpenRequest } from '@/lib/hooks/useOpenRequest';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedClientId } from '@/lib/hooks/useResolvedClientId';
 import { useOrganization } from '@/lib/hooks/useOrganization';
+import { listClientProjects } from '@/lib/services/portal-projects';
 import { useOrgScopedRequests } from '@/lib/hooks/useOrgScopedRequests';
 import { useOrgScopedActivities } from '@/lib/hooks/useOrgScopedActivities';
 import { useOrgTeam } from '@/lib/hooks/useOrgTeam';
@@ -90,6 +91,13 @@ export default function AgencyClientDetailClient({
     cancelInvite,
     isRemovingMember,
   } = useTeamMutations(clientId);
+
+  const { data: clientProjects = [] } = useQuery({
+    queryKey: ['client-projects', clientId],
+    queryFn: () => listClientProjects(clientId),
+    enabled: canView,
+    staleTime: 30_000,
+  });
 
   const pendingInvites = useMemo(
     () => invites.filter(inv => inv.isClientInvite && inv.status === 'pending'),
@@ -164,6 +172,10 @@ export default function AgencyClientDetailClient({
       : 0;
 
   const recentActivities = activities.slice(0, 8);
+  const openProjects = clientProjects.filter(project => !['completed', 'archived'].includes(project.status));
+  const projectWithNextStep = openProjects.find(project => project.nextStep?.trim());
+  const projectWithBlocker = openProjects.find(project => project.blockers?.some(blocker => !blocker.resolved));
+  const nextRequest = requests.find(request => ['NEW', 'NEEDS_INFO', 'CHANGES_REQUESTED', 'IN_REVIEW'].includes(request.status));
   const recentRequests = requests.slice(0, 5);
 
   const handleRemoveMember = (member: OrganizationMember) => {
@@ -288,7 +300,7 @@ export default function AgencyClientDetailClient({
                             ? 'red'
                             : 'green'
                       }
-                      className="text-[9px] font-black uppercase tracking-widest"
+                      className="text-xs font-black uppercase tracking-widest"
                     >
                       {organization.status
                         ? t(getAgencyClientBadgeKey(organization.status))
@@ -297,7 +309,7 @@ export default function AgencyClientDetailClient({
                     {members.length === 0 && (
                       <Badge
                         variant="yellow"
-                        className="text-[9px] font-black uppercase tracking-widest"
+                        className="text-xs font-black uppercase tracking-widest"
                       >
                         {t('agency.clients.badge.pendingInvitation') || 'Pending Invitation'}
                       </Badge>
@@ -406,12 +418,52 @@ export default function AgencyClientDetailClient({
         </Card>
       </div>
 
+      {/* Client 360: actionable relationship context above historical metrics */}
+      <div className="grid gap-3 md:grid-cols-2">
+        <Card className="border-surface-200 dark:border-surface-800">
+          <h2 className="mb-2 text-base font-semibold text-surface-900 dark:text-white">
+            {locale === 'he' ? 'הצעד הבא עם הלקוח' : 'Next client action'}
+          </h2>
+          {projectWithBlocker ? (
+            <Link href={getPortalPath('/projects/' + projectWithBlocker.id + '/')} className="portal-focus-ring block rounded-lg text-sm font-semibold text-amber-600 hover:underline dark:text-amber-400">
+              {locale === 'he' ? 'חסם פתוח בפרויקט' : 'Open project blocker'}: {projectWithBlocker.title}
+            </Link>
+          ) : projectWithNextStep ? (
+            <Link href={getPortalPath('/projects/' + projectWithNextStep.id + '/')} className="portal-focus-ring block rounded-lg text-sm text-surface-700 hover:underline dark:text-surface-200">
+              <span className="font-semibold">{projectWithNextStep.title}</span>
+              <span className="mt-1 block">{projectWithNextStep.nextStep}</span>
+            </Link>
+          ) : nextRequest ? (
+            <button type="button" onClick={() => openRequest(nextRequest.id, { orgId: clientId })} className="portal-focus-ring text-start text-sm font-semibold text-primary-600 hover:underline dark:text-primary-400">
+              {nextRequest.title}
+            </button>
+          ) : (
+            <p className="text-sm text-surface-500">{locale === 'he' ? 'אין כרגע פעולה ממתינה.' : 'Nothing is currently waiting on you.'}</p>
+          )}
+          <Link href={getPortalPath('/projects/') + '?client=' + encodeURIComponent(clientId)} className="portal-focus-ring mt-3 inline-flex min-h-10 items-center text-xs font-semibold text-primary-600 hover:underline dark:text-primary-400">
+            {locale === 'he' ? 'צפייה בכל הפרויקטים' : 'View client projects'}
+          </Link>
+        </Card>
+        <Card className="border-surface-200 dark:border-surface-800">
+          <h2 className="mb-2 text-base font-semibold text-surface-900 dark:text-white">
+            {locale === 'he' ? 'איש קשר ראשי' : 'Primary contact'}
+          </h2>
+          <p className="text-sm font-semibold text-surface-800 dark:text-surface-200">{organization.primaryContactName || (locale === 'he' ? 'לא הוגדר' : 'Not set')}</p>
+          {organization.primaryContactRole && <p className="mt-1 text-sm text-surface-500">{organization.primaryContactRole}</p>}
+          {organization.primaryContactEmail && <a className="portal-focus-ring mt-2 block break-all text-sm text-primary-600 hover:underline dark:text-primary-400" href={'mailto:' + organization.primaryContactEmail}>{organization.primaryContactEmail}</a>}
+          {organization.primaryContactPhone && <a className="portal-focus-ring mt-2 block text-sm text-primary-600 hover:underline dark:text-primary-400" dir="ltr" href={'tel:' + organization.primaryContactPhone}>{organization.primaryContactPhone}</a>}
+          <button type="button" onClick={() => setIsEditModalOpen(true)} className="portal-focus-ring mt-3 min-h-10 rounded-lg text-start text-xs font-semibold text-primary-600 hover:underline dark:text-primary-400">
+            {locale === 'he' ? 'עריכת פרטי הלקוח' : 'Edit client details'}
+          </button>
+        </Card>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.totalRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -430,7 +482,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.activeRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -449,7 +501,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.completedRequests')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -468,7 +520,7 @@ export default function AgencyClientDetailClient({
         <Card className="border-surface-200 dark:border-surface-800 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <p className="portal-label-sm text-[10px] mb-2">
+              <p className="portal-label-sm text-xs mb-2">
                 {t('agency.clients.detail.stats.avgResolution')}
               </p>
               <p className="text-xl font-black text-surface-900 dark:text-white mb-1">
@@ -536,11 +588,11 @@ export default function AgencyClientDetailClient({
                                       ? 'yellow'
                                       : 'gray'
                               }
-                              className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter"
+                              className="text-xs px-2 h-5 font-black uppercase tracking-tighter"
                             >
                               {request.status}
                             </Badge>
-                            <span className="text-[10px] font-bold text-surface-400 font-mono">
+                            <span className="text-xs font-bold text-surface-400 font-mono">
                               #ID-{request.id.slice(0, 6).toUpperCase()}
                             </span>
                           </div>
@@ -554,7 +606,7 @@ export default function AgencyClientDetailClient({
                         {request.createdAt?.toDate && (
                           <div className="flex items-center gap-1.5 text-surface-400">
                             <Clock size={12} />
-                            <span className="text-[10px] font-bold uppercase tracking-tighter">
+                            <span className="text-xs font-bold uppercase tracking-tighter">
                               {isMounted
                                 ? formatDistanceToNow(request.createdAt.toDate(), {
                                     addSuffix: true,
@@ -627,7 +679,7 @@ export default function AgencyClientDetailClient({
                       {activity.createdAt?.toDate && (
                         <div className="flex items-center gap-1.5 text-surface-400 flex-shrink-0">
                           <Clock size={12} />
-                          <span className="text-[10px] font-bold uppercase tracking-tighter">
+                          <span className="text-xs font-bold uppercase tracking-tighter">
                             {isMounted
                               ? formatDistanceToNow(activity.createdAt.toDate(), {
                                   addSuffix: true,
@@ -697,7 +749,7 @@ export default function AgencyClientDetailClient({
               <div className="space-y-5">
                 {organization.website && (
                   <div>
-                    <p className="portal-label-sm text-[10px] mb-2">
+                    <p className="portal-label-sm text-xs mb-2">
                       {t('agency.clients.detail.info.website')}
                     </p>
                     <a
@@ -720,7 +772,7 @@ export default function AgencyClientDetailClient({
 
                 {organization.industry && (
                   <div>
-                    <p className="portal-label-sm text-[10px] mb-2">
+                    <p className="portal-label-sm text-xs mb-2">
                       {t('agency.clients.detail.info.industry')}
                     </p>
                     <p className="text-sm font-bold text-surface-900 dark:text-white">
@@ -730,7 +782,7 @@ export default function AgencyClientDetailClient({
                 )}
 
                 <div>
-                  <p className="portal-label-sm text-[10px] mb-2">
+                  <p className="portal-label-sm text-xs mb-2">
                     {t('agency.clients.detail.info.plan')}
                   </p>
                   <div className="flex items-center gap-2">
@@ -749,7 +801,7 @@ export default function AgencyClientDetailClient({
                 </div>
 
                 <div>
-                  <p className="portal-label-sm text-[10px] mb-2">
+                  <p className="portal-label-sm text-xs mb-2">
                     {t('agency.clients.detail.info.status')}
                   </p>
                   <Badge
@@ -760,7 +812,7 @@ export default function AgencyClientDetailClient({
                           ? 'red'
                           : 'green'
                     }
-                    className="text-[9px] font-black uppercase tracking-widest"
+                    className="text-xs font-black uppercase tracking-widest"
                   >
                     {organization.status
                       ? t(getAgencyClientBadgeKey(organization.status))
@@ -769,7 +821,7 @@ export default function AgencyClientDetailClient({
                 </div>
 
                 <div>
-                  <p className="portal-label-sm text-[10px] mb-2">
+                  <p className="portal-label-sm text-xs mb-2">
                     {t('agency.clients.detail.info.responsibleAgent')}
                   </p>
                   {responsibleAgent ? (
@@ -852,7 +904,7 @@ export default function AgencyClientDetailClient({
                       </div>
                       <Badge
                         variant="blue"
-                        className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
+                        className="text-xs px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
                       >
                         {member.role || 'member'}
                       </Badge>
@@ -885,7 +937,7 @@ export default function AgencyClientDetailClient({
                       </div>
                       <Badge
                         variant="yellow"
-                        className="text-[9px] px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
+                        className="text-xs px-2 h-5 font-black uppercase tracking-tighter flex-shrink-0"
                       >
                         Invited
                       </Badge>
@@ -922,7 +974,7 @@ export default function AgencyClientDetailClient({
                   <h3 className="text-xs font-bold text-surface-900 dark:text-white mb-1">
                     {t('agency.clients.detail.team.emptyTitle')}
                   </h3>
-                  <p className="text-[10px] text-surface-500">
+                  <p className="text-xs text-surface-500">
                     {t('agency.clients.detail.team.emptyDesc')}
                   </p>
                 </div>

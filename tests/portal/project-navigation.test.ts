@@ -15,6 +15,13 @@ describe('Projects navigation', () => {
     );
   });
 
+  it('shows agency home first and keeps the canonical requests workspace', () => {
+    const items = getAgencyNavGroups(key => key).flatMap(group => group.items);
+    expect(items[0].href).toBe(getPortalPath('/agency/dashboard/'));
+    expect(items.some(item => item.href === getPortalPath('/requests/'))).toBe(true);
+    expect(items.some(item => item.href === getPortalPath('/agency/pricing/'))).toBe(false);
+  });
+
   it('appears in the agency workspace without an environment flag', () => {
     const items = getAgencyNavGroups(key => key).flatMap(group => group.items);
     expect(items).toContainEqual(

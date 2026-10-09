@@ -27,6 +27,7 @@ import { SkeletonTable } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useRequests } from '@/lib/hooks/useRequests';
+import { AGENCY_REQUEST_VIEWS, matchesAgencyRequestView } from '@/lib/utils/request-views';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { CLIENT_STATUS_MAP, ClientStatus, Organization } from '@/lib/types/portal';
 import { format } from 'date-fns';
@@ -124,6 +125,7 @@ export default function RequestsClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedBundleIds, setExpandedBundleIds] = useState<Set<string>>(new Set());
   const itemsPerPage = 8;
+
   const locale = useLocale();
 
   // Multi-select for pricing offers (agency only)
@@ -140,21 +142,15 @@ export default function RequestsClient() {
   const isDeletingCombined = isDeleting || isDeletingRequest;
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'ACTION_REQUIRED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED', 'CANCELED'];
-  const filters = isAgency
-    ? [
-        'All',
-        'DRAFT',
-        'NEW',
-        'QUOTED',
-        'CHANGES_REQUESTED',
-        'ACCEPTED',
-        'IN_PROGRESS',
-        'IN_REVIEW',
-        'DELIVERED',
-        'PAID',
-        'CLOSED',
-      ]
-    : ['All', ...clientFilters];
+  const detailedAgencyStatuses = ['DRAFT', 'NEW', 'NEEDS_INFO', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'];
+  const filters = isAgency ? ['All', ...Object.keys(AGENCY_REQUEST_VIEWS)] : ['All', ...clientFilters];
+
+  useEffect(() => {
+    const focus = new URLSearchParams(window.location.search).get('focus');
+    if (focus && Object.hasOwn(AGENCY_REQUEST_VIEWS, focus)) {
+      setActiveFilter(focus);
+    }
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -177,7 +173,7 @@ export default function RequestsClient() {
   // Reset to page 1 when filter or search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeFilter, debouncedSearchQuery]);
+  }, [activeFilter, selectedOrgFilter, debouncedSearchQuery]);
 
   // Track newly pinned items for animation
   useEffect(() => {
@@ -260,7 +256,7 @@ export default function RequestsClient() {
       let matchesFilter = activeFilter === 'All';
       if (!matchesFilter) {
         if (isAgency) {
-          matchesFilter = req.status === activeFilter;
+          matchesFilter = matchesAgencyRequestView(req, activeFilter);
         } else {
           matchesFilter = CLIENT_STATUS_MAP[req.status] === activeFilter;
         }
@@ -490,10 +486,22 @@ export default function RequestsClient() {
                 {filter === 'All'
                   ? t('common.all')
                   : isAgency
-                    ? t(getStatusTranslationKey(filter))
+                    ? t(('requests.views.' + filter) as Parameters<typeof t>[0])
                     : t(getClientStatusTranslationKey(filter, false))}
               </button>
             ))}
+            {isAgency && (
+              <Select
+                value={detailedAgencyStatuses.includes(activeFilter) ? activeFilter : 'all'}
+                onChange={event => setActiveFilter(event.target.value === 'all' ? 'All' : event.target.value)}
+                aria-label={t('requests.views.specificStatus')}
+                className="min-w-[150px] max-w-[200px] text-sm"
+                options={[
+                  { value: 'all', label: t('requests.views.specificStatus') },
+                  ...detailedAgencyStatuses.map(status => ({ value: status, label: t(getStatusTranslationKey(status)) })),
+                ]}
+              />
+            )}
             {/* Organization Filter - Agency Only */}
             {isAgency && organizationsList && organizationsList.length > 0 && (
               <div className="shrink-0 flex items-center gap-1.5">
@@ -616,7 +624,7 @@ export default function RequestsClient() {
                               // Layout animation started
                             }
                           }}
-                          role="link"
+                          role={isSelectionMode ? 'group' : 'link'}
                           tabIndex={isSelectionMode ? -1 : 0}
                           onClick={() => openRequest(req)}
                           onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
@@ -627,7 +635,15 @@ export default function RequestsClient() {
                             isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
                           )}
                         >
-                          {/* ... Mobile card content ... */}
+                          {isAgency && isSelectionMode && req.requestRole !== 'bundle' && !req.parentRequestId && !['PAID', 'CLOSED'].includes(req.status) && (
+                            <button type="button" aria-pressed={selectedRequestIds.includes(req.id)}
+                              aria-label={t('common.select') + ': ' + req.title}
+                              onClick={event => { event.stopPropagation(); toggleRequestSelection(req.id); }}
+                              className="portal-focus-ring mb-3 flex min-h-11 w-full items-center gap-3 rounded-lg border border-primary-200 px-3 text-sm font-semibold dark:border-primary-800">
+                              <span aria-hidden className={cn('flex size-5 items-center justify-center rounded border-2', selectedRequestIds.includes(req.id) ? 'border-primary-600 bg-primary-600 text-white' : 'border-surface-400')}>{selectedRequestIds.includes(req.id) && <Check size={14} />}</span>
+                              {selectedRequestIds.includes(req.id) ? t('requests.selected_singular') : t('common.select')}
+                            </button>
+                          )}
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex flex-col min-w-0 me-2">
                               {/* ... */}
@@ -793,7 +809,7 @@ export default function RequestsClient() {
                                             aria-pressed={isSelected}
                                             aria-label={`${t('common.select')}: ${req.title}`}
                                             className={cn(
-                                              'portal-focus-ring w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
+                                              'portal-focus-ring min-w-10 min-h-10 rounded-md border-2 flex items-center justify-center transition-colors touch-manipulation',
                                               isSelected
                                                 ? 'bg-primary-600 border-primary-600 text-white'
                                                 : 'border-surface-300 dark:border-surface-600 hover:border-primary-400'

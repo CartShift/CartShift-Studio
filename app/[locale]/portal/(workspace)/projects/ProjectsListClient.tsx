@@ -13,6 +13,7 @@ import { PROJECT_STATUS_LABELS, type ProjectTemplate } from '@/lib/types/project
 import { PROJECT_TEMPLATES } from '@/lib/utils/project-workflow';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { toast } from 'sonner';
+import { PortalPageHeader } from '@/components/portal/ui/PortalPageHeader';
 
 export default function ProjectsListClient({ initialClientFilter = 'all' }: { initialClientFilter?: string }) {
   const t = useTranslations('portal.projects');
@@ -59,13 +60,9 @@ export default function ProjectsListClient({ initialClientFilter = 'all' }: { in
   };
 
   return (
-    <main className="space-y-6 pb-16">
+    <div className="space-y-6 pb-16">
       <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">CartShift Studio</p>
-          <h1 className="mt-2 text-3xl font-bold text-surface-950 dark:text-white">{t('title')}</h1>
-          <p className="mt-2 max-w-2xl text-sm text-surface-600 dark:text-surface-400">{t('intro')}</p>
-        </div>
+        <PortalPageHeader title={t('title')} description={t('intro')} className="mb-0" />
         {isAgency && (
           <button type="button" onClick={() => setShowCreate(!showCreate)}
             className="portal-focus-ring flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-semibold text-white hover:bg-primary-700">
@@ -146,6 +143,6 @@ export default function ProjectsListClient({ initialClientFilter = 'all' }: { in
             })}
           </div>
         )}
-    </main>
+    </div>
   );
 }

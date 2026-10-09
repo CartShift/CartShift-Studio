@@ -42,6 +42,32 @@ export default function SalesDashboardClient() {
     [splits]
   );
 
+  const exportSummary = () => {
+    if (!metrics) return;
+    const fields: Array<[string, number | string]> = [
+      ['Period (months)', period],
+      ['Currency', metrics.primaryCurrency],
+      ['Total revenue (minor units)', metrics.totalRevenue],
+      ['Pending revenue (minor units)', metrics.pendingRevenue],
+      ['Revenue growth (%)', metrics.revenueGrowth],
+      ['Active clients', metrics.activeClients],
+      ['Total proposals', metrics.totalProposals],
+      ['Accepted proposals', metrics.acceptedProposals],
+      ['Paid proposals', metrics.paidProposals],
+      ['Proposal conversion (%)', metrics.conversionRate],
+      ['Average deal size (minor units)', metrics.avgDealSize],
+      ['Average days to close', metrics.avgTimeToClose],
+    ];
+    const escapeCsv = (value: string | number) => '"' + String(value).replace(/"/g, '""') + '"';
+    const csv = 'Metric,Value\\r\\n' + fields.map(row => row.map(escapeCsv).join(',')).join('\\r\\n');
+    const href = URL.createObjectURL(new Blob(['\\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+    const anchor = document.createElement('a');
+    anchor.href = href;
+    anchor.download = 'cartshift-sales-summary.csv';
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(href), 1000);
+  };
+
   const hasData =
     metrics && (metrics.totalRevenue > 0 || metrics.totalProposals > 0 || metrics.pendingRevenue > 0);
 
@@ -129,7 +155,7 @@ export default function SalesDashboardClient() {
               >
                 {t('sales.dashboard.refresh')}
               </Button>
-              <Button variant="outline" leftIcon={<Download className="h-4 w-4" />}>
+              <Button variant="outline" onClick={exportSummary} disabled={!metrics || loading} leftIcon={<Download className="h-4 w-4" />}>
                 {t('sales.dashboard.exportReport')}
               </Button>
             </>

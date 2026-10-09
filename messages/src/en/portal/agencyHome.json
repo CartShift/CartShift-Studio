@@ -1,0 +1,38 @@
+{
+  "portal": {
+    "agencyHome": {
+      "title": "Studio overview",
+      "subtitle": "Priorities, active client work and commercial follow-ups in one place.",
+      "newRequest": "New request",
+      "newProposal": "New proposal",
+      "attention": "Needs attention",
+      "activeProjects": "Active projects",
+      "waitingClient": "Awaiting client",
+      "openProposals": "Open proposals",
+      "attentionTitle": "Needs your attention",
+      "attentionHint": "Requests to triage, clarify or review",
+      "viewAll": "View all",
+      "loading": "Loading current work…",
+      "noAttention": "No requests need attention right now.",
+      "noProjects": "No active projects yet.",
+      "noProposals": "No open proposals.",
+      "clientFallback": "Client",
+      "unassigned": "Not assigned",
+      "projectsTitle": "Active project work",
+      "proposalsTitle": "Proposal follow-ups",
+      "nextStep": "Next step",
+      "blocked": "Blocker needs attention",
+      "blockersSummary": "{count, plural, one {# project has an open blocker} other {# projects have open blockers}}",
+      "partialError": "Some information could not load. Refresh to try again.",
+      "workboard": "Open workboard",
+      "clients": "Browse clients",
+      "sales": "Sales overview",
+      "proposalState": {
+        "DRAFT": "Draft",
+        "QUOTED": "Sent",
+        "CHANGES_REQUESTED": "Changes requested",
+        "ACCEPTED": "Accepted"
+      }
+    }
+  }
+}

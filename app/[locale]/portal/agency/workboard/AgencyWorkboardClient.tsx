@@ -140,6 +140,7 @@ export default function AgencyWorkboardClient() {
               >
                 <RequestCard
                   request={req}
+                  clientName={organizations.find(org => org.id === req.orgId)?.name}
                   locale={locale}
                   isMounted={isMounted}
                   onDelete={() => setRequestToDelete({ id: req.id, title: req.title })}
@@ -262,7 +263,7 @@ export default function AgencyWorkboardClient() {
                 className="opacity-95 shadow-2xl shadow-primary-500/20 rounded-2xl"
                 style={{ cursor: 'grabbing' }}
               >
-                <RequestCard request={activeRequest} locale={locale} isMounted={isMounted} />
+                <RequestCard request={activeRequest} clientName={organizations.find(org => org.id === activeRequest.orgId)?.name} locale={locale} isMounted={isMounted} />
               </div>
             ) : null}
           </DragOverlay>,

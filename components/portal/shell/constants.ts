@@ -19,6 +19,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 // Define valid navigation translation keys
 type NavTranslationKey =
   | 'sidebar.nav.dashboard'
+  | 'sidebar.nav.pricing'
   | 'sidebar.nav.requests'
   | 'sidebar.nav.projects'
   | 'sidebar.nav.files'
@@ -70,6 +71,11 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       id: 'agency-operations',
       labelKey: 'sidebar.groups.operations',
       items: [
+        {
+          label: t('sidebar.nav.dashboard'),
+          icon: LayoutDashboard,
+          href: getPortalPath('/agency/dashboard/'),
+        },
         {
           label: t('sidebar.nav.workboard'),
           icon: Kanban,
