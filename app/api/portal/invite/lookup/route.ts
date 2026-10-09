@@ -50,6 +50,10 @@ export async function GET(request: NextRequest) {
         email: data?.email ?? '',
         role: data?.role ?? 'member',
         isAgency: data?.isAgency === true,
+        isClientInvite: data?.isClientInvite === true,
+        linkedRequestIds: Array.isArray(data?.linkedRequestIds)
+          ? data.linkedRequestIds.filter((id: unknown): id is string => typeof id === 'string' && id.length > 0 && !id.includes('/'))
+          : [],
         invitedBy: data?.invitedBy ?? '',
         invitedByName: data?.invitedByName ?? '',
         code: data?.code ?? '',

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { getInvite, acceptInvite, cancelInvite } from '@/lib/services/portal-organizations';
+import { getInvite, acceptInvite, acceptClientInvite, cancelInvite } from '@/lib/services/portal-organizations';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -100,7 +100,16 @@ export default function InviteClient() {
     setError(null);
 
     try {
-      await acceptInvite(invite.id, user.uid, userData.name || undefined);
+      if (invite.isClientInvite) {
+        await acceptClientInvite(
+          invite.id,
+          user.uid,
+          user.email || invite.email,
+          userData.name || undefined,
+        );
+      } else {
+        await acceptInvite(invite.id, user.uid, userData.name || undefined);
+      }
 
       setSuccess(true);
       setTimeout(() => {
