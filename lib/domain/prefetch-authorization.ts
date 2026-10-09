@@ -17,3 +17,12 @@ export function canPrefetchPortalRequest(
   const email = context.email?.trim().toLowerCase();
   return Boolean(email && request.clientEmail?.trim().toLowerCase() === email);
 }
+
+// A pre-assigned email recipient may see the request itself, not the private
+// organization activity stream before becoming an active tenant member.
+export function canPrefetchRequestActivities(
+  context: Pick<PortalSessionContext, 'isAgency' | 'organizations'>,
+  requestOrgId: string,
+): boolean {
+  return context.isAgency || context.organizations.includes(requestOrgId);
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canPrefetchPortalRequest } from '@/lib/domain/prefetch-authorization';
+import { canPrefetchPortalRequest, canPrefetchRequestActivities } from '@/lib/domain/prefetch-authorization';
 
 const base = { uid: 'client-a', email: 'client-a@example.com', isAgency: false, organizations: ['org-a'] };
 const request = { orgId: 'org-b', createdBy: 'client-b', clientUserId: 'client-b', clientEmail: 'client-b@example.com' };
@@ -20,5 +20,12 @@ describe('Admin SDK request prefetch authorization', () => {
 
   it('allows agency access through the verified staff profile', () => {
     expect(canPrefetchPortalRequest({ ...base, isAgency: true }, request, false)).toBe(true);
+  });
+
+  it('does not send an organization activity history to an unjoined email recipient', () => {
+    expect(canPrefetchPortalRequest(base, { ...request, clientEmail: 'client-a@example.com' }, false)).toBe(true);
+    expect(canPrefetchRequestActivities(base, 'org-b')).toBe(false);
+    expect(canPrefetchRequestActivities(base, 'org-a')).toBe(true);
+    expect(canPrefetchRequestActivities({ ...base, isAgency: true }, 'org-b')).toBe(true);
   });
 });

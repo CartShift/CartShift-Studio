@@ -14,7 +14,7 @@ import {
   serverGetRequestsByOrg,
 } from '@/lib/server/portal-data';
 import { getPortalSessionContext } from '@/lib/server/portal-session-context';
-import { canPrefetchPortalRequest } from '@/lib/domain/prefetch-authorization';
+import { canPrefetchPortalRequest, canPrefetchRequestActivities } from '@/lib/domain/prefetch-authorization';
 import { queryKeys } from '@/lib/utils/query-keys';
 
 export type PortalPrefetchScope =
@@ -113,10 +113,12 @@ async function prefetchPortalQueries(
         queryFn: () => Promise.resolve(request),
       });
 
-      await queryClient.prefetchQuery({
-        queryKey: queryKeys.activities.byRequest(requestId),
-        queryFn: () => serverGetRequestActivities(requestId),
-      });
+      if (canPrefetchRequestActivities(context, request.orgId)) {
+        await queryClient.prefetchQuery({
+          queryKey: queryKeys.activities.byRequest(requestId),
+          queryFn: () => serverGetRequestActivities(requestId),
+        });
+      }
     }
   }
 }
