@@ -5,6 +5,7 @@ import { PortalUser } from '@/lib/types/portal';
 import { portalTextareaClassName } from '@/lib/utils/portal-interactive';
 import { cn } from '@/lib/utils';
 import { User } from 'lucide-react';
+import { activeItem, moveActiveIndex } from '@/lib/utils/list-navigation';
 
 import { useTranslations } from 'next-intl';
 
@@ -58,16 +59,18 @@ export const MentionInput = ({
   }, [value, cursorPosition]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing) return;
     if (showSuggestions && filteredUsers.length > 0) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSuggestionIndex(prev => (prev + 1) % filteredUsers.length);
+        setSuggestionIndex(prev => moveActiveIndex(prev, filteredUsers.length, 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setSuggestionIndex(prev => (prev - 1 + filteredUsers.length) % filteredUsers.length);
+        setSuggestionIndex(prev => moveActiveIndex(prev, filteredUsers.length, -1));
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault();
-        insertMention(filteredUsers[suggestionIndex]);
+        const selected = activeItem(filteredUsers, suggestionIndex);
+        if (selected) insertMention(selected);
       } else if (e.key === 'Escape') {
         setShowSuggestions(false);
       }
