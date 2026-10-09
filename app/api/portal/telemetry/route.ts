@@ -31,7 +31,36 @@ export async function POST(request: NextRequest) {
   );
   if (!rate.allowed) return NextResponse.json({ error: 'Rate limited' }, { status: 429 });
 
-  const payload = eventSchema.safeParse(await request.json().catch(() => null));
+  // Bound the actual streaming payload, even when Content-Length is omitted.
+  // Never buffer or print an arbitrary client-supplied error body.
+  const reader = request.body?.getReader();
+  if (!reader) return NextResponse.json({ error: 'Empty event' }, { status: 400 });
+  const decoder = new TextDecoder();
+  let raw = '';
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > 2048) {
+        await reader.cancel();
+        return NextResponse.json({ error: 'Event too large' }, { status: 413 });
+      }
+      raw += decoder.decode(value, { stream: true });
+    }
+    raw += decoder.decode();
+  } catch {
+    return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
+  }
+  let data: unknown = null;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const payload = eventSchema.safeParse(data);
   if (!payload.success) {
     return NextResponse.json({ error: 'Invalid event' }, { status: 400 });
   }
