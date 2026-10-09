@@ -116,6 +116,7 @@ export function useFirestoreUser(
   }, [options.onUserData, options.onNoUserDocument]);
 
   useEffect(() => {
+    let cancelled = false;
     isMountedRef.current = true;
     cleanupSubscription();
 
@@ -137,7 +138,7 @@ export function useFirestoreUser(
       try {
         await user.getIdToken();
       } catch (err) {
-        if (!isMountedRef.current) return;
+        if (cancelled || !isMountedRef.current) return;
         console.error('[useFirestoreUser] Error getting auth token:', err);
         setError(getPortalError(err));
         setUserData(createFallbackUserData(user));
@@ -145,7 +146,7 @@ export function useFirestoreUser(
         return;
       }
 
-      if (!isMountedRef.current) return;
+      if (cancelled || !isMountedRef.current) return;
 
       const db = getFirestoreDb();
       const userDocRef = doc(db, 'portal_users', user.uid);
@@ -235,6 +236,7 @@ export function useFirestoreUser(
     initSubscription();
 
     return () => {
+      cancelled = true;
       isMountedRef.current = false;
       cleanupSubscription();
     };
