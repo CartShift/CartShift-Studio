@@ -357,18 +357,22 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
+      // Internal agency notes must remain private even when the client
+      // belongs to the same organization or authored the original comment.
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
-        resource == null ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        resource.data.get('userId', '') == getUserId()
-      ) && (isAgencyUser() || resource == null || !hasRevokedMembership(resource.data.get('orgId', '')));
+        (resource.data.get('isInternal', false) == false &&
+         !hasRevokedMembership(resource.data.get('orgId', '')) &&
+         (canAccessOrg(resource.data.get('orgId', '')) ||
+          resource.data.get('userId', '') == getUserId()))
+      );
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         ((isMemberOfOrg(getRequestOrgIdFromRequest()) ||
           isOrgOwner(getRequestOrgIdFromRequest())) &&
          request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
-         request.resource.data.get('userId', '') == getUserId())
+         request.resource.data.get('userId', '') == getUserId() &&
+         request.resource.data.get('isInternal', false) == false)
       );
       allow update: if isAuthenticated() && (
         resource.data.get('userId', '') == getUserId() ||
@@ -377,7 +381,8 @@ service cloud.firestore {
         !hasRevokedMembership(resource.data.get('orgId', '')) &&
         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
         request.resource.data.get('userId', '') == resource.data.get('userId', '') &&
-        request.resource.data.get('requestId', '') == resource.data.get('requestId', '')
+        request.resource.data.get('requestId', '') == resource.data.get('requestId', '') &&
+        request.resource.data.get('isInternal', false) == resource.data.get('isInternal', false)
       ));
       allow delete: if isAuthenticated() && (
         resource.data.get('userId', '') == getUserId() ||

@@ -119,8 +119,16 @@ export async function createComment(
   try {
     const docRef = await addDoc(collection(db, COMMENTS_COLLECTION), commentData);
 
-    // Increment comment count and update last message on request
-    await updateRequestLastComment(requestId, sanitizedContent, userName);
+    // Internal agency notes must never leak into a client-visible lastComment preview.
+    // Keep the aggregate count in sync without persisting the private text.
+    if (data.isInternal) {
+      await updateDoc(doc(db, 'portal_requests', requestId), {
+        commentCount: increment(1),
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      await updateRequestLastComment(requestId, sanitizedContent, userName);
+    }
 
     // Return with client-side timestamp (note: actual serverTimestamp is in Firestore)
     const now = Timestamp.now();

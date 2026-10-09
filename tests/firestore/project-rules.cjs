@@ -35,7 +35,8 @@ async function main() {
         db.doc('portal_activities/logA').set({ orgId: 'orgA', userId: 'revoked', action: 'CREATED_REQUEST' }),
         db.doc('portal_notifications/notifyClient').set({ userId: 'client', read: false, title: 'Notice' }),
         db.doc('portal_files/fileClient').set({ orgId: 'orgA', uploadedBy: 'client', name: 'Attached' }),
-        db.doc('portal_comments/commentClient').set({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', text: 'Note' }),
+        db.doc('portal_comments/commentClient').set({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', text: 'Note', isInternal: false }),
+        db.doc('portal_comments/internalAgency').set({ orgId: 'orgA', requestId: 'reqClient', userId: 'agency', content: 'Private financial note', isInternal: true }),
         db.doc('portal_billing_profiles/agency').set({ businessName: 'CartShift' }),
         db.doc('portal_projects/prjA').set({
           orgId: 'orgA',
@@ -90,6 +91,12 @@ async function main() {
 
     await assertSucceeds(client.doc('portal_comments/commentClient').update({ text: 'Edited' }));
     await assertFails(client.doc('portal_comments/commentClient').update({ orgId: 'orgB' }));
+    await assertFails(client.doc('portal_comments/commentClient').update({ isInternal: true }));
+    await assertFails(client.doc('portal_comments/internalAgency').get());
+    await assertSucceeds(agency.doc('portal_comments/internalAgency').get());
+    await assertSucceeds(client.collection('portal_comments').where('requestId', '==', 'reqClient').where('isInternal', '==', false).get());
+    await assertFails(client.collection('portal_comments').add({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', isInternal: true, content: 'Forged note' }));
+    await assertSucceeds(client.collection('portal_comments').add({ orgId: 'orgA', requestId: 'reqClient', userId: 'client', isInternal: false, content: 'Public note' }));
     await assertFails(client.doc('portal_files/fileClient').update({ orgId: 'orgB' }));
     await assertFails(outsider.doc('portal_files/fileClient').get());
 
