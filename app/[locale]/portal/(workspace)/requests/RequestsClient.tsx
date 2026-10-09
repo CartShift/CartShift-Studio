@@ -146,6 +146,7 @@ export default function RequestsClient() {
     working: ['ACCEPTED', 'QUEUED', 'IN_PROGRESS'],
     waiting: ['QUOTED'],
     done: ['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'],
+    proposals: [],
   };
   const filters = isAgency ? ['All', ...Object.keys(viewGroups)] : ['All', ...clientFilters];
 
@@ -259,7 +260,9 @@ export default function RequestsClient() {
       let matchesFilter = activeFilter === 'All';
       if (!matchesFilter) {
         if (isAgency) {
-          matchesFilter = viewGroups[activeFilter] ? viewGroups[activeFilter].includes(req.status) : req.status === activeFilter;
+          matchesFilter = activeFilter === 'proposals'
+            ? Boolean(req.isBillable || req.publicToken || req.requestRole === 'bundle' || req.tags?.includes('quote'))
+            : viewGroups[activeFilter] ? viewGroups[activeFilter].includes(req.status) : req.status === activeFilter;
         } else {
           matchesFilter = CLIENT_STATUS_MAP[req.status] === activeFilter;
         }

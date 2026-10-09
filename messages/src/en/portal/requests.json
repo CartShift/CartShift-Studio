@@ -313,7 +313,8 @@
         "working": "In progress",
         "waiting": "Awaiting client",
         "done": "Done",
-        "specificStatus": "Specific status"
+        "specificStatus": "Specific status",
+        "proposals": "Proposals"
       }
     }
   }

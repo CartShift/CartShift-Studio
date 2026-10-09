@@ -141,7 +141,7 @@ export function InsightsPanel({ metrics, loading = false }: InsightsPanelProps) 
                 </p>
 
                 {insight.action && (
-                  <Link href={getPortalPath('/agency/pricing/')} className="portal-focus-ring inline-flex min-h-10 items-center gap-1.5 rounded text-xs font-bold hover:underline transition-all">
+                  <Link href={getPortalPath('/requests/?focus=proposals')} className="portal-focus-ring inline-flex min-h-10 items-center gap-1.5 rounded text-xs font-bold hover:underline transition-all">
                     <span
                       className={cn(
                         insight.type === 'positive' && 'text-emerald-600 dark:text-emerald-400',

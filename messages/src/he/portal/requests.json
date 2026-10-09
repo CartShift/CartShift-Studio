@@ -313,7 +313,8 @@
         "working": "בעבודה",
         "waiting": "ממתין ללקוח",
         "done": "הושלם",
-        "specificStatus": "סטטוס מפורט"
+        "specificStatus": "סטטוס מפורט",
+        "proposals": "הצעות מחיר"
       }
     }
   }

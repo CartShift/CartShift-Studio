@@ -169,7 +169,7 @@ export function CommandPalette({ isOpen: externalIsOpen, onOpenChange }: Command
         {
           icon: FileText,
           label: t('sidebar.nav.pricing'),
-          path: getPortalPath('/agency/pricing'),
+          path: getPortalPath('/requests/?focus=proposals'),
           keywords: ['pricing', 'proposals', 'quote'],
         },
         {

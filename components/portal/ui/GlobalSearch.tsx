@@ -17,10 +17,10 @@ import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { Input } from '@/components/ui/Input';
 import type { LucideIcon } from 'lucide-react';
 
-interface GlobalSearchProps { orgId?: string; isAgency?: boolean; className?: string }
+interface GlobalSearchProps { orgId?: string; isAgency?: boolean; className?: string; onSelect?: () => void }
 type Result = { id: string; title: string; description: string; type: 'request' | 'client' | 'project' | 'proposal'; href: string; orgId?: string; icon: LucideIcon };
 
-export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps) {
+export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSearchProps) {
   const t = useTranslations('portal.globalSearch');
   const router = useRouter();
   const { loading: authLoading, isAuthenticated, user } = usePortalAuth();
@@ -85,6 +85,7 @@ export function GlobalSearch({ isAgency = false, className }: GlobalSearchProps)
     if (term) addSearch(query.trim());
     setQuery('');
     setIsOpen(false);
+    onSelect?.();
     if (result.type === 'request') openRequest(result.href, { orgId: result.orgId });
     else router.push(result.href);
   };

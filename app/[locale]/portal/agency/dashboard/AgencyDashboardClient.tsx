@@ -51,7 +51,7 @@ export default function AgencyDashboardClient() {
     (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0)
   ), [requests]);
 
-  const waiting = requests.filter(request => waitingStatuses.has(request.status)).length;
+  const waiting = requests.filter(request => waitingStatuses.has(request.status) && request.requestRole !== 'bundle_item').length;
   const activeProjects = projects.filter(project => activeProjectStatuses.has(project.status));
   const blockedProjects = activeProjects.filter(project => project.blockers?.some(blocker => !blocker.resolved));
   const openProposals = proposals.filter(proposal => ['DRAFT', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED'].includes(proposal.status));
@@ -141,11 +141,11 @@ export default function AgencyDashboardClient() {
           <Card noPadding className="overflow-hidden">
             <div className="flex items-center justify-between border-b border-surface-200 px-5 py-4 dark:border-surface-800">
               <h2 className="text-lg font-semibold">{t('proposalsTitle')}</h2>
-              <Link href={getPortalPath('/agency/pricing/')} className="portal-focus-ring rounded-lg text-sm font-semibold text-primary-600 dark:text-primary-400">{t('viewAll')}</Link>
+              <Link href={getPortalPath('/requests/?focus=proposals')} className="portal-focus-ring rounded-lg text-sm font-semibold text-primary-600 dark:text-primary-400">{t('viewAll')}</Link>
             </div>
             <div className="divide-y divide-surface-100 dark:divide-surface-800">
               {openProposals.slice(0, 4).map(proposal => (
-                <Link key={proposal.id} href={getPortalPath('/pricing/' + proposal.id + '/')} className="portal-focus-ring flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-50 dark:hover:bg-surface-800/40">
+                <Link key={proposal.id} href={getPortalPath('/requests/' + proposal.id + '/')} className="portal-focus-ring flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-50 dark:hover:bg-surface-800/40">
                   <div className="min-w-0">
                     <p className="truncate text-xs text-surface-500">{orgNames.get(proposal.orgId) || t('clientFallback')}</p>
                     <p className="truncate text-sm font-semibold">{proposal.title}</p>

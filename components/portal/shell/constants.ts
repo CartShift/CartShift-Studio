@@ -130,12 +130,6 @@ export function getAgencyNavGroups(t: NavTranslationFunction): NavGroup[] {
       labelKey: 'sidebar.groups.growth',
       items: [
         {
-          label: t('sidebar.nav.pricing'),
-          icon: ClipboardList,
-          href: getPortalPath('/agency/pricing/'),
-          roles: PERMISSIONS.MANAGE_PRICING,
-        },
-        {
           label: t('sidebar.nav.calculator'),
           icon: Calculator,
           href: getPortalPath('/agency/calculator/'),
