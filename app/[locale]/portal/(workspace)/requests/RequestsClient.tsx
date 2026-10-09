@@ -140,21 +140,20 @@ export default function RequestsClient() {
   const isDeletingCombined = isDeleting || isDeletingRequest;
 
   const clientFilters: ClientStatus[] = ['SUBMITTED', 'ACTION_REQUIRED', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED', 'CANCELED'];
-  const filters = isAgency
-    ? [
-        'All',
-        'DRAFT',
-        'NEW',
-        'QUOTED',
-        'CHANGES_REQUESTED',
-        'ACCEPTED',
-        'IN_PROGRESS',
-        'IN_REVIEW',
-        'DELIVERED',
-        'PAID',
-        'CLOSED',
-      ]
-    : ['All', ...clientFilters];
+  const detailedAgencyStatuses = ['DRAFT', 'NEW', 'NEEDS_INFO', 'QUOTED', 'CHANGES_REQUESTED', 'ACCEPTED', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'];
+  const viewGroups: Record<string, string[]> = {
+    attention: ['NEW', 'NEEDS_INFO', 'CHANGES_REQUESTED', 'IN_REVIEW'],
+    working: ['ACCEPTED', 'QUEUED', 'IN_PROGRESS'],
+    waiting: ['QUOTED'],
+    done: ['DELIVERED', 'PAID', 'CLOSED', 'CANCELED', 'DECLINED', 'EXPIRED'],
+  };
+  const filters = isAgency ? ['All', ...Object.keys(viewGroups)] : ['All', ...clientFilters];
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('focus') === 'attention') {
+      setActiveFilter('attention');
+    }
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -260,7 +259,7 @@ export default function RequestsClient() {
       let matchesFilter = activeFilter === 'All';
       if (!matchesFilter) {
         if (isAgency) {
-          matchesFilter = req.status === activeFilter;
+          matchesFilter = viewGroups[activeFilter] ? viewGroups[activeFilter].includes(req.status) : req.status === activeFilter;
         } else {
           matchesFilter = CLIENT_STATUS_MAP[req.status] === activeFilter;
         }
@@ -490,10 +489,22 @@ export default function RequestsClient() {
                 {filter === 'All'
                   ? t('common.all')
                   : isAgency
-                    ? t(getStatusTranslationKey(filter))
+                    ? t(('requests.views.' + filter) as Parameters<typeof t>[0])
                     : t(getClientStatusTranslationKey(filter, false))}
               </button>
             ))}
+            {isAgency && (
+              <Select
+                value={detailedAgencyStatuses.includes(activeFilter) ? activeFilter : 'all'}
+                onChange={event => setActiveFilter(event.target.value === 'all' ? 'All' : event.target.value)}
+                aria-label={t('requests.views.specificStatus')}
+                className="min-w-[150px] max-w-[200px] text-sm"
+                options={[
+                  { value: 'all', label: t('requests.views.specificStatus') },
+                  ...detailedAgencyStatuses.map(status => ({ value: status, label: t(getStatusTranslationKey(status)) })),
+                ]}
+              />
+            )}
             {/* Organization Filter - Agency Only */}
             {isAgency && organizationsList && organizationsList.length > 0 && (
               <div className="shrink-0 flex items-center gap-1.5">
@@ -616,7 +627,7 @@ export default function RequestsClient() {
                               // Layout animation started
                             }
                           }}
-                          role="link"
+                          role={isSelectionMode ? 'group' : 'link'}
                           tabIndex={isSelectionMode ? -1 : 0}
                           onClick={() => openRequest(req)}
                           onKeyDown={e => activateOnKeyboard(e, () => openRequest(req))}
@@ -627,7 +638,15 @@ export default function RequestsClient() {
                             isPinned && 'ring-1 ring-amber-300/30 dark:ring-amber-500/20'
                           )}
                         >
-                          {/* ... Mobile card content ... */}
+                          {isAgency && isSelectionMode && req.requestRole !== 'bundle' && !req.parentRequestId && !['PAID', 'CLOSED'].includes(req.status) && (
+                            <button type="button" aria-pressed={selectedRequestIds.includes(req.id)}
+                              aria-label={t('common.select') + ': ' + req.title}
+                              onClick={event => { event.stopPropagation(); toggleRequestSelection(req.id); }}
+                              className="portal-focus-ring mb-3 flex min-h-11 w-full items-center gap-3 rounded-lg border border-primary-200 px-3 text-sm font-semibold dark:border-primary-800">
+                              <span aria-hidden className={cn('flex size-5 items-center justify-center rounded border-2', selectedRequestIds.includes(req.id) ? 'border-primary-600 bg-primary-600 text-white' : 'border-surface-400')}>{selectedRequestIds.includes(req.id) && <Check size={14} />}</span>
+                              {selectedRequestIds.includes(req.id) ? t('requests.selected_singular') : t('common.select')}
+                            </button>
+                          )}
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex flex-col min-w-0 me-2">
                               {/* ... */}
