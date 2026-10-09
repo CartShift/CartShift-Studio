@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const f = vi.hoisted(() => ({
-  getDocs: vi.fn(), where: vi.fn(), orderBy: vi.fn(), startAfter: vi.fn(),
+  getDocs: vi.fn(), getCountFromServer: vi.fn(), where: vi.fn(), orderBy: vi.fn(), startAfter: vi.fn(),
   query: vi.fn(), limit: vi.fn(), docId: vi.fn(),
   getPortalUser: vi.fn(),
 }));
@@ -10,6 +10,7 @@ vi.mock('firebase/firestore', () => ({
   collection: vi.fn((_db: unknown, name: string) => ({ name })),
   documentId: f.docId,
   getDocs: f.getDocs,
+  getCountFromServer: f.getCountFromServer,
   where: f.where,
   orderBy: f.orderBy,
   startAfter: f.startAfter,
@@ -26,7 +27,7 @@ vi.mock('@/lib/firebase', () => ({
 }));
 vi.mock('@/lib/services/portal-users', () => ({ getPortalUser: f.getPortalUser }));
 
-import { getPortalRequestPage, normalizeRequestPageSize, assertRequestCursor } from '@/lib/services/portal-request-pages';
+import { getPortalRequestPage, getPortalRequestCountStats, normalizeRequestPageSize, assertRequestCursor } from '@/lib/services/portal-request-pages';
 
 describe('cursor paging of portal requests', () => {
   beforeEach(() => {
@@ -58,6 +59,19 @@ describe('cursor paging of portal requests', () => {
     expect(page.hasMore).toBe(true);
     expect(page.nextCursor).toEqual({ id: 'b', seconds: 100, nanoseconds: 0 });
     expect(f.limit).toHaveBeenCalledWith(3);
+  });
+
+  it('counts statuses with aggregate queries without downloading request documents', async () => {
+    f.getCountFromServer
+      .mockResolvedValueOnce({ data: () => ({ count: 17 }) })
+      .mockResolvedValueOnce({ data: () => ({ count: 6 }) })
+      .mockResolvedValueOnce({ data: () => ({ count: 2 }) })
+      .mockResolvedValueOnce({ data: () => ({ count: 5 }) });
+    await expect(getPortalRequestCountStats('org-a')).resolves.toEqual({
+      total: 17, active: 6, inReview: 2, completed: 5,
+    });
+    expect(f.getDocs).not.toHaveBeenCalled();
+    expect(f.getCountFromServer).toHaveBeenCalledTimes(4);
   });
 
   it('refuses unscoped cross-tenant reads by clients', async () => {

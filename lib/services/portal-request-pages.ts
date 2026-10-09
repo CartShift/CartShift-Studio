@@ -1,5 +1,5 @@
 import {
-  collection, documentId, getDocs, limit, orderBy, query, startAfter,
+  collection, documentId, getCountFromServer, getDocs, limit, orderBy, query, startAfter,
   Timestamp, where, type QueryConstraint,
 } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb, waitForAuth } from '@/lib/firebase';
@@ -89,4 +89,34 @@ export function assertRequestCursor(cursor: RequestPageCursor): void {
       !/^[A-Za-z0-9_-]{1,1500}$/.test(cursor.id)) {
     throw new Error('INVALID_REQUEST_CURSOR');
   }
+}
+
+/**
+ * Read-only Firestore aggregation counts. No request document payloads are
+ * downloaded merely to render overview numbers.
+ */
+export async function getPortalRequestCountStats(orgId: string): Promise<{
+  total: number;
+  active: number;
+  inReview: number;
+  completed: number;
+}> {
+  await waitForAuth();
+  if (!getFirebaseAuth().currentUser) throw new Error('UNAUTHENTICATED');
+  if (!orgId) throw new Error('INVALID_ORGANIZATION');
+
+  const collectionRef = collection(getFirestoreDb(), 'portal_requests');
+  const scoped = where('orgId', '==', orgId);
+  const [total, active, inReview, completed] = await Promise.all([
+    getCountFromServer(query(collectionRef, scoped)),
+    getCountFromServer(query(collectionRef, scoped, where('status', 'in', ['NEW', 'QUEUED', 'IN_PROGRESS']))),
+    getCountFromServer(query(collectionRef, scoped, where('status', '==', 'IN_REVIEW'))),
+    getCountFromServer(query(collectionRef, scoped, where('status', 'in', ['DELIVERED', 'CLOSED', 'PAID']))),
+  ]);
+  return {
+    total: total.data().count,
+    active: active.data().count,
+    inReview: inReview.data().count,
+    completed: completed.data().count,
+  };
 }
