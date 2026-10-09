@@ -54,15 +54,13 @@ async function main() {
     await assertFails(client.doc('portal_comments/internalA').get());
     await assertFails(outsider.doc('portal_comments/publicA').get());
     await assertSucceeds(agency.doc('portal_comments/internalA').get());
-    await assertSucceeds(client.collection('portal_comments')
+    await assertFails(client.collection('portal_comments')
       .where('orgId', '==', 'orgA').where('requestId', '==', 'reqA')
       .where('isInternal', '==', false).get());
-    // Even if the emulator permits the broader query, it must never return internal notes.
-    const broaderComments = await client.collection('portal_comments')
-      .where('orgId', '==', 'orgA').where('requestId', '==', 'reqA').get();
-    if (broaderComments.docs.some(doc => doc.id === 'internalA')) {
-      throw new Error('Client was able to list internal comments');
-    }
+    await assertFails(client.collection('portal_comments')
+      .where('orgId', '==', 'orgA').where('requestId', '==', 'reqA').get());
+    await assertSucceeds(agency.collection('portal_comments')
+      .where('orgId', '==', 'orgA').get());
     await assertFails(client.doc('portal_comments/publicA').update({ isInternal: true }));
     await assertFails(client.doc('portal_comments/internalA').update({ content: 'Tampered' }));
     await assertFails(client.collection('portal_comments').add({
