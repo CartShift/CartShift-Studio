@@ -16,6 +16,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useRecentSearches } from '@/lib/hooks/useRecentSearches';
 import { Input } from '@/components/ui/Input';
 import type { LucideIcon } from 'lucide-react';
+import { activeItem, moveActiveIndex } from '@/lib/utils/list-navigation';
 
 interface GlobalSearchProps { orgId?: string; isAgency?: boolean; className?: string; onSelect?: () => void }
 type Result = { id: string; title: string; description: string; type: 'request' | 'client' | 'project' | 'proposal'; href: string; orgId?: string; icon: LucideIcon };
@@ -97,11 +98,26 @@ export function GlobalSearch({ isAgency = false, className, onSelect }: GlobalSe
         onChange={event => { setQuery(event.target.value); setIsOpen(true); }}
         onFocus={() => setIsOpen(true)}
         onKeyDown={event => {
-          if (event.key === 'Escape') { setIsOpen(false); inputRef.current?.blur(); }
-          if (!isOpen || results.length === 0) return;
-          if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex(index => (index + 1) % results.length); }
-          if (event.key === 'ArrowUp') { event.preventDefault(); setActiveIndex(index => (index - 1 + results.length) % results.length); }
-          if (event.key === 'Enter') { event.preventDefault(); openResult(results[activeIndex] || results[0]); }
+          if (event.nativeEvent.isComposing) return;
+          if (event.key === 'Escape') {
+            setIsOpen(false);
+            inputRef.current?.blur();
+            return;
+          }
+          if (!isOpen || !results.length) return;
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActiveIndex(index =>
+              moveActiveIndex(index, results.length, event.key === 'ArrowDown' ? 1 : -1)
+            );
+          }
+          if (event.key === 'Enter') {
+            const result = activeItem(results, activeIndex);
+            if (result) {
+              event.preventDefault();
+              openResult(result);
+            }
+          }
         }}
         placeholder={t('search')} leftIcon={<Search size={18} className="text-surface-400" />} className="min-h-11"
       />
