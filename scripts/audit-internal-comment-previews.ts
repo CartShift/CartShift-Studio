@@ -2,7 +2,7 @@
  * Read-only privacy audit for historical portal_requests.lastComment previews.
  * Deliberately has no --apply implementation and never outputs comment text.
  *
- * Run: pnpm audit:portal:private-previews --max-docs=1000
+ * Run: pnpm audit:portal:private-previews --project=<staging-project-id> --max-docs=1000
  * Supply FIREBASE_SERVICE_ACCOUNT_KEY or Application Default Credentials.
  */
 import * as admin from 'firebase-admin';
@@ -28,8 +28,16 @@ function getLimit(): number {
 
 async function main() {
   const maxDocs = getLimit();
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
-  if (!projectId) throw new Error('A Firebase project ID is required.');
+  // Explicit target prevents silently auditing a different Firebase project.
+  const projectArgument = process.argv.find(arg => arg.startsWith('--project='));
+  const projectId = projectArgument?.slice('--project='.length);
+  if (!projectId || !/^[a-z0-9][a-z0-9-]{3,63}$/i.test(projectId)) {
+    throw new Error('Pass an explicit Firebase project ID via --project=<project-id>.');
+  }
+  const configuredProject = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
+  if (configuredProject && configuredProject !== projectId) {
+    throw new Error('The explicit Firebase project ID does not match the configured environment.');
+  }
   if (!admin.apps.length) {
     const credentials = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
     const credential = credentials
