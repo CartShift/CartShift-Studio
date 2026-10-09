@@ -154,12 +154,41 @@ export async function createComment(
 // READ
 // ============================================
 
+async function fetchPublicRequestComments(requestId: string, orgId?: string): Promise<Comment[]> {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('Authentication required to read comments');
+  const token = await user.getIdToken();
+  const params = new URLSearchParams({ request_id: requestId });
+  if (orgId) params.set('org_id', orgId);
+  const response = await fetch('/api/portal/public-comments?' + params.toString(), {
+    headers: { Authorization: 'Bearer ' + token },
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error('Unable to load public comments');
+  const payload = await response.json() as { comments: Array<{
+    id: string; requestId: string; orgId: string; userId: string; userName: string;
+    content: string; isInternal: boolean; userPhotoUrl?: string;
+    attachmentIds: string[]; parentId?: string; reactions?: Record<string, string[]>;
+    mentions?: string[]; createdAtMs: number | null; updatedAtMs: number | null;
+  }> };
+  return payload.comments.map(record => ({
+    id: record.id, requestId: record.requestId, orgId: record.orgId,
+    userId: record.userId, userName: record.userName,
+    userPhotoUrl: record.userPhotoUrl, content: record.content, isInternal: false,
+    attachmentIds: record.attachmentIds, parentId: record.parentId,
+    reactions: record.reactions || {}, mentions: record.mentions || [],
+    createdAt: record.createdAtMs ? Timestamp.fromMillis(record.createdAtMs) : Timestamp.now(),
+    updatedAt: record.updatedAtMs ? Timestamp.fromMillis(record.updatedAtMs) : undefined,
+  }));
+}
+
 export async function getCommentsByRequest(
   requestId: string,
   includeInternal = false,
   orgId?: string
 ): Promise<Comment[]> {
   await waitForAuth();
+  if (!includeInternal) return fetchPublicRequestComments(requestId, orgId);
   const db = getFirestoreDb();
   try {
     // Build query constraints array
@@ -299,6 +328,7 @@ export function subscribeToRequestComments(
   orgId?: string
 ): () => void {
   let unsubscribe: (() => void) | null = null;
+  let pollingTimer: ReturnType<typeof setInterval> | null = null;
   let isUnsubscribed = false;
   const showInternalComments = Boolean(includeInternal);
 
@@ -306,7 +336,19 @@ export function subscribeToRequestComments(
     .then(() => {
       if (isUnsubscribed) return;
       const db = getFirestoreDb();
-      // Firestore rules prevent clients from reading internal agency comments.
+      if (!showInternalComments) {
+        const refresh = () => {
+          void fetchPublicRequestComments(requestId, orgId)
+            .then(comments => { if (!isUnsubscribed) callback(comments); })
+            .catch(() => { if (!isUnsubscribed) callback([]); });
+        };
+        unsubscribe = onSnapshot(doc(db, 'portal_requests', requestId), refresh,
+          () => { if (!isUnsubscribed) callback([]); });
+        pollingTimer = setInterval(refresh, 30000);
+        refresh();
+        return;
+      }
+      // Agency-only internal comment subscription.
       // Apply the filter at the database, not only after receiving the snapshot.
       const q = query(
         collection(db, COMMENTS_COLLECTION),
@@ -377,6 +419,7 @@ export function subscribeToRequestComments(
 
   return () => {
     isUnsubscribed = true;
+    if (pollingTimer) clearInterval(pollingTimer);
     if (unsubscribe) {
       unsubscribe();
     }
