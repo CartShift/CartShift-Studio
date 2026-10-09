@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { createRequestFormSchema, type RequestFormData } from './request-form-schema';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
@@ -33,13 +33,6 @@ import { usePortalTranslations } from '@/lib/i18n/translations';
 import { uploadMultipleFiles, formatFileSize } from '@/lib/services/portal-files';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { CardSectionTitle } from '@/components/ui/Card';
-
-type RequestFormData = {
-  title: string;
-  description: string;
-  type: 'feature' | 'bug' | 'optimization' | 'content' | 'design' | 'other';
-  priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
-};
 
 interface RequestFormProps {
   orgId: string;
@@ -73,16 +66,11 @@ export const RequestForm = ({
 
   const requestSchema = useMemo(
     () =>
-      z.object({
-        title: z
-          .string()
-          .min(5, t('requests.form.errors.titleShort'))
-          .max(200, t('requests.form.errors.titleLong')),
-        description: z.string().min(20, t('requests.form.errors.descShort')),
-        type: z.enum(['feature', 'bug', 'optimization', 'content', 'design', 'other'], {
-          message: t('requests.form.errors.typeRequired'),
-        }),
-        priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']),
+      createRequestFormSchema({
+        titleShort: t('requests.form.errors.titleShort'),
+        titleLong: t('requests.form.errors.titleLong'),
+        descriptionShort: t('requests.form.errors.descShort'),
+        typeRequired: t('requests.form.errors.typeRequired'),
       }),
     [t]
   );
@@ -408,7 +396,7 @@ export const RequestForm = ({
             disabled={loading}
             className="flex-1 md:flex-none font-outfit"
           >
-            {t('common.cancel')}
+            {mode === 'create' ? t('requests.form.cancel') : t('common.cancel')}
           </Button>
           <Button
             type="submit"

@@ -8,6 +8,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { ProposalContentEditor } from '@/components/portal/pricing/ProposalContentEditor';
+import { sharedProposalFields, sharedProposalLineItemFields } from '@/components/portal/pricing/proposal-form-fields';
 import { calculateEstimate, emptyProposalContent, type ProposalContent } from '@/lib/domain/proposal-content';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -156,35 +157,23 @@ export default function CreatePricingForm() {
   const pricingSchema = useMemo(
     () =>
       z.object({
+        ...sharedProposalFields(),
         title: z
           .string()
           .min(3, 'Title must be at least 3 characters')
           .max(200, t('pricing.form.errors.titleTooLong')),
-        description: z.string().optional(),
         lineItems: z
           .array(
             z.object({
-              description: z.string().min(1, t('common.descriptionRequired')),
-              quantity: z.number().min(1, t('pricing.form.errors.quantityMustBeAtLeast1')),
-              unitPrice: z.number().min(0, 'Price must be positive'),
-              notes: z.string().optional(),
-              requestId: z.string().optional(),
-              pricingType: z.enum(['fixed', 'hourly', 'estimate']).optional(),
+              ...sharedProposalLineItemFields({
+                descriptionRequired: t('common.descriptionRequired'),
+                quantityMinimum: t('pricing.form.errors.quantityMustBeAtLeast1'),
+                priceMinimum: 'Price must be positive',
+              }),
             })
           )
           .min(1, 'Add at least one line item'),
-        currency: z.enum(['USD', 'ILS', 'EUR']),
-        validUntil: z.string().optional(),
-        timeframe: z.string().trim().min(1),
-        workDeadline: z.string().optional(),
-        assignedTo: z.string().trim().min(1),
-        clientName: z.string().optional(),
         clientEmail: z.string().email().optional().or(z.literal('')),
-        agencyNotes: z.string().optional(),
-        includeTax: z.boolean(),
-        terms: z.string().min(1),
-        paymentRequired: z.boolean(),
-        depositAmount: z.number().min(0),
         proposalContent: z.custom<ProposalContent>().optional(),
       }),
     [t]
