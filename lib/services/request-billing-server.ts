@@ -136,6 +136,9 @@ async function assertRequestAccess(uid: string, request: RequestDoc) {
   const user = await getUser(uid);
   if (user?.isAgency === true || user?.accountType === 'AGENCY') return;
   const member = await db().collection('portal_members').doc(`${request.orgId}_${uid}`).get();
+  if (member.exists && member.data()?.removedAt) {
+    throw new Error('FORBIDDEN');
+  }
   if (
     !member.exists &&
     request.createdBy !== uid &&
