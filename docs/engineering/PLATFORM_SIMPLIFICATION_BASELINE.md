@@ -53,6 +53,20 @@ A green `quality` check **must not** be described as proof of successful full ty
 - The portal has both Sonner-based `portalToast` and a legacy `useToast` custom wrapper. A full unification is deferred until UI parity and proper toast theming are verified; do not replace a working branded toast with an unstyled one merely to remove code.
 - The full proposal editor has coupled UI, currency and commercial workflow. The common validation extraction is a safe precursor; a shared renderer requires tests and a narrower design review.
 
+## Integrated implementation and library decisions
+
+Integration PR [#42](https://github.com/CartShift/CartShift-Studio/pull/42) combines #36–#41 into an independently testable branch and extends the initial work with:
+
+- A **shared proposal line-items and totals editor** for creation and editing, while keeping persistence, taxes, deposits and lifecycle rules in their existing containers.
+- Shared search request classification and explicit role checks instead of defaulting a missing agency role to owner.
+- One branded Sonner notification emitter shared by portal helpers and legacy hook callers.
+- Focused parser, pagination, role-filter and editor interaction tests, including LTR/RTL behavior.
+- A **temporary integration-only full verification workflow**, to be removed before merge.
+
+**Dependency decision:** Keep Radix, TanStack Query, React Hook Form, Zod and Sonner. The audited source did not justify another UI kit or global state library. cmdk, Driver.js, TanStack Table and Floating UI remain deferred until a measured focused spike proves a maintenance/accessibility advantage. No new runtime dependencies were needed.
+
+**CI note:** A green per-PR quality check is not full verification. Use the last commit of #42 for complete lint, TypeScript, Vitest, translation and build status.
+
 ## Remaining gates before claiming "complete"
 
 - [ ] Execute `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm test:run`, `pnpm i18n:validate`, and `pnpm build` on an up-to-date main + integration branch (with safe CI env); capture exact output.
