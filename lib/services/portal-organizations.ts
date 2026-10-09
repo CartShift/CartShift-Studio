@@ -15,7 +15,6 @@ import {
   serverTimestamp,
   Timestamp,
   arrayUnion,
-  arrayRemove,
 } from 'firebase/firestore';
 import { getFirestoreDb, getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';

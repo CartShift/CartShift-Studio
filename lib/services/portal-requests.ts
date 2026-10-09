@@ -2,7 +2,6 @@ import { canStartProposalWork } from '@/lib/domain/proposal-content';
 import {
   collection,
   doc,
-  addDoc,
   writeBatch,
   updateDoc,
   deleteDoc,
