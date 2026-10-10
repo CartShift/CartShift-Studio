@@ -83,8 +83,14 @@ export async function POST(request: Request) {
       return fail(body.id, -32601, 'Method not found');
   }
 }
-export async function GET() {
-  return new Response('MCP uses POST JSON-RPC', { status: 405, headers: { Allow: 'POST' } });
+// Challenge unauthenticated discovery probes before returning the unsupported-SSE
+// response. Installers must see the protected-resource metadata to start OAuth.
+export async function GET(request: Request) {
+  try { await requireMcpToken(request.headers.get('authorization')); }
+  catch { return unauthorized(); }
+  return new Response('MCP uses POST JSON-RPC', {
+    status: 405, headers: { Allow: 'POST', 'Cache-Control': 'no-store' },
+  });
 }
 export async function DELETE() {
   return new Response(null, { status: 405, headers: { Allow: 'POST' } });

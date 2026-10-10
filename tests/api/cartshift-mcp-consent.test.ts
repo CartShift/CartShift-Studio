@@ -29,7 +29,7 @@ vi.mock('@/lib/utils/api-rate-limit', () => ({ enforceApiRateLimit: async () => 
 import { POST as register } from '@/app/api/cartshift-mcp/oauth/register/route';
 import { GET as consentPage, POST as consent } from '@/app/api/cartshift-mcp/oauth/authorize/route';
 import { POST as exchange } from '@/app/api/cartshift-mcp/oauth/token/route';
-import { POST as mcp } from '@/app/api/cartshift-mcp/mcp/route';
+import { GET as mcpGet, POST as mcp } from '@/app/api/cartshift-mcp/mcp/route';
 
 const origin = 'https://portal.cart-shift.com';
 const resource = origin + '/api/cartshift-mcp/mcp';
@@ -73,6 +73,17 @@ beforeEach(() => {
 });
 
 describe('CartShift complete OAuth consent flow', () => {
+  it('advertises OAuth metadata to unauthenticated MCP GET discovery probes', async () => {
+    for (const headers of [{}, { Authorization: 'Bearer invalid' }]) {
+      const res = await mcpGet(new Request(resource, { headers }));
+      expect(res.status).toBe(401);
+      expect(res.headers.get('WWW-Authenticate')).toContain(
+        'resource_metadata="' + origin + '/.well-known/oauth-protected-resource"'
+      );
+      expect(res.headers.get('Cache-Control')).toBe('no-store');
+    }
+  });
+
   it('submits the rendered form, exchanges the code once and discovers authenticated MCP tools', async () => {
     const { fields, client } = await openConsent();
     const approved = await submit(fields);
@@ -91,6 +102,10 @@ describe('CartShift complete OAuth consent flow', () => {
     const issued = await exchange(tokenRequest());
     expect(issued.status).toBe(200);
     const token = await issued.json();
+    const authenticatedDiscovery = await mcpGet(new Request(resource, {
+      headers: { Authorization: 'Bearer ' + token.access_token },
+    }));
+    expect(authenticatedDiscovery.status).toBe(405); // GET SSE remains unsupported.
     const tools = await mcp(new Request(resource, {
       method: 'POST', headers: { Authorization: 'Bearer ' + token.access_token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
