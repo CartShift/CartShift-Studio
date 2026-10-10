@@ -24,14 +24,23 @@ function fail(id: unknown, code: number, message: string) {
   });
 }
 
+function authenticationRequired(id: unknown, error: 'invalid_token' | 'insufficient_scope', scope?: string) {
+  // ChatGPT scans tools before a user connects. Only tool invocations need
+  // credentials; this challenge lets ChatGPT offer an OAuth sign-in UI.
+  const challenge = 'Bearer resource_metadata="' + metadataUrl + '", error="' + error +
+    '", error_description="Connect a CartShift agency account to use this tool"' +
+    (scope ? ', scope="' + scope + '"' : '');
+  return reply(id, {
+    content: [{ type: 'text', text: 'CartShift authentication required.' }],
+    isError: true,
+    _meta: { 'mcp/www_authenticate': [challenge] },
+  });
+}
+
 export async function POST(request: Request) {
   if (Number(request.headers.get('content-length') || 0) > 102400) {
     return fail(null, -32600, 'Request too large');
   }
-  let grant;
-  try { grant = await requireMcpToken(request.headers.get('authorization')); }
-  catch { return unauthorized(); }
-
   let body: { id?: unknown; jsonrpc?: string; method?: string; params?: Record<string, unknown> };
   try { body = await request.json(); }
   catch { return fail(null, -32700, 'Parse error'); }
@@ -60,14 +69,13 @@ export async function POST(request: Request) {
       if (typeof name !== 'string') return fail(body.id, -32602, 'Missing tool name');
       const tool = TOOL_DEFS.find(t => t.name === name);
       if (!tool) return fail(body.id, -32601, 'Tool not found');
+      // Initialize/tools/list expose only public tool metadata. All data access
+      // and mutations require an authenticated agency user and a matching scope.
+      let grant;
+      try { grant = await requireMcpToken(request.headers.get('authorization')); }
+      catch { return authenticationRequired(body.id, 'invalid_token', tool.scope); }
       if (!grant.scope.includes(tool.scope)) {
-        return Response.json({ jsonrpc: '2.0', id: body.id,
-          error: { code: -32003, message: 'Insufficient OAuth scope' } }, {
-          status: 403, headers: {
-            'WWW-Authenticate': 'Bearer error="insufficient_scope", scope="' + tool.scope +
-              '", resource_metadata="' + metadataUrl + '"',
-          },
-        });
+        return authenticationRequired(body.id, 'insufficient_scope', tool.scope);
       }
       try {
         const result = await callTool(name, body.params?.arguments || {}, grant);
