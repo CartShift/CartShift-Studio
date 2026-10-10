@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo, type CSSProperties } from 'react';
+import { useMemo } from 'react';
 import FeaturedShowcase from './FeaturedShowcase';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDown, ArrowUpRight, Download, Mail, MapPin } from 'lucide-react';
@@ -208,7 +208,7 @@ export default function YotamProfile() {
             <span className="max-w-[15rem] text-end leading-5 sm:max-w-none">
               {copy.availability}
               <br />
-              Full-stack · Product · Commerce · Integrations
+              {isHebrew ? 'מוצר · Full-stack · אינטגרציות' : 'Full-stack · Product · Commerce · Integrations'}
             </span>
           </div>
 
@@ -258,7 +258,7 @@ export default function YotamProfile() {
             </motion.div>
             <div className="yotam-hero-proof mt-8" aria-label={isHebrew ? 'פרטים מקצועיים' : 'Professional snapshot'}>
               <span><strong>10+</strong> {copy.signalExperience}</span>
-              <span><strong>End-to-end</strong> · Product · Engineering</span>
+              <span><strong>{isHebrew ? 'מקצה לקצה' : 'End-to-end'}</strong> · {isHebrew ? 'מוצר · הנדסה' : 'Product · Engineering'}</span>
               <span>{copy.signalAuthorization}</span>
             </div>
           </div>
@@ -442,7 +442,7 @@ export default function YotamProfile() {
                       viewport: { once: true, amount: 0.08 },
                       transition: { duration: 0.5, delay: (index % 2) * 0.04, ease },
                     })}
-                style={{ '--y-card-accent': project.accent } as CSSProperties}
+                style={{ borderTopColor: project.accent }}
                 className="yotam-project-card group overflow-hidden border border-black/15 bg-[#f2efe9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6257d8]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden border-b border-black/12 bg-[#dedbd4]">
