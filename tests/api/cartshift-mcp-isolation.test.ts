@@ -57,12 +57,53 @@ describe('CartShift MCP tenant isolation', () => {
     await expect(agencyActor('agency-user')).rejects.toThrow('FORBIDDEN');
   });
 
-  it('challenges unauthenticated MCP traffic before processing JSON-RPC', async () => {
-    const response = await POST(new Request('https://portal.cart-shift.com/api/cartshift-mcp/mcp', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
-    }));
-    expect(response.status).toBe(401);
-    expect(response.headers.get('www-authenticate')).toContain('resource_metadata=');
+  it('allows public MCP initialization and tool discovery without accessing tenant data', async () => {
+    mocks.orgGet.mockClear();
+    mocks.requestGet.mockClear();
+    for (const method of ['initialize', 'tools/list'] as const) {
+      const response = await POST(new Request('https://portal.cart-shift.com/api/cartshift-mcp/mcp', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 1, method,
+          ...(method === 'initialize' ? { params: { protocolVersion: '2025-11-25' } } : {}),
+        }),
+      }));
+      expect(response.status).toBe(200);
+      const payload = await response.json();
+      if (method === 'tools/list') {
+        expect(payload.result.tools.find((tool: { name: string }) => tool.name === 'list_clients')
+          .securitySchemes).toEqual([{ type: 'oauth2', scopes: ['clients:read'] }]);
+      } else {
+        expect(payload.result.serverInfo.name).toBe('cartshift');
+      }
+    }
+    expect(mocks.orgGet).not.toHaveBeenCalled();
+    expect(mocks.requestGet).not.toHaveBeenCalled();
+  });
+
+  it('returns OAuth challenge metadata without executing unauthenticated tools', async () => {
+    for (const authorization of [undefined, 'Bearer invalid']) {
+      mocks.orgGet.mockClear();
+      mocks.requestGet.mockClear();
+      const response = await POST(new Request('https://portal.cart-shift.com/api/cartshift-mcp/mcp', {
+        method: 'POST', headers: {
+          'Content-Type': 'application/json',
+          ...(authorization ? { Authorization: authorization } : {}),
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 7, method: 'tools/call',
+          params: { name: 'list_clients', arguments: {} },
+        }),
+      }));
+      expect(response.status).toBe(200);
+      const result = (await response.json()).result;
+      expect(result.isError).toBe(true);
+      const challenge = result._meta['mcp/www_authenticate'][0] as string;
+      expect(challenge).toContain('resource_metadata="https://portal.cart-shift.com/.well-known/oauth-protected-resource"');
+      expect(challenge).toContain('error="invalid_token"');
+      expect(challenge).toContain('error_description=');
+      expect(mocks.orgGet).not.toHaveBeenCalled();
+      expect(mocks.requestGet).not.toHaveBeenCalled();
+    }
   });
 });
