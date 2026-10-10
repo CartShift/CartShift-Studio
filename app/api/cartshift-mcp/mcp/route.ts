@@ -4,15 +4,6 @@ import { TOOL_DEFS, callTool } from '@/lib/mcp/tools';
 export const runtime = 'nodejs';
 
 const metadataUrl = MCP_ORIGIN + '/.well-known/oauth-protected-resource';
-function unauthorized(error = 'invalid_token') {
-  return Response.json({ error: 'unauthorized' }, {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Bearer error="' + error + '", resource_metadata="' + metadataUrl + '"',
-      'Cache-Control': 'no-store',
-    },
-  });
-}
 function reply(id: unknown, result: unknown) {
   return Response.json({ jsonrpc: '2.0', id, result }, {
     headers: { 'Cache-Control': 'no-store', 'MCP-Protocol-Version': '2025-11-25' },
@@ -91,11 +82,9 @@ export async function POST(request: Request) {
       return fail(body.id, -32601, 'Method not found');
   }
 }
-// Challenge unauthenticated discovery probes before returning the unsupported-SSE
-// response. Installers must see the protected-resource metadata to start OAuth.
-export async function GET(request: Request) {
-  try { await requireMcpToken(request.headers.get('authorization')); }
-  catch { return unauthorized(); }
+// Streamable HTTP without SSE: let clients fall back from GET to POST.
+// OAuth linking is initiated by the tool-level challenge on POST tools/call.
+export async function GET() {
   return new Response('MCP uses POST JSON-RPC', {
     status: 405, headers: { Allow: 'POST', 'Cache-Control': 'no-store' },
   });
