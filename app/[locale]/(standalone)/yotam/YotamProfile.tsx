@@ -148,7 +148,7 @@ export default function YotamProfile() {
             <span>Yotam</span><span className="text-[#bdb2ff]">.</span><span className="hidden sm:inline">Faraggi</span>
           </a>
           <div className="flex items-center gap-1.5 sm:gap-4 lg:gap-7">
-            <a href="#work" className="yotam-header-link inline-flex min-h-11 items-center px-1.5 text-[12px] sm:px-2 sm:text-[13px]">{copy.work}</a>
+            <a href="#work" className="yotam-header-link inline-flex min-h-11 items-center px-1 text-[12px] sm:px-2 sm:text-[13px]"><span className="hidden sm:inline">{copy.work}</span><span className="sm:hidden">{isHebrew ? 'עבודות' : 'Work'}</span></a>
             <a href="#experience" className="yotam-header-link hidden min-h-11 items-center text-[13px] md:inline-flex">{copy.experience}</a>
             <a href="#capabilities" className="yotam-header-link hidden min-h-11 items-center text-[13px] lg:inline-flex">{copy.capabilities}</a>
             <a
@@ -166,6 +166,15 @@ export default function YotamProfile() {
               <Download className="size-4" />
               <span className="hidden sm:inline">{copy.download}</span>
               <span className="sm:hidden">CV</span>
+            </a>
+            <a
+              href={'/' + (isHebrew ? 'en' : 'he') + '/yotam'}
+              hrefLang={isHebrew ? 'en' : 'he'}
+              lang={isHebrew ? 'en' : 'he'}
+              aria-label={isHebrew ? 'Switch to English' : 'מעבר לעברית'}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/30 px-2.5 text-xs font-semibold transition-colors hover:bg-white hover:text-[#171719]"
+            >
+              {isHebrew ? 'EN' : 'HE'}
             </a>
           </div>
         </nav>
@@ -368,7 +377,7 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="profile" className="yotam-profile-section "px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
+      <section id="profile" className="yotam-profile-section px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <motion.div
           {...sectionReveal}
           className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
@@ -400,7 +409,7 @@ export default function YotamProfile() {
         </motion.div>
       </section>
 
-      <section id="more-work" className="yotam-work-section "bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
+      <section id="more-work" className="yotam-work-section bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1680px]">
           <motion.div
             {...sectionReveal}
