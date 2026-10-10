@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
+import FeaturedShowcase from './FeaturedShowcase';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDown, ArrowUpRight, Download, Mail, MapPin } from 'lucide-react';
 import { useLocale, useMessages } from 'next-intl';
@@ -15,7 +16,8 @@ export default function YotamProfile() {
   const messages = useMessages() as { cv: RawCVMessages };
   const cv = useMemo(() => buildCVData(messages.cv), [messages]);
   const projects = useMemo(() => getPortfolioShowcases(locale), [locale]);
-  const selectedProjects = projects;
+  const featuredProject = projects.find(project => project.slug === 'starlinker') ?? projects[0];
+  const selectedProjects = projects.filter(project => project.slug !== featuredProject?.slug);
   const reduceMotion = useReducedMotion();
   const isHebrew = locale === 'he';
   const profileHref = `/${locale}/yotam`;
@@ -31,9 +33,9 @@ export default function YotamProfile() {
         profile: 'פרופיל',
         contact: 'יצירת קשר',
         download: 'הורדת CV',
-        scroll: 'לפרופיל',
+        scroll: 'לניסיון',
         kicker: "יותם פרג'י · Senior Product Engineer · ברלין",
-        headline: 'בונה פתרונות מורכבים שעובדים באמת בפרודקשן.',
+        headline: 'אני בונה את המוצר כולו. מהרעיון הראשון ועד לפרודקשן.',
         intro:
           'יותר מעשור בהנדסת תוכנה בחברות מוצר, מערכות enterprise, מסחר ומוצרים עצמאיים. אני עובד לאורך כל המערכת, מ-frontend ו-backend דרך APIs, אינטגרציות ו-cloud, מדרישות לא מסודרות ועד מוצר אמין בפרודקשן.',
         profileTitle: 'מוצר, ארכיטקטורה והוצאה לפועל באותה יד.',
@@ -51,9 +53,9 @@ export default function YotamProfile() {
         recentTitle: 'הניסיון שמגדיר את העבודה שלי היום.',
         earlierTitle: 'ניסיון הנדסי מוקדם',
         earlierIntro: 'Enterprise integrations, software development ויזמות טכנולוגית משנת 2011.',
-        workTitle: 'מוצרים שממחישים ownership אמיתי.',
+        workTitle: 'עוד מוצרים. אתגרים שונים. אותה מחויבות.',
         workIntro:
-          'עבודה עצמאית מהשנים האחרונות שבה לקחתי אחריות על כל הלולאה: הגדרת הבעיה, UX, ארכיטקטורה, פיתוח, deployment ואיטרציה.',
+          'מבחר מוצרים בתחומי web, Android וטכנולוגיה יצירתית, עם אחריות על כל מחזור החיים של המוצר.',
         roleLabel: 'התפקיד שלי',
         viewCaseStudy: 'ל-Case study',
         clientWorkEyebrow: 'עבודה מסחרית',
@@ -74,9 +76,9 @@ export default function YotamProfile() {
         profile: 'Profile',
         contact: 'Contact',
         download: 'Download CV',
-        scroll: 'Profile',
+        scroll: 'Experience',
         kicker: 'Yotam Faraggi · Senior Product Engineer · Berlin',
-        headline: 'I turn complex product problems into reliable production software.',
+        headline: 'I build the whole product. From first idea to production.',
         intro:
           '10+ years in software engineering across product companies, enterprise systems, commerce and founder-led software. I work across the full system, from frontend and backend to APIs, integrations and cloud, taking ambiguous requirements through production and iteration.',
         profileTitle: 'Product, architecture and execution in one loop.',
@@ -94,9 +96,9 @@ export default function YotamProfile() {
         recentTitle: 'The experience that defines how I work today.',
         earlierTitle: 'Earlier engineering',
         earlierIntro: 'Enterprise integrations, software development and entrepreneurship from 2011 onward.',
-        workTitle: 'Products that show real ownership.',
+        workTitle: 'More products. Different problems. The same ownership.',
         workIntro:
-          'Recent independent products where I owned the full loop: problem framing, UX, architecture, implementation, deployment and iteration.',
+          'A selection of product work spanning web platforms, Android and creative technology, with ownership across the complete product lifecycle.',
         roleLabel: 'My role',
         viewCaseStudy: 'View case study',
         clientWorkEyebrow: 'Commercial delivery',
@@ -130,43 +132,38 @@ export default function YotamProfile() {
   return (
     <main
       id="top"
-      className="overflow-x-clip bg-[#eceae5] text-[#1d1d1f] selection:bg-[#6257d8] selection:text-white"
+      className="yotam-portfolio overflow-x-clip bg-[#eceae5] text-[#1d1d1f] selection:bg-[#6257d8] selection:text-white"
       dir={isHebrew ? 'rtl' : 'ltr'}
     >
-      <header className="absolute inset-x-0 top-0 z-50 px-5 py-5 text-white sm:px-8 sm:py-7 lg:px-12">
+      <a href="#work" className="yotam-skip">{isHebrew ? "דלג לעבודות" : "Skip to featured work"}</a>
+      <header className="yotam-header absolute inset-x-0 top-0 z-50 px-5 py-5 text-white sm:px-8 sm:py-7 lg:px-12">
         <nav
-          className="mx-auto flex max-w-[1680px] items-center justify-between text-[10px] font-semibold uppercase tracking-[0.16em] sm:text-[11px]"
+          className="mx-auto flex max-w-[1680px] items-center justify-between gap-3 text-xs font-semibold tracking-[0.045em]"
           aria-label={isHebrew ? 'ניווט בפרופיל המקצועי' : 'Professional profile navigation'}
         >
           <a
             href={profileHref}
-            className="group flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold tracking-[-0.035em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base"
           >
-            <span className="text-white/50">©</span>
-            <span className="transition-opacity group-hover:opacity-60">Yotam Faraggi</span>
+            <span>Yotam</span><span className="text-[#bdb2ff]">.</span><span className="hidden sm:inline">Faraggi</span>
           </a>
-          <div className="flex items-center gap-4 sm:gap-7">
-            <a href="#experience" className="hidden transition-opacity hover:opacity-60 md:inline">
-              {copy.experience}
-            </a>
-            <a href="#work" className="hidden transition-opacity hover:opacity-60 md:inline">
-              {copy.work}
-            </a>
-            <a href="#capabilities" className="hidden transition-opacity hover:opacity-60 lg:inline">
-              {copy.capabilities}
-            </a>
+          <div className="flex items-center gap-1.5 sm:gap-4 lg:gap-7">
+            <a href="#work" className="yotam-header-link inline-flex min-h-11 items-center px-1.5 text-[12px] sm:px-2 sm:text-[13px]">{copy.work}</a>
+            <a href="#experience" className="yotam-header-link hidden min-h-11 items-center text-[13px] md:inline-flex">{copy.experience}</a>
+            <a href="#capabilities" className="yotam-header-link hidden min-h-11 items-center text-[13px] lg:inline-flex">{copy.capabilities}</a>
             <a
-              href={`mailto:${cv.email}`}
-              className="hidden items-center gap-2 text-white/78 transition-colors hover:text-white sm:inline-flex"
+              href={'mailto:' + cv.email}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/25 px-2.5 text-white transition-colors hover:border-white/70 hover:bg-white/10 sm:px-3.5"
+              aria-label={copy.contact}
             >
-              <Mail className="size-3.5" />
-              {copy.contact}
+              <Mail className="size-4" />
+              <span className="hidden sm:inline">{copy.contact}</span>
             </a>
             <a
               href={pdfHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/35 px-4 py-2.5 transition-colors hover:bg-white hover:text-[#1d1d1f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white/45 bg-white/10 px-3 text-xs font-semibold transition-colors hover:bg-white hover:text-[#171719] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:gap-2 sm:px-4 sm:text-[13px]"
             >
-              <Download className="size-3.5" />
+              <Download className="size-4" />
               <span className="hidden sm:inline">{copy.download}</span>
               <span className="sm:hidden">CV</span>
             </a>
@@ -174,7 +171,7 @@ export default function YotamProfile() {
         </nav>
       </header>
 
-      <section className="relative min-h-[100svh] overflow-hidden bg-[#171719] px-5 pb-6 pt-24 text-white sm:px-8 sm:pb-8 sm:pt-28 lg:px-12 lg:pb-10">
+      <section className="yotam-hero relative min-h-[100svh] overflow-hidden bg-[#171719] px-5 pb-6 pt-24 text-white sm:px-8 sm:pb-8 sm:pt-28 lg:px-12 lg:pb-10">
         <Image
           src="/images/portfolio-v2/hero-art.webp"
           alt=""
@@ -194,7 +191,7 @@ export default function YotamProfile() {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(23,23,25,.08)_0%,rgba(23,23,25,.24)_45%,rgba(23,23,25,.94)_100%),linear-gradient(90deg,rgba(23,23,25,.58)_0%,rgba(23,23,25,.08)_58%,rgba(23,23,25,.32)_100%)]" />
 
         <div className="relative mx-auto flex min-h-[calc(100svh-7rem)] max-w-[1680px] flex-col">
-          <div className="flex items-start justify-between text-[11px] font-semibold uppercase tracking-[0.14em] text-white/72 sm:text-xs">
+          <div className="flex items-start justify-between text-[13px] font-semibold uppercase tracking-[0.14em] text-white/72 sm:text-xs">
             <span className="flex items-center gap-2">
               <MapPin className="size-3" />
               {cv.location}
@@ -211,7 +208,7 @@ export default function YotamProfile() {
               initial={reduceMotion ? false : { opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.58, delay: 0.04, ease }}
-              className="mb-5 text-[10px] font-semibold uppercase tracking-[0.17em] text-white/60 sm:text-[11px]"
+              className="mb-5 text-xs font-semibold uppercase tracking-[0.17em] text-white/60 sm:text-[13px]"
             >
               {copy.kicker}
             </motion.p>
@@ -219,7 +216,7 @@ export default function YotamProfile() {
               initial={reduceMotion ? false : { opacity: 0, y: 44 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.82, ease }}
-              className="max-w-[14ch] text-balance text-[clamp(2.75rem,8.5vw,6rem)] font-medium leading-[0.87] tracking-[-0.07em] text-white"
+              className="yotam-hero-headline text-balance font-medium text-white"
             >
               {copy.headline}
             </motion.h1>
@@ -239,59 +236,36 @@ export default function YotamProfile() {
             >
               <a
                 href="#work"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] transition-transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] transition-transform hover:-translate-y-0.5"
               >
                 {copy.work} <ArrowDown className="size-3.5" />
               </a>
               <a
                 href={pdfHref}
-                className="inline-flex items-center gap-2 rounded-full border border-white/30 px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:bg-white/10"
+                className="inline-flex items-center gap-2 rounded-full border border-white/30 px-5 py-3 text-xs font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:bg-white/10"
               >
                 <Download className="size-3.5" /> {copy.download}
               </a>
             </motion.div>
+            <div className="yotam-hero-proof mt-8" aria-label={isHebrew ? 'פרטים מקצועיים' : 'Professional snapshot'}>
+              <span><strong>10+</strong> {copy.signalExperience}</span>
+              <span><strong>End-to-end</strong> · Product · Engineering</span>
+              <span>{copy.signalAuthorization}</span>
+            </div>
           </div>
 
           <a
-            href="#profile"
-            className="mt-4 flex items-center justify-end gap-2 border-t border-white/15 pt-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/70 sm:text-[11px]"
+            href="#experience"
+            className="mt-4 flex items-center justify-end gap-2 border-t border-white/15 pt-5 text-xs font-semibold uppercase tracking-[0.16em] text-white/70 sm:text-[13px]"
           >
             {copy.scroll} <ArrowDown className="size-3.5" />
           </a>
         </div>
       </section>
 
-      <section id="profile" className="px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
-        <motion.div
-          {...sectionReveal}
-          className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
-        >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
-            01 / {copy.profile}
-          </p>
-          <div>
-            <h2 className="max-w-[16ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
-              {copy.profileTitle}
-            </h2>
-            <div className="mt-9 border-t border-black/20 pt-7 lg:mt-11">
-              <p className="max-w-4xl text-lg leading-7 tracking-[-0.02em] text-black/74 sm:text-2xl sm:leading-9">
-                {copy.profileBody}
-              </p>
-              <div className="mt-9 grid border-y border-black/20 sm:grid-cols-2 lg:grid-cols-4">
-                {profileSignals.map(([value, label]) => (
-                  <div
-                    key={value}
-                    className="border-b border-black/20 py-5 sm:px-5 sm:[&:nth-child(odd)]:border-e lg:border-b-0 lg:border-e lg:first:ps-0 lg:last:border-e-0"
-                  >
-                    <p className="text-2xl font-medium tracking-[-0.045em] text-[#1d1d1f]">{value}</p>
-                    <p className="mt-2 max-w-[17rem] text-xs leading-5 text-black/62 sm:text-[13px]">{label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      {featuredProject ? (
+        <FeaturedShowcase project={featuredProject} locale={locale} isHebrew={isHebrew} />
+      ) : null}
 
       <section
         id="experience"
@@ -302,7 +276,7 @@ export default function YotamProfile() {
             {...sectionReveal}
             className="mb-14 grid gap-8 sm:mb-20 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/55 sm:text-[11px]">
+            <p className="text-xs font-semibold uppercase tracking-[0.17em] text-white/72 sm:text-[13px]">
               02 / {copy.experience}
             </p>
             <h2 className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-white">
@@ -325,7 +299,7 @@ export default function YotamProfile() {
                     })}
                 className="grid gap-5 border-b border-white/18 py-7 sm:grid-cols-[0.18fr_0.5fr_0.9fr] sm:gap-8 sm:py-9"
               >
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/62 sm:text-xs">
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white/62 sm:text-xs">
                   <p>{String(index + 1).padStart(2, '0')}</p>
                   <p className="mt-2 leading-5">{item.duration}</p>
                 </div>
@@ -336,11 +310,11 @@ export default function YotamProfile() {
                   >
                     {item.company}
                   </h3>
-                  <p className="mt-2 text-[11px] font-semibold uppercase leading-5 tracking-[0.12em] text-white/70">
+                  <p className="mt-2 text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-white/70">
                     {item.title}
                   </p>
                   {item.location ? (
-                    <p className="mt-1 text-xs text-white/48">{item.location}</p>
+                    <p className="mt-1 text-xs text-white/72">{item.location}</p>
                   ) : null}
                 </div>
                 <div>
@@ -367,10 +341,10 @@ export default function YotamProfile() {
 
           <div className="mt-14 grid gap-8 sm:mt-20 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/55 sm:text-[11px]">
+              <p className="text-xs font-semibold uppercase tracking-[0.17em] text-white/72 sm:text-[13px]">
                 {copy.earlierTitle}
               </p>
-              <p className="mt-3 max-w-[15rem] text-[13px] leading-5 text-white/48">
+              <p className="mt-3 max-w-[15rem] text-[13px] leading-5 text-white/72">
                 {copy.earlierIntro}
               </p>
             </div>
@@ -380,7 +354,7 @@ export default function YotamProfile() {
                   key={item.key}
                   className="grid gap-2 border-b border-white/18 py-5 sm:grid-cols-[0.25fr_0.45fr_0.7fr] sm:items-center sm:gap-6"
                 >
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-white/45 sm:text-[11px]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.13em] text-white/72 sm:text-[13px]">
                     {item.duration}
                   </p>
                   <h3 className="text-xl font-medium tracking-[-0.035em] text-white" dir="ltr">
@@ -394,14 +368,46 @@ export default function YotamProfile() {
         </div>
       </section>
 
-      <section id="work" className="bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
+      <section id="profile" className="yotam-profile-section "px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
+        <motion.div
+          {...sectionReveal}
+          className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[13px]">
+            03 / {copy.profile}
+          </p>
+          <div>
+            <h2 className="max-w-[16ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
+              {copy.profileTitle}
+            </h2>
+            <div className="mt-9 border-t border-black/20 pt-7 lg:mt-11">
+              <p className="max-w-4xl text-lg leading-7 tracking-[-0.02em] text-black/74 sm:text-2xl sm:leading-9">
+                {copy.profileBody}
+              </p>
+              <div className="mt-9 grid border-y border-black/20 sm:grid-cols-2 lg:grid-cols-4">
+                {profileSignals.map(([value, label]) => (
+                  <div
+                    key={value}
+                    className="border-b border-black/20 py-5 sm:px-5 sm:[&:nth-child(odd)]:border-e lg:border-b-0 lg:border-e lg:first:ps-0 lg:last:border-e-0"
+                  >
+                    <p className="text-2xl font-medium tracking-[-0.045em] text-[#1d1d1f]">{value}</p>
+                    <p className="mt-2 max-w-[17rem] text-xs leading-5 text-black/62 sm:text-[13px]">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      <section id="more-work" className="yotam-work-section "bg-[#d9d5cc] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1680px]">
           <motion.div
             {...sectionReveal}
             className="mb-14 grid gap-8 sm:mb-20 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
-              03 / {copy.work}
+            <p className="text-xs font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[13px]">
+              04 / {copy.work}
             </p>
             <div className="grid gap-7 lg:grid-cols-[1fr_.6fr] lg:items-end">
               <h2 className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
@@ -413,7 +419,7 @@ export default function YotamProfile() {
             </div>
           </motion.div>
 
-          <div className="grid gap-5 lg:ms-[10%] lg:grid-cols-2 lg:gap-6">
+          <div className="yotam-project-grid grid gap-5 lg:ms-[10%] lg:grid-cols-2 lg:gap-6">
             {selectedProjects.map((project, index) => (
               <motion.a
                 key={project.slug}
@@ -427,7 +433,8 @@ export default function YotamProfile() {
                       viewport: { once: true, amount: 0.08 },
                       transition: { duration: 0.5, delay: (index % 2) * 0.04, ease },
                     })}
-                className="group overflow-hidden border border-black/15 bg-[#f2efe9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6257d8]"
+                style={{ '--y-card-accent': project.accent } as CSSProperties}
+                className="yotam-project-card group overflow-hidden border border-black/15 bg-[#f2efe9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6257d8]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden border-b border-black/12 bg-[#dedbd4]">
                   {project.hero ? (
@@ -438,17 +445,17 @@ export default function YotamProfile() {
                       alt={project.hero.alt}
                       loading="lazy"
                       decoding="async"
-                      className={`h-full w-full transition-transform duration-500 group-hover:scale-[1.015] ${
+                      className={`yotam-project-image h-full w-full transition-transform duration-500 group-hover:scale-[1.015] ${
                         project.hero.contain ? 'object-contain p-4 sm:p-6' : 'object-cover'
                       }`}
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-[10px] font-semibold uppercase tracking-[0.15em] text-black/38 sm:text-[11px]">
+                    <div className="flex h-full items-center justify-center text-xs font-semibold uppercase tracking-[0.15em] text-black/65 sm:text-[13px]">
                       {project.descriptor}
                     </div>
                   )}
-                  <div className="absolute inset-x-4 top-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.13em] text-black/48 sm:inset-x-5 sm:top-5 sm:text-[11px]">
-                    <span className="bg-[#f2efe9]/88 px-2 py-1 backdrop-blur-sm">{project.status}</span>
+                  <div className="absolute inset-x-4 top-4 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.13em] text-black/65 sm:inset-x-5 sm:top-5 sm:text-[13px]">
+                    <span className="yotam-card-status px-2 py-1.5 backdrop-blur-sm">{project.status}</span>
                     <span className="bg-[#f2efe9]/88 px-2 py-1 backdrop-blur-sm">{project.year}</span>
                   </div>
                 </div>
@@ -456,11 +463,11 @@ export default function YotamProfile() {
                 <div className="p-6 sm:p-7">
                   <div className="flex items-start justify-between gap-6">
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-black/45 sm:text-[11px]">
+                      <p className="text-xs font-semibold uppercase tracking-[0.13em] text-black/67 sm:text-[13px]">
                         {project.descriptor}
                       </p>
                       <h3
-                        className="mt-2 text-[clamp(1.9rem,5vw,2.8rem)] font-medium leading-[0.9] tracking-[-0.055em] text-[#1d1d1f]"
+                        className="yotam-project-title mt-2 text-[clamp(1.9rem,5vw,2.8rem)] font-medium leading-[0.9] tracking-[-0.055em] text-[#1d1d1f]"
                         dir="ltr"
                       >
                         {project.title}
@@ -469,20 +476,21 @@ export default function YotamProfile() {
                     <ArrowUpRight className="mt-1 size-5 shrink-0 text-black/40 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                   </div>
 
-                  <p className="mt-5 text-sm leading-6 text-black/66 sm:text-[15px] sm:leading-7">
+                  <p className="yotam-project-summary mt-5 text-sm leading-6 text-black/72 sm:text-[15px] sm:leading-7">
                     {project.summary}
                   </p>
 
                   <div className="mt-6 border-t border-black/14 pt-5">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-black/42 sm:text-[11px]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.13em] text-black/65 sm:text-[13px]">
                       {copy.roleLabel}
                     </p>
-                    <p className="mt-2 text-[13px] leading-5 text-black/64">{project.role}</p>
+                    <p className="mt-2 text-sm leading-6 text-black/75">{project.role}</p>
+                    <p className="yotam-card-proof text-[14px] leading-6"><strong>{isHebrew ? 'האתגר ההנדסי' : 'Engineering focus'}</strong>{project.highlights[0]}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {project.technologies.slice(0, 5).map(technology => (
+                      {project.technologies.slice(0, 3).map(technology => (
                         <span
                           key={technology}
-                          className="border border-black/13 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.09em] text-black/48"
+                          className="border border-black/13 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.09em] text-black/65"
                         >
                           {technology}
                         </span>
@@ -490,7 +498,7 @@ export default function YotamProfile() {
                     </div>
                   </div>
 
-                  <div className="mt-6 flex items-center justify-end gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-black/55 sm:text-[11px]">
+                  <div className="mt-6 flex items-center justify-end gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-black/55 sm:text-[13px]">
                     {copy.viewCaseStudy} <ArrowUpRight className="size-3.5" />
                   </div>
                 </div>
@@ -503,7 +511,7 @@ export default function YotamProfile() {
             {...sectionReveal}
             className="group mt-10 grid gap-6 border-y border-black/20 py-8 lg:ms-[10%] lg:grid-cols-[0.28fr_1fr_auto] lg:items-center lg:gap-10"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/60 sm:text-xs">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-black/60 sm:text-xs">
               {copy.clientWorkEyebrow}
             </p>
             <div>
@@ -514,7 +522,7 @@ export default function YotamProfile() {
                 {copy.clientWorkBody}
               </p>
             </div>
-            <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-black/58 sm:text-[11px]">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-black/58 sm:text-[13px]">
               {copy.clientWorkCta}
               <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
             </span>
@@ -528,8 +536,8 @@ export default function YotamProfile() {
             {...sectionReveal}
             className="mb-14 grid gap-8 sm:mb-20 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
-              04 / {copy.capabilities}
+            <p className="text-xs font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[13px]">
+              05 / {copy.capabilities}
             </p>
             <h2 className="max-w-[14ch] text-balance text-[clamp(2.35rem,6.8vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.06em] text-[#1d1d1f]">
               {copy.skillsTitle}
@@ -541,7 +549,7 @@ export default function YotamProfile() {
                 key={skill.key}
                 className="grid gap-4 border-b border-black/20 py-6 sm:grid-cols-[0.1fr_0.42fr_0.9fr] sm:gap-7 sm:py-7"
               >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45 sm:text-[11px]">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/67 sm:text-[13px]">
                   {String(index + 1).padStart(2, '0')}
                 </p>
                 <h3 className="text-[clamp(1.65rem,4.5vw,2.5rem)] font-medium leading-none tracking-[-0.05em] text-[#1d1d1f]">
@@ -565,8 +573,8 @@ export default function YotamProfile() {
 
       <section className="bg-[#f4f1ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-28">
         <div className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[11px]">
-            05 / {copy.foundation}
+          <p className="text-xs font-semibold uppercase tracking-[0.17em] text-black/55 sm:text-[13px]">
+            06 / {copy.foundation}
           </p>
           <div>
             <motion.h2
@@ -577,7 +585,7 @@ export default function YotamProfile() {
             </motion.h2>
             <div className="mt-12 grid gap-12 border-t border-black/20 pt-8 lg:grid-cols-2">
               <div>
-                <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-black/50 sm:text-[11px]">
+                <p className="mb-5 text-xs font-semibold uppercase tracking-[0.16em] text-black/50 sm:text-[13px]">
                   {cv.sections.education}
                 </p>
                 {cv.education.map(item => (
@@ -590,7 +598,7 @@ export default function YotamProfile() {
                     </h3>
                     <p className="mt-1 text-sm text-black/67">{item.program}</p>
                     {item.years ? (
-                      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-black/60 sm:text-xs">
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-black/60 sm:text-xs">
                         {item.years}
                       </p>
                     ) : null}
@@ -598,7 +606,7 @@ export default function YotamProfile() {
                 ))}
               </div>
               <div>
-                <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-black/50 sm:text-[11px]">
+                <p className="mb-5 text-xs font-semibold uppercase tracking-[0.16em] text-black/50 sm:text-[13px]">
                   {cv.sections.languages}
                 </p>
                 <div className="border-t border-black/20">
@@ -623,7 +631,7 @@ export default function YotamProfile() {
       <footer className="bg-[#6257d8] px-5 pb-8 pt-20 text-white sm:px-8 sm:pb-10 sm:pt-28 lg:px-12 lg:pt-28">
         <div className="mx-auto max-w-[1680px]">
           <div className="grid gap-8 lg:grid-cols-[0.22fr_0.78fr] lg:gap-12">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/72 sm:text-[11px]">
+            <p className="text-xs font-semibold uppercase tracking-[0.17em] text-white/72 sm:text-[13px]">
               {copy.availability}
             </p>
             <div>
@@ -633,14 +641,14 @@ export default function YotamProfile() {
               <div className="mt-10 flex flex-col gap-8 border-t border-white/30 pt-7 sm:flex-row sm:items-end sm:justify-between">
                 <a
                   href={`mailto:${cv.email}`}
-                  className="inline-flex size-32 items-center justify-center rounded-full bg-[#19191b] text-center text-[10px] font-semibold uppercase leading-4 tracking-[0.14em] transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:size-40 sm:text-[11px]"
+                  className="inline-flex size-32 items-center justify-center rounded-full bg-[#19191b] text-center text-xs font-semibold uppercase leading-4 tracking-[0.14em] transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:size-40 sm:text-[13px]"
                 >
                   <span className="flex flex-col items-center gap-2">
                     <Mail className="size-4" />
                     {copy.contact}
                   </span>
                 </a>
-                <div className="flex flex-wrap gap-6 text-[10px] font-semibold uppercase tracking-[0.14em] sm:justify-end sm:text-[11px]">
+                <div className="flex flex-wrap gap-6 text-xs font-semibold uppercase tracking-[0.14em] sm:justify-end sm:text-[13px]">
                   <a href={`mailto:${cv.email}`} className="border-b border-white/55 pb-1">
                     Email
                   </a>
@@ -670,7 +678,7 @@ export default function YotamProfile() {
               </div>
             </div>
           </div>
-          <div className="mt-20 flex items-center justify-between border-t border-white/30 pt-5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/72 sm:mt-28 sm:text-[11px]">
+          <div className="mt-20 flex items-center justify-between border-t border-white/30 pt-5 text-xs font-semibold uppercase tracking-[0.14em] text-white/72 sm:mt-28 sm:text-[13px]">
             <span>Yotam Faraggi © 2026</span>
             <a href="#top">
               Yotam Faraggi <ArrowUpRight className="ms-1 inline size-3" />
