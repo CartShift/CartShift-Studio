@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import type { PortfolioShowcaseProject } from '@/lib/portfolio-showcase';
 
@@ -9,109 +8,98 @@ type Props = {
 };
 
 /**
- * Lead with product evidence rather than a second block of résumé text.
- * This intentionally reuses the canonical showcase data and project route.
+ * An image-led editorial project feature.
+ * Mobile reading order: project identity → actual product → evidence and actions.
  */
 export default function FeaturedShowcase({ project, locale, isHebrew }: Props) {
   const copy = isHebrew
     ? {
-        eyebrow: '01 / עבודה נבחרת',
-        descriptor: 'מוצר מוביל',
-        heading: 'לא רק רעיון. מוצר שלם.',
-        contribution: 'מה בניתי',
+        label: 'עבודה נבחרת',
+        category: 'מוצר עצמאי · פיתוח מקצה לקצה',
+        statement:
+          'מטרות, פרויקטים ומשימות במרחב עבודה ויזואלי אחד, עם סוכן AI שמסוגל לפעול בתוך המוצר.',
+        evidence: 'החלטה הנדסית',
+        preview: 'הצצה למוצר',
         caseStudy: 'לסיפור הפרויקט',
-        more: 'פרויקטים נוספים',
-        preview: 'תצוגת המוצר',
+        more: 'לעוד פרויקטים',
       }
     : {
-        eyebrow: '01 / Featured project',
-        descriptor: 'The signature build',
-        heading: 'Not just an idea. A working product.',
-        contribution: 'Engineering focus',
+        label: 'Selected work',
+        category: 'Founder-built · End-to-end engineering',
+        statement:
+          'Goals, projects and tasks in one visual workspace, with an AI agent that can take action inside the product.',
+        evidence: 'Engineering decision',
+        preview: 'Product preview',
         caseStudy: 'Explore the case study',
-        more: 'Explore more projects',
-        preview: 'Inside the product',
+        more: 'More projects',
       };
+
+  const projectHref = '/' + locale + '/portfolio/' + project.slug;
 
   return (
     <section
       id="work"
       aria-labelledby="yotam-featured-title"
-      className="yotam-featured relative isolate overflow-hidden px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
-      style={{ '--featured-accent': project.accent } as CSSProperties}
+      className="yotam-featured px-5 sm:px-8 lg:px-12"
     >
-      <div className="yotam-featured-grid mx-auto grid max-w-[1680px] gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-center lg:gap-14">
-        <div className="relative z-10">
-          <p className="yotam-eyebrow text-[#5e5871]">{copy.eyebrow}</p>
-          <div className="yotam-featured-rule mt-7" aria-hidden="true" />
-          <p className="mt-10 text-sm font-semibold text-[#6257d8] sm:text-base">{copy.descriptor}</p>
-          <h2
-            id="yotam-featured-title"
-            className="mt-4 max-w-[11ch] text-balance text-[clamp(2.6rem,5.9vw,5.9rem)] font-medium leading-[.96] tracking-[-.065em] text-[#1d1d1f]"
+      <div className="yotam-featured-shell mx-auto max-w-[1500px]">
+        <div className="yotam-featured-sectionline">
+          <span>{copy.label} <span className="yotam-featured-index">/ {project.number}</span></span>
+          <span>{project.year}</span>
+        </div>
+
+        <div className="yotam-featured-grid">
+          <div className="yotam-featured-intro">
+            <p className="yotam-featured-category">{copy.category}</p>
+            <h2 id="yotam-featured-title" className="yotam-featured-title">
+              {project.title}<span aria-hidden="true" className="yotam-featured-period">.</span>
+            </h2>
+            <p className="yotam-featured-statement">{copy.statement}</p>
+          </div>
+
+          <a
+            className="yotam-featured-visual group"
+            href={projectHref}
+            aria-label={copy.caseStudy + ': ' + project.title}
           >
-            {copy.heading}
-          </h2>
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <span className="yotam-project-number">01</span>
-            <h3 className="text-[clamp(2.1rem,5vw,4.2rem)] font-medium tracking-[-.065em] text-[#221d31]">
-              {project.title}
-              <span className="text-[#6257d8]">.</span>
-            </h3>
-          </div>
-          <p className="mt-6 max-w-xl text-[16px] leading-[1.75] text-[#45404e] sm:text-lg">
-            {project.summary}
-          </p>
-          <div className="mt-8 border-s-2 border-[#6257d8] ps-5">
-            <p className="yotam-eyebrow text-[#5e5871]">{copy.contribution}</p>
-            <p className="mt-2 max-w-lg text-[15px] leading-7 text-[#393340]">{project.highlights[0]}</p>
-          </div>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a
-              href={'/' + locale + '/portfolio/' + project.slug}
-              className="yotam-button-primary group inline-flex min-h-12 items-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6257d8]"
-            >
-              {copy.caseStudy}
-              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
-            </a>
-            <a
-              href="#more-work"
-              className="inline-flex min-h-12 items-center gap-2 px-3 text-sm font-semibold text-[#4e4858] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6257d8]"
-            >
-              {copy.more}
-              <ArrowDownRight className="size-4" />
-            </a>
+            <div className="yotam-featured-visual-top">
+              <span>{copy.preview}</span>
+              <span className="yotam-featured-visual-arrow"><ArrowUpRight className="size-5" /></span>
+            </div>
+            <div className="yotam-featured-screen">
+              {project.hero ? (
+                <img
+                  src={project.hero.src}
+                  alt={project.hero.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className={project.hero.contain ? 'object-contain' : 'object-cover'}
+                />
+              ) : (
+                <span className="yotam-featured-fallback">{project.title}</span>
+              )}
+            </div>
+            <div className="yotam-featured-visual-foot">
+              <span>{project.descriptor}</span>
+              <span>{project.status}</span>
+            </div>
+          </a>
+
+          <div className="yotam-featured-details">
+            <div className="yotam-featured-evidence">
+              <span className="yotam-featured-evidence-label">{copy.evidence}</span>
+              <p>{project.highlights[0]}</p>
+            </div>
+            <div className="yotam-featured-actions">
+              <a href={projectHref} className="yotam-featured-primary">
+                {copy.caseStudy} <ArrowUpRight className="size-[18px]" />
+              </a>
+              <a href="#more-work" className="yotam-featured-secondary">
+                {copy.more} <ArrowDownRight className="size-[18px]" />
+              </a>
+            </div>
           </div>
         </div>
-        <a
-          href={'/' + locale + '/portfolio/' + project.slug}
-          className="yotam-featured-frame group relative block focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-8 focus-visible:outline-[#6257d8]"
-          aria-label={copy.caseStudy + ': ' + project.title}
-        >
-          <div className="yotam-featured-inner relative overflow-hidden">
-            <div className="yotam-featured-topline flex items-center justify-between gap-4">
-              <span className="text-[12px] font-semibold tracking-[.12em]">{copy.preview}</span>
-              <span className="text-[12px] font-semibold tracking-[.12em]">{project.year}</span>
-            </div>
-            {project.hero ? (
-              // Native image handles project-owned public assets and external media alike.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={project.hero.src}
-                alt={project.hero.alt}
-                loading="lazy"
-                decoding="async"
-                className={'yotam-featured-image ' + (project.hero.contain ? 'object-contain' : 'object-cover')}
-              />
-            ) : (
-              <span className="yotam-featured-fallback">{project.title}</span>
-            )}
-            <div className="yotam-featured-bottomline">
-              <span>{project.descriptor}</span>
-              <ArrowUpRight className="size-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-            </div>
-          </div>
-          <div className="yotam-featured-shadow" aria-hidden="true" />
-        </a>
       </div>
     </section>
   );
