@@ -187,7 +187,17 @@ const projects: LocalizedProject[] = [
       accent: '#9b72f2',
       accentSoft: '#ddd0ff',
       media: {
-        en: { hero: null, gallery: [] },
+        en: {
+          hero: {
+            src: '/images/cv/portfolio/ensemblis-editorial.svg',
+            alt: 'Ensemblis editorial concept artwork with a vinyl record and music-release graphics, not a product screenshot',
+            label: 'Editorial concept',
+            caption: 'A visual direction for an artist operating system in development. Concept artwork, not an application screenshot.',
+            aspect: 'wide',
+            contain: true,
+          },
+          gallery: [],
+        },
       },
     },
     en: {

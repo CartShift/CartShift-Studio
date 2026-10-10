@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { StandaloneLocaleSwitch } from '@/components/ui/StandaloneLocaleSwitch';
+import './yotam-profile.css';
 import YotamProfile from './YotamProfile';
 
 type Props = {
@@ -111,7 +111,6 @@ export default async function YotamProfilePage({ params }: Props) {
           color: #1d1d1f !important;
         }
       `}</style>
-      <StandaloneLocaleSwitch locale={validLocale} path="/yotam" />
       <div className="yotam-profile-contrast">
         <YotamProfile />
       </div>
