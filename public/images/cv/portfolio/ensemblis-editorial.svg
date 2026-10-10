@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+<title id="title">Ensemblis editorial project artwork</title>
+<desc id="desc">An abstract record, release cards, and flowing sound waves represent a creative workspace for independent music artists. This is conceptual artwork, not a product screenshot.</desc>
+<defs>
+  <linearGradient id="back" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#211b34"/><stop offset=".56" stop-color="#34254c"/><stop offset="1" stop-color="#171522"/></linearGradient>
+  <linearGradient id="record" x1=".08" y1=".04" x2=".97" y2=".98"><stop stop-color="#d5c8ff"/><stop offset=".36" stop-color="#8f7be3"/><stop offset=".66" stop-color="#f0bb9b"/><stop offset="1" stop-color="#7861ab"/></linearGradient>
+  <linearGradient id="album" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fae6c8"/><stop offset=".5" stop-color="#da967f"/><stop offset="1" stop-color="#7256a9"/></linearGradient>
+  <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="32" stdDeviation="44" flood-color="#07050d" flood-opacity=".38"/></filter>
+  <clipPath id="frame"><rect x="0" y="0" width="1600" height="1000" rx="0"/></clipPath>
+</defs>
+<g clip-path="url(#frame)">
+<rect width="1600" height="1000" fill="url(#back)"/>
+<path d="M0 202H1600M0 798H1600M186 0V1000M1414 0V1000" fill="none" stroke="#e9dfff" stroke-opacity=".1"/>
+<g fill="none" stroke="#c2b0f7" stroke-opacity=".11"><circle cx="1138" cy="480" r="490"/><circle cx="1138" cy="480" r="396"/><circle cx="1138" cy="480" r="310"/></g>
+<g transform="translate(790 82)" filter="url(#shadow)">
+ <circle cx="392" cy="394" r="322" fill="#100f1d" stroke="#e9dfff" stroke-opacity=".25" stroke-width="2"/>
+ <circle cx="392" cy="394" r="293" fill="url(#record)"/>
+ <g fill="none" stroke="#2b223c" stroke-opacity=".35"><circle cx="392" cy="394" r="277"/><circle cx="392" cy="394" r="256"/><circle cx="392" cy="394" r="235"/><circle cx="392" cy="394" r="214"/><circle cx="392" cy="394" r="194"/><circle cx="392" cy="394" r="174"/><circle cx="392" cy="394" r="153"/></g>
+ <circle cx="392" cy="394" r="101" fill="#2f2548"/><circle cx="392" cy="394" r="96" fill="#dcc8fa"/><circle cx="392" cy="394" r="13" fill="#281f3a"/>
+</g>
+<g transform="translate(660 338) rotate(-11 170 180)" filter="url(#shadow)">
+ <rect width="326" height="370" rx="12" fill="#f6e8d8"/>
+ <rect x="13" y="13" width="300" height="282" rx="4" fill="url(#album)"/>
+ <circle cx="163" cy="155" r="106" fill="none" stroke="#fdf1e2" stroke-width="2" opacity=".67"/>
+ <circle cx="163" cy="155" r="77" fill="none" stroke="#fdf1e2" stroke-width="2" opacity=".67"/>
+ <path d="M13 209c82-106 134 96 300-24v110H13Z" fill="#3b2356" opacity=".76"/>
+ <text x="26" y="331" fill="#262039" font-family="Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="3">NEW FREQUENCIES</text>
+ <text x="26" y="353" fill="#625271" font-family="Arial,sans-serif" font-size="12" letter-spacing="2">RELEASE  /  001</text>
+</g>
+<g fill="none" stroke="#dccfff" stroke-width="2" stroke-opacity=".47"><path d="M562 790c78-62 120-70 208-18s125 16 192-32"/><path d="M562 812c78-62 120-70 208-18s125 16 192-32"/><path d="M562 834c78-62 120-70 208-18s125 16 192-32"/></g>
+<text x="112" y="114" fill="#f5e8dc" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="9">ENSEMBLIS / STUDIO</text>
+<rect x="112" y="160" width="92" height="5" fill="#d7aeff"/>
+<text x="112" y="409" fill="#f4e8e3" font-family="Arial,sans-serif" font-size="100" font-weight="700" letter-spacing="-5">YOUR MUSIC.</text>
+<text x="112" y="521" fill="#f4e8e3" font-family="Arial,sans-serif" font-size="100" font-weight="700" letter-spacing="-5">IN MOTION.</text>
+<text x="116" y="591" fill="#c9c0d2" font-family="Arial,sans-serif" font-size="25" letter-spacing="1.1">A creative operating system for independent artists.</text>
+<text x="116" y="644" fill="#d9b2ff" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">RELEASE  /  CREATE  /  PROMOTE</text>
+<text x="112" y="926" fill="#b8a8ca" font-family="Arial,sans-serif" font-size="17" letter-spacing="3">CONCEPT ART · PRODUCT IN DEVELOPMENT</text>
+<text x="1352" y="925" fill="#b8a8ca" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">05 / 05</text>
+</g></svg>
