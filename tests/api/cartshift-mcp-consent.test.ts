@@ -73,13 +73,11 @@ beforeEach(() => {
 });
 
 describe('CartShift complete OAuth consent flow', () => {
-  it('advertises OAuth metadata to unauthenticated MCP GET discovery probes', async () => {
+  it('reports unsupported GET/SSE so MCP clients can fall back to POST discovery', async () => {
     for (const headers of [{}, { Authorization: 'Bearer invalid' }]) {
       const res = await mcpGet(new Request(resource, { headers }));
-      expect(res.status).toBe(401);
-      expect(res.headers.get('WWW-Authenticate')).toContain(
-        'resource_metadata="' + origin + '/.well-known/oauth-protected-resource"'
-      );
+      expect(res.status).toBe(405);
+      expect(res.headers.get('Allow')).toBe('POST');
       expect(res.headers.get('Cache-Control')).toBe('no-store');
     }
   });
@@ -112,6 +110,18 @@ describe('CartShift complete OAuth consent flow', () => {
     }));
     expect(tools.status).toBe(200);
     expect((await tools.json()).result.tools.some((tool: { name: string }) => tool.name === 'list_clients')).toBe(true);
+    const insufficientScope = await mcp(new Request(resource, {
+      method: 'POST', headers: { Authorization: 'Bearer ' + token.access_token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 2, method: 'tools/call',
+        params: { name: 'create_client', arguments: { name: 'Must never be written' } },
+      }),
+    }));
+    expect(insufficientScope.status).toBe(200);
+    const scopeError = (await insufficientScope.json()).result;
+    expect(scopeError.isError).toBe(true);
+    expect(scopeError._meta['mcp/www_authenticate'][0]).toContain('error="insufficient_scope"');
+    expect(scopeError._meta['mcp/www_authenticate'][0]).toContain('scope="clients:write"');
     expect((await exchange(tokenRequest())).status).toBe(400);
   });
 
