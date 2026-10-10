@@ -73,13 +73,11 @@ beforeEach(() => {
 });
 
 describe('CartShift complete OAuth consent flow', () => {
-  it('advertises OAuth metadata to unauthenticated MCP GET discovery probes', async () => {
+  it('reports unsupported GET/SSE so MCP clients can fall back to POST discovery', async () => {
     for (const headers of [{}, { Authorization: 'Bearer invalid' }]) {
       const res = await mcpGet(new Request(resource, { headers }));
-      expect(res.status).toBe(401);
-      expect(res.headers.get('WWW-Authenticate')).toContain(
-        'resource_metadata="' + origin + '/.well-known/oauth-protected-resource"'
-      );
+      expect(res.status).toBe(405);
+      expect(res.headers.get('Allow')).toBe('POST');
       expect(res.headers.get('Cache-Control')).toBe('no-store');
     }
   });
