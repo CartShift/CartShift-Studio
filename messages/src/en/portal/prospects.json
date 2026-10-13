@@ -1,0 +1,35 @@
+{
+  "portal": {
+    "prospects": {
+      "title": "Researched prospects",
+      "subtitle": "Private lead research from ChatGPT or manual discovery. Findings are candidates until reviewed; no outreach is sent.",
+      "refresh": "Refresh",
+      "add": "Add prospect",
+      "privacyNotice": "Public business data is not marketing consent. Every finding requires human verification and a permitted contact channel before outreach.",
+      "newTitle": "Add a researched store",
+      "storeUrl": "Store URL",
+      "brandName": "Brand name",
+      "optional": "Optional",
+      "sourceUrl": "Research source URL (optional, defaults to store)",
+      "researchNote": "Research notes (not verified)",
+      "save": "Save candidate",
+      "cancel": "Cancel",
+      "search": "Search stores and stages",
+      "loading": "Loading prospects…",
+      "loadFailed": "Could not load prospects. Check your agency permissions.",
+      "empty": "No researched prospects yet.",
+      "needsReview": "Needs review",
+      "source": "Source",
+      "noPermission": "Outreach not approved",
+      "close": "Close details",
+      "evidence": "View evidence",
+      "noFindings": "No source-backed findings yet.",
+      "viewEvidence": "Open evidence source",
+      "unverified": "Unverified observation",
+      "truncated": "Showing the most recent prospects only.",
+      "created": "Prospect added for review",
+      "duplicate": "Already in CartShift — existing data preserved",
+      "saveFailed": "Could not save prospect"
+    }
+  }
+}
