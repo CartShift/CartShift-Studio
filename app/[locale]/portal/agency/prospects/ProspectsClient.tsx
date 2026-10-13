@@ -1,0 +1,202 @@
+'use client';
+
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { ExternalLink, Loader2, Plus, RefreshCw, Search, ShieldAlert } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { queryKeys } from '@/lib/utils/query-keys';
+
+type Prospect = {
+  id: string;
+  brandName: string;
+  canonicalDomain: string;
+  storeUrl: string;
+  stage: string;
+  platform: string;
+  sourceUrl: string;
+  sourceType: string;
+  outreachEligibility: string;
+  doNotContact: boolean;
+  researchNote: string;
+  updatedAt: string | null;
+};
+type Finding = {
+  id: string; title: string; category: string;
+  observedUrl: string; evidenceExcerpt: string;
+  businessRelevance: string; verificationStatus: string;
+};
+type ListResponse = { prospects: Prospect[]; truncated: boolean };
+type DetailResponse = { prospect: Prospect; findings: Finding[] };
+
+async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(url, { ...options, credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...(options?.headers || {}) } });
+  if (!response.ok) throw new Error(response.status === 403 ? 'forbidden' : 'request_failed');
+  return response.json() as Promise<T>;
+}
+
+export default function ProspectsClient() {
+  const t = useTranslations('portal.prospects');
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
+
+  const list = useQuery({
+    queryKey: queryKeys.prospects.all,
+    queryFn: () => fetchJson<ListResponse>('/api/portal/agency/prospects'),
+    staleTime: 30_000,
+  });
+  const detail = useQuery({
+    queryKey: queryKeys.prospects.detail(selected || ''),
+    queryFn: () => fetchJson<DetailResponse>('/api/portal/agency/prospects/' + selected),
+    enabled: Boolean(selected),
+    staleTime: 30_000,
+  });
+  const create = useMutation({
+    mutationFn: () => fetchJson<{ prospect_id: string; created: boolean }>(
+      '/api/portal/agency/prospects',
+      { method: 'POST', body: JSON.stringify({
+        ...form, source_url: form.source_url || form.store_url,
+      }) }
+    ),
+    onSuccess: async result => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
+      toast.success(result.created ? t('created') : t('duplicate'));
+      setForm({ store_url: '', brand_name: '', source_url: '', research_note: '' });
+      setShowCreate(false);
+      setSelected(result.prospect_id);
+    },
+    onError: () => toast.error(t('saveFailed')),
+  });
+  const rows = (list.data?.prospects || []).filter(row =>
+    [row.brandName, row.canonicalDomain, row.stage].some(value =>
+      value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
+    )
+  );
+
+  return (
+    <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-surface-900 dark:text-white">{t('title')}</h1>
+          <p className="max-w-2xl text-sm text-surface-500">{t('subtitle')}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => list.refetch()} disabled={list.isFetching}>
+            <RefreshCw size={16} className={list.isFetching ? 'animate-spin' : ''} />
+            {t('refresh')}
+          </Button>
+          <Button onClick={() => setShowCreate(x => !x)}>
+            <Plus size={16} />{t('add')}
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 text-sm text-surface-600 dark:text-surface-300">
+        <ShieldAlert size={18} className="mt-0.5 shrink-0 text-amber-600" />
+        <span>{t('privacyNotice')}</span>
+      </div>
+
+      {showCreate && (
+        <Card className="p-5">
+          <form className="space-y-3" onSubmit={e => { e.preventDefault(); create.mutate(); }}>
+            <h2 className="font-semibold text-surface-900 dark:text-white">{t('newTitle')}</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {([
+                ['store_url', t('storeUrl'), 'https://example.co.il'],
+                ['brand_name', t('brandName'), t('optional')],
+                ['source_url', t('sourceUrl'), 'https://example.co.il/about'],
+              ] as const).map(([field, label, placeholder]) => (
+                <label key={field} className="space-y-1 text-sm text-surface-600 dark:text-surface-300">
+                  <span>{label}</span>
+                  <input
+                    className="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 text-surface-900 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-surface-700 dark:bg-surface-900 dark:text-white"
+                    type={field === 'brand_name' ? 'text' : 'url'}
+                    placeholder={placeholder}
+                    required={field === 'store_url'}
+                    value={form[field]}
+                    onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
+                  />
+                </label>
+              ))}
+            </div>
+            <label className="block space-y-1 text-sm text-surface-600 dark:text-surface-300">
+              <span>{t('researchNote')}</span>
+              <textarea className="w-full rounded-lg border border-surface-200 bg-white p-3 text-surface-900 dark:border-surface-700 dark:bg-surface-900 dark:text-white"
+                maxLength={1000} rows={2} value={form.research_note}
+                onChange={e => setForm(p => ({ ...p, research_note: e.target.value }))} />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <Button type="submit" disabled={create.isPending}>
+                {create.isPending && <Loader2 size={16} className="animate-spin" />}
+                {t('save')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setShowCreate(false)}>{t('cancel')}</Button>
+            </div>
+          </form>
+        </Card>
+      )}
+
+      <div className="relative">
+        <Search size={17} className="pointer-events-none absolute start-3 top-3 text-surface-400" />
+        <input aria-label={t('search')} placeholder={t('search')} value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full rounded-xl border border-surface-200 bg-white py-2.5 ps-10 pe-3 text-sm text-surface-900 dark:border-surface-700 dark:bg-surface-900 dark:text-white" />
+      </div>
+
+      {list.isLoading && <p role="status" className="text-sm text-surface-500">{t('loading')}</p>}
+      {list.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
+      {list.data && rows.length === 0 && <p className="py-10 text-center text-surface-500">{t('empty')}</p>}
+      <div className="grid gap-3 lg:grid-cols-2">
+        {rows.map(prospect => (
+          <Card key={prospect.id} className="space-y-3 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="truncate font-semibold text-surface-900 dark:text-white">{prospect.brandName}</h2>
+                <a href={prospect.storeUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-primary-600 hover:underline dark:text-primary-300">
+                  <span dir="ltr">{prospect.canonicalDomain}</span><ExternalLink size={13}/>
+                </a>
+              </div>
+              <span className="shrink-0 rounded-full bg-surface-100 px-2 py-1 text-xs text-surface-600 dark:bg-surface-800 dark:text-surface-300">
+                {t('needsReview')}
+              </span>
+            </div>
+            {prospect.researchNote && <p className="line-clamp-2 text-sm text-surface-500">{prospect.researchNote}</p>}
+            <p className="text-xs text-surface-500">{t('source')}: {prospect.sourceType}</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-surface-500">{t('noPermission')}</span>
+              <Button variant="outline" onClick={() => setSelected(p => p === prospect.id ? null : prospect.id)}>
+                {selected === prospect.id ? t('close') : t('evidence')}
+              </Button>
+            </div>
+            {selected === prospect.id && (
+              <div className="space-y-3 border-t border-surface-200 pt-3 dark:border-surface-700">
+                {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>}
+                {detail.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
+                {detail.data && detail.data.findings.length === 0 && <p className="text-sm text-surface-500">{t('noFindings')}</p>}
+                {detail.data?.findings.map(finding => (
+                  <div key={finding.id} className="space-y-1 rounded-lg bg-surface-50 p-3 dark:bg-surface-900">
+                    <p className="font-medium text-surface-900 dark:text-white">{finding.title}</p>
+                    <p className="text-sm text-surface-500">{finding.evidenceExcerpt}</p>
+                    <a href={finding.observedUrl} target="_blank" rel="noopener noreferrer"
+                      className="block truncate text-xs text-primary-600 hover:underline dark:text-primary-300">
+                      {t('viewEvidence')}
+                    </a>
+                    <p className="text-xs text-amber-600">{t('unverified')}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+      {list.data?.truncated && <p className="text-sm text-surface-500">{t('truncated')}</p>}
+    </div>
+  );
+}
