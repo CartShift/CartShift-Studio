@@ -32,7 +32,18 @@
       "saveFailed": "Could not save prospect",
       "contacts": "Business contacts",
       "noContacts": "No sourced business contacts found yet.",
-      "candidateContact": "Unverified contact — no outreach approved"
+      "candidateContact": "Unverified contact — no outreach approved",
+      "scanState": "Scan status",
+      "nextAction": "Next action",
+      "scanStore": "Scan store",
+      "scanCompleted": "Audit completed: {findings} new findings and {contacts} business contacts",
+      "scanFailed": "Scan failed or limited. Check permissions, robots.txt and rate limits.",
+      "stage": "Sales stage",
+      "dueDate": "Follow-up date",
+      "saveSales": "Save progress",
+      "updated": "Prospect progress saved",
+      "updateFailed": "Update rejected; founder approval or outreach eligibility review may be required.",
+      "approvalReminder": "Contact or proposal stages require authorized channel eligibility and technical review."
     }
   }
 }
