@@ -525,6 +525,26 @@ service cloud.firestore {
       allow write: if isAgencyUser();
     }
 
+    // Outbound research stays server-owned; an authenticated portal session alone
+    // never permits direct Firestore access to prospect or evidence records.
+    match /agency_prospects/{prospectId} {
+      allow read, write: if false;
+      match /findings/{findingId} {
+        allow read, write: if false;
+      }
+      match /contacts/{contactId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /agency_prospect_scan_quotas/{quotaId} {
+      allow read, write: if false;
+    }
+
+    match /agency_prospect_audit/{eventId} {
+      allow read, write: if false;
+    }
+
     match /marketing_leads/{leadId} {
       allow read: if isAuthenticated() && isAgencyUser();
       allow create: if false;

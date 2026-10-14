@@ -68,6 +68,10 @@ export const queryKeys = {
     byPricingRequest: (pricingRequestId: string) =>
       ['profit-split-by-pricing-request', pricingRequestId] as const,
   },
+  prospects: {
+    all: ['agency-prospects'] as const,
+    detail: (id: string) => ['agency-prospects', id] as const,
+  },
   marketing: {
     dashboard: ['marketing-dashboard'] as const,
     leadJobs: (leadId: string) => ['marketing-lead-jobs', leadId] as const,

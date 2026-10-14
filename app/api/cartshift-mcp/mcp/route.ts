@@ -2,6 +2,8 @@ import { MCP_ORIGIN, requireMcpToken } from '@/lib/mcp/connection';
 import { TOOL_DEFS, callTool } from '@/lib/mcp/tools';
 
 export const runtime = 'nodejs';
+// Bounded prospect scans can legitimately take longer than ordinary read tools.
+export const maxDuration = 120;
 
 const metadataUrl = MCP_ORIGIN + '/.well-known/oauth-protected-resource';
 function reply(id: unknown, result: unknown) {
