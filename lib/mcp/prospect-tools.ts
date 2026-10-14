@@ -3,7 +3,7 @@ import 'server-only';
 import type { TokenGrant } from '@/lib/mcp/connection';
 import { may } from '@/lib/mcp/connection';
 import { scanProspect } from '@/lib/services/prospect-scan-service';
-import { updateProspectSales } from '@/lib/services/prospect-sales-server';
+import { updateProspectSales, linkProspectProposal } from '@/lib/services/prospect-sales-server';
 import {
   addProspectFinding, addProspectContactCandidate, getProspect, listProspects, upsertProspect,
 } from '@/lib/services/prospects-server';
@@ -59,6 +59,12 @@ export const PROSPECT_TOOL_DEFS = [
       owner_uid: { type: 'string' }, next_action: { type: 'string', maxLength: 500 },
       due_date: { type: 'string', format: 'date' }, note: { type: 'string', maxLength: 2000 },
     }, ['prospect_id']),
+  definition('link_prospect_proposal',
+    'Link an existing CartShift commercial request (QUOTED, ACCEPTED or PAID) to a technically reviewed researched prospect. Requires verified org and request IDs and a relationship note. Does not create proposals or collect payments.',
+    'prospects:write', {
+      prospect_id: identity, org_id: { type: 'string' },
+      request_id: { type: 'string' }, note: { type: 'string' },
+    }, ['prospect_id', 'org_id', 'request_id', 'note']),
   definition('scan_prospect',
     'Run a bounded HTTPS/robots-respecting audit of ONE existing business prospect, save UNVERIFIED findings and public generic business contact candidates. No marketing outreach. Max 6 pages; per-domain cooldown.',
     'prospects:scan', { prospect_id: identity }, ['prospect_id']),
@@ -84,6 +90,16 @@ export async function callProspectTool(name: string, args: unknown, grant: Token
     if (typeof input.prospect_id !== 'string') throw new Error('Invalid prospect sales arguments');
     const { prospect_id, ...patch } = input;
     return updateProspectSales(prospect_id, patch, grant.uid);
+  }
+  if (name === 'link_prospect_proposal') {
+    const input = args as Record<string, unknown>;
+    if (typeof input.prospect_id !== 'string' || typeof input.org_id !== 'string' ||
+        typeof input.request_id !== 'string' || typeof input.note !== 'string' ||
+        Object.keys(input).length !== 4) {
+      throw new Error('Invalid proposal linking arguments');
+    }
+    return linkProspectProposal(input.prospect_id, input.org_id, input.request_id,
+      input.note, grant.uid);
   }
   if (name === 'scan_prospect') {
     const input = args as Record<string, unknown>;
