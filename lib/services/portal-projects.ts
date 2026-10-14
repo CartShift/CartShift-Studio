@@ -43,6 +43,11 @@ export async function createClientProject(input: {
   const user = getFirebaseAuth().currentUser;
   if (!user || !input.orgId || !input.title.trim()) throw new Error('Missing project details');
   const initial = buildProjectTemplate(input.template, input.locale || 'en');
+  const organization = await getDoc(doc(getFirestoreDb(), 'portal_organizations', input.orgId));
+  if (!organization.exists()) throw new Error('Client organization not found');
+  const savedCurrency = organization.data()?.defaultCurrency;
+  const currency = savedCurrency === 'ILS' || savedCurrency === 'USD' || savedCurrency === 'EUR'
+    ? savedCurrency : 'ILS';
   const reference = await addDoc(collection(getFirestoreDb(), COLLECTION), {
     orgId: input.orgId,
     title: input.title.trim(),
@@ -57,7 +62,7 @@ export async function createClientProject(input: {
     changes: [],
     updates: [],
     reviewRevisions: {},
-    scope: { minHours: 0, maxHours: 0, rateCents: 0, currency: 'ILS' } satisfies ProjectScope,
+    scope: { minHours: 0, maxHours: 0, rateCents: 0, currency } satisfies ProjectScope,
     createdBy: user.uid,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
