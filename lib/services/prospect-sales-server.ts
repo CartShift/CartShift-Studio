@@ -199,6 +199,10 @@ export async function deleteProspectContactCandidate(prospectId: string, contact
     const [prospect, existing] = await Promise.all([tx.get(ref), tx.get(contact)]);
     if (!prospect.exists || !existing.exists) throw new Error('CONTACT_NOT_FOUND');
     tx.delete(contact);
+    // Keep only the derived candidate ID so a later scan cannot re-import
+    // a contact that the founder deliberately removed.
+    tx.update(ref, { suppressedContactIds: FieldValue.arrayUnion(contactId),
+      updatedAt: FieldValue.serverTimestamp() });
     tx.create(event, { uid, action: 'prospect.contact_removed',
       targetId: prospectId, contactId, at: FieldValue.serverTimestamp() });
   });
