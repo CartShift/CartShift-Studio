@@ -7,6 +7,7 @@
  * Does not accept --apply and never alters customers, payments or projects.
  */
 import * as admin from 'firebase-admin';
+import { inspectProjectDocumentGrowth } from '@/lib/domain/project-document-growth';
 
 const MAX = 20000;
 function args() {
@@ -80,8 +81,18 @@ async function main() {
     }
   }
 
+  const documentGrowth: Array<{ projectId: string; estimatedJsonBytes: number; collectionCounts: ReturnType<typeof inspectProjectDocumentGrowth>['collectionCounts']; largestEmbeddedCollection: ReturnType<typeof inspectProjectDocumentGrowth>['largestEmbeddedCollection'] }> = [];
+
   for (const project of projects) {
     const data = project.data;
+    const growth = inspectProjectDocumentGrowth(data);
+    documentGrowth.push({
+      projectId: project.id,
+      estimatedJsonBytes: growth.estimatedJsonBytes,
+      collectionCounts: growth.collectionCounts,
+      largestEmbeddedCollection: growth.largestEmbeddedCollection,
+    });
+    if (growth.caution) problems.push({ code: 'PROJECT_DOCUMENT_SIZE_CAUTION', projectId: project.id });
     if (data.originProposalId) {
       const proposal = requestById.get(data.originProposalId);
       if (!proposal || proposal.orgId !== data.orgId) {
@@ -98,6 +109,13 @@ async function main() {
     auditedRequests: requests.length, auditedProjects: projects.length,
     truncated: requests.length === count || projects.length === count,
     issueCount: problems.length,
+    projectDocumentGrowth: {
+      note: 'Approximate UTF-8 JSON sizes, not Firestore-encoded bytes; per-field overhead is excluded. Verify large documents before planning a subcollection migration.',
+      cautions: problems.filter(item => item.code === 'PROJECT_DOCUMENT_SIZE_CAUTION').length,
+      topTenByEstimatedJsonBytes: documentGrowth
+        .sort((a, b) => b.estimatedJsonBytes - a.estimatedJsonBytes)
+        .slice(0, 10),
+    },
     byCode: problems.reduce<Record<string, number>>((acc, issue) => {
       acc[issue.code] = (acc[issue.code] || 0) + 1;
       return acc;
