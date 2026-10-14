@@ -11,6 +11,7 @@ import { Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getRequestsByOrg, getRequestsByProject, updateRequest } from '@/lib/services/portal-requests';
+import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
 import {
   addProjectItem, editProjectItem, getClientProject, listProjectReviews,
   observeClientProject, submitProjectReview, submitChangeOrderDecision, updateClientProject,
@@ -236,7 +237,8 @@ export default function ProjectDetailClient({ id }: { id: string }) {
   });
   const { data: linkedRequests = [] } = useQuery({
     queryKey: ['client-project-requests', project?.orgId, id],
-    queryFn: () => getRequestsByProject(project!.orgId, id),
+    queryFn: () => isAgency ? getRequestsByProject(project!.orgId, id) :
+      getClientVisibleRequests(project!.orgId, id),
     enabled: Boolean(project),
   });
   const { data: requests = [] } = useQuery({
@@ -536,7 +538,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <Plus size={15}/>{locale === 'he' ? 'בקשה חדשה בפרויקט' : 'New project request'}
           </Link>
         )}
-        {project.linkedProposalIds && project.linkedProposalIds.length > 0 && (
+        {isAgency && project.linkedProposalIds && project.linkedProposalIds.length > 0 && (
           <div className="mb-4 space-y-2 rounded-xl border border-surface-200 p-3 dark:border-surface-700">
             <p className="text-xs font-semibold text-surface-500">{locale === 'he' ? 'הסכמים מסחריים' : 'Commercial agreements'}</p>
             {project.linkedProposalIds.map(proposalId => (
