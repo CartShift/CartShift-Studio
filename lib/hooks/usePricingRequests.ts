@@ -13,6 +13,7 @@ import {
 import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
 import { queryKeys } from '@/lib/utils/query-keys';
 import { PricingRequest, PRICING_STATUS } from '@/lib/types/pricing';
+import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
 
 type OrgPricingOptions = {
   excludeDrafts?: boolean;
@@ -20,7 +21,7 @@ type OrgPricingOptions = {
 
 export function useOrgPricingRequests(options: OrgPricingOptions = {}) {
   const orgId = useResolvedOrgId();
-  const { loading: auth, isAuthenticated } = usePortalAuth();
+  const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
   const safeOrgId = typeof orgId === 'string' ? orgId : '';
   const { excludeDrafts = false } = options;
 
@@ -35,23 +36,25 @@ export function useOrgPricingRequests(options: OrgPricingOptions = {}) {
   } = useQuery({
     queryKey: qKey,
     queryFn: async () => {
-      const data = await getPricingRequestsByOrg(safeOrgId);
+      const data = isAgency ? await getPricingRequestsByOrg(safeOrgId) :
+        (await getClientVisibleRequests(safeOrgId)).filter(item => item.isBillable) as PricingRequest[];
       if (excludeDrafts) {
         return data.filter(request => request.status !== PRICING_STATUS.DRAFT);
       }
       return data;
     },
     enabled: Boolean(shouldFetch),
-    staleTime: Infinity,
+    staleTime: isAgency ? Infinity : 15_000,
+    refetchInterval: isAgency ? false : 30_000,
   });
 
   const subscribe = useMemo(() => {
-    if (!shouldFetch) return null;
+    if (!shouldFetch || !isAgency) return null;
     return (cb: (data: PricingRequest[]) => void) =>
       subscribeToOrgPricingRequests(safeOrgId, cb, { excludeDrafts });
-  }, [shouldFetch, safeOrgId, excludeDrafts]);
+  }, [shouldFetch, safeOrgId, excludeDrafts, isAgency]);
 
-  useFirestoreSubscription(qKey, subscribe, Boolean(shouldFetch));
+  useFirestoreSubscription(qKey, subscribe, Boolean(shouldFetch && isAgency));
 
   return {
     requests,
