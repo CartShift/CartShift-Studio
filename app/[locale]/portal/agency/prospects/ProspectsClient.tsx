@@ -58,6 +58,12 @@ export default function ProspectsClient() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [bulkUrls, setBulkUrls] = useState('');
+  const [importPreview, setImportPreview] = useState<{
+    requested: number; unique: number;
+    prospects: Array<{ canonical_domain: string; exists: boolean }>;
+  } | null>(null);
   const [salesDraft, setSalesDraft] = useState({
     stage: 'needs_review', next_action: '', due_date: '', owner_uid: '',
   });
@@ -118,6 +124,38 @@ export default function ProspectsClient() {
     },
     onError: () => toast.error(t('updateFailed')),
   });
+  const bulkImport = useMutation({
+    mutationFn: async (confirm: boolean) => {
+      const lines = bulkUrls.split(/\\r?\\n/).map(v => v.trim()).filter(Boolean).slice(0, 20);
+      if (!lines.length) throw new Error('No stores');
+      return fetchJson<{
+        requested: number; unique: number; created?: number; duplicate?: number;
+        prospects?: Array<{ canonical_domain: string; exists: boolean }>;
+      }>('/api/portal/agency/prospects/import', {
+        method: confirm ? 'PUT' : 'POST',
+        body: JSON.stringify({
+          confirm,
+          stores: lines.map(line => {
+            const raw = line.startsWith('https://') ? line : 'https://' + line;
+            return { store_url: raw, source_url: raw };
+          }),
+        }),
+      });
+    },
+    onSuccess: async (result, confirm) => {
+      if (confirm) {
+        await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
+        toast.success(t('importDone', { created: result.created || 0 }));
+        setBulkUrls('');
+        setImportPreview(null);
+        setShowImport(false);
+      } else {
+        setImportPreview({ requested: result.requested,
+          unique: result.unique, prospects: result.prospects || [] });
+      }
+    },
+    onError: () => toast.error(t('importFailed')),
+  });
   const review = useMutation({
     mutationFn: (payload: { id: string; type: 'contact' | 'technical'; note: string;
       evidence_url?: string; outreach_eligibility?: string }) =>
@@ -168,6 +206,9 @@ export default function ProspectsClient() {
             <RefreshCw size={16} className={list.isFetching ? 'animate-spin' : ''} />
             {t('refresh')}
           </Button>
+          <Button variant="outline" onClick={() => { setShowImport(x => !x); setImportPreview(null); }}>
+            <Plus size={16}/>{t('import')}
+          </Button>
           <Button onClick={() => setShowCreate(x => !x)}>
             <Plus size={16} />{t('add')}
           </Button>
@@ -179,6 +220,31 @@ export default function ProspectsClient() {
         <span>{t('privacyNotice')}</span>
       </div>
 
+      {showImport && (
+        <Card className="space-y-3 p-5">
+          <h2 className="font-semibold">{t('importTitle')}</h2>
+          <p className="text-sm text-surface-500">{t('importHint')}</p>
+          <textarea value={bulkUrls} rows={5} onChange={e => {
+            setBulkUrls(e.target.value); setImportPreview(null);
+          }} placeholder={'https://store-one.co.il\\nhttps://store-two.co.il'}
+            className="w-full rounded-lg border border-surface-200 bg-white p-3 font-mono text-sm text-surface-900 dark:border-surface-700 dark:bg-surface-900 dark:text-white"/>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" disabled={bulkImport.isPending} onClick={() => bulkImport.mutate(false)}>
+              {t('previewImport')}
+            </Button>
+            {importPreview && <Button disabled={bulkImport.isPending} onClick={() => bulkImport.mutate(true)}>
+              {t('confirmImport')}
+            </Button>}
+          </div>
+          {importPreview && (
+            <div className="space-y-1 text-sm text-surface-500">
+              <p>{t('importPreview', { requested: importPreview.requested, unique: importPreview.unique })}</p>
+              {importPreview.prospects.map(row =>
+                <p key={row.canonical_domain} dir="ltr">{row.canonical_domain} — {row.exists ? t('duplicate') : t('newProspect')}</p>)}
+            </div>
+          )}
+        </Card>
+      )}
       {showCreate && (
         <Card className="p-5">
           <form className="space-y-3" onSubmit={e => { e.preventDefault(); create.mutate(); }}>
