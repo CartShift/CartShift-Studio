@@ -243,12 +243,12 @@ export const EditClientModal = ({
                     ]}
                     {...register('defaultCurrency')}
                   />
-                  <p className="mt-1 text-xs text-surface-500">
-                    {locale === 'he'
-                      ? 'המטבע ישמש כברירת מחדל להצעות ולפרויקטים חדשים בלבד. מטבע של מסמכים קיימים לא ישתנה.'
-                      : 'Default for new quotes and projects only. Existing document currencies remain unchanged.'}
-                  </p>
                 </PortalFormField>
+                <p className="mt-1 text-xs text-surface-500">
+                  {locale === 'he'
+                    ? 'המטבע ישמש כברירת מחדל להצעות ולפרויקטים חדשים בלבד. מטבע של מסמכים קיימים לא ישתנה.'
+                    : 'Default for new quotes and projects only. Existing document currencies remain unchanged.'}
+                </p>
               </div>
             </div>
 
