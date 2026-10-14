@@ -18,15 +18,16 @@ export function ContextualAnalyzerCta({
   variant?: 'compact' | 'full';
 }) {
   const t = useTranslations('blogPost.contextualAnalyzer');
+  const review = useTranslations('storeReview');
   const ref = useRef<HTMLDivElement>(null);
-  const href = `/tools/store-analyzer/${intent}?utm_source=blog&utm_medium=organic&utm_campaign=store_analyzer&utm_content=${encodeURIComponent(articleSlug)}`;
+  const href = `/free-store-review?focus=${intent}&utm_source=blog&utm_medium=organic&utm_campaign=expert_store_review&utm_content=${encodeURIComponent(articleSlug)}`;
 
   useEffect(() => {
     if (!ref.current) return;
     const observer = new IntersectionObserver(
       entries => {
         if (entries.some(entry => entry.isIntersecting)) {
-          trackFunnelEvent('blog_analyzer_cta_viewed', { intent, article_slug: articleSlug });
+          trackFunnelEvent('expert_review_cta_viewed', { intent, article_slug: articleSlug });
           observer.disconnect();
         }
       },
@@ -47,11 +48,11 @@ export function ContextualAnalyzerCta({
       <Link
         href={href}
         onClick={() =>
-          trackFunnelEvent('blog_analyzer_cta_clicked', { intent, article_slug: articleSlug })
+          trackFunnelEvent('expert_review_cta_clicked', { intent, article_slug: articleSlug })
         }
       >
         <Button variant="secondary" size="lg" className="w-full md:w-auto">
-          {t(`${intent}.button`)} <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
+          {review('submit')} <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
         </Button>
       </Link>
     </div>
