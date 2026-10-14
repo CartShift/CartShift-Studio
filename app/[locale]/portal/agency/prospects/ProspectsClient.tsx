@@ -93,6 +93,7 @@ export default function ProspectsClient() {
   const [reviewEvidence, setReviewEvidence] = useState('');
   const [reviewDecision, setReviewDecision] = useState('review_required');
   const [findingReviewNote, setFindingReviewNote] = useState('');
+  const [redactConfirmation, setRedactConfirmation] = useState('');
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
@@ -219,6 +220,22 @@ export default function ProspectsClient() {
       toast.success(t('contactRemoved'));
     },
     onError: () => toast.error(t('removeContactFailed')),
+  });
+  const redact = useMutation({
+    mutationFn: (id: string) => fetchJson<{ prospect_id: string; redacted: boolean }>(
+      '/api/portal/agency/prospects/' + id, {
+        method: 'DELETE', body: JSON.stringify({ confirmation: 'REDACT' }),
+      }),
+    onSuccess: async result => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.detail(result.prospect_id) }),
+      ]);
+      setRedactConfirmation('');
+      setSelected(null);
+      toast.success(t('redactionComplete'));
+    },
+    onError: () => toast.error(t('redactionFailed')),
   });
   const rows = (list.data?.prospects || []).filter(row =>
     (!verifiedOnly || row.verifiedIssueCount > 0) &&
@@ -468,6 +485,20 @@ export default function ProspectsClient() {
                       </Button>
                     </div>
                     <p className="text-xs text-surface-500">{t('founderOnly')}</p>
+                  </section>
+                )}
+                {canReview && !prospect.doNotContact && (
+                  <section className="space-y-2 rounded-lg border border-red-200 p-3 dark:border-red-900">
+                    <h3 className="text-sm font-semibold text-red-700 dark:text-red-300">{t('redactionTitle')}</h3>
+                    <p className="text-xs text-surface-600 dark:text-surface-300">{t('redactionWarning')}</p>
+                    <label className="block text-xs text-surface-600 dark:text-surface-300">
+                      {t('redactionConfirmation')}
+                      <input value={redactConfirmation} onChange={e => setRedactConfirmation(e.target.value)}
+                        autoComplete="off" spellCheck={false}
+                        className="mt-1 w-full rounded-lg border border-red-200 bg-white p-2 text-sm dark:border-red-900 dark:bg-surface-800" />
+                    </label>
+                    <Button variant="danger" disabled={redact.isPending || redactConfirmation !== 'REDACT'}
+                      onClick={() => redact.mutate(prospect.id)}>{t('redactProspect')}</Button>
                   </section>
                 )}
                 {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>}
