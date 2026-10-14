@@ -52,6 +52,7 @@ const editOrgSchema = (t: TranslationFunction) =>
     billingCity: z.string().max(100).optional(),
     billingCountry: z.string().max(100).optional(),
     billingPostalCode: z.string().max(40).optional(),
+    defaultCurrency: z.enum(['ILS', 'USD', 'EUR']),
   });
 
 type EditOrgFormData = z.infer<ReturnType<typeof editOrgSchema>>;
@@ -99,6 +100,7 @@ export const EditClientModal = ({
       billingAddressLine2: organization.billingAddressLine2 || '',
       billingCity: organization.billingCity || '',
       billingCountry: organization.billingCountry || '',
+      defaultCurrency: organization.defaultCurrency || 'ILS',
       billingPostalCode: organization.billingPostalCode || '',
     },
   });
@@ -122,6 +124,7 @@ export const EditClientModal = ({
       billingAddressLine2: organization.billingAddressLine2 || '',
       billingCity: organization.billingCity || '',
       billingCountry: organization.billingCountry || '',
+      defaultCurrency: organization.defaultCurrency || 'ILS',
       billingPostalCode: organization.billingPostalCode || '',
     });
   }, [organization, reset]);
@@ -163,6 +166,7 @@ export const EditClientModal = ({
         billingCity: data.billingCity,
         billingCountry: data.billingCountry,
         billingPostalCode: data.billingPostalCode,
+        defaultCurrency: data.defaultCurrency,
       });
 
       onSuccess();
@@ -229,6 +233,20 @@ export const EditClientModal = ({
                 <Input label={t('invoices.settings.address2')} {...register('billingAddressLine2')} />
                 <div className="grid grid-cols-2 gap-3"><Input label={t('invoices.settings.city')} {...register('billingCity')} /><Input label={t('invoices.settings.country')} {...register('billingCountry')} /></div>
                 <Input label={t('invoices.settings.postalCode')} {...register('billingPostalCode')} />
+                <PortalFormField label={t('pricing.form.currency')}>
+                  <Select
+                    options={[
+                      { value: 'ILS', label: '₪ ILS – שקל חדש' },
+                      { value: 'USD', label: '$ USD – US Dollar' },
+                      { value: 'EUR', label: '€ EUR – Euro' },
+                    ]}
+                    {...register('defaultCurrency')}
+                  />
+                  <p className="mt-1 text-xs text-surface-500">
+                    {t('pricing.form.currency')}: {organization.defaultCurrency || 'ILS'}.
+                    { ' ' }New proposals and projects only. Existing document currencies stay unchanged.
+                  </p>
+                </PortalFormField>
               </div>
             </div>
 
