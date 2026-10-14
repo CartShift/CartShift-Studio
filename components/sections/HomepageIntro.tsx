@@ -191,8 +191,8 @@ export const HomepageIntro: React.FC = () => {
           >
             <p className="max-w-3xl text-lg text-surface-600 dark:text-surface-300">
               {isRtl
-                ? 'מחפשים שותף לשיפור Shopify SEO, מהירות או המרות? התחילו בעמוד השירות שלנו, בדקו את החנות עם כלי האודיט, או קפצו ישר למדריך ה-Shopify SEO.'
-                : 'Looking for help with Shopify SEO, speed, or conversion work? Start with our Shopify service page, run the store analyzer, or dive into the Shopify SEO pillar guide.'}
+                ? 'מחפשים שותף לשיפור Shopify SEO, מהירות או המרות? התחילו בעמוד השירות שלנו, בקשו סקירה מקצועית של החנות, או קפצו ישר למדריך ה-Shopify SEO.'
+                : 'Looking for help with Shopify SEO, speed, or conversion work? Start with our Shopify service page, request an expert store review, or dive into the Shopify SEO pillar guide.'}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link href="/solutions/shopify">
@@ -203,10 +203,10 @@ export const HomepageIntro: React.FC = () => {
                   </span>
                 </Button>
               </Link>
-              <Link href="/tools/store-analyzer">
+              <Link href="/free-store-review">
                 <Button variant="outline" size="lg">
                   <span className="flex items-center gap-2">
-                    {isRtl ? 'אודיט חינם לחנות' : 'Run a free store audit'}
+                    {isRtl ? 'סקירה מקצועית בחינם' : 'Request a free expert review'}
                     <ArrowRight size={18} className="rtl:rotate-180" />
                   </span>
                 </Button>
