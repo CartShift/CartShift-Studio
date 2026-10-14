@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { SalesPerformance } from '@/components/portal/SalesPerformance';
 import { Button } from '@/components/ui/Button';
@@ -23,6 +23,7 @@ import { PROFIT_SPLIT_STATUS } from '@/lib/types/profit-split';
 
 export default function SalesDashboardClient() {
   const t = useTranslations('portal');
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -47,6 +48,11 @@ export default function SalesDashboardClient() {
     const fields: Array<[string, number | string]> = [
       ['Period (months)', period],
       ['Currency', metrics.primaryCurrency],
+      ['Financial KPIs exclude other/unknown currencies', metrics.hasOtherCurrencies ? 'YES' : 'NO'],
+      ...(['ILS', 'USD', 'EUR'] as const).flatMap(currency => [
+        [currency + ' paid (minor units)', metrics.currencyBreakdown?.[currency].paid || 0] as [string, number],
+        [currency + ' pending (minor units)', metrics.currencyBreakdown?.[currency].pending || 0] as [string, number],
+      ]),
       ['Total revenue (minor units)', metrics.totalRevenue],
       ['Pending revenue (minor units)', metrics.pendingRevenue],
       ['Revenue growth (%)', metrics.revenueGrowth],
@@ -172,6 +178,23 @@ export default function SalesDashboardClient() {
           draftCount={draftSplitCount}
         />
       )}
+
+      {activeTab === 'overview' && metrics?.hasOtherCurrencies && <section
+        className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+        <p className="font-semibold">
+          {locale === 'he'
+            ? 'סיכומי ההכנסות מוצגים במטבע אחד בלבד – ללא חיבור שקלים, דולרים ואירו.'
+            : 'Revenue KPIs show a single reporting currency; ILS, USD and EUR are never added together.'}
+        </p>
+        <p className="mt-1 text-xs">
+          {locale === 'he' ? 'מטבע התצוגה:' : 'Reporting currency:'} {metrics.primaryCurrency}.
+          {' '}{locale === 'he' ? 'פירוט סכומים שנרשמו לפי מטבע:' : 'Recorded amounts by currency:'}
+          {' '}{(['ILS', 'USD', 'EUR'] as const).map(currency =>
+            currency + ': ' + new Intl.NumberFormat(locale === 'he' ? 'he-IL' : 'en-US', {
+              style: 'currency', currency, maximumFractionDigits: 0,
+            }).format((metrics.currencyBreakdown?.[currency]?.paid || 0) / 100)).join(' · ')}
+        </p>
+      </section>}
 
       {activeTab === 'profit-splits' && canManageProfitSplits ? (
         <ProfitSplitsSection />
