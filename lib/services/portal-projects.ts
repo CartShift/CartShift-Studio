@@ -9,11 +9,11 @@ import type {
 } from '@/lib/types/project';
 import { buildProjectTemplate } from '@/lib/utils/project-workflow';
 import { appendProjectCollectionItem, editProjectCollectionItem } from '@/lib/domain/project-collection-patches';
+import { normalizeProjectSnapshot } from '@/lib/domain/project-document';
 
 const COLLECTION = 'portal_projects';
 
-const mapProject = (snapshot: { id: string; data: () => unknown }): ClientProject =>
-  ({ id: snapshot.id, ...(snapshot.data() as object) }) as ClientProject;
+const mapProject = normalizeProjectSnapshot;
 
 export async function listClientProjects(orgId?: string): Promise<ClientProject[]> {
   await waitForAuth();
