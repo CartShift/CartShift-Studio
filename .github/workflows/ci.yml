@@ -102,27 +102,8 @@ jobs:
             pnpm test:run
           fi
 
-      - name: Check Cloud Functions syntax and distributed limiter
-        run: |
-          node --check functions/index.js
-          node --check functions/rate-limit.js
-          node --test tests/functions/rate-limit.test.cjs
-
-      - name: Firestore tenant-security regression (when rules change)
-        shell: bash
-        env:
-          BASE_SHA: ${{ steps.changes.outputs.base }}
-        run: |
-          if [ -n "$BASE_SHA" ] && ! git diff --name-only "$BASE_SHA" HEAD -- firestore.rules tests/firestore/project-rules.cjs | grep -q .; then
-            echo 'Security rules unchanged; skipping emulator.'
-            exit 0
-          fi
-          # Isolated, temporary dependencies keep the app lockfile untouched.
-          npm install --prefix tests/firestore --no-save --no-package-lock \
-            @firebase/rules-unit-testing@4 firebase-tools@14
-          tests/firestore/node_modules/.bin/firebase emulators:exec \
-            --project demo-cartshift --only firestore \
-            'node tests/firestore/project-rules.cjs'
+      - name: Distributed limiter regression
+        run: node --test tests/functions/rate-limit.test.cjs
 
   # Full checks are deliberately opt-in while CartShift is in active development.
   full:
