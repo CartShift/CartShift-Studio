@@ -392,7 +392,11 @@ service cloud.firestore {
             parent.get('requestRole', '') in ['bundle', 'bundle_item']
           ) || (
             parent.get('status', '') != 'DRAFT' &&
-            parent.get('publicAccessEnabled', false) == true
+            (parent.get('publicAccessEnabled', false) == true ||
+             (parent.get('requestRole', '') == 'bundle_item' &&
+              parent.get('status', '') in [
+                'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'
+              ]))
           ));
       }
       // Deny client list queries entirely. Emulator tests proved clients could
