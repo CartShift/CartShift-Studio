@@ -68,3 +68,82 @@ export async function DELETE(request: NextRequest, { params }: {
       { status, headers });
   }
 }
+
+/**
+ * React to a client-visible comment without granting direct SDK access to
+ * confidential comment documents or allowing forged reaction user IDs.
+ */
+export async function PATCH(request: NextRequest, { params }: {
+  params: Promise<{ commentId: string }>
+}) {
+  if (!adminDb) return NextResponse.json({ error: 'Unavailable' }, { status: 503, headers });
+  const session = await getServerSession(request);
+  if (!session?.uid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers });
+  const { commentId } = await params;
+  const payload = await request.json().catch(() => null) as {
+    emoji?: unknown; action?: unknown;
+  } | null;
+  const emoji = payload?.emoji;
+  const action = payload?.action;
+  if (!/^[A-Za-z0-9_-]{6,150}$/.test(commentId) ||
+      !['👍', '❤️', '😂', '😮', '😢', '👏'].includes(String(emoji)) ||
+      !['add', 'remove'].includes(String(action))) {
+    return NextResponse.json({ error: 'Invalid reaction' }, { status: 400, headers });
+  }
+
+  const db = adminDb;
+  const commentRef = db.collection('portal_comments').doc(commentId);
+  try {
+    const [userDoc, commentDoc] = await Promise.all([
+      db.collection('portal_users').doc(session.uid).get(), commentRef.get(),
+    ]);
+    const user = userDoc.data();
+    const comment = commentDoc.data();
+    if (!user || user.isAgency === true || user.accountType === 'AGENCY' ||
+        ['inactive', 'suspended'].includes(user.status)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers });
+    }
+    if (!comment || comment.isInternal === true ||
+        typeof comment.orgId !== 'string' || typeof comment.requestId !== 'string') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404, headers });
+    }
+    const orgId = comment.orgId;
+    const [orgDoc, memberDoc] = await Promise.all([
+      db.collection('portal_organizations').doc(orgId).get(),
+      db.collection('portal_members').doc(orgId + '_' + session.uid).get(),
+    ]);
+    const org = orgDoc.data();
+    const member = memberDoc.data();
+    if (!orgDoc.exists || org?.removedAt ||
+        ['inactive', 'suspended'].includes(org?.status) ||
+        !(org?.createdBy === session.uid ||
+          (member?.orgId === orgId && member?.userId === session.uid && !member?.removedAt))) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers });
+    }
+    const parentRef = db.collection('portal_requests').doc(comment.requestId);
+    await db.runTransaction(async tx => {
+      const [fresh, parent] = await Promise.all([tx.get(commentRef), tx.get(parentRef)]);
+      const row = fresh.data();
+      if (!row || row.isInternal === true || row.orgId !== orgId ||
+          row.requestId !== parentRef.id || !parent.exists ||
+          parent.data()?.orgId !== orgId ||
+          !sanitizeClientRequest(parentRef.id, parent.data()!)) {
+        throw new Error('COMMENT_NOT_VISIBLE');
+      }
+      const reactions = row.reactions && typeof row.reactions === 'object' &&
+        !Array.isArray(row.reactions) ? { ...row.reactions } as Record<string, unknown> : {};
+      const members = Array.isArray(reactions[String(emoji)])
+        ? (reactions[String(emoji)] as unknown[]).filter((member): member is string =>
+          typeof member === 'string') : [];
+      reactions[String(emoji)] = action === 'add'
+        ? [...new Set([...members, session.uid])]
+        : members.filter(member => member !== session.uid);
+      tx.update(commentRef, { reactions, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+    });
+    return NextResponse.json({ updated: true }, { headers });
+  } catch (error) {
+    const status = error instanceof Error && error.message === 'COMMENT_NOT_VISIBLE' ? 404 : 500;
+    return NextResponse.json({ error: status === 404 ? 'Not found' : 'Unable to update reaction' },
+      { status, headers });
+  }
+}
