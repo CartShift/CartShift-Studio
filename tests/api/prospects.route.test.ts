@@ -33,6 +33,17 @@ describe('private prospect portal endpoints', () => {
     expect(response.status).toBe(403);
   });
 
+  it('rejects cross-origin creation before any Firestore write', async () => {
+    const response = await POST(new NextRequest('https://portal.cart-shift.com/api/portal/agency/prospects', {
+      method: 'POST', headers: { Origin: 'https://unrelated.example.com' },
+      body: JSON.stringify({
+        store_url: 'https://shop.co.il', source_url: 'https://shop.co.il',
+      }),
+    }));
+    expect(response.status).toBe(403);
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
   it('discards user-supplied consent fields on manual import', async () => {
     const response = await POST(new NextRequest('https://portal.cart-shift.com/api/portal/agency/prospects', {
       method: 'POST',
