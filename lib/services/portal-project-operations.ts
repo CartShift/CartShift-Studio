@@ -1,60 +1,48 @@
+import { getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import {
-  addDoc, collection, doc, getDocs, limit, orderBy, query, serverTimestamp, updateDoc,
-} from 'firebase/firestore';
-import { getFirebaseAuth, getFirestoreDb, waitForAuth } from '@/lib/firebase';
-import {
-  initialProjectRecordStatus, validateProjectPrivateRecord, validProjectRecordTransition,
+  validateProjectPrivateRecord, validProjectRecordTransition,
   type NewProjectPrivateRecord, type ProjectPrivateRecord, type ProjectRecordStatus,
 } from '@/lib/domain/project-operations';
 
-const recordCollection = (projectId: string) =>
-  collection(getFirestoreDb(), 'portal_projects', projectId, 'private_records');
-
-async function agencyUser() {
+async function privateApi(projectId: string, method: 'GET' | 'POST' | 'PATCH', body?: unknown) {
   await waitForAuth();
   const user = getFirebaseAuth().currentUser;
   if (!user) throw new Error('Not authenticated');
-  // Agency permissions are also enforced by Firestore rules on EVERY operation.
-  return user;
+  const token = await user.getIdToken();
+  const response = await fetch('/api/portal/projects/' + encodeURIComponent(projectId) + '/private-records', {
+    method, credentials: 'same-origin', cache: 'no-store',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  const result = await response.json().catch(() => ({})) as {
+    items?: ProjectPrivateRecord[]; id?: string; error?: string;
+  };
+  if (!response.ok) throw new Error(result.error || 'Private project request failed');
+  return result;
 }
 
-/** Only agency staff can read the private subcollection; customers cannot enumerate it. */
+/** The server checks agency role on EVERY request and never shares records with clients. */
 export async function listProjectPrivateRecords(projectId: string): Promise<ProjectPrivateRecord[]> {
-  await agencyUser();
-  const snapshot = await getDocs(query(recordCollection(projectId), orderBy('createdAt', 'desc'), limit(100)));
-  return snapshot.docs.map(item => ({ id: item.id, ...item.data() } as ProjectPrivateRecord));
+  return (await privateApi(projectId, 'GET')).items || [];
 }
-
 export async function addProjectPrivateRecord(
   projectId: string, input: NewProjectPrivateRecord
 ): Promise<string> {
-  const user = await agencyUser();
   const invalid = validateProjectPrivateRecord(input);
   if (invalid) throw new Error(invalid);
-  const result = await addDoc(recordCollection(projectId), {
-    kind: input.kind,
-    title: input.title.trim(),
-    details: input.details.trim(),
-    status: initialProjectRecordStatus(input.kind),
-    sourceUrl: input.sourceUrl?.trim() || '',
-    owner: input.owner?.trim() || '',
-    dueDate: input.dueDate || '',
-    ...(input.kind === 'time' ? { hours: input.hours } : {}),
-    createdBy: user.uid,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  const result = await privateApi(projectId, 'POST', input);
+  if (!result.id) throw new Error('Missing record identifier');
   return result.id;
 }
-
-/** Evidence fields are immutable: changed outcomes are audited via a new record. */
+/** Evidence is immutable; only the documented result/status may change. */
 export async function updateProjectPrivateRecordStatus(
   projectId: string, record: Pick<ProjectPrivateRecord, 'id' | 'kind'>, status: ProjectRecordStatus
 ): Promise<void> {
-  await agencyUser();
-  if (!validProjectRecordTransition(record.kind, status)) throw new Error('Invalid record status');
-  if (record.kind === 'time') throw new Error('Time evidence cannot be modified');
-  await updateDoc(doc(recordCollection(projectId), record.id), {
-    status, updatedAt: serverTimestamp(),
-  });
+  if (record.kind === 'time' || !validProjectRecordTransition(record.kind, status)) {
+    throw new Error('Invalid record status');
+  }
+  await privateApi(projectId, 'PATCH', { recordId: record.id, status });
 }
