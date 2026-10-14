@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
 import {
   generateMetadata as genMeta,
@@ -11,10 +12,9 @@ import { getCaseStudyBySlug, getCaseStudySlugs } from '@/lib/case-studies';
 import { CaseStudyDetailContent } from '@/components/sections/CaseStudyDetailContent';
 
 export async function generateStaticParams() {
-  const locales = ['en', 'he'];
   const slugs = getCaseStudySlugs();
 
-  return locales.flatMap(locale => slugs.map(slug => ({ locale, slug })));
+  return routing.locales.flatMap(locale => slugs.map(slug => ({ locale, slug })));
 }
 
 export async function generateMetadata({

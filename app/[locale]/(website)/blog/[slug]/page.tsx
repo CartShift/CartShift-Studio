@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
 import { BlogPostTemplate } from '@/components/templates/BlogPostTemplate';
 import { getAllPosts, getPostBySlug } from '@/lib/markdown';
@@ -10,12 +11,15 @@ import {
 import Script from 'next/script';
 import type { Metadata } from 'next';
 
+// Prebuild only the newest editorial posts; older posts are generated on first
+// request and remain statically cached until deployment/revalidation.
+const PRERENDERED_POST_COUNT = 6;
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
-  const locales = ['en', 'he'];
-
-  return locales.flatMap(locale =>
-    posts.map(post => ({
+  return routing.locales.flatMap(locale =>
+    posts.slice(0, PRERENDERED_POST_COUNT).map(post => ({
       locale,
       slug: post.slug,
     }))
