@@ -24,6 +24,7 @@ type Prospect = {
   outreachEligibility: string;
   doNotContact: boolean;
   researchNote: string;
+  ownerUid: string;
   nextAction: string;
   nextActionAt: string;
   technicalStatus: string;
