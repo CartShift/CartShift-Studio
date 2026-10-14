@@ -12,10 +12,11 @@ async function main() {
   const env = await initializeTestEnvironment({
     projectId: 'demo-cartshift',
     firestore: { rules: fs.readFileSync('firestore.rules', 'utf8') },
+    storage: { rules: fs.readFileSync('storage.rules', 'utf8') },
   });
 
   const context = (uid, email) =>
-    env.authenticatedContext(uid, { email }).firestore();
+    env.authenticatedContext(uid, { email, email_verified: true }).firestore();
   try {
     await env.withSecurityRulesDisabled(async admin => {
       const db = admin.firestore();
@@ -23,9 +24,16 @@ async function main() {
         db.doc('portal_users/agency').set({ accountType: 'AGENCY', isAgency: true, email: 'staff@example.com' }),
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
+        db.doc('portal_users/removed').set({ accountType: 'CLIENT', isAgency: false, email: 'removed@example.com' }),
+        db.doc('portal_users/storageRevoked').set({ accountType: 'CLIENT', isAgency: false, email: 'storage-revoked@example.com' }),
+        db.doc('portal_users/stranger').set({ accountType: 'CLIENT', isAgency: false, email: 'stranger@example.com' }),
+        db.doc('portal_users/viewer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'viewer', email: 'viewer@example.com' }),
+        db.doc('portal_users/developer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'developer', email: 'developer@example.com' }),
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
+        db.doc('portal_members/orgA_removed').set({ orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'admin', removedAt: require('firebase/firestore').Timestamp.now() }),
+        db.doc('portal_members/orgA_storageRevoked').set({ orgId: 'orgA', userId: 'storageRevoked', email: 'storage-revoked@example.com', role: 'admin', removedAt: require('firebase/firestore').Timestamp.now() }),
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', title: 'Request', status: 'NEW' }),
         db.doc('portal_requests/quoteA').set({
           orgId: 'orgA', title: 'Unpublished pricing',
@@ -75,6 +83,10 @@ async function main() {
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
+    const unverifiedOutsider = env.authenticatedContext('outsider', { email: 'outsider@example.com', email_verified: false }).firestore();
+    const removed = context('removed', 'removed@example.com');
+    const viewer = context('viewer', 'viewer@example.com');
+    const developer = context('developer', 'developer@example.com');
 
     // Internal comments must be protected by Firestore rules, not client-side filtering.
     // Comments are also projected through the secure API, never returned raw.
@@ -123,6 +135,34 @@ async function main() {
     await assertFails(agency.collection('portal_projects').add({
       orgId: 'orgA', title: 'Premature launch', status: 'ready_to_launch',
     }));
+
+    // A revoked member must not read the former tenant or mutate its requests.
+    await assertFails(removed.doc('portal_projects/prjA').get());
+    await assertFails(removed.doc('portal_organizations/orgA').get());
+    await assertFails(removed.doc('portal_requests/reqA').update({ title: 'Removed client edit' }));
+    await assertFails(viewer.doc('portal_projects/prjA').update({ title: 'Viewer edit' }));
+    await assertFails(viewer.collection('portal_projects').add({ orgId: 'orgA', title: 'Viewer create', status: 'planning' }));
+    await assertSucceeds(developer.doc('portal_projects/prjA').update({ title: 'Authorized developer edit' }));
+    await assertFails(viewer.collection('portal_requests').add({ orgId: 'orgA', title: 'Viewer create request' }));
+    await assertFails(developer.doc('portal_requests/reqA').update({ totalAmount: 1 }));
+
+    // Restricted project evidence never inherits parent-project read permissions.
+    const { serverTimestamp: privateStamp } = require('firebase/firestore');
+    const recordPath = 'portal_projects/prjA/private_records/qa-one';
+    const record = {
+      kind: 'qa', title: 'Staging checklist', details: 'Internal verification',
+      status: 'open', sourceUrl: '', owner: 'agency', dueDate: '',
+      createdBy: 'agency', createdAt: privateStamp(), updatedAt: privateStamp(),
+    };
+    await assertSucceeds(agency.doc(recordPath).set(record));
+    await assertSucceeds(agency.doc(recordPath).get());
+    await assertSucceeds(viewer.doc(recordPath).get());
+    await assertFails(client.doc(recordPath).get());
+    await assertFails(client.collection('portal_projects/prjA/private_records').get());
+    await assertFails(viewer.doc(recordPath).update({ status: 'passed', updatedAt: privateStamp() }));
+    await assertFails(agency.doc(recordPath).update({ title: 'Bypass immutable evidence' }));
+    await assertSucceeds(agency.doc(recordPath).update({ status: 'passed', updatedAt: privateStamp() }));
+    await assertFails(agency.doc(recordPath).delete());
 
     // Commercial docs are agency-only. Members use the sanitized server API.
     await assertFails(client.doc('portal_requests/quoteA').get());

@@ -241,13 +241,13 @@ service cloud.firestore {
     // may edit project scope, launch checks, blockers and client-facing updates.
     match /portal_projects/{projectId} {
       allow get, list: if resource != null && canAccessOrg(resource.data.get('orgId', ''));
-      allow create: if isAgencyUser() &&
+      allow create: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') is string &&
         request.resource.data.get('status', '') == 'planning' &&
         exists(/databases/$(database)/documents/portal_organizations/$(request.resource.data.orgId));
       // 'ready_to_launch' can only be entered by the trusted readiness service.
       // Editing gates after readiness requires atomically reopening the project.
-      allow update: if isAgencyUser() &&
+      allow update: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
         (request.resource.data.get('status', '') != 'ready_to_launch' ||
           (resource.data.get('status', '') == 'ready_to_launch' &&
@@ -255,6 +255,66 @@ service cloud.firestore {
              'blockers', 'inputs', 'launchChecks', 'deliverables', 'changes', 'reviewRevisions', 'stages'
            ])));
       allow delete: if false;
+
+      match /private_records/{recordId} {
+        function projectExists() {
+          return exists(/databases/$(database)/documents/portal_projects/$(projectId));
+        }
+        function validRecord() {
+          return request.resource.data.keys().hasOnly([
+            'kind', 'title', 'details', 'status', 'sourceUrl', 'owner',
+            'dueDate', 'hours', 'createdBy', 'createdAt', 'updatedAt'
+          ]) &&
+          request.resource.data.keys().hasAll([
+            'kind', 'title', 'details', 'status', 'sourceUrl', 'owner',
+            'dueDate', 'createdBy', 'createdAt', 'updatedAt'
+          ]) &&
+          request.resource.data.get('kind', '') in [
+            'decision', 'qa', 'dependency', 'follow_up', 'time'
+          ] &&
+          request.resource.data.get('title', '') is string &&
+          request.resource.data.title.size() > 0 &&
+          request.resource.data.title.size() <= 160 &&
+          request.resource.data.get('details', '') is string &&
+          request.resource.data.details.size() <= 3000 &&
+          request.resource.data.get('owner', '') is string &&
+          request.resource.data.owner.size() <= 100 &&
+          request.resource.data.get('sourceUrl', '') is string &&
+          request.resource.data.sourceUrl.size() <= 1024 &&
+          request.resource.data.get('dueDate', '') is string &&
+          request.resource.data.dueDate.size() <= 10 &&
+          request.resource.data.get('createdBy', '') == getUserId() &&
+          request.resource.data.get('createdAt', request.time) == request.time &&
+          request.resource.data.get('updatedAt', request.time) == request.time &&
+          (
+            (request.resource.data.kind == 'time' &&
+              request.resource.data.status == 'done' &&
+              request.resource.data.get('hours', 0) is number &&
+              request.resource.data.hours > 0 &&
+              request.resource.data.hours <= 24) ||
+            (request.resource.data.kind != 'time' &&
+              !request.resource.data.keys().hasAny(['hours']) &&
+              request.resource.data.status == 'open')
+          );
+        }
+        allow get, list: if isAgencyUser() && projectExists();
+        allow create: if canEditAgencyProjects() && projectExists() && validRecord();
+        allow update: if canEditAgencyProjects() && projectExists() &&
+          resource.data.get('kind', '') != 'time' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'status', 'updatedAt'
+          ]) &&
+          request.resource.data.get('updatedAt', request.time) == request.time &&
+          (
+            (resource.data.kind == 'decision' &&
+              request.resource.data.status in ['open', 'confirmed']) ||
+            (resource.data.kind == 'qa' &&
+              request.resource.data.status in ['open', 'passed', 'failed']) ||
+            (resource.data.kind in ['dependency', 'follow_up'] &&
+              request.resource.data.status in ['open', 'done'])
+          );
+        allow delete: if false;
+      }
 
       match /reviews/{reviewId} {
         function projectOrg() {
@@ -405,11 +465,11 @@ service cloud.firestore {
       // explicitly whitelisted client-requests API instead.
       allow get: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
-        isMemberOfOrg(request.resource.data.get('orgId', '')) ||
-        isOrgOwner(request.resource.data.get('orgId', ''))
+        canCreateAgencyRequest() ||
+        (!isAgencyUser() && isMemberOfOrg(request.resource.data.get('orgId', ''))) ||
+        (!isAgencyUser() && isOrgOwner(request.resource.data.get('orgId', '')))
       ) && validNewProjectLink() &&
-      (isAgencyUser() || (
+      (canCreateAgencyRequest() || (
         !isCommercialDocument(request.resource.data) &&
         request.resource.data.get('status', '') == 'NEW' &&
         request.resource.data.get('createdBy', '') == request.auth.uid &&
@@ -424,7 +484,8 @@ service cloud.firestore {
       allow update: if isAuthenticated() && (
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
-        resource.data.get('clientEmail', '') == request.auth.token.email ||
+        (request.auth.token.email_verified == true &&
+         resource.data.get('clientEmail', '') == request.auth.token.email) ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
@@ -432,7 +493,9 @@ service cloud.firestore {
       !editsSignedCommercialTerms() &&
       request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
       validNewProjectLink() &&
-      (isAgencyUser() || (
+      ((canCreateAgencyRequest() &&
+        (!changesAgencyCommercialFields() || canManageAgencyCommercial())) ||
+       (!isAgencyUser() &&
         !isCommercialDocument(resource.data) &&
         !isCommercialDocument(request.resource.data) &&
         !changesAgencyCommercialFields() &&
@@ -446,8 +509,8 @@ service cloud.firestore {
         ])
       ));
       allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        (!isCommercialDocument(resource.data) && (
+        isAgencyManager() ||
+        (!isAgencyUser() && !isCommercialDocument(resource.data) && (
           resource.data.get('createdBy', '') == getUserId() ||
           isOrgOwner(resource.data.get('orgId', ''))
         ))
