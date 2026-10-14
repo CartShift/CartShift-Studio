@@ -38,6 +38,20 @@ export async function redactProspect(prospectId: string, uid: string) {
     }
   }
 
+  // Old audit events may include permission evidence URLs or free-form notes.
+  // Delete per-prospect audit records as well; retain only a minimal redaction receipt.
+  const audit = database.collection('agency_prospect_audit');
+  for (const field of ['targetId', 'prospectId'] as const) {
+    for (;;) {
+      const matched = await audit.where(field, '==', prospectId).limit(100).get();
+      if (matched.empty || matched.docs.length === 0) break;
+      const batch = database.batch();
+      for (const doc of matched.docs) batch.delete(doc.ref);
+      await batch.commit();
+      removed += matched.docs.length;
+    }
+  }
+
   // Full replacement intentionally drops brand/contact names, research notes,
   // private source URLs, personal emails, assignees and commercial draft context.
   // The canonical business domain is retained solely to enforce future suppression.
