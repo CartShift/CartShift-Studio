@@ -88,7 +88,14 @@
       "removeContact": "הסר מועמד לאיש קשר",
       "contactRemoved": "איש הקשר הוסר",
       "removeContactFailed": "לא הצלחנו להסיר את איש הקשר",
-      "linkedProposal": "לצפייה בהצעת המחיר המקושרת"
+      "linkedProposal": "לצפייה בהצעת המחיר המקושרת",
+      "eligibility": {
+        "review_required": "דרושה בדיקת הרשאת פנייה",
+        "consent_recorded": "הסכמה מתועדת",
+        "existing_relationship": "קשר עסקי קיים",
+        "approved_partner_channel": "ערוץ שותפים מאושר",
+        "blocked": "אין לפנות"
+      }
     }
   }
 }
