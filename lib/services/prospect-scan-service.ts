@@ -74,6 +74,7 @@ export async function scanProspect(prospectId: string, uid: string) {
   } catch (error) {
     await ref.update({
       scanStatus: 'failed',
+      scanStartedAtMs: 0,
       scanLockUntilMs: 0,
       updatedAt: FieldValue.serverTimestamp(),
     }).catch(() => {});
