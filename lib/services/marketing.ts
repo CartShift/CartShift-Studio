@@ -139,6 +139,7 @@ export async function captureMarketingLead(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(7000),
     });
     const result = await response.json().catch(() => ({}));
 

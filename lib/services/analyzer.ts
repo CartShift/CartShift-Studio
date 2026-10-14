@@ -1383,31 +1383,41 @@ async function buildScanScope(
     };
   }
 
-  const evidence: ProductSchemaEntityEvidence[] = [];
-  let succeeded = 0;
-
-  for (const productUrl of productCandidates) {
-    try {
-      const fetched = await fetchWithSingleRetry(productUrl, 8000);
-      scannedUrls.push(fetched.finalUrl);
-      const confirmation = confirmProductDetailPage(fetched.html, fetched.finalUrl, platform);
-      if (!confirmation.confirmed) {
-        Logger.info('Product page candidate rejected after fetch', {
-          productUrl,
+  // Product samples are independent; avoid serial network retries eating the API time budget.
+  const sampleResults = await Promise.all(
+    productCandidates.map(async productUrl => {
+      try {
+        const fetched = await fetchWithSingleRetry(productUrl, 8000);
+        const confirmation = confirmProductDetailPage(fetched.html, fetched.finalUrl, platform);
+        if (!confirmation.confirmed) {
+          Logger.info('Product page candidate rejected after fetch', {
+            productUrl,
+            finalUrl: fetched.finalUrl,
+            signals: confirmation.signals,
+          });
+          return { finalUrl: fetched.finalUrl, evidence: null };
+        }
+        return {
           finalUrl: fetched.finalUrl,
-          signals: confirmation.signals,
-        });
-        continue;
+          evidence: {
+            ...validateProductSchema(fetched.html, fetched.finalUrl),
+            confirmedProductPage: true as const,
+            confirmationSignals: confirmation.signals,
+          },
+        };
+      } catch (error) {
+        Logger.warn('Product page sample failed', { productUrl, error });
+        return null;
       }
-      succeeded += 1;
-      evidence.push({
-        ...validateProductSchema(fetched.html, fetched.finalUrl),
-        confirmedProductPage: true,
-        confirmationSignals: confirmation.signals,
-      });
-    } catch (error) {
-      Logger.warn('Product page sample failed', { productUrl, error });
-    }
+    })
+  );
+
+  const evidence: ProductSchemaEntityEvidence[] = sampleResults.flatMap(sample =>
+    sample?.evidence ? [sample.evidence] : []
+  );
+  const succeeded = evidence.length;
+  for (const sample of sampleResults) {
+    if (sample?.finalUrl) scannedUrls.push(sample.finalUrl);
   }
 
   let status: ScanScope['productSchemaCoverageStatus'] = 'not_scanned';
@@ -1824,7 +1834,7 @@ async function runHeavyAnalysisTasks(
         deeperScan: unavailableDeeperScan('Browser automation failed before sampling.'),
       };
     }),
-    Promise.resolve(AIReadinessService.analyze(html, scanScope)).catch(err => {
+    Promise.resolve().then(() => AIReadinessService.analyze(html, scanScope)).catch(err => {
       recordAnalyzerServiceFailure('ai', err, true);
       return {
         score: 50,
@@ -1846,7 +1856,7 @@ async function runHeavyAnalysisTasks(
 
 export class AnalyzerService {
   static async analyzeStore(normalizedUrl: string): Promise<AnalysisResult> {
-    const cacheKey = `analyze:${normalizedUrl}`;
+    const cacheKey = `analyze:v2:${normalizedUrl}`;
 
     // 1. Check Cache
     const cached = await CacheService.get<AnalysisResult>(cacheKey);
@@ -1955,7 +1965,13 @@ export class AnalyzerService {
     let usedLighthouse = false;
     let usedHtmlFallback = false;
 
-    if (pageSpeedData?.lighthouseResult?.categories) {
+    if (
+      pageSpeedData?.lighthouseResult?.categories &&
+      (['performance', 'seo', 'accessibility', 'best-practices'] as const).every(category => {
+        const score = pageSpeedData.lighthouseResult?.categories?.[category]?.score;
+        return typeof score === 'number' && Number.isFinite(score) && score >= 0 && score <= 1;
+      })
+    ) {
       usedLighthouse = true;
       const cats = pageSpeedData.lighthouseResult.categories;
       const audits = pageSpeedData.lighthouseResult.audits || {};

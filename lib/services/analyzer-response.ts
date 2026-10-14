@@ -66,7 +66,7 @@ function withDefaultScanScope(result: AnalysisResult): AnalysisResult {
   };
 }
 
-/** Strips heavy screenshot payloads from API responses; full captures stay in the emailed PDF. */
+/** Exclude unpersisted browser captures from public reports and PDF payloads. The PDF currently contains metrics, not screenshot images. */
 export function serializeAnalysisForClient(result: AnalysisResult): AnalysisResult {
   const normalized = withDefaultScanScope(result);
   const meta = { ...defaultMeta, ...normalized.meta };
@@ -85,7 +85,7 @@ export function serializeAnalysisForClient(result: AnalysisResult): AnalysisResu
     },
     meta: {
       ...meta,
-      screenshotsInEmailReport: true,
+      screenshotsInEmailReport: false,
     },
   };
 }

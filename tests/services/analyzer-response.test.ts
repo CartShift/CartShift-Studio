@@ -102,6 +102,6 @@ describe('serializeAnalysisForClient', () => {
     const serialized = serializeAnalysisForClient(result);
     expect(serialized.visualAnalysis?.screenshots).toEqual([]);
     expect(serialized.visualAnalysis?.mobileResponsivenessScore).toBe(88);
-    expect(serialized.meta?.screenshotsInEmailReport).toBe(true);
+    expect(serialized.meta?.screenshotsInEmailReport).toBe(false);
   });
 });

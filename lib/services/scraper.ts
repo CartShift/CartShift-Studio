@@ -7,6 +7,7 @@ import {
   VisualAnalysis,
 } from '@/lib/types/analyzer';
 import { Logger } from '@/lib/logger';
+import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
 import type { Page } from 'puppeteer-core';
 import { launchAnalyzerBrowser, probeAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
 
@@ -28,6 +29,7 @@ const CATEGORY_PATH_PATTERNS = [
 ];
 
 const PRODUCT_PATH_PATTERNS = [/\/products?\//i, /\/product\//i, /\/item\//i, /\/p\//i];
+const SCRAPER_TIME_BUDGET_MS = 75_000;
 
 function isPuppeteerRuntimeEnabled(): boolean {
   if (process.env.ANALYZER_ENABLE_PUPPETEER === 'true') return true;
@@ -140,7 +142,7 @@ async function sampleProductPage(page: Page, url: string): Promise<ProductPageSa
 
   const analysis = await page.evaluate((sampleUrl: string) => {
     const buttonSelector =
-      'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart" i], form[action*="/cart"] button[type="submit"]';
+      'button[name="add"], button.add-to-cart, button.single_add_to_cart_button, .btn-add-to-cart, #AddToCart, [data-add-to-cart], [class*="add-to-cart"], form[action*="/cart/add"] button[type="submit"]';
     const buyButton = document.querySelector(buttonSelector) as HTMLElement | null;
     const images = document.querySelectorAll('img').length;
     const reviews = document.querySelector('.stars, .reviews, .rating, [class*="review"], [class*="rating"]');
@@ -191,7 +193,7 @@ async function sampleProductPage(page: Page, url: string): Promise<ProductPageSa
   }, url);
 
   const btnSelector =
-    'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart" i], form[action*="/cart"] button[type="submit"]';
+    'button[name="add"], button.add-to-cart, button.single_add_to_cart_button, .btn-add-to-cart, #AddToCart, [data-add-to-cart], [class*="add-to-cart"], form[action*="/cart/add"] button[type="submit"]';
   const addToCartBtn = await page.$(btnSelector);
 
   if (!addToCartBtn) return analysis;
@@ -244,7 +246,7 @@ async function sampleCartInteraction(page: Page, productUrl?: string): Promise<C
     });
 
     const btnSelector =
-      'button[name="add"], button.add-to-cart, .btn-add-to-cart, #AddToCart, [aria-label*="cart" i], form[action*="/cart"] button[type="submit"]';
+      'button[name="add"], button.add-to-cart, button.single_add_to_cart_button, .btn-add-to-cart, #AddToCart, [data-add-to-cart], [class*="add-to-cart"], form[action*="/cart/add"] button[type="submit"]';
     const addToCartBtn = await page.$(btnSelector);
     if (!addToCartBtn) {
       result.error = 'No clickable add-to-cart control was found for interaction.';
@@ -252,8 +254,14 @@ async function sampleCartInteraction(page: Page, productUrl?: string): Promise<C
       return result;
     }
 
-    await addToCartBtn.click().catch(() => undefined);
-    result.addToCartClicked = true;
+    try {
+      await addToCartBtn.click();
+      result.addToCartClicked = true;
+    } catch {
+      result.error = 'The add-to-cart control could not be clicked in this browser sample.';
+      evidence.push(result.error);
+      return result;
+    }
     evidence.push('add-to-cart click attempted');
     await new Promise(resolve => setTimeout(resolve, 1500));
     result.cartUrlAfter = page.url();
@@ -261,17 +269,17 @@ async function sampleCartInteraction(page: Page, productUrl?: string): Promise<C
     const afterSignals = await page.evaluate(() => {
       const text = document.body.innerText || '';
       const checkoutLink = Boolean(
-        document.querySelector('a[href*="checkout"], button[name*="checkout"], [class*="checkout"]')
+        document.querySelector('a[href*="/checkout"], form[action*="/checkout"], button[name="checkout"], button[id*="checkout"]')
       );
       const cartUi = Boolean(
-        document.querySelector('[class*="cart-drawer"], [id*="cart"], form[action*="/cart"]')
+        document.querySelector('[data-cart-drawer], [class*="cart-drawer"], [class*="mini-cart"], [role="dialog"][class*="cart"], main form[action*="/cart"]')
       );
       const match = text.match(/\bCart\s*\(?(\d+)\)?|\bBag\s*\(?(\d+)\)?/i);
       return {
         checkoutLink,
         cartUi,
         cartCount: match ? Number(match[1] || match[2] || 0) : null,
-        textMentionsCart: /cart|basket|bag|checkout/i.test(text),
+        onCartPage: /^\/(cart|basket|bag)(\/|$)/i.test(window.location.pathname),
       };
     });
 
@@ -279,7 +287,7 @@ async function sampleCartInteraction(page: Page, productUrl?: string): Promise<C
       typeof beforeCount === 'number' &&
       typeof afterSignals.cartCount === 'number' &&
       afterSignals.cartCount > beforeCount;
-    result.cartDrawerOrPageDetected = afterSignals.cartUi || afterSignals.textMentionsCart;
+    result.cartDrawerOrPageDetected = afterSignals.cartUi || afterSignals.onCartPage || result.cartCountChanged;
     result.checkoutLinkDetected = afterSignals.checkoutLink;
     evidence.push(
       result.cartDrawerOrPageDetected
@@ -344,6 +352,39 @@ export class ScraperService {
       }
 
       const page = await browser.newPage();
+
+      // Every storefront is untrusted. Block private-network requests and unsafe
+      // protocols before Chromium fetches assets, scripts or navigations.
+      const checkedHosts = new Map<string, Promise<boolean>>();
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        let target: URL;
+        try {
+          target = new URL(request.url());
+        } catch {
+          void request.abort().catch(() => undefined);
+          return;
+        }
+        if (target.protocol === 'data:' || target.protocol === 'blob:') {
+          void request.continue().catch(() => undefined);
+          return;
+        }
+        if (target.protocol !== 'http:' && target.protocol !== 'https:') {
+          void request.abort().catch(() => undefined);
+          return;
+        }
+        const key = target.origin;
+        let allowed = checkedHosts.get(key);
+        if (!allowed) {
+          allowed = validateStoreUrlForAnalysis(key)
+            .then(result => result.ok)
+            .catch(() => false);
+          checkedHosts.set(key, allowed);
+        }
+        void allowed.then(ok =>
+          ok ? request.continue() : request.abort()
+        ).catch(() => undefined);
+      });
 
       // Set a default timeout for all operations
       page.setDefaultTimeout(20000);
@@ -508,7 +549,12 @@ export class ScraperService {
         limitations.push('No same-origin product URLs were discovered from visible homepage links.');
       }
 
+      const deepScanDeadline = startTime + SCRAPER_TIME_BUDGET_MS;
       for (const categoryUrl of discoveredUrls.categoryUrls) {
+        if (Date.now() + 14_000 >= deepScanDeadline) {
+          limitations.push('Browser time budget reached before all category pages could be sampled.');
+          break;
+        }
         try {
           categorySamples.push(await sampleCategoryPage(page, categoryUrl));
         } catch (categoryErr) {
@@ -518,6 +564,10 @@ export class ScraperService {
       }
 
       for (const productUrl of discoveredUrls.productUrls) {
+        if (Date.now() + 16_000 >= deepScanDeadline) {
+          limitations.push('Browser time budget reached before all product pages could be sampled.');
+          break;
+        }
         try {
           productSamples.push(await sampleProductPage(page, productUrl));
         } catch (prodErr) {
@@ -538,7 +588,20 @@ export class ScraperService {
           }
         : undefined;
 
-      const cartInteraction = await sampleCartInteraction(page, productSamples[0]?.url);
+      const cartInteraction: CartInteractionSample =
+        Date.now() + 16_000 < deepScanDeadline
+          ? await sampleCartInteraction(page, productSamples[0]?.url)
+          : {
+              attempted: false,
+              addToCartClicked: false,
+              cartCountChanged: false,
+              cartDrawerOrPageDetected: false,
+              checkoutLinkDetected: false,
+              evidence: [],
+            };
+      if (!cartInteraction.attempted && productSamples.length > 0) {
+        limitations.push('Cart interaction skipped to stay within the browser scan time budget.');
+      }
       if (cartInteraction.error) limitations.push(cartInteraction.error);
 
       const deeperScan: DeeperScanAnalysis = {

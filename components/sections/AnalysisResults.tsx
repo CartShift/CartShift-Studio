@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import { motion } from '@/lib/motion';
 import { useLocale } from 'next-intl';
 import { useAnalyzerTranslations } from '@/lib/i18n/translations';
@@ -343,12 +343,48 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
       results.deeperScan.productPagesAttempted > 0 ||
       results.deeperScan.cartInteractionAttempted)
   );
+  const [deliveryStatus, setDeliveryStatus] = useState<'sent' | 'failed' | null>(null);
+  useEffect(() => {
+    if (analysisMeta.emailReportStatus !== 'pending' || !analysisMeta.reportPath) return;
+    const token = analysisMeta.reportPath.split('/').at(-1);
+    if (!token || !/^[A-Za-z0-9_-]{32}$/.test(token)) return;
+    let cancelled = false;
+    let attempts = 0;
+    const poll = async () => {
+      attempts += 1;
+      try {
+        const response = await fetch(
+          `/api/analyze-store/report-status?token=${encodeURIComponent(token)}`,
+          { cache: 'no-store' }
+        );
+        if (!response.ok) return;
+        const data = (await response.json()) as { status?: string };
+        if (!cancelled && (data.status === 'sent' || data.status === 'failed')) {
+          setDeliveryStatus(data.status);
+        }
+      } catch {
+        // Keep the pending message if the status service is unavailable.
+      }
+    };
+    const timer = window.setInterval(() => {
+      if (attempts >= 8) {
+        window.clearInterval(timer);
+        return;
+      }
+      void poll();
+    }, 12_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [analysisMeta.emailReportStatus, analysisMeta.reportPath]);
+
   const footerReportMessage =
-    analysisMeta.emailReportStatus === 'sent'
+    (deliveryStatus ?? analysisMeta.emailReportStatus) === 'sent'
       ? t('results.fullReportSent')
-      : analysisMeta.emailReportStatus === 'pending'
+      : (deliveryStatus ?? analysisMeta.emailReportStatus) === 'pending'
         ? t('results.emailPendingDescription')
-        : analysisMeta.emailReportStatus === 'failed'
+        : (deliveryStatus ?? analysisMeta.emailReportStatus) === 'failed'
           ? t('results.emailDelayedDescription')
           : t('results.emailUnavailableDescription');
 
@@ -445,6 +481,52 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </div>
         </div>
       </motion.div>
+
+      {/* Lead with concrete actions, not a score whose provenance may be heuristic. */}
+      {priorityRecs.length > 0 && (
+        <section
+          aria-labelledby="analyzer-immediate-actions"
+          className={`rounded-2xl border p-5 md:p-6 ${isDark ? 'border-white/10 bg-surface-950/40' : 'border-surface-200 bg-white shadow-sm'}`}
+        >
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3
+              id="analyzer-immediate-actions"
+              className={`text-lg font-bold ${isDark ? 'text-white' : 'text-surface-900'}`}
+            >
+              {t('results.topIssues', { count: priorityRecs.length })}
+            </h3>
+            <a href="#analyzer-detailed-actions" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400">
+              {t('results.breakdown')}
+            </a>
+          </div>
+          <ol className="grid gap-3 md:grid-cols-3">
+            {priorityRecs.map((rec, index) => (
+              <li
+                key={getRecommendationKey(rec)}
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/10 bg-white/5' : 'border-surface-200 bg-surface-50'}`}
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
+                    {index + 1}
+                  </span>
+                  <span className="text-xs text-surface-500 dark:text-white/50">{rec.sectionName}</span>
+                </div>
+                <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-surface-900'}`}>
+                  {rec.title}
+                </p>
+                {(rec.action || rec.description) && (
+                  <p className={`mt-2 line-clamp-3 text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-surface-600'}`}>
+                    {rec.action || rec.description}
+                  </p>
+                )}
+                <p className="mt-3 text-xs text-surface-500 dark:text-white/50">
+                  {t(getAnalysisConfidenceKey(rec.confidence ?? 'estimated'))}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       {/* Main Score Card */}
       <motion.div
@@ -1157,6 +1239,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         </div>
       </div>
 
+      <div id="analyzer-detailed-actions" className="scroll-mt-20" />
       {/* 30 Day Roadmap */}
       {roadmapWeeks.length > 0 && (
         <motion.div
