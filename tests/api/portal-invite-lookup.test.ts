@@ -35,7 +35,7 @@ const invite = {
 describe('recipient-scoped invitation lookup', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.verifyIdToken.mockResolvedValue({ uid: 'recipient', email: 'recipient@example.com' });
+    mocks.verifyIdToken.mockResolvedValue({ uid: 'recipient', email: 'recipient@example.com', email_verified: true });
     mocks.queryGet.mockResolvedValue({ docs: [{ id: 'invite123', exists: true, data: () => invite }] });
     mocks.directGet.mockResolvedValue({ exists: false, data: () => undefined });
   });
@@ -47,8 +47,16 @@ describe('recipient-scoped invitation lookup', () => {
     expect(mocks.queryGet).not.toHaveBeenCalled();
   });
 
+  it('does not allow an unverified account to claim someone else\'s email address', async () => {
+    mocks.verifyIdToken.mockResolvedValue({ uid: 'recipient', email: 'recipient@example.com', email_verified: false });
+    const result = await POST(request());
+    expect(result.status).toBe(401);
+    expect(mocks.queryGet).not.toHaveBeenCalled();
+    expect(mocks.directGet).not.toHaveBeenCalled();
+  });
+
   it('does not enumerate another recipient\'s invitation', async () => {
-    mocks.verifyIdToken.mockResolvedValue({ uid: 'attacker', email: 'attacker@example.com' });
+    mocks.verifyIdToken.mockResolvedValue({ uid: 'attacker', email: 'attacker@example.com', email_verified: true });
     const result = await POST(request());
     expect(result.status).toBe(404);
     expect(JSON.stringify(await result.json())).not.toContain('recipient@example.com');

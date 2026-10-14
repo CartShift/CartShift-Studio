@@ -16,7 +16,7 @@ async function main() {
   });
 
   const context = (uid, email) =>
-    env.authenticatedContext(uid, { email }).firestore();
+    env.authenticatedContext(uid, { email, email_verified: true }).firestore();
   try {
     await env.withSecurityRulesDisabled(async admin => {
       const db = admin.firestore();
@@ -56,6 +56,7 @@ async function main() {
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
+    const unverifiedOutsider = env.authenticatedContext('outsider', { email: 'outsider@example.com', email_verified: false }).firestore();
     const removed = context('removed', 'removed@example.com');
     const viewer = context('viewer', 'viewer@example.com');
     const developer = context('developer', 'developer@example.com');
@@ -182,11 +183,28 @@ async function main() {
       expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
     }));
     await assertFails(outsider.doc('portal_invites/staff-invite').update({ role: 'owner' }));
+    await assertFails(unverifiedOutsider.doc('portal_invites/staff-invite').get());
+    await assertFails(unverifiedOutsider.collection('portal_invites').where('email', '==', 'outsider@example.com').get());
+    await assertFails(unverifiedOutsider.doc('portal_users/outsider').update({
+      accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',
+      agencyInviteId: 'staff-invite',
+    }));
     await assertFails(outsider.collection('portal_invites').get());
     await assertFails(viewer.collection('portal_invites').get());
     await assertFails(viewer.doc('portal_invites/staff-invite').update({ role: 'owner' }));
     await assertFails(env.unauthenticatedContext().firestore().doc('portal_invites/staff-invite').get());
     await assertSucceeds(outsider.doc('portal_invites/staff-invite').get());
+    await assertSucceeds(outsider.collection('portal_invites').where('email', '==', 'outsider@example.com').get());
+    await assertFails(outsider.collection('portal_invites').where('email', '==', 'staff@example.com').get());
+    await assertSucceeds(agency.doc('portal_invites/client-invite-verification').set({
+      orgId: 'orgB', isAgency: false, role: 'member', status: 'pending',
+      email: 'outsider@example.com', invitedBy: 'agency',
+      expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
+    }));
+    await assertFails(unverifiedOutsider.doc('portal_members/orgB_outsider').set({
+      orgId: 'orgB', userId: 'outsider', role: 'member',
+      inviteId: 'client-invite-verification', email: 'outsider@example.com',
+    }));
     await assertSucceeds(outsider.doc('portal_users/outsider').update({
       accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',
       agencyInviteId: 'staff-invite',

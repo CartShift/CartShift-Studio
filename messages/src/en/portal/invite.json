@@ -21,7 +21,14 @@
       "alreadyHasAccount": "Already have an account? Click \"Sign In\" above",
       "accept": "Accept Invite",
       "accepting": "Accepting...",
-      "emailMismatch": "This invite was sent to {email}, but you're signed in as {userEmail}. Please sign in with the correct email address."
+      "emailMismatch": "This invite was sent to {email}, but you're signed in as {userEmail}. Please sign in with the correct email address.",
+      "verifyEmailTitle": "Verify your email to accept this invitation",
+      "verifyEmailDescription": "For your account's security, verify that you own {email} before joining.",
+      "sendVerificationEmail": "Send verification email",
+      "checkVerification": "I've verified my email",
+      "verificationSent": "Check your inbox (and spam folder), open the verification link, then come back here.",
+      "emailVerificationPending": "Your email is not verified yet. Open the link in your inbox first.",
+      "emailVerificationError": "We couldn't verify your email right now. Please try again."
     }
   }
 }

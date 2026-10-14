@@ -110,6 +110,7 @@ service cloud.firestore {
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('isAgency', false) == true &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('status', '') == 'pending' &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('expiresAt', request.time) > request.time &&
+        request.auth.token.email_verified == true &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('email', '') == request.auth.token.email &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('role', '') == request.resource.data.get('agencyRole', '') &&
         resource.data.get('accountType', 'CLIENT') != 'AGENCY' &&
@@ -161,6 +162,7 @@ service cloud.firestore {
         return inviteId is string && inviteId != '' &&
           exists(/databases/$(database)/documents/portal_invites/$(inviteId)) &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('orgId', '') == request.resource.data.get('orgId', '') &&
+          request.auth.token.email_verified == true &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('email', '') == request.auth.token.email &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('role', '') == request.resource.data.get('role', '') &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('status', '') == 'pending' &&
@@ -180,6 +182,7 @@ service cloud.firestore {
       // restore it, and the invite strictly dictates the recipient and role.
       function validMemberReactivation() {
         return isAuthenticated() &&
+          request.auth.token.email_verified == true &&
           resource.data.get('removedAt', null) != null &&
           memberId == request.resource.data.get('orgId', '') + '_' + getUserId() &&
           resource.data.get('orgId', '') == request.resource.data.get('orgId', '') &&
@@ -201,15 +204,19 @@ service cloud.firestore {
     }
 
     match /portal_invites/{inviteId} {
-      // No public collection enumeration: invites include email addresses and roles.
-      // Invite-by-code lookup is server-side and only returns the signed-in recipient's invite.
+      // Verified recipients can query only invitations addressed to themselves.
+      // Unrestricted listing and reads by an unverified email are forbidden.
       allow get: if isAuthenticated() && (
         isAgencyManager() ||
-        request.auth.token.email == resource.data.get('email', '') ||
+        (request.auth.token.email_verified == true &&
+         request.auth.token.email == resource.data.get('email', '')) ||
         canAdminOrg(resource.data.get('orgId', ''))
       );
       allow list: if isAuthenticated() && (
-        isAgencyManager() || canAdminOrg(resource.data.get('orgId', ''))
+        isAgencyManager() ||
+        (request.auth.token.email_verified == true &&
+         request.auth.token.email == resource.data.get('email', '')) ||
+        canAdminOrg(resource.data.get('orgId', ''))
       );
       allow create: if isAuthenticated() && (
         isAgencyManager() ||
@@ -221,7 +228,8 @@ service cloud.firestore {
       allow update: if isAuthenticated() && (
         isAgencyManager() ||
         canAdminOrg(resource.data.get('orgId', '')) ||
-        (resource.data.get('email', '') == request.auth.token.email &&
+        (request.auth.token.email_verified == true &&
+         resource.data.get('email', '') == request.auth.token.email &&
          resource.data.get('status', '') == 'pending' &&
          request.resource.data.get('status', '') in ['accepted', 'expired'] &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedAt']))

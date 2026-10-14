@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   let email: string;
   try {
     const claims = await adminAuth.verifyIdToken(bearer, true);
-    if (!claims.email) throw new Error('Missing verified identity');
+    if (!claims.email || claims.email_verified !== true) throw new Error('Missing verified identity');
     email = claims.email.trim().toLowerCase();
   } catch {
     return Response.json({ error: 'Unauthorized' }, { status: 401, headers });

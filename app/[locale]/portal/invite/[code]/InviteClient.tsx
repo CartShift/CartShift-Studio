@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/Badge';
 import { Invite } from '@/lib/types/portal';
 import { CheckCircle2, XCircle, Clock, Loader2, Mail, Shield, User } from 'lucide-react';
 import { format } from 'date-fns';
+import { reload, sendEmailVerification } from 'firebase/auth';
+import { syncSessionCookie } from '@/lib/services/auth';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useRouter } from '@/i18n/navigation';
@@ -26,6 +28,9 @@ export default function InviteClient() {
   const [accepting, setAccepting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [verificationAction, setVerificationAction] = useState<'send' | 'check' | null>(null);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [verificationRefresh, setVerificationRefresh] = useState(0);
   const t = useTranslations('portal');
 
   useEffect(() => {
@@ -86,12 +91,47 @@ export default function InviteClient() {
       }
     }
 
-    if (!auth && isAuthenticated) {
+    if (!auth && isAuthenticated && user?.emailVerified) {
       fetchInvite();
-    } else if (!auth && !isAuthenticated) {
+    } else if (!auth) {
       set(false);
     }
-  }, [code, auth, t, isAuthenticated, router, switchOrg]);
+  }, [code, auth, t, isAuthenticated, router, switchOrg, user?.emailVerified, verificationRefresh]);
+
+  const sendVerification = async () => {
+    if (!user || verificationAction) return;
+    setVerificationAction('send');
+    setError(null);
+    try {
+      await sendEmailVerification(user);
+      setVerificationSent(true);
+    } catch {
+      setError(t('invite.emailVerificationError'));
+    } finally {
+      setVerificationAction(null);
+    }
+  };
+
+  const checkVerification = async () => {
+    if (!user || verificationAction) return;
+    setVerificationAction('check');
+    setError(null);
+    try {
+      await reload(user);
+      if (!user.emailVerified) {
+        setError(t('invite.emailVerificationPending'));
+        return;
+      }
+      await user.getIdToken(true);
+      await syncSessionCookie(user);
+      set(true);
+      setVerificationRefresh(previous => previous + 1);
+    } catch {
+      setError(t('invite.emailVerificationError'));
+    } finally {
+      setVerificationAction(null);
+    }
+  };
 
   const handleAcceptInvite = async () => {
     if (!invite || !user || !userData) return;
@@ -145,6 +185,30 @@ export default function InviteClient() {
                 </Button>
               </Link>
             </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (user && !user.emailVerified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-50 dark:bg-surface-950">
+        <Card className="max-w-md w-full">
+          <div className="text-center space-y-4">
+            <Mail className="w-12 h-12 text-primary mx-auto" />
+            <h1 className="text-2xl font-bold">{t('invite.verifyEmailTitle')}</h1>
+            <p className="text-muted-foreground">
+              {t('invite.verifyEmailDescription', { email: user.email || '' })}
+            </p>
+            <Button className="w-full" onClick={sendVerification} disabled={verificationAction !== null}>
+              {t('invite.sendVerificationEmail')}
+            </Button>
+            <Button className="w-full" variant="outline" onClick={checkVerification} disabled={verificationAction !== null}>
+              {t('invite.checkVerification')}
+            </Button>
+            {verificationSent && <p className="text-sm text-muted-foreground">{t('invite.verificationSent')}</p>}
+            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           </div>
         </Card>
       </div>
