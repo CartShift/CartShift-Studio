@@ -86,9 +86,12 @@ export function getProjectHealth(
     );
     return matches.length === 0 || matches.some(review => review.decision !== 'approved');
   }).length;
-  const pendingChanges = project.changes.filter(change => change.status === 'proposed' &&
-    !reviews.some(review => review.deliverableId === 'change:' + change.id &&
-      review.revision === 1 && review.decision === 'approved')).length;
+  const pendingChanges = project.changes.filter(change => {
+    if (change.status !== 'proposed') return false;
+    const decisions = reviews.filter(review =>
+      review.deliverableId === 'change:' + change.id && review.revision === 1);
+    return decisions.length === 0 || decisions.some(review => review.decision !== 'approved');
+  }).length;
   const completedStages = project.stages.filter(s => s.status === 'completed').length;
   const progress = project.stages.length ? Math.round(completedStages / project.stages.length * 100) : 0;
   return {
