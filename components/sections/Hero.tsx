@@ -107,13 +107,13 @@ export const Hero: React.FC = () => {
                   </span>
                 </Button>
               </a>
-              <Link href="/tools/store-analyzer" className="w-full sm:w-auto">
+              <Link href="/free-store-review" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"
                   className="h-14 md:h-16 px-10 md:px-12 text-lg font-bold bg-white/50 dark:bg-white/5 backdrop-blur-md border-surface-200 dark:border-white/10 hover:bg-surface-50 dark:hover:bg-white/10 w-full sm:w-auto transition-all"
                 >
-                  {t('hero.analyzerCta')}
+                  {t('storeReview.submit')}
                 </Button>
               </Link>
             </motion.div>
