@@ -308,6 +308,7 @@ service cloud.firestore {
           'terms',
           'proposalContent',
           'relatedRequestId',
+          'projectChangeId',
           'depositAmount',
           'paymentRequired',
           'balanceDue',
