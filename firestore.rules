@@ -316,6 +316,25 @@ service cloud.firestore {
         ]);
       }
 
+      // A signed commercial agreement is not an editable operational request.
+      // Trusted billing/conversion transactions use the Admin SDK and retain
+      // authority to record payments, approvals and versioned change orders.
+      function editsSignedCommercialTerms() {
+        return isCommercialDocument(resource.data) &&
+          (resource.data.get('lockedAt', null) != null ||
+           resource.data.get('status', '') in [
+             'ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'
+           ]) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'orgId', 'projectId', 'projectChangeId', 'relatedRequestId',
+            'title', 'description', 'lineItems', 'totalAmount', 'subtotal',
+            'taxRate', 'taxAmount', 'currency', 'terms', 'proposalContent',
+            'paymentRequired', 'depositAmount', 'clientEmail', 'clientName',
+            'validUntil', 'timeframe', 'workDeadline', 'publicToken',
+            'publicAccessEnabled'
+          ]);
+      }
+
       // Clients can read requests pre-assigned to their email (before registration)
       // or requests in orgs they're members of
       // Commercial records contain private working drafts and notes.
@@ -353,6 +372,7 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
       !changesServerManagedCommercialFields() &&
+      !editsSignedCommercialTerms() &&
       request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
       validNewProjectLink() &&
       (isAgencyUser() || (
