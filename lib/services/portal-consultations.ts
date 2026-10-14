@@ -6,6 +6,7 @@ import {
   deleteDoc,
   getDoc,
   getDocs,
+  getCountFromServer,
   query,
   where,
   orderBy,
@@ -536,19 +537,18 @@ export async function getConsultationStats(orgId?: string): Promise<{
 }> {
   await waitForAuth();
   const db = getFirestoreDb();
-  let q = query(collection(db, CONSULTATIONS_COLLECTION));
-
-  if (orgId) {
-    q = query(q, where('orgId', '==', orgId));
-  }
-
-  const snapshot = await getDocs(q);
-  const consultations = snapshot.docs.map(d => d.data()) as Consultation[];
-
+  const scope = orgId ? [where('orgId', '==', orgId)] : [];
+  const collectionRef = collection(db, CONSULTATIONS_COLLECTION);
+  const [total, scheduled, completed, canceled] = await Promise.all([
+    getCountFromServer(query(collectionRef, ...scope)),
+    getCountFromServer(query(collectionRef, ...scope, where('status', '==', CONSULTATION_STATUS.SCHEDULED))),
+    getCountFromServer(query(collectionRef, ...scope, where('status', '==', CONSULTATION_STATUS.COMPLETED))),
+    getCountFromServer(query(collectionRef, ...scope, where('status', '==', CONSULTATION_STATUS.CANCELED))),
+  ]);
   return {
-    total: consultations.length,
-    scheduled: consultations.filter(c => c.status === CONSULTATION_STATUS.SCHEDULED).length,
-    completed: consultations.filter(c => c.status === CONSULTATION_STATUS.COMPLETED).length,
-    canceled: consultations.filter(c => c.status === CONSULTATION_STATUS.CANCELED).length,
+    total: total.data().count,
+    scheduled: scheduled.data().count,
+    completed: completed.data().count,
+    canceled: canceled.data().count,
   };
 }
