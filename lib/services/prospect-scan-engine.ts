@@ -9,6 +9,7 @@ export type CandidateFinding = {
 };
 
 export type CandidateContact = {
+  name?: string;
   role: string;
   business_email?: string;
   source_url: string;
@@ -111,6 +112,51 @@ export function robotsAllowsPath(robots: string, path: string): boolean {
   return matching[0]?.allowed ?? true;
 }
 
+export type ShippingThresholdEvidence = {
+  sourceUrl: string; amount: number; excerpt: string;
+};
+
+export function extractFreeShippingThresholds(url: string, html: string): ShippingThresholdEvidence[] {
+  const plain = sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} })
+    .replace(/\\s+/g, ' ').trim().slice(0, 80_000);
+  const found = new Map<number, ShippingThresholdEvidence>();
+  const regex = /(?:משלוח\\s+חינם|free\\s+shipping)[^₪$\\d]{0,55}[₪$]?\\s*(\\d{2,5})/gi;
+  for (const match of plain.matchAll(regex)) {
+    const amount = Number(match[1]);
+    if (Number.isFinite(amount) && amount >= 30 && amount <= 10000 && !found.has(amount)) {
+      found.set(amount, { sourceUrl: url, amount, excerpt: match[0].slice(0, 160) });
+    }
+  }
+  return [...found.values()].slice(0, 3);
+}
+
+function decisionMakerCandidates(url: string, html: string): CandidateContact[] {
+  const results: CandidateContact[] = [];
+  const scripts = [...html.matchAll(/<script\\b[^>]*type\\s*=\\s*["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)].slice(0, 15);
+  const walk = (node: unknown, depth = 0): void => {
+    if (depth > 6 || !node || typeof node !== 'object') return;
+    if (Array.isArray(node)) { node.slice(0, 30).forEach(x => walk(x, depth + 1)); return; }
+    const data = node as Record<string, unknown>;
+    const types = Array.isArray(data['@type']) ? data['@type'] : [data['@type']];
+    const name = typeof data.name === 'string' ? data.name.trim() : '';
+    const role = typeof data.jobTitle === 'string' ? data.jobTitle.trim() : '';
+    if (types.some(t => typeof t === 'string' && /(?:^|\\/)Person$/i.test(t)) &&
+        name.length >= 3 && name.length <= 120 && role.length >= 3 && role.length <= 120 &&
+        /founder|owner|chief executive|ceo|e.?commerce|head of digital|head of marketing|מייסד|מנכ|בעלים|מנהלת?\\s*(?:שיווק|דיגיטל)/i.test(role) &&
+        data.worksFor) {
+      results.push({ name, role, source_url: url,
+        evidence_excerpt: `Official store structured data lists ${name} as ${role}.`.slice(0, 390) });
+    }
+    for (const key of ['@graph', 'employee', 'founder']) {
+      if (data[key]) walk(data[key], depth + 1);
+    }
+  };
+  for (const script of scripts) {
+    try { walk(JSON.parse(script[1])); } catch { /* Bad JSON-LD is not a finding. */ }
+  }
+  return results.slice(0, 3);
+}
+
 export function extractProspectPageEvidence(url: string, html: string, isHomepage: boolean): {
   findings: CandidateFinding[]; contacts: CandidateContact[];
 } {
@@ -140,7 +186,12 @@ export function extractProspectPageEvidence(url: string, html: string, isHomepag
       evidence_excerpt: `Public company page links to a generic business email address: ${email}`,
     });
   }
+  for (const candidate of decisionMakerCandidates(url, html)) {
+    if (!contacts.some(c => c.name === candidate.name && c.role === candidate.role)) {
+      contacts.push(candidate);
+    }
+  }
   // Extracted source HTML alone cannot prove visible layout, checkout performance,
   // broken UX interactions, or a specific change in conversion.
-  return { findings, contacts: contacts.slice(0, 3) };
+  return { findings, contacts: contacts.slice(0, 6) };
 }
