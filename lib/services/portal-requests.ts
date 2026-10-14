@@ -618,7 +618,15 @@ export async function getRequestStats(orgId: string): Promise<{
   inReview: number;
   completed: number;
 }> {
-  return getPortalRequestCountStats(orgId);
+  await waitForAuth();
+  if (await isCurrentUserAgency()) return getPortalRequestCountStats(orgId);
+  const rows = await getClientVisibleRequests(orgId);
+  return {
+    total: rows.length,
+    active: rows.filter(row => ['NEW', 'QUEUED', 'IN_PROGRESS'].includes(row.status)).length,
+    inReview: rows.filter(row => row.status === 'IN_REVIEW').length,
+    completed: rows.filter(row => ['DELIVERED', 'CLOSED', 'PAID'].includes(row.status)).length,
+  };
 }
 
 // ============================================
