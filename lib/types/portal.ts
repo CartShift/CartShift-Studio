@@ -1002,6 +1002,8 @@ export interface ClientRevenueData {
   lastPaymentAt?: Timestamp;
   firstPaymentAt?: Timestamp;
   currency: Currency;
+  /** Amounts in other/unknown denominations excluded without FX conversion. */
+  hasOtherCurrencies?: boolean;
 }
 
 /**
@@ -1034,6 +1036,9 @@ export interface SalesMetrics {
 
   // Currency for display
   primaryCurrency: Currency;
+  /** Primary-currency KPI totals exclude documents with other currencies. */
+  hasOtherCurrencies?: boolean;
+  currencyBreakdown?: Record<Currency, { paid: number; pending: number }>;
 }
 
 /**
