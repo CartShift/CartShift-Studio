@@ -96,7 +96,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/contact', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools', changeFrequency: 'monthly' as const, priority: 0.7 },
-    { path: '/tools/store-analyzer', changeFrequency: 'weekly' as const, priority: 0.9 },
+    { path: '/free-store-review', changeFrequency: 'weekly' as const, priority: 0.9 },
+      { path: '/tools/store-analyzer', changeFrequency: 'yearly' as const, priority: 0.2 },
     ...ANALYZER_INTENTS.map(intent => ({
       path: `/tools/store-analyzer/${intent}`,
       changeFrequency: 'weekly' as const,
