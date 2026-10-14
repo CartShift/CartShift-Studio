@@ -144,7 +144,10 @@ export async function addProspectFinding(raw: unknown, uid: string) {
   const finding = ref.collection('findings').doc(findingId);
   const event = database.collection(AUDIT).doc();
   const created = await database.runTransaction(async tx => {
-    const previous = await tx.get(finding);
+    const [prospect, previous] = await Promise.all([tx.get(ref), tx.get(finding)]);
+    if (!prospect.exists || prospect.data()?.doNotContact === true) {
+      throw new Error('PROSPECT_SUPPRESSED');
+    }
     if (previous.exists) return false;
     tx.create(finding, {
       category: input.category, title: input.title, observedUrl,
@@ -176,7 +179,10 @@ export async function addProspectContactCandidate(raw: unknown, uid: string) {
   const contactRef = ref.collection('contacts').doc(contactId);
   const event = database.collection(AUDIT).doc();
   const created = await database.runTransaction(async tx => {
-    const previous = await tx.get(contactRef);
+    const [prospect, previous] = await Promise.all([tx.get(ref), tx.get(contactRef)]);
+    if (!prospect.exists || prospect.data()?.doNotContact === true) {
+      throw new Error('PROSPECT_SUPPRESSED');
+    }
     if (previous.exists) return false;
     tx.create(contactRef, {
       role: input.role, name: input.name || null,
