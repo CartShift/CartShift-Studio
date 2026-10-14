@@ -140,3 +140,51 @@ export async function reviewProspectFinding(prospectId: string, findingId: strin
   });
   return { prospect_id: prospectId, finding_id: findingId, verification_status: status };
 }
+
+export async function linkProspectProposal(prospectId: string, orgId: string,
+  requestId: string, note: string, uid: string) {
+  if (!/^[a-zA-Z0-9_-]{6,128}$/.test(orgId) ||
+      !/^[a-zA-Z0-9_-]{6,128}$/.test(requestId) ||
+      note.trim().length < 15 || note.length > 1000) {
+    throw new Error('INVALID_LINK_ARGUMENTS');
+  }
+  const { actor, ref } = await refFor(uid, prospectId);
+  const orgRef = database().collection('portal_organizations').doc(orgId);
+  const requestRef = database().collection('portal_requests').doc(requestId);
+  const event = database().collection('agency_prospect_audit').doc();
+
+  let newStage = 'proposal';
+  let proposalStatus = '';
+  await database().runTransaction(async tx => {
+    const [prospect, org, request] = await Promise.all([
+      tx.get(ref), tx.get(orgRef), tx.get(requestRef),
+    ]);
+    if (!prospect.exists) throw new Error('PROSPECT_NOT_FOUND');
+    if (prospect.data()?.doNotContact) throw new Error('PROSPECT_SUPPRESSED');
+    if (prospect.data()?.technicalStatus !== 'approved') throw new Error('TECHNICAL_REVIEW_REQUIRED');
+    if (!org.exists || org.data()?.removedAt || org.data()?.status === 'inactive') {
+      throw new Error('ORG_NOT_FOUND');
+    }
+    const proposal = request.data();
+    if (!request.exists || proposal?.orgId !== orgId || proposal.isBillable !== true) {
+      throw new Error('PROPOSAL_NOT_FOUND');
+    }
+    proposalStatus = String(proposal.status || '');
+    if (!['QUOTED', 'ACCEPTED', 'PAID'].includes(proposalStatus)) {
+      throw new Error('PROPOSAL_NOT_READY');
+    }
+    newStage = ['ACCEPTED', 'PAID'].includes(proposalStatus) ? 'won' : 'proposal';
+    tx.update(ref, {
+      linkedOrgId: orgId, linkedRequestId: requestId, stage: newStage,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    tx.create(event, {
+      uid, actorRole: actor.role, action: 'prospect.linked_proposal',
+      targetId: prospectId, linkedOrgId: orgId, linkedRequestId: requestId,
+      proposalStatus, note: note.trim(), at: FieldValue.serverTimestamp(),
+    });
+  });
+  return { prospect_id: prospectId, org_id: orgId, request_id: requestId,
+    proposal_status: proposalStatus, sales_stage: newStage,
+    cash_collected_confirmed: proposalStatus === 'PAID' };
+}
