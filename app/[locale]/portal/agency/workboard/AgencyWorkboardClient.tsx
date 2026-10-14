@@ -1,6 +1,7 @@
 'use client';
 
 import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners, MeasuringStrategy } from '@dnd-kit/core';
 
 import { DroppableColumn } from '@/components/portal/workboard/DroppableColumn';
@@ -37,6 +38,7 @@ export default function AgencyWorkboardClient() {
     enabled: isAgency && !auth, staleTime: 30_000,
   });
   const projectNames = new Map(projects.map(project => [project.id, project.title]));
+  const [projectFilter, setProjectFilter] = useState('all');
 
   const {
     // Data
@@ -99,7 +101,8 @@ export default function AgencyWorkboardClient() {
 
   // ── Column Rendering Helper ──────────────────────────────────
   const renderColumn = (column: Column, isHiddenOnMobile: boolean) => {
-    const columnRequests = getRequestsForColumn(column);
+    const columnRequests = getRequestsForColumn(column).filter(request =>
+      projectFilter === 'all' || (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
 
     return (
       <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden md:block')}>
@@ -191,6 +194,18 @@ export default function AgencyWorkboardClient() {
       measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
     >
       {/* Filter Bar */}
+      <div className="mb-3 flex justify-end">
+        <label className="flex min-w-0 items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-300">
+          <span>{locale === 'he' ? 'פרויקט' : 'Project'}</span>
+          <select aria-label={locale === 'he' ? 'סינון לפי פרויקט' : 'Filter by project'}
+            className="portal-focus-ring min-h-10 max-w-[280px] rounded-xl border border-surface-200 bg-white px-3 text-sm dark:border-surface-800 dark:bg-surface-900"
+            value={projectFilter} onChange={event => setProjectFilter(event.target.value)}>
+            <option value="all">{locale === 'he' ? 'כל הפרויקטים' : 'All projects'}</option>
+            <option value="unassigned">{locale === 'he' ? 'ללא פרויקט' : 'Unassigned'}</option>
+            {projects.map(project => <option key={project.id} value={project.id}>{project.title}</option>)}
+          </select>
+        </label>
+      </div>
       <WorkboardFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
