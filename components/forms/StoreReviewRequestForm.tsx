@@ -56,13 +56,16 @@ function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
         }),
       });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok || !result.success) throw new Error(result.error || 'GENERIC');
+      if (!response.ok || !result.success) {
+        if (response.status === 429) throw new Error('RATE_LIMIT');
+        throw new Error(result.error || 'GENERIC');
+      }
       setRequestId(result.requestId);
       trackFunnelEvent('expert_review_submitted', { intent: focus || 'generic' });
     } catch (err) {
       const code = err instanceof Error ? err.message : 'GENERIC';
       const known = ['INVALID_INPUT','INVALID_STORE_URL','SECURITY_CHECK_FAILED','INTAKE_PAUSED',
-        'SERVICE_UNAVAILABLE','SAVE_FAILED','ORIGIN_NOT_ALLOWED'] as const;
+        'SERVICE_UNAVAILABLE','SAVE_FAILED','ORIGIN_NOT_ALLOWED','RATE_LIMIT'] as const;
       setError(t(`errors.${known.find(value => value === code) || 'GENERIC'}`));
     } finally {
       setPending(false);
