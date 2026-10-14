@@ -23,8 +23,11 @@ export function useFirestoreSubscription<T>(
     const startSubscription = subscribeRef.current;
     if (!enabled || !startSubscription) return;
 
+    // Capture the original scope. A late callback from an old listener must
+    // never write previous-tenant data into the newly selected tenant's key.
+    const subscribedKey = keyRef.current;
     const unsubscribe = startSubscription((data: T) => {
-      queryClient.setQueryData(keyRef.current, data);
+      queryClient.setQueryData(subscribedKey, data);
     });
 
     return () => unsubscribe();

@@ -11,7 +11,7 @@ const COOKIE_NAME = '__session';
  * Returns undefined if Admin SDK is not configured (graceful degradation for dev).
  */
 export async function getServerSession(request?: NextRequest): Promise<
-  { uid: string; email?: string } | null | undefined
+  { uid: string; email?: string; emailVerified: boolean } | null | undefined
 > {
   if (!adminAuth) return undefined;
 
@@ -24,7 +24,7 @@ export async function getServerSession(request?: NextRequest): Promise<
     const decoded = session
       ? await adminAuth.verifySessionCookie(session, true)
       : await adminAuth.verifyIdToken(bearerToken!, true);
-    return { uid: decoded.uid, email: decoded.email };
+    return { uid: decoded.uid, email: decoded.email, emailVerified: decoded.email_verified === true };
   } catch {
     return null;
   }

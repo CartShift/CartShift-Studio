@@ -25,7 +25,8 @@ export function useOrgPricingRequests(options: OrgPricingOptions = {}) {
   const { excludeDrafts = false } = options;
 
   const shouldFetch = isAuthenticated && !auth && Boolean(safeOrgId);
-  const qKey = queryKeys.pricing.byOrg;
+  // Scope by tenant AND result shape. Keep the byOrg prefix for broad mutation invalidation.
+  const qKey = queryKeys.pricing.scopedByOrg(safeOrgId, excludeDrafts);
 
   const {
     data: requests = [],

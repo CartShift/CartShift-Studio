@@ -14,6 +14,8 @@ export const queryKeys = {
   pricing: {
     allRequests: ['all-pricing-requests'] as const,
     byOrg: ['org-pricing-requests'] as const,
+    scopedByOrg: (orgId: string, excludeDrafts: boolean) =>
+      ['org-pricing-requests', orgId, { excludeDrafts }] as const,
     detail: (pricingId: string) => ['pricing-request', pricingId] as const,
     payments: (pricingId: string) => ['proposal-payments', pricingId] as const,
     config: (orgId: string, requestId?: string) =>
