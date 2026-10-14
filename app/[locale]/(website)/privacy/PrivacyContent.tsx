@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Icon } from '@/components/ui/Icon';
 
-const LAST_UPDATED = 'October 2026 — expert review disclosure drafted, pending legal review';
+const LAST_UPDATED = 'October 2026';
 
 interface SectionProps {
   id: string;
