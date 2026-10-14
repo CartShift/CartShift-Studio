@@ -250,6 +250,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
   const commercialRequests = linkedRequests.filter(request =>
     request.isBillable && request.requestRole !== 'bundle_item' &&
     ['ACCEPTED', 'PAID', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'].includes(request.status));
+  const changeOrderSourceId = project?.originProposalId || commercialRequests[0]?.id;
   const [selectedRequest, setSelectedRequest] = useState('');
   const [summary, setSummary] = useState<string | null>(null);
   const [nextStep, setNextStep] = useState<string | null>(null);
@@ -536,13 +537,13 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           )}
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
             canReview={!isAgency} onReviewed={refreshReviews} />
-          {isAgency && project.originProposalId &&
+          {isAgency && change.status === 'proposed' && changeOrderSourceId &&
             reviews.some(review => review.deliverableId === 'change:' + change.id &&
               review.revision === 1 && review.decision === 'approved') &&
             !reviews.some(review => review.deliverableId === 'change:' + change.id &&
               review.revision === 1 && review.decision === 'changes_requested') && (
               <Link href={getPortalPath('/pricing/new/?projectId=' + encodeURIComponent(id) +
-                '&relatedRequestId=' + encodeURIComponent(project.originProposalId) +
+                '&relatedRequestId=' + encodeURIComponent(changeOrderSourceId) +
                 '&changeId=' + encodeURIComponent(change.id))}
                 className="portal-focus-ring mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
                 <Plus size={14} />{locale === 'he' ? 'הכנת הצעת מחיר לשינוי' : 'Prepare change-order proposal'}
