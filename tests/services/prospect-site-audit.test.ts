@@ -21,6 +21,23 @@ describe('prospect audit orchestration', () => {
     expect(pause).toHaveBeenCalledTimes(2);
   });
 
+  it('does not invent SEO issues from text/plain homepages or robots HTML challenges', async () => {
+    const robots = { finalUrl: 'https://shop.co.il/robots.txt', status: 200,
+      contentType: 'text/plain', body: 'User-agent: *\\nAllow: /' };
+    const fetch = vi.fn(async (url: string) => {
+      if (url.endsWith('/robots.txt')) return robots;
+      return { finalUrl: url, status: 200, contentType: 'text/plain',
+        body: 'A legitimate text endpoint, not a homepage HTML document.' };
+    });
+    await expect(runProspectSiteAudit('https://shop.co.il', {
+      fetch, pause: async () => {},
+    })).rejects.toThrow('SCAN_HOMEPAGE_NOT_HTML');
+    robots.contentType = 'text/html';
+    await expect(runProspectSiteAudit('https://shop.co.il', {
+      fetch, pause: async () => {},
+    })).rejects.toThrow('SCAN_ROBOTS_CONTENT_TYPE');
+  });
+
   it('fails closed if robots cannot be fetched or returns error', async () => {
     const fetch = vi.fn(async (url: string) => ({ finalUrl: url, status: 403, body: 'No', contentType: 'text/plain' }));
     await expect(runProspectSiteAudit('https://shop.co.il', { fetch, pause: async () => {} }))
