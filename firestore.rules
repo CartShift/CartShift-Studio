@@ -537,6 +537,10 @@ service cloud.firestore {
       }
     }
 
+    match /agency_prospect_scan_quotas/{quotaId} {
+      allow read, write: if false;
+    }
+
     match /agency_prospect_audit/{eventId} {
       allow read, write: if false;
     }
