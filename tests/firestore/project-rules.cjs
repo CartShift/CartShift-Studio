@@ -26,6 +26,13 @@ async function main() {
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
+        db.doc('portal_members/orgB_client').set({ orgId: 'orgB', userId: 'client', email: 'client@example.com', role: 'member', removedAt: new Date() }),
+        db.doc('portal_billing_profiles/agency').set({ businessName: 'Private agency', iban: 'SECRET' }),
+        db.doc('portal_notifications/notifA').set({ userId: 'client', title: 'Welcome', read: false }),
+        db.doc('portal_invites/inviteA').set({
+          orgId: 'orgA', email: 'client@example.com', code: 'private-invite',
+          role: 'member', status: 'pending', invitedBy: 'agency',
+        }),
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', title: 'Request', status: 'NEW' }),
         db.doc('portal_comments/publicA').set({
           orgId: 'orgA', requestId: 'reqA', isInternal: false,
@@ -48,6 +55,45 @@ async function main() {
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
+
+    const anonymous = env.unauthenticatedContext().firestore();
+
+    // Removed members lose all tenant privileges despite their retained member document.
+    await assertFails(client.doc('portal_organizations/orgB').get());
+    await assertFails(client.collection('portal_projects').where('orgId', '==', 'orgB').get());
+    // Billing profiles and invite lists must not be exposed across tenants.
+    await assertFails(client.doc('portal_billing_profiles/agency').get());
+    await assertSucceeds(agency.doc('portal_billing_profiles/agency').get());
+    await assertFails(anonymous.collection('portal_invites').get());
+    await assertFails(outsider.collection('portal_invites').get());
+    await assertFails(client.collection('portal_invites').get());
+    await assertSucceeds(client.collection('portal_invites').where('email', '==', 'client@example.com').get());
+    await assertFails(outsider.doc('portal_invites/inviteA').get());
+    await assertSucceeds(client.doc('portal_invites/inviteA').get());
+    // A recipient can acknowledge their notification but never spoof delivery.
+    await assertFails(client.collection('portal_notifications').add({ userId: 'outsider', title: 'Spoofed' }));
+    await assertSucceeds(client.doc('portal_notifications/notifA').update({ read: true }));
+    await assertFails(client.doc('portal_notifications/notifA').update({ userId: 'outsider' }));
+    await assertFails(outsider.doc('portal_notifications/notifA').get());
+    // A malicious client cannot impersonate activity authors or move a request.
+    await assertFails(client.collection('portal_activities').add({
+      orgId: 'orgA', userId: 'outsider', action: 'FORGED',
+    }));
+    await assertFails(client.collection('portal_activities').add({
+      orgId: 'orgB', userId: 'client', action: 'FORGED',
+    }));
+    await assertFails(client.collection('portal_requests').add({
+      orgId: 'orgA', createdBy: 'client', requestRole: 'bundle',
+      status: 'ACCEPTED', totalAmount: 9999,
+    }));
+    await assertFails(client.doc('portal_requests/reqA').update({ orgId: 'orgB' }));
+    await assertSucceeds(client.collection('portal_requests').add({
+      orgId: 'orgA', createdBy: 'client', createdByName: 'Client',
+      title: 'New request', description: 'Please help', type: 'feature',
+      priority: 'NORMAL', status: 'NEW', requestRole: 'standalone',
+      attachmentIds: [], tags: [], commentCount: 0,
+    }));
+
 
     // Internal comments must be protected by Firestore rules, not client-side filtering.
     await assertSucceeds(client.doc('portal_comments/publicA').get());
