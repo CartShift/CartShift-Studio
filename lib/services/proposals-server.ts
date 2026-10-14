@@ -516,7 +516,11 @@ export async function acceptPublicProposal(
     transaction.update(fresh.ref, updates);
   });
 
-  await syncProposalDerivedState(proposalSnapshot.id);
+  // Legacy pre-migration proposal snapshots do not have canonical portal_requests IDs.
+  // Preserve their public acceptance path without pretending a project was materialized.
+  if (proposalSnapshot.ref.parent.id === PROPOSALS_COLLECTION) {
+    await syncProposalDerivedState(proposalSnapshot.id);
+  }
   const accepted = await findProposalByToken(token);
   if (!accepted) throw new Error('NOT_FOUND');
   return sanitizeProposal(accepted);
