@@ -27,7 +27,7 @@ export function useDashboardData() {
   const [membershipChecked, setMembershipChecked] = useState(false);
   const [membershipError, setMembershipError] = useState<string | null>(null);
 
-  const isAgency = userData?.isAgency || false;
+  const isAgency = userData?.isAgency === true || userData?.accountType === 'AGENCY';
   const safeOrgId = typeof orgId === 'string' ? orgId : '';
   const shouldFetchData = isAuthenticated && safeOrgId && (isAgency || membershipChecked);
 
