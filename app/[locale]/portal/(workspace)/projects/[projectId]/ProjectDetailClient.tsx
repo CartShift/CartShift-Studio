@@ -346,7 +346,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       </details>}
     </header>
 
-    {isAgency && <ProjectOperationsPanel project={project} requests={linkedRequests} locale={locale}/>}
+    {isAgency && <ProjectOperationsPanel project={project} requests={linkedRequests} locale={locale} canEdit={canEditProjects}/>}
 
     <div className="grid gap-5 lg:grid-cols-2">
       <Panel title={t('milestones')} icon={ClipboardList}>

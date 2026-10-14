@@ -263,8 +263,8 @@ service cloud.firestore {
           );
         }
         allow get, list: if isAgencyUser() && projectExists();
-        allow create: if isAgencyUser() && projectExists() && validRecord();
-        allow update: if isAgencyUser() && projectExists() &&
+        allow create: if canEditAgencyProjects() && projectExists() && validRecord();
+        allow update: if canEditAgencyProjects() && projectExists() &&
           resource.data.get('kind', '') != 'time' &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             'status', 'updatedAt'

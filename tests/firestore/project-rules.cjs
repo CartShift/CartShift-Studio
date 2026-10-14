@@ -112,6 +112,11 @@ async function main() {
     await assertSucceeds(agency.doc(recordPath).get());
     await assertSucceeds(agency.collection('portal_projects/prjA/private_records').get());
     await assertFails(client.doc(recordPath).get());
+    await assertSucceeds(viewer.doc(recordPath).get());
+    await assertFails(viewer.doc('portal_projects/prjA/private_records/viewer-created').set({
+      ...record, createdBy: 'viewer',
+    }));
+    await assertFails(viewer.doc(recordPath).update({ status: 'passed', updatedAt: privateStamp() }));
     await assertFails(client.collection('portal_projects/prjA/private_records').get());
     await assertFails(outsider.doc(recordPath).get());
     await assertFails(client.doc('portal_projects/prjA/private_records/client-created').set({

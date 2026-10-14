@@ -3,6 +3,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 import { adminDb } from '@/lib/firebase-admin';
 import { getServerSession } from '@/lib/auth/server-auth';
+import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
 import {
   PROJECT_RECORD_KINDS, initialProjectRecordStatus,
   validProjectRecordTransition, validateProjectPrivateRecord,
@@ -55,6 +56,7 @@ async function privateContext(request: NextRequest, params: RouteCtx['params']) 
   if (!project.exists || !project.data()?.orgId) throw new Error('NOT_FOUND');
   return {
     uid: session.uid,
+    canEdit: hasPermission(user?.agencyRole ?? 'owner', PERMISSIONS.MANAGE_PROJECTS),
     projectId: projectId.data,
     records: adminDb.collection('portal_projects').doc(projectId.data).collection('private_records'),
   };
@@ -78,7 +80,8 @@ export async function GET(request: NextRequest, context: RouteCtx) {
 export async function POST(request: NextRequest, context: RouteCtx) {
   if (!sameOrigin(request)) return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
   try {
-    const { uid, records } = await privateContext(request, context.params);
+    const { uid, records, canEdit } = await privateContext(request, context.params);
+    if (!canEdit) throw new Error('FORBIDDEN');
     const parsed = schema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) throw new Error('INVALID');
     const payload: NewProjectPrivateRecord = parsed.data;
@@ -100,7 +103,8 @@ export async function POST(request: NextRequest, context: RouteCtx) {
 export async function PATCH(request: NextRequest, context: RouteCtx) {
   if (!sameOrigin(request)) return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
   try {
-    const { records } = await privateContext(request, context.params);
+    const { records, canEdit } = await privateContext(request, context.params);
+    if (!canEdit) throw new Error('FORBIDDEN');
     const parsed = z.object({
       recordId: id,
       status: z.enum(['open', 'confirmed', 'passed', 'failed', 'done']),
