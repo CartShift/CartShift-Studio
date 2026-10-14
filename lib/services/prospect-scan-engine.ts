@@ -78,38 +78,60 @@ export function buildProspectCrawlPlan(homeUrl: string, homepageHtml: string): s
     .slice(0, MAX_SCAN_PAGES - 1);
 }
 
-type Rule = { pattern: string; allowed: boolean; agent: string };
+type Rule = { pattern: string; allowed: boolean };
+type RobotsGroup = { agents: string[]; rules: Rule[] };
+
+function isRobotsPatternMatch(pattern: string, path: string): boolean {
+  const anchoredEnd = pattern.endsWith('$');
+  const segment = anchoredEnd ? pattern.slice(0, -1) : pattern;
+  const escaped = segment.split('*').map(item =>
+    item.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')
+  ).join('.*');
+  return new RegExp('^' + escaped + (anchoredEnd ? '$' : '')).test(path);
+}
 
 export function robotsAllowsPath(robots: string, path: string): boolean {
-  if (robots.length > 512_000) return false;
-  const rules: Rule[] = [];
-  let agents: string[] = [];
-  let hasDirective = false;
-  let sawRules = false;
+  // Invalid or oversized policies should not accidentally authorize a scan.
+  if (robots.length > 512_000 || !path.startsWith('/')) return false;
+  const groups: RobotsGroup[] = [];
+  let group: RobotsGroup = { agents: [], rules: [] };
+  const flush = () => {
+    if (group.agents.length) groups.push(group);
+    group = { agents: [], rules: [] };
+  };
+
   for (const raw of robots.split(/\r?\n/)) {
     const line = raw.split('#')[0].trim();
-    if (!line) continue;
-    const idx = line.indexOf(':');
-    if (idx === -1) continue;
-    const type = line.slice(0, idx).trim().toLowerCase();
-    const value = line.slice(idx + 1).trim();
-    if (type === 'user-agent') {
-      if (sawRules) { agents = []; sawRules = false; }
-      agents.push(value.toLowerCase());
-    } else if ((type === 'allow' || type === 'disallow') && agents.length) {
-      sawRules = true;
-      hasDirective = true;
-      for (const agent of agents) {
-        if (value) rules.push({ agent, pattern: value.split('*')[0], allowed: type === 'allow' });
-      }
+    if (!line) {
+      if (group.rules.length) flush();
+      continue;
+    }
+    const match = /^([a-z-]+)\s*:\s*(.*)$/i.exec(line);
+    if (!match) continue;
+    const kind = match[1].toLowerCase();
+    const value = match[2].trim();
+    if (kind === 'user-agent') {
+      if (group.rules.length) flush();
+      if (value) group.agents.push(value.toLowerCase());
+    } else if ((kind === 'allow' || kind === 'disallow') && group.agents.length && value) {
+      group.rules.push({ pattern: value, allowed: kind === 'allow' });
     }
   }
-  if (!hasDirective) return true;
-  const own = rules.filter(r => r.agent === SCAN_USER_AGENT.toLowerCase());
-  const matching = (own.length ? own : rules.filter(r => r.agent === '*'))
-    .filter(r => path.startsWith(r.pattern))
-    .sort((a, b) => b.pattern.length - a.pattern.length || Number(b.allowed) - Number(a.allowed));
-  return matching[0]?.allowed ?? true;
+  flush();
+
+  const agent = SCAN_USER_AGENT.toLowerCase();
+  const specific = groups.filter(group => group.agents.some(value =>
+    value === agent || value.startsWith(agent + '/')));
+  const applicable = specific.length ? specific :
+    groups.filter(group => group.agents.includes('*'));
+  const matches = applicable.flatMap(group => group.rules)
+    .filter(rule => isRobotsPatternMatch(rule.pattern, path));
+  // RFC 9309: choose the rule matching the most octets; Allow wins on equal specificity.
+  matches.sort((a, b) => {
+    const specificity = (p: string) => p.replace(/\*/g, '').replace(/\$$/, '').length;
+    return specificity(b.pattern) - specificity(a.pattern) || Number(b.allowed) - Number(a.allowed);
+  });
+  return matches[0]?.allowed ?? true;
 }
 
 export type ShippingThresholdEvidence = {
@@ -180,6 +202,9 @@ export function extractProspectPageEvidence(url: string, html: string, isHomepag
     const email = href.slice(7).split('?')[0].trim().toLowerCase();
     if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(email)) continue;
     if (!/^(?:info|hello|contact|office|team|sales|support|service|customerservice)@/.test(email)) continue;
+    const brandDomain = new URL(url).hostname.toLowerCase().replace(/^www\./, '');
+    const mailDomain = email.split('@')[1];
+    if (mailDomain !== brandDomain && !mailDomain.endsWith('.' + brandDomain)) continue;
     if (contacts.some(contact => contact.business_email === email)) continue;
     contacts.push({
       role: 'Business contact', business_email: email, source_url: url,
