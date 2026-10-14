@@ -25,6 +25,7 @@ async function main() {
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
         db.doc('portal_users/removed').set({ accountType: 'CLIENT', isAgency: false, email: 'removed@example.com' }),
+        db.doc('portal_users/storageRevoked').set({ accountType: 'CLIENT', isAgency: false, email: 'storage-revoked@example.com' }),
         db.doc('portal_users/stranger').set({ accountType: 'CLIENT', isAgency: false, email: 'stranger@example.com' }),
         db.doc('portal_users/viewer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'viewer', email: 'viewer@example.com' }),
         db.doc('portal_users/developer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'developer', email: 'developer@example.com' }),
@@ -32,6 +33,7 @@ async function main() {
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
         db.doc('portal_members/orgA_removed').set({ orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'admin', removedAt: require('firebase/firestore').Timestamp.now() }),
+        db.doc('portal_members/orgA_storageRevoked').set({ orgId: 'orgA', userId: 'storageRevoked', email: 'storage-revoked@example.com', role: 'admin', removedAt: require('firebase/firestore').Timestamp.now() }),
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', title: 'Request', status: 'NEW' }),
         db.doc('portal_comments/publicA').set({
           orgId: 'orgA', requestId: 'reqA', isInternal: false,
@@ -149,6 +151,30 @@ async function main() {
       ...review, reviewerId: 'agency',
     }));
 
+    // A former member may rejoin only with a fresh matching invitation, not by
+    // reusing the removed membership document or claiming a different role.
+    const removedMemberRef = removed.doc('portal_members/orgA_removed');
+    await assertFails(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'owner',
+      joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(agency.doc('portal_invites/reinvite-removed').set({
+      orgId: 'orgA', isAgency: false, role: 'member', status: 'pending',
+      email: 'removed@example.com', invitedBy: 'agency',
+      expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
+    }));
+    await assertFails(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'owner',
+      inviteId: 'reinvite-removed', joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'member',
+      inviteId: 'reinvite-removed', invitedBy: 'agency', name: 'Returning member',
+      joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(removed.doc('portal_projects/prjA').get());
+    await assertFails(removed.doc('portal_projects/prjA').update({ title: 'Member cannot edit' }));
+
     // Client may only acknowledge a genuine invitation, never change its target role.
     await assertSucceeds(agency.doc('portal_invites/staff-invite').set({
       orgId: null, isAgency: true, role: 'developer', status: 'pending',
@@ -171,7 +197,7 @@ async function main() {
     const storageAs = (uid, email) => env.authenticatedContext(uid, { email }).storage(bucket);
     const clientStorage = storageAs('client', 'client@example.com');
     const agencyStorage = storageAs('agency', 'staff@example.com');
-    const removedStorage = storageAs('removed', 'removed@example.com');
+    const removedStorage = storageAs('storageRevoked', 'storage-revoked@example.com');
     // outsider was promoted to agency during the invitation test above; use a real non-member.
     const strangerStorage = storageAs('stranger', 'stranger@example.com');
     const activeFile = clientStorage.ref('portal/orgA/active-member.txt');

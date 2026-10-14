@@ -14,7 +14,6 @@ import {
   serverTimestamp,
   Timestamp,
   arrayUnion,
-  arrayRemove,
 } from 'firebase/firestore';
 import { getFirestoreDb, getFirebaseAuth, waitForAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
@@ -432,22 +431,25 @@ export async function updateMemberRole(memberId: string, role: UserRole): Promis
   await updateDoc(docRef, { role });
 }
 
+/** Revoke a membership atomically on the server (the browser cannot edit another user's profile). */
 export async function removeMember(memberId: string, orgId: string, userId: string): Promise<void> {
-  const db = getFirestoreDb();
-  // Remove from members
-  const memberRef = doc(db, MEMBERS_COLLECTION, memberId);
-  await updateDoc(memberRef, { removedAt: serverTimestamp() });
+  await waitForAuth();
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('Not authenticated');
 
-  // Remove org from user's list
-  const userRef = doc(db, USERS_COLLECTION, userId);
-  await setDoc(
-    userRef,
-    {
-      organizations: arrayRemove(orgId),
-      updatedAt: serverTimestamp(),
+  const response = await fetch('/api/portal/members/revoke', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${await user.getIdToken()}`,
+      'Content-Type': 'application/json',
     },
-    { merge: true }
-  );
+    body: JSON.stringify({ memberId, orgId, userId }),
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    const result = await response.json().catch(() => null) as { error?: string } | null;
+    throw new Error(result?.error || 'Unable to remove team member');
+  }
 }
 
 // ============================================
