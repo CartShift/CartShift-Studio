@@ -42,6 +42,9 @@ export async function updateProspectSales(prospectId: string, raw: unknown, uid:
         !contactAllowed.has(current.outreachEligibility)) {
       throw new Error('OUTREACH_REVIEW_REQUIRED');
     }
+    // Won requires an actual accepted commercial document linked through linkProspectProposal.
+    // A salesperson or MCP caller may not fabricate a signed or paid deal.
+    if (input.stage === 'won') throw new Error('PROPOSAL_LINK_REQUIRED');
     // A sales-status field never grants a technical approval or creates a proposal.
     if (input.stage === 'proposal' && current.technicalStatus !== 'approved') {
       throw new Error('TECHNICAL_REVIEW_REQUIRED');
