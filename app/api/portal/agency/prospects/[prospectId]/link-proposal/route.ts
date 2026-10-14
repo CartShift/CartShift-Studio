@@ -27,7 +27,7 @@ export async function POST(request: NextRequest,
     const status = error instanceof z.ZodError || code.startsWith('INVALID_') ? 400 :
       code === 'FORBIDDEN' ? 403 : code.includes('_NOT_FOUND') ? 404 :
       code === 'PROSPECT_SUPPRESSED' || code === 'TECHNICAL_REVIEW_REQUIRED' ||
-      code === 'PROPOSAL_NOT_READY' ? 409 : 500;
+      code === 'PROPOSAL_NOT_READY' || code === 'ORG_DOMAIN_MISMATCH' ? 409 : 500;
     return NextResponse.json({ error: status === 500 ? 'Proposal link failed' : code }, { status });
   }
 }
