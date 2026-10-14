@@ -14,8 +14,7 @@ export interface ProjectPrivateRecord {
   dueDate?: string;
   hours?: number;
   createdBy: string;
-  createdAt: { toMillis: () => number };
-  updatedAt: { toMillis: () => number };
+  createdAtMs: number;
 }
 
 export type NewProjectPrivateRecord = Pick<ProjectPrivateRecord, 'kind' | 'title' | 'details'> &
