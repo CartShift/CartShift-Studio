@@ -71,7 +71,7 @@ export async function patchStoreReview(id: string, raw: unknown, uid: string) {
       const domain = current.canonicalDomain ||
         normalizeReviewStore(current.storeUrl).canonicalDomain;
       for (const finding of findings) {
-        if (normalizeReviewStore(finding.observedUrl).canonicalDomain !== domain) {
+        if (finding.observedUrl && normalizeReviewStore(finding.observedUrl).canonicalDomain !== domain) {
           throw new Error('CROSS_STORE_EVIDENCE');
         }
       }
