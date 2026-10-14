@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/Input';
 import { updateOrganization } from '@/lib/services/portal-organizations';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser, Organization } from '@/lib/types/portal';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Select } from '@/components/ui/Select';
 import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 
@@ -74,6 +74,7 @@ export const EditClientModal = ({
   const [error, setError] = useState<string | null>(null);
   const [agencyMembers, setAgencyMembers] = useState<PortalUser[]>([]);
   const t = useTranslations('portal');
+  const locale = useLocale();
 
   const schema = editOrgSchema(t);
   const {
@@ -243,8 +244,9 @@ export const EditClientModal = ({
                     {...register('defaultCurrency')}
                   />
                   <p className="mt-1 text-xs text-surface-500">
-                    {t('pricing.form.currency')}: {organization.defaultCurrency || 'ILS'}.
-                    { ' ' }New proposals and projects only. Existing document currencies stay unchanged.
+                    {locale === 'he'
+                      ? 'המטבע ישמש כברירת מחדל להצעות ולפרויקטים חדשים בלבד. מטבע של מסמכים קיימים לא ישתנה.'
+                      : 'Default for new quotes and projects only. Existing document currencies remain unchanged.'}
                   </p>
                 </PortalFormField>
               </div>
