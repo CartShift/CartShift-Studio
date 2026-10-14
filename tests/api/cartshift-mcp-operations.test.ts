@@ -48,7 +48,7 @@ describe('CartShift expanded MCP operations', () => {
       'list_work_item_comments']) {
       expect(TOOL_DEFS.find(tool => tool.name === name)?.scope).toMatch(/^work:(read|write)$/);
     }
-    expect(TOOL_DEFS).toHaveLength(22);
+    expect(TOOL_DEFS).toHaveLength(26);
     expect(TOOL_DEFS.find(tool => tool.name === 'create_client')?.scope).toBe('clients:write');
   });
 
