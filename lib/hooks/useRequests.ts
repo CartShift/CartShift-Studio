@@ -13,6 +13,7 @@ import {
 import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
 import { queryKeys } from '@/lib/utils/query-keys';
 import { Request } from '@/lib/types/portal';
+import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
 
 export interface UseRequestsOptions {
   /** Explicit org scope — skips agency-wide mode */
@@ -47,19 +48,20 @@ export function useRequests(options?: UseRequestsOptions) {
     refetch,
   } = useQuery({
     queryKey: qKey,
-    queryFn: () => (agencyMode ? getAllRequests() : getRequestsByOrg(safeOrgId)),
+    queryFn: () => agencyMode ? getAllRequests() : isAgency ? getRequestsByOrg(safeOrgId) : getClientVisibleRequests(safeOrgId),
     enabled: Boolean(shouldFetch),
-    staleTime: Infinity,
+    staleTime: isAgency ? Infinity : 15_000,
+    refetchInterval: isAgency ? false : 30_000,
   });
 
   const subscribe = useMemo(() => {
-    if (!shouldFetch) return null;
+    if (!shouldFetch || !isAgency) return null;
     return agencyMode
       ? (cb: (data: Request[]) => void) => subscribeToAllRequests(cb)
       : (cb: (data: Request[]) => void) => subscribeToOrgRequests(safeOrgId, cb);
-  }, [shouldFetch, agencyMode, safeOrgId]);
+  }, [shouldFetch, agencyMode, safeOrgId, isAgency]);
 
-  useFirestoreSubscription(qKey, subscribe, Boolean(shouldFetch));
+  useFirestoreSubscription(qKey, subscribe, Boolean(shouldFetch && isAgency));
 
   return {
     requests,
