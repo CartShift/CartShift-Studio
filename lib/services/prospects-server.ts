@@ -47,6 +47,12 @@ function summary(id: string, data: Record<string, unknown>) {
     sourceType: String(data.sourceType || ''),
     researchNote: String(data.researchNote || ''),
     ownerUid: String(data.ownerUid || ''),
+    nextAction: String(data.nextAction || ''),
+    nextActionAt: String(data.nextActionAt || ''),
+    technicalStatus: String(data.technicalStatus || 'needs_review'),
+    scanStatus: String(data.scanStatus || 'not_scanned'),
+    lastScanPageCount: Number(data.lastScanPageCount || 0),
+    lastAuditedAt: iso(data.lastAuditedAt),
     createdAt: iso(data.createdAt), updatedAt: iso(data.updatedAt),
   };
 }
