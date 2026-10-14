@@ -25,6 +25,7 @@ async function main() {
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
         db.doc('portal_users/removed').set({ accountType: 'CLIENT', isAgency: false, email: 'removed@example.com' }),
+        db.doc('portal_users/stranger').set({ accountType: 'CLIENT', isAgency: false, email: 'stranger@example.com' }),
         db.doc('portal_users/viewer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'viewer', email: 'viewer@example.com' }),
         db.doc('portal_users/developer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'developer', email: 'developer@example.com' }),
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
@@ -139,14 +140,16 @@ async function main() {
     const clientStorage = storageAs('client', 'client@example.com');
     const agencyStorage = storageAs('agency', 'staff@example.com');
     const removedStorage = storageAs('removed', 'removed@example.com');
-    const outsiderStorage = storageAs('outsider', 'outsider@example.com');
+    // outsider was promoted to agency during the invitation test above; use a real non-member.
+    const strangerStorage = storageAs('stranger', 'stranger@example.com');
     const activeFile = clientStorage.ref('portal/orgA/active-member.txt');
     await assertSucceeds(activeFile.putString('allowed'));
     await assertSucceeds(agencyStorage.ref('portal/orgA/active-member.txt').getMetadata());
     await assertFails(removedStorage.ref('portal/orgA/active-member.txt').getMetadata());
     await assertFails(removedStorage.ref('portal/orgA/revoked-member.txt').putString('denied'));
     await assertFails(removedStorage.ref('org-logos/orgA/revoked-admin.png').putString('denied', 'raw', { contentType: 'image/png' }));
-    await assertFails(outsiderStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(strangerStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(strangerStorage.ref('portal/orgA/not-allowed.txt').putString('denied'));
     console.log('Firestore and Storage security scenarios passed');
   } finally {
     await env.cleanup();
