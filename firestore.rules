@@ -19,6 +19,13 @@ service cloud.firestore {
              get(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) == null;
     }
 
+    // A retained member document with removedAt is not an active membership.
+    function isRemovedFromOrg(orgId) {
+      return isAuthenticated() && orgId != null && orgId != '' &&
+        exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) &&
+        get(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) != null;
+    }
+
     function isOrgOwner(orgId) {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
@@ -33,7 +40,9 @@ service cloud.firestore {
              (
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
-              );
+              ) &&
+              get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', '') != 'suspended' &&
+              get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', '') != 'inactive';
     }
 
     function canManageProfitSplits() {
@@ -299,7 +308,8 @@ service cloud.firestore {
 
       // Clients can read requests pre-assigned to their email (before registration)
       // or requests in orgs they're members of
-      allow read: if isAuthenticated() && (
+      allow read: if isAuthenticated() &&
+        (isAgencyUser() || !isRemovedFromOrg(resource.data.get('orgId', ''))) && (
         isAgencyUser() ||
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
@@ -321,7 +331,8 @@ service cloud.firestore {
             'attachmentIds', 'commentCount', 'createdAt', 'updatedAt'
           ]))
       );
-      allow update: if isAuthenticated() && (
+      allow update: if isAuthenticated() &&
+        (isAgencyUser() || !isRemovedFromOrg(resource.data.get('orgId', ''))) && (
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
         resource.data.get('clientEmail', '') == request.auth.token.email ||
@@ -336,7 +347,8 @@ service cloud.firestore {
           'orgId', 'createdBy', 'clientEmail', 'clientUserId', 'createdAt', 'requestRole'
         ])
       ));
-      allow delete: if isAuthenticated() && (
+      allow delete: if isAuthenticated() &&
+        (isAgencyUser() || !isRemovedFromOrg(resource.data.get('orgId', ''))) && (
         isAgencyUser() ||
         resource.data.get('createdBy', '') == getUserId() ||
         isOrgOwner(resource.data.get('orgId', ''))
