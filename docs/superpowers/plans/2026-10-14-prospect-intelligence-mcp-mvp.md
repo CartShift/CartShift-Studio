@@ -61,9 +61,9 @@ Files: `app/api/portal/agency/prospects`, `app/[locale]/portal/agency/prospects`
 - [x] ChatGPT MCP scoped read/write/scan actions, bulk import and work-stage/proposal linking.
 - [x] Bounded HTTPS/robots-aware 6-page static scanner, generic business-contact extraction, JSON-LD decision-maker candidates and simple copy/404 findings.
 - [x] Hebrew/English agency UI, owner-only review gates, Adi assignment and next action, suppression/contact removal.
-- [x] Run focused Vitest suite: 56 tests in 12 files passed locally (2026-10-14, before final UI quality patch).
-- [ ] TypeScript and lint green on the final branch HEAD.
-- [ ] Firestore emulator permission tests for new prospect collections, and one safe canary scan after explicitly approved beta deployment.
+- [x] Run focused Vitest suite: 67 tests in 15 files passed in an isolated Vercel Sandbox worktree (2026-10-14, SHA 29ecbe7).
+- [x] TypeScript, generated EN/HE locale merge, and focused ESLint green on the verified feature branch SHA 29ecbe7.
+- [ ] Firestore Emulator permission tests for new prospect collections (static rule test passed, emulator not available in the sandbox); one safe canary scan only after explicitly approved beta deployment.
 - [ ] Founder legal/privacy review of outreach eligibility channels, data minimization and retention TTL before production.
 - [ ] Real desktop/mobile RTL/EN QA with authenticated agency roles, reconnect CartShift OAuth scopes, and verify actual Vercel scanning runtime.
 - [ ] Migrate 14 previously researched businesses through preview-confirm import only when approved; no production writes from this implementation work.
