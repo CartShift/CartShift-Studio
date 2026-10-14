@@ -56,6 +56,9 @@ export async function ensureProjectForAcceptedProposal(proposalId: string): Prom
           ? { ...item, status: 'approved', linkedProposalId: proposalId }
           : item);
       }
+      if (proposal.projectChangeId && project.data()?.status === 'ready_to_launch') {
+        updates.status = 'in_progress';
+      }
       tx.update(projectRef, updates);
     } else {
       // A change order cannot create an unrelated project or replace its scope.
