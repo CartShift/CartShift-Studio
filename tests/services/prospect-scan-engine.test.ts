@@ -45,3 +45,34 @@ describe('bounded prospect scanning', () => {
     }
   });
 });
+describe('robots.txt wildcard and specific agent policy', () => {
+  it('matches wildcard with an anchored end of path', () => {
+    const policy = [
+      'User-agent: *',
+      'Disallow: /*.pdf$',
+      'Allow: /catalog/*.pdf$',
+    ].join('\n');
+    expect(robotsAllowsPath(policy, '/private/invoice.pdf')).toBe(false);
+    expect(robotsAllowsPath(policy, '/catalog/guide.pdf')).toBe(true);
+    expect(robotsAllowsPath(policy, '/private/invoice.pdf/preview')).toBe(true);
+  });
+
+  it('uses specific CartShift robot group instead of generic wildcard group', () => {
+    const policy = [
+      'User-agent: *',
+      'Disallow: /',
+      'User-agent: CartShift-AuditBot',
+      'Allow: /',
+      'Disallow: /private',
+    ].join('\n');
+    expect(robotsAllowsPath(policy, '/pages/contact')).toBe(true);
+    expect(robotsAllowsPath(policy, '/private/settings')).toBe(false);
+  });
+
+  it('does not record an unrelated domain generic address as the store contact', () => {
+    const sample = '<a href="mailto:support@unrelated-company.com">Vendor support</a>' +
+      '<a href="mailto:hello@shop.co.il">Store contact</a>';
+    const result = extractProspectPageEvidence('https://shop.co.il/pages/contact', sample, false);
+    expect(result.contacts.map(c => c.business_email)).toEqual(['hello@shop.co.il']);
+  });
+});
