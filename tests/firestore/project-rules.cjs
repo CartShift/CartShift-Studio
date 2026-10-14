@@ -25,6 +25,7 @@ async function main() {
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
         db.doc('portal_users/removed').set({ accountType: 'CLIENT', isAgency: false, email: 'removed@example.com' }),
+        db.doc('portal_users/storageRevoked').set({ accountType: 'CLIENT', isAgency: false, email: 'storage-revoked@example.com' }),
         db.doc('portal_users/stranger').set({ accountType: 'CLIENT', isAgency: false, email: 'stranger@example.com' }),
         db.doc('portal_users/viewer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'viewer', email: 'viewer@example.com' }),
         db.doc('portal_users/developer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'developer', email: 'developer@example.com' }),
@@ -32,6 +33,7 @@ async function main() {
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
         db.doc('portal_members/orgA_removed').set({ orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'admin', removedAt: require('firebase/firestore').Timestamp.now() }),
+        db.doc('portal_members/orgA_storageRevoked').set({ orgId: 'orgA', userId: 'storageRevoked', email: 'storage-revoked@example.com', role: 'admin', removedAt: require('firebase/firestore').Timestamp.now() }),
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', title: 'Request', status: 'NEW' }),
         db.doc('portal_comments/publicA').set({
           orgId: 'orgA', requestId: 'reqA', isInternal: false,
@@ -195,7 +197,7 @@ async function main() {
     const storageAs = (uid, email) => env.authenticatedContext(uid, { email }).storage(bucket);
     const clientStorage = storageAs('client', 'client@example.com');
     const agencyStorage = storageAs('agency', 'staff@example.com');
-    const removedStorage = storageAs('removed', 'removed@example.com');
+    const removedStorage = storageAs('storageRevoked', 'storage-revoked@example.com');
     // outsider was promoted to agency during the invitation test above; use a real non-member.
     const strangerStorage = storageAs('stranger', 'stranger@example.com');
     const activeFile = clientStorage.ref('portal/orgA/active-member.txt');
