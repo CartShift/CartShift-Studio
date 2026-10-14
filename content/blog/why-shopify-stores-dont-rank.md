@@ -97,7 +97,7 @@ Build a simple cluster:
 - [Shopify SEO audit checklist](/blog/shopify-seo-audit-checklist)
 - [How to improve Shopify SEO results](/blog/improve-shopify-seo-results)
 - [Shopify services page](/solutions/shopify)
-- [Free store analyzer](/tools/store-analyzer)
+- [free expert store review](/free-store-review)
 
 Each support post should reinforce the pillar and the commercial page. Each commercial page should point to useful proof and education.
 
@@ -226,7 +226,7 @@ If your Shopify store is visible but not competitive, do this next:
 
 Shopify stores do not rank because they "do SEO." They rank when the right pages are useful, complete, fast, internally supported, and connected to real buyer intent.
 
-> Want a faster path? Start with the [free store analyzer](/tools/store-analyzer), then [talk with us about Shopify SEO implementation](/contact).
+> Want a faster path? Start with the [free expert store review](/free-store-review), then [talk with us about Shopify SEO implementation](/contact).
 
 ---he---
 
@@ -316,7 +316,7 @@ Shopify stores do not rank because they "do SEO." They rank when the right pages
 - [צ'קליסט Shopify SEO](/blog/shopify-seo-audit-checklist)
 - [איך לשפר תוצאות Shopify SEO](/blog/improve-shopify-seo-results)
 - [עמוד שירותי Shopify](/solutions/shopify)
-- [כלי אודיט חינמי](/tools/store-analyzer)
+- [כלי אודיט חינמי](/free-store-review)
 
 כל פוסט תומך צריך לחזק את ה-pillar ואת העמוד המסחרי. כל עמוד מסחרי צריך לקשר להוכחות ולתוכן שימושי.
 
@@ -443,4 +443,4 @@ Shopify יכולה ליצור עמודים שלא צריכים להיות נכס
 
 חנויות Shopify לא מדורגות כי הן "עושות SEO". הן מדורגות כשיש עמודים נכונים, שימושיים, מלאים, מהירים, מחוזקים בקישורים פנימיים ומחוברים לכוונת קנייה אמיתית.
 
-> רוצים דרך מהירה יותר? התחילו עם [כלי האודיט החינמי](/tools/store-analyzer), ואז [דברו איתנו על יישום Shopify SEO](/contact).
+> רוצים דרך מהירה יותר? התחילו עם [סקירה מקצועית בחינם](/free-store-review), ואז [דברו איתנו על יישום Shopify SEO](/contact).
