@@ -62,7 +62,8 @@ export async function POST(request: NextRequest) {
       const isOrgAdmin = membership?.orgId === orgId &&
         membership?.userId === session.uid && !membership?.removedAt &&
         ['owner', 'admin'].includes(membership?.role);
-      if (!isAgencyManager && org?.createdBy !== session.uid && !isOrgAdmin) {
+      const activeCreator = org?.createdBy === session.uid && !membership?.removedAt;
+      if (!isAgencyManager && !activeCreator && !isOrgAdmin) {
         throw new Error('FORBIDDEN');
       }
       if (!memberDoc.exists || target?.orgId !== orgId || target?.userId !== userId) {

@@ -16,7 +16,8 @@ service firebase.storage {
              (
                firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
-             );
+             ) &&
+             !(firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('status', 'active') in ['suspended', 'inactive']);
     }
 
     function hasActiveOrgMembership(orgId) {
@@ -24,11 +25,19 @@ service firebase.storage {
         firestore.get(/databases/(default)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) == null;
     }
 
+    // Preserve legacy creator accounts lacking a membership while denying revoked creators.
+    function isOrgCreator(orgId) {
+      return isAuthenticated() &&
+        firestore.exists(/databases/(default)/documents/portal_organizations/$(orgId)) &&
+        firestore.get(/databases/(default)/documents/portal_organizations/$(orgId)).data.get('createdBy', '') == getUserId() &&
+        (!firestore.exists(/databases/(default)/documents/portal_members/$(orgId + '_' + getUserId())) ||
+          hasActiveOrgMembership(orgId));
+    }
+
     function isOrgMember(orgId) {
       return isAuthenticated() && (
         isAgencyUser() ||
-        (firestore.exists(/databases/(default)/documents/portal_organizations/$(orgId)) &&
-         firestore.get(/databases/(default)/documents/portal_organizations/$(orgId)).data.get('createdBy', '') == getUserId()) ||
+        isOrgCreator(orgId) ||
         hasActiveOrgMembership(orgId)
       );
     }
@@ -41,8 +50,7 @@ service firebase.storage {
     function canAdminOrg(orgId) {
       return isAuthenticated() && (
         isAgencyManager() ||
-        (firestore.exists(/databases/(default)/documents/portal_organizations/$(orgId)) &&
-         firestore.get(/databases/(default)/documents/portal_organizations/$(orgId)).data.get('createdBy', '') == getUserId()) ||
+        isOrgCreator(orgId) ||
         (hasActiveOrgMembership(orgId) && (
           firestore.get(/databases/(default)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('role', '') == 'owner' ||
           firestore.get(/databases/(default)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('role', '') == 'admin'

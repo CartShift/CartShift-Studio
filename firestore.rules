@@ -23,7 +23,9 @@ service cloud.firestore {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
              exists(/databases/$(database)/documents/portal_organizations/$(orgId)) &&
-             get(/databases/$(database)/documents/portal_organizations/$(orgId)).data.createdBy == getUserId();
+             get(/databases/$(database)/documents/portal_organizations/$(orgId)).data.createdBy == getUserId() &&
+             (!exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) ||
+               isMemberOfOrg(orgId));
     }
 
     function isAgencyUser() {
@@ -33,7 +35,8 @@ service cloud.firestore {
              (
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
-              );
+              ) &&
+             !(get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', 'active') in ['suspended', 'inactive']);
     }
 
     // Role-aware agency mutations. Missing agencyRole is retained for legacy owners.
@@ -140,7 +143,7 @@ service cloud.firestore {
         isAgencyUser() ||
         resource == null ||
         isMemberOfOrg(orgId) ||
-        resource.data.createdBy == getUserId()
+        isOrgOwner(orgId)
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
       // Only admins/owners can update (security fix - was allowing any member)
