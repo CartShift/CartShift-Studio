@@ -572,13 +572,8 @@ service cloud.firestore {
       // Only privileged server routes can edit expert workflow, report and delivery fields.
       // Keep older consent/qualification screens compatible, but enforce original consent.
       allow update: if isAuthenticated() && isAgencyUser()
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
-          'requestId', 'schemaVersion', 'source', 'storeUrl', 'canonicalDomain',
-          'name', 'email', 'locale', 'focus', 'notes', 'reviewStatus',
-          'status', 'statusHistory', 'salesStage', 'reviewReport',
-          'delivery', 'nextAction', 'attribution', 'marketingConsent',
-          'createdAt', 'publicAuditSlug', 'consentTimestamp',
-          'anonymousInsightConsent', 'namedStoreConsent', 'consentVersion'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'qualified', 'reviewVisibility', 'updatedAt'
         ])
         && (
           request.resource.data.get('reviewVisibility', 'private') == 'private' ||
