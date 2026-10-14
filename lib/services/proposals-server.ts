@@ -504,6 +504,38 @@ export async function acceptPublicProposal(
       throw new Error('INVALID_SIGNATURE');
     }
 
+    // Two different quotes cannot both claim the same change order. Read and
+    // reserve the project inside the signature transaction, not in a later
+    // best-effort materialization step that could leave an orphaned signature.
+    let changeProjectRef: admin.firestore.DocumentReference | null = null;
+    let changeProjectUpdates: Record<string, unknown> | null = null;
+    if (proposal.projectChangeId) {
+      if (!proposal.projectId || proposalSnapshot.ref.parent.id !== PROPOSALS_COLLECTION) {
+        throw new Error('INVALID_CHANGE_ORDER_LINK');
+      }
+      changeProjectRef = db.collection('portal_projects').doc(proposal.projectId);
+      const projectSnapshot = await transaction.get(changeProjectRef);
+      if (!projectSnapshot.exists || projectSnapshot.data()?.orgId !== proposal.orgId) {
+        throw new Error('INVALID_CHANGE_ORDER_LINK');
+      }
+      const changes = (projectSnapshot.data()?.changes || []) as Array<{
+        id: string; status: string; linkedProposalId?: string;
+      }>;
+      const change = changes.find(item => item.id === proposal.projectChangeId);
+      if (!change || change.status === 'declined' ||
+          (change.linkedProposalId && change.linkedProposalId !== fresh.id)) {
+        throw new Error('CHANGE_ORDER_ALREADY_APPROVED');
+      }
+      changeProjectUpdates = {
+        changes: changes.map(item => item.id === proposal.projectChangeId
+          ? { ...item, status: 'approved', linkedProposalId: fresh.id } : item),
+        linkedProposalIds: admin.firestore.FieldValue.arrayUnion(fresh.id),
+        ...(projectSnapshot.data()?.status === 'ready_to_launch'
+          ? { status: 'in_progress' } : {}),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+    }
+
     const now = admin.firestore.FieldValue.serverTimestamp();
     const updates: Record<string, unknown> = {
       // Lock the actual published commercial terms and totals at the time of signature.
@@ -540,6 +572,9 @@ export async function acceptPublicProposal(
     }
 
     transaction.update(fresh.ref, updates);
+    if (changeProjectRef && changeProjectUpdates) {
+      transaction.update(changeProjectRef, changeProjectUpdates);
+    }
   });
 
   // Legacy pre-migration proposal snapshots do not have canonical portal_requests IDs.
