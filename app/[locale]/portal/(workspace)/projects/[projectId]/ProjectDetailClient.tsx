@@ -533,7 +533,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
               className="portal-focus-ring mt-2 block text-xs font-semibold text-primary-600 hover:underline">
               {locale === 'he' ? 'הצעת מחיר חתומה לשינוי' : 'Signed change-order proposal'}
             </Link>
-          )
+          )}
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
             canReview={!isAgency} onReviewed={refreshReviews} />
           {isAgency && project.originProposalId &&
