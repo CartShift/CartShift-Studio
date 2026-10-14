@@ -29,6 +29,14 @@ async function main() {
         db.doc('portal_users/stranger').set({ accountType: 'CLIENT', isAgency: false, email: 'stranger@example.com' }),
         db.doc('portal_users/viewer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'viewer', email: 'viewer@example.com' }),
         db.doc('portal_users/developer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'developer', email: 'developer@example.com' }),
+        db.doc('portal_users/suspended').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'admin', status: 'suspended', email: 'suspended@example.com' }),
+        db.doc('portal_users/creatorRemoved').set({ accountType: 'CLIENT', email: 'creator-removed@example.com' }),
+        db.doc('portal_users/legacyCreator').set({ accountType: 'CLIENT', email: 'legacy-creator@example.com' }),
+        db.doc('portal_organizations/orgRevoked').set({ name: 'Revoked owner org', createdBy: 'creatorRemoved' }),
+        db.doc('portal_organizations/orgLegacy').set({ name: 'Legacy owner org', createdBy: 'legacyCreator' }),
+        db.doc('portal_members/orgRevoked_creatorRemoved').set({ orgId: 'orgRevoked', userId: 'creatorRemoved', role: 'owner', removedAt: require('firebase/firestore').Timestamp.now() }),
+        db.doc('portal_projects/prjRevoked').set({ orgId: 'orgRevoked', title: 'Private project' }),
+        db.doc('portal_projects/prjLegacy').set({ orgId: 'orgLegacy', title: 'Existing project' }),
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
@@ -87,6 +95,18 @@ async function main() {
     const removed = context('removed', 'removed@example.com');
     const viewer = context('viewer', 'viewer@example.com');
     const developer = context('developer', 'developer@example.com');
+    const suspended = context('suspended', 'suspended@example.com');
+    const creatorRemoved = context('creatorRemoved', 'creator-removed@example.com');
+    const legacyCreator = context('legacyCreator', 'legacy-creator@example.com');
+    await assertFails(suspended.doc('portal_organizations/orgA').get());
+    await assertFails(suspended.doc('portal_projects/prjA').get());
+    await assertFails(suspended.doc('portal_projects/prjA/private_records/private').get());
+    await assertFails(suspended.collection('portal_invites').get());
+    await assertFails(creatorRemoved.doc('portal_organizations/orgRevoked').get());
+    await assertFails(creatorRemoved.doc('portal_projects/prjRevoked').get());
+    await assertFails(creatorRemoved.doc('portal_organizations/orgRevoked').update({ name: 'Unauthorized' }));
+    await assertSucceeds(legacyCreator.doc('portal_organizations/orgLegacy').get());
+    await assertSucceeds(legacyCreator.doc('portal_projects/prjLegacy').get());
 
     // Internal comments must be protected by Firestore rules, not client-side filtering.
     // Comments are also projected through the secure API, never returned raw.
@@ -311,6 +331,9 @@ async function main() {
     const removedStorage = storageAs('storageRevoked', 'storage-revoked@example.com');
     // outsider was promoted to agency during the invitation test above; use a real non-member.
     const strangerStorage = storageAs('stranger', 'stranger@example.com');
+    const suspendedStorage = storageAs('suspended', 'suspended@example.com');
+    const creatorRemovedStorage = storageAs('creatorRemoved', 'creator-removed@example.com');
+    const legacyStorage = storageAs('legacyCreator', 'legacy-creator@example.com');
     const activeFile = clientStorage.ref('portal/orgA/active-member.txt');
     await assertSucceeds(activeFile.putString('allowed'));
     await assertSucceeds(agencyStorage.ref('portal/orgA/active-member.txt').getMetadata());
@@ -319,6 +342,11 @@ async function main() {
     await assertFails(removedStorage.ref('org-logos/orgA/revoked-admin.png').putString('denied', 'raw', { contentType: 'image/png' }));
     await assertFails(strangerStorage.ref('portal/orgA/active-member.txt').getMetadata());
     await assertFails(strangerStorage.ref('portal/orgA/not-allowed.txt').putString('denied'));
+    await assertFails(suspendedStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(suspendedStorage.ref('portal/orgA/forbidden.txt').putString('denied'));
+    await assertFails(creatorRemovedStorage.ref('portal/orgRevoked/forbidden.txt').putString('denied'));
+    await assertFails(creatorRemovedStorage.ref('org-logos/orgRevoked/forbidden.png').putString('denied', 'raw', { contentType: 'image/png' }));
+    await assertSucceeds(legacyStorage.ref('portal/orgLegacy/legacy.txt').putString('allowed'));
     console.log('Firestore and Storage security scenarios passed');
   } finally {
     await env.cleanup();
