@@ -6,6 +6,7 @@ import {
   updateDoc,
   getDoc,
   getDocs,
+  getCountFromServer,
   query,
   where,
   orderBy,
@@ -224,32 +225,28 @@ export async function getOrganizationsWithStats(): Promise<
   const db = getFirestoreDb();
   const orgs = await getAllOrganizations();
 
-  // Get all members and requests to count them
-  const requestsSnap = await getDocs(collection(db, 'portal_requests'));
-  const membersSnap = await getDocs(collection(db, MEMBERS_COLLECTION));
-
-  const requestCounts: Record<string, number> = {};
-  requestsSnap.forEach(doc => {
-    const orgId = doc.data().orgId;
-    if (orgId) {
-      requestCounts[orgId] = (requestCounts[orgId] || 0) + 1;
-    }
-  });
-
-  const memberCounts: Record<string, number> = {};
-  membersSnap.forEach(doc => {
-    const data = doc.data();
-    const orgId = data.orgId;
-    if (orgId && !data.removedAt) {
-      memberCounts[orgId] = (memberCounts[orgId] || 0) + 1;
-    }
-  });
-
-  return orgs.map(org => ({
-    ...org,
-    memberCount: memberCounts[org.id] || 0,
-    requestCount: requestCounts[org.id] || 0,
-  }));
+  // Aggregations avoid downloading every member and request in the entire agency.
+  // Process bounded batches to avoid unbounded concurrent Firestore requests.
+  const results: (Organization & { memberCount: number; requestCount: number })[] = [];
+  const batchSize = 8;
+  for (let start = 0; start < orgs.length; start += batchSize) {
+    const batch = await Promise.all(orgs.slice(start, start + batchSize).map(async org => {
+      const scopedRequests = query(collection(db, 'portal_requests'), where('orgId', '==', org.id));
+      const scopedMembers = query(collection(db, MEMBERS_COLLECTION), where('orgId', '==', org.id));
+      const [requests, members, removed] = await Promise.all([
+        getCountFromServer(scopedRequests),
+        getCountFromServer(scopedMembers),
+        getCountFromServer(query(scopedMembers, where('removedAt', '!=', null))),
+      ]);
+      return {
+        ...org,
+        requestCount: requests.data().count,
+        memberCount: Math.max(0, members.data().count - removed.data().count),
+      };
+    }));
+    results.push(...batch);
+  }
+  return results;
 }
 
 // ============================================
@@ -523,12 +520,16 @@ export async function createInvite(
  * First tries to fetch by code (for invite URLs), then falls back to ID.
  */
 export async function getInvite(codeOrId: string): Promise<Invite | null> {
+  await waitForAuth();
+  const currentEmail = getFirebaseAuth().currentUser?.email?.trim().toLowerCase();
+  if (!currentEmail) return null;
   const db = getFirestoreDb();
 
-  // Try fetching by code first (for invite URLs)
+  // The invite query must be scoped to the recipient to satisfy security rules.
   const qByCode = query(
     collection(db, INVITES_COLLECTION),
     where('code', '==', codeOrId),
+    where('email', '==', currentEmail),
     limit(1)
   );
 
