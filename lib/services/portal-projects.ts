@@ -102,6 +102,8 @@ export async function addProjectItem<K extends ProjectCollectionField>(
     const fields: Record<string, unknown> = {
       [field]: [...items, item],
       updatedAt: serverTimestamp(),
+      ...((snapshot.data().status === 'ready_to_launch' && field !== 'workLogs' && field !== 'updates')
+        ? { status: 'in_progress' } : {}),
     };
     if (field === 'deliverables' || field === 'changes') {
       const registry = (snapshot.data().reviewRevisions || {}) as Record<string, number>;
@@ -126,6 +128,8 @@ export async function editProjectItem<K extends ProjectCollectionField>(
     const fields: Record<string, unknown> = {
       [field]: updated,
       updatedAt: serverTimestamp(),
+      ...((snapshot.data().status === 'ready_to_launch' && field !== 'workLogs' && field !== 'updates')
+        ? { status: 'in_progress' } : {}),
     };
     if (field === 'deliverables') {
       const registry = (snapshot.data().reviewRevisions || {}) as Record<string, number>;
