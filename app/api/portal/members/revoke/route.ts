@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
   if (origin && origin !== request.nextUrl.origin) {
     return Response.json({ error: 'Forbidden' }, { status: 403, headers });
   }
-  if (!adminDb) return Response.json({ error: 'Unavailable' }, { status: 503, headers });
+  const db = adminDb;
+  if (!db) return Response.json({ error: 'Unavailable' }, { status: 503, headers });
   const session = await getServerSession(request);
   if (!session?.uid) return Response.json({ error: 'Unauthorized' }, { status: 401, headers });
 
@@ -36,12 +37,12 @@ export async function POST(request: NextRequest) {
   const { orgId, userId, memberId } = parsed.data;
 
   try {
-    await adminDb.runTransaction(async tx => {
-      const actorRef = adminDb.collection('portal_users').doc(session.uid);
-      const orgRef = adminDb.collection('portal_organizations').doc(orgId);
-      const actorMemberRef = adminDb.collection('portal_members').doc(`${orgId}_${session.uid}`);
-      const memberRef = adminDb.collection('portal_members').doc(memberId);
-      const targetUserRef = adminDb.collection('portal_users').doc(userId);
+    await db.runTransaction(async tx => {
+      const actorRef = db.collection('portal_users').doc(session.uid);
+      const orgRef = db.collection('portal_organizations').doc(orgId);
+      const actorMemberRef = db.collection('portal_members').doc(`${orgId}_${session.uid}`);
+      const memberRef = db.collection('portal_members').doc(memberId);
+      const targetUserRef = db.collection('portal_users').doc(userId);
 
       // Read before writes, so authorization and the revocation are one snapshot.
       const [actorDoc, orgDoc, actorMember, memberDoc, targetDoc] = await Promise.all([
