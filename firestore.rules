@@ -382,6 +382,19 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
+      function clientCanCommentOnRequest() {
+        let requestId = request.resource.data.get('requestId', '');
+        let parent = get(/databases/$(database)/documents/portal_requests/$(requestId)).data;
+        return exists(/databases/$(database)/documents/portal_requests/$(requestId)) &&
+          (!(
+            parent.get('isBillable', false) == true ||
+            parent.get('publicToken', '') != '' ||
+            parent.get('requestRole', '') in ['bundle', 'bundle_item']
+          ) || (
+            parent.get('status', '') != 'DRAFT' &&
+            parent.get('publicAccessEnabled', false) == true
+          ));
+      }
       // Deny client list queries entirely. Emulator tests proved clients could
       // enumerate confidential notes even with a resource-level predicate.
       // Clients read only through /api/portal/public-comments (authenticated + filtered).
@@ -396,7 +409,9 @@ service cloud.firestore {
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         (request.resource.data.get('isInternal', false) == false &&
+         request.resource.data.get('userId', '') == request.auth.uid &&
          request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
+         clientCanCommentOnRequest() &&
          (isMemberOfOrg(getRequestOrgIdFromRequest()) ||
           isOrgOwner(getRequestOrgIdFromRequest())))
       );
