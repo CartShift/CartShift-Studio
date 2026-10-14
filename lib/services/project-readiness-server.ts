@@ -2,6 +2,7 @@ import 'server-only';
 
 import { adminDb } from '@/lib/firebase-admin';
 import { getProjectHealth } from '@/lib/utils/project-workflow';
+import { getProjectExecutionBlockers } from '@/lib/domain/project-execution-readiness';
 import type { ClientProject, ProjectReview } from '@/lib/types/project';
 
 /**
@@ -21,8 +22,15 @@ export async function markProjectReadyForLaunch(projectId: string): Promise<void
     const reviews = reviewsSnap.docs.map(doc => ({
       id: doc.id, ...doc.data(),
     })) as ProjectReview[];
+    const requests = await tx.get(db.collection('portal_requests')
+      .where('projectId', '==', projectId).limit(501));
+    if (requests.size > 500) throw new Error('PROJECT_WORK_LIMIT_EXCEEDED');
+    const executionBlockers = getProjectExecutionBlockers(projectId, project.orgId,
+      requests.docs.map(doc => doc.data()));
     const health = getProjectHealth(project, reviews);
-    if (!health.readyForLaunch) throw new Error('PROJECT_NOT_READY');
+    if (!health.readyForLaunch || executionBlockers.length > 0) {
+      throw new Error('PROJECT_NOT_READY');
+    }
     // This flag is informational; production publishing still requires a
     // separate explicitly authorized Shopify operation.
     tx.update(ref, { status: 'ready_to_launch', updatedAt: new Date() });
