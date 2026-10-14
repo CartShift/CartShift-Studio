@@ -24,18 +24,33 @@ describe('private project operations', () => {
   it('does not treat reported deposits as paid and excludes child requests', () => {
     const a = projectCommercialSummary([
       { projectId: 'a', isBillable: true, requestRole: 'bundle', totalAmount: 400000,
-        amountPaid: 0, reportedDepositMinor: 200000 },
-      { projectId: 'a', isBillable: true, requestRole: 'bundle_item', totalAmount: 100000 },
-      { projectId: 'b', isBillable: true, totalAmount: 500000 },
+        amountPaid: 0, reportedDepositMinor: 200000, currency: 'ILS' },
+      { projectId: 'a', isBillable: true, requestRole: 'bundle_item', totalAmount: 100000, currency: 'ILS' },
+      { projectId: 'b', isBillable: true, totalAmount: 500000, currency: 'USD' },
     ], 'a');
     expect(a).toEqual({
       estimatedCapMinor: 400000, recordedPaidMinor: 0,
       reportedUnverifiedMinor: 200000, estimatedBalanceMinor: 400000, proposalCount: 1,
+      currency: 'ILS', mixedCurrencies: false,
     });
+  });
+  it('does not add ILS and USD balances into a fictitious total', () => {
+    const result = projectCommercialSummary([
+      { projectId: 'p', isBillable: true, totalAmount: 400000, currency: 'ILS' },
+      { projectId: 'p', isBillable: true, totalAmount: 100000, currency: 'USD' },
+    ], 'p');
+    expect(result.mixedCurrencies).toBe(true);
+    expect(result.currency).toBeNull();
+    expect(result.estimatedBalanceMinor).toBe(0);
+  });
+  it('does not aggregate amounts when the quote currency is missing', () => {
+    expect(projectCommercialSummary([
+      { projectId: 'p', isBillable: true, totalAmount: 100000 },
+    ], 'p').mixedCurrencies).toBe(true);
   });
   it('never shows a negative remaining balance after payment totals', () => {
     expect(projectCommercialSummary([
-      { projectId: 'p', isBillable: true, totalAmount: 10000, amountPaid: 15000 },
+      { projectId: 'p', isBillable: true, totalAmount: 10000, amountPaid: 15000, currency: 'ILS' },
     ], 'p').estimatedBalanceMinor).toBe(0);
   });
 });
