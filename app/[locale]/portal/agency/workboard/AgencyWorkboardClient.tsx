@@ -12,6 +12,8 @@ import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { RequestStatus } from '@/lib/types/portal';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
+import { useQuery } from '@tanstack/react-query';
+import { listClientProjects } from '@/lib/services/portal-projects';
 import { useWorkboardState, type Column } from '@/lib/hooks/useWorkboardState';
 
 import { useTranslations, useLocale } from 'next-intl';
@@ -30,6 +32,11 @@ export default function AgencyWorkboardClient() {
   const { openRequest: openRequestPreview } = useOpenRequest();
   const { loading: auth, isAuthenticated, user, isAgency } = usePortalAuth();
   const { organizations } = useAgencyClients();
+  const { data: projects = [] } = useQuery({
+    queryKey: ['client-projects', 'all'], queryFn: () => listClientProjects(),
+    enabled: isAgency && !auth, staleTime: 30_000,
+  });
+  const projectNames = new Map(projects.map(project => [project.id, project.title]));
 
   const {
     // Data
@@ -141,6 +148,7 @@ export default function AgencyWorkboardClient() {
                 <RequestCard
                   request={req}
                   clientName={organizations.find(org => org.id === req.orgId)?.name}
+                  projectName={req.projectId ? projectNames.get(req.projectId) : undefined}
                   locale={locale}
                   isMounted={isMounted}
                   onDelete={() => setRequestToDelete({ id: req.id, title: req.title })}
@@ -263,7 +271,7 @@ export default function AgencyWorkboardClient() {
                 className="opacity-95 shadow-2xl shadow-primary-500/20 rounded-2xl"
                 style={{ cursor: 'grabbing' }}
               >
-                <RequestCard request={activeRequest} clientName={organizations.find(org => org.id === activeRequest.orgId)?.name} locale={locale} isMounted={isMounted} />
+                <RequestCard request={activeRequest} clientName={organizations.find(org => org.id === activeRequest.orgId)?.name} projectName={activeRequest.projectId ? projectNames.get(activeRequest.projectId) : undefined} locale={locale} isMounted={isMounted} />
               </div>
             ) : null}
           </DragOverlay>,
