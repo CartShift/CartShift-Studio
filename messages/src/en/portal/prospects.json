@@ -87,7 +87,8 @@
       "showing": "Showing {shown} of {total} prospects",
       "removeContact": "Remove contact candidate",
       "contactRemoved": "Contact candidate removed",
-      "removeContactFailed": "Could not remove contact candidate"
+      "removeContactFailed": "Could not remove contact candidate",
+      "linkedProposal": "View linked commercial proposal"
     }
   }
 }
