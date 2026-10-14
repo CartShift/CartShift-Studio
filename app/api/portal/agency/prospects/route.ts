@@ -31,6 +31,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await getServerSession(request);
   if (!session) return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  const origin = request.headers.get('origin');
+  if (origin && origin !== request.nextUrl.origin) {
+    return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
+  }
   try {
     const body = await request.json();
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
