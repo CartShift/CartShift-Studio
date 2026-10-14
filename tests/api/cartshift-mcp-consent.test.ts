@@ -75,7 +75,9 @@ beforeEach(() => {
 describe('CartShift complete OAuth consent flow', () => {
   it('reports unsupported GET/SSE so MCP clients can fall back to POST discovery', async () => {
     for (const headers of [{}, { Authorization: 'Bearer invalid' }]) {
-      const res = await mcpGet(new Request(resource, { headers }));
+      // The GET handler intentionally accepts no request; auth headers are irrelevant for 405.
+      void headers;
+      const res = await mcpGet();
       expect(res.status).toBe(405);
       expect(res.headers.get('Allow')).toBe('POST');
       expect(res.headers.get('Cache-Control')).toBe('no-store');
@@ -100,9 +102,7 @@ describe('CartShift complete OAuth consent flow', () => {
     const issued = await exchange(tokenRequest());
     expect(issued.status).toBe(200);
     const token = await issued.json();
-    const authenticatedDiscovery = await mcpGet(new Request(resource, {
-      headers: { Authorization: 'Bearer ' + token.access_token },
-    }));
+    const authenticatedDiscovery = await mcpGet();
     expect(authenticatedDiscovery.status).toBe(405); // GET SSE remains unsupported.
     const tools = await mcp(new Request(resource, {
       method: 'POST', headers: { Authorization: 'Bearer ' + token.access_token, 'Content-Type': 'application/json' },
