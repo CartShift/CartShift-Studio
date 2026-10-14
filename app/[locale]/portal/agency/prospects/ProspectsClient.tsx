@@ -199,6 +199,16 @@ export default function ProspectsClient() {
     },
     onError: () => toast.error(t('reviewFailed')),
   });
+  const removeContact = useMutation({
+    mutationFn: ({ id, contactId }: { id: string; contactId: string }) =>
+      fetchJson<{ removed: boolean }>('/api/portal/agency/prospects/' + id + '/contacts/' +
+        contactId, { method: 'DELETE' }),
+    onSuccess: async (_result, input) => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.detail(input.id) });
+      toast.success(t('contactRemoved'));
+    },
+    onError: () => toast.error(t('removeContactFailed')),
+  });
   const rows = (list.data?.prospects || []).filter(row =>
     (!verifiedOnly || row.verifiedIssueCount > 0) &&
     (!myOnly || row.ownerUid === user?.uid) &&
@@ -488,6 +498,10 @@ export default function ProspectsClient() {
                       className="text-xs text-primary-600 hover:underline dark:text-primary-300">{t('viewEvidence')}</a>
                     <p className="text-xs text-amber-600">{t('candidateContact')}</p>
                     <p className="text-xs text-surface-500">{contact.sourceUrl}</p>
+                    {canReview && <Button variant="outline" disabled={removeContact.isPending}
+                      onClick={() => removeContact.mutate({ id: prospect.id, contactId: contact.id })}>
+                      {t('removeContact')}
+                    </Button>}
                   </div>
                 ))}
               </div>
