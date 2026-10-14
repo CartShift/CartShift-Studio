@@ -60,7 +60,16 @@
       "verified": "Human-verified finding",
       "rejected": "Rejected finding",
       "verifyFinding": "Verify finding",
-      "rejectFinding": "Reject finding"
+      "rejectFinding": "Reject finding",
+      "import": "Import stores",
+      "importTitle": "Bulk import — preview before saving",
+      "importHint": "Paste up to 20 public store URLs, one per line. Import never contacts any company.",
+      "previewImport": "Preview",
+      "confirmImport": "Confirm and save leads",
+      "importPreview": "{requested} input URLs; {unique} unique businesses",
+      "newProspect": "New candidate",
+      "importDone": "Imported {created} new prospects",
+      "importFailed": "Import failed. Check public HTTPS URLs and duplicate entries."
     }
   }
 }
