@@ -27,6 +27,22 @@ async function main() {
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
         db.doc('portal_requests/reqA').set({ orgId: 'orgA', title: 'Request', status: 'NEW' }),
+        db.doc('portal_requests/quoteA').set({
+          orgId: 'orgA', title: 'Unpublished pricing',
+          status: 'DRAFT', isBillable: true, publicAccessEnabled: false,
+          agencyNotes: 'INTERNAL COMMERCIAL TERMS',
+        }),
+        db.doc('portal_requests/quoteSent').set({
+          orgId: 'orgA', title: 'Sent pricing', status: 'QUOTED',
+          isBillable: true, publicAccessEnabled: true,
+          agencyNotes: 'NEVER EXPOSE', publishedProposal: { totalAmount: 200000 },
+        }),
+        db.doc('portal_pricing_requests/legacyQuote').set({
+          orgId: 'orgA', status: 'SENT', agencyNotes: 'LEGACY PRIVATE',
+        }),
+        db.doc('portal_payments/privatePayment').set({
+          orgId: 'orgA', amount: 200000, manualReference: 'PRIVATE BANK INFO',
+        }),
         db.doc('portal_comments/publicA').set({
           orgId: 'orgA', requestId: 'reqA', isInternal: false,
           userId: 'client', content: 'Public comment',
@@ -38,6 +54,7 @@ async function main() {
         db.doc('portal_projects/prjA').set({
           orgId: 'orgA',
           title: 'Theme review',
+          status: 'in_progress',
           reviewRevisions: { hero: 2, 'change:extra': 1 },
           stages: [], blockers: [], deliverables: [],
           changes: [],
@@ -71,8 +88,32 @@ async function main() {
     await assertFails(outsider.doc('portal_projects/prjA').get());
     await assertFails(client.doc('portal_projects/prjA').update({ title: 'Forged' }));
     await assertFails(client.collection('portal_projects').add({ orgId: 'orgA', title: 'Injected' }));
-    await assertSucceeds(agency.collection('portal_projects').add({ orgId: 'orgA', title: 'Legitimate' }));
+    await assertSucceeds(agency.collection('portal_projects').add({ orgId: 'orgA', title: 'Legitimate', status: 'planning' }));
     await assertFails(outsider.collection('portal_projects').where('orgId', '==', 'orgA').get());
+    await assertFails(agency.doc('portal_projects/prjA').update({ status: 'ready_to_launch' }));
+    await assertFails(agency.collection('portal_projects').add({
+      orgId: 'orgA', title: 'Premature launch', status: 'ready_to_launch',
+    }));
+
+    // Commercial docs are agency-only. Members use the sanitized server API.
+    await assertFails(client.doc('portal_requests/quoteA').get());
+    await assertFails(client.doc('portal_requests/quoteSent').get());
+    await assertSucceeds(agency.doc('portal_requests/quoteA').get());
+    await assertFails(client.collection('portal_requests').where('orgId', '==', 'orgA').get());
+    await assertFails(client.doc('portal_pricing_requests/legacyQuote').get());
+    await assertFails(client.doc('portal_payments/privatePayment').get());
+    await assertSucceeds(agency.doc('portal_payments/privatePayment').get());
+
+    // Clients can create work only under projects owned by their organization.
+    await assertSucceeds(client.doc('portal_requests/validProjectTask').set({
+      orgId: 'orgA', title: 'Task', status: 'NEW', projectId: 'prjA',
+    }));
+    await assertFails(client.doc('portal_requests/crossOrgTask').set({
+      orgId: 'orgA', title: 'Wrong project', status: 'NEW', projectId: 'prjB',
+    }));
+    await assertFails(client.doc('portal_requests/fakePaid').set({
+      orgId: 'orgA', title: 'Commercial spoof', status: 'PAID', isBillable: true,
+    }));
 
     await assertFails(client.doc('portal_users/client').update({ isAgency: true, accountType: 'AGENCY' }));
     await assertFails(client.doc('portal_users/client').update({ agencyRole: 'owner' }));
