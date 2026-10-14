@@ -81,7 +81,10 @@
         "lost": "Lost",
         "suppressed": "Do not contact"
       },
-      "verifiedCount": "{count} verified findings"
+      "verifiedCount": "{count} verified findings",
+      "onlyVerified": "Human-verified issues only",
+      "myProspects": "Assigned to me",
+      "showing": "Showing {shown} of {total} prospects"
     }
   }
 }
