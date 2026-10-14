@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
 import ProjectShowcase from './ProjectShowcase';
 import './project-showcase.css';
 import {
@@ -15,10 +16,9 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return portfolioShowcaseSlugs.flatMap(slug => [
-    { locale: 'en', slug },
-    { locale: 'he', slug },
-  ]);
+  return routing.locales.flatMap(locale =>
+    portfolioShowcaseSlugs.map(slug => ({ locale, slug }))
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
