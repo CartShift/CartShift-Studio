@@ -134,13 +134,19 @@ async function main() {
     }));
     // Storage must enforce the same revocation semantics as Firestore.
     const bucket = 'gs://demo-cartshift.appspot.com';
-    const activeFile = client.storage(bucket).ref('portal/orgA/active-member.txt');
+    // RulesTestContext exposes both APIs; the Firestore handle alone has no storage().
+    const storageAs = (uid, email) => env.authenticatedContext(uid, { email }).storage(bucket);
+    const clientStorage = storageAs('client', 'client@example.com');
+    const agencyStorage = storageAs('agency', 'staff@example.com');
+    const removedStorage = storageAs('removed', 'removed@example.com');
+    const outsiderStorage = storageAs('outsider', 'outsider@example.com');
+    const activeFile = clientStorage.ref('portal/orgA/active-member.txt');
     await assertSucceeds(activeFile.putString('allowed'));
-    await assertSucceeds(agency.storage(bucket).ref('portal/orgA/active-member.txt').getMetadata());
-    await assertFails(removed.storage(bucket).ref('portal/orgA/active-member.txt').getMetadata());
-    await assertFails(removed.storage(bucket).ref('portal/orgA/revoked-member.txt').putString('denied'));
-    await assertFails(removed.storage(bucket).ref('org-logos/orgA/revoked-admin.png').putString('denied', 'raw', { contentType: 'image/png' }));
-    await assertFails(outsider.storage(bucket).ref('portal/orgA/active-member.txt').getMetadata());
+    await assertSucceeds(agencyStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(removedStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(removedStorage.ref('portal/orgA/revoked-member.txt').putString('denied'));
+    await assertFails(removedStorage.ref('org-logos/orgA/revoked-admin.png').putString('denied', 'raw', { contentType: 'image/png' }));
+    await assertFails(outsiderStorage.ref('portal/orgA/active-member.txt').getMetadata());
     console.log('Firestore and Storage security scenarios passed');
   } finally {
     await env.cleanup();
