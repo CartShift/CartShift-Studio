@@ -24,8 +24,8 @@ The server-side audit caps 6 public pages including homepage, 2 seconds between 
 ## Release checks — required before merging
 
 1. Run full generated localization parity check and TypeScript typecheck after `pnpm i18n:merge`.
-2. Run targeted prospect/MCP Vitest suites and Firestore emulator security rules including prospect and contact client denial.
-3. Confirm role tests for owner/admin, sales_manager, developer, client, unauthenticated and revoked actor. Founder-only human approval must not be callable by a sales manager.
+2. Run targeted prospect/MCP Vitest suites and Firestore emulator security rules including prospect, quota, audit and contact client denial. The current static rules test ensures the deny clauses are present but is **not** a substitute for an Emulator test.
+3. Confirm role tests for owner/admin, sales_manager, developer, client, unauthenticated and revoked actor. Founder-only human approval and erasure must not be callable by a sales manager. Linking an existing commercial request must match the prospect domain to the organization's published website or require owner review if no website is recorded.
 4. Validate safe network behavior (DNS/IP literals, redirects to another host, content types, redirects and oversized responses). A real authorized canary store scan should be performed *only after deployment on approval*; no production write during testing.
 5. Visual QA on desktop/mobile with Hebrew RTL and English, including the 20-URL preview, saved duplicate, evidence review, assignment, owner-only contact decision, and empty/failed scan states.
 6. Check current platform terms, robots directives and legal basis for collecting contact fields and any future outreach. No automatic emailing/contact-form sending.
@@ -43,9 +43,9 @@ The server-side audit caps 6 public pages including homepage, 2 seconds between 
 ## Privacy and retention
 
 - Personal contact collection is intentionally limited. Default contact state is candidate, `marketingConsent=false`, and `outreachEligibility=review_required`. Public business information does **not** confer marketing opt-in.
-- Owner/admin may remove an individual candidate; the generated contact ID is saved as a minimal suppression record to prevent re-import by later audits.
+- Owner/admin may remove an individual candidate; the generated contact ID is saved as a minimal suppression record to prevent re-import by later audits. They may also permanently redact an entire prospect through the authenticated agency portal after typing REDACT: this removes contacts, findings, former per-prospect audit evidence and commercial cross-references, retaining only the normalized business domain and a blocked do-not-contact tombstone. An aggregate redaction receipt retains the staff actor and count.
 - No raw full webpage snapshots, cookies, signup events or invented contact details are persisted by the scan.
-- **Not yet implemented:** configurable automatic personal-data retention/TTL, source-specific terms policy engine, legal assessment for cross-border processing and real verification of marketing permission. Keep the feature as private human-reviewed research until these decisions are made.
+- **Not yet implemented:** automatic retention/TTL cleanup of never-visited candidates, source-specific terms policy engine, legal assessment for cross-border processing and independent verification of marketing permission. Manual, audited erasure is available now, but is not a replacement for a reviewed retention policy. Keep the feature as private human-reviewed research until these decisions are made.
 - Existing `marketing_leads`, `marketing_email_jobs`, client invitations and paid proposals are not modified by scanner operations.
 
 ## Cost control
