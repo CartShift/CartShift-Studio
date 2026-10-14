@@ -12,6 +12,7 @@ async function main() {
   const env = await initializeTestEnvironment({
     projectId: 'demo-cartshift',
     firestore: { rules: fs.readFileSync('firestore.rules', 'utf8') },
+    storage: { rules: fs.readFileSync('storage.rules', 'utf8') },
   });
 
   const context = (uid, email) =>
@@ -131,7 +132,16 @@ async function main() {
       accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',
       agencyInviteId: 'staff-invite',
     }));
-    console.log('Firestore security scenarios passed');
+    // Storage must enforce the same revocation semantics as Firestore.
+    const bucket = 'gs://demo-cartshift.appspot.com';
+    const activeFile = client.storage(bucket).ref('portal/orgA/active-member.txt');
+    await assertSucceeds(activeFile.putString('allowed'));
+    await assertSucceeds(agency.storage(bucket).ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(removed.storage(bucket).ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(removed.storage(bucket).ref('portal/orgA/revoked-member.txt').putString('denied'));
+    await assertFails(removed.storage(bucket).ref('org-logos/orgA/revoked-admin.png').putString('denied', 'raw', { contentType: 'image/png' }));
+    await assertFails(outsider.storage(bucket).ref('portal/orgA/active-member.txt').getMetadata());
+    console.log('Firestore and Storage security scenarios passed');
   } finally {
     await env.cleanup();
   }
