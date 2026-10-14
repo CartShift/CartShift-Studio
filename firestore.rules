@@ -319,7 +319,11 @@ service cloud.firestore {
       // or requests in orgs they're members of
       // Commercial records contain private working drafts and notes.
       // Clients get only the published, whitelisted server projection instead.
-      allow read: if isAuthenticated() && (
+      // Queries containing both private proposals and public requests cannot be
+      // authorized safely against arbitrary result sets. Client lists use the
+      // authenticated, field-projected portal API instead.
+      allow list: if isAuthenticated() && isAgencyUser();
+      allow get: if isAuthenticated() && (
         isAgencyUser() ||
         (resource != null && !isCommercialDocument(resource.data) && (
           resource.data.get('createdBy', '') == getUserId() ||
