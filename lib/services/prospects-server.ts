@@ -52,6 +52,7 @@ function summary(id: string, data: Record<string, unknown>) {
     technicalStatus: String(data.technicalStatus || 'needs_review'),
     scanStatus: String(data.scanStatus || 'not_scanned'),
     lastScanPageCount: Number(data.lastScanPageCount || 0),
+    verifiedIssueCount: Number(data.verifiedIssueCount || 0),
     lastAuditedAt: iso(data.lastAuditedAt),
     createdAt: iso(data.createdAt), updatedAt: iso(data.updatedAt),
   };
@@ -115,7 +116,9 @@ export async function getProspect(rawId: string, uid: string) {
       id: doc.id, category: doc.data().category, title: doc.data().title,
       observedUrl: doc.data().observedUrl, evidenceExcerpt: doc.data().evidenceExcerpt,
       businessRelevance: doc.data().businessRelevance || '',
-      verificationStatus: 'unverified', observedAt: iso(doc.data().createdAt),
+      verificationStatus: doc.data().verificationStatus || 'unverified',
+      reviewNote: doc.data().reviewNote || '',
+      observedAt: iso(doc.data().createdAt),
     })),
     contacts: contacts.docs.map(doc => ({
       id: doc.id, role: doc.data().role, name: doc.data().name || '',
