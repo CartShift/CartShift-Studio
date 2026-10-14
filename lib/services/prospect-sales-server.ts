@@ -3,7 +3,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase-admin';
 import { requireProspectActor } from '@/lib/services/prospects-server';
 import {
-  prospectSalesUpdateSchema, prospectReviewSchema,
+  prospectSalesUpdateSchema, prospectReviewSchema, canLinkProspectToOrganization,
 } from '@/lib/domain/prospect-sales';
 
 const ID = /^prospect_[a-f0-9]{32}$/;
@@ -167,6 +167,11 @@ export async function linkProspectProposal(prospectId: string, orgId: string,
     if (prospect.data()?.technicalStatus !== 'approved') throw new Error('TECHNICAL_REVIEW_REQUIRED');
     if (!org.exists || org.data()?.removedAt || org.data()?.status === 'inactive') {
       throw new Error('ORG_NOT_FOUND');
+    }
+    if (!canLinkProspectToOrganization(
+      String(prospect.data()?.canonicalDomain || ''), org.data()?.website, actor.role,
+    )) {
+      throw new Error('ORG_DOMAIN_MISMATCH');
     }
     const proposal = request.data();
     if (!request.exists || proposal?.orgId !== orgId || proposal.isBillable !== true) {
