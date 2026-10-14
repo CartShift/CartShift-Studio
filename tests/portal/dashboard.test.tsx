@@ -143,7 +143,7 @@ describe('Dashboard Page', () => {
 
     await waitFor(() => {
       // access.restrictedMessage
-      expect(screen.getByText('portal.access.restrictedMessage')).toBeInTheDocument();
+      expect(screen.getByText(/necessary permissions to access this specific organization workspace/)).toBeInTheDocument();
     });
   });
 
