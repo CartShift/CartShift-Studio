@@ -126,7 +126,7 @@ export default function ProspectsClient() {
   });
   const bulkImport = useMutation({
     mutationFn: async (confirm: boolean) => {
-      const lines = bulkUrls.split(/\\r?\\n/).map(v => v.trim()).filter(Boolean).slice(0, 20);
+      const lines = bulkUrls.split(/\r?\n/).map(v => v.trim()).filter(Boolean).slice(0, 20);
       if (!lines.length) throw new Error('No stores');
       return fetchJson<{
         requested: number; unique: number; created?: number; duplicate?: number;
@@ -226,7 +226,7 @@ export default function ProspectsClient() {
           <p className="text-sm text-surface-500">{t('importHint')}</p>
           <textarea value={bulkUrls} rows={5} onChange={e => {
             setBulkUrls(e.target.value); setImportPreview(null);
-          }} placeholder={'https://store-one.co.il\\nhttps://store-two.co.il'}
+          }} placeholder={'https://store-one.co.il\nhttps://store-two.co.il'}
             className="w-full rounded-lg border border-surface-200 bg-white p-3 font-mono text-sm text-surface-900 dark:border-surface-700 dark:bg-surface-900 dark:text-white"/>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" disabled={bulkImport.isPending} onClick={() => bulkImport.mutate(false)}>
