@@ -285,8 +285,24 @@ async function materializeProposalRequests(proposalId: string): Promise<string[]
       proposal.childRequestIds?.[index] ||
       getMaterializedRequestId(proposalId, item, index)
   );
+  // A duplicate source request would corrupt child totals and payment allocation.
+  // Firestore batches also have a fixed write limit (including the parent).
+  if (new Set(requestIds).size !== requestIds.length) {
+    throw new Error('DUPLICATE_BUNDLE_REQUEST_ID');
+  }
+  if (requestIds.length > 499) throw new Error('PROPOSAL_BUNDLE_TOO_LARGE');
   const requestRefs = requestIds.map(id => db.collection(REQUESTS_COLLECTION).doc(id));
   const existingRequests = requestRefs.length > 0 ? await db.getAll(...requestRefs) : [];
+  for (const snapshot of existingRequests) {
+    if (!snapshot.exists) continue;
+    const existing = snapshot.data()!;
+    if (existing.orgId !== proposal.orgId ||
+        (existing.parentRequestId && existing.parentRequestId !== proposalId) ||
+        existing.requestRole === 'bundle' || existing.publicToken ||
+        (proposal.projectId && existing.projectId && existing.projectId !== proposal.projectId)) {
+      throw new Error('INVALID_BUNDLE_REQUEST_LINK');
+    }
+  }
   const batch = db.batch();
   const now = admin.firestore.FieldValue.serverTimestamp();
 
@@ -307,19 +323,25 @@ async function materializeProposalRequests(proposalId: string): Promise<string[]
       subtotal: itemSubtotal,
       taxRate: proposal.taxRate ?? 0,
       currency: proposal.currency,
-      amountPaid: 0,
-      balanceDue: totalAmount,
-      paymentStatus: 'unpaid',
       updatedAt: now,
     };
 
     if (existing.exists) {
-      batch.set(requestRef, baseData, { merge: true });
+      // Retry-safe: never reset verified payments or already-started work.
+      // Financial allocations are reconciled in syncMaterializedRequestPayments.
+      const status = existing.data()?.status;
+      batch.set(requestRef, {
+        ...baseData,
+        ...(['NEW', 'NEEDS_INFO'].includes(status) ? { status: 'QUEUED' } : {}),
+      }, { merge: true });
       return;
     }
 
     batch.set(requestRef, {
       ...baseData,
+      amountPaid: 0,
+      balanceDue: totalAmount,
+      paymentStatus: 'unpaid',
       orgId: proposal.orgId,
       title: item.title || item.description,
       description: item.notes ? `${item.description}\n\n${item.notes}` : item.description,
