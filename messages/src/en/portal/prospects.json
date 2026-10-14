@@ -69,7 +69,19 @@
       "importPreview": "{requested} input URLs; {unique} unique businesses",
       "newProspect": "New candidate",
       "importDone": "Imported {created} new prospects",
-      "importFailed": "Import failed. Check public HTTPS URLs and duplicate entries."
+      "importFailed": "Import failed. Check public HTTPS URLs and duplicate entries.",
+      "stageLabels": {
+        "needs_review": "Needs review",
+        "qualified": "Qualified",
+        "contact_research": "Finding contact",
+        "contact_ready": "Contact channel approved",
+        "in_conversation": "In conversation",
+        "proposal": "Proposal",
+        "won": "Won",
+        "lost": "Lost",
+        "suppressed": "Do not contact"
+      },
+      "verifiedCount": "{count} verified findings"
     }
   }
 }
