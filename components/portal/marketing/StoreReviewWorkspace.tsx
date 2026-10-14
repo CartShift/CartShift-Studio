@@ -82,7 +82,9 @@ export function StoreReviewWorkspace({
   const currentStatus=detail?.reviewStatus||detail?.status||'requested';
   const editable=detail?.schemaVersion===2&&currentStatus!=='delivered'&&currentStatus!=='declined';
   const canSend=editable&&currentStatus==='in_review'&&summary.trim().length>=30&&findings.length>=3&&
-    findings.length<=5&&findings.every(f=>f.title.trim().length>=5&&
+    findings.length<=5&&summary===detail?.reviewReport?.summary&&
+    JSON.stringify(findings)===JSON.stringify(detail?.reviewReport?.findings)&&
+    findings.every(f=>f.title.trim().length>=5&&
       f.observation.trim().length>=10&&f.whyItMatters.trim().length>=10&&
       f.recommendedAction.trim().length>=10&&/^https:\/\//.test(f.observedUrl));
   return <section className="space-y-5">
