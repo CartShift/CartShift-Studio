@@ -26,7 +26,8 @@ export function useOrgPricingRequests(options: OrgPricingOptions = {}) {
   const { excludeDrafts = false } = options;
 
   const shouldFetch = isAuthenticated && !auth && Boolean(safeOrgId);
-  const qKey = queryKeys.pricing.byOrg;
+  // Separate private agency results from client-safe projections in the same org.
+  const qKey = queryKeys.pricing.scopedByOrg(safeOrgId, excludeDrafts, isAgency ? 'agency' : 'client');
 
   const {
     data: requests = [],
