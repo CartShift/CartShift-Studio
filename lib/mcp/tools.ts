@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { FieldValue } from 'firebase-admin/firestore';
 import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connection';
 import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
+import { PROSPECT_TOOL_DEFS, callProspectTool } from '@/lib/mcp/prospect-tools';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -124,6 +125,7 @@ export const TOOL_DEFS = [
     }, additionalProperties: false },
   },
   ...EXTENDED_TOOL_DEFS,
+  ...PROSPECT_TOOL_DEFS,
 ] as const;
 
 function serialize(value: unknown) {
@@ -154,6 +156,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   const args = getArgs(input);
   if (EXTENDED_TOOL_DEFS.some(item => item.name === name)) {
     return callExtendedTool(name, args, grant);
+  }
+  if (PROSPECT_TOOL_DEFS.some(item => item.name === name)) {
+    return callProspectTool(name, args, grant);
   }
   const db = firestore();
   const orgs = db.collection('portal_organizations');

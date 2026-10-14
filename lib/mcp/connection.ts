@@ -5,7 +5,7 @@ import { adminDb } from '@/lib/firebase-admin';
 
 export const MCP_ORIGIN = 'https://portal.cart-shift.com';
 export const MCP_RESOURCE = MCP_ORIGIN + '/api/cartshift-mcp/mcp';
-export const MCP_SCOPES = ['clients:read', 'clients:write', 'work:read', 'work:write'] as const;
+export const MCP_SCOPES = ['clients:read', 'clients:write', 'work:read', 'work:write', 'prospects:read', 'prospects:write', 'prospects:scan'] as const;
 export type McpScope = (typeof MCP_SCOPES)[number];
 
 export const CLIENTS = 'cartshift_mcp_oauth_clients';

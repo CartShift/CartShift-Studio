@@ -49,6 +49,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
+    "test:prospects:release": "node scripts/check-prospects-release.mjs",
     "test:linkedin-editorial": "vitest run tests/scripts/linkedin-editorial-quality.test.ts tests/scripts/linkedin-editorial-prompts.test.ts tests/scripts/linkedin-editorial-validation.test.ts",
     "test:linkedin-editorial:coverage": "vitest run tests/scripts/linkedin-editorial-quality.test.ts tests/scripts/linkedin-editorial-prompts.test.ts tests/scripts/linkedin-editorial-validation.test.ts --coverage --coverage.include=scripts/lib/linkedin-editorial-quality.mjs --coverage.include=scripts/lib/linkedin-editorial-prompts.mjs --coverage.thresholds.lines=80 --coverage.thresholds.functions=80 --coverage.thresholds.branches=80 --coverage.thresholds.statements=80",
     "i18n:validate": "node scripts/validate-translations.js",
