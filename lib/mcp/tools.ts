@@ -104,7 +104,7 @@ export const TOOL_DEFS = [
     }, additionalProperties: false },
   },
   {
-    name: 'create_work_item', description: 'Create an agency work item only when no semantically matching item already exists. Does not create a bill or invite.',
+    name: 'create_work_item', description: 'Create an agency work item only when no semantically matching item already exists. For Israeli / Hebrew-speaking clients, write the TITLE and DESCRIPTION in clear natural Hebrew (retain technical brand/product names like Shopify, Make, SKU); do not default to English. Does not create a bill or invite.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['org_id', 'title', 'description', 'type', 'priority'], properties: {
       org_id: { type: 'string' }, title: { type: 'string' }, description: { type: 'string' },
@@ -114,7 +114,7 @@ export const TOOL_DEFS = [
     }, additionalProperties: false },
   },
   {
-    name: 'update_work_item', description: 'Update existing portal request after checking its actual status. Does not alter payments, prices, or organization.',
+    name: 'update_work_item', description: 'Update existing portal request after checking its actual status. For Israeli / Hebrew-speaking clients, keep title and description in clear natural Hebrew, including when revising older English tasks. Does not alter payments, prices, or organization.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['org_id', 'work_item_id', 'patch'], properties: {
       org_id: { type: 'string' }, work_item_id: { type: 'string' },
