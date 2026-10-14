@@ -5,7 +5,7 @@ import { may } from '@/lib/mcp/connection';
 import { scanProspect } from '@/lib/services/prospect-scan-service';
 import { updateProspectSales, linkProspectProposal } from '@/lib/services/prospect-sales-server';
 import {
-  addProspectFinding, addProspectContactCandidate, getProspect, listProspects, upsertProspect,
+  addProspectFinding, addProspectContactCandidate, getProspect, listProspects, upsertProspect, importProspectBatch,
 } from '@/lib/services/prospects-server';
 
 const identity = { type: 'string', pattern: '^prospect_[a-f0-9]{32}$' };
@@ -31,6 +31,22 @@ export const PROSPECT_TOOL_DEFS = [
       source_url: { type: 'string', maxLength: 1024 },
       source_type: { type: 'string', enum: ['manual', 'chatgpt_research', 'spreadsheet_import'] },
       research_note: { type: 'string', maxLength: 1000 } }, ['store_url', 'source_url']),
+  definition('upsert_prospect_batch',
+    'Preview (dry_run=true) or import up to 20 researched business stores. Validates and deduplicates domains, saves only private review-required prospects, no outreach or client invites.',
+    'prospects:write', {
+      dry_run: { type: 'boolean' },
+      prospects: { type: 'array', minItems: 1, maxItems: 20,
+        items: { type: 'object',
+          required: ['store_url', 'source_url'],
+          properties: {
+            store_url: { type: 'string' }, brand_name: { type: 'string' },
+            source_url: { type: 'string' },
+            source_type: { type: 'string', enum: ['manual', 'chatgpt_research', 'spreadsheet_import'] },
+            research_note: { type: 'string' },
+          },
+          additionalProperties: false },
+      },
+    }, ['prospects']),
   definition('add_prospect_finding',
     'Save a factual research observation about an existing store, with same-domain public evidence URL and excerpt. Always stores UNVERIFIED and does not contact the business.',
     'prospects:write',
@@ -109,6 +125,14 @@ export async function callProspectTool(name: string, args: unknown, grant: Token
     return scanProspect(input.prospect_id, grant.uid);
   }
   if (name === 'upsert_prospect') return upsertProspect(args, grant.uid);
+  if (name === 'upsert_prospect_batch') {
+    const input = args as Record<string, unknown>;
+    if (!Array.isArray(input.prospects) || Object.keys(input).some(k => !['prospects', 'dry_run'].includes(k)) ||
+        (input.dry_run !== undefined && typeof input.dry_run !== 'boolean')) {
+      throw new Error('Invalid prospect import arguments');
+    }
+    return importProspectBatch(input.prospects, grant.uid, input.dry_run === true);
+  }
   if (name === 'add_prospect_finding') return addProspectFinding(args, grant.uid);
   if (name === 'add_prospect_contact_candidate') return addProspectContactCandidate(args, grant.uid);
   throw new Error('Unknown prospect tool');
