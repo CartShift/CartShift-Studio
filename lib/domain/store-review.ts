@@ -47,11 +47,12 @@ export const storeReviewWorkUpdateSchema = z.object({
 }).strict().refine(value => Object.keys(value).length > 0, 'Empty update');
 
 export function canMoveReviewStatus(previous: StoreReviewStatus, next: StoreReviewStatus) {
-  return ({
+  const transitions: Record<StoreReviewStatus, StoreReviewStatus[]> = {
     requested: ['accepted','declined'],
     accepted: ['in_review','declined'],
     in_review: ['delivered','declined'],
     delivered: [],
     declined: [],
-  } satisfies Record<StoreReviewStatus, StoreReviewStatus[]>)[previous].includes(next);
+  };
+  return transitions[previous].includes(next);
 }
