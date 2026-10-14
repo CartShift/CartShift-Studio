@@ -102,6 +102,12 @@ jobs:
             pnpm test:run
           fi
 
+      - name: Check Cloud Functions syntax and distributed limiter
+        run: |
+          node --check functions/index.js
+          node --check functions/rate-limit.js
+          node --test tests/functions/rate-limit.test.cjs
+
       - name: Firestore tenant-security regression (when rules change)
         shell: bash
         env:
