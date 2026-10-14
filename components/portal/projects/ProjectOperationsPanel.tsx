@@ -50,30 +50,34 @@ function FinanceOverview({ project, requests, locale }: {
   const he = locale === 'he';
   const summary = projectCommercialSummary(requests, project.id);
   const hasQuotes = summary.proposalCount > 0;
-  const currency = project.scope.currency || 'ILS';
+  const currency = summary.currency || project.scope.currency || 'ILS';
   const scopeCap = Math.round(project.scope.maxHours * project.scope.rateCents);
   const due = summary.estimatedBalanceMinor;
   return <div className="grid gap-3 sm:grid-cols-3">
     <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
       <p className="text-xs text-surface-500">{he ? 'מסגרת הערכה' : 'Estimated project cap'}</p>
-      <p className="mt-1 text-lg font-semibold">{scopeCap > 0 ? amount(scopeCap, currency, locale) : (he ? 'טרם הוגדרה' : 'Not set')}</p>
+      <p className="mt-1 text-lg font-semibold">{scopeCap > 0 ? amount(scopeCap, project.scope.currency, locale) : (he ? 'טרם הוגדרה' : 'Not set')}</p>
       <p className="mt-1 text-xs text-surface-500">{he ? 'לא סכום חיוב סופי' : 'Not a final invoice'}</p>
     </div>
     <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
       <p className="text-xs text-surface-500">{he ? 'נרשם כשולם במערכת' : 'Recorded paid in system'}</p>
-      <p className="mt-1 text-lg font-semibold">{hasQuotes ? amount(summary.recordedPaidMinor, currency, locale) : '—'}</p>
+      <p className="mt-1 text-lg font-semibold">{hasQuotes && !summary.mixedCurrencies ? amount(summary.recordedPaidMinor, currency, locale) : '—'}</p>
       <p className="mt-1 text-xs text-surface-500">{he ? 'מתוך הצעות מקושרות בלבד' : 'Linked proposals only'}</p>
     </div>
     <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
       <p className="text-xs text-surface-500">{he ? 'יתרת מסגרת משוערת' : 'Estimated remaining cap'}</p>
-      <p className="mt-1 text-lg font-semibold">{hasQuotes ? amount(due, currency, locale) : '—'}</p>
+      <p className="mt-1 text-lg font-semibold">{hasQuotes && !summary.mixedCurrencies ? amount(due, currency, locale) : '—'}</p>
       <p className="mt-1 text-xs text-surface-500">{he ? 'יש להתאים לשעות ולתשלומים בפועל' : 'Reconcile with actual work and payments'}</p>
     </div>
-    {hasQuotes && summary.reportedUnverifiedMinor > 0 && <p className="sm:col-span-3 text-xs text-amber-700 dark:text-amber-300">
+    {hasQuotes && !summary.mixedCurrencies && summary.reportedUnverifiedMinor > 0 && <p className="sm:col-span-3 text-xs text-amber-700 dark:text-amber-300">
       <AlertCircle size={14} className="me-1 inline"/>
       {he ? 'דווחה מקדמה שעדיין לא אומתה: ' : 'Reported, unverified deposit: '}
       {amount(summary.reportedUnverifiedMinor, currency, locale)}.
       {he ? ' לא נספרה כתשלום.' : ' Not counted as paid.'}
+    </p>}
+    {summary.mixedCurrencies && <p className="sm:col-span-3 text-xs text-amber-700 dark:text-amber-300" role="alert">
+      {he ? 'יש הצעות במטבעות שונים או לא ידועים. אין לחבר את הסכומים; יש להתאים יתרה לכל מטבע בנפרד.' :
+        'Linked quotes have mixed or unknown currencies. Reconcile amounts per currency; no combined balance is shown.'}
     </p>}
     {!hasQuotes && <p className="sm:col-span-3 text-xs text-amber-700 dark:text-amber-300">
       {he ? 'לא נמצאה הצעת מחיר מקושרת לפרויקט. יש לקשר את ההצעה הקיימת, ולא ליצור חיוב כפול.' :
@@ -144,6 +148,9 @@ export default function ProjectOperationsPanel({ project, requests, locale }: {
   const [filter, setFilter] = useState<'all' | ProjectRecordKind>('all');
   const refresh = () => cache.invalidateQueries({ queryKey: key });
   const recordCount = records.filter(r => r.status === 'open' || r.status === 'failed').length;
+  const today = new Date().toLocaleDateString('sv-SE');
+  const overdue = records.filter(r => (r.kind === 'follow_up' || r.kind === 'dependency') &&
+    r.status === 'open' && r.dueDate && r.dueDate < today).length;
   const privateHours = records.filter(r => r.kind === 'time').reduce((n, r) => n + (r.hours || 0), 0);
   const sharedHours = project.workLogs.reduce((n, r) => n + (r.hours || 0), 0);
   const completedStages = project.stages.filter(s => s.status === 'completed').length;
@@ -191,6 +198,9 @@ export default function ProjectOperationsPanel({ project, requests, locale }: {
       <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
         <p className="text-xs text-surface-500">{he ? 'מה עדיין פתוח?' : 'Open operations'}</p>
         <p className="mt-1 text-lg font-bold">{recordCount} <span className="text-xs font-normal">+ {project.blockers.filter(b => !b.resolved).length} {he ? 'חסמים' : 'blockers'}</span></p>
+        {overdue > 0 && <p className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+          {he ? overdue + ' פעולות באיחור' : overdue + ' overdue actions'}
+        </p>}
       </div>
       <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
         <p className="text-xs text-surface-500">{he ? 'זמן שתועד' : 'Recorded time'}</p>
