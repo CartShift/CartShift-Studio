@@ -219,7 +219,7 @@ What you need is a **systematic diagnosis**—an honest audit that shows you exa
 
 ### Stop Guessing. Start Knowing.
 
-We've built a [free Store Analyzer tool](/tools/store-analyzer) that examines your store across all the critical areas we've discussed:
+You can request a [free expert store review](/free-store-review) from CartShift. We look at relevant parts of your store across the areas discussed:
 
 - **Performance & Speed** – Is your site fast enough?
 - **Mobile Experience** – How does it really perform on phones?
@@ -227,14 +227,14 @@ We've built a [free Store Analyzer tool](/tools/store-analyzer) that examines yo
 - **Trust Signals** – Does your store inspire confidence?
 - **Technical Issues** – What's broken that you can't see?
 
-In under 2 minutes, you'll get a comprehensive report with:
+After your request is accepted and reviewed, we follow up with:
 
-- ✅ Your overall store health score
-- ✅ Specific issues identified
-- ✅ Prioritized recommendations
-- ✅ Actionable next steps
+- ✅ 3–5 concrete, prioritized findings
+- ✅ Examples from your store
+- ✅ Practical suggestions for what to fix first
+- ✅ An optional plan for implementation
 
-**[→ Analyze My Store Free](/tools/store-analyzer)**
+**[→ Request My Free Store Review](/free-store-review)**
 
 ## How to Prioritize Your Fixes
 
@@ -275,11 +275,11 @@ Even fixing just 2-3 of the issues above could dramatically improve your convers
 
 Your store is leaking revenue right now. Every hour you wait, potential customers are leaving without buying.
 
-**Option 1: Get a Free Instant Analysis**
+**Option 1: Request a Free Expert Store Review**
 
-Use our [Store Analyzer](/tools/store-analyzer) to get an immediate diagnosis. It's free, takes under 2 minutes, and you'll walk away with actionable insights.
+Request a focused review by the CartShift team. We inspect public pages, verify the most useful observations and follow up personally—without a generic instant score.
 
-**[→ Get My Free Store Analysis](/tools/store-analyzer)**
+**[→ Request an Expert Review](/free-store-review)**
 
 **Option 2: Work With Experts**
 
@@ -399,7 +399,7 @@ If you'd prefer a hands-on partner to audit your store and implement conversion 
 
 ### הפסיקו לנחש. התחילו לדעת.
 
-בנינו [כלי ניתוח חנויות חינמי](/tools/store-analyzer) שבוחן את החנות שלכם בכל התחומים הקריטיים שדיברנו עליהם:
+אפשר לבקש [סקירה מקצועית חינמית לחנות](/free-store-review) מצוות CartShift. נבחן את התחומים הרלוונטיים מתוך הנושאים שדיברנו עליהם:
 
 - **ביצועים ומהירות** – האם האתר מספיק מהיר?
 - **חוויית מובייל** – איך הוא באמת מתפקד בטלפונים?
@@ -407,14 +407,14 @@ If you'd prefer a hands-on partner to audit your store and implement conversion 
 - **אותות אמון** – האם החנות משרה ביטחון?
 - **בעיות טכניות** – מה שבור שאתם לא יכולים לראות?
 
-תוך פחות מ-2 דקות, תקבלו דוח מקיף עם:
+לאחר שנבחן את הבקשה והחנות, נחזור אליכם עם:
 
-- ✅ ציון בריאות כולל לחנות
-- ✅ בעיות ספציפיות שזוהו
-- ✅ המלצות מתועדפות
-- ✅ צעדים מעשיים
+- ✅ 3–5 ממצאים לפי סדר חשיבות
+- ✅ דוגמאות אמיתיות מהחנות
+- ✅ המלצות מעשיות להמשך
+- ✅ אפשרות להצעת עבודה מסודרת
 
-**[→ נתחו את החנות שלי בחינם](/tools/store-analyzer)**
+**[→ בקשו סקירה מקצועית בחינם](/free-store-review)**
 
 ## איך לתעדף את התיקונים
 
@@ -455,11 +455,11 @@ If you'd prefer a hands-on partner to audit your store and implement conversion 
 
 החנות שלכם מאבדת הכנסות עכשיו. כל שעה שאתם מחכים, לקוחות פוטנציאליים עוזבים בלי לקנות.
 
-**אפשרות 1: קבלו ניתוח מיידי חינם**
+**אפשרות 1: בקשו סקירה מקצועית בחינם**
 
-השתמשו ב[כלי ניתוח החנויות](/tools/store-analyzer) שלנו כדי לקבל אבחון מיידי. זה חינמי, לוקח פחות מ-2 דקות, ותצאו עם תובנות מעשיות.
+בקשו סקירה ראשונית מאנשי CartShift. נבחן עמודים ציבוריים בחנות, נוודא את הממצאים החשובים ונחזור אליכם אישית.
 
-**[→ קבלו ניתוח חנות חינמי](/tools/store-analyzer)**
+**[→ בקשו סקירת חנות בחינם](/free-store-review)**
 
 **אפשרות 2: עבדו עם מומחים**
 
