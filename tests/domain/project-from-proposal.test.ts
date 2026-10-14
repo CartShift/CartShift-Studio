@@ -23,9 +23,7 @@ describe('accepted proposal project contract', () => {
   it('copies only customer-facing objective into client-visible project summary', () => {
     const content = emptyProposalContent();
     content.objective = 'Approved scope';
-    expect(projectSummaryFromProposal({
-      description: 'Alternative', proposalContent: content,
-      agencyNotes: 'PRIVATE NOTES',
-    })).toBe('Approved scope');
+    const proposal = { description: 'Alternative', proposalContent: content, agencyNotes: 'PRIVATE NOTES' };
+    expect(projectSummaryFromProposal(proposal)).toBe('Approved scope');
   });
 });
