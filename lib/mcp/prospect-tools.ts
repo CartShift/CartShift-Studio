@@ -3,6 +3,7 @@ import 'server-only';
 import type { TokenGrant } from '@/lib/mcp/connection';
 import { may } from '@/lib/mcp/connection';
 import { scanProspect } from '@/lib/services/prospect-scan-service';
+import { updateProspectSales } from '@/lib/services/prospect-sales-server';
 import {
   addProspectFinding, addProspectContactCandidate, getProspect, listProspects, upsertProspect,
 } from '@/lib/services/prospects-server';
@@ -49,6 +50,15 @@ export const PROSPECT_TOOL_DEFS = [
       source_url: { type: 'string', maxLength: 1024 },
       evidence_excerpt: { type: 'string', minLength: 8, maxLength: 400 } },
     ['prospect_id', 'role', 'source_url', 'evidence_excerpt']),
+  definition('update_prospect_sales',
+    'Update an existing prospect sales stage, assigned CartShift agency user and next action. Stage gates forbid contacting before channel review or proposing before founder technical approval. Does not send outreach.',
+    'prospects:write', {
+      prospect_id: identity,
+      stage: { type: 'string', enum: ['needs_review', 'qualified', 'contact_research',
+        'contact_ready', 'in_conversation', 'proposal', 'won', 'lost'] },
+      owner_uid: { type: 'string' }, next_action: { type: 'string', maxLength: 500 },
+      due_date: { type: 'string', format: 'date' }, note: { type: 'string', maxLength: 2000 },
+    }, ['prospect_id']),
   definition('scan_prospect',
     'Run a bounded HTTPS/robots-respecting audit of ONE existing business prospect, save UNVERIFIED findings and public generic business contact candidates. No marketing outreach. Max 6 pages; per-domain cooldown.',
     'prospects:scan', { prospect_id: identity }, ['prospect_id']),
@@ -68,6 +78,12 @@ export async function callProspectTool(name: string, args: unknown, grant: Token
       throw new Error('Invalid prospect ID arguments');
     }
     return getProspect(input.prospect_id, grant.uid);
+  }
+  if (name === 'update_prospect_sales') {
+    const input = args as Record<string, unknown>;
+    if (typeof input.prospect_id !== 'string') throw new Error('Invalid prospect sales arguments');
+    const { prospect_id, ...patch } = input;
+    return updateProspectSales(prospect_id, patch, grant.uid);
   }
   if (name === 'scan_prospect') {
     const input = args as Record<string, unknown>;
