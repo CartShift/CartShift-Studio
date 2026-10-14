@@ -84,6 +84,7 @@ export default function CreatePricingForm() {
   const searchParams = useSearchParams();
   const relatedRequestId = searchParams.get('relatedRequestId');
   const initializedRelatedId = useRef<string | null>(null);
+  const currencyInitializedForClientId = useRef<string | null>(null);
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
@@ -221,6 +222,12 @@ export default function CreatePricingForm() {
   useEffect(() => {
     const client = fullOrganizations.find(organization => organization.id === orgId);
     if (!client) return;
+    // Every new proposal inherits the selected client's currency once.
+    // Manual overrides remain possible and never rewrite historical proposals.
+    if (currencyInitializedForClientId.current !== client.id) {
+      currencyInitializedForClientId.current = client.id;
+      if (client.defaultCurrency) setValue('currency', client.defaultCurrency);
+    }
     if (!watch('clientName')) setValue('clientName', client.name);
     if (!watch('clientEmail') && client.billingEmail) setValue('clientEmail', client.billingEmail);
   }, [orgId, fullOrganizations, setValue, watch]);
