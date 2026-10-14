@@ -5,7 +5,6 @@ import { createAppQueryClient } from '@/lib/query/query-client-config';
 import {
   serverGetAllRequests,
   serverGetOrgActivities,
-  serverGetOrgInvites,
   serverGetOrgMembers,
   serverGetOrganization,
   serverGetRequest,
@@ -75,16 +74,12 @@ async function prefetchPortalQueries(
     }
 
     if (scope === 'team') {
-      await Promise.all([
-        queryClient.prefetchQuery({
-          queryKey: queryKeys.members.byOrg(orgId),
-          queryFn: () => serverGetOrgMembers(orgId),
-        }),
-        queryClient.prefetchQuery({
-          queryKey: queryKeys.invites.byOrg(orgId),
-          queryFn: () => serverGetOrgInvites(orgId),
-        }),
-      ]);
+      // Never hydrate raw invite documents: they include recipient emails and
+      // claim codes, and Admin SDK bypasses Firestore invitation rules.
+      await queryClient.prefetchQuery({
+        queryKey: queryKeys.members.byOrg(orgId),
+        queryFn: () => serverGetOrgMembers(orgId),
+      });
     }
 
     if (scope === 'settings') {
