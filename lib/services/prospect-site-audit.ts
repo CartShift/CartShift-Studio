@@ -32,12 +32,16 @@ export async function runProspectSiteAudit(rawStoreUrl: string, deps: AuditDeps 
   const robots = await fetch(robotsUrl, root.hostname);
   // Fail closed on blocked/unknown robots; 404 is the standard "no robots rules" case.
   if (robots.status !== 200 && robots.status !== 404) throw new Error('SCAN_ROBOTS_UNAVAILABLE');
+  if (robots.status === 200 && !robots.contentType.startsWith('text/plain')) {
+    throw new Error('SCAN_ROBOTS_CONTENT_TYPE');
+  }
   const rules = robots.status === 404 ? '' : robots.body;
   if (!robotsAllowsPath(rules, '/')) throw new Error('SCAN_ROBOTS_BLOCKED');
 
   await pause(2000);
   const home = await fetch(homeUrl, root.hostname);
   if (home.status !== 200) throw new Error('SCAN_HOMEPAGE_UNAVAILABLE');
+  if (!home.contentType.startsWith('text/html')) throw new Error('SCAN_HOMEPAGE_NOT_HTML');
   const platform = detectPlatform(home.body, homeUrl) === 'Shopify' ? 'shopify' :
     detectPlatform(home.body, homeUrl) ? 'other' : 'unknown';
   const scannedUrls = [home.finalUrl];
@@ -56,7 +60,7 @@ export async function runProspectSiteAudit(rawStoreUrl: string, deps: AuditDeps 
     await pause(2000);
     try {
       const page = await fetch(url, root.hostname);
-      if (page.status !== 200) {
+      if (page.status !== 200 || !page.contentType.startsWith('text/html')) {
         skippedUrls.push(url);
         if (page.status === 404 || page.status === 410) {
           findings.push({
