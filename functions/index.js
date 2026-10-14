@@ -4,6 +4,7 @@ const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const { checkFirestoreRateLimit: checkDistributedRateLimit } = require('./rate-limit');
 const {
   sendEmailWithLogging,
   sendBatchEmails,
@@ -17,8 +18,6 @@ const {
 
 admin.initializeApp();
 
-const contactRateLimitMap = new Map();
-const newsletterRateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const CONTACT_RATE_LIMIT_MAX_REQUESTS = 5;
 const NEWSLETTER_RATE_LIMIT_MAX_REQUESTS = 3;
@@ -65,58 +64,9 @@ function getRateLimitKey(req) {
   return req.ip || 'unknown';
 }
 
-function checkRateLimit(map, key, maxRequests) {
-  const now = Date.now();
-  const record = map.get(key);
-
-  if (!record || now > record.resetTime) {
-    map.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-
-  if (record.count >= maxRequests) {
-    return false;
-  }
-
-  record.count += 1;
-  return true;
-}
-
+// All public endpoints share the same cross-instance transactional limiter.
 async function checkFirestoreRateLimit(key, maxRequests, windowMs = 60 * 60 * 1000) {
-  const ref = admin
-    .firestore()
-    .collection('rate_limits')
-    .doc(key.replace(/[^a-zA-Z0-9]/g, '_')); // Sanitize key
-
-  try {
-    return await admin.firestore().runTransaction(async t => {
-      const doc = await t.get(ref);
-      const now = Date.now();
-
-      if (!doc.exists) {
-        t.set(ref, { count: 1, resetTime: now + windowMs });
-        return true;
-      }
-
-      const data = doc.data();
-
-      if (now > data.resetTime) {
-        t.set(ref, { count: 1, resetTime: now + windowMs });
-        return true;
-      }
-
-      if (data.count >= maxRequests) {
-        return false;
-      }
-
-      t.update(ref, { count: admin.firestore.FieldValue.increment(1) });
-      return true;
-    });
-  } catch (e) {
-    console.error('Rate limit transaction error:', e);
-    // Fail open (allow request) if DB check fails to avoid blocking users during outages
-    return true;
-  }
+  return checkDistributedRateLimit(admin.firestore(), key, maxRequests, windowMs);
 }
 
 const resendApiKey = defineSecret('RESEND_API_KEY', { required: false });
@@ -1946,7 +1896,7 @@ exports.contactForm = onRequest(
 
     try {
       const rateLimitKey = getRateLimitKey(req);
-      if (!checkRateLimit(contactRateLimitMap, rateLimitKey, CONTACT_RATE_LIMIT_MAX_REQUESTS)) {
+      if (!(await checkFirestoreRateLimit(`contact_form_${rateLimitKey}`, CONTACT_RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW))) {
         res.set('Retry-After', '60');
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
       }
@@ -2031,7 +1981,7 @@ exports.newsletterSubscription = onRequest(
     try {
       const rateLimitKey = getRateLimitKey(req);
       if (
-        !checkRateLimit(newsletterRateLimitMap, rateLimitKey, NEWSLETTER_RATE_LIMIT_MAX_REQUESTS)
+        !(await checkFirestoreRateLimit(`newsletter_${rateLimitKey}`, NEWSLETTER_RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW))
       ) {
         res.set('Retry-After', '60');
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
