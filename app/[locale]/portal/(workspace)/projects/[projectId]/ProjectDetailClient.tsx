@@ -473,7 +473,9 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       <Panel title={t('scopeAndTime')} icon={Clock}>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
-            <p className="text-xs text-surface-500">{t('approvedBudget')}</p>
+            <p className="text-xs text-surface-500">
+              {locale === 'he' ? 'תחזית עלות עבודה (לא סכום החוזה)' : 'Estimated work cost (not contract price)'}
+            </p>
             <p className="mt-1 font-bold">{money(budget.minCents)} – {money(budget.maxCents)}</p>
           </div>
           <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
@@ -483,6 +485,11 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         </div>
         {isAgency && <ScopeEditor key={project.id} project={project}
           save={scope => execute(() => updateClientProject(id, { scope }))}/>}
+        <p className="mt-3 text-xs text-surface-500">
+          {locale === 'he'
+            ? 'הצעות המחיר החתומות הן המקור המחייב לתכולה ולתשלום. עדכון תחזית השעות אינו משנה את ההסכם.'
+            : 'Signed proposals remain authoritative for scope and billing. Editing estimates does not change an agreement.'}
+        </p>
         {isAgency && <form onSubmit={e => {
           e.preventDefault();
           const value = Number(logHours);
@@ -514,6 +521,19 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <span className="text-xs text-surface-500">{change.estimatedHours}h · {t(change.status)}</span>
           </div>
           <p className="mt-2 text-xs text-surface-500">{change.description}</p>
+          {change.status === 'proposed' && (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+              {locale === 'he'
+                ? 'אישור היקף השינוי אינו אישור כספי. השינוי יאושר לביצוע רק לאחר חתימה על הצעת מחיר נפרדת.'
+                : 'Scope review is not payment authorization. The change is approved only when a separate proposal is signed.'}
+            </p>
+          )}
+          {change.status === 'approved' && change.linkedProposalId && (
+            <Link href={getPortalPath('/pricing/' + change.linkedProposalId + '/')}
+              className="portal-focus-ring mt-2 block text-xs font-semibold text-primary-600 hover:underline">
+              {locale === 'he' ? 'הצעת מחיר חתומה לשינוי' : 'Signed change-order proposal'}
+            </Link>
+          )
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
             canReview={!isAgency} onReviewed={refreshReviews} />
           {isAgency && project.originProposalId &&
@@ -522,7 +542,8 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             !reviews.some(review => review.deliverableId === 'change:' + change.id &&
               review.revision === 1 && review.decision === 'changes_requested') && (
               <Link href={getPortalPath('/pricing/new/?projectId=' + encodeURIComponent(id) +
-                '&relatedRequestId=' + encodeURIComponent(project.originProposalId))}
+                '&relatedRequestId=' + encodeURIComponent(project.originProposalId) +
+                '&changeId=' + encodeURIComponent(change.id))}
                 className="portal-focus-ring mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
                 <Plus size={14} />{locale === 'he' ? 'הכנת הצעת מחיר לשינוי' : 'Prepare change-order proposal'}
               </Link>
