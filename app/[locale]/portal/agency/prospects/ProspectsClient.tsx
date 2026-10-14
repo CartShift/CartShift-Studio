@@ -64,6 +64,7 @@ export default function ProspectsClient() {
   const [reviewNote, setReviewNote] = useState('');
   const [reviewEvidence, setReviewEvidence] = useState('');
   const [reviewDecision, setReviewDecision] = useState('review_required');
+  const [findingReviewNote, setFindingReviewNote] = useState('');
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
@@ -129,6 +130,23 @@ export default function ProspectsClient() {
         queryClient.invalidateQueries({ queryKey: queryKeys.prospects.detail(result.prospect_id) }),
       ]);
       toast.success(t('reviewSaved'));
+    },
+    onError: () => toast.error(t('reviewFailed')),
+  });
+  const findingReview = useMutation({
+    mutationFn: ({ id, findingId, decision, note }: {
+      id: string; findingId: string; decision: 'verified' | 'rejected'; note: string;
+    }) => fetchJson<{ prospect_id: string }>(
+      '/api/portal/agency/prospects/' + id + '/findings/' + findingId + '/review', {
+        method: 'POST', body: JSON.stringify({ decision, note }),
+      }),
+    onSuccess: async result => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.detail(result.prospect_id) }),
+      ]);
+      toast.success(t('findingReviewed'));
+      setFindingReviewNote('');
     },
     onError: () => toast.error(t('reviewFailed')),
   });
@@ -342,7 +360,28 @@ export default function ProspectsClient() {
                       className="block truncate text-xs text-primary-600 hover:underline dark:text-primary-300">
                       {t('viewEvidence')}
                     </a>
-                    <p className="text-xs text-amber-600">{t('unverified')}</p>
+                    <p className="text-xs text-surface-500">
+                      {finding.verificationStatus === 'unverified' ? t('unverified') :
+                        finding.verificationStatus === 'verified' ? t('verified') : t('rejected')}
+                    </p>
+                    {canReview && (
+                      <div className="space-y-2">
+                        <input value={findingReviewNote} maxLength={1000}
+                          onChange={e => setFindingReviewNote(e.target.value)}
+                          placeholder={t('findingReviewNote')}
+                          className="w-full rounded-lg border border-surface-200 bg-white p-2 text-xs text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white"/>
+                        <div className="flex flex-wrap gap-2">
+                          <Button variant="outline" disabled={findingReview.isPending || findingReviewNote.trim().length < 15}
+                            onClick={() => findingReview.mutate({
+                              id: prospect.id, findingId: finding.id, decision: 'verified', note: findingReviewNote,
+                            })}>{t('verifyFinding')}</Button>
+                          <Button variant="outline" disabled={findingReview.isPending || findingReviewNote.trim().length < 15}
+                            onClick={() => findingReview.mutate({
+                              id: prospect.id, findingId: finding.id, decision: 'rejected', note: findingReviewNote,
+                            })}>{t('rejectFinding')}</Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
                 {detail.data && <h3 className="text-sm font-semibold text-surface-900 dark:text-white">{t('contacts')}</h3>}
