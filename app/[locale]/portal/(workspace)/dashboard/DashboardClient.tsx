@@ -5,7 +5,7 @@ import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { Clock, AlertCircle, ChevronDown, Sparkles } from 'lucide-react';
 import { Card, CardSectionTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { useTranslations, NextIntlClientProvider } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { QuickActions } from '@/components/portal/QuickActions';
 import { ProjectHighlights } from '@/components/portal/projects/ProjectHighlights';
 import { TipsCard } from '@/components/portal/TipsCard';
@@ -204,20 +204,5 @@ function DashboardClientContent() {
   );
 }
 
-export default function DashboardClient({
-  messages,
-  locale,
-}: {
-  messages: Record<string, unknown>;
-  locale: string;
-}) {
-  if (!messages || !locale) {
-    throw new Error('DashboardClient requires messages and locale props');
-  }
-
-  return (
-    <NextIntlClientProvider messages={messages} locale={locale as 'en' | 'he'} timeZone="UTC">
-      <DashboardClientContent />
-    </NextIntlClientProvider>
-  );
-}
+// The portal layout owns the locale provider; pages must not recreate it.
+export default DashboardClientContent;

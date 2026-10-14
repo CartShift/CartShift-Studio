@@ -216,14 +216,14 @@ async function mergeTranslations(locale) {
     // Validate content
     const warnings = validateContent(content);
     if (warnings.length > 0 && !isSilent) {
-      console.warn(`⚠️  Warnings in ${locale}/${file}:`);
+      console.warn(`⚠️  Warnings in ${relativePath}:`);
       warnings.forEach(w => console.warn(`   - ${w}`));
     }
 
     // Deep merge and check for conflicts
     const { merged: newMerged, conflicts } = deepMerge(merged, content);
     if (conflicts.length > 0) {
-      console.error(`❌ Duplicate keys found in ${locale}/${file}:`);
+      console.error(`❌ Duplicate keys found in ${relativePath}:`);
       conflicts.forEach(c => console.error(`   - "${c}"`));
       process.exit(1);
     }
