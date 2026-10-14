@@ -53,6 +53,8 @@ async function pinnedHttpsResponse(url: URL): Promise<ProspectFetchResponse> {
         'Accept-Encoding': 'identity',
       },
     }, response => {
+      // Register first so rejecting oversized/encoded replies cannot hang the scan.
+      response.on('error', fail);
       const length = Number(response.headers['content-length'] || 0);
       if (length > MAX_BODY_BYTES) {
         response.destroy(new Error('SCAN_RESPONSE_TOO_LARGE'));
@@ -73,7 +75,6 @@ async function pinnedHttpsResponse(url: URL): Promise<ProspectFetchResponse> {
         }
         chunks.push(chunk);
       });
-      response.on('error', fail);
       response.on('end', () => {
         if (settled) return;
         settled = true;
