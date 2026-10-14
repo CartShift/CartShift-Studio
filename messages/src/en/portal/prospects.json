@@ -88,7 +88,14 @@
       "removeContact": "Remove contact candidate",
       "contactRemoved": "Contact candidate removed",
       "removeContactFailed": "Could not remove contact candidate",
-      "linkedProposal": "View linked commercial proposal"
+      "linkedProposal": "View linked commercial proposal",
+      "eligibility": {
+        "review_required": "Outreach requires review",
+        "consent_recorded": "Consent documented",
+        "existing_relationship": "Existing relationship",
+        "approved_partner_channel": "Approved partner channel",
+        "blocked": "Do not contact"
+      }
     }
   }
 }
