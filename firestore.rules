@@ -229,6 +229,12 @@ service cloud.firestore {
     }
 
     match /portal_requests/{requestId} {
+      function isCommercialDocument(data) {
+        return data.get('isBillable', false) == true ||
+          data.get('publicToken', '') != '' ||
+          data.get('requestRole', '') in ['bundle', 'bundle_item'];
+      }
+
       function validNewProjectLink() {
         let projectId = request.resource.data.get('projectId', '');
         return projectId == null || projectId == '' ||
@@ -276,6 +282,7 @@ service cloud.firestore {
 
       function changesAgencyCommercialFields() {
         return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'isBillable',
           'publicToken',
           'publicAccessEnabled',
           'requestRole',
@@ -301,34 +308,52 @@ service cloud.firestore {
 
       // Clients can read requests pre-assigned to their email (before registration)
       // or requests in orgs they're members of
+      // Commercial records contain private working drafts and notes.
+      // Clients get only the published, whitelisted server projection instead.
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
-        resource == null ||
-        resource.data.get('createdBy', '') == getUserId() ||
-        resource.data.get('clientEmail', '') == request.auth.token.email ||
-        resource.data.get('clientUserId', '') == getUserId() ||
-        canAccessOrg(resource.data.get('orgId', ''))
+        (resource != null && !isCommercialDocument(resource.data) && (
+          resource.data.get('createdBy', '') == getUserId() ||
+          resource.data.get('clientEmail', '') == request.auth.token.email ||
+          resource.data.get('clientUserId', '') == getUserId() ||
+          canAccessOrg(resource.data.get('orgId', ''))
+        ))
       );
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
         isOrgOwner(request.resource.data.get('orgId', ''))
-      ) && validNewProjectLink();
+      ) && validNewProjectLink() &&
+      (isAgencyUser() || (
+        !isCommercialDocument(request.resource.data) &&
+        request.resource.data.get('status', '') == 'NEW' &&
+        !request.resource.data.keys().hasAny([
+          'lineItems', 'totalAmount', 'agencyNotes', 'proposalContent', 'publishedProposal',
+          'paymentIds', 'amountPaid', 'signatureText', 'lockedAt'
+        ])
+      ));
       allow update: if isAuthenticated() && (
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
         resource.data.get('clientEmail', '') == request.auth.token.email ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
-      ) && validNewProjectLink() &&
+      ) &&
       !changesServerManagedCommercialFields() &&
       request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
       validNewProjectLink() &&
-      (isAgencyUser() || (!changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
+      (isAgencyUser() || (
+        !isCommercialDocument(resource.data) &&
+        !isCommercialDocument(request.resource.data) &&
+        !changesAgencyCommercialFields() &&
+        !attemptsUnsignedProposalApproval()
+      ));
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
-        resource.data.get('createdBy', '') == getUserId() ||
-        isOrgOwner(resource.data.get('orgId', ''))
+        (!isCommercialDocument(resource.data) && (
+          resource.data.get('createdBy', '') == getUserId() ||
+          isOrgOwner(resource.data.get('orgId', ''))
+        ))
       );
     }
 
