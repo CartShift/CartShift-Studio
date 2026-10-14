@@ -434,12 +434,8 @@ service cloud.firestore {
 
     match /portal_pricing_requests/{requestId} {
       // Rollback/compatibility source only. New writes belong in portal_requests.
-      allow read: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource == null ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        resource.data.get('createdBy', '') == getUserId()
-      );
+      // Legacy commercial documents are private too; public proposal URLs are server-read.
+      allow read: if isAuthenticated() && isAgencyUser();
       allow create, update, delete: if false;
     }
 
@@ -453,10 +449,9 @@ service cloud.firestore {
     }
 
     match /portal_payments/{paymentId} {
-      allow read: if isAuthenticated() && (
-        isAgencyUser() ||
-        canAccessOrg(resource.data.get('orgId', ''))
-      );
+      // Payment ledger may contain private reconciliation references and notes.
+      // Customer receipts are delivered through authenticated billing APIs.
+      allow read: if isAuthenticated() && isAgencyUser();
       allow write: if false;
     }
 
