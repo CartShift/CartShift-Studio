@@ -54,7 +54,13 @@
       "approveTechnical": "Approve technical review",
       "founderOnly": "Only owner/admin can record legal-channel or technical approval. No message is sent.",
       "reviewSaved": "Review saved",
-      "reviewFailed": "Review rejected. Verify your role, evidence, and suppression state."
+      "reviewFailed": "Review rejected. Verify your role, evidence, and suppression state.",
+      "findingReviewed": "Finding verification saved",
+      "findingReviewNote": "Review notes (at least 15 characters)",
+      "verified": "Human-verified finding",
+      "rejected": "Rejected finding",
+      "verifyFinding": "Verify finding",
+      "rejectFinding": "Reject finding"
     }
   }
 }
