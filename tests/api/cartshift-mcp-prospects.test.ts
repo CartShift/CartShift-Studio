@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  list: vi.fn(), get: vi.fn(), upsert: vi.fn(), finding: vi.fn(),
+  list: vi.fn(), get: vi.fn(), upsert: vi.fn(), finding: vi.fn(), contact: vi.fn(),
 }));
 vi.mock('@/lib/firebase-admin', () => ({ adminDb: null }));
 vi.mock('@/lib/services/prospects-server', () => ({
   listProspects: mocks.list, getProspect: mocks.get,
   upsertProspect: mocks.upsert, addProspectFinding: mocks.finding,
+  addProspectContactCandidate: mocks.contact,
 }));
 
 import { TOOL_DEFS, callTool } from '@/lib/mcp/tools';

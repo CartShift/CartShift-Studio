@@ -6,6 +6,10 @@ function errorResponse(error: unknown) {
   const message = error instanceof Error ? error.message : '';
   if (message === 'FORBIDDEN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (message === 'ADMIN_NOT_CONFIGURED') return NextResponse.json({ error: 'Unavailable' }, { status: 503 });
+  if (message === 'A public HTTPS business URL is required' ||
+      message === 'Invalid store domain') {
+    return NextResponse.json({ error: 'Invalid public store or research source URL' }, { status: 400 });
+  }
   if (error && typeof error === 'object' && 'issues' in error) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }

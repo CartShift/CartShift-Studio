@@ -76,10 +76,9 @@ export async function upsertProspect(raw: unknown, uid: string) {
   const database = db();
   const ref = database.collection(COLLECTION).doc(prospectId);
   const event = database.collection(AUDIT).doc();
-  let created = false;
-  await database.runTransaction(async tx => {
+  const created = await database.runTransaction(async tx => {
     const existing = await tx.get(ref);
-    if (existing.exists) return;
+    if (existing.exists) return false;
     tx.create(ref, {
       canonicalDomain, storeUrl, brandName: input.brand_name || canonicalDomain,
       sourceUrl, sourceType: input.source_type, researchNote: input.research_note || '',
@@ -89,7 +88,7 @@ export async function upsertProspect(raw: unknown, uid: string) {
     });
     tx.create(event, { uid, action: 'prospect.created', prospectId,
       at: FieldValue.serverTimestamp() });
-    created = true;
+    return true;
   });
   return { prospect_id: prospectId, canonical_domain: canonicalDomain,
     created, duplicate: !created, outreach_approved: false };
@@ -135,10 +134,9 @@ export async function addProspectFinding(raw: unknown, uid: string) {
   const findingId = 'finding_' + hash;
   const finding = ref.collection('findings').doc(findingId);
   const event = database.collection(AUDIT).doc();
-  let created = false;
-  await database.runTransaction(async tx => {
+  const created = await database.runTransaction(async tx => {
     const previous = await tx.get(finding);
-    if (previous.exists) return;
+    if (previous.exists) return false;
     tx.create(finding, {
       category: input.category, title: input.title, observedUrl,
       evidenceExcerpt: input.evidence_excerpt,
@@ -147,7 +145,7 @@ export async function addProspectFinding(raw: unknown, uid: string) {
     });
     tx.create(event, { uid, action: 'prospect.finding_added', prospectId: input.prospect_id,
       findingId, at: FieldValue.serverTimestamp() });
-    created = true;
+    return true;
   });
   return { prospect_id: input.prospect_id, finding_id: findingId,
     created, duplicate: !created, verification_status: 'unverified' };
@@ -168,10 +166,9 @@ export async function addProspectContactCandidate(raw: unknown, uid: string) {
   const contactId = 'contact_' + hash;
   const contactRef = ref.collection('contacts').doc(contactId);
   const event = database.collection(AUDIT).doc();
-  let created = false;
-  await database.runTransaction(async tx => {
+  const created = await database.runTransaction(async tx => {
     const previous = await tx.get(contactRef);
-    if (previous.exists) return;
+    if (previous.exists) return false;
     tx.create(contactRef, {
       role: input.role, name: input.name || null,
       businessEmail: input.business_email || null,
@@ -181,7 +178,7 @@ export async function addProspectContactCandidate(raw: unknown, uid: string) {
     });
     tx.create(event, { uid, action: 'prospect.contact_candidate_added',
       prospectId: input.prospect_id, contactId, at: FieldValue.serverTimestamp() });
-    created = true;
+    return true;
   });
   return { prospect_id: input.prospect_id, contact_id: contactId,
     created, duplicate: !created, status: 'candidate', outreach_approved: false };
