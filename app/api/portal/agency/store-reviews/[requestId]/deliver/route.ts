@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/server-auth';
 import { assertReviewEditor, reviewRef, reviewDb } from '@/lib/services/store-review-admin-server';
+import { normalizeReviewStore, storeReviewFindingSchema } from '@/lib/domain/store-review';
 
 const headers = { 'Cache-Control': 'no-store' };
 const escapeHtml = (s: string) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -59,6 +60,12 @@ export async function POST(request: NextRequest, { params }: {params: Promise<{r
       const report = data.reviewReport;
       if (!report || report.summary?.length < 30 || report.findings?.length < 3 ||
         report.findings?.length > 5) throw new Error('REPORT_INCOMPLETE');
+      for (const finding of report.findings) {
+        if (!storeReviewFindingSchema.safeParse(finding).success ||
+          normalizeReviewStore(finding.observedUrl).canonicalDomain !== data.canonicalDomain) {
+          throw new Error('REPORT_INCOMPLETE');
+        }
+      }
       if (data.delivery?.status === 'sending' &&
           now.getTime() - (data.delivery.startedAt?.toDate?.()?.getTime() || 0) < 10 * 60_000) {
         throw new Error('DELIVERY_IN_PROGRESS');
