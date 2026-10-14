@@ -319,6 +319,8 @@ export async function resolveBillingProfileOwnerId(bootstrapUid?: string) {
 
 export async function getBillingProfile(): Promise<BillingProfile | null> {
   const session = await getSession();
+  // Never expose bank details or tax data to arbitrary authenticated clients.
+  await assertAgencyRole(session.uid, SETTINGS_ROLES);
   const ownerId = await resolveBillingProfileOwnerId(session.uid);
   if (!ownerId) return null;
   const snapshot = await db().collection(PROFILES).doc(ownerId).get();
