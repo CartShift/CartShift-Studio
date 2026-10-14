@@ -297,8 +297,30 @@ export async function updateComment(commentId: string, content: string): Promise
 // REACTIONS
 // ============================================
 
+async function updateClientReaction(
+  commentId: string, userId: string, emoji: string, action: 'add' | 'remove',
+): Promise<boolean> {
+  const actor = getFirebaseAuth().currentUser;
+  if (!actor) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(actor.uid);
+  if (profile?.accountType === 'AGENCY' || profile?.isAgency === true) return false;
+  if (userId !== actor.uid) throw new Error('INVALID_REACTION_USER');
+  const token = await actor.getIdToken();
+  const response = await fetch('/api/portal/client-comments/' + encodeURIComponent(commentId), {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+    body: JSON.stringify({ emoji, action }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { error?: string } | null;
+    throw new Error(body?.error || 'Unable to update reaction');
+  }
+  return true;
+}
+
 export async function addReaction(commentId: string, userId: string, emoji: string): Promise<void> {
   await waitForAuth();
+  if (await updateClientReaction(commentId, userId, emoji, 'add')) return;
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
   const fieldPath = `reactions.${emoji}`;
@@ -314,6 +336,7 @@ export async function removeReaction(
   emoji: string
 ): Promise<void> {
   await waitForAuth();
+  if (await updateClientReaction(commentId, userId, emoji, 'remove')) return;
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
   const fieldPath = `reactions.${emoji}`;
