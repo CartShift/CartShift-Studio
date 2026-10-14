@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  list: vi.fn(), get: vi.fn(), upsert: vi.fn(), finding: vi.fn(), contact: vi.fn(),
+  list: vi.fn(), get: vi.fn(), upsert: vi.fn(), finding: vi.fn(), contact: vi.fn(), scan: vi.fn(),
 }));
 vi.mock('@/lib/firebase-admin', () => ({ adminDb: null }));
+vi.mock('@/lib/services/prospect-scan-service', () => ({ scanProspect: mocks.scan }));
 vi.mock('@/lib/services/prospects-server', () => ({
   listProspects: mocks.list, getProspect: mocks.get,
   upsertProspect: mocks.upsert, addProspectFinding: mocks.finding,
@@ -35,6 +36,7 @@ describe('CartShift ChatGPT research connector', () => {
       ['upsert_prospect', 'prospects:write'],
       ['add_prospect_finding', 'prospects:write'],
       ['add_prospect_contact_candidate', 'prospects:write'],
+      ['scan_prospect', 'prospects:scan'],
     ]);
   });
 
@@ -44,6 +46,13 @@ describe('CartShift ChatGPT research connector', () => {
     }, { ...grant, scope: ['clients:read', 'work:write'] }))
       .rejects.toThrow('INSUFFICIENT_SCOPE');
     expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it('requires explicit prospect scan OAuth scope before triggering a site audit', async () => {
+    await expect(callTool('scan_prospect', {
+      prospect_id: 'prospect_' + 'a'.repeat(32),
+    }, grant)).rejects.toThrow('INSUFFICIENT_SCOPE');
+    expect(mocks.scan).not.toHaveBeenCalled();
   });
 
   it('allows candidate insertion and private listing through shared services', async () => {

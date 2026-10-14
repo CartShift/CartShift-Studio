@@ -2,12 +2,13 @@ import 'server-only';
 
 import type { TokenGrant } from '@/lib/mcp/connection';
 import { may } from '@/lib/mcp/connection';
+import { scanProspect } from '@/lib/services/prospect-scan-service';
 import {
   addProspectFinding, addProspectContactCandidate, getProspect, listProspects, upsertProspect,
 } from '@/lib/services/prospects-server';
 
 const identity = { type: 'string', pattern: '^prospect_[a-f0-9]{32}$' };
-const definition = (name: string, description: string, scope: 'prospects:read' | 'prospects:write',
+const definition = (name: string, description: string, scope: 'prospects:read' | 'prospects:write' | 'prospects:scan',
   properties: Record<string, unknown>, required: string[] = []) => ({
   name, description, scope,
   inputSchema: { type: 'object', properties, required, additionalProperties: false },
@@ -48,6 +49,9 @@ export const PROSPECT_TOOL_DEFS = [
       source_url: { type: 'string', maxLength: 1024 },
       evidence_excerpt: { type: 'string', minLength: 8, maxLength: 400 } },
     ['prospect_id', 'role', 'source_url', 'evidence_excerpt']),
+  definition('scan_prospect',
+    'Run a bounded HTTPS/robots-respecting audit of ONE existing business prospect, save UNVERIFIED findings and public generic business contact candidates. No marketing outreach. Max 6 pages; per-domain cooldown.',
+    'prospects:scan', { prospect_id: identity }, ['prospect_id']),
 ] as const;
 
 export async function callProspectTool(name: string, args: unknown, grant: TokenGrant) {
@@ -64,6 +68,13 @@ export async function callProspectTool(name: string, args: unknown, grant: Token
       throw new Error('Invalid prospect ID arguments');
     }
     return getProspect(input.prospect_id, grant.uid);
+  }
+  if (name === 'scan_prospect') {
+    const input = args as Record<string, unknown>;
+    if (typeof input.prospect_id !== 'string' || Object.keys(input).length !== 1) {
+      throw new Error('Invalid prospect scan arguments');
+    }
+    return scanProspect(input.prospect_id, grant.uid);
   }
   if (name === 'upsert_prospect') return upsertProspect(args, grant.uid);
   if (name === 'add_prospect_finding') return addProspectFinding(args, grant.uid);
