@@ -66,6 +66,15 @@ describe('internal project operations server authorization', () => {
     const res = await GET(request('GET'), context);
     expect(res.status).toBe(404);
   });
+  it('allows viewer to read internal evidence but prevents editing it', async () => {
+    mocks.actorGet.mockResolvedValue({ exists: true,
+      data: () => ({ accountType: 'AGENCY', agencyRole: 'viewer', status: 'active' }) });
+    expect((await GET(request('GET'), context)).status).toBe(200);
+    expect((await POST(request('POST', { kind: 'qa', title: 'Should not save', details: '' }), context)).status).toBe(403);
+    expect((await PATCH(request('PATCH', { recordId: 'qa-record', status: 'passed' }), context)).status).toBe(403);
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(mocks.runTransaction).not.toHaveBeenCalled();
+  });
   it('lists bounded, sanitized evidence for agency staff', async () => {
     const res = await GET(request('GET'), context);
     expect(res.status).toBe(200);

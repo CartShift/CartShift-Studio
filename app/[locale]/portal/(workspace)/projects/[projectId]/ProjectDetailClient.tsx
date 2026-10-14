@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
+import { USER_ROLE } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getRequestsByOrg, updateRequest } from '@/lib/services/portal-requests';
 import {
@@ -223,7 +225,11 @@ export default function ProjectDetailClient({ id }: { id: string }) {
   const t = useTranslations('portal.projects');
   const locale = useLocale();
   const cache = useQueryClient();
-  const { isAgency, loading: authLoading, user } = usePortalAuth();
+  const { isAgency, loading: authLoading, user, userData } = usePortalAuth();
+  const canEditProjects = isAgency && hasPermission(
+    userData?.agencyRole ?? USER_ROLE.OWNER,
+    PERMISSIONS.MANAGE_PROJECTS
+  );
   const key = useMemo(() => ['client-project', id], [id]);
   const { data: project, isLoading, error } = useQuery({
     queryKey: key, queryFn: () => getClientProject(id), enabled: !authLoading && Boolean(user),
@@ -296,7 +302,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       <p className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">CartShift / {t('title')}</p>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold sm:text-3xl">{project.title}</h1>
-        {isAgency ? <select aria-label={t('status')} value={project.status} disabled={saving}
+        {canEditProjects ? <select aria-label={t('status')} value={project.status} disabled={saving}
           onChange={e => {
             const next = e.target.value as ProjectStatus;
             if (next === 'ready_to_launch' && !health?.readyForLaunch) {
@@ -320,7 +326,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       <div className="mt-5 rounded-xl border-s-4 border-primary-500 bg-primary-50/50 p-4 dark:bg-primary-900/10">
         <p className="text-xs font-bold text-primary-700 dark:text-primary-300">{t('nextStep')}</p>
         <p className="mt-1 whitespace-pre-wrap text-sm">{project.nextStep || t('nextStepEmpty')}</p>
-        {isAgency && <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+        {canEditProjects && <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input maxLength={400} aria-label={t('nextStep')} value={nextStep ?? project.nextStep}
             onChange={e => setNextStep(e.target.value)} className="portal-focus-ring min-h-10 min-w-0 flex-1 rounded-xl border border-surface-200 bg-white px-3 text-sm dark:border-surface-700 dark:bg-surface-900"/>
           <button type="button" disabled={saving} onClick={() => void execute(async () => {
@@ -330,7 +336,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           </button>
         </div>}
       </div>
-      {isAgency && <details className="mt-4">
+      {canEditProjects && <details className="mt-4">
         <summary className="cursor-pointer text-sm font-semibold text-primary-600">{t('editOverview')}</summary>
         <textarea aria-label={t('summary')} value={summary ?? project.summary} onChange={e => setSummary(e.target.value)}
           className="portal-focus-ring mt-3 min-h-24 w-full rounded-xl border border-surface-200 bg-transparent p-3 text-sm dark:border-surface-700"/>
@@ -340,7 +346,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       </details>}
     </header>
 
-    {isAgency && <ProjectOperationsPanel project={project} requests={linkedRequests} locale={locale}/>}
+    {isAgency && <ProjectOperationsPanel project={project} requests={linkedRequests} locale={locale} canEdit={canEditProjects}/>}
 
     <div className="grid gap-5 lg:grid-cols-2">
       <Panel title={t('milestones')} icon={ClipboardList}>
@@ -348,7 +354,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           {project.stages.map(stage => <div key={stage.id} className="flex items-start gap-3">
             {stage.status === 'completed' ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-600" size={19}/> : <Circle className="mt-0.5 shrink-0 text-surface-400" size={19}/>}
             <span className="min-w-0 flex-1 text-sm font-medium">{stage.title}</span>
-            {isAgency && <select aria-label={stage.title} value={stage.status} disabled={saving}
+            {canEditProjects && <select aria-label={stage.title} value={stage.status} disabled={saving}
               onChange={e => void edit('stages', stage.id, previous => ({
                 ...previous, status: e.target.value as typeof stage.status,
               }))}
@@ -359,7 +365,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             </select>}
           </div>)}
         </div>
-        {isAgency && <AddItem label={t('add')} placeholder={t('newMilestone')} onAdd={title =>
+        {canEditProjects && <AddItem label={t('add')} placeholder={t('newMilestone')} onAdd={title =>
           append('stages', { id: makeId(), title, status: 'pending' })}/>}
       </Panel>
       <Panel title={t('blockers')} icon={AlertTriangle}>
@@ -373,7 +379,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
                 <p className="text-sm font-semibold">{blocker.title}</p>
                 <p className="mt-1 text-xs text-surface-500">{t(blocker.owner)}</p>
                 {blocker.nextAction && <p className="mt-2 text-sm">{blocker.nextAction}</p>}
-                {isAgency && <input aria-label={t('nextAction')} defaultValue={blocker.nextAction}
+                {canEditProjects && <input aria-label={t('nextAction')} defaultValue={blocker.nextAction}
                   placeholder={t('nextAction')} maxLength={250}
                   onBlur={event => {
                     const nextAction = event.currentTarget.value.trim();
@@ -381,7 +387,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
                   }}
                   className="portal-focus-ring mt-2 min-h-9 w-full rounded-lg border border-surface-200 bg-transparent px-2 text-xs dark:border-surface-700" />}
               </div>
-              {isAgency && <button type="button" disabled={saving}
+              {canEditProjects && <button type="button" disabled={saving}
                 onClick={() => void edit('blockers', blocker.id, old => ({ ...old, resolved: !old.resolved }))}
                 className="portal-focus-ring rounded-lg border border-surface-200 px-2 py-1 text-xs dark:border-surface-700">
                 {blocker.resolved ? t('reopen') : t('resolve')}
@@ -389,7 +395,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             </div>
           </div>)}
         </div>
-        {isAgency && <>
+        {canEditProjects && <>
           <div className="mt-4 flex items-center gap-2">
             <label className="text-xs font-semibold" htmlFor="blockerOwner">{t('responsibility')}</label>
             <select id="blockerOwner" value={blockerOwner} onChange={e => setBlockerOwner(e.target.value as typeof blockerOwner)}
@@ -409,14 +415,14 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.deliverables.map(deliverable => <div key={deliverable.id}>
           <ReviewRow project={project} deliverable={deliverable} reviews={reviews} canReview={!isAgency}
             onReviewed={refreshReviews}/>
-          {isAgency && <button type="button" disabled={saving}
+          {canEditProjects && <button type="button" disabled={saving}
             onClick={() => void edit('deliverables', deliverable.id, old => ({
               ...old, revision: old.revision + 1,
             }))} className="portal-focus-ring my-2 rounded-lg border border-surface-200 px-3 py-1.5 text-xs font-semibold dark:border-surface-700">
             {t('newRevision')}
           </button>}
         </div>)}
-        {isAgency && <>
+        {canEditProjects && <>
           <input aria-label={t('previewUrl')} value={reviewUrl} onChange={e => setReviewUrl(e.target.value)}
             placeholder={t('previewUrl')} className="portal-focus-ring mt-4 min-h-10 w-full rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700"/>
           <AddItem label={t('add')} placeholder={t('newDeliverable')} onAdd={async title => {
@@ -438,10 +444,10 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.inputs.map(input => <div key={input.id} className="mb-3 flex items-center gap-3 text-sm">
           {input.done ? <CheckCircle2 size={18} className="shrink-0 text-emerald-600"/> : <Circle size={18} className="shrink-0 text-surface-400"/>}
           <span className="flex-1">{input.title}</span>
-          {isAgency && <button type="button" disabled={saving} onClick={() => void edit('inputs', input.id, old => ({ ...old, done: !old.done }))}
+          {canEditProjects && <button type="button" disabled={saving} onClick={() => void edit('inputs', input.id, old => ({ ...old, done: !old.done }))}
             className="portal-focus-ring rounded-lg border border-surface-200 px-2 py-1 text-xs dark:border-surface-700">{input.done ? t('reopen') : t('markReceived')}</button>}
         </div>)}
-        {isAgency && <AddItem label={t('add')} placeholder={t('newInput')} onAdd={title =>
+        {canEditProjects && <AddItem label={t('add')} placeholder={t('newInput')} onAdd={title =>
           append('inputs', { id: makeId(), title, done: false, required: true })}/>}
       </Panel>
 
@@ -455,10 +461,10 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.launchChecks.map(item => <div key={item.id} className="mb-3 flex items-center gap-3 text-sm">
           {item.done ? <CheckCircle2 size={18} className="shrink-0 text-emerald-600"/> : <Circle size={18} className="shrink-0 text-surface-400"/>}
           <span className="min-w-0 flex-1">{item.title}</span>
-          {isAgency && <button type="button" disabled={saving} onClick={() => void edit('launchChecks', item.id, old => ({ ...old, done: !old.done }))}
+          {canEditProjects && <button type="button" disabled={saving} onClick={() => void edit('launchChecks', item.id, old => ({ ...old, done: !old.done }))}
             className="portal-focus-ring rounded-lg border border-surface-200 px-2 py-1 text-xs dark:border-surface-700">{item.done ? t('reopen') : t('markPassed')}</button>}
         </div>)}
-        {isAgency && <AddItem label={t('add')} placeholder={t('newLaunchCheck')} onAdd={title =>
+        {canEditProjects && <AddItem label={t('add')} placeholder={t('newLaunchCheck')} onAdd={title =>
           append('launchChecks', { id: makeId(), title, done: false, required: true })}/>}
       </Panel>
 
@@ -473,9 +479,9 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <p className="mt-1 font-bold">{hours.toLocaleString(locale)}h / {project.scope.maxHours}h</p>
           </div>
         </div>
-        {isAgency && <ScopeEditor key={project.id} project={project}
+        {canEditProjects && <ScopeEditor key={project.id} project={project}
           save={scope => execute(() => updateClientProject(id, { scope }))}/>}
-        {isAgency && <form onSubmit={e => {
+        {canEditProjects && <form onSubmit={e => {
           e.preventDefault();
           const value = Number(logHours);
           if (!Number.isFinite(value) || value <= 0 || value > 24) { toast.error(t('invalidHours')); return; }
@@ -509,7 +515,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
             canReview={!isAgency} onReviewed={refreshReviews} />
         </div>)}
-        {isAgency && <>
+        {canEditProjects && <>
           <div className="mt-4 flex gap-2">
             <input aria-label={t('changeHours')} type="number" min="0" step="0.25" value={changeHours} onChange={e => setChangeHours(e.target.value)}
               className="portal-focus-ring min-h-10 w-24 rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700"/>
@@ -532,13 +538,13 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {linkedRequests.map(request => <div key={request.id} className="mb-2 flex items-center justify-between gap-3 rounded-xl bg-surface-50 p-3 text-sm dark:bg-surface-800">
           <span className="min-w-0 flex-1 truncate font-semibold">{request.title}</span>
           <span className="text-xs text-surface-500">{request.status.replaceAll('_', ' ')}</span>
-          {isAgency && <button aria-label={t('unlink')} type="button" disabled={saving}
+          {canEditProjects && <button aria-label={t('unlink')} type="button" disabled={saving}
             onClick={() => void execute(async () => {
               await updateRequest(request.id, { projectId: null });
               await cache.invalidateQueries({ queryKey: ['client-project-requests'] });
             })} className="portal-focus-ring rounded-lg px-2 py-1 text-xs text-primary-600">{t('unlink')}</button>}
         </div>)}
-        {isAgency && <div className="mt-4 flex gap-2">
+        {canEditProjects && <div className="mt-4 flex gap-2">
           <select aria-label={t('attachRequest')} value={selectedRequest} onChange={e => setSelectedRequest(e.target.value)}
             className="portal-focus-ring min-h-10 min-w-0 flex-1 rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700">
             <option value="">{t('attachRequest')}</option>
@@ -557,11 +563,11 @@ export default function ProjectDetailClient({ id }: { id: string }) {
 
       <Panel title={t('clientUpdates')} icon={FileCheck2}>
         <p className="mb-3 text-sm text-surface-500">{t('updatesHelp')}</p>
-        {isAgency && <div className="mb-3 flex justify-end">
+        {canEditProjects && <div className="mb-3 flex justify-end">
           <button type="button" onClick={() => setUpdateText(buildProjectUpdateDraft(project, locale))}
             className="portal-focus-ring rounded-lg border border-primary-300 px-3 py-2 text-xs font-semibold text-primary-700 dark:border-primary-700 dark:text-primary-300">{t('prepareUpdateDraft')}</button>
         </div>}
-        {isAgency && <form onSubmit={e => {
+        {canEditProjects && <form onSubmit={e => {
           e.preventDefault();
           if (!updateText.trim()) return;
           void append('updates', { id: makeId(), text: updateText.trim(), createdAt: Date.now(), author: user?.displayName || 'CartShift Studio' })

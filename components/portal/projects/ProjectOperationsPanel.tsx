@@ -86,9 +86,9 @@ function FinanceOverview({ project, requests, locale }: {
   </div>;
 }
 
-function RecordRow({ record, projectId, locale, onSaved }: {
+function RecordRow({ record, projectId, locale, onSaved, canEdit }: {
   record: ProjectPrivateRecord; projectId: string; locale: string;
-  onSaved: () => Promise<unknown>;
+  onSaved: () => Promise<unknown>; canEdit: boolean;
 }) {
   const [saving, setSaving] = useState(false);
   const he = locale === 'he';
@@ -103,6 +103,7 @@ function RecordRow({ record, projectId, locale, onSaved }: {
         <p className="mt-1 break-words text-sm font-semibold">{record.title}</p>
       </div>
       {record.kind === 'time' ? <span className="text-sm font-bold">{record.hours}h</span> :
+        !canEdit ? <span className="text-xs font-medium">{statusText[record.status][he ? 'he' : 'en']}</span> :
         <select className={inputClass + ' w-auto max-w-full'} aria-label={he ? 'מצב הרשומה' : 'Record status'}
           disabled={saving} value={record.status}
           onChange={async e => {
@@ -128,8 +129,8 @@ function RecordRow({ record, projectId, locale, onSaved }: {
 }
 
 /** Only rendered for agency staff; Firestore rules independently enforce access. */
-export default function ProjectOperationsPanel({ project, requests, locale }: {
-  project: ClientProject; requests: Request[]; locale: string;
+export default function ProjectOperationsPanel({ project, requests, locale, canEdit }: {
+  project: ClientProject; requests: Request[]; locale: string; canEdit: boolean;
 }) {
   const he = locale === 'he';
   const cache = useQueryClient();
@@ -213,7 +214,7 @@ export default function ProjectOperationsPanel({ project, requests, locale }: {
         {he ? 'מה הובטח וכמה עוד לתשלום?' : 'Scope and commercial position'}</h3>
       <FinanceOverview project={project} requests={requests} locale={locale}/>
     </div>
-    <div className="border-t border-surface-100 pt-4 dark:border-surface-800">
+    {canEdit && <div className="border-t border-surface-100 pt-4 dark:border-surface-800">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-bold"><Plus size={16}/>
         {he ? 'הוספת תיעוד פנימי' : 'Add internal evidence'}</h3>
       <form onSubmit={save} className="grid gap-3 sm:grid-cols-2">
@@ -241,7 +242,7 @@ export default function ProjectOperationsPanel({ project, requests, locale }: {
           {busy ? (he ? 'שומר…' : 'Saving…') : (he ? 'שמור כרשומה פנימית' : 'Save internal record')}
         </button>
       </form>
-    </div>
+    </div>}
     <div className="border-t border-surface-100 pt-4 dark:border-surface-800">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-bold"><FileCheck2 size={16}/>
         {he ? 'יומן ראיות, החלטות ופעולות' : 'Operational evidence history'}</h3>
@@ -257,7 +258,7 @@ export default function ProjectOperationsPanel({ project, requests, locale }: {
       {error && <p role="alert" className="text-xs text-red-600">{he ? 'לא ניתן לטעון את הרשומות הפנימיות' : 'Could not load private records'}</p>}
       {!isLoading && !error && visible.length === 0 && <p className="text-xs text-surface-500">{he ? 'אין עדיין תיעוד בקטגוריה הזאת' : 'No records in this category yet'}</p>}
       <div className="space-y-2">
-        {visible.map(r => <RecordRow key={r.id} record={r} projectId={project.id} locale={locale} onSaved={refresh}/>)}
+        {visible.map(r => <RecordRow key={r.id} record={r} projectId={project.id} locale={locale} onSaved={refresh} canEdit={canEdit}/>)}
       </div>
       {records.length >= 100 && <p className="mt-3 text-xs text-amber-700">{he ? 'מוצגות 100 הרשומות האחרונות בלבד' : 'Showing only 100 recent records'}</p>}
       <p className="mt-3 flex items-center gap-1 text-xs text-surface-500"><CheckCircle2 size={13}/>

@@ -15,7 +15,8 @@ service cloud.firestore {
     function isMemberOfOrg(orgId) {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
-             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId()));
+             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) &&
+             get(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) == null;
     }
 
     function isOrgOwner(orgId) {
@@ -33,6 +34,27 @@ service cloud.firestore {
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
               );
+    }
+
+    // Role-aware agency mutations. Missing agencyRole is retained for legacy owners.
+    function isAgencyManager() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', ''];
+    }
+
+    function canEditAgencyProjects() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', 'sales_manager', 'developer', ''];
+    }
+
+    function canCreateAgencyRequest() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', 'sales_manager', 'developer', 'member', ''];
+    }
+
+    function canManageAgencyCommercial() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', 'sales_manager', ''];
     }
 
     function canManageProfitSplits() {
@@ -74,7 +96,7 @@ service cloud.firestore {
     function canAdminOrg(orgId) {
       return isAuthenticated() && (
         isOrgOwner(orgId) ||
-        isAgencyUser() ||
+        isAgencyManager() ||
         isOrgAdmin(orgId)
       );
     }
@@ -116,7 +138,7 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
         resource == null ||
-        exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) ||
+        isMemberOfOrg(orgId) ||
         resource.data.createdBy == getUserId()
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
@@ -146,7 +168,7 @@ service cloud.firestore {
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('isAgency', false) == false;
       }
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
+        isAgencyManager() ||
         isOrgOwner(request.resource.data.get('orgId', '')) ||
         isOrgAdmin(request.resource.data.get('orgId', '')) ||
         (memberId == (request.resource.data.get('orgId', '') + '_' + getUserId()) &&
@@ -158,19 +180,25 @@ service cloud.firestore {
     }
 
     match /portal_invites/{inviteId} {
-      // PUBLIC READ: Required for unauthenticated invite acceptance flow.
-      // Security rationale: Invite codes are cryptographically random UUIDs,
-      // documents contain no PII - only orgId, email, role, and expiry.
-      allow read: if true;
+      // No public collection enumeration: invites include email addresses and roles.
+      // Invite-by-code lookup is server-side and only returns the signed-in recipient's invite.
+      allow get: if isAuthenticated() && (
+        isAgencyManager() ||
+        request.auth.token.email == resource.data.get('email', '') ||
+        canAdminOrg(resource.data.get('orgId', ''))
+      );
+      allow list: if isAuthenticated() && (
+        isAgencyManager() || canAdminOrg(resource.data.get('orgId', ''))
+      );
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
+        isAgencyManager() ||
         (request.resource.data.get('isAgency', false) == false &&
          canAdminOrg(request.resource.data.get('orgId', '')))
       ) && request.resource.data.get('invitedBy', '') == getUserId();
       // Invitation recipients can acknowledge an invite, but cannot change
       // the invited role, email, organization, or agency flag.
       allow update: if isAuthenticated() && (
-        isAgencyUser() ||
+        isAgencyManager() ||
         canAdminOrg(resource.data.get('orgId', '')) ||
         (resource.data.get('email', '') == request.auth.token.email &&
          resource.data.get('status', '') == 'pending' &&
@@ -184,10 +212,10 @@ service cloud.firestore {
     // may edit project scope, launch checks, blockers and client-facing updates.
     match /portal_projects/{projectId} {
       allow get, list: if resource != null && canAccessOrg(resource.data.get('orgId', ''));
-      allow create: if isAgencyUser() &&
+      allow create: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') is string &&
         exists(/databases/$(database)/documents/portal_organizations/$(request.resource.data.orgId));
-      allow update: if isAgencyUser() &&
+      allow update: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') == resource.data.get('orgId', '');
       allow delete: if false;
 
@@ -235,8 +263,8 @@ service cloud.firestore {
           );
         }
         allow get, list: if isAgencyUser() && projectExists();
-        allow create: if isAgencyUser() && projectExists() && validRecord();
-        allow update: if isAgencyUser() && projectExists() &&
+        allow create: if canEditAgencyProjects() && projectExists() && validRecord();
+        allow update: if canEditAgencyProjects() && projectExists() &&
           resource.data.get('kind', '') != 'time' &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             'status', 'updatedAt'
@@ -363,7 +391,7 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', ''))
       );
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
+        canCreateAgencyRequest() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
         isOrgOwner(request.resource.data.get('orgId', ''))
       );
@@ -375,10 +403,11 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
       !changesServerManagedCommercialFields() &&
-      (isAgencyUser() || (!changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
+      ((canCreateAgencyRequest() && (!changesAgencyCommercialFields() || canManageAgencyCommercial())) ||
+       (!isAgencyUser() && !changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
       allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource.data.get('createdBy', '') == getUserId() ||
+        isAgencyManager() ||
+        (!isAgencyUser() && resource.data.get('createdBy', '') == getUserId()) ||
         isOrgOwner(resource.data.get('orgId', ''))
       );
     }
