@@ -10,6 +10,7 @@ const SAFE_FIELDS = [
   'balanceDue', 'clientNotes', 'acceptedAt', 'declinedAt', 'paidAt',
   'timeframe', 'workDeadline', 'proposalContent', 'terms', 'clientName',
   'paymentRequired', 'depositAmount', 'proposalVersion', 'relatedRequestId',
+  'projectChangeId',
 ] as const;
 
 export type StoredRequest = Record<string, unknown>;
