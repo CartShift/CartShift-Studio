@@ -490,9 +490,8 @@ export async function createInvite(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7); // 7 day expiry
 
-  // Generate unique invite code
-  const inviteCode =
-    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // CSPRNG: invite links must not be predictable.
+  const inviteCode = crypto.randomUUID().replaceAll('-', '');
 
   const inviteData = {
     orgId: orgId || null,
@@ -509,7 +508,7 @@ export async function createInvite(
 
   const docRef = await addDoc(collection(db, INVITES_COLLECTION), inviteData);
 
-  console.log(`[Invite] Created invite ${docRef.id} with code ${inviteCode} for ${data.email}`);
+  // Never log invitation tokens or recipient PII.
 
   return {
     id: docRef.id,
@@ -518,41 +517,26 @@ export async function createInvite(
   } as Invite;
 }
 
-/**
- * Fetches an invite by its code or ID.
- * First tries to fetch by code (for invite URLs), then falls back to ID.
- */
+/** Invite links are resolved by a recipient-scoped endpoint, never a public Firestore list query. */
 export async function getInvite(codeOrId: string): Promise<Invite | null> {
-  const db = getFirestoreDb();
+  const user = getFirebaseAuth().currentUser;
+  if (!user) return null;
 
-  // Try fetching by code first (for invite URLs)
-  const qByCode = query(
-    collection(db, INVITES_COLLECTION),
-    where('code', '==', codeOrId),
-    limit(1)
-  );
+  const response = await fetch(`/api/portal/invites/lookup?code=${encodeURIComponent(codeOrId)}`, {
+    headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+    cache: 'no-store',
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error('Unable to load invitation');
 
-  const codeSnapshot = await getDocs(qByCode);
-
-  if (!codeSnapshot.empty) {
-    const docSnap = codeSnapshot.docs[0];
-    return {
-      id: docSnap.id,
-      ...docSnap.data(),
-    } as Invite;
-  }
-
-  // Fallback: try fetching by document ID
-  const docRef = doc(db, INVITES_COLLECTION, codeOrId);
-  const docSnap = await getDoc(docRef);
-
-  if (!docSnap.exists()) {
-    return null;
-  }
-
+  const { invite } = (await response.json()) as {
+    invite: Omit<Invite, 'expiresAt' | 'createdAt'> & { expiresAtMs: number; createdAtMs: number };
+  };
+  const { expiresAtMs, createdAtMs, ...fields } = invite;
   return {
-    id: docSnap.id,
-    ...docSnap.data(),
+    ...fields,
+    expiresAt: Timestamp.fromMillis(expiresAtMs),
+    createdAt: Timestamp.fromMillis(createdAtMs),
   } as Invite;
 }
 
@@ -905,9 +889,8 @@ export async function inviteClient(
     throw new Error('An invitation has already been sent to this email');
   }
 
-  // Generate unique invite code
-  const inviteCode =
-    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // CSPRNG: invite links must not be predictable.
+  const inviteCode = crypto.randomUUID().replaceAll('-', '');
 
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30); // 30 day expiry for client invites
@@ -929,9 +912,7 @@ export async function inviteClient(
 
   const docRef = await addDoc(collection(db, INVITES_COLLECTION), inviteData);
 
-  console.log(
-    `[ClientInvite] Created client invite ${docRef.id} with code ${inviteCode} for ${email}`
-  );
+  // Never log invitation tokens or recipient PII.
 
   return {
     id: docRef.id,
