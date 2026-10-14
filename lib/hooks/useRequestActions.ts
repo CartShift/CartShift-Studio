@@ -202,12 +202,12 @@ export function useRequestActions({
     if (!canPerformAction()) return;
 
     // Optimistic update
-    const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+    const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
     setIsAccepting(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+      queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
         if (!old) return old;
         return {
           ...old,
@@ -227,25 +227,25 @@ export function useRequestActions({
       console.error('Error accepting quote:', err);
       // Rollback on error
       if (previousRequest) {
-        queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+        queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
       }
       toast.error(t('quoteAcceptFailed'), t('quoteAcceptFailedDesc'));
     } finally {
       setIsAccepting(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, queryClient, t]);
+  }, [canPerformAction, requestId, orgId, userData, queryClient, t, isAgency]);
 
   // Decline quote
   const handleDeclineQuote = useCallback(async () => {
     if (!canPerformAction()) return;
 
     // Optimistic update
-    const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+    const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
     setIsDeclining(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+      queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
         if (!old) return old;
         return {
           ...old,
@@ -264,25 +264,25 @@ export function useRequestActions({
       console.error('Error declining quote:', err);
       // Rollback on error
       if (previousRequest) {
-        queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+        queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
       }
       toast.error(t('quoteDeclineFailed'), t('quoteDeclineFailedDesc'));
     } finally {
       setIsDeclining(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, queryClient, t]);
+  }, [canPerformAction, requestId, orgId, userData, queryClient, t, isAgency]);
 
   // Start work
   const handleStartWork = useCallback(async () => {
     if (!canPerformAction()) return;
 
     // Optimistic update
-    const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+    const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
     setIsWork(true);
     try {
       // Optimistically update UI
-      queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+      queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
         if (!old) return old;
         return {
           ...old,
@@ -301,13 +301,13 @@ export function useRequestActions({
       console.error('Error starting work:', err);
       // Rollback on error
       if (previousRequest) {
-        queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+        queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
       }
       toast.error(t('workStartFailed'), t('workStartFailedDesc'));
     } finally {
       setIsWork(false);
     }
-  }, [canPerformAction, requestId, orgId, userData, queryClient, t]);
+  }, [canPerformAction, requestId, orgId, userData, queryClient, t, isAgency]);
 
   // Payment success
   const handlePaymentSuccess = useCallback(
@@ -315,11 +315,11 @@ export function useRequestActions({
       if (!canPerformAction() || !result.paymentId) return;
 
       // Optimistic update
-      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
       try {
         // Optimistically update UI
-        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
           if (!old) return old;
           return {
             ...old,
@@ -345,12 +345,12 @@ export function useRequestActions({
         console.error('Error marking as paid:', err);
         // Rollback on error
         if (previousRequest) {
-          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+          queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
         }
         toast.error(t('paymentRecorded'), t('paymentRecordedDesc'));
       }
     },
-    [canPerformAction, requestId, orgId, userData, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, queryClient, t, isAgency]
   );
 
   // Assign specialist
@@ -359,12 +359,12 @@ export function useRequestActions({
       if (!canPerformAction()) return;
 
       // Optimistic update
-      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
       setIsAssigning(true);
       try {
         // Optimistically update UI
-        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
           if (!old) return old;
           return {
             ...old,
@@ -396,14 +396,14 @@ export function useRequestActions({
         console.error('Error assigning specialist:', err);
         // Rollback on error
         if (previousRequest) {
-          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+          queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
         }
         toast.error(t('specialistAssignFailed'), t('specialistAssignFailedDesc'));
       } finally {
         setIsAssigning(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, queryClient, t, isAgency]
   );
 
   // Request revision
@@ -412,12 +412,12 @@ export function useRequestActions({
       if (!canPerformAction() || !notes.trim()) return false;
 
       // Optimistic update
-      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
       setIsSubmittingRevision(true);
       try {
         // Optimistically update UI - move back to IN_PROGRESS
-        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
           if (!old) return old;
           return {
             ...old,
@@ -443,7 +443,7 @@ export function useRequestActions({
         console.error('Failed to request revision:', err);
         // Rollback on error
         if (previousRequest) {
-          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+          queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
         }
         toast.error(t('revisionFailed'), t('revisionFailedDesc'));
         return false;
@@ -451,7 +451,7 @@ export function useRequestActions({
         setIsSubmittingRevision(false);
       }
     },
-    [canPerformAction, requestId, orgId, userData, queryClient, t]
+    [canPerformAction, requestId, orgId, userData, queryClient, t, isAgency]
   );
 
   // File upload
@@ -496,10 +496,10 @@ export function useRequestActions({
         return;
       }
 
-      const previousRequest = queryClient.getQueryData(queryKeys.requests.detail(requestId!));
+      const previousRequest = queryClient.getQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'));
 
       try {
-        queryClient.setQueryData<Request>(queryKeys.requests.detail(requestId!), old => {
+        queryClient.setQueryData<Request>(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), old => {
           if (!old) return old;
           return {
             ...old,
@@ -530,7 +530,7 @@ export function useRequestActions({
       } catch (error) {
         console.error('Error updating status:', error);
         if (previousRequest) {
-          queryClient.setQueryData(queryKeys.requests.detail(requestId!), previousRequest);
+          queryClient.setQueryData(queryKeys.requests.byRoleDetail(requestId!, isAgency ? 'agency' : 'client'), previousRequest);
         }
 
         toast.error(t('statusUpdateFailed'), t('statusUpdateFailedDesc'));

@@ -39,7 +39,8 @@ export function useRequests(options?: UseRequestsOptions) {
   const shouldFetch =
     isAuthenticated && !auth && enabled && (agencyMode || Boolean(safeOrgId));
 
-  const qKey = agencyMode ? queryKeys.requests.all : queryKeys.requests.byOrg(safeOrgId);
+  const qKey = agencyMode ? queryKeys.requests.all :
+    queryKeys.requests.byRoleOrg(safeOrgId, isAgency ? 'agency' : 'client');
 
   const {
     data: requests = [],

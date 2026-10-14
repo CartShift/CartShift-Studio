@@ -10,7 +10,7 @@ import type { PricingRequest } from '@/lib/types/pricing';
 export function usePricingRequest(pricingId: string | null) {
   const { isAgency, loading } = usePortalAuth();
   return useQuery({
-    queryKey: queryKeys.requests.detail(pricingId || ''),
+    queryKey: queryKeys.requests.byRoleDetail(pricingId || '', isAgency ? 'agency' : 'client'),
     queryFn: async () => isAgency ? getPricingRequest(pricingId!) :
       await getClientVisibleRequest(pricingId!) as PricingRequest | null,
     enabled: Boolean(pricingId) && !loading,

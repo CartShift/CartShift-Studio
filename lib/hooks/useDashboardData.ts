@@ -72,7 +72,7 @@ export function useDashboardData() {
     isLoading: isLoadingRequests,
     error: requestsError,
   } = useQuery({
-    queryKey: queryKeys.requests.byOrg(safeOrgId),
+    queryKey: queryKeys.requests.byRoleOrg(safeOrgId, isAgency ? 'agency' : 'client'),
     queryFn: () => isAgency ? getRequestsByOrg(safeOrgId) : getClientVisibleRequests(safeOrgId),
     enabled: Boolean(shouldFetchData),
     staleTime: isAgency ? Infinity : 15_000,
@@ -95,7 +95,7 @@ export function useDashboardData() {
     [shouldFetchData, safeOrgId, isAgency]
   );
   useFirestoreSubscription(
-    queryKeys.requests.byOrg(safeOrgId),
+    queryKeys.requests.byRoleOrg(safeOrgId, isAgency ? 'agency' : 'client'),
     subscribeRequests,
     Boolean(shouldFetchData && isAgency)
   );
