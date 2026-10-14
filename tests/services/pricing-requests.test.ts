@@ -61,6 +61,9 @@ describe('pricing proposal totals', () => {
     vi.stubGlobal('fetch', vi.fn());
     firestore.addDoc.mockResolvedValue({ id: 'proposal-1' });
     firestore.updateDoc.mockResolvedValue(undefined);
+    firestore.getDoc.mockResolvedValue({
+      exists: () => true, data: () => ({ defaultCurrency: 'ILS' }),
+    });
   });
 
   it('calculates subtotal and rounds VAT to the nearest cent', () => {
@@ -96,6 +99,30 @@ describe('pricing proposal totals', () => {
         balanceDue: 37_842,
       })
     );
+  });
+
+  it('rejects creation in a denomination that conflicts with the client profile', async () => {
+    await expect(createPricingRequest('org-1', 'user-1', 'Agency User', {
+      title: 'Website proposal',
+      lineItems: items.map(({ id: _id, ...item }) => item),
+      currency: 'USD',
+      taxRate: 0.17,
+    })).rejects.toThrow('Quote currency must match the client currency');
+    expect(firestore.addDoc).not.toHaveBeenCalled();
+  });
+
+  it('preserves the legacy currency workflow where no client default exists', async () => {
+    firestore.getDoc.mockResolvedValue({
+      exists: () => true, data: () => ({}),
+    });
+    await createPricingRequest('org-1', 'user-1', 'Agency User', {
+      title: 'Legacy customer proposal',
+      lineItems: items.map(({ id: _id, ...item }) => item),
+      currency: 'USD',
+      taxRate: 0.17,
+    });
+    expect(firestore.addDoc).toHaveBeenCalledWith(expect.anything(),
+      expect.objectContaining({ currency: 'USD' }));
   });
 
   it('uses the stored VAT rate when an update omits taxRate', async () => {
