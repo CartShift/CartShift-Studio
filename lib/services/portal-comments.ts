@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
+import { getPortalUser } from './portal-users';
 import { Comment, CreateCommentData } from '@/lib/types/portal';
 
 const COMMENTS_COLLECTION = 'portal_comments';
@@ -100,6 +101,32 @@ export async function createComment(
 
   // Validate and sanitize content
   const sanitizedContent = sanitizeContent(data.content);
+
+  const actor = getFirebaseAuth().currentUser;
+  if (!actor) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(actor.uid);
+  if (profile?.accountType !== 'AGENCY' && profile?.isAgency !== true) {
+    // The client cannot update the parent document through Firestore rules,
+    // particularly when it contains confidential commercial fields.
+    // The server creates the comment and updates the parent atomically.
+    const token = await actor.getIdToken();
+    const response = await fetch('/api/portal/client-comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({
+        requestId, orgId, content: data.content, attachmentIds: data.attachmentIds || [],
+        parentId: data.parentId || null, mentions: data.mentions || [],
+        isInternal: data.isInternal === true,
+      }),
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null) as { error?: string } | null;
+      throw new Error(body?.error || 'Unable to add comment');
+    }
+    const body = await response.json() as { comment: Comment & { createdAtMs: number } };
+    const { createdAtMs, ...comment } = body.comment;
+    return { ...comment, createdAt: Timestamp.fromMillis(createdAtMs) };
+  }
 
   const commentData = {
     requestId,
