@@ -66,8 +66,8 @@ export const Header: React.FC = () => {
         dropdownType: 'tools' as DropdownType,
         submenu: [
           {
-            name: t('analyzer.hero.title') || 'Free Store Analyzer',
-            href: '/tools/store-analyzer',
+            name: t('storeReview.formTitle'),
+            href: '/free-store-review',
           },
           { name: t('nav.clientPortal') || 'Client Portal', href: '/tools/client-portal' },
         ],
@@ -217,7 +217,7 @@ export const Header: React.FC = () => {
                 size="md"
                 className="font-outfit font-black tracking-tight shadow-lg shadow-primary-500/15 hover:shadow-xl hover:shadow-primary-500/25 active:scale-[0.97] px-5 sm:px-6 transition-shadow"
                 onClick={() =>
-                  router.push(isLoggedIn ? getPortalPath('/') : '/tools/store-analyzer')
+                  router.push(isLoggedIn ? getPortalPath('/') : '/free-store-review')
                 }
               >
                 {isLoggedIn ? (
@@ -228,7 +228,7 @@ export const Header: React.FC = () => {
                 ) : (
                   <span className="flex items-center gap-2">
                     <Icon name="bar-chart" size={16} />
-                    <span>{t('nav.freeAudit')}</span>
+                    <span>{t('storeReview.badge')}</span>
                   </span>
                 )}
               </Button>
