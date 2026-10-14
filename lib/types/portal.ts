@@ -242,6 +242,8 @@ export interface Organization {
   billingCity?: string;
   billingCountry?: string;
   billingPostalCode?: string;
+  /** Default denomination for NEW quotes and projects; never reprice existing documents. */
+  defaultCurrency?: Currency;
 }
 
 export interface BillingProfile {

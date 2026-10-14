@@ -143,7 +143,7 @@ service cloud.firestore {
         isAgencyUser() ||
         resource == null ||
         isMemberOfOrg(orgId) ||
-        resource.data.createdBy == getUserId()
+        isOrgOwner(orgId)
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
       // Only admins/owners can update (security fix - was allowing any member)
