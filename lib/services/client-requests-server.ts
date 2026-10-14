@@ -19,7 +19,8 @@ async function orgAccess(orgId: string, uid: string): Promise<boolean> {
     db.collection('portal_members').doc(orgId + '_' + uid).get(),
   ]);
   return org.exists && !org.data()?.removedAt &&
-    (org.data()?.createdBy === uid || member.exists);
+    !['inactive', 'suspended'].includes(org.data()?.status) &&
+    (org.data()?.createdBy === uid || (member.exists && !member.data()?.removedAt));
 }
 
 export async function readClientRequest(request: NextRequest, requestId: string) {
