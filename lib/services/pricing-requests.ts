@@ -17,6 +17,7 @@ import {
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { deepClean } from '@/lib/utils';
 import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
+import { validateNewQuoteCurrency } from '@/lib/domain/client-currency';
 import {
   PricingRequest,
   CreatePricingRequestData,
@@ -126,6 +127,9 @@ export async function createPricingRequest(
 
   await waitForAuth();
   const db = getFirestoreDb();
+  const orgSnapshot = await getDoc(doc(db, 'portal_organizations', orgId));
+  if (!orgSnapshot.exists()) throw new Error('Client organization not found');
+  validateNewQuoteCurrency(orgSnapshot.data().defaultCurrency, data.currency);
   // Reusing a request for a quote is only safe before any commercial commitment.
   // Never overwrite an accepted, active or paid request with a new proposal.
   const linkedSnapshots = await Promise.all(linkedRequestIds.map(id =>
