@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
+import { USER_ROLE } from '@/lib/types/portal';
+import ProjectOperationsPanel from '@/components/portal/projects/ProjectOperationsPanel';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getRequestsByOrg, getRequestsByProject, updateRequest } from '@/lib/services/portal-requests';
 import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
@@ -355,13 +358,17 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       </details>}
     </header>
 
+    {isAgency && <ProjectOperationsPanel
+      project={project} requests={linkedRequests} locale={locale} canEdit={canEditProjects}
+    />}
+
     <div className="grid gap-5 lg:grid-cols-2">
       <Panel title={t('milestones')} icon={ClipboardList}>
         <div className="space-y-3">
           {project.stages.map(stage => <div key={stage.id} className="flex items-start gap-3">
             {stage.status === 'completed' ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-600" size={19}/> : <Circle className="mt-0.5 shrink-0 text-surface-400" size={19}/>}
             <span className="min-w-0 flex-1 text-sm font-medium">{stage.title}</span>
-            {isAgency && <select aria-label={stage.title} value={stage.status} disabled={saving}
+            {canEditProjects && <select aria-label={stage.title} value={stage.status} disabled={saving}
               onChange={e => void edit('stages', stage.id, previous => ({
                 ...previous, status: e.target.value as typeof stage.status,
               }))}
@@ -488,14 +495,14 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <p className="mt-1 font-bold">{hours.toLocaleString(locale)}h / {project.scope.maxHours}h</p>
           </div>
         </div>
-        {isAgency && <ScopeEditor key={project.id} project={project}
+        {canEditProjects && <ScopeEditor key={project.id} project={project}
           save={scope => execute(() => updateClientProject(id, { scope }))}/>}
         <p className="mt-3 text-xs text-surface-500">
           {locale === 'he'
             ? 'הצעות המחיר החתומות הן המקור המחייב לתכולה ולתשלום. עדכון תחזית השעות אינו משנה את ההסכם.'
             : 'Signed proposals remain authoritative for scope and billing. Editing estimates does not change an agreement.'}
         </p>
-        {isAgency && <form onSubmit={e => {
+        {canEditProjects && <form onSubmit={e => {
           e.preventDefault();
           const value = Number(logHours);
           if (!Number.isFinite(value) || value <= 0 || value > 24) { toast.error(t('invalidHours')); return; }
@@ -541,7 +548,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           )}
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
             canReview={!isAgency && change.status === 'proposed'} onReviewed={refreshReviews} />
-          {isAgency && change.status === 'proposed' && (
+          {canEditProjects && change.status === 'proposed' && (
             <button type="button" disabled={saving}
               onClick={() => void edit('changes', change.id, old => ({
                 ...old, status: 'declined',
@@ -563,7 +570,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
               </Link>
             )}
         </div>)}
-        {isAgency && <>
+        {canEditProjects && <>
           <div className="mt-4 flex gap-2">
             <input aria-label={t('changeHours')} type="number" min="0" step="0.25" value={changeHours} onChange={e => setChangeHours(e.target.value)}
               className="portal-focus-ring min-h-10 w-24 rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700"/>
@@ -612,7 +619,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         </Panel>
       )}
       <Panel title={t('linkedRequests')} icon={ClipboardList}>
-        {isAgency && (
+        {canEditProjects && (
           <Link href={getPortalPath('/requests/new/?projectId=' + encodeURIComponent(id) +
             '&clientId=' + encodeURIComponent(project.orgId))}
             className="portal-focus-ring mb-4 inline-flex min-h-10 items-center gap-2 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
@@ -635,13 +642,13 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           <Link href={getPortalPath('/requests/' + request.id + '/')}
             className="portal-focus-ring min-w-0 flex-1 truncate font-semibold text-primary-700 hover:underline dark:text-primary-300">{request.title}</Link>
           <span className="text-xs text-surface-500">{request.status.replaceAll('_', ' ')}</span>
-          {isAgency && <button aria-label={t('unlink')} type="button" disabled={saving}
+          {canEditProjects && <button aria-label={t('unlink')} type="button" disabled={saving}
             onClick={() => void execute(async () => {
               await updateRequest(request.id, { projectId: null });
               await cache.invalidateQueries({ queryKey: ['client-project-requests'] });
             })} className="portal-focus-ring rounded-lg px-2 py-1 text-xs text-primary-600">{t('unlink')}</button>}
         </div>)}
-        {isAgency && <div className="mt-4 flex gap-2">
+        {canEditProjects && <div className="mt-4 flex gap-2">
           <select aria-label={t('attachRequest')} value={selectedRequest} onChange={e => setSelectedRequest(e.target.value)}
             className="portal-focus-ring min-h-10 min-w-0 flex-1 rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700">
             <option value="">{t('attachRequest')}</option>
