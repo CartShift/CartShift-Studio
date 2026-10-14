@@ -28,6 +28,7 @@ type Prospect = {
   technicalStatus: string;
   scanStatus: string;
   lastAuditedAt: string | null;
+  verifiedIssueCount: number;
   updatedAt: string | null;
 };
 type Finding = {
@@ -52,6 +53,14 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 export default function ProspectsClient() {
   const t = useTranslations('portal.prospects');
   const queryClient = useQueryClient();
+  const stageLabels: Record<string, string> = {
+    needs_review: t('stageLabels.needs_review'), qualified: t('stageLabels.qualified'),
+    contact_research: t('stageLabels.contact_research'),
+    contact_ready: t('stageLabels.contact_ready'),
+    in_conversation: t('stageLabels.in_conversation'), proposal: t('stageLabels.proposal'),
+    won: t('stageLabels.won'), lost: t('stageLabels.lost'),
+    suppressed: t('stageLabels.suppressed'),
+  };
   const { userData } = usePortalAuth();
   const agencyTeam = useAgencyTeam();
   const canReview = userData?.agencyRole === 'owner' || userData?.agencyRole === 'admin';
@@ -307,13 +316,15 @@ export default function ProspectsClient() {
                 </a>
               </div>
               <span className="shrink-0 rounded-full bg-surface-100 px-2 py-1 text-xs text-surface-600 dark:bg-surface-800 dark:text-surface-300">
-                {prospect.stage === 'needs_review' ? t('needsReview') : prospect.stage}
+                {stageLabels[prospect.stage] || prospect.stage}
               </span>
             </div>
             {prospect.researchNote && <p className="line-clamp-2 text-sm text-surface-500">{prospect.researchNote}</p>}
             <p className="text-xs text-surface-500">{t('source')}: {prospect.sourceType}</p>
             <p className="text-xs text-surface-500">{t('scanState')}: {prospect.scanStatus}</p>
             {prospect.nextAction && <p className="text-sm text-surface-600 dark:text-surface-300">{t('nextAction')}: {prospect.nextAction}</p>}
+            {prospect.nextActionAt && <p className="text-xs text-surface-500">{t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span></p>}
+            {prospect.verifiedIssueCount > 0 && <p className="text-xs text-surface-500">{t('verifiedCount', { count: prospect.verifiedIssueCount })}</p>}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-surface-500">{t('noPermission')}</span>
               <Button variant="outline" disabled={scan.isPending} onClick={() => scan.mutate(prospect.id)}>
@@ -347,7 +358,7 @@ export default function ProspectsClient() {
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
                         'in_conversation', 'proposal', 'won', 'lost'].map(stage => (
-                        <option key={stage} value={stage}>{stage}</option>
+                        <option key={stage} value={stage}>{stageLabels[stage] || stage}</option>
                       ))}
                     </select>
                   </label>
@@ -460,6 +471,7 @@ export default function ProspectsClient() {
                     <a href={contact.sourceUrl} target="_blank" rel="noopener noreferrer"
                       className="text-xs text-primary-600 hover:underline dark:text-primary-300">{t('viewEvidence')}</a>
                     <p className="text-xs text-amber-600">{t('candidateContact')}</p>
+                    <p className="text-xs text-surface-500">{contact.sourceUrl}</p>
                   </div>
                 ))}
               </div>
