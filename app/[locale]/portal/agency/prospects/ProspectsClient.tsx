@@ -26,6 +26,8 @@ type Prospect = {
   nextAction: string;
   nextActionAt: string;
   technicalStatus: string;
+  linkedOrgId: string;
+  linkedRequestId: string;
   scanStatus: string;
   lastAuditedAt: string | null;
   verifiedIssueCount: number;
@@ -351,6 +353,11 @@ export default function ProspectsClient() {
             {prospect.nextAction && <p className="text-sm text-surface-600 dark:text-surface-300">{t('nextAction')}: {prospect.nextAction}</p>}
             {prospect.nextActionAt && <p className="text-xs text-surface-500">{t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span></p>}
             {prospect.verifiedIssueCount > 0 && <p className="text-xs text-surface-500">{t('verifiedCount', { count: prospect.verifiedIssueCount })}</p>}
+            {prospect.linkedRequestId && <a
+              href={'/portal/requests/' + encodeURIComponent(prospect.linkedRequestId)}
+              className="block text-sm text-primary-600 hover:underline dark:text-primary-300">
+              {t('linkedProposal')} <ExternalLink size={12} className="inline" />
+            </a>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-surface-500">{t('noPermission')}</span>
               <Button variant="outline" disabled={scan.isPending} onClick={() => scan.mutate(prospect.id)}>
