@@ -58,6 +58,11 @@ async function pinnedHttpsResponse(url: URL): Promise<ProspectFetchResponse> {
         response.destroy(new Error('SCAN_RESPONSE_TOO_LARGE'));
         return;
       }
+      const encoding = String(response.headers['content-encoding'] || '').toLowerCase().trim();
+      if (encoding && encoding !== 'identity') {
+        response.destroy(new Error('SCAN_UNSUPPORTED_ENCODING'));
+        return;
+      }
       const chunks: Buffer[] = [];
       let total = 0;
       response.on('data', (chunk: Buffer) => {
