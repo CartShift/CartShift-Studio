@@ -15,6 +15,7 @@ import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
 import {
   addProjectItem, editProjectItem, getClientProject, listProjectReviews,
   observeClientProject, submitProjectReview, submitChangeOrderDecision, updateClientProject,
+  markClientProjectReady,
 } from '@/lib/services/portal-projects';
 import {
   PROJECT_STATUS_LABELS,
@@ -307,7 +308,8 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             if (next === 'ready_to_launch' && !health?.readyForLaunch) {
               toast.error(t('launchNotReady')); return;
             }
-            void execute(() => updateClientProject(id, { status: next }));
+            void execute(() => next === 'ready_to_launch' ? markClientProjectReady(id) :
+              updateClientProject(id, { status: next }));
           }}
           className="portal-focus-ring min-h-11 rounded-xl border border-surface-200 bg-white px-3 text-sm font-semibold dark:border-surface-700 dark:bg-surface-900">
           {(Object.keys(PROJECT_STATUS_LABELS) as ProjectStatus[]).map(status =>
