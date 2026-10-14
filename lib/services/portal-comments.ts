@@ -348,8 +348,9 @@ export function subscribeToRequestComments(
             .then(comments => { if (!isUnsubscribed) callback(comments); })
             .catch(() => { if (!isUnsubscribed) callback([]); });
         };
-        unsubscribe = onSnapshot(doc(db, 'portal_requests', requestId), refresh,
-          () => { if (!isUnsubscribed) callback([]); });
+        // The raw parent request is intentionally unreadable to clients.
+        // Refresh from the authorized projection endpoint instead of making
+        // a Firestore subscription that always fails with permission-denied.
         pollingTimer = setInterval(refresh, 30000);
         refresh();
         return;
