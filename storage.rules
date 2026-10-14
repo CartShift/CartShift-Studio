@@ -16,7 +16,9 @@ service firebase.storage {
              (
                firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
-             );
+             ) &&
+             firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('status', '') != 'suspended' &&
+             firestore.get(/databases/(default)/documents/portal_users/$(getUserId())).data.get('status', '') != 'inactive';
     }
 
     function isOrgMember(orgId) {
