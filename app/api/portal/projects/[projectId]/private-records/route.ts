@@ -26,6 +26,7 @@ type RouteCtx = { params: Promise<{ projectId: string }> };
 
 function errorResponse(error: unknown) {
   const message = error instanceof Error ? error.message : '';
+  if (message === 'UNAUTHENTICATED') return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
   if (message === 'FORBIDDEN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (message === 'NOT_FOUND') return NextResponse.json({ error: 'Project not found' }, { status: 404 });
   if (message === 'ADMIN_NOT_CONFIGURED') return NextResponse.json({ error: 'Unavailable' }, { status: 503 });
@@ -40,7 +41,7 @@ function sameOrigin(request: NextRequest): boolean {
 
 async function privateContext(request: NextRequest, params: RouteCtx['params']) {
   const session = await getServerSession(request);
-  if (!session) throw new Error('FORBIDDEN');
+  if (!session) throw new Error('UNAUTHENTICATED');
   if (!adminDb) throw new Error('ADMIN_NOT_CONFIGURED');
   const projectId = id.safeParse((await params).projectId);
   if (!projectId.success) throw new Error('NOT_FOUND');
