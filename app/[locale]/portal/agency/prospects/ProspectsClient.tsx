@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { queryKeys } from '@/lib/utils/query-keys';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 
 type Prospect = {
   id: string;
@@ -50,10 +52,18 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 export default function ProspectsClient() {
   const t = useTranslations('portal.prospects');
   const queryClient = useQueryClient();
+  const { userData } = usePortalAuth();
+  const agencyTeam = useAgencyTeam();
+  const canReview = userData?.agencyRole === 'owner' || userData?.agencyRole === 'admin';
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  const [salesDraft, setSalesDraft] = useState({ stage: 'needs_review', next_action: '', due_date: '' });
+  const [salesDraft, setSalesDraft] = useState({
+    stage: 'needs_review', next_action: '', due_date: '', owner_uid: '',
+  });
+  const [reviewNote, setReviewNote] = useState('');
+  const [reviewEvidence, setReviewEvidence] = useState('');
+  const [reviewDecision, setReviewDecision] = useState('review_required');
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
@@ -106,6 +116,21 @@ export default function ProspectsClient() {
       toast.success(t('updated'));
     },
     onError: () => toast.error(t('updateFailed')),
+  });
+  const review = useMutation({
+    mutationFn: (payload: { id: string; type: 'contact' | 'technical'; note: string;
+      evidence_url?: string; outreach_eligibility?: string }) =>
+      fetchJson<{ prospect_id: string }>('/api/portal/agency/prospects/' + payload.id + '/review', {
+        method: 'POST', body: JSON.stringify(payload),
+      }),
+    onSuccess: async result => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.detail(result.prospect_id) }),
+      ]);
+      toast.success(t('reviewSaved'));
+    },
+    onError: () => toast.error(t('reviewFailed')),
   });
   const rows = (list.data?.prospects || []).filter(row =>
     [row.brandName, row.canonicalDomain, row.stage].some(value =>
@@ -214,7 +239,7 @@ export default function ProspectsClient() {
               <Button variant="outline" onClick={() => {
                 setSelected(p => p === prospect.id ? null : prospect.id);
                 setSalesDraft({ stage: prospect.stage, next_action: prospect.nextAction || '',
-                  due_date: prospect.nextActionAt || '' });
+                  due_date: prospect.nextActionAt || '', owner_uid: prospect.ownerUid || '' });
               }}>
                 {selected === prospect.id ? t('close') : t('evidence')}
               </Button>
@@ -228,6 +253,7 @@ export default function ProspectsClient() {
                       stage: salesDraft.stage,
                       next_action: salesDraft.next_action,
                       ...(salesDraft.due_date ? { due_date: salesDraft.due_date } : {}),
+                      ...(salesDraft.owner_uid ? { owner_uid: salesDraft.owner_uid } : {}),
                     } });
                   }}>
                   <label className="block text-sm text-surface-600 dark:text-surface-300">
@@ -238,6 +264,20 @@ export default function ProspectsClient() {
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
                         'in_conversation', 'proposal', 'won', 'lost'].map(stage => (
                         <option key={stage} value={stage}>{stage}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block text-sm text-surface-600 dark:text-surface-300">
+                    {t('assignedTo')}
+                    <select value={salesDraft.owner_uid}
+                      onChange={e => setSalesDraft(p => ({ ...p, owner_uid: e.target.value }))}
+                      className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
+                      <option value="">{t('unassigned')}</option>
+                      {(agencyTeam.data || []).filter(member =>
+                        ['owner', 'admin', 'sales_manager'].includes(member.agencyRole || '') &&
+                        member.status !== 'inactive' && member.status !== 'suspended'
+                      ).map(member => (
+                        <option key={member.id} value={member.id}>{member.name || member.email}</option>
                       ))}
                     </select>
                   </label>
@@ -256,6 +296,41 @@ export default function ProspectsClient() {
                   <Button type="submit" disabled={updateSales.isPending}>{t('saveSales')}</Button>
                   <p className="text-xs text-surface-500">{t('approvalReminder')}</p>
                 </form>
+                {canReview && (
+                  <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
+                    <h3 className="text-sm font-semibold">{t('founderReview')}</h3>
+                    <label className="block text-sm text-surface-600 dark:text-surface-300">
+                      {t('contactEligibility')}
+                      <select value={reviewDecision} onChange={e => setReviewDecision(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
+                        {['review_required', 'consent_recorded', 'existing_relationship',
+                          'approved_partner_channel', 'blocked'].map(value =>
+                          <option key={value} value={value}>{value}</option>)}
+                      </select>
+                    </label>
+                    <input type="url" value={reviewEvidence}
+                      onChange={e => setReviewEvidence(e.target.value)}
+                      placeholder={t('eligibilityEvidence')}
+                      className="w-full rounded-lg border border-surface-200 bg-white p-2 text-sm text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white"/>
+                    <textarea value={reviewNote} onChange={e => setReviewNote(e.target.value)}
+                      rows={2} maxLength={1000} placeholder={t('reviewNote')}
+                      className="w-full rounded-lg border border-surface-200 bg-white p-2 text-sm text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white"/>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" disabled={review.isPending || reviewNote.trim().length < 15}
+                        onClick={() => review.mutate({ id: prospect.id, type: 'contact',
+                          outreach_eligibility: reviewDecision,
+                          evidence_url: reviewEvidence || undefined, note: reviewNote })}>
+                        {t('saveEligibility')}
+                      </Button>
+                      <Button variant="outline" disabled={review.isPending || reviewNote.trim().length < 15}
+                        onClick={() => review.mutate({ id: prospect.id, type: 'technical',
+                          note: reviewNote })}>
+                        {t('approveTechnical')}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-surface-500">{t('founderOnly')}</p>
+                  </section>
+                )}
                 {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>}
                 {detail.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
                 {detail.data && detail.data.findings.length === 0 && <p className="text-sm text-surface-500">{t('noFindings')}</p>}
