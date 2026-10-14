@@ -21,6 +21,10 @@ The server-side audit caps 6 public pages including homepage, 2 seconds between 
 
 **Caution:** This is a deliberately conservative static audit, not browser-based end-to-end Shopify QA, a Lighthouse-grade benchmark, or a guarantee that a potential issue is visible. It detects candidate omissions (e.g. missing homepage description), obviously failed public links (404/410), conflicting published shipping thresholds and selected official structured-data business roles / generic publicly published mailboxes. Those can be false positives and require verification; no conversion/revenue impact is inferred.
 
+## Repeatable local validation
+
+Run `pnpm test:prospects:release` at the repository root. This merges source translations, checks TypeScript, runs the focused prospect/MCP Vitest suites and focused ESLint. It requires already installed dependencies and **does not invoke GitHub Actions, create Vercel previews, deploy, or scan external stores**. It cannot substitute for real Firestore Emulator rules tests or authenticated browser QA. The last fully executed code check was 67 passing focused tests on commit `29ecbe7`; newer hardening and UI commits still require the repeatable gate to be run once in a working Node environment.
+
 ## Release checks — required before merging
 
 1. Run full generated localization parity check and TypeScript typecheck after `pnpm i18n:merge`.
@@ -29,7 +33,7 @@ The server-side audit caps 6 public pages including homepage, 2 seconds between 
 4. Validate safe network behavior (DNS/IP literals, redirects to another host, content types, redirects and oversized responses). A real authorized canary store scan should be performed *only after deployment on approval*; no production write during testing.
 5. Visual QA on desktop/mobile with Hebrew RTL and English, including the 20-URL preview, saved duplicate, evidence review, assignment, owner-only contact decision, and empty/failed scan states.
 6. Check current platform terms, robots directives and legal basis for collecting contact fields and any future outreach. No automatic emailing/contact-form sending.
-7. Review Vercel/Firebase environment authorization/limits and budget before rollout. MCP scans run synchronously with `maxDuration=120`; verify that the deployed Vercel runtime actually permits that duration before exposing it.
+7. Review Vercel/Firebase environment authorization/limits and budget before rollout. Vercel Hobby functions with Fluid Compute support a maximum duration up to 300 seconds, but **without** Fluid Compute Hobby's published maximum is 60 seconds; this code uses `maxDuration=120`, so confirm the project actually has Fluid Compute before deploying scans. Official docs: https://vercel.com/docs/functions/limitations. MCP scans run synchronously with `maxDuration=120`; verify that the deployed Vercel runtime actually permits that duration before exposing it.
 8. Roll out to agency-only beta; no uncontrolled background scan scheduler. Existing user OAuth grants do **not** gain new scopes automatically — reconnect/reauthorize CartShift in ChatGPT to obtain `prospects:read`, `prospects:write` and `prospects:scan`.
 
 ## Adi / founder workflow
