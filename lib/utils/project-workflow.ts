@@ -74,7 +74,7 @@ export function buildProjectTemplate(template: ProjectTemplate, locale: 'en' | '
 }
 
 export function getProjectHealth(
-  project: Pick<ClientProject, 'blockers' | 'deliverables' | 'launchChecks' | 'inputs' | 'stages'>,
+  project: Pick<ClientProject, 'blockers' | 'deliverables' | 'launchChecks' | 'inputs' | 'stages' | 'changes'>,
   reviews: ProjectReview[]
 ) {
   const openBlockers = project.blockers.filter(blocker => !blocker.resolved).length;
@@ -86,11 +86,14 @@ export function getProjectHealth(
     );
     return matches.length === 0 || matches.some(review => review.decision !== 'approved');
   }).length;
+  const pendingChanges = project.changes.filter(change => change.status === 'proposed' &&
+    !reviews.some(review => review.deliverableId === 'change:' + change.id &&
+      review.revision === 1 && review.decision === 'approved')).length;
   const completedStages = project.stages.filter(s => s.status === 'completed').length;
   const progress = project.stages.length ? Math.round(completedStages / project.stages.length * 100) : 0;
   return {
-    openBlockers, missingInputs, missingChecks, pendingReviews, progress,
-    readyForLaunch: openBlockers === 0 && missingInputs === 0 && missingChecks === 0 && pendingReviews === 0,
+    openBlockers, missingInputs, missingChecks, pendingReviews, pendingChanges, progress,
+    readyForLaunch: openBlockers === 0 && missingInputs === 0 && missingChecks === 0 && pendingReviews === 0 && pendingChanges === 0,
   };
 }
 
