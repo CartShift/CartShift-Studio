@@ -84,9 +84,15 @@ async function main() {
       .where('orgId', '==', 'orgA').get());
     await assertFails(client.doc('portal_comments/publicA').update({ isInternal: true }));
     await assertFails(client.doc('portal_comments/internalA').update({ content: 'Tampered' }));
-    await assertSucceeds(client.collection('portal_comments').add({
+    // Client comment mutations go through the authenticated API so their
+    // parent counter and latest preview cannot diverge from stored comments.
+    await assertFails(client.collection('portal_comments').add({
       orgId: 'orgA', requestId: 'reqA', userId: 'client',
-      content: 'A real client comment', isInternal: false,
+      content: 'Bypassing the client API', isInternal: false,
+    }));
+    await assertFails(client.doc('portal_comments/publicA').delete());
+    await assertFails(client.doc('portal_comments/publicA').update({
+      reactions: { '👍': ['outsider'] },
     }));
     await assertFails(client.collection('portal_comments').add({
       orgId: 'orgA', requestId: 'reqA', userId: 'agency',
