@@ -89,7 +89,7 @@ function RecordRow({ record, projectId, locale, onSaved }: {
   const [saving, setSaving] = useState(false);
   const he = locale === 'he';
   const statusOptions = statuses[record.kind];
-  const date = record.createdAt?.toMillis?.();
+  const date = record.createdAtMs;
   return <article className="rounded-xl border border-surface-200 p-3 dark:border-surface-700">
     <div className="flex flex-wrap items-start justify-between gap-2">
       <div className="min-w-0 flex-1">
