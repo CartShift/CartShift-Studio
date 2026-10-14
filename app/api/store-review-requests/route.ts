@@ -61,7 +61,10 @@ export async function POST(request: NextRequest) {
     const result = await db.runTransaction(async tx => {
       const markerSnapshot = await tx.get(marker);
       const previous = markerSnapshot.data();
-      const lastSeen = previous?.createdAt?.toDate?.()?.getTime() || 0;
+      const createdAt = previous?.createdAt;
+      const lastSeen = createdAt instanceof Date
+        ? createdAt.getTime()
+        : (createdAt?.toDate?.()?.getTime() || 0);
       if (previous?.requestId && now.getTime() - lastSeen < DUPLICATE_WINDOW_MS) {
         return { requestId: String(previous.requestId), created: false };
       }
@@ -123,14 +126,18 @@ export async function POST(request: NextRequest) {
     } catch {
       console.warn('[store-review] Staff notification not delivered', { requestId });
     }
-    const captured = await captureMarketingLead({
-      email, name: data.name, storeUrl: normalized.storeUrl, locale: data.locale,
-      source: 'human_review', intent: data.focus, primaryIssue: 'general_conversion',
-      ctaType: 'expert_store_review', subscribeNewsletter: data.marketingOptIn,
-      consent: data.marketingOptIn, skipWelcome: true,
-      attribution: data.attribution, metadata: { reviewRequestId: requestId },
-    });
-    if (!captured.success) console.warn('[store-review] Marketing mirror pending', { requestId });
+    try {
+      const captured = await captureMarketingLead({
+        email, name: data.name, storeUrl: normalized.storeUrl, locale: data.locale,
+        source: 'human_review', intent: data.focus, primaryIssue: 'general_conversion',
+        ctaType: 'expert_store_review', subscribeNewsletter: data.marketingOptIn,
+        consent: data.marketingOptIn, skipWelcome: true,
+        attribution: data.attribution, metadata: { reviewRequestId: requestId },
+      });
+      if (!captured.success) console.warn('[store-review] Marketing mirror pending', { requestId });
+    } catch {
+      console.warn('[store-review] Marketing mirror failed', { requestId });
+    }
   }
 
   return NextResponse.json({ success: true, requestId, status: 'requested', deduplicated: !created }, {
