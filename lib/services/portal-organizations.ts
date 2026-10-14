@@ -236,7 +236,7 @@ export async function getOrganizationsWithStats(): Promise<
       const [requests, members, removed] = await Promise.all([
         getCountFromServer(scopedRequests),
         getCountFromServer(scopedMembers),
-        getCountFromServer(query(scopedMembers, where('removedAt', '!=', null))),
+        getCountFromServer(query(scopedMembers, where('removedAt', '>', Timestamp.fromMillis(0)))),
       ]);
       return {
         ...org,
