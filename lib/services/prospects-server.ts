@@ -192,3 +192,37 @@ export async function addProspectContactCandidate(raw: unknown, uid: string) {
   return { prospect_id: input.prospect_id, contact_id: contactId,
     created, duplicate: !created, status: 'candidate', outreach_approved: false };
 }
+
+export async function importProspectBatch(raw: unknown, uid: string, dryRun = false) {
+  await requireProspectActor(uid);
+  const parsed = z.array(upsertProspectSchema).min(1).max(20).parse(raw);
+  const sourceDomains = new Set<string>();
+  const plan: Array<{ input: z.infer<typeof upsertProspectSchema>; prospectId: string;
+    canonicalDomain: string; exists: boolean }> = [];
+  // Validate every item and check for duplicates before any write.
+  for (const input of parsed) {
+    const normalized = normalizeProspectStoreUrl(input.store_url);
+    validateProspectSource(input.source_url);
+    if (sourceDomains.has(normalized.canonicalDomain)) continue;
+    sourceDomains.add(normalized.canonicalDomain);
+    const prospectId = prospectDocumentId(normalized.canonicalDomain);
+    const existing = await db().collection(COLLECTION).doc(prospectId).get();
+    plan.push({ input, prospectId,
+      canonicalDomain: normalized.canonicalDomain, exists: existing.exists });
+  }
+  if (dryRun) return {
+    dry_run: true, requested: parsed.length, unique: plan.length,
+    prospects: plan.map(({ prospectId, canonicalDomain, exists }) =>
+      ({ prospect_id: prospectId, canonical_domain: canonicalDomain, exists })),
+  };
+  const results = [];
+  for (const row of plan) {
+    results.push(await upsertProspect(row.input, uid));
+  }
+  return {
+    dry_run: false, requested: parsed.length, unique: plan.length,
+    created: results.filter(result => result.created).length,
+    duplicate: results.filter(result => result.duplicate).length,
+    results,
+  };
+}
