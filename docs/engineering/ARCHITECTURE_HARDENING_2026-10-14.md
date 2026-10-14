@@ -47,7 +47,7 @@ Keep the **Next.js + Firebase modular monolith**. Do not introduce Rails, micros
 ### B. Back-end module boundaries
 
 - Split `functions/index.js` by domain (marketing, email, portal notifications, payments, analyzer) one exported trigger at a time, preserving exported Function names and deploys.
-- Refactor `lib/services/analyzer.ts` into orchestration, extraction, scoring and provider adapters without changing outputs during the first pass.
+- **First extraction implemented:** independent HTML-only SEO, performance, accessibility and trust fallbacks, H1 detection and recommendation creation; parity tests added. Continue separating orchestration, evidence extraction, scoring and provider adapters without changing outputs.
 - Prefer deterministic domain functions under `lib/domain/`, APIs/adapters under `lib/services/`, and hooks only for React-specific state. Do not add generic scaffolding without two real use cases.
 - Split large client views by responsibility only after behavioral regression coverage exists.
 
