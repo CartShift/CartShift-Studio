@@ -99,6 +99,33 @@ async function main() {
       orgId: 'orgB', userId: 'client', role: 'owner',
     }));
 
+    // Project private evidence must be unreadable and unlistable by customers,
+    // even members with access to the parent project.
+    const { serverTimestamp: privateStamp } = require('firebase/firestore');
+    const recordPath = 'portal_projects/prjA/private_records/qa-one';
+    const record = {
+      kind: 'qa', title: 'Mixed order delivered', details: 'Tracked in EHouse staging',
+      status: 'open', sourceUrl: '', owner: 'agency', dueDate: '',
+      createdBy: 'agency', createdAt: privateStamp(), updatedAt: privateStamp(),
+    };
+    await assertSucceeds(agency.doc(recordPath).set(record));
+    await assertSucceeds(agency.doc(recordPath).get());
+    await assertSucceeds(agency.collection('portal_projects/prjA/private_records').get());
+    await assertFails(client.doc(recordPath).get());
+    await assertFails(client.collection('portal_projects/prjA/private_records').get());
+    await assertFails(outsider.doc(recordPath).get());
+    await assertFails(client.doc('portal_projects/prjA/private_records/client-created').set({
+      ...record, createdBy: 'client',
+    }));
+    await assertFails(agency.doc('portal_projects/prjA/private_records/invalid').set({
+      ...record, kind: 'time', status: 'done',
+    }));
+    await assertFails(agency.doc(recordPath).update({ title: 'Evidence overwritten' }));
+    await assertSucceeds(agency.doc(recordPath).update({
+      status: 'passed', updatedAt: privateStamp(),
+    }));
+    await assertFails(agency.doc(recordPath).delete());
+
     const baseReview = {
       projectId: 'prjA', orgId: 'orgA', deliverableId: 'hero', reviewerId: 'client',
       revision: 2, decision: 'approved', comment: 'Looks good',

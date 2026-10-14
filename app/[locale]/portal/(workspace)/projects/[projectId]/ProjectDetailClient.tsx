@@ -24,6 +24,7 @@ import {
   type ProjectCollectionItem,
 } from '@/lib/types/project';
 import { buildProjectUpdateDraft, getProjectHealth, loggedHours, projectBudget } from '@/lib/utils/project-workflow';
+import ProjectOperationsPanel from '@/components/portal/projects/ProjectOperationsPanel';
 import { toast } from 'sonner';
 
 function AddItem({ label, placeholder, onAdd, disabled }: {
@@ -344,6 +345,8 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         })} className="portal-focus-ring mt-2 min-h-10 rounded-xl bg-primary-600 px-5 text-sm text-white">{t('save')}</button>
       </details>}
     </header>
+
+    {isAgency && <ProjectOperationsPanel project={project} requests={linkedRequests} locale={locale}/>}
 
     <div className="grid gap-5 lg:grid-cols-2">
       <Panel title={t('milestones')} icon={ClipboardList}>

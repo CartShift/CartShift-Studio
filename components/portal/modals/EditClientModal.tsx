@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/Input';
 import { updateOrganization } from '@/lib/services/portal-organizations';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser, Organization } from '@/lib/types/portal';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Select } from '@/components/ui/Select';
 import { PortalFormField } from '@/components/portal/ui/PortalFormField';
 
@@ -52,6 +52,7 @@ const editOrgSchema = (t: TranslationFunction) =>
     billingCity: z.string().max(100).optional(),
     billingCountry: z.string().max(100).optional(),
     billingPostalCode: z.string().max(40).optional(),
+    defaultCurrency: z.enum(['ILS', 'USD', 'EUR']),
   });
 
 type EditOrgFormData = z.infer<ReturnType<typeof editOrgSchema>>;
@@ -73,6 +74,7 @@ export const EditClientModal = ({
   const [error, setError] = useState<string | null>(null);
   const [agencyMembers, setAgencyMembers] = useState<PortalUser[]>([]);
   const t = useTranslations('portal');
+  const locale = useLocale();
 
   const schema = editOrgSchema(t);
   const {
@@ -99,6 +101,7 @@ export const EditClientModal = ({
       billingAddressLine2: organization.billingAddressLine2 || '',
       billingCity: organization.billingCity || '',
       billingCountry: organization.billingCountry || '',
+      defaultCurrency: organization.defaultCurrency || 'ILS',
       billingPostalCode: organization.billingPostalCode || '',
     },
   });
@@ -122,6 +125,7 @@ export const EditClientModal = ({
       billingAddressLine2: organization.billingAddressLine2 || '',
       billingCity: organization.billingCity || '',
       billingCountry: organization.billingCountry || '',
+      defaultCurrency: organization.defaultCurrency || 'ILS',
       billingPostalCode: organization.billingPostalCode || '',
     });
   }, [organization, reset]);
@@ -163,6 +167,7 @@ export const EditClientModal = ({
         billingCity: data.billingCity,
         billingCountry: data.billingCountry,
         billingPostalCode: data.billingPostalCode,
+        defaultCurrency: data.defaultCurrency,
       });
 
       onSuccess();
@@ -229,6 +234,21 @@ export const EditClientModal = ({
                 <Input label={t('invoices.settings.address2')} {...register('billingAddressLine2')} />
                 <div className="grid grid-cols-2 gap-3"><Input label={t('invoices.settings.city')} {...register('billingCity')} /><Input label={t('invoices.settings.country')} {...register('billingCountry')} /></div>
                 <Input label={t('invoices.settings.postalCode')} {...register('billingPostalCode')} />
+                <PortalFormField label={t('pricing.form.currency')}>
+                  <Select
+                    options={[
+                      { value: 'ILS', label: '₪ ILS – שקל חדש' },
+                      { value: 'USD', label: '$ USD – US Dollar' },
+                      { value: 'EUR', label: '€ EUR – Euro' },
+                    ]}
+                    {...register('defaultCurrency')}
+                  />
+                  <p className="mt-1 text-xs text-surface-500">
+                    {locale === 'he'
+                      ? 'המטבע ישמש כברירת מחדל להצעות ולפרויקטים חדשים בלבד. מטבע של מסמכים קיימים לא ישתנה.'
+                      : 'Default for new quotes and projects only. Existing document currencies remain unchanged.'}
+                  </p>
+                </PortalFormField>
               </div>
             </div>
 

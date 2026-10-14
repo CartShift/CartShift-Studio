@@ -43,7 +43,8 @@ export async function createOrganization(
   userId: string,
   userEmail: string,
   userName?: string,
-  addCreatorAsMember: boolean = true
+  addCreatorAsMember: boolean = true,
+  defaultCurrency: import('@/lib/types/portal').Currency = 'ILS'
 ): Promise<Organization> {
   await waitForAuth();
   const db = getFirestoreDb();
@@ -56,6 +57,7 @@ export async function createOrganization(
     name: name.trim(),
     slug,
     createdBy: userId,
+    defaultCurrency,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
@@ -192,6 +194,7 @@ export async function updateOrganization(
     billingCity?: string;
     billingCountry?: string;
     billingPostalCode?: string;
+    defaultCurrency?: import('@/lib/types/portal').Currency;
   }
 ): Promise<void> {
   await waitForAuth();
