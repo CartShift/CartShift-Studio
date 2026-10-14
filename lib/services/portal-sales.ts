@@ -256,6 +256,7 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
 
   // Create org name lookup
   const orgNames = new Map(organizations.map(org => [org.id, org.name]));
+  const orgCurrency = new Map(organizations.map(org => [org.id, org.defaultCurrency]));
 
   // Group pricing requests by org
   const orgData = new Map<
@@ -288,12 +289,18 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
   const revenueData: ClientRevenueData[] = [];
 
   orgData.forEach((data, orgId) => {
-    const totalRevenue = data.paid.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
-    const pendingRevenue =
-      data.accepted.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0);
+    const currency = recognizedCurrency(orgCurrency.get(orgId)) || reportingCurrency(data.paid.length ? data.paid : data.all);
+    const paidInCurrency = data.paid.filter(pr => recognizedCurrency(pr.currency) === currency);
+    const acceptedInCurrency = data.accepted.filter(pr => recognizedCurrency(pr.currency) === currency);
+    const hasOtherCurrencies = data.all.some(pr =>
+      (getRecognizedRevenue(pr) > 0 || getPricingRequestPendingAmount(pr) > 0) &&
+      recognizedCurrency(pr.currency) !== currency
+    );
+    const totalRevenue = paidInCurrency.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
+    const pendingRevenue = acceptedInCurrency.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0);
 
     // Find first and last payment dates
-    const paidDates = data.paid
+    const paidDates = paidInCurrency
       .filter(pr => pr.lastPaymentAt || pr.paidAt)
       .map(pr => (pr.lastPaymentAt || pr.paidAt)!.toDate())
       .sort((a, b) => a.getTime() - b.getTime());
@@ -306,11 +313,7 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
     const sentCount = data.all.filter(
       pr => pr.status !== PRICING_STATUS.DRAFT && pr.status !== PRICING_STATUS.CANCELED
     ).length;
-    const conversionRate = sentCount > 0 ? Math.round((data.paid.length / sentCount) * 100) : 0;
-
-    // Determine currency (most used for this client)
-    const currency =
-      data.paid.length > 0 ? ((data.paid[0].currency || 'USD') as Currency) : ('USD' as Currency);
+    const conversionRate = sentCount > 0 ? Math.round((paidInCurrency.length / sentCount) * 100) : 0;
 
     revenueData.push({
       orgId,
@@ -318,16 +321,17 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
       totalRevenue,
       pendingRevenue,
       proposalCount: data.all.length,
-      paidCount: data.paid.length,
+      paidCount: paidInCurrency.length,
       conversionRate,
       firstPaymentAt,
       lastPaymentAt,
       currency,
+      hasOtherCurrencies,
     });
   });
 
-  // Sort by total revenue descending
-  return revenueData.sort((a, b) => b.totalRevenue - a.totalRevenue);
+  // Rank revenue only within a shared currency; cross-currency ranking requires FX conversion.
+  return revenueData.sort((a, b) => a.currency.localeCompare(b.currency) || b.totalRevenue - a.totalRevenue);
 }
 
 /**
@@ -343,6 +347,8 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
   ]);
 
   const now = new Date();
+  const reportCurrency = reportingCurrency(pricingRequests.filter(pr =>
+    getRecognizedRevenue(pr) > 0 || getPricingRequestPendingAmount(pr) > 0));
   const result: MonthlyRevenue[] = [];
 
   // Generate data for each month
@@ -354,7 +360,7 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
     // Filter requests for this month
     const monthPaid = pricingRequests.filter(pr => {
       const paymentAt = pr.lastPaymentAt || pr.paidAt;
-      if (!paymentAt || getRecognizedRevenue(pr) <= 0) return false;
+      if (!paymentAt || getRecognizedRevenue(pr) <= 0 || recognizedCurrency(pr.currency) !== reportCurrency) return false;
       const paidDate = paymentAt.toDate();
       return paidDate >= monthDate && paidDate <= monthEnd;
     });
@@ -388,9 +394,10 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
  */
 export async function getTopClients(limit: number = 5): Promise<TopClient[]> {
   const revenueData = await getClientRevenueData();
+  const reportCurrency = reportingCurrency(revenueData.filter(client => client.totalRevenue > 0));
 
   return revenueData
-    .filter(client => client.totalRevenue > 0)
+    .filter(client => client.totalRevenue > 0 && client.currency === reportCurrency)
     .slice(0, limit)
     .map(client => {
       // Calculate trend based on payment recency
