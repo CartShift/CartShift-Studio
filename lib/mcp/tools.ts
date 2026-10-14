@@ -35,6 +35,7 @@ const clientFields = z.object({
   billingCity: tinyText.optional(),
   billingCountry: tinyText.optional(),
   billingPostalCode: tinyText.optional(),
+  defaultCurrency: z.enum(['ILS', 'USD', 'EUR']).optional(),
 }).strict();
 const requestFields = z.object({
   title: tinyText.optional(),
@@ -62,6 +63,7 @@ export const TOOL_DEFS = [
         shopifyDomain: { type: 'string' },
         primaryContactName: { type: 'string' }, primaryContactRole: { type: 'string' },
         primaryContactEmail: { type: 'string' }, primaryContactPhone: { type: 'string' },
+        defaultCurrency: { type: 'string', enum: ['ILS', 'USD', 'EUR'] },
       }, additionalProperties: false,
     },
   },
@@ -87,6 +89,7 @@ export const TOOL_DEFS = [
           billingAddressLine1: { type: 'string' }, billingAddressLine2: { type: 'string' },
           billingCity: { type: 'string' }, billingCountry: { type: 'string' },
           billingPostalCode: { type: 'string' },
+          defaultCurrency: { type: 'string', enum: ['ILS', 'USD', 'EUR'] },
         }, additionalProperties: false },
       }, additionalProperties: false,
     },
@@ -182,6 +185,7 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
       }).map(doc => ({
         id: doc.id, name: doc.data().name, website: doc.data().website || null,
         shopifyDomain: doc.data().shopifyDomain || null, status: doc.data().status || 'active',
+        defaultCurrency: doc.data().defaultCurrency || null,
       }));
     return { clients: result, truncated: matches.size === 500 };
   }
@@ -192,6 +196,7 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
       name: true, website: true, industry: true, bio: true, shopifyDomain: true,
       primaryContactName: true, primaryContactRole: true,
       primaryContactEmail: true, primaryContactPhone: true,
+      defaultCurrency: true,
     }).extend({ name: tinyText });
     const data = fields.parse(args);
     const normalizeDomain = (value: string) => value.toLowerCase().replace(/^https?:\/\//, '')
@@ -217,7 +222,7 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
       const prior = await tx.get(ref);
       if (prior.exists) return;
       tx.create(ref, {
-        ...data, slug, status: 'active', createdBy: grant.uid,
+        ...data, defaultCurrency: data.defaultCurrency || 'ILS', slug, status: 'active', createdBy: grant.uid,
         createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp(),
       });
       tx.create(audits.doc(), auditRow(grant.uid, 'create_client', ref.id));
@@ -233,7 +238,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
     const allowed = ['name', 'slug', 'website', 'industry', 'bio', 'shopifyDomain', 'shopifyAccessStatus',
       'responsibleAgencyUserId', 'primaryContactName', 'primaryContactRole',
       'primaryContactEmail', 'primaryContactPhone', 'billingName', 'billingEmail', 'billingTaxId',
-      'billingAddressLine1', 'billingAddressLine2', 'billingCity', 'billingCountry', 'billingPostalCode', 'updatedAt'];
+      'billingAddressLine1', 'billingAddressLine2', 'billingCity', 'billingCountry', 'billingPostalCode',
+      'defaultCurrency', 'updatedAt'];
     return { id: doc.id, ...Object.fromEntries(allowed.filter(k => data[k] !== undefined).map(k => [k, serialize(data[k])])) };
   }
 
