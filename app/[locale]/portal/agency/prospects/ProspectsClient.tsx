@@ -149,8 +149,9 @@ export default function ProspectsClient() {
   });
   const bulkImport = useMutation({
     mutationFn: async (confirm: boolean) => {
-      const lines = bulkUrls.split(/\r?\n/).map(v => v.trim()).filter(Boolean).slice(0, 20);
+      const lines = bulkUrls.split(/\r?\n/).map(v => v.trim()).filter(Boolean);
       if (!lines.length) throw new Error('No stores');
+      if (lines.length > 20) throw new Error('Too many stores');
       return fetchJson<{
         requested: number; unique: number; created?: number; duplicate?: number;
         prospects?: Array<{ canonical_domain: string; exists: boolean }>;
@@ -177,7 +178,8 @@ export default function ProspectsClient() {
           unique: result.unique, prospects: result.prospects || [] });
       }
     },
-    onError: () => toast.error(t('importFailed')),
+    onError: error => toast.error(error instanceof Error && error.message === 'Too many stores'
+      ? t('importTooMany') : t('importFailed')),
   });
   const review = useMutation({
     mutationFn: (payload: { id: string; type: 'contact' | 'technical'; note: string;
@@ -374,7 +376,16 @@ export default function ProspectsClient() {
               </span>
             </div>
             {prospect.researchNote && <p className="line-clamp-2 text-sm text-surface-500">{prospect.researchNote}</p>}
-            <p className="text-xs text-surface-500">{t('source')}: {prospect.sourceType}</p>
+            <p className="text-xs text-surface-500">
+              {t('source')}: {prospect.sourceType}{' · '}
+              <a href={prospect.sourceUrl} target="_blank" rel="noopener noreferrer"
+                className="text-primary-600 underline-offset-2 hover:underline dark:text-primary-300">
+                {t('openResearchSource')} <ExternalLink size={12} className="inline" />
+              </a>
+            </p>
+            <p className="text-xs text-surface-500">
+              {t('platform')}: {prospect.platform === 'shopify' ? t('shopifyDetected') : t('platformUnknown')}
+            </p>
             <p className="text-xs text-surface-500">{t('scanState')}: {prospect.scanStatus}</p>
             {prospect.nextAction && <p className="text-sm text-surface-600 dark:text-surface-300">{t('nextAction')}: {prospect.nextAction}</p>}
             {prospect.nextActionAt && <p className="text-xs text-surface-500">{t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span></p>}
