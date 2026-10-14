@@ -183,6 +183,9 @@ export async function addProspectContactCandidate(raw: unknown, uid: string) {
     if (!prospect.exists || prospect.data()?.doNotContact === true) {
       throw new Error('PROSPECT_SUPPRESSED');
     }
+    if ((prospect.data()?.suppressedContactIds || []).includes(contactId)) {
+      return false;
+    }
     if (previous.exists) return false;
     tx.create(contactRef, {
       role: input.role, name: input.name || null,
