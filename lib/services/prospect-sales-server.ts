@@ -110,3 +110,33 @@ export async function approveProspectTechnicalScope(prospectId: string, note: st
   });
   return { prospect_id: prospectId, technical_status: 'approved' };
 }
+
+export async function reviewProspectFinding(prospectId: string, findingId: string,
+  status: 'verified' | 'rejected' | 'stale', note: string, uid: string) {
+  if (!/^finding_[a-f0-9]{32}$/.test(findingId)) throw new Error('INVALID_FINDING_ID');
+  if (!['verified', 'rejected', 'stale'].includes(status) ||
+      typeof note !== 'string' || note.trim().length < 15 || note.length > 1000) {
+    throw new Error('INVALID_FINDING_REVIEW');
+  }
+  const { actor, ref } = await refFor(uid, prospectId);
+  if (!['owner', 'admin'].includes(actor.role)) throw new Error('FOUNDER_REVIEW_REQUIRED');
+  const finding = ref.collection('findings').doc(findingId);
+  const event = database().collection('agency_prospect_audit').doc();
+  await database().runTransaction(async tx => {
+    const [storeSnapshot, findingSnapshot] = await Promise.all([tx.get(ref), tx.get(finding)]);
+    if (!storeSnapshot.exists || !findingSnapshot.exists) throw new Error('PROSPECT_FINDING_NOT_FOUND');
+    const previous = findingSnapshot.data()?.verificationStatus || 'unverified';
+    tx.update(finding, {
+      verificationStatus: status,
+      reviewedBy: uid, reviewedAt: FieldValue.serverTimestamp(), reviewNote: note.trim(),
+    });
+    const delta = (status === 'verified' ? 1 : 0) - (previous === 'verified' ? 1 : 0);
+    if (delta !== 0) tx.update(ref, {
+      verifiedIssueCount: FieldValue.increment(delta),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    tx.create(event, { uid, action: 'prospect.finding_review',
+      targetId: prospectId, findingId, decision: status, at: FieldValue.serverTimestamp() });
+  });
+  return { prospect_id: prospectId, finding_id: findingId, verification_status: status };
+}
