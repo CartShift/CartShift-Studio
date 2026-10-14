@@ -77,6 +77,7 @@ async function organizationExists(orgId: string) {
   if (!snap.exists || snap.data()?.removedAt || ['inactive', 'suspended'].includes(snap.data()?.status)) {
     throw new Error('Organization not found or inactive');
   }
+  return snap;
 }
 
 async function projectExists(orgId: string, projectId: string) {
