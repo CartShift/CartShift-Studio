@@ -87,7 +87,8 @@
       "showing": "מציג {shown} מתוך {total} לידים",
       "removeContact": "הסר מועמד לאיש קשר",
       "contactRemoved": "איש הקשר הוסר",
-      "removeContactFailed": "לא הצלחנו להסיר את איש הקשר"
+      "removeContactFailed": "לא הצלחנו להסיר את איש הקשר",
+      "linkedProposal": "לצפייה בהצעת המחיר המקושרת"
     }
   }
 }
