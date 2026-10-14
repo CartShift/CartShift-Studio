@@ -358,7 +358,7 @@ export default function ProspectsClient() {
               href={getPortalPath('/requests/' + encodeURIComponent(prospect.linkedRequestId))}
               className="block text-sm text-primary-600 hover:underline dark:text-primary-300">
               {t('linkedProposal')} <ExternalLink size={12} className="inline" />
-            </a>
+            </a>}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-surface-500">{t('noPermission')}</span>
               <Button variant="outline" disabled={scan.isPending} onClick={() => scan.mutate(prospect.id)}>
@@ -391,7 +391,7 @@ export default function ProspectsClient() {
                       onChange={e => setSalesDraft(p => ({ ...p, stage: e.target.value }))}
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
-                        'in_conversation', 'proposal', 'won', 'lost'].map(stage => (
+                        'in_conversation', 'proposal', 'lost'].map(stage => (
                         <option key={stage} value={stage}>{stageLabels[stage] || stage}</option>
                       ))}
                     </select>
