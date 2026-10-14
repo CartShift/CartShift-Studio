@@ -266,7 +266,7 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       const p = doc.data();
       return p.isBillable || p.publicToken || p.requestRole === 'bundle';
     }).map(doc => ({
-      id: doc.id, ...pick(doc.data(), ['title', 'description', 'status', 'currency',
+      id: doc.id, ...pick(doc.data(), ['title', 'description', 'projectId', 'status', 'currency',
         'totalAmount', 'amountPaid', 'balanceDue', 'paymentStatus', 'proposalVersion',
         'clientName', 'clientEmail', 'sentAt', 'acceptedAt', 'updatedAt']),
     }));
@@ -281,10 +281,12 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       throw new Error('Not a commercial proposal');
     }
     return { id: snap.id, ...pick(p, [
-      'orgId', 'title', 'description', 'status', 'lineItems', 'subtotal', 'taxAmount', 'taxRate',
+      'orgId', 'projectId', 'title', 'description', 'status', 'lineItems', 'subtotal', 'taxAmount', 'taxRate',
       'totalAmount', 'currency', 'validUntil', 'timeframe', 'workDeadline', 'agencyNotes',
       'clientName', 'clientEmail', 'proposalContent', 'proposalVersion', 'terms',
-      'paymentRequired', 'depositAmount', 'amountPaid', 'balanceDue', 'paymentStatus',
+      'paymentRequired', 'depositAmount', 'reportedDepositMinor', 'reportedDepositStatus',
+      'reportedDepositDate', 'externalInvoiceReference', 'externalProposalSourceUrl',
+      'amountPaid', 'balanceDue', 'paymentStatus',
       'relatedRequestId', 'requestRole', 'childRequestIds', 'sentAt', 'acceptedAt',
       'createdAt', 'updatedAt',
     ]) };
