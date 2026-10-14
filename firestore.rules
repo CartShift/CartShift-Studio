@@ -323,15 +323,10 @@ service cloud.firestore {
       // authorized safely against arbitrary result sets. Client lists use the
       // authenticated, field-projected portal API instead.
       allow list: if isAuthenticated() && isAgencyUser();
-      allow get: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null && !isCommercialDocument(resource.data) && (
-          resource.data.get('createdBy', '') == getUserId() ||
-          resource.data.get('clientEmail', '') == request.auth.token.email ||
-          resource.data.get('clientUserId', '') == getUserId() ||
-          canAccessOrg(resource.data.get('orgId', ''))
-        ))
-      );
+      // SDK reads disclose *every* field, including private notes added later.
+      // All client reads (including ordinary requests) use the authenticated,
+      // explicitly whitelisted client-requests API instead.
+      allow get: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
@@ -340,9 +335,13 @@ service cloud.firestore {
       (isAgencyUser() || (
         !isCommercialDocument(request.resource.data) &&
         request.resource.data.get('status', '') == 'NEW' &&
-        !request.resource.data.keys().hasAny([
-          'lineItems', 'totalAmount', 'agencyNotes', 'proposalContent', 'publishedProposal',
-          'paymentIds', 'amountPaid', 'signatureText', 'lockedAt'
+        request.resource.data.get('createdBy', '') == request.auth.uid &&
+        request.resource.data.get('requestRole', '') == 'standalone' &&
+        request.resource.data.get('commentCount', 0) == 0 &&
+        request.resource.data.keys().hasOnly([
+          'orgId', 'projectId', 'title', 'description', 'type', 'status',
+          'priority', 'requestRole', 'createdBy', 'createdByName', 'tags',
+          'attachmentIds', 'commentCount', 'createdAt', 'updatedAt'
         ])
       ));
       allow update: if isAuthenticated() && (
@@ -359,7 +358,14 @@ service cloud.firestore {
         !isCommercialDocument(resource.data) &&
         !isCommercialDocument(request.resource.data) &&
         !changesAgencyCommercialFields() &&
-        !attemptsUnsignedProposalApproval()
+        !attemptsUnsignedProposalApproval() &&
+        // Clients can edit their own request contents and comment previews;
+        // commercial, workflow, assignment, identity and audit fields are
+        // never writable through a client Firebase SDK transaction.
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title', 'description', 'type', 'priority', 'tags', 'attachmentIds',
+          'clientNotes', 'commentCount', 'lastComment', 'updatedAt'
+        ])
       ));
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
