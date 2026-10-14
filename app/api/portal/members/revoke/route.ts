@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const headers = { 'Cache-Control': 'private, no-store' };
-const identifier = z.string().min(1).max(128).regex(/^[\\w-]+$/);
+const identifier = z.string().min(1).max(128).regex(/^[A-Za-z0-9_-]+$/);
 const schema = z.object({
   memberId: z.string().min(3).max(257),
   orgId: identifier,
