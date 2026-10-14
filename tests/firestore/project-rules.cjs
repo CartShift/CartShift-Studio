@@ -205,6 +205,30 @@ async function main() {
       ...review, reviewerId: 'agency',
     }));
 
+    // A former member may rejoin only with a fresh matching invitation, not by
+    // reusing the removed membership document or claiming a different role.
+    const removedMemberRef = removed.doc('portal_members/orgA_removed');
+    await assertFails(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'owner',
+      joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(agency.doc('portal_invites/reinvite-removed').set({
+      orgId: 'orgA', isAgency: false, role: 'member', status: 'pending',
+      email: 'removed@example.com', invitedBy: 'agency',
+      expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
+    }));
+    await assertFails(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'owner',
+      inviteId: 'reinvite-removed', joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'member',
+      inviteId: 'reinvite-removed', invitedBy: 'agency', name: 'Returning member',
+      joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(removed.doc('portal_projects/prjA').get());
+    await assertFails(removed.doc('portal_projects/prjA').update({ title: 'Member cannot edit' }));
+
     // Client may only acknowledge a genuine invitation, never change its target role.
     await assertSucceeds(agency.doc('portal_invites/staff-invite').set({
       orgId: null, isAgency: true, role: 'developer', status: 'pending',
@@ -212,11 +236,50 @@ async function main() {
       expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
     }));
     await assertFails(outsider.doc('portal_invites/staff-invite').update({ role: 'owner' }));
+    await assertFails(unverifiedOutsider.doc('portal_invites/staff-invite').get());
+    await assertFails(unverifiedOutsider.collection('portal_invites').where('email', '==', 'outsider@example.com').get());
+    await assertFails(unverifiedOutsider.doc('portal_users/outsider').update({
+      accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',
+      agencyInviteId: 'staff-invite',
+    }));
+    await assertFails(outsider.collection('portal_invites').get());
+    await assertFails(viewer.collection('portal_invites').get());
+    await assertFails(viewer.doc('portal_invites/staff-invite').update({ role: 'owner' }));
+    await assertFails(env.unauthenticatedContext().firestore().doc('portal_invites/staff-invite').get());
+    await assertSucceeds(outsider.doc('portal_invites/staff-invite').get());
+    await assertSucceeds(outsider.collection('portal_invites').where('email', '==', 'outsider@example.com').get());
+    await assertFails(outsider.collection('portal_invites').where('email', '==', 'staff@example.com').get());
+    await assertSucceeds(agency.doc('portal_invites/client-invite-verification').set({
+      orgId: 'orgB', isAgency: false, role: 'member', status: 'pending',
+      email: 'outsider@example.com', invitedBy: 'agency',
+      expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
+    }));
+    await assertFails(unverifiedOutsider.doc('portal_members/orgB_outsider').set({
+      orgId: 'orgB', userId: 'outsider', role: 'member',
+      inviteId: 'client-invite-verification', email: 'outsider@example.com',
+    }));
     await assertSucceeds(outsider.doc('portal_users/outsider').update({
       accountType: 'AGENCY', isAgency: true, agencyRole: 'developer',
       agencyInviteId: 'staff-invite',
     }));
-    console.log('Firestore security scenarios passed');
+    // Storage must enforce the same revocation semantics as Firestore.
+    const bucket = 'gs://demo-cartshift.appspot.com';
+    // RulesTestContext exposes both APIs; the Firestore handle alone has no storage().
+    const storageAs = (uid, email) => env.authenticatedContext(uid, { email }).storage(bucket);
+    const clientStorage = storageAs('client', 'client@example.com');
+    const agencyStorage = storageAs('agency', 'staff@example.com');
+    const removedStorage = storageAs('storageRevoked', 'storage-revoked@example.com');
+    // outsider was promoted to agency during the invitation test above; use a real non-member.
+    const strangerStorage = storageAs('stranger', 'stranger@example.com');
+    const activeFile = clientStorage.ref('portal/orgA/active-member.txt');
+    await assertSucceeds(activeFile.putString('allowed'));
+    await assertSucceeds(agencyStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(removedStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(removedStorage.ref('portal/orgA/revoked-member.txt').putString('denied'));
+    await assertFails(removedStorage.ref('org-logos/orgA/revoked-admin.png').putString('denied', 'raw', { contentType: 'image/png' }));
+    await assertFails(strangerStorage.ref('portal/orgA/active-member.txt').getMetadata());
+    await assertFails(strangerStorage.ref('portal/orgA/not-allowed.txt').putString('denied'));
+    console.log('Firestore and Storage security scenarios passed');
   } finally {
     await env.cleanup();
   }
