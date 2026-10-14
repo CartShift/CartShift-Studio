@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { prospectReviewSchema, prospectSalesUpdateSchema } from '@/lib/domain/prospect-sales';
+import { prospectReviewSchema, prospectSalesUpdateSchema, canLinkProspectToOrganization } from '@/lib/domain/prospect-sales';
 
 describe('prospect commercial and compliance guards', () => {
   it('requires evidence when claiming prior consent or lawful business relationship', () => {
@@ -31,5 +31,17 @@ describe('prospect commercial and compliance guards', () => {
       stage: 'qualified', next_action: 'Schedule an approved business discovery call',
       due_date: '2026-10-20',
     }).success).toBe(true);
+  });
+});
+describe('commercial account identity binding', () => {
+  it('matches only the same website domain before linking an existing paid proposal', () => {
+    expect(canLinkProspectToOrganization('shop.co.il', 'https://www.shop.co.il/pages/about', 'sales_manager')).toBe(true);
+    expect(canLinkProspectToOrganization('shop.co.il', 'https://another-shop.co.il', 'owner')).toBe(false);
+    expect(canLinkProspectToOrganization('shop.co.il', 'https://shop.co.il.evil.com', 'owner')).toBe(false);
+  });
+
+  it('requires a founder when the existing client has no verified business website', () => {
+    expect(canLinkProspectToOrganization('shop.co.il', undefined, 'sales_manager')).toBe(false);
+    expect(canLinkProspectToOrganization('shop.co.il', '', 'owner')).toBe(true);
   });
 });
