@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* global require */
+/* global require, setImmediate */
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
