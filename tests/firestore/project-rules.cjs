@@ -37,6 +37,12 @@ async function main() {
           isBillable: true, publicAccessEnabled: true,
           agencyNotes: 'NEVER EXPOSE', publishedProposal: { totalAmount: 200000 },
         }),
+        db.doc('portal_requests/quoteAccepted').set({
+          orgId: 'orgA', title: 'Signed agreement', status: 'ACCEPTED',
+          isBillable: true, publicToken: 'signed-token', proposalVersion: 1,
+          publicAccessEnabled: true, projectId: 'prjA', totalAmount: 200000,
+          lockedAt: require('firebase/firestore').Timestamp.fromDate(new Date()),
+        }),
         db.doc('portal_pricing_requests/legacyQuote').set({
           orgId: 'orgA', status: 'SENT', agencyNotes: 'LEGACY PRIVATE',
         }),
@@ -65,6 +71,7 @@ async function main() {
       ]);
     });
 
+    const { serverTimestamp } = require('firebase/firestore');
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
@@ -120,6 +127,16 @@ async function main() {
     // Commercial docs are agency-only. Members use the sanitized server API.
     await assertFails(client.doc('portal_requests/quoteA').get());
     await assertFails(client.doc('portal_requests/quoteSent').get());
+    await assertFails(client.doc('portal_requests/quoteAccepted').get());
+    await assertFails(agency.doc('portal_requests/quoteAccepted').update({
+      totalAmount: 100, updatedAt: serverTimestamp(),
+    }));
+    await assertFails(agency.doc('portal_requests/quoteAccepted').update({
+      projectChangeId: 'forged-change', updatedAt: serverTimestamp(),
+    }));
+    await assertSucceeds(agency.doc('portal_requests/quoteAccepted').update({
+      assignedTo: 'agency', updatedAt: serverTimestamp(),
+    }));
     await assertSucceeds(agency.doc('portal_requests/quoteA').get());
     // Even ordinary requests can contain unpublished staff-only fields.
     // Client request data must always come from the sanitized server API.
@@ -131,7 +148,6 @@ async function main() {
     await assertSucceeds(agency.doc('portal_payments/privatePayment').get());
 
     // Clients can create work only under projects owned by their organization.
-    const { serverTimestamp } = require('firebase/firestore');
     await assertSucceeds(client.doc('portal_requests/validProjectTask').set({
       orgId: 'orgA', title: 'Task', description: 'Work', type: 'other',
       status: 'NEW', priority: 'NORMAL', projectId: 'prjA',
