@@ -52,7 +52,7 @@ const editOrgSchema = (t: TranslationFunction) =>
     billingCity: z.string().max(100).optional(),
     billingCountry: z.string().max(100).optional(),
     billingPostalCode: z.string().max(40).optional(),
-    defaultCurrency: z.enum(['ILS', 'USD', 'EUR']),
+    defaultCurrency: z.enum(['ILS', 'USD', 'EUR']).or(z.literal('')),
   });
 
 type EditOrgFormData = z.infer<ReturnType<typeof editOrgSchema>>;
@@ -101,7 +101,7 @@ export const EditClientModal = ({
       billingAddressLine2: organization.billingAddressLine2 || '',
       billingCity: organization.billingCity || '',
       billingCountry: organization.billingCountry || '',
-      defaultCurrency: organization.defaultCurrency || 'ILS',
+      defaultCurrency: organization.defaultCurrency || '',
       billingPostalCode: organization.billingPostalCode || '',
     },
   });
@@ -125,7 +125,7 @@ export const EditClientModal = ({
       billingAddressLine2: organization.billingAddressLine2 || '',
       billingCity: organization.billingCity || '',
       billingCountry: organization.billingCountry || '',
-      defaultCurrency: organization.defaultCurrency || 'ILS',
+      defaultCurrency: organization.defaultCurrency || '',
       billingPostalCode: organization.billingPostalCode || '',
     });
   }, [organization, reset]);
@@ -167,7 +167,7 @@ export const EditClientModal = ({
         billingCity: data.billingCity,
         billingCountry: data.billingCountry,
         billingPostalCode: data.billingPostalCode,
-        defaultCurrency: data.defaultCurrency,
+        ...(data.defaultCurrency ? { defaultCurrency: data.defaultCurrency } : {}),
       });
 
       onSuccess();
@@ -237,6 +237,7 @@ export const EditClientModal = ({
                 <PortalFormField label={t('pricing.form.currency')}>
                   <Select
                     options={[
+                      ...(!organization.defaultCurrency ? [{ value: '', label: locale === 'he' ? 'טרם נבחר מטבע' : 'Not configured' }] : []),
                       { value: 'ILS', label: '₪ ILS – שקל חדש' },
                       { value: 'USD', label: '$ USD – US Dollar' },
                       { value: 'EUR', label: '€ EUR – Euro' },
@@ -246,8 +247,8 @@ export const EditClientModal = ({
                 </PortalFormField>
                 <p className="mt-1 text-xs text-surface-500">
                   {locale === 'he'
-                    ? 'המטבע ישמש כברירת מחדל להצעות ולפרויקטים חדשים בלבד. מטבע של מסמכים קיימים לא ישתנה.'
-                    : 'Default for new quotes and projects only. Existing document currencies remain unchanged.'}
+                    ? (organization.defaultCurrency ? 'המטבע ישמש להצעות ולפרויקטים חדשים בלבד. מסמכים קיימים לא ישתנו.' : 'לא הוגדר עדיין מטבע ללקוח. יש לבחור מטבע במפורש כדי שהצעות ופרויקטים חדשים יירשו אותו.')
+                    : (organization.defaultCurrency ? 'Used for new quotes and projects only; existing documents remain unchanged.' : 'No currency has been configured for this client. Choose one explicitly for new quotes and projects.')}
                 </p>
               </div>
             </div>
