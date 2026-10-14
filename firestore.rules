@@ -568,8 +568,30 @@ service cloud.firestore {
     }
 
     match /human_review_requests/{requestId} {
-      allow read, update: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isAgencyUser();
+      // Only privileged server routes can edit expert workflow, report and delivery fields.
+      // Keep older consent/qualification screens compatible, but enforce original consent.
+      allow update: if isAuthenticated() && isAgencyUser()
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'requestId', 'schemaVersion', 'source', 'storeUrl', 'canonicalDomain',
+          'name', 'email', 'locale', 'focus', 'notes', 'reviewStatus',
+          'status', 'statusHistory', 'salesStage', 'reviewReport',
+          'delivery', 'nextAction', 'attribution', 'marketingConsent',
+          'createdAt', 'publicAuditSlug', 'consentTimestamp',
+          'anonymousInsightConsent', 'namedStoreConsent', 'consentVersion'
+        ])
+        && (
+          request.resource.data.get('reviewVisibility', 'private') == 'private' ||
+          (request.resource.data.get('reviewVisibility', 'private') == 'anonymous_educational'
+            && resource.data.get('anonymousInsightConsent', false) == true) ||
+          (request.resource.data.get('reviewVisibility', 'private') == 'approved_public_case_study'
+            && resource.data.get('namedStoreConsent', false) == true)
+        );
       allow create, delete: if false;
+    }
+
+    match /store_review_dedupe/{fingerprint} {
+      allow read, write: if false;
     }
 
     match /analyzer_funnel_events/{eventId} {
