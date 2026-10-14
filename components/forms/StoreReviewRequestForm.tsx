@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useLocale, useTranslations } from 'next-intl';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
@@ -26,7 +26,7 @@ function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
     trackFunnelEvent('expert_review_page_viewed', { intent: initialFocus || 'generic' });
   }, [initialFocus]);
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
     const form = new FormData(event.currentTarget);
