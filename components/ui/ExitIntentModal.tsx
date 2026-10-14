@@ -9,10 +9,10 @@ import { BarChart3, Zap, ArrowRight, X, CheckCircle } from 'lucide-react';
 import {
   trackExitIntentShown,
   trackExitIntentClosed,
-  trackAnalyzerStarted,
 } from '@/lib/analytics';
 import { getScheduleUrl } from '@/lib/schedule';
 import { ModalBackdrop, ModalContent } from './ModalBackdrop';
+import { trackFunnelEvent } from '@/lib/services/analyzer-events';
 
 interface ExitIntentModalProps {
   delay?: number;
@@ -66,7 +66,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
   }, []);
 
   const handleAnalyzerClick = useCallback(() => {
-    trackAnalyzerStarted('exit_intent');
+    trackFunnelEvent('expert_review_cta_clicked', { source: 'exit_intent' });
     handleClose('cta_clicked');
   }, [handleClose]);
 
@@ -165,10 +165,10 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
               </Link>
             </div>
 
-            <Link href="/tools/store-analyzer" onClick={handleAnalyzerClick} className="block">
+            <Link href="/free-store-review" onClick={handleAnalyzerClick} className="block">
               <Button className="w-full group relative overflow-hidden font-outfit" size="lg">
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  {t('exitIntent.cta')}
+                  {t('storeReview.ctaShort')}
                   <ArrowRight
                     size={18}
                     className="rtl:-scale-x-100 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
