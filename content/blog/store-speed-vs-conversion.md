@@ -215,7 +215,7 @@ Compare performance and conversion together. After each speed release, annotate 
 
 The goal is not to win a screenshot of a perfect performance score. The goal is to make the store feel trustworthy, fast, and easy to buy from.
 
-If your store is visible but not converting, pair this with [Why your store is not converting](/blog/why-your-store-isnt-converting), run the [free store analyzer](/tools/store-analyzer), or talk with us about [Shopify performance and conversion work](/solutions/shopify).
+If your store is visible but not converting, pair this with [Why your store is not converting](/blog/why-your-store-isnt-converting), request the [free expert store review](/free-store-review), or talk with us about [Shopify performance and conversion work](/solutions/shopify).
 
 ---he---
 
@@ -415,4 +415,4 @@ Collections צריכים פילטרים שימושיים, product cards מהיר
 
 המטרה היא לא screenshot של ציון מושלם. המטרה היא חנות שמרגישה אמינה, מהירה וקלה לקנייה.
 
-אם החנות נראית בגוגל אבל לא ממירה, חברו את זה עם [למה החנות לא ממירה](/blog/why-your-store-isnt-converting), הריצו את [כלי האודיט החינמי](/tools/store-analyzer), או דברו איתנו על [עבודת ביצועים והמרות ב-Shopify](/solutions/shopify).
+אם החנות נראית בגוגל אבל לא ממירה, חברו את זה עם [למה החנות לא ממירה](/blog/why-your-store-isnt-converting), בקשו [סקירה מקצועית בחינם](/free-store-review), או דברו איתנו על [עבודת ביצועים והמרות ב-Shopify](/solutions/shopify).
