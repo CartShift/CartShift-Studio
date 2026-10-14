@@ -145,7 +145,7 @@ export default [
     files: ['components/**/*.{ts,tsx}', 'app/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
-        'warn',
+        'error',
         {
           paths: [
             {
