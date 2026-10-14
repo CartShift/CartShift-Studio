@@ -23,9 +23,12 @@ async function main() {
         db.doc('portal_users/agency').set({ accountType: 'AGENCY', isAgency: true, email: 'staff@example.com' }),
         db.doc('portal_users/client').set({ accountType: 'CLIENT', isAgency: false, email: 'client@example.com' }),
         db.doc('portal_users/outsider').set({ accountType: 'CLIENT', isAgency: false, email: 'outsider@example.com' }),
+        db.doc('portal_users/sales').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'sales_manager' }),
+        db.doc('portal_users/orgAdmin').set({ accountType: 'CLIENT', isAgency: false }),
         db.doc('portal_organizations/orgA').set({ name: 'A', createdBy: 'agency' }),
         db.doc('portal_organizations/orgB').set({ name: 'B', createdBy: 'agency' }),
         db.doc('portal_members/orgA_client').set({ orgId: 'orgA', userId: 'client', email: 'client@example.com', role: 'member' }),
+        db.doc('portal_members/orgA_orgAdmin').set({ orgId: 'orgA', userId: 'orgAdmin', role: 'admin' }),
         db.doc('portal_members/orgB_client').set({ orgId: 'orgB', userId: 'client', email: 'client@example.com', role: 'member', removedAt: new Date() }),
         db.doc('portal_billing_profiles/agency').set({ businessName: 'Private agency', iban: 'SECRET' }),
         db.doc('portal_notifications/notifA').set({ userId: 'client', title: 'Welcome', read: false }),
@@ -55,6 +58,8 @@ async function main() {
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
+    const orgAdmin = context('orgAdmin', 'admin@example.com');
+    const sales = context('sales', 'sales@example.com');
 
     const anonymous = env.unauthenticatedContext().firestore();
 
@@ -64,6 +69,14 @@ async function main() {
     // Billing profiles and invite lists must not be exposed across tenants.
     await assertFails(client.doc('portal_billing_profiles/agency').get());
     await assertSucceeds(agency.doc('portal_billing_profiles/agency').get());
+    await assertFails(sales.doc('portal_billing_profiles/agency').get());
+    // Admins may edit a name, but cannot redirect organization ownership.
+    await assertSucceeds(orgAdmin.doc('portal_organizations/orgA').update({ name: 'Updated A' }));
+    await assertFails(orgAdmin.doc('portal_organizations/orgA').update({ createdBy: 'outsider' }));
+    await assertFails(agency.doc('portal_organizations/orgA').update({ createdBy: 'outsider' }));
+    await assertFails(orgAdmin.doc('portal_organizations/orgA').update({ status: 'inactive' }));
+    await assertFails(orgAdmin.doc('portal_members/orgA_client').update({ userId: 'outsider' }));
+    await assertFails(orgAdmin.doc('portal_members/orgA_client').update({ orgId: 'orgB' }));
     await assertFails(anonymous.collection('portal_invites').get());
     await assertFails(outsider.collection('portal_invites').get());
     await assertFails(client.collection('portal_invites').get());
@@ -81,6 +94,15 @@ async function main() {
     }));
     await assertFails(client.collection('portal_activities').add({
       orgId: 'orgB', userId: 'client', action: 'FORGED',
+    }));
+    const { serverTimestamp: activityTimestamp } = require('firebase/firestore');
+    await assertFails(client.collection('portal_activities').add({
+      orgId: 'orgA', userId: 'client', userName: 'Client', action: 'PAID_REQUEST',
+      createdAt: activityTimestamp(),
+    }));
+    await assertSucceeds(client.collection('portal_activities').add({
+      orgId: 'orgA', userId: 'client', userName: 'Client', action: 'CREATED_REQUEST',
+      createdAt: activityTimestamp(),
     }));
     await assertFails(client.collection('portal_requests').add({
       orgId: 'orgA', createdBy: 'client', requestRole: 'bundle',

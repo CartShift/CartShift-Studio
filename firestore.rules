@@ -45,6 +45,13 @@ service cloud.firestore {
               get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', '') != 'inactive';
     }
 
+    // Financial profile reads must match server billing owner/admin permissions.
+    function canReadAgencyBilling() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId()))
+          .data.get('agencyRole', '') in ['owner', 'admin', ''];
+    }
+
     function canManageProfitSplits() {
       return isAgencyUser() && (
         get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') == 'owner' ||
@@ -130,8 +137,12 @@ service cloud.firestore {
         resource.data.createdBy == getUserId()
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
-      // Only admins/owners can update (security fix - was allowing any member)
-      allow update: if canAdminOrg(orgId);
+      // Ownership is immutable through client SDKs, including for agency users.
+      // Non-agency admins cannot soft-delete or suspend an organization.
+      allow update: if canAdminOrg(orgId) &&
+        request.resource.data.get('createdBy', '') == resource.data.get('createdBy', '') &&
+        (isAgencyUser() || !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['status', 'removedAt']));
       allow delete: if false;
     }
 
@@ -163,7 +174,11 @@ service cloud.firestore {
          request.resource.data.get('userId', '') == getUserId() &&
          validMemberInvite())
       );
-      allow update: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
+      allow update: if resource != null &&
+        canAdminOrg(resource.data.get('orgId', '')) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'orgId', 'userId', 'inviteId', 'createdAt'
+        ]);
       allow delete: if false;
     }
 
@@ -459,8 +474,8 @@ service cloud.firestore {
     }
 
     match /portal_billing_profiles/{profileId} {
-      // Financial and bank details are not readable by arbitrary signed-in users.
-      allow read: if isAgencyUser();
+      // Align SDK permissions with /api/portal/billing-profile (owner/admin only).
+      allow read: if canReadAgencyBilling();
       allow write: if false;
     }
 
@@ -496,8 +511,19 @@ service cloud.firestore {
         request.resource.data.get('userId', '') == getUserId() &&
         request.resource.data.get('orgId', '') is string &&
         request.resource.data.get('action', '') is string &&
+        request.resource.data.get('action', '').size() <= 80 &&
+        request.resource.data.keys().hasOnly([
+          'orgId', 'requestId', 'userId', 'userName', 'action', 'details', 'createdAt'
+        ]) &&
         request.resource.data.get('createdAt', request.time) == request.time &&
-        (isAgencyUser() || canAccessOrg(request.resource.data.get('orgId', '')));
+        (isAgencyUser() || (
+          canAccessOrg(request.resource.data.get('orgId', '')) &&
+          request.resource.data.get('action', '') in [
+            'CREATED_REQUEST', 'ADDED_ATTACHMENT', 'STATUS_CHANGED',
+            'REQUESTED_REVISION', 'scheduled_consultation',
+            'completed_consultation', 'canceled_consultation', 'marked_no_show'
+          ]
+        ));
       allow update, delete: if false;
     }
 
