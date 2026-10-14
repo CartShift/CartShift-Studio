@@ -99,14 +99,39 @@ async function main() {
     await assertFails(client.doc('portal_requests/quoteA').get());
     await assertFails(client.doc('portal_requests/quoteSent').get());
     await assertSucceeds(agency.doc('portal_requests/quoteA').get());
+    // Even ordinary requests can contain unpublished staff-only fields.
+    // Client request data must always come from the sanitized server API.
+    await assertFails(client.doc('portal_requests/reqA').get());
+    await assertSucceeds(agency.doc('portal_requests/reqA').get());
     await assertFails(client.collection('portal_requests').where('orgId', '==', 'orgA').get());
     await assertFails(client.doc('portal_pricing_requests/legacyQuote').get());
     await assertFails(client.doc('portal_payments/privatePayment').get());
     await assertSucceeds(agency.doc('portal_payments/privatePayment').get());
 
     // Clients can create work only under projects owned by their organization.
+    const { serverTimestamp } = require('firebase/firestore');
     await assertSucceeds(client.doc('portal_requests/validProjectTask').set({
-      orgId: 'orgA', title: 'Task', status: 'NEW', projectId: 'prjA',
+      orgId: 'orgA', title: 'Task', description: 'Work', type: 'other',
+      status: 'NEW', priority: 'NORMAL', projectId: 'prjA',
+      requestRole: 'standalone', createdBy: 'client', createdByName: 'Client',
+      tags: [], attachmentIds: [], commentCount: 0,
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+    }));
+    await assertSucceeds(client.doc('portal_requests/validProjectTask').update({
+      description: 'Clarified request', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/validProjectTask').update({
+      status: 'DELIVERED', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/validProjectTask').update({
+      assignedTo: 'client', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/validProjectTask').update({
+      createdBy: 'agency', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/impersonatedTask').set({
+      orgId: 'orgA', title: 'Forged owner', status: 'NEW',
+      requestRole: 'standalone', createdBy: 'agency',
     }));
     await assertFails(client.doc('portal_requests/crossOrgTask').set({
       orgId: 'orgA', title: 'Wrong project', status: 'NEW', projectId: 'prjB',
@@ -127,7 +152,6 @@ async function main() {
       updatedAt: null,
     };
     // The compat SDK supplies serverTimestamp() as a transform; rules see request.time.
-    const { serverTimestamp } = require('firebase/firestore');
     const review = { ...baseReview, updatedAt: serverTimestamp() };
     await assertSucceeds(client.doc('portal_projects/prjA/reviews/hero_client').set(review));
     await assertFails(client.doc('portal_projects/prjA/reviews/hero_wrong').set(review));
