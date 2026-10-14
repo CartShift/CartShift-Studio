@@ -330,8 +330,20 @@ describe('POST /api/analyze-store', () => {
     });
   });
 
-  it('returns 400 when client IP cannot be determined in production', async () => {
+  it('returns 503 when the public instant analyzer is intentionally disabled in production', async () => {
     vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('PUBLIC_ANALYZER_ENABLED', 'false');
+    const response = await POST(createAnalyzeRequest({
+      storeUrl: 'https://shop.example.com',
+      email: 'owner@example.com',
+    }));
+    expect(response.status).toBe(503);
+    expect(enforceApiRateLimit).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when client IP cannot be determined in production with analyzer explicitly enabled', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('PUBLIC_ANALYZER_ENABLED', 'true');
     vi.mocked(enforceApiRateLimit).mockResolvedValueOnce({
       response: NextResponse.json(
         {
