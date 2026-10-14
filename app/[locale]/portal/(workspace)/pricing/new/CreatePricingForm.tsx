@@ -90,6 +90,7 @@ export default function CreatePricingForm() {
   const [selectedProjectId, setSelectedProjectId] = useState(searchParams.get('projectId') || '');
   const { data: clientProjects = [] } = useClientProjects(typeof orgId === 'string' ? orgId : undefined);
   const initializedRelatedId = useRef<string | null>(null);
+  const clientCurrencyId = useRef<string | null>(null);
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
@@ -231,13 +232,24 @@ export default function CreatePricingForm() {
     });
   }, [relatedRequestId, orgId, setValue]);
 
+  const selectedClient = fullOrganizations.find(organization => organization.id === orgId);
+  const configuredClientCurrency = selectedClient?.defaultCurrency;
+
+  // New quotes follow the currency configured on their client account.
+  // Initialize once per client, never convert existing drafts or historical quotes.
+  useEffect(() => {
+    if (!orgId || !configuredClientCurrency) return;
+    if (clientCurrencyId.current === orgId) return;
+    clientCurrencyId.current = orgId;
+    setValue('currency', configuredClientCurrency, { shouldValidate: true });
+  }, [orgId, configuredClientCurrency, setValue]);
+
   // Prefill known client details without overwriting edits or drafts.
   useEffect(() => {
-    const client = fullOrganizations.find(organization => organization.id === orgId);
-    if (!client) return;
-    if (!watch('clientName')) setValue('clientName', client.name);
-    if (!watch('clientEmail') && client.billingEmail) setValue('clientEmail', client.billingEmail);
-  }, [orgId, fullOrganizations, setValue, watch]);
+    if (!selectedClient) return;
+    if (!watch('clientName')) setValue('clientName', selectedClient.name);
+    if (!watch('clientEmail') && selectedClient.billingEmail) setValue('clientEmail', selectedClient.billingEmail);
+  }, [selectedClient, setValue, watch]);
 
   // Load calculator data from session storage
   useEffect(() => {
@@ -646,9 +658,16 @@ export default function CreatePricingForm() {
             <PortalFormSection title={t('pricing.form.settings' as never) || 'Settings'}>
               <Select
                 label={t('pricing.form.currency')}
-                options={currencyOptions}
+                options={configuredClientCurrency
+                  ? currencyOptions.filter(option => option.value === configuredClientCurrency)
+                  : currencyOptions}
                 {...register('currency')}
               />
+              {configuredClientCurrency && <p className="text-xs text-surface-500">
+                {locale === 'he'
+                  ? 'מטבע הצעת המחיר נקבע בפרטי הלקוח. שינוי מטבע מתבצע בפרופיל הלקוח, ולא בהצעה.'
+                  : 'Quote currency follows the client profile. Update the client to change it.'}
+              </p>}
 
               <Input
                 label={t('pricing.form.validUntil')}
