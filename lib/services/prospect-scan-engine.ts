@@ -118,9 +118,9 @@ export type ShippingThresholdEvidence = {
 
 export function extractFreeShippingThresholds(url: string, html: string): ShippingThresholdEvidence[] {
   const plain = sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} })
-    .replace(/\\s+/g, ' ').trim().slice(0, 80_000);
+    .replace(/\s+/g, ' ').trim().slice(0, 80_000);
   const found = new Map<number, ShippingThresholdEvidence>();
-  const regex = /(?:משלוח\\s+חינם|free\\s+shipping)[^₪$\\d]{0,55}[₪$]?\\s*(\\d{2,5})/gi;
+  const regex = /(?:משלוח\s+חינם|free\s+shipping)[^₪$\d]{0,55}[₪$]?\s*(\d{2,5})/gi;
   for (const match of plain.matchAll(regex)) {
     const amount = Number(match[1]);
     if (Number.isFinite(amount) && amount >= 30 && amount <= 10000 && !found.has(amount)) {
@@ -132,7 +132,7 @@ export function extractFreeShippingThresholds(url: string, html: string): Shippi
 
 function decisionMakerCandidates(url: string, html: string): CandidateContact[] {
   const results: CandidateContact[] = [];
-  const scripts = [...html.matchAll(/<script\\b[^>]*type\\s*=\\s*["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)].slice(0, 15);
+  const scripts = [...html.matchAll(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].slice(0, 15);
   const walk = (node: unknown, depth = 0): void => {
     if (depth > 6 || !node || typeof node !== 'object') return;
     if (Array.isArray(node)) { node.slice(0, 30).forEach(x => walk(x, depth + 1)); return; }
@@ -140,9 +140,9 @@ function decisionMakerCandidates(url: string, html: string): CandidateContact[] 
     const types = Array.isArray(data['@type']) ? data['@type'] : [data['@type']];
     const name = typeof data.name === 'string' ? data.name.trim() : '';
     const role = typeof data.jobTitle === 'string' ? data.jobTitle.trim() : '';
-    if (types.some(t => typeof t === 'string' && /(?:^|\\/)Person$/i.test(t)) &&
+    if (types.some(t => typeof t === 'string' && /(?:^|\/)Person$/i.test(t)) &&
         name.length >= 3 && name.length <= 120 && role.length >= 3 && role.length <= 120 &&
-        /founder|owner|chief executive|ceo|e.?commerce|head of digital|head of marketing|מייסד|מנכ|בעלים|מנהלת?\\s*(?:שיווק|דיגיטל)/i.test(role) &&
+        /founder|owner|chief executive|ceo|e.?commerce|head of digital|head of marketing|מייסד|מנכ|בעלים|מנהלת?\s*(?:שיווק|דיגיטל)/i.test(role) &&
         data.worksFor) {
       results.push({ name, role, source_url: url,
         evidence_excerpt: `Official store structured data lists ${name} as ${role}.`.slice(0, 390) });
