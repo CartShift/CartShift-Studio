@@ -536,7 +536,16 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             </Link>
           )}
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
-            canReview={!isAgency} onReviewed={refreshReviews} />
+            canReview={!isAgency && change.status === 'proposed'} onReviewed={refreshReviews} />
+          {isAgency && change.status === 'proposed' && (
+            <button type="button" disabled={saving}
+              onClick={() => void edit('changes', change.id, old => ({
+                ...old, status: 'declined',
+              }))}
+              className="portal-focus-ring mt-2 rounded-lg border border-surface-200 px-3 py-1.5 text-xs text-surface-600 dark:border-surface-700 dark:text-surface-300">
+              {locale === 'he' ? 'ביטול בקשת שינוי' : 'Withdraw change request'}
+            </button>
+          )}
           {isAgency && change.status === 'proposed' && changeOrderSourceId &&
             reviews.some(review => review.deliverableId === 'change:' + change.id &&
               review.revision === 1 && review.decision === 'approved') &&
