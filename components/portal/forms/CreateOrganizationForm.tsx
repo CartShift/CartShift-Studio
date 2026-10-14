@@ -41,6 +41,7 @@ const orgSchema = (t: TranslationFunction) =>
       .optional()
       .or(z.literal('')),
     responsibleAgencyUserId: z.string().optional(),
+    defaultCurrency: z.enum(['ILS', 'USD', 'EUR']),
   });
 
 type OrgFormData = z.infer<ReturnType<typeof orgSchema>>;
@@ -67,6 +68,7 @@ export const CreateOrganizationForm = ({
     formState: { errors },
   } = useForm<OrgFormData>({
     resolver: zodResolver(orgSchema(t)),
+    defaultValues: { defaultCurrency: 'ILS' },
   });
 
   const [agencyMembers, setAgencyMembers] = useState<PortalUser[]>([]);
@@ -99,7 +101,8 @@ export const CreateOrganizationForm = ({
         user.uid,
         user.email || userData.email,
         userData.name,
-        !isClientOrganization // Don't add creator as member for client orgs
+        !isClientOrganization, // Don't add creator as member for client orgs
+        data.defaultCurrency
       );
 
       // Update the org with additional fields if provided
@@ -163,6 +166,16 @@ export const CreateOrganizationForm = ({
               disabled={isSubmitting}
             />
 
+            <PortalFormField label={t('pricing.form.currency')}>
+              <Select
+                options={[
+                  { value: 'ILS', label: '₪ ILS – שקל חדש' },
+                  { value: 'USD', label: '$ USD – US Dollar' },
+                  { value: 'EUR', label: '€ EUR – Euro' },
+                ]}
+                {...register('defaultCurrency')}
+              />
+            </PortalFormField>
             <PortalFormField label={t('organization.createForm.responsibleAgentLabel')}>
               <Select
                 disabled={isSubmitting}
