@@ -489,6 +489,10 @@ export default function AgencyClientsClient() {
                         {formatRevenue(org.totalRevenue || 0, org.revenueCurrency || org.defaultCurrency || 'ILS')}
                       </span>
                     </div>
+                    {org.hasOtherCurrencies && <p className="mt-2 text-xs font-medium text-amber-800 dark:text-amber-300">
+                      {locale === 'he' ? 'יש מסמכים במטבעות אחרים שלא נכללו בסכום.' :
+                        'Other-currency documents are excluded from this total.'}
+                    </p>}
                     {(org.pendingRevenue ?? 0) > 0 && (
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/50 dark:border-emerald-500/20">
                         <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
