@@ -1627,12 +1627,12 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Invalid email address",
       "emailHint": "We'll send your detailed report here",
-      "newsletterLabel": "Send me tips and insights to grow my store (recommended)",
+      "newsletterLabel": "Also send me occasional growth tips (optional)",
       "submitButton": "Analyze My Store (Free)",
       "analyzing": "Analyzing...",
       "tryAgain": "Try again",
       "submitFailed": "Could not start the analysis. Please try again.",
-      "privacy": "Your data is secure. We never share your information with third parties."
+      "privacy": "We use your details to deliver this report. Marketing updates require separate consent."
     },
     "errors": {
       "unknown": {

@@ -17,10 +17,6 @@ function scoreText(score) {
   return `<span dir="ltr" style="unicode-bidi: isolate; white-space: nowrap;">${escapeHtml(score)}/100</span>`;
 }
 
-function percentRangeText(lowEnd, highEnd) {
-  return `<span dir="ltr" style="unicode-bidi: isolate; white-space: nowrap;">${escapeHtml(lowEnd)}-${escapeHtml(highEnd)}%</span>`;
-}
-
 function overallScoreDisplay(score) {
   return `
     <span dir="ltr" style="display: block; unicode-bidi: isolate; font-size: 48px; font-weight: 900; color: #0f172a; line-height: 1;">${escapeHtml(score)}</span>
@@ -937,59 +933,7 @@ function buildActionRoadmapHtml(sections, texts, isRtl) {
 }
 
 // Build revenue impact section - PROFESSIONAL VERSION (no CSS gradients for email)
-function buildRevenueImpactHtml(sections, texts, isRtl) {
-  const priorityAreas = buildPriorityRecommendations(allRecommendations(sections, texts), 3).length;
-
-  if (priorityAreas === 0) return '';
-
-  // Conservative directional range. The report should guide prioritization, not promise outcomes.
-  const lowEnd = Math.min(8 + priorityAreas * 4, 25);
-  const highEnd = Math.min(14 + priorityAreas * 6, 35);
-  const countLabels = getCountLabels(texts);
-
-  return `
-    <table class="avoid-break" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 40px; break-inside: avoid; page-break-inside: avoid; ${isRtl ? 'direction: rtl;' : ''}">
-      <tr>
-        <td style="background: #0f172a; border-radius: 12px; padding: 28px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td style="${isRtl ? 'text-align: right;' : ''}">
-                <h3 style="color: #ffffff; font-size: 18px; font-weight: 800; margin: 0 0 10px;">
-                  ${escapeHtml(texts.revenueImpactTitle)}
-                </h3>
-                <p style="color: #94a3b8; font-size: 14px; margin: 0 0 20px; line-height: 1.6;">
-                  ${escapeHtml(texts.revenueImpactText)}
-                </p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #1e293b; border-radius: 10px;">
-                  <tr>
-                    <td style="padding: 24px; text-align: center;">
-                      <table cellpadding="0" cellspacing="0" border="0" align="center">
-                        <tr>
-                          <td style="text-align: center;">
-                            <span style="font-size: 44px; font-weight: 900; color: #22c55e;">${percentRangeText(lowEnd, highEnd)}</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding-top: 8px; text-align: center;">
-                            <span style="color: #64748b; font-size: 13px;">${countText(priorityAreas, countLabels.issueSingular, countLabels.issuePlural, isRtl)}</span>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  `;
-}
+// No conversion or revenue lift can be estimated from anonymous technical signals alone.
 
 function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
   const lang = isRtl ? 'he' : 'en';
@@ -1030,7 +974,7 @@ function buildStoreAnalysisReportHtml(results, storeUrl, texts, isRtl) {
       analyzedUrl: texts.analyzedUrl,
       footerText: texts.footerText,
       footerYear: String(new Date().getFullYear()),
-      revenueImpactHtml: buildRevenueImpactHtml(sections, texts, isRtl),
+      revenueImpactHtml: '', // Withhold speculative percentages without merchant sales data.
       scoresHtml: buildScoresHtml(sections, texts, isRtl),
       recommendationsHtml: buildRecommendationsHtml(sections, texts, isRtl),
       coreWebVitalsHtml: buildCoreWebVitalsHtml(results.coreWebVitals, texts, isRtl),

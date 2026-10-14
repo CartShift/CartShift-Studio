@@ -31,7 +31,11 @@ function isPrivateIpv4(a: number, b: number): boolean {
 function isPrivateIpAddress(ip: string): boolean {
   const normalized = ip.toLowerCase().trim();
 
-  if (normalized === '::1') return true;
+  if (normalized === '::' || normalized === '::1') return true;
+  if (normalized.startsWith('::ffff:')) {
+    const embedded = normalized.slice('::ffff:'.length);
+    return isPrivateIpAddress(embedded);
+  }
   if (normalized.startsWith('fe80:')) return true;
   if (normalized.startsWith('fc') || normalized.startsWith('fd')) return true;
 
@@ -93,6 +97,14 @@ export async function validateStoreUrlForAnalysis(
     };
   }
 
+  if (urlObj.username || urlObj.password) {
+    return { ok: false, error: 'Store URLs must not contain usernames or passwords.' };
+  }
+
+  if (urlObj.port && urlObj.port !== '80' && urlObj.port !== '443') {
+    return { ok: false, error: 'Store URLs must use the standard HTTP or HTTPS port.' };
+  }
+
   if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
     return { ok: false, error: 'Invalid URL protocol. Only HTTP and HTTPS are supported.' };
   }
@@ -127,5 +139,13 @@ export async function validateStoreUrlForAnalysis(
     }
   }
 
-  return { ok: true, normalizedUrl };
+  // Canonicalize hostile path/query characters before using the URL in HTML/PDF.
+  urlObj.hash = '';
+  const canonical = urlObj.toString();
+  const safeNormalizedUrl =
+    urlObj.pathname === '/' && !urlObj.search
+      ? canonical.replace(/\/$/, '')
+      : canonical;
+
+  return { ok: true, normalizedUrl: safeNormalizedUrl };
 }

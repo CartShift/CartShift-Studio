@@ -78,10 +78,8 @@ export function determinePrimaryIssue(result: AnalysisResult): PrimaryIssueDecis
   }
 
   if (result.coreWebVitals?.lcp?.rating === 'poor') scores.speed += 30;
-  if (result.deeperScan?.cartInteraction?.attempted) {
-    const cart = result.deeperScan.cartInteraction;
-    if (!cart.addToCartClicked || !cart.checkoutLinkDetected) scores.checkout += 28;
-  }
+  // Inconclusive cart probes (timeouts, disabled buttons or hidden drawers) are
+  // not proof that checkout is broken; only confirmed findings affect ranking.
   if (result.productAnalysis) {
     if (!result.productAnalysis.hasBuyButtonAboveFold) scores.product_page += 20;
     if (!result.productAnalysis.hasReviews) scores.trust += 12;

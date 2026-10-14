@@ -51,6 +51,40 @@ describe('analyzer funnel domain', () => {
     });
     expect(determinePrimaryIssue(tied).primaryIssue).toBe('general_conversion');
   });
+  it('does not interpret an unsuccessful cart probe as a checkout defect', () => {
+    const sample = result();
+    Object.values(sample.sections).forEach(section => {
+      section.score = 95;
+    });
+    sample.overallScore = 95;
+    sample.deeperScan = {
+      attempted: true,
+      available: false,
+      categoryPagesAttempted: 0,
+      categoryPagesSucceeded: 0,
+      productPagesAttempted: 0,
+      productPagesSucceeded: 0,
+      cartInteractionAttempted: true,
+      cartInteractionSucceeded: false,
+      categorySamples: [],
+      productSamples: [],
+      confidence: 'insufficient_evidence',
+      limitations: [],
+      cartInteraction: {
+        attempted: true,
+        addToCartClicked: false,
+        cartCountChanged: false,
+        cartDrawerOrPageDetected: false,
+        checkoutLinkDetected: false,
+        error: 'Browser click failed',
+        evidence: [],
+      },
+    };
+    const decision = determinePrimaryIssue(sample);
+    expect(decision.scores.checkout).toBe(5);
+    expect(decision.primaryIssue).not.toBe('checkout');
+  });
+
   it('maps blog metadata and honors overrides', () => {
     expect(mapArticleToAnalyzerIntent({ category: 'Performance', title: 'Core Web Vitals' })).toBe(
       'speed'

@@ -100,6 +100,32 @@ describe('safeFetchStoreHtml', () => {
     await expect(safeFetchStoreHtml('https://shop.example.com')).rejects.toThrow(/too large/i);
   });
 
+  it('rejects non-HTML responses even when the server returns 200', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('{"login":true}', {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      )
+    );
+    await expect(safeFetchStoreHtml('https://shop.example.com')).rejects.toThrow(/HTML page/i);
+  });
+
+  it('rejects unrecognizable HTML responses', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('Access denied', {
+          status: 200,
+          headers: { 'content-type': 'text/html' },
+        })
+      )
+    );
+    await expect(safeFetchStoreHtml('https://shop.example.com')).rejects.toThrow(/HTML document/i);
+  });
+
   it('rejects redirect chains beyond the limit', async () => {
     let hop = 0;
     const fetchMock = vi.fn().mockImplementation((_url: string) => {

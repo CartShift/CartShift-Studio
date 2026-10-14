@@ -39,6 +39,33 @@ describe('validateStoreUrlForAnalysis', () => {
     }
   });
 
+  it('rejects credentials in storefront URLs', async () => {
+    expect((await validateStoreUrlForAnalysis('https://admin:secret@example.com')).ok).toBe(false);
+  });
+
+  it('rejects nonstandard ports that could reach arbitrary services', async () => {
+    expect((await validateStoreUrlForAnalysis('https://example.com:8080')).ok).toBe(false);
+  });
+
+  it('rejects IPv4-mapped IPv6 internal destinations', async () => {
+    expect((await validateStoreUrlForAnalysis('http://[::ffff:127.0.0.1]')).ok).toBe(false);
+  });
+
+  it('normalizes and safely encodes the URL before it enters a report', async () => {
+    vi.mocked(dnsLookupMock).mockResolvedValueOnce([
+      { address: '93.184.216.34', family: 4 },
+    ] as unknown as Awaited<ReturnType<typeof lookup>>);
+
+    const result = await validateStoreUrlForAnalysis(
+      'https://example.com/?q=<script>#private-fragment'
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.normalizedUrl).not.toContain('<script>');
+      expect(result.normalizedUrl).not.toContain('#private-fragment');
+    }
+  });
+
   it('accepts public store URLs', async () => {
     vi.mocked(dnsLookupMock).mockResolvedValueOnce([
       { address: '93.184.216.34', family: 4 },

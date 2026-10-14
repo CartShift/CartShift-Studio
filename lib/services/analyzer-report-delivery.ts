@@ -5,7 +5,8 @@ import type { AnalysisResult } from '@/lib/types/analyzer';
 import type { AnalyzerAttribution, AnalyzerIntent, PrimaryIssue } from '@/lib/analyzer/funnel';
 
 /** PDF generation on Cloud Functions can take up to ~90s; runs after the API response is sent. */
-const REPORT_DELIVERY_TIMEOUT_MS = 90_000;
+const REPORT_DELIVERY_TIMEOUT_MS = 45_000;
+const REPORT_DELIVERY_KEY = process.env.ANALYZER_REPORT_DELIVERY_KEY;
 
 export type ReportDeliveryStatus = 'sent' | 'failed' | 'unconfigured';
 
@@ -14,7 +15,7 @@ export function resolveInitialEmailReportStatus(): ReportDeliveryStatus | 'pendi
     env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL,
     'sendStoreAnalysisReport'
   );
-  return reportUrl ? 'pending' : 'unconfigured';
+  return reportUrl && REPORT_DELIVERY_KEY ? 'pending' : 'unconfigured';
 }
 
 export async function deliverStoreAnalysisReport(params: {
@@ -28,14 +29,15 @@ export async function deliverStoreAnalysisReport(params: {
   attribution?: AnalyzerAttribution;
   primaryIssue?: PrimaryIssue;
   reportUrl?: string;
+  deliveryId?: string;
 }): Promise<ReportDeliveryStatus> {
   const reportUrl = buildFirebaseFunctionUrl(
     env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL,
     'sendStoreAnalysisReport'
   );
 
-  if (!reportUrl) {
-    logWarn('Store analysis report delivery skipped: function URL not configured');
+  if (!reportUrl || !REPORT_DELIVERY_KEY) {
+    logWarn('Store analysis report delivery skipped: function URL or delivery key not configured');
     return 'unconfigured';
   }
 
@@ -45,7 +47,10 @@ export async function deliverStoreAnalysisReport(params: {
   try {
     const response = await fetch(reportUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Analyzer-Delivery-Key': REPORT_DELIVERY_KEY,
+      },
       body: JSON.stringify(params),
       signal: controller.signal,
     });

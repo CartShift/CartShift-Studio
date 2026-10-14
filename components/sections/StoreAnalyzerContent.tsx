@@ -437,15 +437,7 @@ export const StoreAnalyzerContent: React.FC<{
                         <AnalyzerForm onSubmit={handleAnalyze} />
                       </GoogleReCaptchaProvider>
 
-                      <div className="mt-6 pt-6 border-t border-surface-100 dark:border-white/10">
-                        <div className="flex items-center justify-center gap-2 text-surface-400 dark:text-white/40 text-xs">
-                          <Shield className="w-3.5 h-3.5" />
-                          <span>
-                            {t('analyzer.form.privacy') ||
-                              'Your data is encrypted and never shared'}
-                          </span>
-                        </div>
-                      </div>
+
                     </div>
                   </div>
                 </motion.div>
