@@ -106,7 +106,8 @@
       "openResearchSource": "Open research source",
       "platform": "Platform signal",
       "shopifyDetected": "Shopify detected (not verified)",
-      "platformUnknown": "Platform not verified"
+      "platformUnknown": "Platform not verified",
+      "scanAwaitingLaunch": "Scanning awaits launch approval"
     }
   }
 }

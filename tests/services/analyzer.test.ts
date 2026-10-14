@@ -331,6 +331,22 @@ describe('AnalyzerService.analyzeStore', () => {
     expect(result.overallScore).toBeGreaterThan(0);
   });
 
+  it('treats incomplete PageSpeed category data as unverified rather than failed audits', async () => {
+    const payload = buildPageSpeedPayload();
+    delete (payload.lighthouseResult.categories as Record<string, unknown>).seo;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify(payload), { status: 200 }))
+    );
+
+    const result = await AnalyzerService.analyzeStore('https://shop.example.com');
+
+    expect(result.meta.usedLighthouse).toBe(false);
+    expect(result.meta.usedHtmlFallback).toBe(true);
+    expect(result.sections.seo.score).toBeGreaterThan(0);
+    expect(result.sections.performance.score).toBeGreaterThan(0);
+  });
+
   it('falls back to static HTML analysis when PageSpeed is unavailable', async () => {
     vi.stubGlobal(
       'fetch',

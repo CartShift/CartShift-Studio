@@ -12,7 +12,11 @@ import { verifyRecaptchaToken } from '@/lib/services/recaptcha-server';
 import { validateAnalyzeStoreRequest } from '@/lib/validation';
 import { validateStoreUrlForAnalysis } from '@/lib/utils/store-url';
 import { determinePrimaryIssue } from '@/lib/analyzer/funnel';
-import { storePrivateAnalysisReport } from '@/lib/services/analysis-report-store';
+import { buildAnalyzerLeadIntelligence } from '@/lib/analyzer/lead-intelligence';
+import {
+  storePrivateAnalysisReport,
+  updatePrivateReportDelivery,
+} from '@/lib/services/analysis-report-store';
 
 export const maxDuration = 120;
 
@@ -54,6 +58,14 @@ export async function POST(request: NextRequest) {
     const { storeUrl, email, subscribeNewsletter, locale, captchaToken, intent, attribution } =
       validation.data;
     const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+
+    // Do not allow unauthenticated expensive scans if bot protection is misconfigured.
+    if (process.env.NODE_ENV === 'production' && !recaptchaSecret) {
+      return NextResponse.json(
+        createErrorResponse('Store analysis is temporarily unavailable. Please try again later.', 503),
+        { status: 503 }
+      );
+    }
 
     if (recaptchaSecret) {
       if (!captchaToken) {
@@ -111,35 +123,14 @@ export async function POST(request: NextRequest) {
       reportCompletedAt,
     };
 
+    const leadIntelligence = buildAnalyzerLeadIntelligence(result, issueDecision.primaryIssue);
     const leadCaptureStatus = await captureStoreAnalysisLead({
       email,
       storeUrl: normalizedUrl,
       locale: locale || 'en',
       platform: result.platform,
       overallScore: result.overallScore,
-      ...(() => {
-        const [focusArea, focusSection] = Object.entries(result.sections).sort(
-          ([, a], [, b]) => a.score - b.score
-        )[0];
-        const primaryRecommendation = focusSection.recommendations
-          .filter(recommendation => !recommendation.excludeFromActionPlan)
-          .sort((a, b) => {
-            const priority = { high: 0, medium: 1, low: 2 } as const;
-            return priority[a.impact] - priority[b.impact];
-          })[0];
-
-        return {
-          focusArea: focusArea as
-            | 'performance'
-            | 'seo'
-            | 'accessibility'
-            | 'bestPractices'
-            | 'cart'
-            | 'trust',
-          focusScore: focusSection.score,
-          primaryRecommendation: primaryRecommendation?.title,
-        };
-      })(),
+      ...leadIntelligence,
       subscribeNewsletter: subscribeNewsletter ?? false,
       intent,
       attribution,
@@ -155,11 +146,26 @@ export async function POST(request: NextRequest) {
       meta: { ...result.meta, emailReportStatus, leadCaptureStatus },
     });
     let reportUrl: string | undefined;
+    let reportToken: string | null = null;
     try {
-      const reportToken = await storePrivateAnalysisReport(clientResult, locale || 'en');
+      reportToken = await storePrivateAnalysisReport(
+        clientResult,
+        locale || 'en',
+        emailReportStatus === 'pending'
+          ? {
+              email,
+              storeUrl: normalizedUrl,
+              subscribeNewsletter: subscribeNewsletter ?? false,
+              skipLeadCapture,
+              intent,
+              attribution,
+              primaryIssue: issueDecision.primaryIssue,
+            }
+          : undefined
+      );
       if (reportToken) {
         const reportPath = `/${locale || 'en'}/tools/store-analyzer/report/${reportToken}`;
-        reportUrl = new URL(reportPath, request.nextUrl.origin).toString();
+        reportUrl = new URL(reportPath, 'https://cart-shift.com').toString();
         clientResult = { ...clientResult, meta: { ...clientResult.meta, reportPath } };
         result.meta.reportPath = reportPath;
       }
@@ -172,18 +178,29 @@ export async function POST(request: NextRequest) {
       email,
       storeUrl: normalizedUrl,
       locale: locale || 'en',
-      results: result,
+      results: clientResult,
       subscribeNewsletter: subscribeNewsletter ?? false,
       skipLeadCapture,
       intent,
       attribution,
       primaryIssue: issueDecision.primaryIssue,
       reportUrl,
+      deliveryId: reportToken ?? undefined,
     };
 
     if (emailReportStatus === 'pending') {
       after(async () => {
         const deliveryStatus = await deliverStoreAnalysisReport(reportPayload);
+        if (reportToken) {
+          try {
+            await updatePrivateReportDelivery(
+              reportToken,
+              deliveryStatus === 'sent' ? 'sent' : 'failed'
+            );
+          } catch (statusError) {
+            logError('Failed to persist analysis report email status', statusError);
+          }
+        }
         if (deliveryStatus === 'failed') {
           logError(
             'Store analysis report delivery failed after response',

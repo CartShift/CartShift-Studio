@@ -74,14 +74,12 @@ beforeEach(() => {
 
 describe('CartShift complete OAuth consent flow', () => {
   it('reports unsupported GET/SSE so MCP clients can fall back to POST discovery', async () => {
-    for (const headers of [{}, { Authorization: 'Bearer invalid' }]) {
-      // The GET handler intentionally accepts no request; auth headers are irrelevant for 405.
-      void headers;
-      const res = await mcpGet();
-      expect(res.status).toBe(405);
-      expect(res.headers.get('Allow')).toBe('POST');
-      expect(res.headers.get('Cache-Control')).toBe('no-store');
-    }
+    // GET intentionally accepts no request argument and always rejects SSE discovery.
+    // Authentication is tested separately via the POST-only MCP endpoint below.
+    const res = await mcpGet();
+    expect(res.status).toBe(405);
+    expect(res.headers.get('Allow')).toBe('POST');
+    expect(res.headers.get('Cache-Control')).toBe('no-store');
   });
 
   it('submits the rendered form, exchanges the code once and discovers authenticated MCP tools', async () => {

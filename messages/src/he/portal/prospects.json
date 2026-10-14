@@ -106,7 +106,8 @@
       "openResearchSource": "פתיחת מקור המחקר",
       "platform": "זיהוי פלטפורמה",
       "shopifyDetected": "זוהו סימני Shopify (דורש אימות)",
-      "platformUnknown": "טרם אומתה פלטפורמה"
+      "platformUnknown": "טרם אומתה פלטפורמה",
+      "scanAwaitingLaunch": "הסריקה תופעל לאחר אישור בדיקות ההשקה"
     }
   }
 }

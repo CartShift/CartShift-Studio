@@ -31,6 +31,7 @@ export interface MarketingLead {
   focusArea?: 'performance' | 'seo' | 'accessibility' | 'bestPractices' | 'cart' | 'trust';
   focusScore?: number | null;
   primaryRecommendation?: string | null;
+  analysisMetadata?: Record<string, string | number | boolean | null> | null;
   analyzerIntent?: string | null;
   primaryIssue?: string | null;
   ctaType?: string | null;

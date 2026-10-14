@@ -27,6 +27,7 @@ export async function captureStoreAnalysisLead(params: {
   focusArea?: 'performance' | 'seo' | 'accessibility' | 'bestPractices' | 'cart' | 'trust';
   focusScore?: number;
   primaryRecommendation?: string;
+  metadata?: Record<string, string | number | boolean | null>;
   subscribeNewsletter: boolean;
   intent?: AnalyzerIntent;
   attribution?: AnalyzerAttribution;
@@ -42,7 +43,7 @@ export async function captureStoreAnalysisLead(params: {
   const recentlyCaptured = await CacheService.get<boolean>(dedupeKey);
   if (recentlyCaptured) {
     if (params.subscribeNewsletter) {
-      await captureMarketingLead({
+      const subscriptionResult = await captureMarketingLead({
         email: params.email,
         storeUrl: params.storeUrl,
         locale: params.locale as 'en' | 'he',
@@ -52,16 +53,17 @@ export async function captureStoreAnalysisLead(params: {
         focusArea: params.focusArea,
         focusScore: params.focusScore,
         primaryRecommendation: params.primaryRecommendation,
+        metadata: params.metadata,
         subscribeNewsletter: true,
         consent: true,
         skipWelcome: true,
         intent: params.intent,
         attribution: params.attribution,
         primaryIssue: params.primaryIssue,
-        ctaType: params.primaryIssue ? `human_review_${params.primaryIssue}` : undefined,
         analyzerSubmittedAt: params.analyzerSubmittedAt,
         reportCompletedAt: params.reportCompletedAt,
       });
+      if (!subscriptionResult.success) return 'failed';
     }
     return 'deduped';
   }
@@ -76,13 +78,13 @@ export async function captureStoreAnalysisLead(params: {
     focusArea: params.focusArea,
     focusScore: params.focusScore,
     primaryRecommendation: params.primaryRecommendation,
+    metadata: params.metadata,
     subscribeNewsletter: params.subscribeNewsletter,
     consent: params.subscribeNewsletter,
     skipWelcome: true,
     intent: params.intent,
     attribution: params.attribution,
     primaryIssue: params.primaryIssue,
-    ctaType: params.primaryIssue ? `human_review_${params.primaryIssue}` : undefined,
     analyzerSubmittedAt: params.analyzerSubmittedAt,
     reportCompletedAt: params.reportCompletedAt,
   });

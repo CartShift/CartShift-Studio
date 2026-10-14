@@ -40,7 +40,7 @@ type Finding = {
   observedUrl: string; evidenceExcerpt: string;
   businessRelevance: string; verificationStatus: string;
 };
-type ListResponse = { prospects: Prospect[]; truncated: boolean };
+type ListResponse = { prospects: Prospect[]; truncated: boolean; scanningEnabled: boolean };
 type ContactCandidate = {
   id: string; name: string; role: string; businessEmail: string;
   sourceUrl: string; status: string;
@@ -397,9 +397,9 @@ export default function ProspectsClient() {
             </a>}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-surface-500">{eligibilityLabels[prospect.outreachEligibility] || t('noPermission')}</span>
-              <Button variant="outline" disabled={scan.isPending || prospect.doNotContact} onClick={() => scan.mutate(prospect.id)}>
+              <Button variant="outline" disabled={!list.data?.scanningEnabled || scan.isPending || prospect.doNotContact} onClick={() => scan.mutate(prospect.id)}>
                 {scan.isPending && scan.variables === prospect.id && <Loader2 size={14} className="animate-spin" />}
-                {t('scanStore')}
+                {list.data?.scanningEnabled ? t('scanStore') : t('scanAwaitingLaunch')}
               </Button>
               <Button variant="outline" onClick={() => {
                 setSelected(p => p === prospect.id ? null : prospect.id);

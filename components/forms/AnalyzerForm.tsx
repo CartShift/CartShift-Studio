@@ -50,7 +50,7 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
     defaultValues: {
       storeUrl: '',
       email: '',
-      subscribeNewsletter: true,
+      subscribeNewsletter: false,
     },
   });
 
@@ -90,8 +90,8 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
     }
   };
 
-  // URL validation pattern
-  const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-./?%&=]*)?$/i;
+  // Detailed DNS and SSRF checks are performed server-side.
+  const urlPattern = /^(https?:\/\/)?[^\s/?#]+(?:[/?#][^\s]*)?$/i;
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
@@ -201,7 +201,7 @@ export const AnalyzerForm: React.FC<AnalyzerFormProps> = ({ onSubmit, variant = 
         className={`text-xs text-center ${isDark ? 'text-white/30' : 'text-surface-400 dark:text-surface-500'}`}
       >
         {t('analyzer.form.privacy') ||
-          'Your data is secure. We never share your information with third parties.'}
+          'We use your details to provide the report. Marketing emails require separate consent.'}
       </p>
     </form>
   );

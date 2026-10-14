@@ -73,7 +73,8 @@ export async function listProspects(raw: unknown, uid: string) {
     [x.brandName, x.canonicalDomain, x.stage].some(s => s.toLocaleLowerCase().includes(filter))
   ) : all;
   const limit = input.limit || 60;
-  return { prospects: filtered.slice(0, limit), truncated: snapshot.size === 100 || filtered.length > limit };
+  return { prospects: filtered.slice(0, limit), truncated: snapshot.size === 100 || filtered.length > limit,
+    scanningEnabled: process.env.PROSPECT_SCANS_ENABLED === 'true' };
 }
 
 export async function upsertProspect(raw: unknown, uid: string) {

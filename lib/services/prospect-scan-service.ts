@@ -12,6 +12,8 @@ const DAILY_USER_SCAN_LIMIT = 25;
 
 export async function scanProspect(prospectId: string, uid: string) {
   await requireProspectActor(uid);
+  // Explicit internal rollout flag: never crawl public stores on a fresh deployment.
+  if (process.env.PROSPECT_SCANS_ENABLED !== 'true') throw new Error('SCAN_DISABLED');
   if (!/^prospect_[a-f0-9]{32}$/.test(prospectId)) throw new Error('INVALID_PROSPECT_ID');
   if (!adminDb) throw new Error('ADMIN_NOT_CONFIGURED');
   const ref = adminDb.collection('agency_prospects').doc(prospectId);

@@ -16,6 +16,7 @@ const suites = [
   'tests/services/prospect-site-audit.test.ts',
   'tests/services/prospect-lead-quality.test.ts',
   'tests/services/prospect-safe-http.test.ts',
+  'tests/services/prospect-scan-service.test.ts',
   'tests/api/cartshift-mcp-prospects.test.ts',
   'tests/api/cartshift-mcp-operations.test.ts',
   'tests/api/cartshift-mcp-consent.test.ts',

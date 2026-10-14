@@ -64,17 +64,44 @@ function getScoreTone(score?: number) {
   return 'gray';
 }
 
+function canContactLead(lead: MarketingLead): boolean {
+  return lead.marketingConsent === true ||
+    lead.latestSource === 'human_review' ||
+    lead.conversionStatus === 'project_inquiry';
+}
+
 function buildMailto(lead: MarketingLead) {
-  const subject = encodeURIComponent(`CartShift follow-up — ${lead.email}`);
+  const he = lead.locale === 'he';
+  const isRequestedReview = lead.latestSource === 'human_review';
+  const verifiedOpportunity =
+    lead.analysisMetadata?.followUpReadiness === 'evidence_ready' &&
+    Boolean(lead.primaryRecommendation);
+  const subject = encodeURIComponent(
+    he ? 'בהמשך לפנייה שלך ל־CartShift' : 'Following up on your CartShift request'
+  );
   const body = encodeURIComponent(
     [
-      `Lead: ${lead.email}`,
-      lead.storeUrl ? `Store: ${lead.storeUrl}` : null,
-      lead.overallScore != null ? `Analyzer score: ${lead.overallScore}/100` : null,
-      lead.latestSource ? `Source: ${lead.latestSource}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n')
+      he ? 'היי,' : 'Hi,',
+      '',
+      isRequestedReview
+        ? he
+          ? 'תודה שפנית אלינו וביקשת בדיקה מקצועית לחנות.'
+          : 'Thanks for requesting a professional review of your store.'
+        : he
+          ? 'תודה שבדקת את החנות באמצעות ה־Store Analyzer של CartShift.'
+          : 'Thanks for using the CartShift Store Analyzer.',
+      lead.storeUrl ? (he ? `החנות: ${lead.storeUrl}` : `Store: ${lead.storeUrl}`) : null,
+      verifiedOpportunity
+        ? he
+          ? `אחד הממצאים שזוהו בסריקה הוא: ${lead.primaryRecommendation}.`
+          : `One evidence-backed finding from the scan was: ${lead.primaryRecommendation}.`
+        : null,
+      he
+        ? 'אם זה רלוונטי, אשמח לשמוע על האתגר המרכזי שלכם ולבדוק איך אפשר לעזור.'
+        : "If it's useful, I'd be happy to learn about your main challenge and discuss practical next steps.",
+      '',
+      he ? 'תודה,\nCartShift Studio' : 'Best,\nCartShift Studio',
+    ].filter(value => value !== null).join('\n')
   );
   return `mailto:${lead.email}?subject=${subject}&body=${body}`;
 }
@@ -98,14 +125,16 @@ function buildCalendarUrl(lead: MarketingLead) {
         .join('\n'),
       startTime: start,
       endTime: end,
-      attendeeEmails: [lead.email],
+      // Internal follow-up only: never invite a prospect who has not accepted a meeting.
+      attendeeEmails: [],
       addConferencing: true,
     }) || getScheduleUrl()
   );
 }
 
 function leadNeedsFollowUp(lead: MarketingLead) {
-  if ((lead.leadScore || 0) < 50) return false;
+  if (!canContactLead(lead)) return false;
+  if ((lead.leadScore || 0) < 50 && lead.latestSource !== 'human_review') return false;
   if (lead.contactStatus === 'contacted') return false;
   const updated = lead.updatedAt?.toMillis() || lead.createdAt?.toMillis() || 0;
   return updated <= Date.now() - 48 * 60 * 60 * 1000;
@@ -132,7 +161,8 @@ export default function MarketingLeadsClient() {
     const term = search.trim().toLowerCase();
 
     return leads.filter(lead => {
-      if (filter === 'hot' && (lead.leadScore || 0) < 50) return false;
+      if (filter === 'hot' && (!canContactLead(lead) ||
+        ((lead.leadScore || 0) < 50 && lead.latestSource !== 'human_review'))) return false;
       if (filter === 'needsFollowUp' && !leadNeedsFollowUp(lead)) return false;
 
       if (!term) return true;
@@ -370,6 +400,25 @@ export default function MarketingLeadsClient() {
                             </a>
                           )}
                         </div>
+                        {lead.primaryRecommendation && (
+                          <div className="mt-1 max-w-md text-xs text-surface-600 dark:text-surface-300">
+                            {lead.primaryRecommendation}
+                            {lead.analysisMetadata?.reportPartial === true && (
+                              <span className="ms-2 text-amber-600 dark:text-amber-400">
+                                (partial audit)
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {typeof lead.analysisMetadata?.topEvidence === 'string' &&
+                          lead.analysisMetadata.topEvidence && (
+                            <div
+                              className="mt-1 max-w-md truncate text-xs text-surface-500"
+                              title={lead.analysisMetadata.topEvidence}
+                            >
+                              {lead.analysisMetadata.topEvidence}
+                            </div>
+                          )}
                       </PortalTableCell>
                       <PortalTableCell className="capitalize">
                         {formatSource(lead.latestSource)}
@@ -391,13 +440,15 @@ export default function MarketingLeadsClient() {
                           >
                             <Copy className="h-4 w-4" />
                           </Button>
-                          <a
-                            href={buildMailto(lead)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-white/10"
-                            title={t('actions.emailLead')}
-                          >
-                            <Mail className="h-4 w-4" />
-                          </a>
+                          {canContactLead(lead) && (
+                            <a
+                              href={buildMailto(lead)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-white/10"
+                              title={t('actions.emailLead')}
+                            >
+                              <Mail className="h-4 w-4" />
+                            </a>
+                          )}
                           <a
                             href={buildCalendarUrl(lead)}
                             target="_blank"

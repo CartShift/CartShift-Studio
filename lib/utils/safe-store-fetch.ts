@@ -31,7 +31,11 @@ function isPrivateIpv4(a: number, b: number): boolean {
 function isPrivateIpAddress(ip: string): boolean {
   const normalized = ip.toLowerCase().trim();
 
-  if (normalized === '::1') return true;
+  if (normalized === '::' || normalized === '::1') return true;
+  if (normalized.startsWith('::ffff:')) {
+    const embedded = normalized.slice('::ffff:'.length);
+    return isPrivateIpAddress(embedded);
+  }
   if (normalized.startsWith('fe80:')) return true;
   if (normalized.startsWith('fc') || normalized.startsWith('fd')) return true;
 
@@ -119,11 +123,34 @@ export async function safeFetchStoreHtml(
       throw new Error('Store page is too large to analyze.');
     }
 
-    const html = await response.text();
-    if (html.length > MAX_BODY_BYTES) {
-      throw new Error('Store page is too large to analyze.');
+    const contentType = response.headers.get('content-type')?.toLowerCase() || '';
+    if (contentType && !/text\/html|application\/xhtml\+xml/.test(contentType)) {
+      throw new Error('Store URL did not return an HTML page.');
     }
 
+    // Stream with an actual byte limit. Content-Length is frequently absent or incorrect.
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error('Store response contained no readable body.');
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        totalBytes += value.byteLength;
+        if (totalBytes > MAX_BODY_BYTES) {
+          await reader.cancel();
+          throw new Error('Store page is too large to analyze.');
+        }
+        chunks.push(value);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    const html = new TextDecoder().decode(Buffer.concat(chunks));
+    if (!/<html[\s>]|<!doctype html|<head[\s>]|<body[\s>]/i.test(html)) {
+      throw new Error('Store URL did not provide a recognizable HTML document.');
+    }
     return { html, finalUrl: currentUrl };
   }
 
