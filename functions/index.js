@@ -4219,8 +4219,7 @@ exports.analyzeStore = onRequest({ cors: true, maxInstances: 2 }, async (req, re
 
 /**
  * Recovery lane for reports abandoned by serverless post-response execution.
- * Runs hourly, processes a small bounded batch, and stops after five attempts.
- * The send function uses the same stable Resend idempotency key as the initial attempt.
+ * The exported Cloud Function name stays unchanged for safe deployment.
  */
 exports.retryStoreAnalysisReports = onSchedule(
   {
@@ -4237,71 +4236,15 @@ exports.retryStoreAnalysisReports = onSchedule(
       console.warn('[Analyzer retry] Delivery key or project ID unavailable');
       return;
     }
-    const baseUrl = process.env.ANALYZER_REPORT_FUNCTION_URL ||
-      `https://us-central1-${project}.cloudfunctions.net/sendStoreAnalysisReport`;
-    const docs = await admin.firestore().collection('store_analysis_reports')
-      .where('delivery.status', 'in', ['pending', 'failed', 'retrying'])
-      .limit(12).get();
-    const now = Date.now();
-
-    for (const doc of docs.docs) {
-      const record = doc.data();
-      const job = record.delivery;
-      const lastAttempt = job?.lastAttemptAt?.toDate?.().getTime() || 0;
-      if (!job?.email || !record?.result || job.attempts >= 5) continue;
-      // Avoid racing the immediate after() sender or a previous scheduled instance.
-      if (now - (lastAttempt || record.createdAt?.toDate?.().getTime() || now) < 30 * 60 * 1000) continue;
-
-      const claim = await admin.firestore().runTransaction(async tx => {
-        const current = await tx.get(doc.ref);
-        const state = current.data()?.delivery;
-        const updated = state?.lastAttemptAt?.toDate?.().getTime() || 0;
-        if (state?.status === 'sent' || state?.attempts >= 5 ||
-            now - (updated || current.data()?.createdAt?.toDate?.().getTime() || now) < 30 * 60 * 1000) {
-          return false;
-        }
-        tx.update(doc.ref, {
-          'delivery.status': 'retrying',
-          'delivery.attempts': admin.firestore.FieldValue.increment(1),
-          'delivery.lastAttemptAt': admin.firestore.FieldValue.serverTimestamp(),
-          'delivery.updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-        });
-        return true;
-      });
-      if (!claim) continue;
-
-      try {
-        const response = await fetch(baseUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Analyzer-Delivery-Key': key },
-          body: JSON.stringify({
-            email: job.email,
-            storeUrl: job.storeUrl,
-            locale: record.locale || 'en',
-            results: record.result,
-            subscribeNewsletter: job.subscribeNewsletter === true,
-            skipLeadCapture: job.skipLeadCapture === true,
-            intent: job.intent,
-            attribution: job.attribution,
-            primaryIssue: job.primaryIssue,
-            reportUrl: `https://cart-shift.com/${record.locale || 'en'}/tools/store-analyzer/report/${doc.id}`,
-            deliveryId: doc.id,
-          }),
-          signal: AbortSignal.timeout(120000),
-        });
-        if (!response.ok) throw new Error(`Report delivery returned HTTP ${response.status}`);
-        await doc.ref.update({
-          'delivery.status': 'sent',
-          'delivery.updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-        });
-      } catch (error) {
-        console.error('[Analyzer retry] Email attempt failed', doc.id, error.message);
-        await doc.ref.update({
-          'delivery.status': 'failed',
-          'delivery.updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-        });
-      }
-    }
+    const url = process.env.ANALYZER_REPORT_FUNCTION_URL ||
+      'https://us-central1-' + project + '.cloudfunctions.net/sendStoreAnalysisReport';
+    const { retryAnalysisReports } = require('./analyzer/report-retry');
+    const counters = await retryAnalysisReports({
+      db: admin.firestore(),
+      FieldValue: admin.firestore.FieldValue,
+      deliveryKey: key,
+      deliveryUrl: url,
+    });
+    console.log('[Analyzer retry] Completed', counters);
   }
 );
-

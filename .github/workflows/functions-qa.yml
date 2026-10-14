@@ -43,5 +43,7 @@ jobs:
         # Functions still uses ESLint 8 + legacy .eslintrc.json.
         # Explicitly select legacy config and lint JS; TypeScript is checked by tsc.
         run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js
+      - name: Analyzer retry regression
+        run: node --test ../tests/functions/report-retry.test.cjs
       - name: Compile Firebase Functions TypeScript
         run: pnpm build
