@@ -33,7 +33,7 @@ Searchers use "Shopify SEO review" in a few different ways. Before changing titl
 | ------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Shopify SEO review        | A judgment call on whether SEO is working and what to fix next | Use the performance evaluation below                                      |
 | Shopify SEO audit         | A checklist of indexability, content, speed, and linking fixes | Work through the [SEO audit checklist](/blog/shopify-seo-audit-checklist) |
-| Shopify SEO report        | Search Console, GA4, and revenue metrics in one view           | Run the [store analyzer](/tools/store-analyzer), then compare results     |
+| Shopify SEO report        | Search Console, GA4, and revenue metrics in one view           | Run the [expert store review](/free-store-review), then compare results     |
 | Shopify SEO agency review | Proof that a partner can diagnose and implement safely         | Review process, technical depth, and ecommerce outcomes together          |
 
 This article focuses on the first job: turning ranking, CTR, analytics, and revenue signals into a prioritized decision. If the review shows technical or implementation work, the next step should be a scoped fix plan, not another generic SEO report.
@@ -71,7 +71,7 @@ Add the five scores, then use the weakest rows to build the action plan:
 - **40-59:** Resolve intent, content, and internal-path problems before polishing the snippet.
 - **0-39:** Start with crawlability, indexability, and measurement.
 
-This is not a Google ranking factor, and it is not useful for comparing one store with another. It is a prioritization tool for one store over time. A [store grader](/tools/store-analyzer) can speed up evidence collection, but the review still needs a person to decide which fix matters most.
+This is not a Google ranking factor, and it is not useful for comparing one store with another. It is a prioritization tool for one store over time. A [expert review](/free-store-review) can speed up evidence collection, but the review still needs a person to decide which fix matters most.
 
 ## What to measure first
 
@@ -160,7 +160,7 @@ If a blog post gets traffic but no useful downstream behavior, the problem might
 - from Shopify SEO content to [Shopify development services](/solutions/shopify),
 - from performance content to [store speed and conversion](/blog/store-speed-vs-conversion),
 - from CRO content to [conversion audit checklist](/blog/conversion-audit-checklist),
-- from diagnostic content to the [store analyzer](/tools/store-analyzer).
+- from diagnostic content to the [expert store review](/free-store-review).
 
 The goal is not to turn every paragraph into a sales pitch. The goal is to make the next useful step obvious.
 
@@ -280,7 +280,7 @@ Bring in a technical partner when the evaluation shows:
 - organic traffic is rising but leads or sales are not,
 - the team knows the problem but cannot safely implement the fix.
 
-CartShift Studio works where SEO, performance, and ecommerce implementation overlap. If your review points to theme, app, structure, or conversion issues, start with the [store analyzer](/tools/store-analyzer), review our [Shopify development services](/solutions/shopify), or see how we approach [technical and content SEO](/solutions/seo).
+CartShift Studio works where SEO, performance, and ecommerce implementation overlap. If your review points to theme, app, structure, or conversion issues, start with the [expert store review](/free-store-review), review our [Shopify development services](/solutions/shopify), or see how we approach [technical and content SEO](/solutions/seo).
 
 ## Final takeaway
 
@@ -312,7 +312,7 @@ The best version shows which pages deserve attention, which queries are close to
 | ------------------------- | ------------------------------------------- | --------------------------------------------------------- |
 | Shopify SEO review        | החלטה אם ה-SEO עובד ומה לתקן קודם           | להשתמש במסגרת הערכת הביצועים שבהמשך                       |
 | Shopify SEO audit         | צ׳קליסט אינדוקס, תוכן, מהירות וקישורים      | לעבור על [צ׳קליסט SEO](/blog/shopify-seo-audit-checklist) |
-| Shopify SEO report        | נתוני Search Console, GA4 והכנסות במקום אחד | להריץ את [כלי ניתוח החנות](/tools/store-analyzer)         |
+| Shopify SEO report        | נתוני Search Console, GA4 והכנסות במקום אחד | לבקש [סקירה מקצועית של החנות](/free-store-review)         |
 | Shopify SEO agency review | הוכחה ששותף יודע לאבחן וליישם בצורה בטוחה   | לבדוק תהליך, עומק טכני ותוצאות איקומרס יחד                |
 
 המאמר הזה מתמקד במשימה הראשונה: להפוך דירוגים, CTR, אנליטיקס והכנסות להחלטה מתועדפת. אם הסקירה חושפת עבודה טכנית או יישומית, הצעד הבא צריך להיות תוכנית תיקון ממוקדת ולא עוד דוח SEO כללי.
@@ -350,7 +350,7 @@ The best version shows which pages deserve attention, which queries are close to
 - **40-59:** פתרו בעיות כוונה, תוכן ומסלול פנימי לפני שמלטשים את ה-snippet.
 - **0-39:** התחילו מסריקה, אינדוקס ומדידה.
 
-זה לא פקטור דירוג של Google, ואין טעם להשתמש בציון כדי להשוות בין חנויות שונות. זה כלי לתעדוף השיפור של אותה חנות לאורך זמן. [כלי דירוג חנות](/tools/store-analyzer) יכול לקצר את איסוף הראיות, אבל עדיין נדרש אדם שיחליט איזה תיקון חשוב ביותר.
+זה לא פקטור דירוג של Google, ואין טעם להשתמש בציון כדי להשוות בין חנויות שונות. זה כלי לתעדוף השיפור של אותה חנות לאורך זמן. [סקירה מקצועית לחנות](/free-store-review) יכול לקצר את איסוף הראיות, אבל עדיין נדרש אדם שיחליט איזה תיקון חשוב ביותר.
 
 ## מה מודדים קודם
 
@@ -439,7 +439,7 @@ GA4 לא צריך להיות דשבורד גס של "טראפיק SEO עלה א�
 - מתוכן Shopify SEO אל [שירותי Shopify](/solutions/shopify),
 - מתוכן ביצועים אל [מהירות חנות והמרות](/blog/store-speed-vs-conversion),
 - מתוכן CRO אל [צ׳קליסט אודיט המרות](/blog/conversion-audit-checklist),
-- מתוכן אבחוני אל [כלי ניתוח החנות](/tools/store-analyzer).
+- מתוכן אבחוני אל [סקירה מקצועית של החנות](/free-store-review).
 
 המטרה היא לא להפוך כל פסקה למכירה. המטרה היא להפוך את הצעד הבא לשימושי וברור.
 
@@ -559,7 +559,7 @@ GA4 לא צריך להיות דשבורד גס של "טראפיק SEO עלה א�
 - הטראפיק האורגני עולה אבל לידים או מכירות לא,
 - הצוות יודע מה הבעיה אבל לא יכול ליישם בבטחה.
 
-CartShift Studio עובד בדיוק באזור שבו SEO, ביצועים ויישום איקומרס נפגשים. אם הסקירה מצביעה על theme, אפליקציות, מבנה או בעיות המרה, התחילו עם [כלי ניתוח החנות](/tools/store-analyzer), קראו על [שירותי Shopify](/solutions/shopify), או ראו איך אנחנו ניגשים ל-[SEO טכני ותוכן](/solutions/seo).
+CartShift Studio עובד בדיוק באזור שבו SEO, ביצועים ויישום איקומרס נפגשים. אם הסקירה מצביעה על theme, אפליקציות, מבנה או בעיות המרה, התחילו עם [סקירה מקצועית של החנות](/free-store-review), קראו על [שירותי Shopify](/solutions/shopify), או ראו איך אנחנו ניגשים ל-[SEO טכני ותוכן](/solutions/seo).
 
 ## השורה התחתונה
 
