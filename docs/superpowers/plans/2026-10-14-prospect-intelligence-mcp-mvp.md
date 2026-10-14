@@ -2,7 +2,7 @@
 
 > **For agentic workers:** Implement in reviewable stages with tests; never trigger promotional outbound actions.
 
-**Goal:** let ChatGPT save and read researched candidate stores and unverified findings inside CartShift; let Adi view them in the existing Agency Portal.
+**Goal:** let ChatGPT save and read researched candidate stores, unverified findings and official-site business-contact candidates inside CartShift; let Adi view them in the existing Agency Portal.
 
 **Architecture:** server-only Firestore prospect service shared by MCP tool adapter and authenticated Portal APIs; domain validation and deterministic key for idempotency; role and OAuth gates enforced server-side.
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 - Separate `agency_prospects` from inbound `marketing_leads` and `portal_organizations`.
-- Prospect upserts may not set marketing consent, verified findings, contacts, approved eligibility, nor send messages.
+- Prospect upserts may not set marketing consent, verified findings, approved eligibility, nor send messages. Separate contact-candidate writes require official-site source evidence and are explicitly unverified.
 - Staff role: owner/admin/sales_manager only; sales_manager cannot approve legal/technical review.
 - Add OAuth scopes `prospects:read` and `prospects:write`; existing scopes and tokens are not sufficient.
 - Use source-only EN/HE translations; never edit generated locale JSON.

@@ -4,7 +4,7 @@
 
 **Architecture:** existing Next.js agency portal and CartShift MCP OAuth call the same server-only prospect service. Firestore `agency_prospects` stores researched companies, distinct from opt-in `marketing_leads`. Findings are subdocuments with source URLs, excerpts, timestamps and `unverified` state. Every store retains its do-not-contact gate.
 
-**MVP (first release):** manual/domain upserts, dedupe, private list/details, attach sourced finding candidates, role-restricted ChatGPT tools, Adi-facing view and source badges. No scanning/crawling/contacts/outreach yet. Current sources are just user-/ChatGPT-provided research, never represented as independently verified. Business promotion channel stays `review_required`.
+**MVP (first release):** manual/domain upserts, dedupe, private list/details, attach sourced finding candidates and public business-contact candidates, role-restricted ChatGPT tools, Adi-facing view and source badges. No automated scanning, contact crawling, consent approval or outreach yet. Contact suggestions are unverified and never indicate a permitted marketing channel. Current sources are just user-/ChatGPT-provided research, never represented as independently verified. Business promotion channel stays `review_required`.
 
 **Sequence:** (1) P0+MCP-A private leads and external prospect ingestion; (2) P1+MCP-B safe server scan with robot/terms/SSRF enforcement and scan job polling; (3) P2+MCP-C official business contact suggestions with legal basis and suppression; (4) P3 assignment, follow-up and approved proposal/payment handoff.
 
