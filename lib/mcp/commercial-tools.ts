@@ -307,22 +307,36 @@ export async function callCommercialTool(name: string, raw: unknown, grant: Toke
     const input = z.object({ org_id: identifier, proposal_id: identifier }).strict().parse(raw);
     const snap = await validateProposal(input.org_id, input.proposal_id);
     const p = snap.data() || {};
-    const total = Number(p.totalAmount || 0), amountPaid = Number(p.amountPaid || 0);
+    const total = Number(p.totalAmount || 0), materializedPaid = Number(p.amountPaid || 0);
     const reported = Number(p.reportedDepositMinor || 0);
+    const ledger = await db.collection('portal_payments').where('requestId', '==', snap.id).limit(500).get();
+    const paidDocs = ledger.docs.filter(doc => {
+      const row = doc.data();
+      return row.orgId === input.org_id &&
+        (row.status === 'paid' || (!row.status && !!row.paidAt)) &&
+        row.status !== 'refunded' && row.status !== 'canceled';
+    });
+    const ledgerPaid = paidDocs.reduce((sum, doc) => sum + Number(doc.data().amount || 0), 0);
+    const ledgerTruncated = ledger.size === 500;
+    // A materialized aggregate is useful, but must not be presented as an independently
+    // reconciled bank receipt. Report any divergence rather than hiding it.
+    const paidForProjection = Math.max(materializedPaid, ledgerPaid);
     return { proposal_id: snap.id, project_id: p.projectId || null,
       currency: p.currency || null, status: p.status || null,
       estimated_cap_minor: total,
-      verified_paid_minor: amountPaid,
-      canonical_balance_due_minor: Math.max(0, total - amountPaid),
+      verified_paid_minor: ledgerPaid,
+      materialized_paid_minor: materializedPaid,
+      verified_ledger_entries: paidDocs.length,
+      ledger_truncated: ledgerTruncated,
+      reconciliation_mismatch: ledgerPaid !== materializedPaid || ledgerTruncated,
+      canonical_balance_due_minor: Math.max(0, total - materializedPaid),
       reported_deposit_minor: reported,
       reported_status: p.reportedDepositStatus || 'not_reported',
       reported_at: p.reportedDepositDate || null,
-      unverified_estimated_remaining_minor: reported > amountPaid
-        ? Math.max(0, total - reported)
-        : Math.max(0, total - amountPaid),
+      unverified_estimated_remaining_minor: Math.max(0, total - Math.max(reported, paidForProjection)),
       deposit_required_minor: p.depositAmount || 0,
       external_invoice_reference: p.externalInvoiceReference || null,
-      disclaimer: 'Reported transfers are not verified payments. Remaining cost is provisional and actual hours/tax must be reconciled.',
+      disclaimer: 'The ledger is an application record, not independent bank proof. Client-reported transfers are not verified payments. All balances remain provisional until actual hours and tax reconciliation.',
     };
   }
   throw new Error('Unknown tool');
