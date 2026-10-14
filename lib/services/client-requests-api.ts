@@ -11,6 +11,10 @@ function reviveDates(value: unknown): unknown {
     if (typeof obj._seconds === 'number' && typeof obj._nanoseconds === 'number') {
       return new Timestamp(obj._seconds, obj._nanoseconds);
     }
+    if (typeof obj.seconds === 'number' && typeof obj.nanoseconds === 'number' &&
+        Object.keys(obj).every(key => ['seconds', 'nanoseconds'].includes(key))) {
+      return new Timestamp(obj.seconds, obj.nanoseconds);
+    }
     return Object.fromEntries(Object.entries(obj).map(([key, item]) => [key, reviveDates(item)]));
   }
   return value;
