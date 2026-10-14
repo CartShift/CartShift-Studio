@@ -1,16 +1,20 @@
-name: Firestore Rules QA
+name: Firebase Security Rules QA
 
 on:
   pull_request:
     paths:
       - 'firestore.rules'
+      - 'storage.rules'
       - 'tests/firestore/**'
+      - 'tests/storage/**'
       - '.github/workflows/firestore-rules-qa.yml'
   push:
     branches: [main]
     paths:
       - 'firestore.rules'
+      - 'storage.rules'
       - 'tests/firestore/**'
+      - 'tests/storage/**'
       - '.github/workflows/firestore-rules-qa.yml'
 
 permissions:
@@ -34,7 +38,9 @@ jobs:
           mkdir -p /tmp/cartshift-rules-test
           npm install --prefix /tmp/cartshift-rules-test --no-audit --no-fund --save=false @firebase/rules-unit-testing@5 firebase@12
           npm install --global --no-audit --no-fund firebase-tools@14
-      - name: Validate rules and exercise tenant boundaries
+      - name: Validate tenant boundaries in Firestore and Storage
         env:
           NODE_PATH: /tmp/cartshift-rules-test/node_modules
-        run: firebase emulators:exec --project demo-cartshift --only firestore -- "node tests/firestore/project-rules.cjs"
+        run: |
+          firebase emulators:exec --project demo-cartshift --only firestore,storage -- \
+            "node tests/firestore/project-rules.cjs && node tests/storage/tenant-rules.cjs"
