@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createRequestFormSchema, type RequestFormData } from './request-form-schema';
 import { useRouter } from '@/i18n/navigation';
+import { useLocale } from 'next-intl';
+import { useClientProjects } from '@/lib/hooks/useClientProjects';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { RequestFormCoreFields } from '@/components/portal/forms/RequestFormCoreFields';
@@ -36,6 +38,8 @@ import { CardSectionTitle } from '@/components/ui/Card';
 
 interface RequestFormProps {
   orgId: string;
+  initialProjectId?: string;
+  initialOrgId?: string;
   initialValues?: Partial<RequestFormData>;
   requestId?: string;
   mode?: 'create' | 'edit';
@@ -45,6 +49,8 @@ interface RequestFormProps {
 
 export const RequestForm = ({
   orgId,
+  initialProjectId = '',
+  initialOrgId = '',
   initialValues,
   requestId,
   mode = 'create',
@@ -61,7 +67,11 @@ export const RequestForm = ({
   const { user, userData, isAgency } = usePortalAuth();
   const { createRequest } = useRequestMutations(orgId);
   const { organizations: clients } = useAgencyClients();
-  const [selectedClientId, setSelectedClientId] = useState<string>('');
+  const [selectedClientId, setSelectedClientId] = useState(initialOrgId);
+  const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId);
+  const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
+  const { data: projects = [] } = useClientProjects(targetOrgId);
+  const locale = useLocale();
   const t = usePortalTranslations();
 
   const requestSchema = useMemo(
@@ -109,7 +119,6 @@ export const RequestForm = ({
     }
 
     // For agency users with no inherited org, a client MUST be selected.
-    const targetOrgId = isAgency && selectedClientId ? selectedClientId : orgId;
     if (mode === 'create' && !targetOrgId) {
       setError(t('requests.form.errors.clientRequired'));
       return;
@@ -134,6 +143,7 @@ export const RequestForm = ({
           userId: user.uid,
           userName,
           data: {
+            projectId: selectedProjectId || undefined,
             title: data.title,
             description: data.description,
             type: data.type as CreateRequestData['type'],
@@ -264,10 +274,22 @@ export const RequestForm = ({
           <Select
             label={t('requests.form.clientLabel')}
             value={selectedClientId}
-            onChange={e => setSelectedClientId(e.target.value)}
+            onChange={e => { setSelectedClientId(e.target.value); setSelectedProjectId(''); }}
             options={[
               { value: '', label: t('requests.form.clientSelect') },
               ...clients.map(client => ({ value: client.id, label: client.name })),
+            ]}
+          />
+        )}
+        {mode === 'create' && targetOrgId && projects.length > 0 && (
+          <Select
+            label={locale === 'he' ? 'פרויקט משויך (אופציונלי)' : 'Project (optional)'}
+            value={selectedProjectId}
+            onChange={e => setSelectedProjectId(e.target.value)}
+            options={[
+              { value: '', label: locale === 'he' ? 'בקשה ללא פרויקט' : 'Unassigned request' },
+              ...projects.filter(project => project.status !== 'archived').map(project =>
+                ({ value: project.id, label: project.title })),
             ]}
           />
         )}

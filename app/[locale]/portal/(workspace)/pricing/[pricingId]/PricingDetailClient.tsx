@@ -173,6 +173,13 @@ export default function PricingDetailClient() {
             </div>
           </div>
 
+          {pricingRequest.projectId && (
+            <Link href={getPortalPath('/projects/' + pricingRequest.projectId + '/')}
+              className="portal-focus-ring mb-4 inline-flex min-h-10 items-center gap-2 rounded-xl border border-primary-200 px-4 text-sm font-semibold text-primary-700 hover:bg-primary-50 dark:border-primary-800 dark:text-primary-300 dark:hover:bg-primary-900/20">
+              <ExternalLink size={16} />
+              {locale === 'he' ? 'פתיחת הפרויקט המשויך' : 'View linked project'}
+            </Link>
+          )}
           {pricingRequest.lineItems && pricingRequest.lineItems.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-bold text-surface-900 dark:text-white font-outfit mb-4">

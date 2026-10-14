@@ -10,7 +10,7 @@ import {
 import { Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-import { getRequestsByOrg, updateRequest } from '@/lib/services/portal-requests';
+import { getRequestsByOrg, getRequestsByProject, updateRequest } from '@/lib/services/portal-requests';
 import {
   addProjectItem, editProjectItem, getClientProject, listProjectReviews,
   observeClientProject, submitProjectReview, submitChangeOrderDecision, updateClientProject,
@@ -234,12 +234,16 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     enabled: Boolean(project),
     staleTime: 10_000,
   });
-  const { data: requests = [] } = useQuery({
-    queryKey: ['client-project-requests', project?.orgId],
-    queryFn: () => getRequestsByOrg(project!.orgId),
+  const { data: linkedRequests = [] } = useQuery({
+    queryKey: ['client-project-requests', project?.orgId, id],
+    queryFn: () => getRequestsByProject(project!.orgId, id),
     enabled: Boolean(project),
   });
-  const linkedRequests = requests.filter(req => req.projectId === id);
+  const { data: requests = [] } = useQuery({
+    queryKey: ['client-project-unlinked-requests', project?.orgId],
+    queryFn: () => getRequestsByOrg(project!.orgId),
+    enabled: Boolean(project && isAgency),
+  });
   const [selectedRequest, setSelectedRequest] = useState('');
   const [summary, setSummary] = useState<string | null>(null);
   const [nextStep, setNextStep] = useState<string | null>(null);
@@ -525,9 +529,28 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       </Panel>
 
       <Panel title={t('linkedRequests')} icon={ClipboardList}>
+        {isAgency && (
+          <Link href={getPortalPath('/requests/new/?projectId=' + encodeURIComponent(id) +
+            '&clientId=' + encodeURIComponent(project.orgId))}
+            className="portal-focus-ring mb-4 inline-flex min-h-10 items-center gap-2 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
+            <Plus size={15}/>{locale === 'he' ? 'בקשה חדשה בפרויקט' : 'New project request'}
+          </Link>
+        )}
+        {project.linkedProposalIds && project.linkedProposalIds.length > 0 && (
+          <div className="mb-4 space-y-2 rounded-xl border border-surface-200 p-3 dark:border-surface-700">
+            <p className="text-xs font-semibold text-surface-500">{locale === 'he' ? 'הסכמים מסחריים' : 'Commercial agreements'}</p>
+            {project.linkedProposalIds.map(proposalId => (
+              <Link key={proposalId} href={getPortalPath('/pricing/' + proposalId + '/')}
+                className="portal-focus-ring block text-sm text-primary-600 hover:underline">
+                {locale === 'he' ? 'הצעת מחיר' : 'Proposal'} · {proposalId}
+              </Link>
+            ))}
+          </div>
+        )}
         {linkedRequests.length === 0 && <p className="text-sm text-surface-500">{t('noLinkedRequests')}</p>}
         {linkedRequests.map(request => <div key={request.id} className="mb-2 flex items-center justify-between gap-3 rounded-xl bg-surface-50 p-3 text-sm dark:bg-surface-800">
-          <span className="min-w-0 flex-1 truncate font-semibold">{request.title}</span>
+          <Link href={getPortalPath('/requests/' + request.id + '/')}
+            className="portal-focus-ring min-w-0 flex-1 truncate font-semibold text-primary-700 hover:underline dark:text-primary-300">{request.title}</Link>
           <span className="text-xs text-surface-500">{request.status.replaceAll('_', ' ')}</span>
           {isAgency && <button aria-label={t('unlink')} type="button" disabled={saving}
             onClick={() => void execute(async () => {
