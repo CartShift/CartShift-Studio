@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canPrefetchPortalRequest, canPrefetchRequestActivities } from '@/lib/domain/prefetch-authorization';
+import { canDehydrateFullRequest, canPrefetchPortalRequest, canPrefetchRequestActivities } from '@/lib/domain/prefetch-authorization';
 
 const base = { uid: 'client-a', email: 'client-a@example.com', isAgency: false, organizations: ['org-a'] };
 const request = { orgId: 'org-b', createdBy: 'client-b', clientUserId: 'client-b', clientEmail: 'client-b@example.com' };
@@ -20,6 +20,12 @@ describe('Admin SDK request prefetch authorization', () => {
 
   it('allows agency access through the verified staff profile', () => {
     expect(canPrefetchPortalRequest({ ...base, isAgency: true }, request, false)).toBe(true);
+  });
+
+  it('never hydrates raw requests into the client HTML payload', () => {
+    expect(canDehydrateFullRequest(base, { ...request, orgId: 'org-a' }, false)).toBe(false);
+    expect(canDehydrateFullRequest(base, { ...request, clientEmail: 'client-a@example.com' }, false)).toBe(false);
+    expect(canDehydrateFullRequest({ ...base, isAgency: true }, request, false)).toBe(true);
   });
 
   it('does not send an organization activity history to an unjoined email recipient', () => {

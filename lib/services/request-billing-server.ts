@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 import { randomUUID } from 'node:crypto';
 import { adminDb } from '@/lib/firebase-admin';
 import { getServerSession } from '@/lib/auth/server-auth';
+import { canAccessRequestBilling } from '@/lib/domain/request-billing-access';
 import {
   BillingDocumentType,
   BillingProfile,
@@ -132,19 +133,24 @@ async function assertAgencyRole(uid: string, roles: Set<string>) {
   return user;
 }
 
-async function assertRequestAccess(uid: string, request: RequestDoc) {
-  const user = await getUser(uid);
-  if (user?.isAgency === true || user?.accountType === 'AGENCY') return;
-  const member = await db().collection('portal_members').doc(`${request.orgId}_${uid}`).get();
-  if (member.exists && member.data()?.removedAt) {
-    throw new Error('FORBIDDEN');
-  }
-  if (
-    !member.exists &&
-    request.createdBy !== uid &&
-    request.clientUserId !== uid &&
-    request.clientEmail !== user?.email
-  ) {
+async function assertRequestAccess(
+  session: { uid: string; email?: string; emailVerified: boolean },
+  request: RequestDoc
+) {
+  const user = await getUser(session.uid);
+  const isAgency = user?.isAgency === true || user?.accountType === 'AGENCY';
+  const member = isAgency
+    ? null
+    : await db().collection('portal_members').doc(`${request.orgId}_${session.uid}`).get();
+
+  if (!canAccessRequestBilling({
+    uid: session.uid,
+    isAgency,
+    hasOrgMembership: member?.exists === true,
+    revokedMembership: Boolean(member?.data()?.removedAt),
+    verifiedEmail: session.emailVerified ? session.email : undefined,
+    request,
+  })) {
     throw new Error('FORBIDDEN');
   }
 }
@@ -181,7 +187,7 @@ function legacyPayment(requestId: string, request: RequestDoc): PaymentRecord | 
 export async function listRequestPayments(requestId: string): Promise<PaymentRecord[]> {
   const session = await getSession();
   const request = (await requestSnapshot(requestId)).data() as RequestDoc;
-  await assertRequestAccess(session.uid, request);
+  await assertRequestAccess(session, request);
   const snapshot = await db().collection(PAYMENTS).where('requestId', '==', requestId).get();
   const payments = snapshot.docs
     .filter(doc => {
@@ -283,7 +289,7 @@ export async function recordManualRequestPayment(
 export async function recordVerifiedPayPalRequestPayment(requestId: string, orderId: string) {
   const session = await getSession();
   const request = (await requestSnapshot(requestId)).data() as RequestDoc;
-  await assertRequestAccess(session.uid, request);
+  await assertRequestAccess(session, request);
   const { getPayPalOrder } = await import('@/lib/services/paypal-server');
   const order = await getPayPalOrder(orderId);
   const purchase = order.purchase_units?.[0];
@@ -319,6 +325,8 @@ export async function resolveBillingProfileOwnerId(bootstrapUid?: string) {
 
 export async function getBillingProfile(): Promise<BillingProfile | null> {
   const session = await getSession();
+  // Bank, tax and payment details are agency-only, even when a global owner is configured.
+  await assertAgencyRole(session.uid, FINANCE_ROLES);
   const ownerId = await resolveBillingProfileOwnerId(session.uid);
   if (!ownerId) return null;
   const snapshot = await db().collection(PROFILES).doc(ownerId).get();

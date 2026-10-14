@@ -22,6 +22,8 @@ import {
 } from '@/components/portal/ui/PortalFormField';
 import { getRequestsByOrg, getRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { useClientProjects } from '@/lib/hooks/useClientProjects';
+import { useLocale } from 'next-intl';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { useOrg } from '@/lib/context/OrgContext';
@@ -83,8 +85,11 @@ export default function CreatePricingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const relatedRequestId = searchParams.get('relatedRequestId');
+  const projectChangeId = searchParams.get('changeId');
+  const locale = useLocale();
+  const [selectedProjectId, setSelectedProjectId] = useState(searchParams.get('projectId') || '');
+  const { data: clientProjects = [] } = useClientProjects(typeof orgId === 'string' ? orgId : undefined);
   const initializedRelatedId = useRef<string | null>(null);
-  const currencyInitializedForClientId = useRef<string | null>(null);
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
@@ -138,6 +143,14 @@ export default function CreatePricingForm() {
 
     fetchRequests();
   }, [orgId]);
+
+  // Reuse the project of the existing request(s) when creating a proposal.
+  useEffect(() => {
+    if (selectedProjectId || !selectedRequestIds.length) return;
+    const ids = new Set(availableRequests.filter(request => selectedRequestIds.includes(request.id))
+      .map(request => request.projectId).filter(Boolean));
+    if (ids.size === 1) setSelectedProjectId([...ids][0]!);
+  }, [selectedProjectId, selectedRequestIds, availableRequests]);
 
   // Pre-select requests from URL params
   useEffect(() => {
@@ -222,12 +235,6 @@ export default function CreatePricingForm() {
   useEffect(() => {
     const client = fullOrganizations.find(organization => organization.id === orgId);
     if (!client) return;
-    // Every new proposal inherits the selected client's currency once.
-    // Manual overrides remain possible and never rewrite historical proposals.
-    if (currencyInitializedForClientId.current !== client.id) {
-      currencyInitializedForClientId.current = client.id;
-      if (client.defaultCurrency) setValue('currency', client.defaultCurrency);
-    }
     if (!watch('clientName')) setValue('clientName', client.name);
     if (!watch('clientEmail') && client.billingEmail) setValue('clientEmail', client.billingEmail);
   }, [orgId, fullOrganizations, setValue, watch]);
@@ -407,6 +414,7 @@ export default function CreatePricingForm() {
         userId: userData.id,
         userName: userData.name || t('common.unknown'),
         data: {
+          projectId: selectedProjectId || undefined,
           title: data.title,
           description: data.description,
           lineItems,
@@ -423,6 +431,7 @@ export default function CreatePricingForm() {
           proposalType: 'work_proposal',
           proposalContent: data.proposalContent,
           relatedRequestId: relatedRequestId || undefined,
+          projectChangeId: projectChangeId || undefined,
           terms: data.terms,
           publicAccessEnabled: true,
           taxRate: data.includeTax ? TAX_RATE : 0,
@@ -508,6 +517,16 @@ export default function CreatePricingForm() {
                 {...register('title')}
               />
 
+              {clientProjects.length > 0 && (
+                <PortalFormField label={locale === 'he' ? 'פרויקט משויך' : 'Related project'}>
+                  <Select value={selectedProjectId} onChange={event => setSelectedProjectId(event.target.value)}
+                    options={[
+                      { value: '', label: locale === 'he' ? 'יצירת פרויקט לאחר אישור ההצעה' : 'Create project on acceptance' },
+                      ...clientProjects.filter(project => project.status !== 'archived').map(project =>
+                        ({ value: project.id, label: project.title })),
+                    ]} />
+                </PortalFormField>
+              )}
               <PortalFormField label={t('pricing.form.descriptionLabel')}>
                 <Textarea
                   {...register('description')}

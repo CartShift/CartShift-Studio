@@ -242,7 +242,7 @@ export interface Organization {
   billingCity?: string;
   billingCountry?: string;
   billingPostalCode?: string;
-  /** Default denomination for NEW quotes and project budgets; existing documents stay immutable. */
+  /** Default denomination for NEW quotes and projects; never reprice existing documents. */
   defaultCurrency?: Currency;
 }
 
@@ -534,6 +534,8 @@ export interface Request {
   // Commercial document fields. A quote/proposal is a view of this request.
   proposalContent?: ProposalContent;
   relatedRequestId?: string;
+  /** Project change order funded by this separate commercial agreement. */
+  projectChangeId?: string;
   proposalRequirementStatuses?: Record<string, 'pending' | 'received' | 'approved'>;
   proposalVersion?: number;
   publishedProposal?: Record<string, unknown>;
@@ -769,6 +771,7 @@ export const CONSULTATION_STATUS_CONFIG: Record<
 // ============================================
 
 export interface CreateRequestData {
+  projectId?: string;
   title: string;
   description: string;
   type: RequestType;
@@ -1001,6 +1004,8 @@ export interface ClientRevenueData {
   lastPaymentAt?: Timestamp;
   firstPaymentAt?: Timestamp;
   currency: Currency;
+  /** Amounts in other/unknown denominations excluded without FX conversion. */
+  hasOtherCurrencies?: boolean;
 }
 
 /**
@@ -1033,6 +1038,9 @@ export interface SalesMetrics {
 
   // Currency for display
   primaryCurrency: Currency;
+  /** Primary-currency KPI totals exclude documents with other currencies. */
+  hasOtherCurrencies?: boolean;
+  currencyBreakdown?: Record<Currency, { paid: number; pending: number }>;
 }
 
 /**

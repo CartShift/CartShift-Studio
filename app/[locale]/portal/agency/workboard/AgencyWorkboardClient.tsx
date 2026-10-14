@@ -1,6 +1,7 @@
 'use client';
 
 import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners, MeasuringStrategy } from '@dnd-kit/core';
 
 import { DroppableColumn } from '@/components/portal/workboard/DroppableColumn';
@@ -12,6 +13,8 @@ import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { RequestStatus } from '@/lib/types/portal';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
+import { useQuery } from '@tanstack/react-query';
+import { listClientProjects } from '@/lib/services/portal-projects';
 import { useWorkboardState, type Column } from '@/lib/hooks/useWorkboardState';
 
 import { useTranslations, useLocale } from 'next-intl';
@@ -30,6 +33,12 @@ export default function AgencyWorkboardClient() {
   const { openRequest: openRequestPreview } = useOpenRequest();
   const { loading: auth, isAuthenticated, user, isAgency } = usePortalAuth();
   const { organizations } = useAgencyClients();
+  const { data: projects = [] } = useQuery({
+    queryKey: ['client-projects', 'all'], queryFn: () => listClientProjects(),
+    enabled: isAgency && !auth, staleTime: 30_000,
+  });
+  const projectNames = new Map(projects.map(project => [project.id, project.title]));
+  const [projectFilter, setProjectFilter] = useState('all');
 
   const {
     // Data
@@ -92,7 +101,8 @@ export default function AgencyWorkboardClient() {
 
   // ── Column Rendering Helper ──────────────────────────────────
   const renderColumn = (column: Column, isHiddenOnMobile: boolean) => {
-    const columnRequests = getRequestsForColumn(column);
+    const columnRequests = getRequestsForColumn(column).filter(request =>
+      projectFilter === 'all' || (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
 
     return (
       <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden md:block')}>
@@ -141,6 +151,7 @@ export default function AgencyWorkboardClient() {
                 <RequestCard
                   request={req}
                   clientName={organizations.find(org => org.id === req.orgId)?.name}
+                  projectName={req.projectId ? projectNames.get(req.projectId) : undefined}
                   locale={locale}
                   isMounted={isMounted}
                   onDelete={() => setRequestToDelete({ id: req.id, title: req.title })}
@@ -183,6 +194,18 @@ export default function AgencyWorkboardClient() {
       measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
     >
       {/* Filter Bar */}
+      <div className="mb-3 flex justify-end">
+        <label className="flex min-w-0 items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-300">
+          <span>{locale === 'he' ? 'פרויקט' : 'Project'}</span>
+          <select aria-label={locale === 'he' ? 'סינון לפי פרויקט' : 'Filter by project'}
+            className="portal-focus-ring min-h-10 max-w-[280px] rounded-xl border border-surface-200 bg-white px-3 text-sm dark:border-surface-800 dark:bg-surface-900"
+            value={projectFilter} onChange={event => setProjectFilter(event.target.value)}>
+            <option value="all">{locale === 'he' ? 'כל הפרויקטים' : 'All projects'}</option>
+            <option value="unassigned">{locale === 'he' ? 'ללא פרויקט' : 'Unassigned'}</option>
+            {projects.map(project => <option key={project.id} value={project.id}>{project.title}</option>)}
+          </select>
+        </label>
+      </div>
       <WorkboardFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -263,7 +286,7 @@ export default function AgencyWorkboardClient() {
                 className="opacity-95 shadow-2xl shadow-primary-500/20 rounded-2xl"
                 style={{ cursor: 'grabbing' }}
               >
-                <RequestCard request={activeRequest} clientName={organizations.find(org => org.id === activeRequest.orgId)?.name} locale={locale} isMounted={isMounted} />
+                <RequestCard request={activeRequest} clientName={organizations.find(org => org.id === activeRequest.orgId)?.name} projectName={activeRequest.projectId ? projectNames.get(activeRequest.projectId) : undefined} locale={locale} isMounted={isMounted} />
               </div>
             ) : null}
           </DragOverlay>,

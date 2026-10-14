@@ -6,7 +6,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { canAccessNav, PERMISSIONS } from '@/lib/utils/permissions';
 import { getOrganizationsWithStats } from '@/lib/services/portal-organizations';
 import { getClientRevenueData } from '@/lib/services/portal-sales';
-import { Organization, ClientRevenueData } from '@/lib/types/portal';
+import { Organization, ClientRevenueData, Currency } from '@/lib/types/portal';
 import { queryKeys } from '@/lib/utils/query-keys';
 import { mergeAgencyClientRevenue } from '@/lib/domain/agency-client-revenue';
 
@@ -16,6 +16,8 @@ export type EnhancedOrganization = Organization & {
   totalRevenue?: number;
   pendingRevenue?: number;
   paidCount?: number;
+  revenueCurrency?: Currency;
+  hasOtherCurrencies?: boolean;
 };
 
 export function useAgencyClients() {

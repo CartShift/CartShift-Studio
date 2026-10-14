@@ -71,6 +71,20 @@ export async function createClientProject(input: {
   return reference.id;
 }
 
+/** Privileged transition; the server re-evaluates project blockers and approvals. */
+export async function markClientProjectReady(id: string): Promise<void> {
+  await waitForAuth();
+  const token = await getFirebaseAuth().currentUser?.getIdToken();
+  if (!token) throw new Error('UNAUTHENTICATED');
+  const response = await fetch('/api/portal/projects/' + encodeURIComponent(id) + '/ready', {
+    method: 'POST', headers: { Authorization: 'Bearer ' + token },
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.error || 'Unable to mark project ready');
+  }
+}
+
 export async function updateClientProject(
   id: string,
   changes: Partial<Pick<ClientProject, 'title' | 'summary' | 'nextStep' | 'status' | 'scope'>>
@@ -91,7 +105,12 @@ export async function addProjectItem<K extends ProjectCollectionField>(
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists()) throw new Error('Project not found');
     const fields = appendProjectCollectionItem(snapshot.data(), field, item);
-    transaction.update(ref, { ...fields, updatedAt: serverTimestamp() });
+    transaction.update(ref, {
+      ...fields,
+      updatedAt: serverTimestamp(),
+      ...((snapshot.data().status === 'ready_to_launch' && field !== 'workLogs' && field !== 'updates')
+        ? { status: 'in_progress' } : {}),
+    });
   });
 }
 
@@ -104,7 +123,12 @@ export async function editProjectItem<K extends ProjectCollectionField>(
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists()) throw new Error('Project not found');
     const fields = editProjectCollectionItem(snapshot.data(), field, itemId, edit);
-    transaction.update(ref, { ...fields, updatedAt: serverTimestamp() });
+    transaction.update(ref, {
+      ...fields,
+      updatedAt: serverTimestamp(),
+      ...((snapshot.data().status === 'ready_to_launch' && field !== 'workLogs' && field !== 'updates')
+        ? { status: 'in_progress' } : {}),
+    });
   });
 }
 

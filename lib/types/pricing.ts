@@ -85,6 +85,7 @@ export type PricingRequest = Omit<
 // ============================================
 
 export interface CreatePricingRequestData {
+  projectId?: string;
   title: string;
   description?: string;
   lineItems: Omit<PricingLineItem, 'id'>[];
@@ -102,6 +103,7 @@ export interface CreatePricingRequestData {
   proposalType?: ProposalType;
   proposalContent?: ProposalContent;
   relatedRequestId?: string;
+  projectChangeId?: string;
   terms?: string;
   publicAccessEnabled?: boolean;
   paymentRequired?: boolean;

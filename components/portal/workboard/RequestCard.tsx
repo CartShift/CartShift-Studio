@@ -21,6 +21,7 @@ interface RequestCardProps {
   selected?: boolean;
   onSelect?: () => void;
   clientName?: string;
+  projectName?: string;
 }
 
 export function RequestCard({
@@ -32,6 +33,7 @@ export function RequestCard({
   selected,
   onSelect,
   clientName,
+  projectName,
 }: RequestCardProps) {
   const t = useTranslations('portal');
 
@@ -101,6 +103,7 @@ export function RequestCard({
       )}
 
       {clientName && <p className="mb-2 truncate pe-10 text-xs font-semibold text-primary-600 dark:text-primary-400">{clientName}</p>}
+      {projectName && <p className="mb-2 truncate text-[11px] font-medium text-surface-500 dark:text-surface-400">{locale === 'he' ? 'פרויקט' : 'Project'} · {projectName}</p>}
       {/* Header: Priority & ID/Date */}
       <div className={cn('flex items-center justify-between gap-2 mb-2', selectable && 'ps-7')}>
         <Badge

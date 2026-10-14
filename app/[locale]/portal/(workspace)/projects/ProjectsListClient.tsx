@@ -6,6 +6,8 @@ import { useTranslations, useLocale } from 'next-intl';
 import { FolderKanban, Plus, ArrowUpRight, Loader2, Search } from 'lucide-react';
 import { useRouter, Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
+import { USER_ROLE } from '@/lib/types/portal';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useAgencyClients } from '@/lib/hooks/useAgencyClients';
 import { createClientProject, listClientProjects } from '@/lib/services/portal-projects';
@@ -20,7 +22,11 @@ export default function ProjectsListClient({ initialClientFilter = 'all' }: { in
   const locale = useLocale();
   const router = useRouter();
   const cache = useQueryClient();
-  const { isAgency, loading: authLoading } = usePortalAuth();
+  const { isAgency, userData, loading: authLoading } = usePortalAuth();
+  const canEditProjects = isAgency && hasPermission(
+    userData?.agencyRole ?? USER_ROLE.OWNER,
+    PERMISSIONS.MANAGE_PROJECTS
+  );
   const orgId = useResolvedOrgId();
   const { organizations } = useAgencyClients();
   const [filter, setFilter] = useState('');
@@ -63,14 +69,14 @@ export default function ProjectsListClient({ initialClientFilter = 'all' }: { in
     <div className="space-y-6 pb-16">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <PortalPageHeader title={t('title')} description={t('intro')} className="mb-0" />
-        {isAgency && (
+        {canEditProjects && (
           <button type="button" onClick={() => setShowCreate(!showCreate)}
             className="portal-focus-ring flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-semibold text-white hover:bg-primary-700">
             <Plus size={17} />{t('newProject')}
           </button>
         )}
       </header>
-      {isAgency && showCreate && (
+      {canEditProjects && showCreate && (
         <form onSubmit={create} className="rounded-2xl border border-primary-200 bg-primary-50/40 p-5 dark:border-primary-800 dark:bg-primary-900/10">
           <h2 className="mb-4 font-semibold">{t('newProject')}</h2>
           <div className="grid gap-4 md:grid-cols-3">

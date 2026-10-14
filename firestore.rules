@@ -15,14 +15,17 @@ service cloud.firestore {
     function isMemberOfOrg(orgId) {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
-             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId()));
+             exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) &&
+             get(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())).data.get('removedAt', null) == null;
     }
 
     function isOrgOwner(orgId) {
       return isAuthenticated() &&
              orgId != null && orgId != '' &&
              exists(/databases/$(database)/documents/portal_organizations/$(orgId)) &&
-             get(/databases/$(database)/documents/portal_organizations/$(orgId)).data.createdBy == getUserId();
+             get(/databases/$(database)/documents/portal_organizations/$(orgId)).data.createdBy == getUserId() &&
+             (!exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) ||
+               isMemberOfOrg(orgId));
     }
 
     function isAgencyUser() {
@@ -32,7 +35,29 @@ service cloud.firestore {
              (
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
-              );
+              ) &&
+             !(get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', 'active') in ['suspended', 'inactive']);
+    }
+
+    // Role-aware agency mutations. Missing agencyRole is retained for legacy owners.
+    function isAgencyManager() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', ''];
+    }
+
+    function canEditAgencyProjects() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', 'sales_manager', 'developer', ''];
+    }
+
+    function canCreateAgencyRequest() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', 'sales_manager', 'developer', 'member', ''];
+    }
+
+    function canManageAgencyCommercial() {
+      return isAgencyUser() &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') in ['owner', 'admin', 'sales_manager', ''];
     }
 
     function canManageProfitSplits() {
@@ -74,7 +99,7 @@ service cloud.firestore {
     function canAdminOrg(orgId) {
       return isAuthenticated() && (
         isOrgOwner(orgId) ||
-        isAgencyUser() ||
+        isAgencyManager() ||
         isOrgAdmin(orgId)
       );
     }
@@ -88,6 +113,7 @@ service cloud.firestore {
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('isAgency', false) == true &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('status', '') == 'pending' &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('expiresAt', request.time) > request.time &&
+        request.auth.token.email_verified == true &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('email', '') == request.auth.token.email &&
         get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('role', '') == request.resource.data.get('agencyRole', '') &&
         resource.data.get('accountType', 'CLIENT') != 'AGENCY' &&
@@ -116,8 +142,8 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
         resource == null ||
-        exists(/databases/$(database)/documents/portal_members/$(orgId + '_' + getUserId())) ||
-        resource.data.createdBy == getUserId()
+        isMemberOfOrg(orgId) ||
+        isOrgOwner(orgId)
       );
       allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
       // Only admins/owners can update (security fix - was allowing any member)
@@ -139,6 +165,7 @@ service cloud.firestore {
         return inviteId is string && inviteId != '' &&
           exists(/databases/$(database)/documents/portal_invites/$(inviteId)) &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('orgId', '') == request.resource.data.get('orgId', '') &&
+          request.auth.token.email_verified == true &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('email', '') == request.auth.token.email &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('role', '') == request.resource.data.get('role', '') &&
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('status', '') == 'pending' &&
@@ -146,33 +173,66 @@ service cloud.firestore {
           get(/databases/$(database)/documents/portal_invites/$(inviteId)).data.get('isAgency', false) == false;
       }
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
+        isAgencyManager() ||
         isOrgOwner(request.resource.data.get('orgId', '')) ||
         isOrgAdmin(request.resource.data.get('orgId', '')) ||
         (memberId == (request.resource.data.get('orgId', '') + '_' + getUserId()) &&
          request.resource.data.get('userId', '') == getUserId() &&
          validMemberInvite())
       );
-      allow update: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
+      // Re-invitation of a removed member updates the same deterministic
+      // document ID. Only a new, unexpired invitation issued by an admin may
+      // restore it, and the invite strictly dictates the recipient and role.
+      function validMemberReactivation() {
+        return isAuthenticated() &&
+          request.auth.token.email_verified == true &&
+          resource.data.get('removedAt', null) != null &&
+          memberId == request.resource.data.get('orgId', '') + '_' + getUserId() &&
+          resource.data.get('orgId', '') == request.resource.data.get('orgId', '') &&
+          resource.data.get('userId', '') == getUserId() &&
+          request.resource.data.get('userId', '') == getUserId() &&
+          request.resource.data.get('email', '') == request.auth.token.email &&
+          request.resource.data.get('removedAt', null) == null &&
+          request.resource.data.keys().hasOnly([
+            'orgId', 'userId', 'email', 'name', 'role', 'invitedBy', 'inviteId', 'joinedAt'
+          ]) &&
+          request.resource.data.get('joinedAt', request.time) == request.time &&
+          validMemberInvite();
+      }
+      allow update: if resource != null && (
+        canAdminOrg(resource.data.get('orgId', '')) ||
+        validMemberReactivation()
+      );
       allow delete: if false;
     }
 
     match /portal_invites/{inviteId} {
-      // PUBLIC READ: Required for unauthenticated invite acceptance flow.
-      // Security rationale: Invite codes are cryptographically random UUIDs,
-      // documents contain no PII - only orgId, email, role, and expiry.
-      allow read: if true;
+      // Verified recipients can query only invitations addressed to themselves.
+      // Unrestricted listing and reads by an unverified email are forbidden.
+      allow get: if isAuthenticated() && (
+        isAgencyManager() ||
+        (request.auth.token.email_verified == true &&
+         request.auth.token.email == resource.data.get('email', '')) ||
+        canAdminOrg(resource.data.get('orgId', ''))
+      );
+      allow list: if isAuthenticated() && (
+        isAgencyManager() ||
+        (request.auth.token.email_verified == true &&
+         request.auth.token.email == resource.data.get('email', '')) ||
+        canAdminOrg(resource.data.get('orgId', ''))
+      );
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
+        isAgencyManager() ||
         (request.resource.data.get('isAgency', false) == false &&
          canAdminOrg(request.resource.data.get('orgId', '')))
       ) && request.resource.data.get('invitedBy', '') == getUserId();
       // Invitation recipients can acknowledge an invite, but cannot change
       // the invited role, email, organization, or agency flag.
       allow update: if isAuthenticated() && (
-        isAgencyUser() ||
+        isAgencyManager() ||
         canAdminOrg(resource.data.get('orgId', '')) ||
-        (resource.data.get('email', '') == request.auth.token.email &&
+        (request.auth.token.email_verified == true &&
+         resource.data.get('email', '') == request.auth.token.email &&
          resource.data.get('status', '') == 'pending' &&
          request.resource.data.get('status', '') in ['accepted', 'expired'] &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedAt']))
@@ -184,15 +244,21 @@ service cloud.firestore {
     // may edit project scope, launch checks, blockers and client-facing updates.
     match /portal_projects/{projectId} {
       allow get, list: if resource != null && canAccessOrg(resource.data.get('orgId', ''));
-      allow create: if isAgencyUser() &&
+      allow create: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') is string &&
+        request.resource.data.get('status', '') == 'planning' &&
         exists(/databases/$(database)/documents/portal_organizations/$(request.resource.data.orgId));
-      allow update: if isAgencyUser() &&
-        request.resource.data.get('orgId', '') == resource.data.get('orgId', '');
+      // 'ready_to_launch' can only be entered by the trusted readiness service.
+      // Editing gates after readiness requires atomically reopening the project.
+      allow update: if canEditAgencyProjects() &&
+        request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+        (request.resource.data.get('status', '') != 'ready_to_launch' ||
+          (resource.data.get('status', '') == 'ready_to_launch' &&
+           !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+             'blockers', 'inputs', 'launchChecks', 'deliverables', 'changes', 'reviewRevisions', 'stages'
+           ])));
       allow delete: if false;
 
-      // Agency-only evidence. This collection MUST NOT inherit portal_projects
-      // client read access; even project members may not get or list records.
       match /private_records/{recordId} {
         function projectExists() {
           return exists(/databases/$(database)/documents/portal_projects/$(projectId));
@@ -235,8 +301,8 @@ service cloud.firestore {
           );
         }
         allow get, list: if isAgencyUser() && projectExists();
-        allow create: if isAgencyUser() && projectExists() && validRecord();
-        allow update: if isAgencyUser() && projectExists() &&
+        allow create: if canEditAgencyProjects() && projectExists() && validRecord();
+        allow update: if canEditAgencyProjects() && projectExists() &&
           resource.data.get('kind', '') != 'time' &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             'status', 'updatedAt'
@@ -262,6 +328,7 @@ service cloud.firestore {
           let deliverableId = request.resource.data.get('deliverableId', '');
           return exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
             !isAgencyUser() &&
+            project.get('status', '') != 'ready_to_launch' &&
             project.get('reviewRevisions', {}).get(deliverableId, 0) == request.resource.data.get('revision', 0) &&
             request.resource.data.get('updatedAt', request.time) == request.time &&
             request.resource.data.keys().hasOnly([
@@ -291,6 +358,21 @@ service cloud.firestore {
     }
 
     match /portal_requests/{requestId} {
+      function isCommercialDocument(data) {
+        return data.get('isBillable', false) == true ||
+          data.get('publicToken', '') != '' ||
+          data.get('requestRole', '') in ['bundle', 'bundle_item'];
+      }
+
+      function validNewProjectLink() {
+        let projectId = request.resource.data.get('projectId', '');
+        return projectId == null || projectId == '' ||
+          (projectId is string &&
+           exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
+           get(/databases/$(database)/documents/portal_projects/$(projectId)).data.get('orgId', '') ==
+             request.resource.data.get('orgId', ''));
+      }
+
       function changesServerManagedCommercialFields() {
         return request.resource.data.diff(resource.data).affectedKeys().hasAny([
                  'acceptedByName',
@@ -329,6 +411,7 @@ service cloud.firestore {
 
       function changesAgencyCommercialFields() {
         return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'isBillable',
           'publicToken',
           'publicAccessEnabled',
           'requestRole',
@@ -345,6 +428,7 @@ service cloud.firestore {
           'terms',
           'proposalContent',
           'relatedRequestId',
+          'projectChangeId',
           'depositAmount',
           'paymentRequired',
           'balanceDue',
@@ -352,34 +436,87 @@ service cloud.firestore {
         ]);
       }
 
+      // A signed commercial agreement is not an editable operational request.
+      // Trusted billing/conversion transactions use the Admin SDK and retain
+      // authority to record payments, approvals and versioned change orders.
+      function editsSignedCommercialTerms() {
+        return isCommercialDocument(resource.data) &&
+          (resource.data.get('lockedAt', null) != null ||
+           resource.data.get('status', '') in [
+             'ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'
+           ]) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'orgId', 'projectId', 'projectChangeId', 'relatedRequestId',
+            'title', 'description', 'lineItems', 'totalAmount', 'subtotal',
+            'taxRate', 'taxAmount', 'currency', 'terms', 'proposalContent',
+            'paymentRequired', 'depositAmount', 'clientEmail', 'clientName',
+            'validUntil', 'timeframe', 'workDeadline', 'publicToken',
+            'publicAccessEnabled'
+          ]);
+      }
+
       // Clients can read requests pre-assigned to their email (before registration)
       // or requests in orgs they're members of
-      allow read: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource == null ||
-        resource.data.get('createdBy', '') == getUserId() ||
-        resource.data.get('clientEmail', '') == request.auth.token.email ||
-        resource.data.get('clientUserId', '') == getUserId() ||
-        canAccessOrg(resource.data.get('orgId', ''))
-      );
+      // Commercial records contain private working drafts and notes.
+      // Clients get only the published, whitelisted server projection instead.
+      // Queries containing both private proposals and public requests cannot be
+      // authorized safely against arbitrary result sets. Client lists use the
+      // authenticated, field-projected portal API instead.
+      allow list: if isAuthenticated() && isAgencyUser();
+      // SDK reads disclose *every* field, including private notes added later.
+      // All client reads (including ordinary requests) use the authenticated,
+      // explicitly whitelisted client-requests API instead.
+      allow get: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
-        isAgencyUser() ||
-        isMemberOfOrg(request.resource.data.get('orgId', '')) ||
-        isOrgOwner(request.resource.data.get('orgId', ''))
-      );
+        canCreateAgencyRequest() ||
+        (!isAgencyUser() && isMemberOfOrg(request.resource.data.get('orgId', ''))) ||
+        (!isAgencyUser() && isOrgOwner(request.resource.data.get('orgId', '')))
+      ) && validNewProjectLink() &&
+      (canCreateAgencyRequest() || (
+        !isCommercialDocument(request.resource.data) &&
+        request.resource.data.get('status', '') == 'NEW' &&
+        request.resource.data.get('createdBy', '') == request.auth.uid &&
+        request.resource.data.get('requestRole', '') == 'standalone' &&
+        request.resource.data.get('commentCount', 0) == 0 &&
+        request.resource.data.keys().hasOnly([
+          'orgId', 'projectId', 'title', 'description', 'type', 'status',
+          'priority', 'requestRole', 'createdBy', 'createdByName', 'tags',
+          'attachmentIds', 'commentCount', 'createdAt', 'updatedAt'
+        ])
+      ));
       allow update: if isAuthenticated() && (
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
-        resource.data.get('clientEmail', '') == request.auth.token.email ||
+        (request.auth.token.email_verified == true &&
+         resource.data.get('clientEmail', '') == request.auth.token.email) ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
       !changesServerManagedCommercialFields() &&
-      (isAgencyUser() || (!changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
+      !editsSignedCommercialTerms() &&
+      request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+      validNewProjectLink() &&
+      ((canCreateAgencyRequest() &&
+        (!changesAgencyCommercialFields() || canManageAgencyCommercial())) ||
+       (!isAgencyUser() &&
+        !isCommercialDocument(resource.data) &&
+        !isCommercialDocument(request.resource.data) &&
+        !changesAgencyCommercialFields() &&
+        !attemptsUnsignedProposalApproval() &&
+        // Clients can edit their own request contents and comment previews;
+        // commercial, workflow, assignment, identity and audit fields are
+        // never writable through a client Firebase SDK transaction.
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title', 'description', 'type', 'priority', 'tags', 'attachmentIds',
+          'clientNotes', 'commentCount', 'lastComment', 'updatedAt'
+        ])
+      ));
       allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource.data.get('createdBy', '') == getUserId() ||
-        isOrgOwner(resource.data.get('orgId', ''))
+        isAgencyManager() ||
+        (!isAgencyUser() && !isCommercialDocument(resource.data) && (
+          resource.data.get('createdBy', '') == getUserId() ||
+          isOrgOwner(resource.data.get('orgId', ''))
+        ))
       );
     }
 
@@ -389,24 +526,32 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
+      function clientCanCommentOnRequest() {
+        let requestId = request.resource.data.get('requestId', '');
+        let parent = get(/databases/$(database)/documents/portal_requests/$(requestId)).data;
+        return exists(/databases/$(database)/documents/portal_requests/$(requestId)) &&
+          (!(
+            parent.get('isBillable', false) == true ||
+            parent.get('publicToken', '') != '' ||
+            parent.get('requestRole', '') in ['bundle', 'bundle_item']
+          ) || (
+            parent.get('status', '') != 'DRAFT' &&
+            (parent.get('publicAccessEnabled', false) == true ||
+             (parent.get('requestRole', '') == 'bundle_item' &&
+              parent.get('status', '') in [
+                'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'
+              ]))
+          ));
+      }
       // Deny client list queries entirely. Emulator tests proved clients could
       // enumerate confidential notes even with a resource-level predicate.
       // Clients read only through /api/portal/public-comments (authenticated + filtered).
-      allow get: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null &&
-         resource.data.get('isInternal', false) == false &&
-         (canAccessOrg(resource.data.get('orgId', '')) ||
-          resource.data.get('userId', '') == getUserId()))
-      );
-      allow list: if isAuthenticated() && isAgencyUser();
-      allow create: if isAuthenticated() && (
-        isAgencyUser() ||
-        (request.resource.data.get('isInternal', false) == false &&
-         request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
-         (isMemberOfOrg(getRequestOrgIdFromRequest()) ||
-          isOrgOwner(getRequestOrgIdFromRequest())))
-      );
+      // Even a non-internal comment may belong to a confidential draft.
+      // Client reads are authenticated, request-visibility checked projections.
+      allow get, list: if isAuthenticated() && isAgencyUser();
+      // Every client comment is created through a trusted API, which checks
+      // request visibility, org membership and atomically updates the parent.
+      allow create: if isAuthenticated() && isAgencyUser();
       allow update: if isAuthenticated() && (
         isAgencyUser() ||
         (resource != null &&
@@ -414,15 +559,11 @@ service cloud.firestore {
          request.resource.data.get('isInternal', false) == false &&
          resource.data.get('userId', '') == getUserId() &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-           'content', 'updatedAt', 'reactions'
+           'content', 'updatedAt'
          ]))
       );
-      allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null &&
-         resource.data.get('isInternal', false) == false &&
-         resource.data.get('userId', '') == getUserId())
-      );
+      // Client deletions need an atomic parent count adjustment as well.
+      allow delete: if isAuthenticated() && isAgencyUser();
     }
 
     match /portal_files/{fileId} {
@@ -460,12 +601,8 @@ service cloud.firestore {
 
     match /portal_pricing_requests/{requestId} {
       // Rollback/compatibility source only. New writes belong in portal_requests.
-      allow read: if isAuthenticated() && (
-        isAgencyUser() ||
-        resource == null ||
-        canAccessOrg(resource.data.get('orgId', '')) ||
-        resource.data.get('createdBy', '') == getUserId()
-      );
+      // Legacy commercial documents are private too; public proposal URLs are server-read.
+      allow read: if isAuthenticated() && isAgencyUser();
       allow create, update, delete: if false;
     }
 
@@ -479,10 +616,9 @@ service cloud.firestore {
     }
 
     match /portal_payments/{paymentId} {
-      allow read: if isAuthenticated() && (
-        isAgencyUser() ||
-        canAccessOrg(resource.data.get('orgId', ''))
-      );
+      // Payment ledger may contain private reconciliation references and notes.
+      // Customer receipts are delivered through authenticated billing APIs.
+      allow read: if isAuthenticated() && isAgencyUser();
       allow write: if false;
     }
 

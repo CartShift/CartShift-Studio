@@ -74,7 +74,7 @@ export function usePinnedRequests(_orgId?: string) {
 
       // Optimistically update the cache
       const safeOrgId = typeof orgId === 'string' ? orgId : '';
-      const queryKey = isAgency ? queryKeys.requests.all : queryKeys.requests.byOrg(safeOrgId);
+      const queryKey = isAgency ? queryKeys.requests.all : queryKeys.requests.byRoleOrg(safeOrgId, 'client');
       queryClient.setQueryData<Request[]>(queryKey, oldData => {
         if (!oldData) return oldData;
         return oldData.map(req => {

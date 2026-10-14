@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { isLoggingOut } from './auth';
+import { getPortalUser } from './portal-users';
 import { Comment, CreateCommentData } from '@/lib/types/portal';
 
 const COMMENTS_COLLECTION = 'portal_comments';
@@ -100,6 +101,32 @@ export async function createComment(
 
   // Validate and sanitize content
   const sanitizedContent = sanitizeContent(data.content);
+
+  const actor = getFirebaseAuth().currentUser;
+  if (!actor) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(actor.uid);
+  if (profile?.accountType !== 'AGENCY' && profile?.isAgency !== true) {
+    // The client cannot update the parent document through Firestore rules,
+    // particularly when it contains confidential commercial fields.
+    // The server creates the comment and updates the parent atomically.
+    const token = await actor.getIdToken();
+    const response = await fetch('/api/portal/client-comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({
+        requestId, orgId, content: data.content, attachmentIds: data.attachmentIds || [],
+        parentId: data.parentId || null, mentions: data.mentions || [],
+        isInternal: data.isInternal === true,
+      }),
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null) as { error?: string } | null;
+      throw new Error(body?.error || 'Unable to add comment');
+    }
+    const body = await response.json() as { comment: Comment & { createdAtMs: number } };
+    const { createdAtMs, ...comment } = body.comment;
+    return { ...comment, createdAt: Timestamp.fromMillis(createdAtMs) };
+  }
 
   const commentData = {
     requestId,
@@ -270,8 +297,30 @@ export async function updateComment(commentId: string, content: string): Promise
 // REACTIONS
 // ============================================
 
+async function updateClientReaction(
+  commentId: string, userId: string, emoji: string, action: 'add' | 'remove',
+): Promise<boolean> {
+  const actor = getFirebaseAuth().currentUser;
+  if (!actor) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(actor.uid);
+  if (profile?.accountType === 'AGENCY' || profile?.isAgency === true) return false;
+  if (userId !== actor.uid) throw new Error('INVALID_REACTION_USER');
+  const token = await actor.getIdToken();
+  const response = await fetch('/api/portal/client-comments/' + encodeURIComponent(commentId), {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+    body: JSON.stringify({ emoji, action }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { error?: string } | null;
+    throw new Error(body?.error || 'Unable to update reaction');
+  }
+  return true;
+}
+
 export async function addReaction(commentId: string, userId: string, emoji: string): Promise<void> {
   await waitForAuth();
+  if (await updateClientReaction(commentId, userId, emoji, 'add')) return;
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
   const fieldPath = `reactions.${emoji}`;
@@ -287,6 +336,7 @@ export async function removeReaction(
   emoji: string
 ): Promise<void> {
   await waitForAuth();
+  if (await updateClientReaction(commentId, userId, emoji, 'remove')) return;
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
   const fieldPath = `reactions.${emoji}`;
@@ -302,6 +352,20 @@ export async function removeReaction(
 
 export async function deleteComment(commentId: string): Promise<void> {
   await waitForAuth();
+  const actor = getFirebaseAuth().currentUser;
+  if (!actor) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(actor.uid);
+  if (profile?.accountType !== 'AGENCY' && profile?.isAgency !== true) {
+    const token = await actor.getIdToken();
+    const response = await fetch('/api/portal/client-comments/' + encodeURIComponent(commentId), {
+      method: 'DELETE', headers: { Authorization: 'Bearer ' + token },
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null) as { error?: string } | null;
+      throw new Error(body?.error || 'Unable to delete comment');
+    }
+    return;
+  }
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
 
@@ -348,8 +412,9 @@ export function subscribeToRequestComments(
             .then(comments => { if (!isUnsubscribed) callback(comments); })
             .catch(() => { if (!isUnsubscribed) callback([]); });
         };
-        unsubscribe = onSnapshot(doc(db, 'portal_requests', requestId), refresh,
-          () => { if (!isUnsubscribed) callback([]); });
+        // The raw parent request is intentionally unreadable to clients.
+        // Refresh from the authorized projection endpoint instead of making
+        // a Firestore subscription that always fails with permission-denied.
         pollingTimer = setInterval(refresh, 30000);
         refresh();
         return;
