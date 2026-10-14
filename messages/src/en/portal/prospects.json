@@ -43,7 +43,18 @@
       "saveSales": "Save progress",
       "updated": "Prospect progress saved",
       "updateFailed": "Update rejected; founder approval or outreach eligibility review may be required.",
-      "approvalReminder": "Contact or proposal stages require authorized channel eligibility and technical review."
+      "approvalReminder": "Contact or proposal stages require authorized channel eligibility and technical review.",
+      "assignedTo": "Assigned sales manager",
+      "unassigned": "Unassigned",
+      "founderReview": "Founder approval",
+      "contactEligibility": "Outreach eligibility (requires documented basis)",
+      "eligibilityEvidence": "Source URL proving contact permission",
+      "reviewNote": "Decision and technical review notes (15+ characters)",
+      "saveEligibility": "Save channel decision",
+      "approveTechnical": "Approve technical review",
+      "founderOnly": "Only owner/admin can record legal-channel or technical approval. No message is sent.",
+      "reviewSaved": "Review saved",
+      "reviewFailed": "Review rejected. Verify your role, evidence, and suppression state."
     }
   }
 }
