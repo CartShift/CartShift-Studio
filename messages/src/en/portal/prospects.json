@@ -101,7 +101,12 @@
       "redactionConfirmation": "Type REDACT to confirm",
       "redactProspect": "Erase candidate research and suppress",
       "redactionComplete": "Research erased and do-not-contact suppression retained",
-      "redactionFailed": "Research erase failed. Suppression may be retained after a partial failure; retry if necessary."
+      "redactionFailed": "Research erase failed. Suppression may be retained after a partial failure; retry if necessary.",
+      "importTooMany": "Up to 20 stores per import. No data was saved.",
+      "openResearchSource": "Open research source",
+      "platform": "Platform signal",
+      "shopifyDetected": "Shopify detected (not verified)",
+      "platformUnknown": "Platform not verified"
     }
   }
 }
