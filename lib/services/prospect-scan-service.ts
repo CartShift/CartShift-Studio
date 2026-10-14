@@ -8,6 +8,7 @@ import { runProspectSiteAudit } from '@/lib/services/prospect-site-audit';
 
 const COOLDOWN_MS = 15 * 60 * 1000;
 const LOCK_MS = 2 * 60 * 1000;
+const DAILY_USER_SCAN_LIMIT = 25;
 
 export async function scanProspect(prospectId: string, uid: string) {
   await requireProspectActor(uid);
@@ -15,17 +16,26 @@ export async function scanProspect(prospectId: string, uid: string) {
   if (!adminDb) throw new Error('ADMIN_NOT_CONFIGURED');
   const ref = adminDb.collection('agency_prospects').doc(prospectId);
   const now = Date.now();
+  const utcDay = new Date(now).toISOString().slice(0, 10);
+  const quotaRef = adminDb.collection('agency_prospect_scan_quotas').doc(uid + '_' + utcDay);
 
   let storeUrl: string | undefined;
   await adminDb.runTransaction(async transaction => {
-    const snap = await transaction.get(ref);
+    const [snap, quota] = await Promise.all([transaction.get(ref), transaction.get(quotaRef)]);
     if (!snap.exists) throw new Error('PROSPECT_NOT_FOUND');
     const data = snap.data()!;
     if (data.doNotContact || data.stage === 'suppressed') throw new Error('PROSPECT_SUPPRESSED');
     const previous = Number(data.scanStartedAtMs || 0);
     if (previous && now - previous < COOLDOWN_MS) throw new Error('SCAN_COOLDOWN');
     if (Number(data.scanLockUntilMs || 0) > now) throw new Error('SCAN_IN_PROGRESS');
+    if (Number(quota.data()?.count || 0) >= DAILY_USER_SCAN_LIMIT) {
+      throw new Error('SCAN_DAILY_QUOTA');
+    }
     storeUrl = String(data.storeUrl || '');
+    transaction.set(quotaRef, {
+      uid, utcDay, count: Number(quota.data()?.count || 0) + 1,
+      updatedAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
     transaction.update(ref, {
       scanStatus: 'running',
       scanStartedAtMs: now,
