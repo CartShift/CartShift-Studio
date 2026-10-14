@@ -21,6 +21,11 @@ type Prospect = {
   outreachEligibility: string;
   doNotContact: boolean;
   researchNote: string;
+  nextAction: string;
+  nextActionAt: string;
+  technicalStatus: string;
+  scanStatus: string;
+  lastAuditedAt: string | null;
   updatedAt: string | null;
 };
 type Finding = {
@@ -48,6 +53,7 @@ export default function ProspectsClient() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [salesDraft, setSalesDraft] = useState({ stage: 'needs_review', next_action: '', due_date: '' });
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
@@ -76,6 +82,30 @@ export default function ProspectsClient() {
       setSelected(result.prospect_id);
     },
     onError: () => toast.error(t('saveFailed')),
+  });
+  const scan = useMutation({
+    mutationFn: (id: string) => fetchJson<{
+      prospect_id: string; findings_saved: number; contact_candidates_saved: number;
+    }>('/api/portal/agency/prospects/' + id + '/scan', { method: 'POST' }),
+    onSuccess: async result => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.prospects.detail(result.prospect_id) }),
+      ]);
+      toast.success(t('scanCompleted', { findings: result.findings_saved, contacts: result.contact_candidates_saved }));
+    },
+    onError: () => toast.error(t('scanFailed')),
+  });
+  const updateSales = useMutation({
+    mutationFn: ({ id, patch }: { id: string; patch: Record<string, string> }) =>
+      fetchJson<{ updated: boolean }>('/api/portal/agency/prospects/' + id, {
+        method: 'PATCH', body: JSON.stringify(patch),
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
+      toast.success(t('updated'));
+    },
+    onError: () => toast.error(t('updateFailed')),
   });
   const rows = (list.data?.prospects || []).filter(row =>
     [row.brandName, row.canonicalDomain, row.stage].some(value =>
@@ -168,19 +198,64 @@ export default function ProspectsClient() {
                 </a>
               </div>
               <span className="shrink-0 rounded-full bg-surface-100 px-2 py-1 text-xs text-surface-600 dark:bg-surface-800 dark:text-surface-300">
-                {t('needsReview')}
+                {prospect.stage === 'needs_review' ? t('needsReview') : prospect.stage}
               </span>
             </div>
             {prospect.researchNote && <p className="line-clamp-2 text-sm text-surface-500">{prospect.researchNote}</p>}
             <p className="text-xs text-surface-500">{t('source')}: {prospect.sourceType}</p>
+            <p className="text-xs text-surface-500">{t('scanState')}: {prospect.scanStatus}</p>
+            {prospect.nextAction && <p className="text-sm text-surface-600 dark:text-surface-300">{t('nextAction')}: {prospect.nextAction}</p>}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-surface-500">{t('noPermission')}</span>
-              <Button variant="outline" onClick={() => setSelected(p => p === prospect.id ? null : prospect.id)}>
+              <Button variant="outline" disabled={scan.isPending} onClick={() => scan.mutate(prospect.id)}>
+                {scan.isPending && scan.variables === prospect.id && <Loader2 size={14} className="animate-spin" />}
+                {t('scanStore')}
+              </Button>
+              <Button variant="outline" onClick={() => {
+                setSelected(p => p === prospect.id ? null : prospect.id);
+                setSalesDraft({ stage: prospect.stage, next_action: prospect.nextAction || '',
+                  due_date: prospect.nextActionAt || '' });
+              }}>
                 {selected === prospect.id ? t('close') : t('evidence')}
               </Button>
             </div>
             {selected === prospect.id && (
               <div className="space-y-3 border-t border-surface-200 pt-3 dark:border-surface-700">
+                <form className="space-y-2 rounded-lg bg-surface-50 p-3 dark:bg-surface-900"
+                  onSubmit={e => {
+                    e.preventDefault();
+                    updateSales.mutate({ id: prospect.id, patch: {
+                      stage: salesDraft.stage,
+                      next_action: salesDraft.next_action,
+                      ...(salesDraft.due_date ? { due_date: salesDraft.due_date } : {}),
+                    } });
+                  }}>
+                  <label className="block text-sm text-surface-600 dark:text-surface-300">
+                    {t('stage')}
+                    <select value={salesDraft.stage}
+                      onChange={e => setSalesDraft(p => ({ ...p, stage: e.target.value }))}
+                      className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
+                      {['needs_review', 'qualified', 'contact_research', 'contact_ready',
+                        'in_conversation', 'proposal', 'won', 'lost'].map(stage => (
+                        <option key={stage} value={stage}>{stage}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block text-sm text-surface-600 dark:text-surface-300">
+                    {t('nextAction')}
+                    <input value={salesDraft.next_action} maxLength={500}
+                      onChange={e => setSalesDraft(p => ({ ...p, next_action: e.target.value }))}
+                      className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white"/>
+                  </label>
+                  <label className="block text-sm text-surface-600 dark:text-surface-300">
+                    {t('dueDate')}
+                    <input type="date" value={salesDraft.due_date}
+                      onChange={e => setSalesDraft(p => ({ ...p, due_date: e.target.value }))}
+                      className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white"/>
+                  </label>
+                  <Button type="submit" disabled={updateSales.isPending}>{t('saveSales')}</Button>
+                  <p className="text-xs text-surface-500">{t('approvalReminder')}</p>
+                </form>
                 {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>}
                 {detail.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
                 {detail.data && detail.data.findings.length === 0 && <p className="text-sm text-surface-500">{t('noFindings')}</p>}
