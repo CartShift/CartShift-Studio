@@ -189,10 +189,14 @@ service cloud.firestore {
         request.resource.data.get('status', '') == 'planning' &&
         exists(/databases/$(database)/documents/portal_organizations/$(request.resource.data.orgId));
       // 'ready_to_launch' can only be entered by the trusted readiness service.
+      // Editing gates after readiness requires atomically reopening the project.
       allow update: if isAgencyUser() &&
         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
         (request.resource.data.get('status', '') != 'ready_to_launch' ||
-          resource.data.get('status', '') == 'ready_to_launch');
+          (resource.data.get('status', '') == 'ready_to_launch' &&
+           !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+             'blockers', 'inputs', 'launchChecks', 'deliverables', 'changes', 'reviewRevisions', 'stages'
+           ])));
       allow delete: if false;
 
       match /reviews/{reviewId} {
@@ -204,6 +208,7 @@ service cloud.firestore {
           let deliverableId = request.resource.data.get('deliverableId', '');
           return exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
             !isAgencyUser() &&
+            project.get('status', '') != 'ready_to_launch' &&
             project.get('reviewRevisions', {}).get(deliverableId, 0) == request.resource.data.get('revision', 0) &&
             request.resource.data.get('updatedAt', request.time) == request.time &&
             request.resource.data.keys().hasOnly([
