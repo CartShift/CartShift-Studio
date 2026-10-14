@@ -66,7 +66,7 @@ export const Header: React.FC = () => {
         dropdownType: 'tools' as DropdownType,
         submenu: [
           {
-            name: t('storeReview.formTitle'),
+            name: t('storeReview.ctaShort'),
             href: '/free-store-review',
           },
           { name: t('nav.clientPortal') || 'Client Portal', href: '/tools/client-portal' },
@@ -228,7 +228,7 @@ export const Header: React.FC = () => {
                 ) : (
                   <span className="flex items-center gap-2">
                     <Icon name="bar-chart" size={16} />
-                    <span>{t('storeReview.badge')}</span>
+                    <span>{t('storeReview.ctaShort')}</span>
                   </span>
                 )}
               </Button>
