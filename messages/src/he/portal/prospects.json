@@ -81,7 +81,10 @@
         "lost": "לא נסגר",
         "suppressed": "אין לפנות"
       },
-      "verifiedCount": "{count} ממצאים מאומתים"
+      "verifiedCount": "{count} ממצאים מאומתים",
+      "onlyVerified": "רק עם ממצאים מאומתים",
+      "myProspects": "הלידים שבאחריותי",
+      "showing": "מציג {shown} מתוך {total} לידים"
     }
   }
 }
