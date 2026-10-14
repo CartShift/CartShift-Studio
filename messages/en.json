@@ -5972,7 +5972,8 @@
       "SERVICE_UNAVAILABLE": "The service is temporarily unavailable. Please try again later.",
       "SAVE_FAILED": "We couldn't securely save the request. Please try again.",
       "ORIGIN_NOT_ALLOWED": "This request could not be verified.",
-      "GENERIC": "Something went wrong. Please try again."
+      "GENERIC": "Something went wrong. Please try again.",
+      "RATE_LIMIT": "Too many requests from this connection. Please try again later."
     },
     "whatTitle": "What we'll look at",
     "whatDescription": "A focused review of the parts of your store that shape the buying experience.",
