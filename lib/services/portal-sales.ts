@@ -15,9 +15,9 @@ import {
   MonthlyRevenue,
   TopClient,
   Organization,
-  Currency,
 } from '@/lib/types/portal';
 import { PricingRequest, PRICING_STATUS } from '@/lib/types/pricing';
+import { recognizedCurrency, reportingCurrency, revenueByCurrency } from '@/lib/domain/revenue-currency';
 import {
   getPricingRequestPendingAmount,
   getRecognizedRevenue,
@@ -129,19 +129,31 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
   const revenueBearingRequests = pricingRequests.filter(pr => getRecognizedRevenue(pr) > 0);
   const acceptedRequests = pricingRequests.filter(pr => pr.status === PRICING_STATUS.ACCEPTED);
   const declinedRequests = pricingRequests.filter(pr => pr.status === PRICING_STATUS.DECLINED);
+  const reportingRows = pricingRequests.filter(pr => getRecognizedRevenue(pr) > 0 || getPricingRequestPendingAmount(pr) > 0);
+  const primaryCurrency = reportingCurrency(reportingRows);
+  const currencyRevenueRequests = revenueBearingRequests.filter(pr => recognizedCurrency(pr.currency) === primaryCurrency);
+  const acceptedCurrencyRequests = acceptedRequests.filter(pr => recognizedCurrency(pr.currency) === primaryCurrency);
+  const byCurrencyRevenue = revenueByCurrency(revenueBearingRequests, getRecognizedRevenue);
+  const byCurrencyPending = revenueByCurrency(acceptedRequests, getPricingRequestPendingAmount);
+  const hasOtherCurrencies = reportingRows.some(pr => recognizedCurrency(pr.currency) !== primaryCurrency);
+  const currencyBreakdown = {
+    ILS: { paid: byCurrencyRevenue.amounts.ILS, pending: byCurrencyPending.amounts.ILS },
+    USD: { paid: byCurrencyRevenue.amounts.USD, pending: byCurrencyPending.amounts.USD },
+    EUR: { paid: byCurrencyRevenue.amounts.EUR, pending: byCurrencyPending.amounts.EUR },
+  };
   const sentRequests = pricingRequests.filter(
     pr => pr.status !== PRICING_STATUS.DRAFT && pr.status !== PRICING_STATUS.CANCELED
   );
 
   // Revenue calculations
-  const totalRevenue = revenueBearingRequests.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
-  const pendingRevenue = acceptedRequests.reduce(
+  const totalRevenue = currencyRevenueRequests.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
+  const pendingRevenue = acceptedCurrencyRequests.reduce(
     (sum, pr) => sum + getPricingRequestPendingAmount(pr),
     0
   );
 
   // This month's revenue
-  const revenueThisMonth = revenueBearingRequests
+  const revenueThisMonth = currencyRevenueRequests
     .filter(pr => {
       const paymentAt = pr.lastPaymentAt || pr.paidAt;
       return paymentAt ? paymentAt.toDate() >= thisMonthStart : false;
@@ -149,7 +161,7 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
     .reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
 
   // Last month's revenue
-  const revenueLastMonth = revenueBearingRequests
+  const revenueLastMonth = currencyRevenueRequests
     .filter(pr => {
       const paymentAt = pr.lastPaymentAt || pr.paidAt;
       if (!paymentAt) return false;
@@ -193,7 +205,8 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
     totalProposals > 0 ? Math.round((paidRequests.length / totalProposals) * 100) : 0;
 
   // Average deal size
-  const avgDealSize = paidRequests.length > 0 ? Math.round(totalRevenue / paidRequests.length) : 0;
+  const currencyPaidCount = paidRequests.filter(pr => recognizedCurrency(pr.currency) === primaryCurrency).length;
+  const avgDealSize = currencyPaidCount > 0 ? Math.round(totalRevenue / currencyPaidCount) : 0;
 
   // Average time to close (days from sent to paid)
   const closeTimes = paidRequests
@@ -204,19 +217,6 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
     closeTimes.length > 0
       ? Math.round(closeTimes.reduce((sum, days) => sum + days, 0) / closeTimes.length)
       : 0;
-
-  // Determine primary currency (most used)
-  const currencyCounts = revenueBearingRequests.reduce(
-    (acc, pr) => {
-      const curr = pr.currency || 'USD';
-      acc[curr] = (acc[curr] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  const primaryCurrency = (Object.entries(currencyCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ||
-    'USD') as Currency;
 
   return {
     totalRevenue,
@@ -236,6 +236,8 @@ export async function getSalesMetrics(): Promise<SalesMetrics> {
     avgDealSize,
     avgTimeToClose,
     primaryCurrency,
+    hasOtherCurrencies,
+    currencyBreakdown,
   };
 }
 
@@ -253,6 +255,7 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
 
   // Create org name lookup
   const orgNames = new Map(organizations.map(org => [org.id, org.name]));
+  const orgCurrency = new Map(organizations.map(org => [org.id, org.defaultCurrency]));
 
   // Group pricing requests by org
   const orgData = new Map<
@@ -285,12 +288,18 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
   const revenueData: ClientRevenueData[] = [];
 
   orgData.forEach((data, orgId) => {
-    const totalRevenue = data.paid.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
-    const pendingRevenue =
-      data.accepted.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0);
+    const currency = recognizedCurrency(orgCurrency.get(orgId)) || reportingCurrency(data.paid.length ? data.paid : data.all);
+    const paidInCurrency = data.paid.filter(pr => recognizedCurrency(pr.currency) === currency);
+    const acceptedInCurrency = data.accepted.filter(pr => recognizedCurrency(pr.currency) === currency);
+    const hasOtherCurrencies = data.all.some(pr =>
+      (getRecognizedRevenue(pr) > 0 || getPricingRequestPendingAmount(pr) > 0) &&
+      recognizedCurrency(pr.currency) !== currency
+    );
+    const totalRevenue = paidInCurrency.reduce((sum, pr) => sum + getRecognizedRevenue(pr), 0);
+    const pendingRevenue = acceptedInCurrency.reduce((sum, pr) => sum + getPricingRequestPendingAmount(pr), 0);
 
     // Find first and last payment dates
-    const paidDates = data.paid
+    const paidDates = paidInCurrency
       .filter(pr => pr.lastPaymentAt || pr.paidAt)
       .map(pr => (pr.lastPaymentAt || pr.paidAt)!.toDate())
       .sort((a, b) => a.getTime() - b.getTime());
@@ -303,11 +312,7 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
     const sentCount = data.all.filter(
       pr => pr.status !== PRICING_STATUS.DRAFT && pr.status !== PRICING_STATUS.CANCELED
     ).length;
-    const conversionRate = sentCount > 0 ? Math.round((data.paid.length / sentCount) * 100) : 0;
-
-    // Determine currency (most used for this client)
-    const currency =
-      data.paid.length > 0 ? ((data.paid[0].currency || 'USD') as Currency) : ('USD' as Currency);
+    const conversionRate = sentCount > 0 ? Math.round((paidInCurrency.length / sentCount) * 100) : 0;
 
     revenueData.push({
       orgId,
@@ -315,16 +320,17 @@ export async function getClientRevenueData(): Promise<ClientRevenueData[]> {
       totalRevenue,
       pendingRevenue,
       proposalCount: data.all.length,
-      paidCount: data.paid.length,
+      paidCount: paidInCurrency.length,
       conversionRate,
       firstPaymentAt,
       lastPaymentAt,
       currency,
+      hasOtherCurrencies,
     });
   });
 
-  // Sort by total revenue descending
-  return revenueData.sort((a, b) => b.totalRevenue - a.totalRevenue);
+  // Rank revenue only within a shared currency; cross-currency ranking requires FX conversion.
+  return revenueData.sort((a, b) => a.currency.localeCompare(b.currency) || b.totalRevenue - a.totalRevenue);
 }
 
 /**
@@ -340,6 +346,8 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
   ]);
 
   const now = new Date();
+  const reportCurrency = reportingCurrency(pricingRequests.filter(pr =>
+    getRecognizedRevenue(pr) > 0 || getPricingRequestPendingAmount(pr) > 0));
   const result: MonthlyRevenue[] = [];
 
   // Generate data for each month
@@ -351,7 +359,7 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
     // Filter requests for this month
     const monthPaid = pricingRequests.filter(pr => {
       const paymentAt = pr.lastPaymentAt || pr.paidAt;
-      if (!paymentAt || getRecognizedRevenue(pr) <= 0) return false;
+      if (!paymentAt || getRecognizedRevenue(pr) <= 0 || recognizedCurrency(pr.currency) !== reportCurrency) return false;
       const paidDate = paymentAt.toDate();
       return paidDate >= monthDate && paidDate <= monthEnd;
     });
@@ -385,9 +393,10 @@ export async function getMonthlyRevenueData(months: number = 6): Promise<Monthly
  */
 export async function getTopClients(limit: number = 5): Promise<TopClient[]> {
   const revenueData = await getClientRevenueData();
+  const reportCurrency = reportingCurrency(revenueData.filter(client => client.totalRevenue > 0));
 
   return revenueData
-    .filter(client => client.totalRevenue > 0)
+    .filter(client => client.totalRevenue > 0 && client.currency === reportCurrency)
     .slice(0, limit)
     .map(client => {
       // Calculate trend based on payment recency

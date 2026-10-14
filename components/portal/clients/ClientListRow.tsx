@@ -14,11 +14,13 @@ import { MoreVertical, ArrowUpRight, Eye, Trash2, ShieldCheck, FilePlus2 } from 
 import { Organization } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useOrg } from '@/lib/context/OrgContext';
-import { formatCompactCurrency } from '@/lib/utils/format-compact-currency';
+import type { Currency } from '@/lib/types/portal';
 
 export interface AgencyClient extends Organization {
   totalRevenue?: number;
   requestCount?: number;
+  revenueCurrency?: Currency;
+  hasOtherCurrencies?: boolean;
 }
 
 interface ClientListRowProps {
@@ -93,7 +95,12 @@ export function ClientListRow({
 
       <PortalTableCell>
         <span className="font-mono font-medium">
-          {formatCompactCurrency((client.totalRevenue ?? 0) / 100)}
+          {new Intl.NumberFormat('he-IL', {
+            style: 'currency', currency: client.revenueCurrency || client.defaultCurrency || 'ILS',
+            notation: 'compact', maximumFractionDigits: 1,
+          }).format((client.totalRevenue ?? 0) / 100)}
+          {client.hasOtherCurrencies && <span title="יש מסמכים במטבעות נוספים שלא הומרו לסכום הזה"
+            className="ms-1 text-amber-600" aria-label="סכומים במטבעות אחרים לא נכללו">*</span>}
         </span>
       </PortalTableCell>
 

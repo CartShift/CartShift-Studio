@@ -24,7 +24,7 @@ import { invalidatePortalRequestData } from '@/lib/utils/portal-cache-invalidati
 import { queryKeys } from '@/lib/utils/query-keys';
 import { useAgencyClientMutations } from '@/lib/hooks/useAgencyClientMutations';
 import { Link, useRouter } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getPortalPath } from '@/lib/utils/portal-paths';
@@ -63,6 +63,8 @@ function formatRevenue(amountInCents: number, currency: Currency = 'USD'): strin
 
 export default function AgencyClientsClient() {
   const t = useTranslations('portal');
+  const locale = useLocale();
+  const [summaryCurrency, setSummaryCurrency] = useState<Currency>('ILS');
   const router = useRouter();
   const queryClient = useQueryClient();
   const { loading: auth, isAuthenticated, user } = usePortalAuth();
@@ -90,10 +92,14 @@ export default function AgencyClientsClient() {
 
   // Calculate totals for the header stats
   const totals = useMemo(() => {
-    const totalRevenue = organizations.reduce((sum, org) => sum + (org.totalRevenue || 0), 0);
-    const pendingRevenue = organizations.reduce((sum, org) => sum + (org.pendingRevenue || 0), 0);
-    return { totalRevenue, pendingRevenue };
-  }, [organizations]);
+    // Only sum client revenue inside one denomination. No implied FX conversion.
+    const matching = organizations.filter(org =>
+      (org.revenueCurrency || org.defaultCurrency || 'ILS') === summaryCurrency);
+    const totalRevenue = matching.reduce((sum, org) => sum + (org.totalRevenue || 0), 0);
+    const pendingRevenue = matching.reduce((sum, org) => sum + (org.pendingRevenue || 0), 0);
+    const paidCount = matching.reduce((sum, org) => sum + (org.paidCount || 0), 0);
+    return { totalRevenue, pendingRevenue, paidCount };
+  }, [organizations, summaryCurrency]);
 
   const handleRepair = async () => {
     if (!user) return;
@@ -257,13 +263,25 @@ export default function AgencyClientsClient() {
         }
       />
 
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-surface-500">
+          {locale === 'he' ? 'סיכומי הכנסות מוצגים לפי מטבע לקוח, ללא המרה אוטומטית.' :
+            'Revenue totals are grouped by client currency, without implicit exchange rates.'}
+        </p>
+        <select value={summaryCurrency} aria-label={locale === 'he' ? 'מטבע סיכומי לקוחות' : 'Client summary currency'}
+          onChange={event => setSummaryCurrency(event.target.value as Currency)}
+          className="portal-focus-ring min-h-9 rounded-lg border border-surface-200 bg-white px-3 text-xs dark:border-surface-700 dark:bg-surface-900">
+          <option value="ILS">₪ ILS</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option>
+        </select>
+      </div>
+
       {/* Revenue Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
         <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
           <PortalMetricCard
             icon={DollarSign}
             label={t('sales.metrics.totalRevenue')}
-            value={formatRevenue(totals.totalRevenue)}
+            value={formatRevenue(totals.totalRevenue, summaryCurrency)}
             tone="success"
             interactive
           />
@@ -273,7 +291,7 @@ export default function AgencyClientsClient() {
           <PortalMetricCard
             icon={Clock}
             label={t('sales.metrics.pendingRevenue')}
-            value={formatRevenue(totals.pendingRevenue)}
+            value={formatRevenue(totals.pendingRevenue, summaryCurrency)}
             tone="warning"
             interactive
           />
@@ -291,13 +309,8 @@ export default function AgencyClientsClient() {
             icon={TrendingUp}
             label={t('sales.metrics.avgDealSize')}
             value={
-              organizations.filter(o => o.paidCount && o.paidCount > 0).length > 0
-                ? formatRevenue(
-                    Math.round(
-                      totals.totalRevenue /
-                        organizations.reduce((sum, o) => sum + (o.paidCount || 0), 0) || 0
-                    )
-                  )
+              totals.paidCount > 0
+                ? formatRevenue(Math.round(totals.totalRevenue / totals.paidCount), summaryCurrency)
                 : '—'
             }
             tone="primary"
@@ -473,16 +486,20 @@ export default function AgencyClientsClient() {
                         </span>
                       </div>
                       <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
-                        {formatRevenue(org.totalRevenue || 0)}
+                        {formatRevenue(org.totalRevenue || 0, org.revenueCurrency || org.defaultCurrency || 'ILS')}
                       </span>
                     </div>
+                    {org.hasOtherCurrencies && <p className="mt-2 text-xs font-medium text-amber-800 dark:text-amber-300">
+                      {locale === 'he' ? 'יש מסמכים במטבעות אחרים שלא נכללו בסכום.' :
+                        'Other-currency documents are excluded from this total.'}
+                    </p>}
                     {(org.pendingRevenue ?? 0) > 0 && (
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/50 dark:border-emerald-500/20">
                         <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
                           {t('sales.metrics.pending')}
                         </span>
                         <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
-                          +{formatRevenue(org.pendingRevenue || 0)}
+                          +{formatRevenue(org.pendingRevenue || 0, org.revenueCurrency || org.defaultCurrency || 'ILS')}
                         </span>
                       </div>
                     )}
