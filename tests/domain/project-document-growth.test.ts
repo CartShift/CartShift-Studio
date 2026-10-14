@@ -11,7 +11,7 @@ describe('read-only project document growth diagnostics', () => {
     expect(growth.caution).toBe(false);
     expect(growth.collectionCounts.workLogs).toBe(0);
     expect(growth.collectionCounts.changes).toBe(0);
-    expect(growth.largestEmbeddedCollection?.field).toBe('stages');
+    expect(growth.largestEmbeddedCollection).toBeNull();
     expect(legacy).toEqual({ orgId: 'org', title: 'Legacy Shopify work' });
   });
 

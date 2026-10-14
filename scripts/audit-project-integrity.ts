@@ -85,14 +85,20 @@ async function main() {
 
   for (const project of projects) {
     const data = project.data;
-    const growth = inspectProjectDocumentGrowth(data);
-    documentGrowth.push({
-      projectId: project.id,
-      estimatedJsonBytes: growth.estimatedJsonBytes,
-      collectionCounts: growth.collectionCounts,
-      largestEmbeddedCollection: growth.largestEmbeddedCollection,
-    });
-    if (growth.caution) problems.push({ code: 'PROJECT_DOCUMENT_SIZE_CAUTION', projectId: project.id });
+    try {
+      const growth = inspectProjectDocumentGrowth(data);
+      documentGrowth.push({
+        projectId: project.id,
+        estimatedJsonBytes: growth.estimatedJsonBytes,
+        collectionCounts: growth.collectionCounts,
+        largestEmbeddedCollection: growth.largestEmbeddedCollection,
+      });
+      if (growth.caution) problems.push({ code: 'PROJECT_DOCUMENT_SIZE_CAUTION', projectId: project.id });
+    } catch {
+      // Keep the read-only audit usable even when a legacy document is malformed.
+      // Report only the document ID, never dump customer content into logs.
+      problems.push({ code: 'PROJECT_DOCUMENT_SHAPE_INVALID', projectId: project.id });
+    }
     if (data.originProposalId) {
       const proposal = requestById.get(data.originProposalId);
       if (!proposal || proposal.orgId !== data.orgId) {

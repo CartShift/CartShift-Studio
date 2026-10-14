@@ -37,9 +37,11 @@ export function inspectProjectDocumentGrowth(data: Record<string, unknown>): Pro
     }
     const items = (value ?? []) as unknown[];
     collectionCounts[field] = items.length;
-    const collectionBytes = utf8Bytes(items);
-    if (!largestEmbeddedCollection || collectionBytes > largestEmbeddedCollection.estimatedJsonBytes) {
-      largestEmbeddedCollection = { field, estimatedJsonBytes: collectionBytes };
+    if (items.length > 0) {
+      const collectionBytes = utf8Bytes(items);
+      if (!largestEmbeddedCollection || collectionBytes > largestEmbeddedCollection.estimatedJsonBytes) {
+        largestEmbeddedCollection = { field, estimatedJsonBytes: collectionBytes };
+      }
     }
   }
 
