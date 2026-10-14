@@ -101,6 +101,16 @@ describe('atomic portal membership revocation', () => {
     expect((await POST(request())).status).toBe(200);
   });
 
+  it('does not treat a revoked organization creator as an active admin', async () => {
+    store.set('portal_users/managerA', row({ accountType: 'CLIENT' }));
+    store.set('portal_organizations/orgA', row({ createdBy: 'managerA' }));
+    store.set('portal_members/orgA_managerA', row({
+      orgId: 'orgA', userId: 'managerA', role: 'owner', removedAt: true,
+    }));
+    expect((await POST(request())).status).toBe(403);
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+
   it('is idempotent for a removed member but still reconciles cached organizations', async () => {
     store.set('portal_members/orgA_clientB', row({
       orgId: 'orgA', userId: 'clientB', removedAt: true,

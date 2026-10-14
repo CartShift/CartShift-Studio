@@ -77,6 +77,7 @@ async function organizationExists(orgId: string) {
   if (!snap.exists || snap.data()?.removedAt || ['inactive', 'suspended'].includes(snap.data()?.status)) {
     throw new Error('Organization not found or inactive');
   }
+  return snap;
 }
 
 async function projectExists(orgId: string, projectId: string) {
@@ -131,7 +132,10 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       org_id: id, title: short, template: templates, locale: z.enum(['en', 'he']).optional(),
       summary: z.string().trim().max(4000).optional(),
     }).strict().parse(input);
-    await organizationExists(org_id);
+    const organization = await organizationExists(org_id);
+    const preferredCurrency = organization.data()?.defaultCurrency;
+    const currency = preferredCurrency === 'ILS' || preferredCurrency === 'USD' || preferredCurrency === 'EUR'
+      ? preferredCurrency : 'ILS';
     const existing = await projects.where('orgId', '==', org_id).limit(200).get();
     if (existing.size === 200) throw new Error('Project list is too large to safely deduplicate');
     const duplicate = existing.docs.find(doc => normalize(doc.data().title || '') === normalize(title));
@@ -148,7 +152,7 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
         orgId: org_id, title, template, summary, nextStep: '', status: 'planning',
         ...buildProjectTemplate(template, locale), blockers: [], deliverables: [], workLogs: [],
         changes: [], updates: [], reviewRevisions: {},
-        scope: { minHours: 0, maxHours: 0, rateCents: 0, currency: 'ILS' },
+        scope: { minHours: 0, maxHours: 0, rateCents: 0, currency },
         createdBy: grant.uid, createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       });
