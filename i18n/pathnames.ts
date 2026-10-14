@@ -16,6 +16,7 @@ const websitePathnames = [
   '/tools',
   '/tools/client-portal',
   '/tools/store-analyzer',
+  '/free-store-review',
   '/solutions/shopify',
   '/solutions/wordpress',
   '/industries/[industry]',
