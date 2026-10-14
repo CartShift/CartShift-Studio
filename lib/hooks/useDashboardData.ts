@@ -8,6 +8,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useResolvedOrgId } from '@/lib/hooks/useResolvedOrgId';
 import { useTranslations } from 'next-intl';
 import { getRequestsByOrg, subscribeToOrgRequests } from '@/lib/services/portal-requests';
+import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
 import { getOrgActivities, subscribeToOrgActivities } from '@/lib/services/portal-activities';
 import { getMemberByUserId, ensureMembership } from '@/lib/services/portal-organizations';
 import { portalToast } from '@/lib/utils/portal-toast';
@@ -72,9 +73,10 @@ export function useDashboardData() {
     error: requestsError,
   } = useQuery({
     queryKey: queryKeys.requests.byOrg(safeOrgId),
-    queryFn: () => getRequestsByOrg(safeOrgId),
+    queryFn: () => isAgency ? getRequestsByOrg(safeOrgId) : getClientVisibleRequests(safeOrgId),
     enabled: Boolean(shouldFetchData),
-    staleTime: Infinity,
+    staleTime: isAgency ? Infinity : 15_000,
+    refetchInterval: isAgency ? false : 30_000,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message.includes('Permission denied')) {
         portalToast.error(t('accessDenied'), t('accessDeniedDesc'));
@@ -87,15 +89,15 @@ export function useDashboardData() {
 
   const subscribeRequests = useMemo(
     () =>
-      shouldFetchData
+      shouldFetchData && isAgency
         ? (cb: (data: Request[]) => void) => subscribeToOrgRequests(safeOrgId, cb)
         : null,
-    [shouldFetchData, safeOrgId]
+    [shouldFetchData, safeOrgId, isAgency]
   );
   useFirestoreSubscription(
     queryKeys.requests.byOrg(safeOrgId),
     subscribeRequests,
-    Boolean(shouldFetchData)
+    Boolean(shouldFetchData && isAgency)
   );
 
   // 2. Activities (initial fetch + real-time)
