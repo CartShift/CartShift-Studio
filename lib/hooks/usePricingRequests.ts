@@ -20,13 +20,13 @@ type OrgPricingOptions = {
 
 export function useOrgPricingRequests(options: OrgPricingOptions = {}) {
   const orgId = useResolvedOrgId();
-  const { loading: auth, isAuthenticated } = usePortalAuth();
+  const { loading: auth, isAuthenticated, isAgency } = usePortalAuth();
   const safeOrgId = typeof orgId === 'string' ? orgId : '';
   const { excludeDrafts = false } = options;
 
   const shouldFetch = isAuthenticated && !auth && Boolean(safeOrgId);
   // Scope by tenant AND result shape. Keep the byOrg prefix for broad mutation invalidation.
-  const qKey = queryKeys.pricing.scopedByOrg(safeOrgId, excludeDrafts);
+  const qKey = queryKeys.pricing.scopedByOrg(safeOrgId, excludeDrafts, isAgency ? 'agency' : 'client');
 
   const {
     data: requests = [],
