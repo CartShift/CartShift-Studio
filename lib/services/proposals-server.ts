@@ -34,9 +34,8 @@ type ProposalDocument = Omit<PricingRequest, 'id'> & {
 
 function getPublishedFields(proposal: ProposalDocument) {
   return {
-    // Commercial relationships are signed with the published version too;
-    // editing a draft cannot silently reattach an accepted change order.
-    projectId: proposal.projectId ?? null,
+    // Freeze the specific scope change being signed. Project assignment is
+    // operational metadata and may be linked after the offer was published.
     projectChangeId: proposal.projectChangeId ?? null,
     title: proposal.title,
     description: proposal.description ?? null,
