@@ -69,7 +69,19 @@
       "importPreview": "{requested} כתובות הוזנו; {unique} עסקים ייחודיים",
       "newProspect": "מועמד חדש",
       "importDone": "נשמרו {created} לידים חדשים",
-      "importFailed": "הייבוא נכשל. בדקו כתובות HTTPS ציבוריות וכפילויות."
+      "importFailed": "הייבוא נכשל. בדקו כתובות HTTPS ציבוריות וכפילויות.",
+      "stageLabels": {
+        "needs_review": "ממתין לאימות",
+        "qualified": "ליד מתאים",
+        "contact_research": "איתור איש קשר",
+        "contact_ready": "ערוץ פנייה מאושר",
+        "in_conversation": "בשיחה",
+        "proposal": "הצעת מחיר",
+        "won": "נסגר",
+        "lost": "לא נסגר",
+        "suppressed": "אין לפנות"
+      },
+      "verifiedCount": "{count} ממצאים מאומתים"
     }
   }
 }
