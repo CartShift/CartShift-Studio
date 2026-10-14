@@ -43,7 +43,7 @@ vi.mock('@/lib/firebase-admin', () => {
 });
 
 import {
-  upsertProspect, addProspectFinding, listProspects, getProspect,
+  upsertProspect, addProspectFinding, addProspectContactCandidate, listProspects, getProspect,
 } from '@/lib/services/prospects-server';
 
 beforeEach(() => {
@@ -112,6 +112,18 @@ describe('agency prospect persistence and access', () => {
     const result = await getProspect(first.prospect_id, 'staff');
     expect(result.findings).toHaveLength(1);
     expect(result.findings[0].verificationStatus).toBe('unverified');
+    const contact = await addProspectContactCandidate({
+      prospect_id: first.prospect_id, role: 'Store owner', name: 'Business Contact',
+      source_url: 'https://shop.co.il/pages/about',
+      evidence_excerpt: 'Business Contact is listed as store owner on the About page.',
+    }, 'staff');
+    expect(contact.status).toBe('candidate');
+    expect(contact.outreach_approved).toBe(false);
+    await expect(addProspectContactCandidate({
+      prospect_id: first.prospect_id, role: 'Store owner',
+      source_url: 'https://external.co.il/team',
+      evidence_excerpt: 'A profile from another site',
+    }, 'staff')).rejects.toThrow('Finding evidence');
     expect([...records.keys()].some(k => k.startsWith('marketing_'))).toBe(false);
   });
 });

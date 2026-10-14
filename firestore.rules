@@ -532,6 +532,9 @@ service cloud.firestore {
       match /findings/{findingId} {
         allow read, write: if false;
       }
+      match /contacts/{contactId} {
+        allow read, write: if false;
+      }
     }
 
     match /agency_prospect_audit/{eventId} {

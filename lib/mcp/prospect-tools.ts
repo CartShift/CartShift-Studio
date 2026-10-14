@@ -3,7 +3,7 @@ import 'server-only';
 import type { TokenGrant } from '@/lib/mcp/connection';
 import { may } from '@/lib/mcp/connection';
 import {
-  addProspectFinding, getProspect, listProspects, upsertProspect,
+  addProspectFinding, addProspectContactCandidate, getProspect, listProspects, upsertProspect,
 } from '@/lib/services/prospects-server';
 
 const identity = { type: 'string', pattern: '^prospect_[a-f0-9]{32}$' };
@@ -39,6 +39,15 @@ export const PROSPECT_TOOL_DEFS = [
       evidence_excerpt: { type: 'string', minLength: 12, maxLength: 800 },
       business_relevance: { type: 'string', maxLength: 500 } },
     ['prospect_id', 'category', 'title', 'observed_url', 'evidence_excerpt']),
+  definition('add_prospect_contact_candidate',
+    'Record a public business-role contact suggestion from the official store site. Not validated for marketing permission; do not infer email addresses or send outreach.',
+    'prospects:write',
+    { prospect_id: identity, role: { type: 'string', minLength: 2, maxLength: 120 },
+      name: { type: 'string', maxLength: 120 },
+      business_email: { type: 'string', maxLength: 240 },
+      source_url: { type: 'string', maxLength: 1024 },
+      evidence_excerpt: { type: 'string', minLength: 8, maxLength: 400 } },
+    ['prospect_id', 'role', 'source_url', 'evidence_excerpt']),
 ] as const;
 
 export async function callProspectTool(name: string, args: unknown, grant: TokenGrant) {
@@ -58,5 +67,6 @@ export async function callProspectTool(name: string, args: unknown, grant: Token
   }
   if (name === 'upsert_prospect') return upsertProspect(args, grant.uid);
   if (name === 'add_prospect_finding') return addProspectFinding(args, grant.uid);
+  if (name === 'add_prospect_contact_candidate') return addProspectContactCandidate(args, grant.uid);
   throw new Error('Unknown prospect tool');
 }

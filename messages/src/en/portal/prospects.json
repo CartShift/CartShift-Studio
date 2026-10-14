@@ -29,7 +29,10 @@
       "truncated": "Showing the most recent prospects only.",
       "created": "Prospect added for review",
       "duplicate": "Already in CartShift — existing data preserved",
-      "saveFailed": "Could not save prospect"
+      "saveFailed": "Could not save prospect",
+      "contacts": "Business contacts",
+      "noContacts": "No sourced business contacts found yet.",
+      "candidateContact": "Unverified contact — no outreach approved"
     }
   }
 }

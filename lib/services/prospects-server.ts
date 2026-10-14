@@ -2,6 +2,7 @@ import 'server-only';
 import { createHash } from 'node:crypto';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
+import { prospectContactCandidateSchema } from '@/lib/domain/prospect-contacts';
 import { adminDb } from '@/lib/firebase-admin';
 import { normalizeProspectStoreUrl, prospectDocumentId, prospectFindingSchema,
   upsertProspectSchema, validateProspectSource, verifyProspectEvidenceUrl } from '@/lib/domain/prospects';
@@ -100,13 +101,22 @@ export async function getProspect(rawId: string, uid: string) {
   const ref = db().collection(COLLECTION).doc(prospectId);
   const snap = await ref.get();
   if (!snap.exists) throw new Error('Prospect not found');
-  const findings = await ref.collection('findings').orderBy('createdAt', 'desc').limit(50).get();
+  const [findings, contacts] = await Promise.all([
+    ref.collection('findings').orderBy('createdAt', 'desc').limit(50).get(),
+    ref.collection('contacts').orderBy('createdAt', 'desc').limit(30).get(),
+  ]);
   return { prospect: summary(prospectId, snap.data() || {}),
     findings: findings.docs.map(doc => ({
       id: doc.id, category: doc.data().category, title: doc.data().title,
       observedUrl: doc.data().observedUrl, evidenceExcerpt: doc.data().evidenceExcerpt,
       businessRelevance: doc.data().businessRelevance || '',
       verificationStatus: 'unverified', observedAt: iso(doc.data().createdAt),
+    })),
+    contacts: contacts.docs.map(doc => ({
+      id: doc.id, role: doc.data().role, name: doc.data().name || '',
+      businessEmail: doc.data().businessEmail || '',
+      sourceUrl: doc.data().sourceUrl, evidenceExcerpt: doc.data().evidenceExcerpt,
+      status: 'candidate', marketingConsent: false, observedAt: iso(doc.data().createdAt),
     })),
   };
 }
@@ -141,4 +151,38 @@ export async function addProspectFinding(raw: unknown, uid: string) {
   });
   return { prospect_id: input.prospect_id, finding_id: findingId,
     created, duplicate: !created, verification_status: 'unverified' };
+}
+
+export async function addProspectContactCandidate(raw: unknown, uid: string) {
+  await requireProspectActor(uid);
+  const input = prospectContactCandidateSchema.parse(raw);
+  const database = db();
+  const ref = database.collection(COLLECTION).doc(input.prospect_id);
+  const snap = await ref.get();
+  if (!snap.exists) throw new Error('Prospect not found');
+  if (snap.data()?.doNotContact === true) throw new Error('Prospect suppressed');
+  const sourceUrl = verifyProspectEvidenceUrl(input.source_url,
+    String(snap.data()?.canonicalDomain || ''));
+  const hash = createHash('sha256').update([input.prospect_id, input.role,
+    input.name || '', input.business_email || '', sourceUrl].join('|')).digest('hex').slice(0, 32);
+  const contactId = 'contact_' + hash;
+  const contactRef = ref.collection('contacts').doc(contactId);
+  const event = database.collection(AUDIT).doc();
+  let created = false;
+  await database.runTransaction(async tx => {
+    const previous = await tx.get(contactRef);
+    if (previous.exists) return;
+    tx.create(contactRef, {
+      role: input.role, name: input.name || null,
+      businessEmail: input.business_email || null,
+      sourceUrl, evidenceExcerpt: input.evidence_excerpt,
+      status: 'candidate', outreachEligibility: 'review_required',
+      marketingConsent: false, createdBy: uid, createdAt: FieldValue.serverTimestamp(),
+    });
+    tx.create(event, { uid, action: 'prospect.contact_candidate_added',
+      prospectId: input.prospect_id, contactId, at: FieldValue.serverTimestamp() });
+    created = true;
+  });
+  return { prospect_id: input.prospect_id, contact_id: contactId,
+    created, duplicate: !created, status: 'candidate', outreach_approved: false };
 }

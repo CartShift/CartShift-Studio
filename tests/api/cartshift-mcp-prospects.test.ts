@@ -33,6 +33,7 @@ describe('CartShift ChatGPT research connector', () => {
       ['get_prospect', 'prospects:read'],
       ['upsert_prospect', 'prospects:write'],
       ['add_prospect_finding', 'prospects:write'],
+      ['add_prospect_contact_candidate', 'prospects:write'],
     ]);
   });
 

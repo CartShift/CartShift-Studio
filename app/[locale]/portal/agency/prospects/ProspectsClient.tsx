@@ -29,7 +29,11 @@ type Finding = {
   businessRelevance: string; verificationStatus: string;
 };
 type ListResponse = { prospects: Prospect[]; truncated: boolean };
-type DetailResponse = { prospect: Prospect; findings: Finding[] };
+type ContactCandidate = {
+  id: string; name: string; role: string; businessEmail: string;
+  sourceUrl: string; status: string;
+};
+type DetailResponse = { prospect: Prospect; findings: Finding[]; contacts: ContactCandidate[] };
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, { ...options, credentials: 'same-origin',
@@ -189,6 +193,18 @@ export default function ProspectsClient() {
                       {t('viewEvidence')}
                     </a>
                     <p className="text-xs text-amber-600">{t('unverified')}</p>
+                  </div>
+                ))}
+                {detail.data && <h3 className="text-sm font-semibold text-surface-900 dark:text-white">{t('contacts')}</h3>}
+                {detail.data?.contacts.length === 0 && <p className="text-sm text-surface-500">{t('noContacts')}</p>}
+                {detail.data?.contacts.map(contact => (
+                  <div key={contact.id} className="rounded-lg border border-surface-200 p-3 text-sm dark:border-surface-700">
+                    <p className="font-medium text-surface-900 dark:text-white">{contact.name || contact.role}</p>
+                    {contact.name && <p className="text-surface-500">{contact.role}</p>}
+                    {contact.businessEmail && <p className="text-surface-500" dir="ltr">{contact.businessEmail}</p>}
+                    <a href={contact.sourceUrl} target="_blank" rel="noopener noreferrer"
+                      className="text-xs text-primary-600 hover:underline dark:text-primary-300">{t('viewEvidence')}</a>
+                    <p className="text-xs text-amber-600">{t('candidateContact')}</p>
                   </div>
                 ))}
               </div>
