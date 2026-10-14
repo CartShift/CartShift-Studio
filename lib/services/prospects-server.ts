@@ -50,6 +50,8 @@ function summary(id: string, data: Record<string, unknown>) {
     nextAction: String(data.nextAction || ''),
     nextActionAt: String(data.nextActionAt || ''),
     technicalStatus: String(data.technicalStatus || 'needs_review'),
+    linkedOrgId: String(data.linkedOrgId || ''),
+    linkedRequestId: String(data.linkedRequestId || ''),
     scanStatus: String(data.scanStatus || 'not_scanned'),
     lastScanPageCount: Number(data.lastScanPageCount || 0),
     verifiedIssueCount: Number(data.verifiedIssueCount || 0),
