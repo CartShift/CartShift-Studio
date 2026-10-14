@@ -28,7 +28,7 @@ function fixture(id, overrides = {}) {
   };
 }
 function firestore(records) {
-  const rows = new Map(records.map(x => [x.id, structuredClone(x)]));
+  const rows = new Map(records.map(x => [x.id, x]));
   const queryCalls = [];
   const makeRef = id => ({ id });
   function snapshot(id) {
