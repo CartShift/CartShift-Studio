@@ -15,7 +15,6 @@ import {
   MonthlyRevenue,
   TopClient,
   Organization,
-  Currency,
 } from '@/lib/types/portal';
 import { PricingRequest, PRICING_STATUS } from '@/lib/types/pricing';
 import { recognizedCurrency, reportingCurrency, revenueByCurrency } from '@/lib/domain/revenue-currency';
