@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getRequest } from '@/lib/services/portal-requests';
+import { getClientVisibleRequest } from '@/lib/services/client-requests-api';
 import { getCommentsByRequest, subscribeToRequestComments } from '@/lib/services/portal-comments';
 import {
   getRequestActivities,
@@ -55,19 +56,20 @@ export function useRequestDetail(options?: { requestId?: string }): UseRequestDe
     error: requestError,
   } = useQuery({
     queryKey: queryKeys.requests.detail(safeRequestId),
-    queryFn: () => getRequest(safeRequestId),
+    queryFn: () => isAgency ? getRequest(safeRequestId) : getClientVisibleRequest(safeRequestId),
     enabled,
-    staleTime: Infinity,
+    staleTime: isAgency ? Infinity : 15_000,
+    refetchInterval: isAgency ? false : 30_000,
   });
 
   const subscribeRequest = useMemo(
     () =>
-      enabled
+      enabled && isAgency
         ? (cb: (data: Request | null) => void) => subscribeToRequest(safeRequestId, cb)
         : null,
-    [safeRequestId, enabled]
+    [safeRequestId, enabled, isAgency]
   );
-  useFirestoreSubscription(queryKeys.requests.detail(safeRequestId), subscribeRequest, enabled);
+  useFirestoreSubscription(queryKeys.requests.detail(safeRequestId), subscribeRequest, enabled && isAgency);
 
   // 2. Comments (real-time via onSnapshot)
   const { data: comments = [] } = useQuery({
