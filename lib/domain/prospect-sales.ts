@@ -26,3 +26,21 @@ export const prospectReviewSchema = z.object({
       message: 'Approval requires documented eligibility evidence' });
   }
 });
+
+/** Sales managers may link only organizations whose listed website matches the prospect.
+ * Owners can review organizations with no website but never override a known mismatch.
+ */
+export function canLinkProspectToOrganization(
+  canonicalDomain: string, organizationWebsite: string | undefined, actorRole: string,
+): boolean {
+  const website = organizationWebsite?.trim();
+  if (!website) return actorRole === 'owner' || actorRole === 'admin';
+  try {
+    const url = new URL(/^https?:\/\//i.test(website) ? website : 'https://' + website);
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return false;
+    const domain = url.hostname.toLowerCase().replace(/\.$/, '').replace(/^www\./, '');
+    return domain === canonicalDomain;
+  } catch {
+    return false;
+  }
+}
