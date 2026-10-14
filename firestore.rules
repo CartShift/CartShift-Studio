@@ -406,15 +406,9 @@ service cloud.firestore {
       // Even a non-internal comment may belong to a confidential draft.
       // Client reads are authenticated, request-visibility checked projections.
       allow get, list: if isAuthenticated() && isAgencyUser();
-      allow create: if isAuthenticated() && (
-        isAgencyUser() ||
-        (request.resource.data.get('isInternal', false) == false &&
-         request.resource.data.get('userId', '') == request.auth.uid &&
-         request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
-         clientCanCommentOnRequest() &&
-         (isMemberOfOrg(getRequestOrgIdFromRequest()) ||
-          isOrgOwner(getRequestOrgIdFromRequest())))
-      );
+      // Every client comment is created through a trusted API, which checks
+      // request visibility, org membership and atomically updates the parent.
+      allow create: if isAuthenticated() && isAgencyUser();
       allow update: if isAuthenticated() && (
         isAgencyUser() ||
         (resource != null &&
@@ -422,15 +416,11 @@ service cloud.firestore {
          request.resource.data.get('isInternal', false) == false &&
          resource.data.get('userId', '') == getUserId() &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-           'content', 'updatedAt', 'reactions'
+           'content', 'updatedAt'
          ]))
       );
-      allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null &&
-         resource.data.get('isInternal', false) == false &&
-         resource.data.get('userId', '') == getUserId())
-      );
+      // Client deletions need an atomic parent count adjustment as well.
+      allow delete: if isAuthenticated() && isAgencyUser();
     }
 
     match /portal_files/{fileId} {
