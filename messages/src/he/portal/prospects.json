@@ -101,7 +101,12 @@
       "redactionConfirmation": "כדי לאשר, הקלידו REDACT",
       "redactProspect": "מחק נתוני ליד ושמור חסימה",
       "redactionComplete": "נתוני המחקר נמחקו ונשמרה חסימת פנייה",
-      "redactionFailed": "מחיקת נתוני הליד נכשלה. החסימה נשמרה אם החלה המחיקה; אפשר לנסות שוב."
+      "redactionFailed": "מחיקת נתוני הליד נכשלה. החסימה נשמרה אם החלה המחיקה; אפשר לנסות שוב.",
+      "importTooMany": "ניתן לייבא עד 20 חנויות בכל פעולה. הרשימה לא נשמרה.",
+      "openResearchSource": "פתיחת מקור המחקר",
+      "platform": "זיהוי פלטפורמה",
+      "shopifyDetected": "זוהו סימני Shopify (דורש אימות)",
+      "platformUnknown": "טרם אומתה פלטפורמה"
     }
   }
 }
