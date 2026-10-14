@@ -55,6 +55,7 @@ export async function createRequest(
     const db = getFirestoreDb();
     const requestData = {
       orgId,
+      ...(data.projectId ? { projectId: data.projectId } : {}),
       title: data.title.trim(),
       description: data.description.trim(),
       type: data.type,
@@ -255,6 +256,17 @@ export async function getRequestsByOrg(
     }
     throw error;
   }
+}
+
+/** Fetch linked requests without scanning every client request. */
+export async function getRequestsByProject(orgId: string, projectId: string): Promise<Request[]> {
+  await waitForAuth();
+  const snapshot = await getDocs(query(
+    collection(getFirestoreDb(), REQUESTS_COLLECTION),
+    where('orgId', '==', orgId),
+    where('projectId', '==', projectId),
+  ));
+  return snapshot.docs.map(item => ({ id: item.id, ...item.data() }) as Request);
 }
 
 export async function getAllRequests(): Promise<Request[]> {

@@ -18,6 +18,7 @@ import {
   formatCurrency,
 } from '@/lib/types/pricing';
 import { getRequestRole } from '@/lib/domain/request-commercial';
+import { ensureProjectForAcceptedProposal } from '@/lib/services/project-conversion-server';
 import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
 
 const PROPOSALS_COLLECTION = 'portal_requests';
@@ -295,6 +296,7 @@ async function materializeProposalRequests(proposalId: string): Promise<string[]
     const baseData = {
       requestRole: 'bundle_item',
       parentRequestId: proposalId,
+      ...(proposal.projectId ? { projectId: proposal.projectId } : {}),
       assignedTo: proposal.assignedTo ?? null,
       assignedToName: proposal.assignedToName ?? null,
       timeframe: proposal.timeframe ?? null,
@@ -428,6 +430,7 @@ async function syncProfitSplitInspection(proposalId: string): Promise<void> {
 }
 
 async function syncProposalDerivedState(proposalId: string): Promise<void> {
+  await ensureProjectForAcceptedProposal(proposalId);
   await materializeProposalRequests(proposalId);
   await syncMaterializedRequestPayments(proposalId);
   await syncProfitSplitInspection(proposalId);

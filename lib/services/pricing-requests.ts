@@ -80,6 +80,7 @@ export async function createPricingRequest(
   const requestRole = linkedRequestIds.length > 1 ? 'bundle' : 'standalone';
   const requestData = {
     orgId,
+    ...(data.projectId ? { projectId: data.projectId } : {}),
     title: data.title.trim(),
     description: data.description?.trim() || null,
     lineItems,
@@ -136,6 +137,22 @@ export async function createPricingRequest(
       Boolean(existing.lockedAt || existing.parentRequestId);
   });
   if (invalidLinked) throw new Error('Choose only unquoted requests from this client');
+  const linkedProjects = new Set(linkedSnapshots.map(snapshot =>
+    (snapshot.data() as PricingRequest | undefined)?.projectId).filter(
+    (id): id is string => Boolean(id)
+  ));
+  if (linkedProjects.size > 1 ||
+      (data.projectId && linkedProjects.size > 0 && !linkedProjects.has(data.projectId))) {
+    throw new Error('Requests from different projects cannot share one proposal');
+  }
+  const resolvedProjectId = data.projectId || [...linkedProjects][0];
+  if (resolvedProjectId) {
+    const targetProject = await getDoc(doc(db, 'portal_projects', resolvedProjectId));
+    if (!targetProject.exists() || targetProject.data().orgId !== orgId) {
+      throw new Error('Choose a project belonging to this client');
+    }
+    requestData.projectId = resolvedProjectId;
+  }
   if (data.relatedRequestId) {
     if (linkedRequestIds.length > 0) throw new Error('Change orders cannot reprice existing requests');
     const sourceSnapshot = await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, data.relatedRequestId));
@@ -180,6 +197,7 @@ export async function createPricingRequest(
       await updateDoc(requestDocRef, {
         requestRole: 'bundle_item',
         parentRequestId: docRef.id,
+        ...(resolvedProjectId ? { projectId: resolvedProjectId } : {}),
         updatedAt: serverTimestamp(),
       });
     }

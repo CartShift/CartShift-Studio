@@ -229,6 +229,15 @@ service cloud.firestore {
     }
 
     match /portal_requests/{requestId} {
+      function validNewProjectLink() {
+        let projectId = request.resource.data.get('projectId', '');
+        return projectId == null || projectId == '' ||
+          (projectId is string &&
+           exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
+           get(/databases/$(database)/documents/portal_projects/$(projectId)).data.get('orgId', '') ==
+             request.resource.data.get('orgId', ''));
+      }
+
       function changesServerManagedCommercialFields() {
         return request.resource.data.diff(resource.data).affectedKeys().hasAny([
                  'acceptedByName',
@@ -304,15 +313,17 @@ service cloud.firestore {
         isAgencyUser() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
         isOrgOwner(request.resource.data.get('orgId', ''))
-      );
+      ) && validNewProjectLink();
       allow update: if isAuthenticated() && (
         resource == null ||
         resource.data.get('createdBy', '') == getUserId() ||
         resource.data.get('clientEmail', '') == request.auth.token.email ||
         resource.data.get('clientUserId', '') == getUserId() ||
         canAccessOrg(resource.data.get('orgId', ''))
-      ) &&
+      ) && validNewProjectLink() &&
       !changesServerManagedCommercialFields() &&
+      request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+      validNewProjectLink() &&
       (isAgencyUser() || (!changesAgencyCommercialFields() && !attemptsUnsignedProposalApproval()));
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||

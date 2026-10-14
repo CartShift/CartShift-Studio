@@ -767,6 +767,7 @@ export const CONSULTATION_STATUS_CONFIG: Record<
 // ============================================
 
 export interface CreateRequestData {
+  projectId?: string;
   title: string;
   description: string;
   type: RequestType;

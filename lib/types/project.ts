@@ -64,6 +64,8 @@ export interface ProjectScope {
 export interface ClientProject {
   id: string;
   orgId: string;
+  originProposalId?: string;
+  linkedProposalIds?: string[];
   title: string;
   summary: string;
   nextStep: string;
