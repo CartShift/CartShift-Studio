@@ -2,7 +2,8 @@ import 'server-only';
 import { normalizeProspectStoreUrl } from '@/lib/domain/prospects';
 import { detectPlatform } from '@/lib/services/analyzer-platform';
 import {
-  buildProspectCrawlPlan, extractProspectPageEvidence, MAX_SCAN_PAGES, robotsAllowsPath,
+  buildProspectCrawlPlan, extractProspectPageEvidence, extractFreeShippingThresholds,
+  MAX_SCAN_PAGES, robotsAllowsPath,
   type CandidateContact, type CandidateFinding,
 } from '@/lib/services/prospect-scan-engine';
 import { fetchPublicProspectPage, type ProspectFetchResponse } from '@/lib/services/prospect-safe-http';
@@ -44,6 +45,7 @@ export async function runProspectSiteAudit(rawStoreUrl: string, deps: AuditDeps 
   const all = extractProspectPageEvidence(home.finalUrl, home.body, true);
   const findings = [...all.findings];
   const contacts = [...all.contacts];
+  const shipping = extractFreeShippingThresholds(home.finalUrl, home.body);
 
   for (const url of buildProspectCrawlPlan(home.finalUrl, home.body).slice(0, MAX_SCAN_PAGES - 1)) {
     const path = new URL(url).pathname;
@@ -54,8 +56,20 @@ export async function runProspectSiteAudit(rawStoreUrl: string, deps: AuditDeps 
     await pause(2000);
     try {
       const page = await fetch(url, root.hostname);
-      if (page.status !== 200) { skippedUrls.push(url); continue; }
+      if (page.status !== 200) {
+        skippedUrls.push(url);
+        if (page.status === 404 || page.status === 410) {
+          findings.push({
+            category: 'content', title: 'Broken internal storefront link',
+            observed_url: home.finalUrl,
+            evidence_excerpt: `Public homepage link ${url} returned HTTP ${page.status} during the audit.`.slice(0, 750),
+            business_relevance: 'A linked destination may be unavailable to shoppers; verify manually before outreach.',
+          });
+        }
+        continue;
+      }
       scannedUrls.push(page.finalUrl);
+      shipping.push(...extractFreeShippingThresholds(page.finalUrl, page.body));
       const evidence = extractProspectPageEvidence(page.finalUrl, page.body, false);
       findings.push(...evidence.findings);
       for (const contact of evidence.contacts) {
@@ -65,6 +79,16 @@ export async function runProspectSiteAudit(rawStoreUrl: string, deps: AuditDeps 
       // Individual page failure may be permission/network/timeout. Never infer a bug in the store.
       skippedUrls.push(url);
     }
+  }
+  const distinctThresholds = [...new Map(shipping.map(item => [item.amount, item])).values()];
+  if (distinctThresholds.length >= 2) {
+    const [first, second] = distinctThresholds;
+    findings.push({
+      category: 'content', title: 'Conflicting published free-shipping thresholds',
+      observed_url: first.sourceUrl,
+      evidence_excerpt: `Published threshold ${first.amount} at ${first.sourceUrl}; ${second.amount} at ${second.sourceUrl}. Verify applicable markets and conditions.`.slice(0, 750),
+      business_relevance: 'Contradictory published delivery terms can confuse buyers; manual confirmation required.',
+    });
   }
   return { platform, scannedUrls, skippedUrls,
     findings: findings.slice(0, 10), contacts: contacts.slice(0, 10) };
