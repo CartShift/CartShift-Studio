@@ -188,3 +188,19 @@ export async function linkProspectProposal(prospectId: string, orgId: string,
     proposal_status: proposalStatus, sales_stage: newStage,
     cash_collected_confirmed: proposalStatus === 'PAID' };
 }
+
+export async function deleteProspectContactCandidate(prospectId: string, contactId: string, uid: string) {
+  if (!/^contact_[a-f0-9]{32}$/.test(contactId)) throw new Error('INVALID_CONTACT_ID');
+  const { actor, ref } = await refFor(uid, prospectId);
+  if (!['owner', 'admin'].includes(actor.role)) throw new Error('FOUNDER_REVIEW_REQUIRED');
+  const contact = ref.collection('contacts').doc(contactId);
+  const event = database().collection('agency_prospect_audit').doc();
+  await database().runTransaction(async tx => {
+    const [prospect, existing] = await Promise.all([tx.get(ref), tx.get(contact)]);
+    if (!prospect.exists || !existing.exists) throw new Error('CONTACT_NOT_FOUND');
+    tx.delete(contact);
+    tx.create(event, { uid, action: 'prospect.contact_removed',
+      targetId: prospectId, contactId, at: FieldValue.serverTimestamp() });
+  });
+  return { prospect_id: prospectId, contact_id: contactId, removed: true };
+}
