@@ -35,10 +35,10 @@ const origin = 'https://portal.cart-shift.com';
 const resource = origin + '/api/cartshift-mcp/mcp';
 const verifier = 'v'.repeat(43);
 
-async function openConsent() {
+async function openConsent(redirectUri = 'http://127.0.0.1:53005/callback') {
   const response = await register(new NextRequest(origin + '/api/cartshift-mcp/oauth/register', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ redirect_uris: ['http://127.0.0.1:53005/callback'] }),
+    body: JSON.stringify({ redirect_uris: [redirectUri] }),
   }));
   expect(response.status).toBe(201);
   const client = await response.json();
@@ -50,6 +50,7 @@ async function openConsent() {
   const page = await consentPage(new NextRequest(origin + '/api/cartshift-mcp/oauth/authorize?' + params));
   expect(page.status).toBe(200);
   const html = await page.text();
+  const csp = page.headers.get('Content-Security-Policy');
   const fields = new URLSearchParams();
   for (const match of html.matchAll(/<input type="hidden" name="([^"]+)" value="([^"]*)">/g)) {
     const value = match[2].replace(/&quot;/g, '"').replace(/&#39;/g, "'")
@@ -57,7 +58,7 @@ async function openConsent() {
     fields.set(match[1], value);
   }
   fields.set('decision', 'allow');
-  return { fields, client };
+  return { fields, client, csp };
 }
 
 function submit(fields: URLSearchParams, cookie = '') {
@@ -73,6 +74,16 @@ beforeEach(() => {
 });
 
 describe('CartShift complete OAuth consent flow', () => {
+  it('allows the validated callback origin through form-action without broadening other origins', async () => {
+    const loopback = await openConsent();
+    expect(loopback.csp).toContain("form-action 'self' http://127.0.0.1:53005;");
+    expect(loopback.csp).not.toContain('https://chatgpt.com');
+
+    const chatgpt = await openConsent('https://chatgpt.com/connector/oauth/callback');
+    expect(chatgpt.csp).toContain("form-action 'self' https://chatgpt.com;");
+    expect(chatgpt.csp).not.toContain('127.0.0.1');
+  });
+
   it('reports unsupported GET/SSE so MCP clients can fall back to POST discovery', async () => {
     // GET intentionally accepts no request argument and always rejects SSE discovery.
     // Authentication is tested separately via the POST-only MCP endpoint below.
