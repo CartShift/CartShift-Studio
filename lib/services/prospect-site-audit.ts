@@ -73,7 +73,12 @@ export async function runProspectSiteAudit(rawStoreUrl: string, deps: AuditDeps 
       const evidence = extractProspectPageEvidence(page.finalUrl, page.body, false);
       findings.push(...evidence.findings);
       for (const contact of evidence.contacts) {
-        if (!contacts.some(previous => previous.business_email === contact.business_email)) contacts.push(contact);
+        if (!contacts.some(previous =>
+          contact.business_email
+            ? previous.business_email === contact.business_email
+            : previous.name === contact.name && previous.role === contact.role)) {
+          contacts.push(contact);
+        }
       }
     } catch {
       // Individual page failure may be permission/network/timeout. Never infer a bug in the store.
