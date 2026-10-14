@@ -175,7 +175,28 @@ service cloud.firestore {
          request.resource.data.get('userId', '') == getUserId() &&
          validMemberInvite())
       );
-      allow update: if resource != null && canAdminOrg(resource.data.get('orgId', ''));
+      // Re-invitation of a removed member updates the same deterministic
+      // document ID. Only a new, unexpired invitation issued by an admin may
+      // restore it, and the invite strictly dictates the recipient and role.
+      function validMemberReactivation() {
+        return isAuthenticated() &&
+          resource.data.get('removedAt', null) != null &&
+          memberId == request.resource.data.get('orgId', '') + '_' + getUserId() &&
+          resource.data.get('orgId', '') == request.resource.data.get('orgId', '') &&
+          resource.data.get('userId', '') == getUserId() &&
+          request.resource.data.get('userId', '') == getUserId() &&
+          request.resource.data.get('email', '') == request.auth.token.email &&
+          request.resource.data.get('removedAt', null) == null &&
+          request.resource.data.keys().hasOnly([
+            'orgId', 'userId', 'email', 'name', 'role', 'invitedBy', 'inviteId', 'joinedAt'
+          ]) &&
+          request.resource.data.get('joinedAt', request.time) == request.time &&
+          validMemberInvite();
+      }
+      allow update: if resource != null && (
+        canAdminOrg(resource.data.get('orgId', '')) ||
+        validMemberReactivation()
+      );
       allow delete: if false;
     }
 

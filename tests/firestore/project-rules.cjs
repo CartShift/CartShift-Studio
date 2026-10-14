@@ -149,6 +149,30 @@ async function main() {
       ...review, reviewerId: 'agency',
     }));
 
+    // A former member may rejoin only with a fresh matching invitation, not by
+    // reusing the removed membership document or claiming a different role.
+    const removedMemberRef = removed.doc('portal_members/orgA_removed');
+    await assertFails(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'owner',
+      joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(agency.doc('portal_invites/reinvite-removed').set({
+      orgId: 'orgA', isAgency: false, role: 'member', status: 'pending',
+      email: 'removed@example.com', invitedBy: 'agency',
+      expiresAt: require('firebase/firestore').Timestamp.fromDate(new Date(Date.now() + 3600_000)),
+    }));
+    await assertFails(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'owner',
+      inviteId: 'reinvite-removed', joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(removedMemberRef.set({
+      orgId: 'orgA', userId: 'removed', email: 'removed@example.com', role: 'member',
+      inviteId: 'reinvite-removed', invitedBy: 'agency', name: 'Returning member',
+      joinedAt: require('firebase/firestore').serverTimestamp(),
+    }));
+    await assertSucceeds(removed.doc('portal_projects/prjA').get());
+    await assertFails(removed.doc('portal_projects/prjA').update({ title: 'Member cannot edit' }));
+
     // Client may only acknowledge a genuine invitation, never change its target role.
     await assertSucceeds(agency.doc('portal_invites/staff-invite').set({
       orgId: null, isAgency: true, role: 'developer', status: 'pending',
