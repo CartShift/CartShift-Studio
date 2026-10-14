@@ -103,6 +103,7 @@ export interface CreatePricingRequestData {
   proposalType?: ProposalType;
   proposalContent?: ProposalContent;
   relatedRequestId?: string;
+  projectChangeId?: string;
   terms?: string;
   publicAccessEnabled?: boolean;
   paymentRequired?: boolean;
