@@ -57,6 +57,13 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 export default function ProspectsClient() {
   const t = useTranslations('portal.prospects');
   const queryClient = useQueryClient();
+  const eligibilityLabels: Record<string, string> = {
+    review_required: t('eligibility.review_required'),
+    consent_recorded: t('eligibility.consent_recorded'),
+    existing_relationship: t('eligibility.existing_relationship'),
+    approved_partner_channel: t('eligibility.approved_partner_channel'),
+    blocked: t('eligibility.blocked'),
+  };
   const stageLabels: Record<string, string> = {
     needs_review: t('stageLabels.needs_review'), qualified: t('stageLabels.qualified'),
     contact_research: t('stageLabels.contact_research'),
@@ -361,8 +368,8 @@ export default function ProspectsClient() {
               {t('linkedProposal')} <ExternalLink size={12} className="inline" />
             </a>}
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-surface-500">{t('noPermission')}</span>
-              <Button variant="outline" disabled={scan.isPending} onClick={() => scan.mutate(prospect.id)}>
+              <span className="text-xs text-surface-500">{eligibilityLabels[prospect.outreachEligibility] || t('noPermission')}</span>
+              <Button variant="outline" disabled={scan.isPending || prospect.doNotContact} onClick={() => scan.mutate(prospect.id)}>
                 {scan.isPending && scan.variables === prospect.id && <Loader2 size={14} className="animate-spin" />}
                 {t('scanStore')}
               </Button>
@@ -380,7 +387,7 @@ export default function ProspectsClient() {
                   onSubmit={e => {
                     e.preventDefault();
                     updateSales.mutate({ id: prospect.id, patch: {
-                      stage: salesDraft.stage,
+                      ...(salesDraft.stage === 'won' ? {} : { stage: salesDraft.stage }),
                       next_action: salesDraft.next_action,
                       ...(salesDraft.due_date ? { due_date: salesDraft.due_date } : {}),
                       ...(salesDraft.owner_uid ? { owner_uid: salesDraft.owner_uid } : {}),
@@ -392,8 +399,10 @@ export default function ProspectsClient() {
                       onChange={e => setSalesDraft(p => ({ ...p, stage: e.target.value }))}
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
-                        'in_conversation', 'proposal', 'lost'].map(stage => (
-                        <option key={stage} value={stage}>{stageLabels[stage] || stage}</option>
+                        'in_conversation', 'proposal', 'won', 'lost', 'suppressed'].map(stage => (
+                        <option key={stage} value={stage} disabled={stage === 'won' || stage === 'suppressed'}>
+                          {stageLabels[stage] || stage}
+                        </option>
                       ))}
                     </select>
                   </label>
