@@ -38,11 +38,20 @@ export const storeReviewFindingSchema = z.object({
   confidence: z.enum(['verified','estimated','needs_access']),
 }).strict();
 
+// Partial drafts are allowed. Delivery performs full evidence validation.
+export const storeReviewDraftFindingSchema = storeReviewFindingSchema.extend({
+  title: z.string().trim().max(160),
+  observedUrl: z.string().trim().max(1024),
+  observation: z.string().trim().max(1500),
+  whyItMatters: z.string().trim().max(1000),
+  recommendedAction: z.string().trim().max(1500),
+});
+
 export const storeReviewWorkUpdateSchema = z.object({
   status: z.enum(['accepted','in_review','delivered','declined']).optional(),
   qualified: z.boolean().optional(),
   summary: z.string().trim().max(3000).optional(),
-  findings: z.array(storeReviewFindingSchema).max(5).optional(),
+  findings: z.array(storeReviewDraftFindingSchema).max(5).optional(),
   nextAction: z.string().trim().max(300).optional(),
 }).strict().refine(value => Object.keys(value).length > 0, 'Empty update');
 
