@@ -64,12 +64,23 @@ export function projectCommercialSummary(
   requests: Array<{
     projectId?: string; isBillable?: boolean; requestRole?: string; totalAmount?: number;
     amountPaid?: number; reportedDepositMinor?: number; depositAmount?: number;
-    status?: string;
+    status?: string; currency?: string;
   }>,
   projectId: string
 ) {
   const proposals = requests.filter(r => r.projectId === projectId && r.isBillable &&
     r.requestRole !== 'bundle_item');
+  // Never add minor amounts from two currencies (or an unknown legacy
+  // currency): the resulting balance would be financially meaningless.
+  const currencies = new Set(proposals.map(proposal => proposal.currency || 'unknown'));
+  const currency = currencies.size === 1 && !currencies.has('unknown')
+    ? [...currencies][0] : null;
+  const mixedCurrencies = proposals.length > 0 && currency === null;
+  if (mixedCurrencies) {
+    return { estimatedCapMinor: 0, recordedPaidMinor: 0,
+      reportedUnverifiedMinor: 0, estimatedBalanceMinor: 0,
+      proposalCount: proposals.length, currency: null, mixedCurrencies: true };
+  }
   const totals = proposals.reduce((acc, proposal) => {
     const cap = Math.max(0, Number(proposal.totalAmount) || 0);
     const paid = Math.min(cap, Math.max(0, Number(proposal.amountPaid) || 0));
@@ -82,5 +93,5 @@ export function projectCommercialSummary(
     };
   }, { estimatedCapMinor: 0, recordedPaidMinor: 0,
     reportedUnverifiedMinor: 0, estimatedBalanceMinor: 0 });
-  return { ...totals, proposalCount: proposals.length };
+  return { ...totals, proposalCount: proposals.length, currency, mixedCurrencies: false };
 }
