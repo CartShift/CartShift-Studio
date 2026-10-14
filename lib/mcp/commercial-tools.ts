@@ -85,9 +85,6 @@ const importSchema = scopeSchema.extend({
 function normalize(s: string) {
   return s.trim().toLocaleLowerCase().replace(/\s+/g, ' ');
 }
-function toJSON(value: unknown): unknown {
-  return JSON.parse(JSON.stringify(value));
-}
 function audit(uid: string, action: string, targetId: string) {
   return { uid, action, targetId, at: Date.now() };
 }
@@ -107,7 +104,7 @@ async function validateProposal(orgId: string, proposalId: string) {
   const db = firestore();
   const proposal = await db.collection('portal_requests').doc(proposalId).get();
   if (!proposal.exists || proposal.data()?.orgId !== orgId ||
-    !Boolean(proposal.data()?.isBillable || proposal.data()?.publicToken || proposal.data()?.requestRole === 'bundle')) {
+    !(proposal.data()?.isBillable || proposal.data()?.publicToken || proposal.data()?.requestRole === 'bundle')) {
     throw new Error('Proposal not found for this client');
   }
   return proposal;
