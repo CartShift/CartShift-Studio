@@ -247,6 +247,9 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     queryFn: () => getRequestsByOrg(project!.orgId),
     enabled: Boolean(project && isAgency),
   });
+  const commercialRequests = linkedRequests.filter(request =>
+    request.isBillable && request.requestRole !== 'bundle_item' &&
+    ['ACCEPTED', 'PAID', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'].includes(request.status));
   const [selectedRequest, setSelectedRequest] = useState('');
   const [summary, setSummary] = useState<string | null>(null);
   const [nextStep, setNextStep] = useState<string | null>(null);
@@ -513,6 +516,17 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           <p className="mt-2 text-xs text-surface-500">{change.description}</p>
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
             canReview={!isAgency} onReviewed={refreshReviews} />
+          {isAgency && project.originProposalId &&
+            reviews.some(review => review.deliverableId === 'change:' + change.id &&
+              review.revision === 1 && review.decision === 'approved') &&
+            !reviews.some(review => review.deliverableId === 'change:' + change.id &&
+              review.revision === 1 && review.decision === 'changes_requested') && (
+              <Link href={getPortalPath('/pricing/new/?projectId=' + encodeURIComponent(id) +
+                '&relatedRequestId=' + encodeURIComponent(project.originProposalId))}
+                className="portal-focus-ring mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
+                <Plus size={14} />{locale === 'he' ? 'הכנת הצעת מחיר לשינוי' : 'Prepare change-order proposal'}
+              </Link>
+            )}
         </div>)}
         {isAgency && <>
           <div className="mt-4 flex gap-2">
@@ -532,6 +546,36 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         </>}
       </Panel>
 
+      {commercialRequests.length > 0 && (
+        <Panel title={locale === 'he' ? 'הסכמים ותקציב מאושר' : 'Agreements and approved budget'} icon={FileCheck2}>
+          <p className="mb-3 text-xs text-surface-500">
+            {locale === 'he'
+              ? 'הסכומים נגזרים מהצעות המחיר במערכת, ואינם אישור עצמאי להעברה בנקאית.'
+              : 'Amounts come from canonical proposals, not independently verified bank records.'}
+          </p>
+          {commercialRequests.map(offer => {
+            const currency = offer.currency || 'ILS';
+            const fmt = (cents: number) => new Intl.NumberFormat(locale === 'he' ? 'he-IL' : 'en-US',
+              { style: 'currency', currency }).format(cents / 100);
+            return (
+              <div key={offer.id} className="mb-3 rounded-xl border border-surface-200 p-3 dark:border-surface-700">
+                <Link href={getPortalPath('/pricing/' + offer.id + '/')}
+                  className="portal-focus-ring text-sm font-semibold text-primary-600 hover:underline">
+                  {offer.title}
+                </Link>
+                <div className="mt-2 grid grid-cols-2 gap-3 text-xs sm:grid-cols-3">
+                  <div><span className="text-surface-500">{locale === 'he' ? 'היקף מאושר' : 'Approved'}</span>
+                    <p className="font-bold">{fmt(offer.totalAmount || 0)}</p></div>
+                  <div><span className="text-surface-500">{locale === 'he' ? 'תשלומים שנרשמו' : 'Recorded paid'}</span>
+                    <p className="font-bold">{fmt(offer.amountPaid || 0)}</p></div>
+                  <div><span className="text-surface-500">{locale === 'he' ? 'יתרה רשומה' : 'Recorded balance'}</span>
+                    <p className="font-bold">{fmt(offer.balanceDue ?? offer.totalAmount ?? 0)}</p></div>
+                </div>
+              </div>
+            );
+          })}
+        </Panel>
+      )}
       <Panel title={t('linkedRequests')} icon={ClipboardList}>
         {isAgency && (
           <Link href={getPortalPath('/requests/new/?projectId=' + encodeURIComponent(id) +
