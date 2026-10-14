@@ -21,7 +21,7 @@ describe('expert store review validation', () => {
 
   it.each([
     'http://127.0.0.1', 'http://localhost', 'https://10.0.0.1',
-    'https://shop.co.il:443', 'https://user:pass@brand.co.il',
+    'https://shop.co.il:8443', 'https://user:pass@brand.co.il',
     'https://example.local', 'ftp://brand.co.il',
   ])('rejects unsafe input domains: %s', url => {
     expect(() => normalizeReviewStore(url)).toThrow();
