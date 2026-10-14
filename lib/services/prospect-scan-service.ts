@@ -50,7 +50,8 @@ export async function scanProspect(prospectId: string, uid: string) {
     }
     for (const contact of result.contacts) {
       const saved = await addProspectContactCandidate({
-        prospect_id: prospectId, role: contact.role, business_email: contact.business_email,
+        prospect_id: prospectId, role: contact.role, name: contact.name,
+        business_email: contact.business_email,
         source_url: contact.source_url, evidence_excerpt: contact.evidence_excerpt,
       }, uid);
       if (saved.created) contactsSaved++;
