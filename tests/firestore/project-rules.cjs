@@ -59,6 +59,9 @@ async function main() {
           stages: [], blockers: [], deliverables: [],
           changes: [],
         }),
+        db.doc('portal_projects/prjB').set({
+          orgId: 'orgB', title: 'Another client', status: 'planning',
+        }),
       ]);
     });
 
@@ -80,6 +83,18 @@ async function main() {
       .where('orgId', '==', 'orgA').get());
     await assertFails(client.doc('portal_comments/publicA').update({ isInternal: true }));
     await assertFails(client.doc('portal_comments/internalA').update({ content: 'Tampered' }));
+    await assertSucceeds(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'reqA', userId: 'client',
+      content: 'A real client comment', isInternal: false,
+    }));
+    await assertFails(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'reqA', userId: 'agency',
+      content: 'Forged staff response', isInternal: false,
+    }));
+    await assertFails(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'quoteA', userId: 'client',
+      content: 'Comment on a private draft', isInternal: false,
+    }));
     await assertFails(client.collection('portal_comments').add({
       orgId: 'orgA', requestId: 'reqA', userId: 'client', isInternal: true,
       content: 'Forged confidential note',
@@ -134,7 +149,11 @@ async function main() {
       requestRole: 'standalone', createdBy: 'agency',
     }));
     await assertFails(client.doc('portal_requests/crossOrgTask').set({
-      orgId: 'orgA', title: 'Wrong project', status: 'NEW', projectId: 'prjB',
+      orgId: 'orgA', title: 'Wrong project', description: 'Work',
+      type: 'other', priority: 'NORMAL', status: 'NEW', projectId: 'prjB',
+      requestRole: 'standalone', createdBy: 'client', createdByName: 'Client',
+      tags: [], attachmentIds: [], commentCount: 0,
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
     }));
     await assertFails(client.doc('portal_requests/fakePaid').set({
       orgId: 'orgA', title: 'Commercial spoof', status: 'PAID', isBillable: true,
