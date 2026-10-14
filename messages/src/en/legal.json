@@ -99,6 +99,11 @@
         "title": "Changes to This Policy",
         "content": "We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page."
       }
+    },
+    "expertReview": {
+      "title": "Expert store review requests",
+      "description": "When you request an expert store review, we process the name, email, store domain, optional goals and notes you submit to assess the request, conduct a focused review of publicly available store pages, manage the request, and respond with findings or an optional proposal. Authorized CartShift staff can access those request details; reports are private by default and are not published as case studies without additional permission.",
+      "marketing": "Communication about your requested review is separate from optional marketing messages. The marketing checkbox is unchecked by default. Information in review requests may be stored in our internal lead workflow and transferred to our service email provider solely for correspondence and delivery."
     }
   },
   "terms": {
