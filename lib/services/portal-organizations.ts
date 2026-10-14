@@ -522,8 +522,13 @@ export async function getInvite(codeOrId: string): Promise<Invite | null> {
   const user = getFirebaseAuth().currentUser;
   if (!user) return null;
 
-  const response = await fetch(`/api/portal/invites/lookup?code=${encodeURIComponent(codeOrId)}`, {
-    headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+  const response = await fetch('/api/portal/invites/lookup', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${await user.getIdToken()}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ code: codeOrId }),
     cache: 'no-store',
   });
   if (response.status === 404) return null;
