@@ -4287,7 +4287,7 @@ exports.retryStoreAnalysisReports = onSchedule(
             reportUrl: `https://cart-shift.com/${record.locale || 'en'}/tools/store-analyzer/report/${doc.id}`,
             deliveryId: doc.id,
           }),
-          signal: AbortSignal.timeout(120_000),
+          signal: AbortSignal.timeout(120000),
         });
         if (!response.ok) throw new Error(`Report delivery returned HTTP ${response.status}`);
         await doc.ref.update({
