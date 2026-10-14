@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
 import Script from 'next/script';
 import { IndustryPageContent } from '@/components/sections/IndustryPageContent';
 import {
@@ -139,8 +140,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
 };
 
 export async function generateStaticParams() {
-  const locales = ['en', 'he'];
-  return locales.flatMap(locale => INDUSTRIES.map(industry => ({ locale, industry })));
+  return routing.locales.flatMap(locale => INDUSTRIES.map(industry => ({ locale, industry })));
 }
 
 export async function generateMetadata({ params }: IndustryPageProps): Promise<Metadata> {
