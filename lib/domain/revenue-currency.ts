@@ -13,11 +13,9 @@ export function reportingCurrency<T extends { currency?: unknown }>(
     const currency = recognizedCurrency(row.currency);
     if (currency) counts[currency]++;
   }
-  return (Object.entries(counts) as Array<[Currency, number]>)
-    .sort((a, b) => b[1] - a[1] || (a[0] === fallback ? -1 : b[0] === fallback ? 1 : 0))[0]?.[1]
-    ? (Object.entries(counts) as Array<[Currency, number]>)
-      .sort((a, b) => b[1] - a[1] || (a[0] === fallback ? -1 : b[0] === fallback ? 1 : 0))[0][0]
-    : fallback;
+  const ranked = (Object.entries(counts) as Array<[Currency, number]>)
+    .sort((a, b) => b[1] - a[1] || (a[0] === fallback ? -1 : b[0] === fallback ? 1 : 0));
+  return ranked[0]?.[1] ? ranked[0][0] : fallback;
 }
 
 export function revenueByCurrency<T extends { currency?: unknown }>(
