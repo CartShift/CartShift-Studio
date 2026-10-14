@@ -329,6 +329,20 @@ export async function removeReaction(
 
 export async function deleteComment(commentId: string): Promise<void> {
   await waitForAuth();
+  const actor = getFirebaseAuth().currentUser;
+  if (!actor) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(actor.uid);
+  if (profile?.accountType !== 'AGENCY' && profile?.isAgency !== true) {
+    const token = await actor.getIdToken();
+    const response = await fetch('/api/portal/client-comments/' + encodeURIComponent(commentId), {
+      method: 'DELETE', headers: { Authorization: 'Bearer ' + token },
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null) as { error?: string } | null;
+      throw new Error(body?.error || 'Unable to delete comment');
+    }
+    return;
+  }
   const db = getFirestoreDb();
   const docRef = doc(db, COMMENTS_COLLECTION, commentId);
 
