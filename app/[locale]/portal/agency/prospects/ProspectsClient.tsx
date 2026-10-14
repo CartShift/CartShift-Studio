@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { queryKeys } from '@/lib/utils/query-keys';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 
@@ -354,7 +355,7 @@ export default function ProspectsClient() {
             {prospect.nextActionAt && <p className="text-xs text-surface-500">{t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span></p>}
             {prospect.verifiedIssueCount > 0 && <p className="text-xs text-surface-500">{t('verifiedCount', { count: prospect.verifiedIssueCount })}</p>}
             {prospect.linkedRequestId && <a
-              href={'/portal/requests/' + encodeURIComponent(prospect.linkedRequestId)}
+              href={getPortalPath('/requests/' + encodeURIComponent(prospect.linkedRequestId))}
               className="block text-sm text-primary-600 hover:underline dark:text-primary-300">
               {t('linkedProposal')} <ExternalLink size={12} className="inline" />
             </a>
