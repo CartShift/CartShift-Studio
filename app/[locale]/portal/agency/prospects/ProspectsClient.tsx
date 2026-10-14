@@ -61,10 +61,12 @@ export default function ProspectsClient() {
     won: t('stageLabels.won'), lost: t('stageLabels.lost'),
     suppressed: t('stageLabels.suppressed'),
   };
-  const { userData } = usePortalAuth();
+  const { userData, user } = usePortalAuth();
   const agencyTeam = useAgencyTeam();
   const canReview = userData?.agencyRole === 'owner' || userData?.agencyRole === 'admin';
   const [search, setSearch] = useState('');
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [myOnly, setMyOnly] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -198,10 +200,13 @@ export default function ProspectsClient() {
     onError: () => toast.error(t('reviewFailed')),
   });
   const rows = (list.data?.prospects || []).filter(row =>
+    (!verifiedOnly || row.verifiedIssueCount > 0) &&
+    (!myOnly || row.ownerUid === user?.uid) &&
     [row.brandName, row.canonicalDomain, row.stage].some(value =>
       value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
     )
-  );
+  ).sort((a, b) => b.verifiedIssueCount - a.verifiedIssueCount ||
+    (a.nextActionAt || '9999').localeCompare(b.nextActionAt || '9999'));
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6">
@@ -301,6 +306,17 @@ export default function ProspectsClient() {
           className="w-full rounded-xl border border-surface-200 bg-white py-2.5 ps-10 pe-3 text-sm text-surface-900 dark:border-surface-700 dark:bg-surface-900 dark:text-white" />
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <label className="inline-flex items-center gap-2 rounded-lg border border-surface-200 px-3 py-2 dark:border-surface-700">
+          <input type="checkbox" checked={verifiedOnly} onChange={e => setVerifiedOnly(e.target.checked)}/>
+          {t('onlyVerified')}
+        </label>
+        <label className="inline-flex items-center gap-2 rounded-lg border border-surface-200 px-3 py-2 dark:border-surface-700">
+          <input type="checkbox" checked={myOnly} onChange={e => setMyOnly(e.target.checked)}/>
+          {t('myProspects')}
+        </label>
+        <span className="text-surface-500">{t('showing', { shown: rows.length, total: list.data?.prospects.length || 0 })}</span>
+      </div>
       {list.isLoading && <p role="status" className="text-sm text-surface-500">{t('loading')}</p>}
       {list.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
       {list.data && rows.length === 0 && <p className="py-10 text-center text-surface-500">{t('empty')}</p>}
