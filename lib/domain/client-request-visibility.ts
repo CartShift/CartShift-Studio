@@ -3,7 +3,7 @@ const SAFE_FIELDS = [
   'orgId', 'projectId', 'title', 'description', 'type', 'status', 'priority',
   'createdBy', 'createdByName', 'assignedTo', 'assignedToName', 'tags', 'attachmentIds',
   'commentCount', 'createdAt', 'updatedAt', 'closedAt', 'deliveredAt',
-  'requestRole', 'parentRequestId', 'childRequestIds', 'lastComment',
+  'requestRole', 'parentRequestId', 'childRequestIds',
   'milestones', 'currentMilestoneId', 'estimatedHours', 'isBillable',
   'lineItems', 'totalAmount', 'subtotal', 'taxAmount', 'taxRate', 'currency',
   'validUntil', 'quotedAt', 'paymentDueAt', 'paymentStatus', 'amountPaid',
