@@ -308,11 +308,31 @@ service cloud.firestore {
           'terms',
           'proposalContent',
           'relatedRequestId',
+          'projectChangeId',
           'depositAmount',
           'paymentRequired',
           'balanceDue',
           'paymentStatus'
         ]);
+      }
+
+      // A signed commercial agreement is not an editable operational request.
+      // Trusted billing/conversion transactions use the Admin SDK and retain
+      // authority to record payments, approvals and versioned change orders.
+      function editsSignedCommercialTerms() {
+        return isCommercialDocument(resource.data) &&
+          (resource.data.get('lockedAt', null) != null ||
+           resource.data.get('status', '') in [
+             'ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'
+           ]) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'orgId', 'projectId', 'projectChangeId', 'relatedRequestId',
+            'title', 'description', 'lineItems', 'totalAmount', 'subtotal',
+            'taxRate', 'taxAmount', 'currency', 'terms', 'proposalContent',
+            'paymentRequired', 'depositAmount', 'clientEmail', 'clientName',
+            'validUntil', 'timeframe', 'workDeadline', 'publicToken',
+            'publicAccessEnabled'
+          ]);
       }
 
       // Clients can read requests pre-assigned to their email (before registration)
@@ -323,15 +343,10 @@ service cloud.firestore {
       // authorized safely against arbitrary result sets. Client lists use the
       // authenticated, field-projected portal API instead.
       allow list: if isAuthenticated() && isAgencyUser();
-      allow get: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null && !isCommercialDocument(resource.data) && (
-          resource.data.get('createdBy', '') == getUserId() ||
-          resource.data.get('clientEmail', '') == request.auth.token.email ||
-          resource.data.get('clientUserId', '') == getUserId() ||
-          canAccessOrg(resource.data.get('orgId', ''))
-        ))
-      );
+      // SDK reads disclose *every* field, including private notes added later.
+      // All client reads (including ordinary requests) use the authenticated,
+      // explicitly whitelisted client-requests API instead.
+      allow get: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
         isAgencyUser() ||
         isMemberOfOrg(request.resource.data.get('orgId', '')) ||
@@ -340,9 +355,13 @@ service cloud.firestore {
       (isAgencyUser() || (
         !isCommercialDocument(request.resource.data) &&
         request.resource.data.get('status', '') == 'NEW' &&
-        !request.resource.data.keys().hasAny([
-          'lineItems', 'totalAmount', 'agencyNotes', 'proposalContent', 'publishedProposal',
-          'paymentIds', 'amountPaid', 'signatureText', 'lockedAt'
+        request.resource.data.get('createdBy', '') == request.auth.uid &&
+        request.resource.data.get('requestRole', '') == 'standalone' &&
+        request.resource.data.get('commentCount', 0) == 0 &&
+        request.resource.data.keys().hasOnly([
+          'orgId', 'projectId', 'title', 'description', 'type', 'status',
+          'priority', 'requestRole', 'createdBy', 'createdByName', 'tags',
+          'attachmentIds', 'commentCount', 'createdAt', 'updatedAt'
         ])
       ));
       allow update: if isAuthenticated() && (
@@ -353,13 +372,21 @@ service cloud.firestore {
         canAccessOrg(resource.data.get('orgId', ''))
       ) &&
       !changesServerManagedCommercialFields() &&
+      !editsSignedCommercialTerms() &&
       request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
       validNewProjectLink() &&
       (isAgencyUser() || (
         !isCommercialDocument(resource.data) &&
         !isCommercialDocument(request.resource.data) &&
         !changesAgencyCommercialFields() &&
-        !attemptsUnsignedProposalApproval()
+        !attemptsUnsignedProposalApproval() &&
+        // Clients can edit their own request contents and comment previews;
+        // commercial, workflow, assignment, identity and audit fields are
+        // never writable through a client Firebase SDK transaction.
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title', 'description', 'type', 'priority', 'tags', 'attachmentIds',
+          'clientNotes', 'commentCount', 'lastComment', 'updatedAt'
+        ])
       ));
       allow delete: if isAuthenticated() && (
         isAgencyUser() ||
@@ -376,24 +403,32 @@ service cloud.firestore {
           ? get(/databases/$(database)/documents/portal_requests/$(request.resource.data.get('requestId', ''))).data.get('orgId', '')
           : '';
       }
+      function clientCanCommentOnRequest() {
+        let requestId = request.resource.data.get('requestId', '');
+        let parent = get(/databases/$(database)/documents/portal_requests/$(requestId)).data;
+        return exists(/databases/$(database)/documents/portal_requests/$(requestId)) &&
+          (!(
+            parent.get('isBillable', false) == true ||
+            parent.get('publicToken', '') != '' ||
+            parent.get('requestRole', '') in ['bundle', 'bundle_item']
+          ) || (
+            parent.get('status', '') != 'DRAFT' &&
+            (parent.get('publicAccessEnabled', false) == true ||
+             (parent.get('requestRole', '') == 'bundle_item' &&
+              parent.get('status', '') in [
+                'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'
+              ]))
+          ));
+      }
       // Deny client list queries entirely. Emulator tests proved clients could
       // enumerate confidential notes even with a resource-level predicate.
       // Clients read only through /api/portal/public-comments (authenticated + filtered).
-      allow get: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null &&
-         resource.data.get('isInternal', false) == false &&
-         (canAccessOrg(resource.data.get('orgId', '')) ||
-          resource.data.get('userId', '') == getUserId()))
-      );
-      allow list: if isAuthenticated() && isAgencyUser();
-      allow create: if isAuthenticated() && (
-        isAgencyUser() ||
-        (request.resource.data.get('isInternal', false) == false &&
-         request.resource.data.get('orgId', '') == getRequestOrgIdFromRequest() &&
-         (isMemberOfOrg(getRequestOrgIdFromRequest()) ||
-          isOrgOwner(getRequestOrgIdFromRequest())))
-      );
+      // Even a non-internal comment may belong to a confidential draft.
+      // Client reads are authenticated, request-visibility checked projections.
+      allow get, list: if isAuthenticated() && isAgencyUser();
+      // Every client comment is created through a trusted API, which checks
+      // request visibility, org membership and atomically updates the parent.
+      allow create: if isAuthenticated() && isAgencyUser();
       allow update: if isAuthenticated() && (
         isAgencyUser() ||
         (resource != null &&
@@ -401,15 +436,11 @@ service cloud.firestore {
          request.resource.data.get('isInternal', false) == false &&
          resource.data.get('userId', '') == getUserId() &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-           'content', 'updatedAt', 'reactions'
+           'content', 'updatedAt'
          ]))
       );
-      allow delete: if isAuthenticated() && (
-        isAgencyUser() ||
-        (resource != null &&
-         resource.data.get('isInternal', false) == false &&
-         resource.data.get('userId', '') == getUserId())
-      );
+      // Client deletions need an atomic parent count adjustment as well.
+      allow delete: if isAuthenticated() && isAgencyUser();
     }
 
     match /portal_files/{fileId} {

@@ -85,6 +85,7 @@ export default function CreatePricingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const relatedRequestId = searchParams.get('relatedRequestId');
+  const projectChangeId = searchParams.get('changeId');
   const locale = useLocale();
   const [selectedProjectId, setSelectedProjectId] = useState(searchParams.get('projectId') || '');
   const { data: clientProjects = [] } = useClientProjects(typeof orgId === 'string' ? orgId : undefined);
@@ -430,6 +431,7 @@ export default function CreatePricingForm() {
           proposalType: 'work_proposal',
           proposalContent: data.proposalContent,
           relatedRequestId: relatedRequestId || undefined,
+          projectChangeId: projectChangeId || undefined,
           terms: data.terms,
           publicAccessEnabled: true,
           taxRate: data.includeTax ? TAX_RATE : 0,

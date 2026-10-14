@@ -37,11 +37,32 @@ export async function ensureProjectForAcceptedProposal(proposalId: string): Prom
     const now = admin.firestore.FieldValue.serverTimestamp();
     if (project.exists) {
       if (project.data()?.orgId !== proposal.orgId) throw new Error('PROJECT_ORG_MISMATCH');
-      tx.update(projectRef, {
+      const updates: Record<string, unknown> = {
         linkedProposalIds: admin.firestore.FieldValue.arrayUnion(proposalId),
         updatedAt: now,
-      });
+      };
+      if (proposal.projectChangeId) {
+        const changes = (project.data()?.changes || []) as Array<{
+          id: string; status: string; linkedProposalId?: string;
+        }>;
+        const change = changes.find(item => item.id === proposal.projectChangeId);
+        if (!change || change.status === 'declined' ||
+            (change.linkedProposalId && change.linkedProposalId !== proposalId)) {
+          throw new Error('INVALID_CHANGE_ORDER_LINK');
+        }
+        // Client scope approval is not a commercial commitment. Only a
+        // separately signed proposal may promote the change to approved.
+        updates.changes = changes.map(item => item.id === proposal.projectChangeId
+          ? { ...item, status: 'approved', linkedProposalId: proposalId }
+          : item);
+      }
+      if (proposal.projectChangeId && project.data()?.status === 'ready_to_launch') {
+        updates.status = 'in_progress';
+      }
+      tx.update(projectRef, updates);
     } else {
+      // A change order cannot create an unrelated project or replace its scope.
+      if (proposal.projectChangeId) throw new Error('CHANGE_ORDER_PROJECT_NOT_FOUND');
       // Explicit links are never silently replaced by a new project.
       if (proposal.projectId || inheritedProjectId) throw new Error('PROJECT_NOT_FOUND');
       const locale = proposal.currency === 'ILS' ? 'he' : 'en';

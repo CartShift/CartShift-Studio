@@ -28,7 +28,24 @@ export async function markProjectReadyForLaunch(projectId: string): Promise<void
     const executionBlockers = getProjectExecutionBlockers(projectId, project.orgId,
       requests.docs.map(doc => doc.data()));
     const health = getProjectHealth(project, reviews);
-    if (!health.readyForLaunch || executionBlockers.length > 0) {
+    // Project array flags are editable operational data, not signed contracts.
+    // Verify every approved change against its actual accepted quote.
+    const changeOrders = (project.changes || []).filter(change =>
+      change.status === 'approved' && change.linkedProposalId);
+    const commercialSnapshots = await Promise.all(changeOrders.map(change =>
+      tx.get(db.collection('portal_requests').doc(change.linkedProposalId!))));
+    const invalidChangeOrder = commercialSnapshots.some((snapshot, index) => {
+      const proposal = snapshot.data();
+      const change = changeOrders[index];
+      return !proposal || proposal.orgId !== project.orgId ||
+        proposal.projectId !== projectId ||
+        proposal.projectChangeId !== change.id ||
+        !proposal.acceptedAt || !proposal.signatureText || !proposal.lockedAt ||
+        !['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'].includes(proposal.status) ||
+        (proposal.paymentRequired &&
+          Number(proposal.amountPaid || 0) < Number(proposal.depositAmount || 0));
+    });
+    if (!health.readyForLaunch || executionBlockers.length > 0 || invalidChangeOrder) {
       throw new Error('PROJECT_NOT_READY');
     }
     // This flag is informational; production publishing still requires a

@@ -532,6 +532,8 @@ export interface Request {
   // Commercial document fields. A quote/proposal is a view of this request.
   proposalContent?: ProposalContent;
   relatedRequestId?: string;
+  /** Project change order funded by this separate commercial agreement. */
+  projectChangeId?: string;
   proposalRequirementStatuses?: Record<string, 'pending' | 'received' | 'approved'>;
   proposalVersion?: number;
   publishedProposal?: Record<string, unknown>;

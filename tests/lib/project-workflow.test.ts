@@ -59,6 +59,25 @@ describe('project workflows', () => {
     expect(getProjectHealth(p, [review(2, 'changes_requested')]).readyForLaunch).toBe(false);
     expect(getProjectHealth(p, [review(2)]).readyForLaunch).toBe(true);
   });
+  it('does not mistake a scope review for an accepted commercial change order', () => {
+    const p = project();
+    p.inputs.forEach(item => item.done = true);
+    p.launchChecks.forEach(item => item.done = true);
+    p.changes = [{
+      id: 'extra', title: 'Additional work', description: 'Extra section',
+      estimatedHours: 4, status: 'proposed',
+    }];
+    const approval = {
+      ...review(), id: 'change_extra', deliverableId: 'change:extra',
+      revision: 1, decision: 'approved' as const,
+    };
+    expect(getProjectHealth(p, [review(), approval]).pendingChanges).toBe(1);
+    expect(getProjectHealth(p, [review(), approval]).readyForLaunch).toBe(false);
+    p.changes[0].status = 'approved';
+    expect(getProjectHealth(p, [review(), approval]).readyForLaunch).toBe(false);
+    p.changes[0].linkedProposalId = 'signed-proposal';
+    expect(getProjectHealth(p, [review(), approval]).readyForLaunch).toBe(true);
+  });
   it('calculates hours and monetary values without double counting', () => {
     const p = project();
     p.workLogs = [

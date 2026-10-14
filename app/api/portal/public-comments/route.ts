@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 import { getServerSession } from '@/lib/auth/server-auth';
+import { sanitizeClientRequest } from '@/lib/domain/client-request-visibility';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -49,6 +50,11 @@ export async function GET(request: NextRequest) {
     }
 
     const agency = user.accountType === 'AGENCY' || user.isAgency === true;
+    // Hiding a private commercial draft in the Requests API is insufficient
+    // if its comments can still be queried by a guessed request identifier.
+    if (!agency && !sanitizeClientRequest(requestId, item)) {
+      return Response.json({ error: 'Not found' }, { status: 404, headers });
+    }
     if (!agency) {
       const [orgDoc, membership] = await Promise.all([
         adminDb.collection('portal_organizations').doc(organizationId).get(),

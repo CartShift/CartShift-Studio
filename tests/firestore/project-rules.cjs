@@ -37,6 +37,12 @@ async function main() {
           isBillable: true, publicAccessEnabled: true,
           agencyNotes: 'NEVER EXPOSE', publishedProposal: { totalAmount: 200000 },
         }),
+        db.doc('portal_requests/quoteAccepted').set({
+          orgId: 'orgA', title: 'Signed agreement', status: 'ACCEPTED',
+          isBillable: true, publicToken: 'signed-token', proposalVersion: 1,
+          publicAccessEnabled: true, projectId: 'prjA', totalAmount: 200000,
+          lockedAt: require('firebase/firestore').Timestamp.fromDate(new Date()),
+        }),
         db.doc('portal_pricing_requests/legacyQuote').set({
           orgId: 'orgA', status: 'SENT', agencyNotes: 'LEGACY PRIVATE',
         }),
@@ -59,15 +65,20 @@ async function main() {
           stages: [], blockers: [], deliverables: [],
           changes: [],
         }),
+        db.doc('portal_projects/prjB').set({
+          orgId: 'orgB', title: 'Another client', status: 'planning',
+        }),
       ]);
     });
 
+    const { serverTimestamp } = require('firebase/firestore');
     const agency = context('agency', 'staff@example.com');
     const client = context('client', 'client@example.com');
     const outsider = context('outsider', 'outsider@example.com');
 
     // Internal comments must be protected by Firestore rules, not client-side filtering.
-    await assertSucceeds(client.doc('portal_comments/publicA').get());
+    // Comments are also projected through the secure API, never returned raw.
+    await assertFails(client.doc('portal_comments/publicA').get());
     await assertFails(client.doc('portal_comments/internalA').get());
     await assertFails(outsider.doc('portal_comments/publicA').get());
     await assertSucceeds(agency.doc('portal_comments/internalA').get());
@@ -80,6 +91,24 @@ async function main() {
       .where('orgId', '==', 'orgA').get());
     await assertFails(client.doc('portal_comments/publicA').update({ isInternal: true }));
     await assertFails(client.doc('portal_comments/internalA').update({ content: 'Tampered' }));
+    // Client comment mutations go through the authenticated API so their
+    // parent counter and latest preview cannot diverge from stored comments.
+    await assertFails(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'reqA', userId: 'client',
+      content: 'Bypassing the client API', isInternal: false,
+    }));
+    await assertFails(client.doc('portal_comments/publicA').delete());
+    await assertFails(client.doc('portal_comments/publicA').update({
+      reactions: { '👍': ['outsider'] },
+    }));
+    await assertFails(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'reqA', userId: 'agency',
+      content: 'Forged staff response', isInternal: false,
+    }));
+    await assertFails(client.collection('portal_comments').add({
+      orgId: 'orgA', requestId: 'quoteA', userId: 'client',
+      content: 'Comment on a private draft', isInternal: false,
+    }));
     await assertFails(client.collection('portal_comments').add({
       orgId: 'orgA', requestId: 'reqA', userId: 'client', isInternal: true,
       content: 'Forged confidential note',
@@ -98,7 +127,21 @@ async function main() {
     // Commercial docs are agency-only. Members use the sanitized server API.
     await assertFails(client.doc('portal_requests/quoteA').get());
     await assertFails(client.doc('portal_requests/quoteSent').get());
+    await assertFails(client.doc('portal_requests/quoteAccepted').get());
+    await assertFails(agency.doc('portal_requests/quoteAccepted').update({
+      totalAmount: 100, updatedAt: serverTimestamp(),
+    }));
+    await assertFails(agency.doc('portal_requests/quoteAccepted').update({
+      projectChangeId: 'forged-change', updatedAt: serverTimestamp(),
+    }));
+    await assertSucceeds(agency.doc('portal_requests/quoteAccepted').update({
+      assignedTo: 'agency', updatedAt: serverTimestamp(),
+    }));
     await assertSucceeds(agency.doc('portal_requests/quoteA').get());
+    // Even ordinary requests can contain unpublished staff-only fields.
+    // Client request data must always come from the sanitized server API.
+    await assertFails(client.doc('portal_requests/reqA').get());
+    await assertSucceeds(agency.doc('portal_requests/reqA').get());
     await assertFails(client.collection('portal_requests').where('orgId', '==', 'orgA').get());
     await assertFails(client.doc('portal_pricing_requests/legacyQuote').get());
     await assertFails(client.doc('portal_payments/privatePayment').get());
@@ -106,10 +149,34 @@ async function main() {
 
     // Clients can create work only under projects owned by their organization.
     await assertSucceeds(client.doc('portal_requests/validProjectTask').set({
-      orgId: 'orgA', title: 'Task', status: 'NEW', projectId: 'prjA',
+      orgId: 'orgA', title: 'Task', description: 'Work', type: 'other',
+      status: 'NEW', priority: 'NORMAL', projectId: 'prjA',
+      requestRole: 'standalone', createdBy: 'client', createdByName: 'Client',
+      tags: [], attachmentIds: [], commentCount: 0,
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+    }));
+    await assertSucceeds(client.doc('portal_requests/validProjectTask').update({
+      description: 'Clarified request', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/validProjectTask').update({
+      status: 'DELIVERED', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/validProjectTask').update({
+      assignedTo: 'client', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/validProjectTask').update({
+      createdBy: 'agency', updatedAt: serverTimestamp(),
+    }));
+    await assertFails(client.doc('portal_requests/impersonatedTask').set({
+      orgId: 'orgA', title: 'Forged owner', status: 'NEW',
+      requestRole: 'standalone', createdBy: 'agency',
     }));
     await assertFails(client.doc('portal_requests/crossOrgTask').set({
-      orgId: 'orgA', title: 'Wrong project', status: 'NEW', projectId: 'prjB',
+      orgId: 'orgA', title: 'Wrong project', description: 'Work',
+      type: 'other', priority: 'NORMAL', status: 'NEW', projectId: 'prjB',
+      requestRole: 'standalone', createdBy: 'client', createdByName: 'Client',
+      tags: [], attachmentIds: [], commentCount: 0,
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
     }));
     await assertFails(client.doc('portal_requests/fakePaid').set({
       orgId: 'orgA', title: 'Commercial spoof', status: 'PAID', isBillable: true,
@@ -127,7 +194,6 @@ async function main() {
       updatedAt: null,
     };
     // The compat SDK supplies serverTimestamp() as a transform; rules see request.time.
-    const { serverTimestamp } = require('firebase/firestore');
     const review = { ...baseReview, updatedAt: serverTimestamp() };
     await assertSucceeds(client.doc('portal_projects/prjA/reviews/hero_client').set(review));
     await assertFails(client.doc('portal_projects/prjA/reviews/hero_wrong').set(review));
