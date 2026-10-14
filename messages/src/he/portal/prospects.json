@@ -60,7 +60,16 @@
       "verified": "ממצא אומת בבדיקה אנושית",
       "rejected": "ממצא נדחה",
       "verifyFinding": "אמת ממצא",
-      "rejectFinding": "דחה ממצא"
+      "rejectFinding": "דחה ממצא",
+      "import": "ייבוא חנויות",
+      "importTitle": "ייבוא מרוכז — תצוגה מקדימה לפני שמירה",
+      "importHint": "הדביקו עד 20 כתובות חנויות ציבוריות, כתובת בכל שורה. הייבוא לא שולח הודעות.",
+      "previewImport": "תצוגה מקדימה",
+      "confirmImport": "אשר ושמור לידים",
+      "importPreview": "{requested} כתובות הוזנו; {unique} עסקים ייחודיים",
+      "newProspect": "מועמד חדש",
+      "importDone": "נשמרו {created} לידים חדשים",
+      "importFailed": "הייבוא נכשל. בדקו כתובות HTTPS ציבוריות וכפילויות."
     }
   }
 }
