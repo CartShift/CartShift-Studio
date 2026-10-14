@@ -42,7 +42,7 @@ For Shopify SEO, a clean map often looks like this:
 | Broad education     | pillar guide        | `/blog/shopify-seo-complete-guide`   |
 | Tactical audit      | checklist           | `/blog/shopify-seo-audit-checklist`  |
 | Problem diagnosis   | support post        | `/blog/why-shopify-stores-dont-rank` |
-| Implementation help | contact or analyzer | `/tools/store-analyzer`              |
+| Implementation help | contact or analyzer | `/free-store-review`              |
 
 ### What to fix
 
@@ -68,7 +68,7 @@ For a Shopify service or growth page, include:
 This is why informational content should point back to:
 
 - [Shopify services](/solutions/shopify)
-- [store analyzer](/tools/store-analyzer)
+- [expert store review](/free-store-review)
 - [contact / consultation](/contact)
 
 If the service page is thin, ranking a blog post will not create enough business value. The user has nowhere persuasive to go next.
@@ -239,7 +239,7 @@ To improve Shopify SEO results, build a system:
 5. clean technical foundations
 6. conversion measurement
 
-If your store is stuck and you want a faster diagnosis, start with the [free store analyzer](/tools/store-analyzer), review our [Shopify SEO services](/solutions/shopify), or read [Why Shopify stores do not rank](/blog/why-shopify-stores-dont-rank).
+If your store is stuck and you want a faster diagnosis, start with the [free expert store review](/free-store-review), review our [Shopify SEO services](/solutions/shopify), or read [Why Shopify stores do not rank](/blog/why-shopify-stores-dont-rank).
 
 ---he---
 
@@ -274,7 +274,7 @@ Shopify SEO משתפר כשהחנות נהיית קלה יותר להבנה גם
 | חינוך רחב   | מדריך pillar        | `/blog/shopify-seo-complete-guide`   |
 | אודיט טקטי  | צ'קליסט             | `/blog/shopify-seo-audit-checklist`  |
 | אבחון בעיה  | פוסט תומך           | `/blog/why-shopify-stores-dont-rank` |
-| יישום       | contact או analyzer | `/tools/store-analyzer`              |
+| יישום       | contact או analyzer | `/free-store-review`              |
 
 ### מה לתקן
 
@@ -300,7 +300,7 @@ Shopify SEO משתפר כשהחנות נהיית קלה יותר להבנה גם
 לכן תוכן מידע צריך להוביל ל:
 
 - [שירותי Shopify](/solutions/shopify)
-- [כלי אודיט לחנות](/tools/store-analyzer)
+- [סקירה מקצועית לחנות](/free-store-review)
 - [יצירת קשר / ייעוץ](/contact)
 
 אם עמוד השירות דק, דירוג של פוסט בבלוג לא ייצור מספיק ערך עסקי. לקורא אין לאן להמשיך בצורה משכנעת.
@@ -460,4 +460,4 @@ SEO לא נגמר בדירוגים.
 
 כדי לשפר Shopify SEO צריך מערכת: עמוד ברור לכל כוונה, עמודים מסחריים חזקים, pillar אמיתי, קישורים פנימיים מכוונים, יסודות טכניים נקיים ומדידת המרות.
 
-אם החנות תקועה ואתם רוצים אבחון מהיר, התחילו עם [כלי האודיט החינמי](/tools/store-analyzer), עברו על [שירותי Shopify SEO](/solutions/shopify), או קראו [למה חנויות Shopify לא מדורגות](/blog/why-shopify-stores-dont-rank).
+אם החנות תקועה ואתם רוצים אבחון מהיר, התחילו עם [סקירה מקצועית בחינם](/free-store-review), עברו על [שירותי Shopify SEO](/solutions/shopify), או קראו [למה חנויות Shopify לא מדורגות](/blog/why-shopify-stores-dont-rank).
