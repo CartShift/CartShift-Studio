@@ -70,7 +70,8 @@ async function main() {
     const outsider = context('outsider', 'outsider@example.com');
 
     // Internal comments must be protected by Firestore rules, not client-side filtering.
-    await assertSucceeds(client.doc('portal_comments/publicA').get());
+    // Comments are also projected through the secure API, never returned raw.
+    await assertFails(client.doc('portal_comments/publicA').get());
     await assertFails(client.doc('portal_comments/internalA').get());
     await assertFails(outsider.doc('portal_comments/publicA').get());
     await assertSucceeds(agency.doc('portal_comments/internalA').get());
