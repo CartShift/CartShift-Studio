@@ -79,6 +79,8 @@ export async function listProspects(raw: unknown, uid: string) {
     active_only: z.boolean().optional(),
     owner_uid: z.string().max(128).optional(),
     verified_only: z.boolean().optional(),
+    due_before: z.iso.date().optional(),
+    review_requested: z.boolean().optional(),
   }).strict().parse(raw);
   const limit = input.limit || 40;
   const items: ReturnType<typeof summary>[] = [];
@@ -107,6 +109,8 @@ export async function listProspects(raw: unknown, uid: string) {
       if (input.active_only && item.archived) continue;
       if (input.owner_uid && item.ownerUid !== input.owner_uid) continue;
       if (input.verified_only && item.verifiedIssueCount < 1) continue;
+      if (input.due_before && (!item.nextActionAt || item.nextActionAt > input.due_before || ['won','lost'].includes(item.stage))) continue;
+      if (input.review_requested && item.deepReviewStatus !== 'requested') continue;
       if (search && ![item.brandName, item.canonicalDomain, item.stage, item.researchNote]
         .some(value => value.toLocaleLowerCase().includes(search))) continue;
       items.push(item);
