@@ -93,11 +93,15 @@ export default function ProspectsClient() {
   const [segmentFilter, setSegmentFilter] = useState<'all' | 'merchant' | 'agency_partner'>('all');
   const [activeOnly, setActiveOnly] = useState(true);
   const [highOnly, setHighOnly] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkPriority, setBulkPriority] = useState<'keep' | 'high' | 'normal' | 'low'>('keep');
+  const [bulkArchived, setBulkArchived] = useState<'keep' | 'archive' | 'activate'>('keep');
+  const [bulkOwnerUid, setBulkOwnerUid] = useState('keep');
   const [focus, setFocus] = useState<'all' | 'due' | 'reviews'>('all');
   const [pageCursor, setPageCursor] = useState<string | null>(null);
   const [pageHistory, setPageHistory] = useState<Array<string | null>>([]);
   const deferredSearch = useDeferredValue(search);
-  useEffect(() => { setPageCursor(null); setPageHistory([]); }, [deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly, focus]);
+  useEffect(() => { setPageCursor(null); setPageHistory([]); setSelectedIds([]); }, [deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly, focus]);
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -179,6 +183,26 @@ export default function ProspectsClient() {
       toast.success(t('updated'));
     },
     onError: () => toast.error(t('updateFailed')),
+  });
+  const bulkUpdate = useMutation({
+    mutationFn: async () => {
+      const patch: Record<string, string | boolean> = {};
+      if (bulkPriority !== 'keep') patch.priority = bulkPriority;
+      if (bulkArchived !== 'keep') patch.archived = bulkArchived === 'archive';
+      if (bulkOwnerUid !== 'keep') patch.owner_uid = bulkOwnerUid;
+      if (selectedIds.length < 1 || selectedIds.length > 20 || !Object.keys(patch).length) {
+        throw new Error('INVALID_BULK_SELECTION');
+      }
+      return fetchJson<{ updated: number }>('/api/portal/agency/prospects/bulk', {
+        method: 'POST', body: JSON.stringify({ prospect_ids: selectedIds, patch }),
+      });
+    },
+    onSuccess: async (result) => {
+      setSelectedIds([]); setBulkPriority('keep'); setBulkArchived('keep'); setBulkOwnerUid('keep');
+      await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
+      toast.success(he ? `${result.updated} לידים עודכנו` : `${result.updated} prospects updated`);
+    },
+    onError: () => toast.error(he ? 'עדכון הלידים נכשל. בדקי הרשאות ובחירה.' : 'Bulk update failed. Review selection and permissions.'),
   });
   const bulkImport = useMutation({
     mutationFn: async (confirm: boolean) => {
@@ -441,10 +465,62 @@ export default function ProspectsClient() {
           {he ? 'ניקוי מסננים' : 'Clear filters'}
         </Button>
       </div>}
+      {selectedIds.length > 0 && <section aria-label={he ? 'פעולות מרובות' : 'Bulk actions'} className="space-y-3 rounded-xl border border-primary-200 bg-primary-50/40 p-4 dark:border-primary-800 dark:bg-primary-950/10">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-surface-900 dark:text-white">{he ? `נבחרו ${selectedIds.length} לידים` : `${selectedIds.length} selected`}</p>
+          <Button variant="outline" onClick={() => setSelectedIds([])}>{he ? 'ביטול בחירה' : 'Clear selection'}</Button>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-3">
+          <label className="space-y-1 text-xs text-surface-600 dark:text-surface-300">
+            {he ? 'עדיפות' : 'Priority'}
+            <select value={bulkPriority} onChange={event => setBulkPriority(event.target.value as typeof bulkPriority)}
+              className="block w-full rounded-lg border border-surface-200 bg-white p-2 text-sm dark:border-surface-700 dark:bg-surface-900">
+              <option value="keep">{he ? 'ללא שינוי' : 'Keep current'}</option>
+              <option value="high">{he ? 'גבוהה' : 'High'}</option><option value="normal">{he ? 'רגילה' : 'Normal'}</option>
+              <option value="low">{he ? 'נמוכה' : 'Low'}</option>
+            </select>
+          </label>
+          <label className="space-y-1 text-xs text-surface-600 dark:text-surface-300">
+            {he ? 'העברה לאחראי' : 'Assign to'}
+            <select value={bulkOwnerUid} onChange={event => setBulkOwnerUid(event.target.value)}
+              className="block w-full rounded-lg border border-surface-200 bg-white p-2 text-sm dark:border-surface-700 dark:bg-surface-900">
+              <option value="keep">{he ? 'ללא שינוי' : 'Keep current'}</option>
+              {(agencyTeam.data || []).filter(member => ['owner', 'admin', 'sales_manager', 'business_development'].includes(member.agencyRole || '') &&
+                !['inactive', 'suspended'].includes(member.status || '')).map(member =>
+                <option key={member.id} value={member.id}>{member.name || member.email}</option>)}
+            </select>
+          </label>
+          <label className="space-y-1 text-xs text-surface-600 dark:text-surface-300">
+            {he ? 'סטטוס רשימה' : 'Worklist status'}
+            <select value={bulkArchived} onChange={event => setBulkArchived(event.target.value as typeof bulkArchived)}
+              className="block w-full rounded-lg border border-surface-200 bg-white p-2 text-sm dark:border-surface-700 dark:bg-surface-900">
+              <option value="keep">{he ? 'ללא שינוי' : 'Keep current'}</option>
+              <option value="archive">{he ? 'ארכוב' : 'Archive'}</option>
+              <option value="activate">{he ? 'החזרה לרשימה' : 'Restore to active'}</option>
+            </select>
+          </label>
+        </div>
+        <Button disabled={bulkUpdate.isPending || (bulkPriority === 'keep' && bulkOwnerUid === 'keep' && bulkArchived === 'keep')}
+          onClick={() => bulkUpdate.mutate()}>{he ? 'שמירת שינויים לנבחרים' : 'Apply to selected'}</Button>
+      </section>}
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs text-surface-500">{he ? 'ניתן לבחור עד 20 לידים לשינוי קבוצתי' : 'Select up to 20 prospects for a batch action'}</span>
+        <Button variant="outline" disabled={rows.length === 0} onClick={() => {
+          const ids = rows.filter(prospect => !prospect.doNotContact && prospect.stage !== 'suppressed').slice(0, 20).map(prospect => prospect.id);
+          setSelectedIds(previous => previous.length ? [] : ids);
+        }}>{selectedIds.length ? (he ? 'בטל בחירה' : 'Deselect') : (he ? 'בחר את הראשונים' : 'Select first 20')}</Button>
+      </div>
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(prospect => (
           <Card key={prospect.id} className={`space-y-3 p-4 ${selected === prospect.id ? 'lg:col-span-2' : ''}`}>
             <div className="flex items-start justify-between gap-3">
+              {!prospect.doNotContact && prospect.stage !== 'suppressed' &&
+                <label className="mt-1 shrink-0">
+                  <input type="checkbox" checked={selectedIds.includes(prospect.id)} aria-label={he ? `בחירת ${prospect.brandName}` : `Select ${prospect.brandName}`}
+                    disabled={!selectedIds.includes(prospect.id) && selectedIds.length >= 20}
+                    onChange={event => setSelectedIds(previous => event.target.checked
+                      ? [...previous, prospect.id].slice(0, 20) : previous.filter(id => id !== prospect.id))}/>
+                </label>}
               <div className="min-w-0">
                 <h2 className="truncate font-semibold text-surface-900 dark:text-white">{prospect.brandName}</h2>
                 <a href={prospect.storeUrl} target="_blank" rel="noopener noreferrer"
