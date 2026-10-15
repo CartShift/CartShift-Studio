@@ -83,6 +83,7 @@ beforeEach(() => {
   });
   state.docs.set(base + '/findings/finding_private', { title: 'Something private' });
   state.docs.set(base + '/contacts/contact_private', { businessEmail: 'dana@shop.co.il' });
+  state.docs.set(base + '/activities/activity_private', { kind: 'email', note: 'Private discussion with Dana' });
   state.docs.set('agency_prospect_audit/old_audit', {
     targetId: id, evidenceUrl: 'https://shop.co.il/person/dana',
   });
@@ -103,6 +104,7 @@ describe('owner-controlled irreversible research redaction', () => {
     expect(serialized).not.toContain('dana@shop.co.il');
     expect(serialized).not.toContain('request_private');
     expect(serialized).not.toContain('Private notes on Dana');
+    expect(serialized).not.toContain('Private discussion with Dana');
     expect([...state.docs.keys()].filter(key => key.startsWith(base + '/'))).toEqual([]);
     expect(await redactProspect(id, 'owner')).toMatchObject({ redacted: true, suppressed: true });
   });
