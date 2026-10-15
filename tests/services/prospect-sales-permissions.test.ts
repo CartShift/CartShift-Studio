@@ -83,5 +83,7 @@ describe('commercial transitions cannot be fabricated by sales staff', () => {
     }, 'adi');
     expect(data.get(storePath)?.stage).toBe('proposal');
     expect(data.get(storePath)?.priority).toBe('high');
+    await expect(updateProspectSales(prospectId, { stage: 'lost' }, 'adi'))
+      .rejects.toThrow('PROPOSAL_LINK_REQUIRED');
   });
 });
