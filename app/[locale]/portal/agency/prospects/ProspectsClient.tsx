@@ -357,6 +357,18 @@ export default function ProspectsClient() {
         </Card>
       )}
 
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[
+          { label: he ? 'לידים פעילים' : 'Active prospects', count: activeProspects.length },
+          { label: he ? 'משימות להיום / באיחור' : 'Actions due', count: dueCount },
+          { label: he ? 'סקירות ממתינות' : 'Pending deep reviews', count: reviewCount },
+        ].map(metric => (
+          <div key={metric.label} className="rounded-xl border border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-900">
+            <p className="text-xs text-surface-500">{metric.label}</p>
+            <p className="mt-1 text-2xl font-bold tabular-nums text-surface-900 dark:text-white">{metric.count}</p>
+          </div>
+        ))}
+      </div>
       <div className="relative">
         <Search size={17} className="pointer-events-none absolute start-3 top-3 text-surface-400" />
         <input aria-label={t('search')} placeholder={t('search')} value={search}
@@ -372,6 +384,19 @@ export default function ProspectsClient() {
         <label className="inline-flex items-center gap-2 rounded-lg border border-surface-200 px-3 py-2 dark:border-surface-700">
           <input type="checkbox" checked={myOnly} onChange={e => setMyOnly(e.target.checked)}/>
           {t('myProspects')}
+        </label>
+        <select aria-label={he ? 'סוג ליד' : 'Prospect segment'} value={segmentFilter}
+          onChange={event => setSegmentFilter(event.target.value as typeof segmentFilter)}
+          className="rounded-lg border border-surface-200 bg-white px-3 py-2 dark:border-surface-700 dark:bg-surface-900">
+          <option value="all">{he ? 'כל הסוגים' : 'All segments'}</option>
+          <option value="merchant">{he ? 'חנויות' : 'Merchants'}</option>
+          <option value="agency_partner">{he ? 'סוכנויות ושותפים' : 'Agency partners'}</option>
+        </select>
+        <label className="inline-flex items-center gap-2 rounded-lg border border-surface-200 px-3 py-2 dark:border-surface-700">
+          <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)}/>{he ? 'פעילים' : 'Active'}
+        </label>
+        <label className="inline-flex items-center gap-2 rounded-lg border border-surface-200 px-3 py-2 dark:border-surface-700">
+          <input type="checkbox" checked={highOnly} onChange={e => setHighOnly(e.target.checked)}/>{he ? 'עדיפות גבוהה' : 'High priority'}
         </label>
         <span className="text-surface-500">{t('showing', { shown: rows.length, total: list.data?.prospects.length || 0 })}</span>
       </div>
@@ -389,9 +414,14 @@ export default function ProspectsClient() {
                   <span dir="ltr">{prospect.canonicalDomain}</span><ExternalLink size={13}/>
                 </a>
               </div>
-              <span className="shrink-0 rounded-full bg-surface-100 px-2 py-1 text-xs text-surface-600 dark:bg-surface-800 dark:text-surface-300">
-                {stageLabels[prospect.stage] || prospect.stage}
-              </span>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="rounded-full bg-surface-100 px-2 py-1 text-xs text-surface-600 dark:bg-surface-800 dark:text-surface-300">
+                  {stageLabels[prospect.stage] || prospect.stage}
+                </span>
+                {prospect.priority === 'high' && <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                  ★ {he ? 'חשוב' : 'High priority'}
+                </span>}
+              </div>
             </div>
             {prospect.researchNote && <p className="line-clamp-2 text-sm text-surface-500">{prospect.researchNote}</p>}
             <p className="text-xs text-surface-500">
@@ -400,6 +430,11 @@ export default function ProspectsClient() {
                 className="text-primary-600 underline-offset-2 hover:underline dark:text-primary-300">
                 {t('openResearchSource')} <ExternalLink size={12} className="inline" />
               </a>
+            </p>
+            <p className="text-xs text-surface-500">
+              {prospect.segment === 'agency_partner' ? (he ? 'שותף / סוכנות' : 'Agency partner') :
+                prospect.segment === 'merchant' ? (he ? 'חנות מסחר' : 'Merchant') : (he ? 'לא סווג' : 'Unclassified')}
+              {prospect.archived ? ' · ' + (he ? 'ארכיון' : 'Archived') : ''}
             </p>
             <p className="text-xs text-surface-500">
               {t('platform')}: {prospect.platform === 'shopify' ? t('shopifyDetected') : t('platformUnknown')}
