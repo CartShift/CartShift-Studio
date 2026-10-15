@@ -89,6 +89,7 @@ export default function ScheduleConsultationForm({
   // Smart Calendar Features
   const [isConnected, setIsConnected] = useState(false);
   const [checkingAvailability, setAvailability] = useState(false);
+  const [availabilityFailed, setAvailabilityFailed] = useState(false);
   const [busySlots, setBusySlots] = useState<{ start: Date; end: Date }[]>([]);
 
   useEffect(() => {
@@ -96,25 +97,40 @@ export default function ScheduleConsultationForm({
   }, []);
 
   useEffect(() => {
-    if (isConnected && scheduledDate) {
-      setAvailability(true);
-      const dateObj = new Date(scheduledDate);
-
-      // Expand the window to cover timezone differences
-      const timeMin = new Date(dateObj);
-      timeMin.setDate(timeMin.getDate() - 1);
-
-      const timeMax = new Date(dateObj);
-      timeMax.setDate(timeMax.getDate() + 2);
-
-      getFreeBusyIntervals(timeMin, timeMax)
-        .then(slots => {
-          setBusySlots(slots);
-        })
-        .finally(() => {
-          setAvailability(false);
-        });
+    if (!isConnected || !scheduledDate) {
+      setBusySlots([]);
+      setAvailabilityFailed(false);
+      setAvailability(false);
+      return;
     }
+
+    let canceled = false;
+    setAvailability(true);
+    setAvailabilityFailed(false);
+    setBusySlots([]);
+
+    const dateObj = new Date(scheduledDate);
+    // Expand the window to cover timezone differences.
+    const timeMin = new Date(dateObj);
+    timeMin.setDate(timeMin.getDate() - 1);
+    const timeMax = new Date(dateObj);
+    timeMax.setDate(timeMax.getDate() + 2);
+
+    getFreeBusyIntervals(timeMin, timeMax)
+      .then(slots => {
+        if (!canceled) setBusySlots(slots);
+      })
+      .catch(() => {
+        if (!canceled) {
+          setBusySlots([]);
+          setAvailabilityFailed(true);
+        }
+      })
+      .finally(() => {
+        if (!canceled) setAvailability(false);
+      });
+
+    return () => { canceled = true; };
   }, [isConnected, scheduledDate]);
 
   const hasConflict = useMemo(() => {
@@ -129,10 +145,15 @@ export default function ScheduleConsultationForm({
     e.preventDefault();
     if (!userData || !title || !scheduledDate || !scheduledTime) return;
 
-    if (hasConflict) {
+    // Never describe an unverified calendar as available. A human may
+    // explicitly override a failed lookup, but only after a warning.
+    if (isConnected && checkingAvailability) return;
+    if (hasConflict || (isConnected && availabilityFailed)) {
       const ok = await confirm({
         title: t('common.confirm'),
-        description: t('consultations.form.calendarConflict'),
+        description: availabilityFailed
+          ? t('consultations.form.calendarAvailabilityUnknownConfirm')
+          : t('consultations.form.calendarConflict'),
         confirmText: t('common.submit'),
         cancelText: t('common.cancel'),
         variant: 'warning',
@@ -278,7 +299,7 @@ export default function ScheduleConsultationForm({
                   ) : (
                     <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 dark:bg-green-900/20 p-2 rounded-lg w-fit">
                       <CheckCircle2 size={12} />
-                      <span>Calendar synced & checking availability</span>
+                      <span>{t('consultations.form.calendarConnected')}</span>
                     </div>
                   )}
 
@@ -338,13 +359,13 @@ export default function ScheduleConsultationForm({
                       </PortalFormField>
                       <PortalFormField
                         label={t('consultations.form.time')}
-                        error={hasConflict ? 'Conflict detected with your calendar' : undefined}
+                        error={hasConflict ? t('consultations.form.calendarAvailabilityConflict') : undefined}
                       >
                         <Input
                           type="time"
                           value={scheduledTime}
                           onChange={e => setScheduledTime(e.target.value)}
-                          error={hasConflict ? 'Conflict detected with your calendar' : undefined}
+                          error={hasConflict ? t('consultations.form.calendarAvailabilityConflict') : undefined}
                           required
                         />
                       </PortalFormField>
@@ -356,7 +377,12 @@ export default function ScheduleConsultationForm({
                         {checkingAvailability ? (
                           <span className="flex items-center gap-1 text-surface-500">
                             <Loader2 size={12} className="animate-spin" />
-                            availability...
+                            {t('consultations.form.calendarAvailabilityChecking')}
+                          </span>
+                        ) : availabilityFailed ? (
+                          <span role="alert" className="flex items-start gap-2 text-amber-700 dark:text-amber-300">
+                            <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                            {t('consultations.form.calendarAvailabilityUnknown')}
                           </span>
                         ) : hasConflict ? (
                           <motion.div
@@ -365,12 +391,12 @@ export default function ScheduleConsultationForm({
                             className="flex items-center gap-2 text-red-600 bg-red-50 dark:bg-red-900/20 p-2 rounded-lg"
                           >
                             <AlertTriangle size={14} />
-                            <span>Conflict detected with your calendar</span>
+                            <span>{t('consultations.form.calendarAvailabilityConflict')}</span>
                           </motion.div>
                         ) : scheduledTime ? (
                           <span className="text-green-600 dark:text-green-400 flex items-center gap-1">
                             <CheckCircle2 size={12} />
-                            Available
+                            {t('consultations.form.calendarAvailabilityAvailable')}
                           </span>
                         ) : null}
                       </div>
