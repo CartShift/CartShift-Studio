@@ -21,11 +21,11 @@ export async function requireProspectActor(uid: string) {
   const data = snap.data();
   const role = data?.agencyRole;
   if (!snap.exists || (data?.accountType !== 'AGENCY' && data?.isAgency !== true) ||
-      !['owner', 'admin', 'sales_manager'].includes(role) ||
+      !['owner', 'admin', 'sales_manager', 'business_development'].includes(role) ||
       data?.status === 'inactive' || data?.status === 'suspended') {
     throw new Error('FORBIDDEN');
   }
-  return { uid, role: role as 'owner' | 'admin' | 'sales_manager' };
+  return { uid, role: role as 'owner' | 'admin' | 'sales_manager' | 'business_development' };
 }
 
 function iso(value: unknown): string | null {
