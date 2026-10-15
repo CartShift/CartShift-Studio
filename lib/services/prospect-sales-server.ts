@@ -27,7 +27,7 @@ export async function updateProspectSales(prospectId: string, raw: unknown, uid:
     const staffSnap = await database().collection('portal_users').doc(input.owner_uid).get();
     const staff = staffSnap.data();
     if (!staffSnap.exists || (staff?.accountType !== 'AGENCY' && staff?.isAgency !== true) ||
-        !['owner', 'admin', 'sales_manager'].includes(staff?.agencyRole) ||
+        !['owner', 'admin', 'sales_manager', 'business_development'].includes(staff?.agencyRole) ||
         staff?.status === 'inactive' || staff?.status === 'suspended') {
       throw new Error('INVALID_OWNER');
     }
