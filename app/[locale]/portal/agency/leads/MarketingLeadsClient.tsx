@@ -170,7 +170,7 @@ export default function MarketingLeadsClient() {
     onError: () => toast.error(he ? 'לא ניתן להוסיף את הליד למאגר ההזדמנויות' : 'Could not add the lead to the prospect worklist'),
   });
   const { dashboard, loading, error, refetch } = useMarketingDashboard();
-  const { organizations } = useAgencyClients();
+  const { organizations } = useAgencyClients({ enabled: canInvite });
   const updateLead = useUpdateMarketingLead();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<LeadFilter>('all');
