@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import {
   Activity,
   AlertCircle,
@@ -146,6 +147,9 @@ function leadNeedsFollowUp(lead: MarketingLead) {
 
 export default function MarketingLeadsClient() {
   const t = useTranslations('portal.marketing');
+  const he = useLocale() === 'he';
+  const { userData } = usePortalAuth();
+  const canInvite = userData?.agencyRole !== 'business_development';
   const queryClient = useQueryClient();
   const [trackedLeadIds, setTrackedLeadIds] = useState<string[]>([]);
   const trackOpportunity = useMutation({
@@ -161,9 +165,9 @@ export default function MarketingLeadsClient() {
     onSuccess: async (_result, leadId) => {
       setTrackedLeadIds(previous => previous.includes(leadId) ? previous : [...previous, leadId]);
       await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
-      toast.success('Lead added to the prospect worklist for human review');
+      toast.success(he ? 'הליד נוסף לרשימת ההזדמנויות לסקירה' : 'Lead added to the prospect worklist for review');
     },
-    onError: () => toast.error('Could not add this lead to the prospect worklist'),
+    onError: () => toast.error(he ? 'לא ניתן להוסיף את הליד למאגר ההזדמנויות' : 'Could not add the lead to the prospect worklist'),
   });
   const { dashboard, loading, error, refetch } = useMarketingDashboard();
   const { organizations } = useAgencyClients();
@@ -492,27 +496,29 @@ export default function MarketingLeadsClient() {
                             </Button>
                           )}
                           {lead.storeUrl && !trackedLeadIds.includes(lead.leadId) && (
-                            <Button size="sm" variant="ghost" title="Track this store as a prospect"
-                              aria-label="Track this store as a prospect"
+                            <Button size="sm" variant="ghost" title={he ? 'העברה להזדמנויות מכירה' : 'Track this store as a prospect'}
+                              aria-label={he ? 'העברה להזדמנויות מכירה' : 'Track this store as a prospect'}
                               disabled={trackOpportunity.isPending}
                               onClick={() => trackOpportunity.mutate(lead.leadId)}>
                               <Link2 className="h-4 w-4" />
                             </Button>
                           )}
                           {trackedLeadIds.includes(lead.leadId) && (
-                            <a href={getPortalPath('/agency/prospects/')} title="Open prospect worklist"
+                            <a href={getPortalPath('/agency/prospects/')} title={he ? 'פתיחת רשימת ההזדמנויות' : 'Open prospect worklist'}
                               className="inline-flex h-8 items-center rounded-md px-2 text-xs text-primary-600 hover:underline">
-                              Prospects ↗
+                              {he ? 'הזדמנויות ↗' : 'Prospects ↗'}
                             </a>
                           )}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            title={t('actions.invite')}
-                            onClick={() => setInviteLead(lead)}
-                          >
-                            <UserPlus className="h-4 w-4" />
-                          </Button>
+                          {canInvite && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              title={t('actions.invite')}
+                              onClick={() => setInviteLead(lead)}
+                            >
+                              <UserPlus className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </PortalTableCell>
                     </PortalTableRow>
