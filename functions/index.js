@@ -3112,52 +3112,102 @@ exports.onTeamInviteCreated = onDocumentCreated(
 // EMAIL QUEUE PROCESSOR (for batch/reliable sending)
 // ============================================
 
-exports.processEmailQueue = onDocumentCreated(
-  { document: 'email_queue/{emailId}', secrets: [resendApiKey] },
-  async event => {
-    const emailDoc = event.data;
-    const email = emailDoc.data();
+const EMAIL_QUEUE_MAX_ATTEMPTS = 3;
 
-    if (email.status !== 'pending') return;
-
-    await emailDoc.ref.update({
+/**
+ * Firestore events can be delivered more than once. Claim work inside a transaction
+ * so duplicate create/update deliveries cannot both send the same email.
+ */
+async function processPendingEmailQueue(emailRef, jobId) {
+  const claimed = await admin.firestore().runTransaction(async tx => {
+    const snapshot = await tx.get(emailRef);
+    if (!snapshot.exists) return null;
+    const email = snapshot.data();
+    const attempts = email.attempts || 0;
+    if (email.status !== 'pending') return null;
+    if (attempts >= EMAIL_QUEUE_MAX_ATTEMPTS) {
+      tx.update(emailRef, { status: 'failed', error: 'max_attempts_exceeded' });
+      return null;
+    }
+    tx.update(emailRef, {
       status: 'processing',
+      attempts: attempts + 1,
       processingStartedAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+    return email;
+  });
+  if (!claimed) return;
 
-    try {
-      if (!SUPPORTED_EMAIL_TEMPLATES.includes(email.templateName)) {
-        throw new Error(`Unsupported email_queue templateName: ${email.templateName}`);
+  try {
+    if (!SUPPORTED_EMAIL_TEMPLATES.includes(claimed.templateName)) {
+      throw new Error(`Unsupported email_queue templateName: ${claimed.templateName}`);
+    }
+    const result = await sendPortalEmail(
+      claimed.to, claimed.subject, claimed.templateName, claimed.data,
+      {
+        tags: claimed.tags || [],
+        uniqueId: jobId,
+        scheduledAt: claimed.scheduledAt,
       }
+    );
+    await emailRef.update({
+      status: result.success ? 'sent' : 'failed',
+      emailId: result.id || null,
+      error: result.success ? null : result.error || 'send_failed',
+      result,
+      processedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('[EmailQueue] Processing failed', jobId, error);
+    await emailRef.update({
+      status: 'failed',
+      error: error.message || 'queue_processing_failed',
+      processedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+}
 
-      const result = await sendPortalEmail(
-        email.to,
-        email.subject,
-        email.templateName,
-        email.data,
-        {
-          tags: email.tags || [],
-          uniqueId: event.params.emailId,
-          scheduledAt: email.scheduledAt,
-        }
-      );
+exports.processEmailQueue = onDocumentCreated(
+  { document: 'email_queue/{emailId}', secrets: [resendApiKey] },
+  async event => {
+    if (!event.data) return;
+    await processPendingEmailQueue(event.data.ref, event.params.emailId);
+  }
+);
 
-      await emailDoc.ref.update({
-        status: result.success ? 'sent' : 'failed',
-        emailId: result.id || null,
-        error: result.success ? null : result.error || 'send_failed',
-        result,
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    } catch (error) {
-      console.error('[EmailQueue] Processing failed', event.params.emailId, error);
-      await emailDoc.ref.update({
-        status: 'failed',
-        error: error.message || 'queue_processing_failed',
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+// Only retry records moved back into 'pending' by the recovery schedule.
+exports.processRetriedEmailQueue = onDocumentUpdated(
+  { document: 'email_queue/{emailId}', secrets: [resendApiKey] },
+  async event => {
+    if (!event.data || event.data.before.data().status === 'pending' ||
+        event.data.after.data().status !== 'pending') return;
+    await processPendingEmailQueue(event.data.after.ref, event.params.emailId);
+  }
+);
+
+// Recovers abandoned 'processing' records after a function crash. Resend receives
+// the stable job ID as an idempotency key across every attempt.
+exports.recoverEmailQueue = onSchedule(
+  { schedule: 'every 60 minutes', maxInstances: 1 },
+  async () => {
+    const snapshot = await admin.firestore().collection('email_queue')
+      .where('status', '==', 'processing').limit(100).get();
+    const cutoff = Date.now() - 30 * 60 * 1000;
+    for (const doc of snapshot.docs) {
+      await admin.firestore().runTransaction(async tx => {
+        const current = await tx.get(doc.ref);
+        const data = current.data();
+        if (!data || data.status !== 'processing' ||
+            !data.processingStartedAt?.toMillis ||
+            data.processingStartedAt.toMillis() > cutoff) return;
+        tx.update(doc.ref, {
+          status: (data.attempts || 0) >= EMAIL_QUEUE_MAX_ATTEMPTS ? 'failed' : 'pending',
+          error: (data.attempts || 0) >= EMAIL_QUEUE_MAX_ATTEMPTS ? 'max_attempts_exceeded' : 'recovered_interrupted_attempt',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
       });
     }
   }
