@@ -1,4 +1,5 @@
 import 'server-only';
+import { addProspectActivity } from '@/lib/services/prospect-activities-server';
 
 import type { TokenGrant } from '@/lib/mcp/connection';
 import { may } from '@/lib/mcp/connection';
@@ -81,6 +82,16 @@ export const PROSPECT_TOOL_DEFS = [
       prospect_id: identity, org_id: { type: 'string' },
       request_id: { type: 'string' }, note: { type: 'string' },
     }, ['prospect_id', 'org_id', 'request_id', 'note']),
+  definition('log_prospect_activity',
+    'Log a private research note, human call/email/meeting, follow-up, or request a founder deep review. Records history only; NEVER sends a message or grants outreach permission.',
+    'prospects:write', {
+      prospect_id: identity,
+      kind: { type: 'string', enum: ['note', 'call', 'email', 'meeting', 'social', 'follow_up', 'review_request', 'review_completed'] },
+      direction: { type: 'string', enum: ['internal', 'inbound', 'outbound'] },
+      outcome: { type: 'string', enum: ['none', 'attempted', 'responded', 'positive', 'negative', 'booked'] },
+      note: { type: 'string', minLength: 3, maxLength: 1500 },
+      occurred_at: { type: 'string', format: 'date-time' },
+    }, ['prospect_id', 'kind', 'note']),
   definition('scan_prospect',
     'Run a bounded HTTPS/robots-respecting audit of ONE existing business prospect, save UNVERIFIED findings and public generic business contact candidates. No marketing outreach. Max 6 pages; per-domain cooldown.',
     'prospects:scan', { prospect_id: identity }, ['prospect_id']),
@@ -116,6 +127,12 @@ export async function callProspectTool(name: string, args: unknown, grant: Token
     }
     return linkProspectProposal(input.prospect_id, input.org_id, input.request_id,
       input.note, grant.uid);
+  }
+  if (name === 'log_prospect_activity') {
+    const input = args as Record<string, unknown>;
+    if (typeof input.prospect_id !== 'string') throw new Error('Missing prospect ID');
+    const { prospect_id, ...entry } = input;
+    return addProspectActivity(prospect_id, entry, grant.uid);
   }
   if (name === 'scan_prospect') {
     const input = args as Record<string, unknown>;
