@@ -36,9 +36,17 @@ import {
 } from '@/lib/types/portal';
 import { logActivity } from './portal-activities';
 import { withRetry } from '@/lib/utils/retry';
+import { getClientVisibleRequest, getClientVisibleRequests } from '@/lib/services/client-requests-api';
 import { getPortalRequestCountStats } from '@/lib/services/portal-request-pages';
 
 const REQUESTS_COLLECTION = 'portal_requests';
+
+async function isCurrentUserAgency(): Promise<boolean> {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('UNAUTHENTICATED');
+  const profile = await getPortalUser(user.uid);
+  return profile?.accountType === 'AGENCY' || profile?.isAgency === true;
+}
 
 // ============================================
 // CREATE
@@ -55,6 +63,7 @@ export async function createRequest(
     const db = getFirestoreDb();
     const requestData = {
       orgId,
+      ...(data.projectId ? { projectId: data.projectId } : {}),
       title: data.title.trim(),
       description: data.description.trim(),
       type: data.type,
@@ -183,6 +192,7 @@ export async function getRequest(requestId: string): Promise<Request | null> {
   await waitForAuth();
   const db = getFirestoreDb();
   const docRef = doc(db, REQUESTS_COLLECTION, requestId);
+  if (!(await isCurrentUserAgency())) return getClientVisibleRequest(requestId);
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
@@ -216,6 +226,7 @@ export async function getRequestsByOrg(
     console.warn('[getRequestsByOrg] Error refreshing token:', error);
   }
 
+  if (!(await isCurrentUserAgency())) return getClientVisibleRequests(orgId);
   const db = getFirestoreDb();
   let q = query(
     collection(db, REQUESTS_COLLECTION),
@@ -255,6 +266,18 @@ export async function getRequestsByOrg(
     }
     throw error;
   }
+}
+
+/** Fetch linked requests without scanning every client request. */
+export async function getRequestsByProject(orgId: string, projectId: string): Promise<Request[]> {
+  await waitForAuth();
+  if (!(await isCurrentUserAgency())) return getClientVisibleRequests(orgId, projectId);
+  const snapshot = await getDocs(query(
+    collection(getFirestoreDb(), REQUESTS_COLLECTION),
+    where('orgId', '==', orgId),
+    where('projectId', '==', projectId),
+  ));
+  return snapshot.docs.map(item => ({ id: item.id, ...item.data() }) as Request);
 }
 
 export async function getAllRequests(): Promise<Request[]> {
@@ -595,7 +618,15 @@ export async function getRequestStats(orgId: string): Promise<{
   inReview: number;
   completed: number;
 }> {
-  return getPortalRequestCountStats(orgId);
+  await waitForAuth();
+  if (await isCurrentUserAgency()) return getPortalRequestCountStats(orgId);
+  const rows = await getClientVisibleRequests(orgId);
+  return {
+    total: rows.length,
+    active: rows.filter(row => ['NEW', 'QUEUED', 'IN_PROGRESS'].includes(row.status)).length,
+    inReview: rows.filter(row => row.status === 'IN_REVIEW').length,
+    completed: rows.filter(row => ['DELIVERED', 'CLOSED', 'PAID'].includes(row.status)).length,
+  };
 }
 
 // ============================================

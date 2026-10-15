@@ -2,11 +2,20 @@ export const queryKeys = {
   requests: {
     all: ['all-requests'] as const,
     byOrg: (orgId: string) => ['org-requests', orgId] as const,
+    byRoleOrg: (orgId: string, role: 'agency' | 'client') =>
+      role === 'agency' ? (['org-requests', orgId] as const) :
+        (['org-requests', orgId, 'client'] as const),
     detail: (requestId: string) => ['request', requestId] as const,
+    byRoleDetail: (requestId: string, role: 'agency' | 'client') =>
+      role === 'agency' ? (['request', requestId] as const) :
+        (['request', requestId, 'client'] as const),
     comments: (requestId: string, orgId?: string) =>
       orgId
         ? (['request-comments', requestId, orgId] as const)
         : (['request-comments', requestId] as const),
+    commentsByRole: (requestId: string, orgId: string, role: 'agency' | 'client') =>
+      role === 'agency' ? (['request-comments', requestId, orgId] as const) :
+        (['request-comments', requestId, orgId, 'client'] as const),
     portal: ['portal-requests'] as const,
     payments: (requestId: string) => ['request-payments', requestId] as const,
     commercialPayments: (requestId: string) => ['request-commercial-payments', requestId] as const,
@@ -14,6 +23,8 @@ export const queryKeys = {
   pricing: {
     allRequests: ['all-pricing-requests'] as const,
     byOrg: ['org-pricing-requests'] as const,
+    scopedByOrg: (orgId: string, excludeDrafts: boolean, access: 'agency' | 'client') =>
+      ['org-pricing-requests', orgId, { excludeDrafts, access }] as const,
     detail: (pricingId: string) => ['pricing-request', pricingId] as const,
     payments: (pricingId: string) => ['proposal-payments', pricingId] as const,
     config: (orgId: string, requestId?: string) =>

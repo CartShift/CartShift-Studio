@@ -8,11 +8,12 @@ import type {
   ProjectReview, ProjectReviewDecision, ProjectScope, ProjectStatus, ProjectTemplate,
 } from '@/lib/types/project';
 import { buildProjectTemplate } from '@/lib/utils/project-workflow';
+import { appendProjectCollectionItem, editProjectCollectionItem } from '@/lib/domain/project-collection-patches';
+import { normalizeProjectSnapshot } from '@/lib/domain/project-document';
 
 const COLLECTION = 'portal_projects';
 
-const mapProject = (snapshot: { id: string; data: () => unknown }): ClientProject =>
-  ({ id: snapshot.id, ...(snapshot.data() as object) }) as ClientProject;
+const mapProject = normalizeProjectSnapshot;
 
 export async function listClientProjects(orgId?: string): Promise<ClientProject[]> {
   await waitForAuth();
@@ -43,6 +44,11 @@ export async function createClientProject(input: {
   const user = getFirebaseAuth().currentUser;
   if (!user || !input.orgId || !input.title.trim()) throw new Error('Missing project details');
   const initial = buildProjectTemplate(input.template, input.locale || 'en');
+  const organization = await getDoc(doc(getFirestoreDb(), 'portal_organizations', input.orgId));
+  if (!organization.exists()) throw new Error('Client organization not found');
+  const savedCurrency = organization.data()?.defaultCurrency;
+  const currency = savedCurrency === 'ILS' || savedCurrency === 'USD' || savedCurrency === 'EUR'
+    ? savedCurrency : 'ILS';
   const reference = await addDoc(collection(getFirestoreDb(), COLLECTION), {
     orgId: input.orgId,
     title: input.title.trim(),
@@ -57,12 +63,26 @@ export async function createClientProject(input: {
     changes: [],
     updates: [],
     reviewRevisions: {},
-    scope: { minHours: 0, maxHours: 0, rateCents: 0, currency: 'ILS' } satisfies ProjectScope,
+    scope: { minHours: 0, maxHours: 0, rateCents: 0, currency } satisfies ProjectScope,
     createdBy: user.uid,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
   return reference.id;
+}
+
+/** Privileged transition; the server re-evaluates project blockers and approvals. */
+export async function markClientProjectReady(id: string): Promise<void> {
+  await waitForAuth();
+  const token = await getFirebaseAuth().currentUser?.getIdToken();
+  if (!token) throw new Error('UNAUTHENTICATED');
+  const response = await fetch('/api/portal/projects/' + encodeURIComponent(id) + '/ready', {
+    method: 'POST', headers: { Authorization: 'Bearer ' + token },
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.error || 'Unable to mark project ready');
+  }
 }
 
 export async function updateClientProject(
@@ -84,17 +104,13 @@ export async function addProjectItem<K extends ProjectCollectionField>(
   await runTransaction(getFirestoreDb(), async transaction => {
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists()) throw new Error('Project not found');
-    const items = (snapshot.data()[field] || []) as ProjectCollectionItem[K][];
-    const fields: Record<string, unknown> = {
-      [field]: [...items, item],
+    const fields = appendProjectCollectionItem(snapshot.data(), field, item);
+    transaction.update(ref, {
+      ...fields,
       updatedAt: serverTimestamp(),
-    };
-    if (field === 'deliverables' || field === 'changes') {
-      const registry = (snapshot.data().reviewRevisions || {}) as Record<string, number>;
-      const reviewId = field === 'changes' ? 'change:' + item.id : item.id;
-      fields.reviewRevisions = { ...registry, [reviewId]: field === 'changes' ? 1 : (item as ProjectCollectionItem['deliverables']).revision };
-    }
-    transaction.update(ref, fields);
+      ...((snapshot.data().status === 'ready_to_launch' && field !== 'workLogs' && field !== 'updates')
+        ? { status: 'in_progress' } : {}),
+    });
   });
 }
 
@@ -106,19 +122,13 @@ export async function editProjectItem<K extends ProjectCollectionField>(
   await runTransaction(getFirestoreDb(), async transaction => {
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists()) throw new Error('Project not found');
-    const items = (snapshot.data()[field] || []) as ProjectCollectionItem[K][];
-    if (!items.some(item => item.id === itemId)) throw new Error('Item not found');
-    const updated = items.map(item => item.id === itemId ? edit(item) : item);
-    const fields: Record<string, unknown> = {
-      [field]: updated,
+    const fields = editProjectCollectionItem(snapshot.data(), field, itemId, edit);
+    transaction.update(ref, {
+      ...fields,
       updatedAt: serverTimestamp(),
-    };
-    if (field === 'deliverables') {
-      const registry = (snapshot.data().reviewRevisions || {}) as Record<string, number>;
-      const changed = updated.find(item => item.id === itemId) as ProjectCollectionItem['deliverables'];
-      fields.reviewRevisions = { ...registry, [itemId]: changed.revision };
-    }
-    transaction.update(ref, fields);
+      ...((snapshot.data().status === 'ready_to_launch' && field !== 'workLogs' && field !== 'updates')
+        ? { status: 'in_progress' } : {}),
+    });
   });
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFirestoreSubscription } from '@/lib/hooks/useFirestoreSubscription';
 
@@ -31,5 +31,37 @@ describe('useFirestoreSubscription', () => {
 
     unmount();
     expect(stops[1]).toHaveBeenCalledTimes(1);
+  });
+
+  it('never writes a late callback from an old organization into the new organization cache', () => {
+    const queryClient = new QueryClient();
+    const listeners: Array<(data: string[]) => void> = [];
+    const subscribe = vi.fn((callback: (data: string[]) => void) => {
+      listeners.push(callback);
+      return vi.fn();
+    });
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { rerender, unmount } = renderHook(
+      ({ scope }) => useFirestoreSubscription(['requests', scope], subscribe),
+      { initialProps: { scope: 'org-a' }, wrapper }
+    );
+
+    const oldListener = listeners[0];
+    expect(oldListener).toBeTypeOf('function');
+    rerender({ scope: 'org-b' });
+    expect(listeners).toHaveLength(2);
+
+    act(() => {
+      oldListener(['late org-a update']);
+      listeners[1](['org-b update']);
+    });
+
+    expect(queryClient.getQueryData(['requests', 'org-a'])).toEqual(['late org-a update']);
+    expect(queryClient.getQueryData(['requests', 'org-b'])).toEqual(['org-b update']);
+    unmount();
+    queryClient.clear();
   });
 });

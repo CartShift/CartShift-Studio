@@ -9,11 +9,16 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
+import { USER_ROLE } from '@/lib/types/portal';
+import ProjectOperationsPanel from '@/components/portal/projects/ProjectOperationsPanel';
 import { getPortalPath } from '@/lib/utils/portal-paths';
-import { getRequestsByOrg, updateRequest } from '@/lib/services/portal-requests';
+import { getRequestsByOrg, getRequestsByProject, updateRequest } from '@/lib/services/portal-requests';
+import { getClientVisibleRequests } from '@/lib/services/client-requests-api';
 import {
   addProjectItem, editProjectItem, getClientProject, listProjectReviews,
   observeClientProject, submitProjectReview, submitChangeOrderDecision, updateClientProject,
+  markClientProjectReady,
 } from '@/lib/services/portal-projects';
 import {
   PROJECT_STATUS_LABELS,
@@ -222,7 +227,11 @@ export default function ProjectDetailClient({ id }: { id: string }) {
   const t = useTranslations('portal.projects');
   const locale = useLocale();
   const cache = useQueryClient();
-  const { isAgency, loading: authLoading, user } = usePortalAuth();
+  const { isAgency, loading: authLoading, user, userData } = usePortalAuth();
+  const canEditProjects = isAgency && hasPermission(
+    userData?.agencyRole ?? USER_ROLE.OWNER,
+    PERMISSIONS.MANAGE_PROJECTS
+  );
   const key = useMemo(() => ['client-project', id], [id]);
   const { data: project, isLoading, error } = useQuery({
     queryKey: key, queryFn: () => getClientProject(id), enabled: !authLoading && Boolean(user),
@@ -234,12 +243,21 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     enabled: Boolean(project),
     staleTime: 10_000,
   });
-  const { data: requests = [] } = useQuery({
-    queryKey: ['client-project-requests', project?.orgId],
-    queryFn: () => getRequestsByOrg(project!.orgId),
+  const { data: linkedRequests = [] } = useQuery({
+    queryKey: ['client-project-requests', project?.orgId, id],
+    queryFn: () => isAgency ? getRequestsByProject(project!.orgId, id) :
+      getClientVisibleRequests(project!.orgId, id),
     enabled: Boolean(project),
   });
-  const linkedRequests = requests.filter(req => req.projectId === id);
+  const { data: requests = [] } = useQuery({
+    queryKey: ['client-project-unlinked-requests', project?.orgId],
+    queryFn: () => getRequestsByOrg(project!.orgId),
+    enabled: Boolean(project && isAgency),
+  });
+  const commercialRequests = linkedRequests.filter(request =>
+    request.isBillable && request.requestRole !== 'bundle_item' &&
+    ['ACCEPTED', 'PAID', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'].includes(request.status));
+  const changeOrderSourceId = project?.originProposalId || commercialRequests[0]?.id;
   const [selectedRequest, setSelectedRequest] = useState('');
   const [summary, setSummary] = useState<string | null>(null);
   const [nextStep, setNextStep] = useState<string | null>(null);
@@ -295,13 +313,14 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       <p className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">CartShift / {t('title')}</p>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold sm:text-3xl">{project.title}</h1>
-        {isAgency ? <select aria-label={t('status')} value={project.status} disabled={saving}
+        {canEditProjects ? <select aria-label={t('status')} value={project.status} disabled={saving}
           onChange={e => {
             const next = e.target.value as ProjectStatus;
             if (next === 'ready_to_launch' && !health?.readyForLaunch) {
               toast.error(t('launchNotReady')); return;
             }
-            void execute(() => updateClientProject(id, { status: next }));
+            void execute(() => next === 'ready_to_launch' ? markClientProjectReady(id) :
+              updateClientProject(id, { status: next }));
           }}
           className="portal-focus-ring min-h-11 rounded-xl border border-surface-200 bg-white px-3 text-sm font-semibold dark:border-surface-700 dark:bg-surface-900">
           {(Object.keys(PROJECT_STATUS_LABELS) as ProjectStatus[]).map(status =>
@@ -319,7 +338,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       <div className="mt-5 rounded-xl border-s-4 border-primary-500 bg-primary-50/50 p-4 dark:bg-primary-900/10">
         <p className="text-xs font-bold text-primary-700 dark:text-primary-300">{t('nextStep')}</p>
         <p className="mt-1 whitespace-pre-wrap text-sm">{project.nextStep || t('nextStepEmpty')}</p>
-        {isAgency && <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+        {canEditProjects && <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input maxLength={400} aria-label={t('nextStep')} value={nextStep ?? project.nextStep}
             onChange={e => setNextStep(e.target.value)} className="portal-focus-ring min-h-10 min-w-0 flex-1 rounded-xl border border-surface-200 bg-white px-3 text-sm dark:border-surface-700 dark:bg-surface-900"/>
           <button type="button" disabled={saving} onClick={() => void execute(async () => {
@@ -329,7 +348,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
           </button>
         </div>}
       </div>
-      {isAgency && <details className="mt-4">
+      {canEditProjects && <details className="mt-4">
         <summary className="cursor-pointer text-sm font-semibold text-primary-600">{t('editOverview')}</summary>
         <textarea aria-label={t('summary')} value={summary ?? project.summary} onChange={e => setSummary(e.target.value)}
           className="portal-focus-ring mt-3 min-h-24 w-full rounded-xl border border-surface-200 bg-transparent p-3 text-sm dark:border-surface-700"/>
@@ -339,13 +358,17 @@ export default function ProjectDetailClient({ id }: { id: string }) {
       </details>}
     </header>
 
+    {isAgency && <ProjectOperationsPanel
+      project={project} requests={linkedRequests} locale={locale} canEdit={canEditProjects}
+    />}
+
     <div className="grid gap-5 lg:grid-cols-2">
       <Panel title={t('milestones')} icon={ClipboardList}>
         <div className="space-y-3">
           {project.stages.map(stage => <div key={stage.id} className="flex items-start gap-3">
             {stage.status === 'completed' ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-600" size={19}/> : <Circle className="mt-0.5 shrink-0 text-surface-400" size={19}/>}
             <span className="min-w-0 flex-1 text-sm font-medium">{stage.title}</span>
-            {isAgency && <select aria-label={stage.title} value={stage.status} disabled={saving}
+            {canEditProjects && <select aria-label={stage.title} value={stage.status} disabled={saving}
               onChange={e => void edit('stages', stage.id, previous => ({
                 ...previous, status: e.target.value as typeof stage.status,
               }))}
@@ -356,7 +379,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             </select>}
           </div>)}
         </div>
-        {isAgency && <AddItem label={t('add')} placeholder={t('newMilestone')} onAdd={title =>
+        {canEditProjects && <AddItem label={t('add')} placeholder={t('newMilestone')} onAdd={title =>
           append('stages', { id: makeId(), title, status: 'pending' })}/>}
       </Panel>
       <Panel title={t('blockers')} icon={AlertTriangle}>
@@ -370,7 +393,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
                 <p className="text-sm font-semibold">{blocker.title}</p>
                 <p className="mt-1 text-xs text-surface-500">{t(blocker.owner)}</p>
                 {blocker.nextAction && <p className="mt-2 text-sm">{blocker.nextAction}</p>}
-                {isAgency && <input aria-label={t('nextAction')} defaultValue={blocker.nextAction}
+                {canEditProjects && <input aria-label={t('nextAction')} defaultValue={blocker.nextAction}
                   placeholder={t('nextAction')} maxLength={250}
                   onBlur={event => {
                     const nextAction = event.currentTarget.value.trim();
@@ -378,7 +401,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
                   }}
                   className="portal-focus-ring mt-2 min-h-9 w-full rounded-lg border border-surface-200 bg-transparent px-2 text-xs dark:border-surface-700" />}
               </div>
-              {isAgency && <button type="button" disabled={saving}
+              {canEditProjects && <button type="button" disabled={saving}
                 onClick={() => void edit('blockers', blocker.id, old => ({ ...old, resolved: !old.resolved }))}
                 className="portal-focus-ring rounded-lg border border-surface-200 px-2 py-1 text-xs dark:border-surface-700">
                 {blocker.resolved ? t('reopen') : t('resolve')}
@@ -386,7 +409,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             </div>
           </div>)}
         </div>
-        {isAgency && <>
+        {canEditProjects && <>
           <div className="mt-4 flex items-center gap-2">
             <label className="text-xs font-semibold" htmlFor="blockerOwner">{t('responsibility')}</label>
             <select id="blockerOwner" value={blockerOwner} onChange={e => setBlockerOwner(e.target.value as typeof blockerOwner)}
@@ -406,14 +429,14 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.deliverables.map(deliverable => <div key={deliverable.id}>
           <ReviewRow project={project} deliverable={deliverable} reviews={reviews} canReview={!isAgency}
             onReviewed={refreshReviews}/>
-          {isAgency && <button type="button" disabled={saving}
+          {canEditProjects && <button type="button" disabled={saving}
             onClick={() => void edit('deliverables', deliverable.id, old => ({
               ...old, revision: old.revision + 1,
             }))} className="portal-focus-ring my-2 rounded-lg border border-surface-200 px-3 py-1.5 text-xs font-semibold dark:border-surface-700">
             {t('newRevision')}
           </button>}
         </div>)}
-        {isAgency && <>
+        {canEditProjects && <>
           <input aria-label={t('previewUrl')} value={reviewUrl} onChange={e => setReviewUrl(e.target.value)}
             placeholder={t('previewUrl')} className="portal-focus-ring mt-4 min-h-10 w-full rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700"/>
           <AddItem label={t('add')} placeholder={t('newDeliverable')} onAdd={async title => {
@@ -435,10 +458,10 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.inputs.map(input => <div key={input.id} className="mb-3 flex items-center gap-3 text-sm">
           {input.done ? <CheckCircle2 size={18} className="shrink-0 text-emerald-600"/> : <Circle size={18} className="shrink-0 text-surface-400"/>}
           <span className="flex-1">{input.title}</span>
-          {isAgency && <button type="button" disabled={saving} onClick={() => void edit('inputs', input.id, old => ({ ...old, done: !old.done }))}
+          {canEditProjects && <button type="button" disabled={saving} onClick={() => void edit('inputs', input.id, old => ({ ...old, done: !old.done }))}
             className="portal-focus-ring rounded-lg border border-surface-200 px-2 py-1 text-xs dark:border-surface-700">{input.done ? t('reopen') : t('markReceived')}</button>}
         </div>)}
-        {isAgency && <AddItem label={t('add')} placeholder={t('newInput')} onAdd={title =>
+        {canEditProjects && <AddItem label={t('add')} placeholder={t('newInput')} onAdd={title =>
           append('inputs', { id: makeId(), title, done: false, required: true })}/>}
       </Panel>
 
@@ -452,17 +475,19 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         {project.launchChecks.map(item => <div key={item.id} className="mb-3 flex items-center gap-3 text-sm">
           {item.done ? <CheckCircle2 size={18} className="shrink-0 text-emerald-600"/> : <Circle size={18} className="shrink-0 text-surface-400"/>}
           <span className="min-w-0 flex-1">{item.title}</span>
-          {isAgency && <button type="button" disabled={saving} onClick={() => void edit('launchChecks', item.id, old => ({ ...old, done: !old.done }))}
+          {canEditProjects && <button type="button" disabled={saving} onClick={() => void edit('launchChecks', item.id, old => ({ ...old, done: !old.done }))}
             className="portal-focus-ring rounded-lg border border-surface-200 px-2 py-1 text-xs dark:border-surface-700">{item.done ? t('reopen') : t('markPassed')}</button>}
         </div>)}
-        {isAgency && <AddItem label={t('add')} placeholder={t('newLaunchCheck')} onAdd={title =>
+        {canEditProjects && <AddItem label={t('add')} placeholder={t('newLaunchCheck')} onAdd={title =>
           append('launchChecks', { id: makeId(), title, done: false, required: true })}/>}
       </Panel>
 
       <Panel title={t('scopeAndTime')} icon={Clock}>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
-            <p className="text-xs text-surface-500">{t('approvedBudget')}</p>
+            <p className="text-xs text-surface-500">
+              {locale === 'he' ? 'תחזית עלות עבודה (לא סכום החוזה)' : 'Estimated work cost (not contract price)'}
+            </p>
             <p className="mt-1 font-bold">{money(budget.minCents)} – {money(budget.maxCents)}</p>
           </div>
           <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
@@ -470,9 +495,14 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <p className="mt-1 font-bold">{hours.toLocaleString(locale)}h / {project.scope.maxHours}h</p>
           </div>
         </div>
-        {isAgency && <ScopeEditor key={project.id} project={project}
+        {canEditProjects && <ScopeEditor key={project.id} project={project}
           save={scope => execute(() => updateClientProject(id, { scope }))}/>}
-        {isAgency && <form onSubmit={e => {
+        <p className="mt-3 text-xs text-surface-500">
+          {locale === 'he'
+            ? 'הצעות המחיר החתומות הן המקור המחייב לתכולה ולתשלום. עדכון תחזית השעות אינו משנה את ההסכם.'
+            : 'Signed proposals remain authoritative for scope and billing. Editing estimates does not change an agreement.'}
+        </p>
+        {canEditProjects && <form onSubmit={e => {
           e.preventDefault();
           const value = Number(logHours);
           if (!Number.isFinite(value) || value <= 0 || value > 24) { toast.error(t('invalidHours')); return; }
@@ -503,10 +533,44 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <span className="text-xs text-surface-500">{change.estimatedHours}h · {t(change.status)}</span>
           </div>
           <p className="mt-2 text-xs text-surface-500">{change.description}</p>
+          {change.status === 'proposed' && (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+              {locale === 'he'
+                ? 'אישור היקף השינוי אינו אישור כספי. השינוי יאושר לביצוע רק לאחר חתימה על הצעת מחיר נפרדת.'
+                : 'Scope review is not payment authorization. The change is approved only when a separate proposal is signed.'}
+            </p>
+          )}
+          {change.status === 'approved' && change.linkedProposalId && (
+            <Link href={getPortalPath('/pricing/' + change.linkedProposalId + '/')}
+              className="portal-focus-ring mt-2 block text-xs font-semibold text-primary-600 hover:underline">
+              {locale === 'he' ? 'הצעת מחיר חתומה לשינוי' : 'Signed change-order proposal'}
+            </Link>
+          )}
           <ChangeOrderDecision project={project} changeId={change.id} reviews={reviews}
-            canReview={!isAgency} onReviewed={refreshReviews} />
+            canReview={!isAgency && change.status === 'proposed'} onReviewed={refreshReviews} />
+          {canEditProjects && change.status === 'proposed' && (
+            <button type="button" disabled={saving}
+              onClick={() => void edit('changes', change.id, old => ({
+                ...old, status: 'declined',
+              }))}
+              className="portal-focus-ring mt-2 rounded-lg border border-surface-200 px-3 py-1.5 text-xs text-surface-600 dark:border-surface-700 dark:text-surface-300">
+              {locale === 'he' ? 'ביטול בקשת שינוי' : 'Withdraw change request'}
+            </button>
+          )}
+          {isAgency && change.status === 'proposed' && changeOrderSourceId &&
+            reviews.some(review => review.deliverableId === 'change:' + change.id &&
+              review.revision === 1 && review.decision === 'approved') &&
+            !reviews.some(review => review.deliverableId === 'change:' + change.id &&
+              review.revision === 1 && review.decision === 'changes_requested') && (
+              <Link href={getPortalPath('/pricing/new/?projectId=' + encodeURIComponent(id) +
+                '&relatedRequestId=' + encodeURIComponent(changeOrderSourceId) +
+                '&changeId=' + encodeURIComponent(change.id))}
+                className="portal-focus-ring mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
+                <Plus size={14} />{locale === 'he' ? 'הכנת הצעת מחיר לשינוי' : 'Prepare change-order proposal'}
+              </Link>
+            )}
         </div>)}
-        {isAgency && <>
+        {canEditProjects && <>
           <div className="mt-4 flex gap-2">
             <input aria-label={t('changeHours')} type="number" min="0" step="0.25" value={changeHours} onChange={e => setChangeHours(e.target.value)}
               className="portal-focus-ring min-h-10 w-24 rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700"/>
@@ -524,18 +588,67 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         </>}
       </Panel>
 
+      {commercialRequests.length > 0 && (
+        <Panel title={locale === 'he' ? 'הסכמים ותקציב מאושר' : 'Agreements and approved budget'} icon={FileCheck2}>
+          <p className="mb-3 text-xs text-surface-500">
+            {locale === 'he'
+              ? 'הסכומים נגזרים מהצעות המחיר במערכת, ואינם אישור עצמאי להעברה בנקאית.'
+              : 'Amounts come from canonical proposals, not independently verified bank records.'}
+          </p>
+          {commercialRequests.map(offer => {
+            const currency = offer.currency || 'ILS';
+            const fmt = (cents: number) => new Intl.NumberFormat(locale === 'he' ? 'he-IL' : 'en-US',
+              { style: 'currency', currency }).format(cents / 100);
+            return (
+              <div key={offer.id} className="mb-3 rounded-xl border border-surface-200 p-3 dark:border-surface-700">
+                <Link href={getPortalPath('/pricing/' + offer.id + '/')}
+                  className="portal-focus-ring text-sm font-semibold text-primary-600 hover:underline">
+                  {offer.title}
+                </Link>
+                <div className="mt-2 grid grid-cols-2 gap-3 text-xs sm:grid-cols-3">
+                  <div><span className="text-surface-500">{locale === 'he' ? 'היקף מאושר' : 'Approved'}</span>
+                    <p className="font-bold">{fmt(offer.totalAmount || 0)}</p></div>
+                  <div><span className="text-surface-500">{locale === 'he' ? 'תשלומים שנרשמו' : 'Recorded paid'}</span>
+                    <p className="font-bold">{fmt(offer.amountPaid || 0)}</p></div>
+                  <div><span className="text-surface-500">{locale === 'he' ? 'יתרה רשומה' : 'Recorded balance'}</span>
+                    <p className="font-bold">{fmt(offer.balanceDue ?? offer.totalAmount ?? 0)}</p></div>
+                </div>
+              </div>
+            );
+          })}
+        </Panel>
+      )}
       <Panel title={t('linkedRequests')} icon={ClipboardList}>
+        {canEditProjects && (
+          <Link href={getPortalPath('/requests/new/?projectId=' + encodeURIComponent(id) +
+            '&clientId=' + encodeURIComponent(project.orgId))}
+            className="portal-focus-ring mb-4 inline-flex min-h-10 items-center gap-2 rounded-lg border border-primary-200 px-3 text-xs font-semibold text-primary-600 dark:border-primary-800">
+            <Plus size={15}/>{locale === 'he' ? 'בקשה חדשה בפרויקט' : 'New project request'}
+          </Link>
+        )}
+        {isAgency && project.linkedProposalIds && project.linkedProposalIds.length > 0 && (
+          <div className="mb-4 space-y-2 rounded-xl border border-surface-200 p-3 dark:border-surface-700">
+            <p className="text-xs font-semibold text-surface-500">{locale === 'he' ? 'הסכמים מסחריים' : 'Commercial agreements'}</p>
+            {project.linkedProposalIds.map(proposalId => (
+              <Link key={proposalId} href={getPortalPath('/pricing/' + proposalId + '/')}
+                className="portal-focus-ring block text-sm text-primary-600 hover:underline">
+                {locale === 'he' ? 'הצעת מחיר' : 'Proposal'} · {proposalId}
+              </Link>
+            ))}
+          </div>
+        )}
         {linkedRequests.length === 0 && <p className="text-sm text-surface-500">{t('noLinkedRequests')}</p>}
         {linkedRequests.map(request => <div key={request.id} className="mb-2 flex items-center justify-between gap-3 rounded-xl bg-surface-50 p-3 text-sm dark:bg-surface-800">
-          <span className="min-w-0 flex-1 truncate font-semibold">{request.title}</span>
+          <Link href={getPortalPath('/requests/' + request.id + '/')}
+            className="portal-focus-ring min-w-0 flex-1 truncate font-semibold text-primary-700 hover:underline dark:text-primary-300">{request.title}</Link>
           <span className="text-xs text-surface-500">{request.status.replaceAll('_', ' ')}</span>
-          {isAgency && <button aria-label={t('unlink')} type="button" disabled={saving}
+          {canEditProjects && <button aria-label={t('unlink')} type="button" disabled={saving}
             onClick={() => void execute(async () => {
               await updateRequest(request.id, { projectId: null });
               await cache.invalidateQueries({ queryKey: ['client-project-requests'] });
             })} className="portal-focus-ring rounded-lg px-2 py-1 text-xs text-primary-600">{t('unlink')}</button>}
         </div>)}
-        {isAgency && <div className="mt-4 flex gap-2">
+        {canEditProjects && <div className="mt-4 flex gap-2">
           <select aria-label={t('attachRequest')} value={selectedRequest} onChange={e => setSelectedRequest(e.target.value)}
             className="portal-focus-ring min-h-10 min-w-0 flex-1 rounded-xl border border-surface-200 bg-transparent px-3 text-sm dark:border-surface-700">
             <option value="">{t('attachRequest')}</option>
@@ -554,11 +667,11 @@ export default function ProjectDetailClient({ id }: { id: string }) {
 
       <Panel title={t('clientUpdates')} icon={FileCheck2}>
         <p className="mb-3 text-sm text-surface-500">{t('updatesHelp')}</p>
-        {isAgency && <div className="mb-3 flex justify-end">
+        {canEditProjects && <div className="mb-3 flex justify-end">
           <button type="button" onClick={() => setUpdateText(buildProjectUpdateDraft(project, locale))}
             className="portal-focus-ring rounded-lg border border-primary-300 px-3 py-2 text-xs font-semibold text-primary-700 dark:border-primary-700 dark:text-primary-300">{t('prepareUpdateDraft')}</button>
         </div>}
-        {isAgency && <form onSubmit={e => {
+        {canEditProjects && <form onSubmit={e => {
           e.preventDefault();
           if (!updateText.trim()) return;
           void append('updates', { id: makeId(), text: updateText.trim(), createdAt: Date.now(), author: user?.displayName || 'CartShift Studio' })

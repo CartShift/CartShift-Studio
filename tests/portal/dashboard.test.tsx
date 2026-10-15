@@ -101,7 +101,7 @@ describe('Dashboard Page', () => {
       userData: mockUserData(),
     });
 
-    render(<DashboardClient messages={{}} locale="en" />);
+    render(<DashboardClient />);
 
     // Check for skeleton elements which usually have animate-pulse class
     // Since DashboardClient renders DashboardSkeleton which contains elements with animate-pulse
@@ -119,7 +119,7 @@ describe('Dashboard Page', () => {
       error: null,
     });
 
-    render(<DashboardClient messages={{}} locale="en" />);
+    render(<DashboardClient />);
 
     await waitFor(() => {
       // Multiple elements might contain "dashboard" (keys or text), so checking if any exist is enough
@@ -139,11 +139,11 @@ describe('Dashboard Page', () => {
       error: 'access_denied',
     });
 
-    render(<DashboardClient messages={{}} locale="en" />);
+    render(<DashboardClient />);
 
     await waitFor(() => {
       // access.restrictedMessage
-      expect(screen.getByText('portal.access.restrictedMessage')).toBeInTheDocument();
+      expect(screen.getByText(/necessary permissions to access this specific organization workspace/)).toBeInTheDocument();
     });
   });
 
@@ -157,7 +157,7 @@ describe('Dashboard Page', () => {
       error: null,
     });
 
-    render(<DashboardClient messages={{}} locale="en" />);
+    render(<DashboardClient />);
 
     await waitFor(() => {
       expect(screen.getByTestId('pinned-requests')).toBeInTheDocument();

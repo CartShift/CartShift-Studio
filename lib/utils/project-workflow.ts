@@ -74,7 +74,7 @@ export function buildProjectTemplate(template: ProjectTemplate, locale: 'en' | '
 }
 
 export function getProjectHealth(
-  project: Pick<ClientProject, 'blockers' | 'deliverables' | 'launchChecks' | 'inputs' | 'stages'>,
+  project: Pick<ClientProject, 'blockers' | 'deliverables' | 'launchChecks' | 'inputs' | 'stages' | 'changes'>,
   reviews: ProjectReview[]
 ) {
   const openBlockers = project.blockers.filter(blocker => !blocker.resolved).length;
@@ -86,11 +86,18 @@ export function getProjectHealth(
     );
     return matches.length === 0 || matches.some(review => review.decision !== 'approved');
   }).length;
+  // A review confirms the client's scope preference, not payment authorization.
+  // A change is commercially cleared only when an accepted, linked proposal
+  // transitions it to approved. The server separately verifies that proposal.
+  const pendingChanges = project.changes.filter(change =>
+    change.status === 'proposed' ||
+    (change.status === 'approved' && !change.linkedProposalId)
+  ).length;
   const completedStages = project.stages.filter(s => s.status === 'completed').length;
   const progress = project.stages.length ? Math.round(completedStages / project.stages.length * 100) : 0;
   return {
-    openBlockers, missingInputs, missingChecks, pendingReviews, progress,
-    readyForLaunch: openBlockers === 0 && missingInputs === 0 && missingChecks === 0 && pendingReviews === 0,
+    openBlockers, missingInputs, missingChecks, pendingReviews, pendingChanges, progress,
+    readyForLaunch: openBlockers === 0 && missingInputs === 0 && missingChecks === 0 && pendingReviews === 0 && pendingChanges === 0,
   };
 }
 

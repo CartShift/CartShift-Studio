@@ -17,6 +17,7 @@ import {
 import { getFirestoreDb, waitForAuth, getFirebaseAuth } from '@/lib/firebase';
 import { deepClean } from '@/lib/utils';
 import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
+import { validateNewQuoteCurrency } from '@/lib/domain/client-currency';
 import {
   PricingRequest,
   CreatePricingRequestData,
@@ -80,6 +81,7 @@ export async function createPricingRequest(
   const requestRole = linkedRequestIds.length > 1 ? 'bundle' : 'standalone';
   const requestData = {
     orgId,
+    ...(data.projectId ? { projectId: data.projectId } : {}),
     title: data.title.trim(),
     description: data.description?.trim() || null,
     lineItems,
@@ -98,6 +100,7 @@ export async function createPricingRequest(
     terms: data.terms?.trim() || null,
     proposalContent: data.proposalContent ? deepClean(data.proposalContent) : null,
     relatedRequestId: data.relatedRequestId ?? null,
+    ...(data.projectChangeId ? { projectChangeId: data.projectChangeId } : {}),
     publicToken: generatePublicToken(),
     // A draft is private until the agency publishes and queues its first version.
     publicAccessEnabled: data.proposalContent ? false : (data.publicAccessEnabled ?? true),
@@ -124,6 +127,9 @@ export async function createPricingRequest(
 
   await waitForAuth();
   const db = getFirestoreDb();
+  const orgSnapshot = await getDoc(doc(db, 'portal_organizations', orgId));
+  if (!orgSnapshot.exists()) throw new Error('Client organization not found');
+  validateNewQuoteCurrency(orgSnapshot.data().defaultCurrency, data.currency);
   // Reusing a request for a quote is only safe before any commercial commitment.
   // Never overwrite an accepted, active or paid request with a new proposal.
   const linkedSnapshots = await Promise.all(linkedRequestIds.map(id =>
@@ -136,11 +142,42 @@ export async function createPricingRequest(
       Boolean(existing.lockedAt || existing.parentRequestId);
   });
   if (invalidLinked) throw new Error('Choose only unquoted requests from this client');
+  const linkedProjects = new Set(linkedSnapshots.map(snapshot =>
+    (snapshot.data() as PricingRequest | undefined)?.projectId).filter(
+    (id): id is string => Boolean(id)
+  ));
+  if (linkedProjects.size > 1 ||
+      (data.projectId && linkedProjects.size > 0 && !linkedProjects.has(data.projectId))) {
+    throw new Error('Requests from different projects cannot share one proposal');
+  }
+  const resolvedProjectId = data.projectId || [...linkedProjects][0];
+  if (resolvedProjectId) {
+    const targetProject = await getDoc(doc(db, 'portal_projects', resolvedProjectId));
+    if (!targetProject.exists() || targetProject.data().orgId !== orgId) {
+      throw new Error('Choose a project belonging to this client');
+    }
+    requestData.projectId = resolvedProjectId;
+  }
+  if (data.projectChangeId) {
+    if (!resolvedProjectId || !data.relatedRequestId ||
+        !/^[A-Za-z0-9_-]{1,150}$/.test(data.projectChangeId)) {
+      throw new Error('A change-order proposal must reference an existing project and agreement');
+    }
+    const projectSnapshot = await getDoc(doc(db, 'portal_projects', resolvedProjectId));
+    const changes = (projectSnapshot.data()?.changes || []) as Array<{
+      id: string; status: string; linkedProposalId?: string;
+    }>;
+    const change = changes.find(item => item.id === data.projectChangeId);
+    if (!change || change.status !== 'proposed' || change.linkedProposalId) {
+      throw new Error('The change order must be open and not already commercially approved');
+    }
+  }
   if (data.relatedRequestId) {
     if (linkedRequestIds.length > 0) throw new Error('Change orders cannot reprice existing requests');
     const sourceSnapshot = await getDoc(doc(db, PRICING_REQUESTS_COLLECTION, data.relatedRequestId));
     const source = sourceSnapshot.data() as PricingRequest | undefined;
     if (!source || source.orgId !== orgId ||
+        (resolvedProjectId && source.projectId && source.projectId !== resolvedProjectId) ||
         !['ACCEPTED', 'PAID', 'QUEUED', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED'].includes(source.status)) {
       throw new Error('The source work is not eligible for a change order');
     }
@@ -180,6 +217,7 @@ export async function createPricingRequest(
       await updateDoc(requestDocRef, {
         requestRole: 'bundle_item',
         parentRequestId: docRef.id,
+        ...(resolvedProjectId ? { projectId: resolvedProjectId } : {}),
         updatedAt: serverTimestamp(),
       });
     }

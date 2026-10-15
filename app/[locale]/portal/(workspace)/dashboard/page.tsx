@@ -1,4 +1,4 @@
-import { setRequestLocale, getMessages, getTranslations } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import DashboardClient from './DashboardClient';
 import { PortalQueryHydration } from '@/components/providers/PortalQueryHydration';
 import { prefetchPortalPageData } from '@/lib/server/prefetch-portal-queries';
@@ -20,14 +20,11 @@ export async function generateMetadata({
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const [messages, dehydratedState] = await Promise.all([
-    getMessages(),
-    prefetchPortalPageData('dashboard'),
-  ]);
+  const dehydratedState = await prefetchPortalPageData('dashboard');
 
   return (
     <PortalQueryHydration state={dehydratedState}>
-      <DashboardClient messages={messages} locale={locale} />
+      <DashboardClient />
     </PortalQueryHydration>
   );
 }

@@ -22,6 +22,8 @@ import {
 } from '@/components/portal/ui/PortalFormField';
 import { getRequestsByOrg, getRequest } from '@/lib/services/portal-requests';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { useClientProjects } from '@/lib/hooks/useClientProjects';
+import { useLocale } from 'next-intl';
 import { useRequestCommercialMutations } from '@/lib/hooks/useRequestCommercial';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { useOrg } from '@/lib/context/OrgContext';
@@ -83,7 +85,12 @@ export default function CreatePricingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const relatedRequestId = searchParams.get('relatedRequestId');
+  const projectChangeId = searchParams.get('changeId');
+  const locale = useLocale();
+  const [selectedProjectId, setSelectedProjectId] = useState(searchParams.get('projectId') || '');
+  const { data: clientProjects = [] } = useClientProjects(typeof orgId === 'string' ? orgId : undefined);
   const initializedRelatedId = useRef<string | null>(null);
+  const clientCurrencyId = useRef<string | null>(null);
   const { userData } = usePortalAuth();
   const { createPricingRequest, sendPricingRequest } = useRequestCommercialMutations();
   const agencyTeam = useAgencyTeam();
@@ -137,6 +144,14 @@ export default function CreatePricingForm() {
 
     fetchRequests();
   }, [orgId]);
+
+  // Reuse the project of the existing request(s) when creating a proposal.
+  useEffect(() => {
+    if (selectedProjectId || !selectedRequestIds.length) return;
+    const ids = new Set(availableRequests.filter(request => selectedRequestIds.includes(request.id))
+      .map(request => request.projectId).filter(Boolean));
+    if (ids.size === 1) setSelectedProjectId([...ids][0]!);
+  }, [selectedProjectId, selectedRequestIds, availableRequests]);
 
   // Pre-select requests from URL params
   useEffect(() => {
@@ -217,13 +232,24 @@ export default function CreatePricingForm() {
     });
   }, [relatedRequestId, orgId, setValue]);
 
+  const selectedClient = fullOrganizations.find(organization => organization.id === orgId);
+  const configuredClientCurrency = selectedClient?.defaultCurrency;
+
+  // New quotes follow the currency configured on their client account.
+  // Initialize once per client, never convert existing drafts or historical quotes.
+  useEffect(() => {
+    if (!orgId || !configuredClientCurrency) return;
+    if (clientCurrencyId.current === orgId) return;
+    clientCurrencyId.current = orgId;
+    setValue('currency', configuredClientCurrency, { shouldValidate: true });
+  }, [orgId, configuredClientCurrency, setValue]);
+
   // Prefill known client details without overwriting edits or drafts.
   useEffect(() => {
-    const client = fullOrganizations.find(organization => organization.id === orgId);
-    if (!client) return;
-    if (!watch('clientName')) setValue('clientName', client.name);
-    if (!watch('clientEmail') && client.billingEmail) setValue('clientEmail', client.billingEmail);
-  }, [orgId, fullOrganizations, setValue, watch]);
+    if (!selectedClient) return;
+    if (!watch('clientName')) setValue('clientName', selectedClient.name);
+    if (!watch('clientEmail') && selectedClient.billingEmail) setValue('clientEmail', selectedClient.billingEmail);
+  }, [selectedClient, setValue, watch]);
 
   // Load calculator data from session storage
   useEffect(() => {
@@ -400,6 +426,7 @@ export default function CreatePricingForm() {
         userId: userData.id,
         userName: userData.name || t('common.unknown'),
         data: {
+          projectId: selectedProjectId || undefined,
           title: data.title,
           description: data.description,
           lineItems,
@@ -416,6 +443,7 @@ export default function CreatePricingForm() {
           proposalType: 'work_proposal',
           proposalContent: data.proposalContent,
           relatedRequestId: relatedRequestId || undefined,
+          projectChangeId: projectChangeId || undefined,
           terms: data.terms,
           publicAccessEnabled: true,
           taxRate: data.includeTax ? TAX_RATE : 0,
@@ -501,6 +529,16 @@ export default function CreatePricingForm() {
                 {...register('title')}
               />
 
+              {clientProjects.length > 0 && (
+                <PortalFormField label={locale === 'he' ? 'פרויקט משויך' : 'Related project'}>
+                  <Select value={selectedProjectId} onChange={event => setSelectedProjectId(event.target.value)}
+                    options={[
+                      { value: '', label: locale === 'he' ? 'יצירת פרויקט לאחר אישור ההצעה' : 'Create project on acceptance' },
+                      ...clientProjects.filter(project => project.status !== 'archived').map(project =>
+                        ({ value: project.id, label: project.title })),
+                    ]} />
+                </PortalFormField>
+              )}
               <PortalFormField label={t('pricing.form.descriptionLabel')}>
                 <Textarea
                   {...register('description')}
@@ -620,9 +658,16 @@ export default function CreatePricingForm() {
             <PortalFormSection title={t('pricing.form.settings' as never) || 'Settings'}>
               <Select
                 label={t('pricing.form.currency')}
-                options={currencyOptions}
+                options={configuredClientCurrency
+                  ? currencyOptions.filter(option => option.value === configuredClientCurrency)
+                  : currencyOptions}
                 {...register('currency')}
               />
+              {configuredClientCurrency && <p className="text-xs text-surface-500">
+                {locale === 'he'
+                  ? 'מטבע הצעת המחיר נקבע בפרטי הלקוח. שינוי מטבע מתבצע בפרופיל הלקוח, ולא בהצעה.'
+                  : 'Quote currency follows the client profile. Update the client to change it.'}
+              </p>}
 
               <Input
                 label={t('pricing.form.validUntil')}

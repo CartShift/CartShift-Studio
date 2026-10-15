@@ -32,20 +32,20 @@ export const EXTENDED_TOOL_DEFS = [
     'work:read', org, ['org_id']),
   definition('get_project', 'Read one project including milestones, review/checklist state, time logs and all client-visible notes.',
     'work:read', project, ['org_id', 'project_id']),
-  definition('create_project', 'Create a client-visible project from a standard template. Use only verified client-safe information; deduplicates titles.',
+  definition('create_project', 'Create a client-visible project from a standard template. For an Israeli / Hebrew-speaking client, use locale he and a natural Hebrew title and summary. Use only verified client-safe information; deduplicates titles.',
     'work:write', { ...org, title: { type: 'string' }, template: { type: 'string', enum: templates.options },
       locale: { type: 'string', enum: ['en', 'he'] }, summary: { type: 'string' } }, ['org_id', 'title', 'template']),
-  definition('update_project', 'Update an existing CLIENT-VISIBLE project title, summary, next step, or working status. Does not mark launch-ready or completed.',
+  definition('update_project', 'Update an existing CLIENT-VISIBLE project title, summary, next step, or working status. Prefer Hebrew titles and client-visible text for Israeli / Hebrew-speaking clients. Does not mark launch-ready or completed.',
     'work:write', { ...project, patch: { type: 'object', properties: {
       title: { type: 'string' }, summary: { type: 'string' }, nextStep: { type: 'string' },
       status: { type: 'string', enum: projectStatuses.options },
     }, additionalProperties: false } }, ['org_id', 'project_id', 'patch']),
-  definition('add_project_blocker', 'Add a client-visible blocker to a project. Does not contact the vendor or client.',
+  definition('add_project_blocker', 'Add a client-visible blocker to a project. Use clear Hebrew titles and next actions for Israeli / Hebrew-speaking clients. Does not contact the vendor or client.',
     'work:write', { ...project, title: { type: 'string' }, owner: { type: 'string', enum: blockerOwners.options },
       next_action: { type: 'string' } }, ['org_id', 'project_id', 'title', 'owner', 'next_action']),
   definition('resolve_project_blocker', 'Mark a specific verified project blocker resolved. Does not claim an external system was fixed.',
     'work:write', { ...project, blocker_id: identifier }, ['org_id', 'project_id', 'blocker_id']),
-  definition('add_project_update', 'Publish a project update INSIDE the client-visible CartShift project. Does not send an email.',
+  definition('add_project_update', 'Publish a project update INSIDE the client-visible CartShift project. Write updates in Hebrew for Israeli / Hebrew-speaking clients. Does not send an email.',
     'work:write', { ...project, text: { type: 'string' } }, ['org_id', 'project_id', 'text']),
   definition('link_work_item_to_project', 'Associate an existing work item with a project within the SAME client organization.',
     'work:write', { ...work, project_id: identifier }, ['org_id', 'work_item_id', 'project_id']),
@@ -77,6 +77,7 @@ async function organizationExists(orgId: string) {
   if (!snap.exists || snap.data()?.removedAt || ['inactive', 'suspended'].includes(snap.data()?.status)) {
     throw new Error('Organization not found or inactive');
   }
+  return snap;
 }
 
 async function projectExists(orgId: string, projectId: string) {
@@ -131,7 +132,10 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       org_id: id, title: short, template: templates, locale: z.enum(['en', 'he']).optional(),
       summary: z.string().trim().max(4000).optional(),
     }).strict().parse(input);
-    await organizationExists(org_id);
+    const organization = await organizationExists(org_id);
+    const preferredCurrency = organization.data()?.defaultCurrency;
+    const currency = preferredCurrency === 'ILS' || preferredCurrency === 'USD' || preferredCurrency === 'EUR'
+      ? preferredCurrency : 'ILS';
     const existing = await projects.where('orgId', '==', org_id).limit(200).get();
     if (existing.size === 200) throw new Error('Project list is too large to safely deduplicate');
     const duplicate = existing.docs.find(doc => normalize(doc.data().title || '') === normalize(title));
@@ -148,7 +152,7 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
         orgId: org_id, title, template, summary, nextStep: '', status: 'planning',
         ...buildProjectTemplate(template, locale), blockers: [], deliverables: [], workLogs: [],
         changes: [], updates: [], reviewRevisions: {},
-        scope: { minHours: 0, maxHours: 0, rateCents: 0, currency: 'ILS' },
+        scope: { minHours: 0, maxHours: 0, rateCents: 0, currency },
         createdBy: grant.uid, createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       });
@@ -266,7 +270,7 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       const p = doc.data();
       return p.isBillable || p.publicToken || p.requestRole === 'bundle';
     }).map(doc => ({
-      id: doc.id, ...pick(doc.data(), ['title', 'description', 'status', 'currency',
+      id: doc.id, ...pick(doc.data(), ['title', 'description', 'projectId', 'status', 'currency',
         'totalAmount', 'amountPaid', 'balanceDue', 'paymentStatus', 'proposalVersion',
         'clientName', 'clientEmail', 'sentAt', 'acceptedAt', 'updatedAt']),
     }));
@@ -281,10 +285,12 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       throw new Error('Not a commercial proposal');
     }
     return { id: snap.id, ...pick(p, [
-      'orgId', 'title', 'description', 'status', 'lineItems', 'subtotal', 'taxAmount', 'taxRate',
+      'orgId', 'projectId', 'title', 'description', 'status', 'lineItems', 'subtotal', 'taxAmount', 'taxRate',
       'totalAmount', 'currency', 'validUntil', 'timeframe', 'workDeadline', 'agencyNotes',
       'clientName', 'clientEmail', 'proposalContent', 'proposalVersion', 'terms',
-      'paymentRequired', 'depositAmount', 'amountPaid', 'balanceDue', 'paymentStatus',
+      'paymentRequired', 'depositAmount', 'reportedDepositMinor', 'reportedDepositStatus',
+      'reportedDepositDate', 'externalInvoiceReference', 'externalProposalSourceUrl',
+      'amountPaid', 'balanceDue', 'paymentStatus',
       'relatedRequestId', 'requestRole', 'childRequestIds', 'sentAt', 'acceptedAt',
       'createdAt', 'updatedAt',
     ]) };

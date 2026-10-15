@@ -22,6 +22,7 @@
 tmp-*
 *.tmp
 temp_*
+/temp-*.txt
 alondon-*-test.*
 *-test.jpg
 *-test.png

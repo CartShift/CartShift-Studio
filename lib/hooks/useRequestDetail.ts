@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getRequest } from '@/lib/services/portal-requests';
+import { getClientVisibleRequest } from '@/lib/services/client-requests-api';
 import { getCommentsByRequest, subscribeToRequestComments } from '@/lib/services/portal-comments';
 import {
   getRequestActivities,
@@ -54,24 +55,25 @@ export function useRequestDetail(options?: { requestId?: string }): UseRequestDe
     isLoading: requestLoading,
     error: requestError,
   } = useQuery({
-    queryKey: queryKeys.requests.detail(safeRequestId),
-    queryFn: () => getRequest(safeRequestId),
+    queryKey: queryKeys.requests.byRoleDetail(safeRequestId, isAgency ? 'agency' : 'client'),
+    queryFn: () => isAgency ? getRequest(safeRequestId) : getClientVisibleRequest(safeRequestId),
     enabled,
-    staleTime: Infinity,
+    staleTime: isAgency ? Infinity : 15_000,
+    refetchInterval: isAgency ? false : 30_000,
   });
 
   const subscribeRequest = useMemo(
     () =>
-      enabled
+      enabled && isAgency
         ? (cb: (data: Request | null) => void) => subscribeToRequest(safeRequestId, cb)
         : null,
-    [safeRequestId, enabled]
+    [safeRequestId, enabled, isAgency]
   );
-  useFirestoreSubscription(queryKeys.requests.detail(safeRequestId), subscribeRequest, enabled);
+  useFirestoreSubscription(queryKeys.requests.byRoleDetail(safeRequestId, isAgency ? 'agency' : 'client'), subscribeRequest, enabled && isAgency);
 
   // 2. Comments (real-time via onSnapshot)
   const { data: comments = [] } = useQuery({
-    queryKey: queryKeys.requests.comments(safeRequestId, safeOrgId),
+    queryKey: queryKeys.requests.commentsByRole(safeRequestId, safeOrgId, isAgency ? 'agency' : 'client'),
     queryFn: () =>
       getCommentsByRequest(safeRequestId, Boolean(userData?.isAgency), safeOrgId || undefined),
     enabled,
@@ -92,7 +94,7 @@ export function useRequestDetail(options?: { requestId?: string }): UseRequestDe
     [safeRequestId, safeOrgId, enabled, userData?.isAgency]
   );
   useFirestoreSubscription(
-    queryKeys.requests.comments(safeRequestId, safeOrgId),
+    queryKeys.requests.commentsByRole(safeRequestId, safeOrgId, isAgency ? 'agency' : 'client'),
     subscribeComments,
     enabled
   );
@@ -147,14 +149,14 @@ export function useRequestDetail(options?: { requestId?: string }): UseRequestDe
   const setComments = useCallback(
     (action: React.SetStateAction<Comment[]>) => {
       queryClient.setQueryData<Comment[]>(
-        queryKeys.requests.comments(safeRequestId, safeOrgId),
+        queryKeys.requests.commentsByRole(safeRequestId, safeOrgId, isAgency ? 'agency' : 'client'),
         oldData => {
           const current = oldData || [];
           return typeof action === 'function' ? action(current) : action;
         }
       );
     },
-    [queryClient, safeRequestId, safeOrgId]
+    [queryClient, safeRequestId, safeOrgId, isAgency]
   );
 
   const canAct = Boolean(userData);

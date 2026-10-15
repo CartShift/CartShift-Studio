@@ -33,7 +33,6 @@ async function validate(params: URLSearchParams): Promise<AuthParameters | null>
 const htmlHeaders = {
   'Content-Type': 'text/html; charset=utf-8',
   'Cache-Control': 'no-store',
-  'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
   'X-Content-Type-Options': 'nosniff',
 };
 
@@ -78,7 +77,15 @@ export async function GET(request: NextRequest) {
     '<button type="submit" name="decision" value="allow" style="background:#6355e9;color:white;border:0;border-radius:8px;padding:12px 24px;cursor:pointer">Authorize connection</button>' +
     ' <button type="submit" name="decision" value="deny" style="border:1px solid #888;border-radius:8px;padding:12px 24px;cursor:pointer">Deny</button>' +
     '</form></body></html>';
-  return new NextResponse(html, { headers: htmlHeaders });
+  // Chromium checks form-action on the POST's 303 redirect as well. Only permit
+  // the origin of the previously validated, registered OAuth callback.
+  const callbackOrigin = new URL(auth.redirectUri).origin;
+  return new NextResponse(html, {
+    headers: {
+      ...htmlHeaders,
+      'Content-Security-Policy': `default-src 'none'; style-src 'unsafe-inline'; form-action 'self' ${callbackOrigin}; frame-ancestors 'none'; base-uri 'none'`,
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {

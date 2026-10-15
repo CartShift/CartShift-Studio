@@ -18,6 +18,19 @@ export function canPrefetchPortalRequest(
   return Boolean(email && request.clientEmail?.trim().toLowerCase() === email);
 }
 
+/**
+ * Full Firestore request snapshots may include unpublished proposal content,
+ * private notes and ledger metadata. Only an agency role may hydrate them.
+ * Client access to a request does not imply access to its raw representation.
+ */
+export function canDehydrateFullRequest(
+  context: Pick<PortalSessionContext, 'uid' | 'email' | 'isAgency' | 'organizations'>,
+  request: Pick<Request, 'orgId' | 'createdBy' | 'clientUserId' | 'clientEmail'>,
+  revoked: boolean,
+): boolean {
+  return context.isAgency && canPrefetchPortalRequest(context, request, revoked);
+}
+
 // A pre-assigned email recipient may see the request itself, not the private
 // organization activity stream before becoming an active tenant member.
 export function canPrefetchRequestActivities(

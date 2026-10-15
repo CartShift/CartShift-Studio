@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { FieldValue } from 'firebase-admin/firestore';
 import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connection';
 import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
+import { COMMERCIAL_TOOL_DEFS, callCommercialTool } from '@/lib/mcp/commercial-tools';
 import { PROSPECT_TOOL_DEFS, callProspectTool } from '@/lib/mcp/prospect-tools';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
@@ -103,7 +104,7 @@ export const TOOL_DEFS = [
     }, additionalProperties: false },
   },
   {
-    name: 'create_work_item', description: 'Create an agency work item only when no semantically matching item already exists. Does not create a bill or invite.',
+    name: 'create_work_item', description: 'Create an agency work item only when no semantically matching item already exists. For Israeli / Hebrew-speaking clients, write the TITLE and DESCRIPTION in clear natural Hebrew (retain technical brand/product names like Shopify, Make, SKU); do not default to English. Does not create a bill or invite.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['org_id', 'title', 'description', 'type', 'priority'], properties: {
       org_id: { type: 'string' }, title: { type: 'string' }, description: { type: 'string' },
@@ -113,7 +114,7 @@ export const TOOL_DEFS = [
     }, additionalProperties: false },
   },
   {
-    name: 'update_work_item', description: 'Update existing portal request after checking its actual status. Does not alter payments, prices, or organization.',
+    name: 'update_work_item', description: 'Update existing portal request after checking its actual status. For Israeli / Hebrew-speaking clients, keep title and description in clear natural Hebrew, including when revising older English tasks. Does not alter payments, prices, or organization.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['org_id', 'work_item_id', 'patch'], properties: {
       org_id: { type: 'string' }, work_item_id: { type: 'string' },
@@ -126,6 +127,7 @@ export const TOOL_DEFS = [
   },
   ...EXTENDED_TOOL_DEFS,
   ...PROSPECT_TOOL_DEFS,
+  ...COMMERCIAL_TOOL_DEFS,
 ] as const;
 
 function serialize(value: unknown) {
@@ -156,6 +158,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   const args = getArgs(input);
   if (EXTENDED_TOOL_DEFS.some(item => item.name === name)) {
     return callExtendedTool(name, args, grant);
+  }
+  if (COMMERCIAL_TOOL_DEFS.some(item => item.name === name)) {
+    return callCommercialTool(name, args, grant);
   }
   if (PROSPECT_TOOL_DEFS.some(item => item.name === name)) {
     return callProspectTool(name, args, grant);

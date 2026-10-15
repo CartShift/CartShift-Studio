@@ -49,6 +49,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
+    "test:firestore:rules": "pnpm dlx firebase-tools@14.23.0 emulators:exec --only firestore,storage --project demo-cartshift \"node tests/firestore/project-rules.cjs\"",
     "test:prospects:release": "node scripts/check-prospects-release.mjs",
     "test:linkedin-editorial": "vitest run tests/scripts/linkedin-editorial-quality.test.ts tests/scripts/linkedin-editorial-prompts.test.ts tests/scripts/linkedin-editorial-validation.test.ts",
     "test:linkedin-editorial:coverage": "vitest run tests/scripts/linkedin-editorial-quality.test.ts tests/scripts/linkedin-editorial-prompts.test.ts tests/scripts/linkedin-editorial-validation.test.ts --coverage --coverage.include=scripts/lib/linkedin-editorial-quality.mjs --coverage.include=scripts/lib/linkedin-editorial-prompts.mjs --coverage.thresholds.lines=80 --coverage.thresholds.functions=80 --coverage.thresholds.branches=80 --coverage.thresholds.statements=80",
@@ -60,7 +61,8 @@
     "test:analyzer": "node scripts/test-analyzer.js",
     "test:analyzer:live": "node scripts/test-analyzer.js --no-unit --live",
     "test:analyzer:all": "node scripts/test-analyzer.js --unit --live",
-    "test:analyzer:unit": "vitest run tests/services/analyzer.test.ts tests/services/competitor-service.test.ts tests/services/cart-analyzer-advanced.test.ts tests/services/scraper.test.ts tests/api/analyze-store.route.test.ts tests/utils/safe-store-fetch.test.ts tests/utils/store-url.test.ts tests/lib/analyzer-progress.test.ts tests/hooks/use-analyzer-progress.test.tsx tests/services/analyzer-response.test.ts tests/services/ai-readiness.test.ts tests/services/analyzer-best-practices-fallback.test.ts tests/validation/analyze-store.test.ts tests/scripts/test-analyzer.test.ts"
+    "test:analyzer:unit": "vitest run tests/services/analyzer.test.ts tests/services/competitor-service.test.ts tests/services/cart-analyzer-advanced.test.ts tests/services/scraper.test.ts tests/api/analyze-store.route.test.ts tests/utils/safe-store-fetch.test.ts tests/utils/store-url.test.ts tests/lib/analyzer-progress.test.ts tests/hooks/use-analyzer-progress.test.tsx tests/services/analyzer-response.test.ts tests/services/ai-readiness.test.ts tests/services/analyzer-best-practices-fallback.test.ts tests/validation/analyze-store.test.ts tests/scripts/test-analyzer.test.ts",
+    "audit:portal:projects": "tsx scripts/audit-project-integrity.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -105,6 +107,7 @@
   "devDependencies": {
     "@esbuild/win32-arm64": "0.27.2",
     "@eslint/js": "^9.39.2",
+    "@firebase/rules-unit-testing": "4.0.1",
     "@next/eslint-plugin-next": "^16.2.7",
     "@next/swc-win32-arm64-msvc": "16.2.7",
     "@parcel/watcher-win32-arm64": "2.5.1",

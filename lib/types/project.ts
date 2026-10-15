@@ -54,6 +54,8 @@ export interface ProjectChangeRequest {
   description: string;
   estimatedHours: number;
   status: 'proposed' | 'approved' | 'declined';
+  /** A signed, accepted quote is required before a change becomes billable. */
+  linkedProposalId?: string;
 }
 export interface ProjectScope {
   minHours: number;
@@ -64,6 +66,8 @@ export interface ProjectScope {
 export interface ClientProject {
   id: string;
   orgId: string;
+  originProposalId?: string;
+  linkedProposalIds?: string[];
   title: string;
   summary: string;
   nextStep: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -14,11 +14,13 @@ import { MoreVertical, ArrowUpRight, Eye, Trash2, ShieldCheck, FilePlus2 } from 
 import { Organization } from '@/lib/types/portal';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { useOrg } from '@/lib/context/OrgContext';
-import { formatCompactCurrency } from '@/lib/utils/format-compact-currency';
+import type { Currency } from '@/lib/types/portal';
 
 export interface AgencyClient extends Organization {
   totalRevenue?: number;
   requestCount?: number;
+  revenueCurrency?: Currency;
+  hasOtherCurrencies?: boolean;
 }
 
 interface ClientListRowProps {
@@ -35,6 +37,7 @@ export function ClientListRow({
   onDelete,
 }: ClientListRowProps) {
   const t = useTranslations('portal');
+  const locale = useLocale();
   const router = useRouter();
   const { switchOrg } = useOrg();
 
@@ -64,6 +67,12 @@ export function ClientListRow({
                   ? t(`agency.clients.badge.${client.status}` as Parameters<typeof t>[0])
                   : 'Active'}
               </Badge>
+              {!client.defaultCurrency && (
+                <span className="rounded-md border border-amber-300/70 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-800 dark:text-amber-300"
+                  title={locale === 'he' ? 'יש להגדיר מטבע בהגדרות הלקוח' : 'Configure currency in the client profile'}>
+                  {locale === 'he' ? 'מטבע לא הוגדר' : 'Currency not set'}
+                </span>
+              )}
               {isMyClient ? (
                 <Badge
                   variant="blue"
@@ -93,7 +102,14 @@ export function ClientListRow({
 
       <PortalTableCell>
         <span className="font-mono font-medium">
-          {formatCompactCurrency((client.totalRevenue ?? 0) / 100)}
+          {client.totalRevenue || client.revenueCurrency || client.defaultCurrency
+            ? new Intl.NumberFormat(locale === 'he' ? 'he-IL' : 'en-US', {
+              style: 'currency', currency: client.revenueCurrency || client.defaultCurrency || 'ILS',
+              notation: 'compact', maximumFractionDigits: 1,
+            }).format((client.totalRevenue ?? 0) / 100)
+            : '—'}
+          {client.hasOtherCurrencies && <span title="יש מסמכים במטבעות נוספים שלא הומרו לסכום הזה"
+            className="ms-1 text-amber-600" aria-label="סכומים במטבעות אחרים לא נכללו">*</span>}
         </span>
       </PortalTableCell>
 

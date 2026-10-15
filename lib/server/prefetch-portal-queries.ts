@@ -5,16 +5,13 @@ import { createAppQueryClient } from '@/lib/query/query-client-config';
 import {
   serverGetAllRequests,
   serverGetOrgActivities,
-  serverGetOrgInvites,
   serverGetOrgMembers,
   serverGetOrganization,
   serverGetRequest,
   serverGetRequestActivities,
-  serverHasRevokedMembership,
-  serverGetRequestsByOrg,
 } from '@/lib/server/portal-data';
 import { getPortalSessionContext } from '@/lib/server/portal-session-context';
-import { canPrefetchPortalRequest, canPrefetchRequestActivities } from '@/lib/domain/prefetch-authorization';
+import { canDehydrateFullRequest, canPrefetchRequestActivities } from '@/lib/domain/prefetch-authorization';
 import { queryKeys } from '@/lib/utils/query-keys';
 
 export type PortalPrefetchScope =
@@ -66,12 +63,8 @@ async function prefetchPortalQueries(
   } else if (context.orgId) {
     const orgId = context.orgId;
 
-    if (scope === 'dashboard' || scope === 'requests' || scope === 'workboard') {
-      await queryClient.prefetchQuery({
-        queryKey: queryKeys.requests.byOrg(orgId),
-        queryFn: () => serverGetRequestsByOrg(orgId),
-      });
-    }
+    // Client request documents contain agency-only fields. Client views fetch
+    // explicit public projections instead; never serialize raw Admin SDK data.
 
     if (scope === 'dashboard') {
       await queryClient.prefetchQuery({
@@ -81,16 +74,12 @@ async function prefetchPortalQueries(
     }
 
     if (scope === 'team') {
-      await Promise.all([
-        queryClient.prefetchQuery({
-          queryKey: queryKeys.members.byOrg(orgId),
-          queryFn: () => serverGetOrgMembers(orgId),
-        }),
-        queryClient.prefetchQuery({
-          queryKey: queryKeys.invites.byOrg(orgId),
-          queryFn: () => serverGetOrgInvites(orgId),
-        }),
-      ]);
+      // Never hydrate raw invite documents: they include recipient emails and
+      // claim codes, and Admin SDK bypasses Firestore invitation rules.
+      await queryClient.prefetchQuery({
+        queryKey: queryKeys.members.byOrg(orgId),
+        queryFn: () => serverGetOrgMembers(orgId),
+      });
     }
 
     if (scope === 'settings') {
@@ -101,13 +90,10 @@ async function prefetchPortalQueries(
     }
   }
 
-  if (scope === 'request-detail' && options?.requestId) {
+  if (context.isAgency && scope === 'request-detail' && options?.requestId) {
     const requestId = options.requestId;
     const request = await serverGetRequest(requestId);
-    const revoked = request && !context.isAgency
-      ? await serverHasRevokedMembership(request.orgId, context.uid)
-      : false;
-    if (request && canPrefetchPortalRequest(context, request, revoked)) {
+    if (request && canDehydrateFullRequest(context, request, false)) {
       await queryClient.prefetchQuery({
         queryKey: queryKeys.requests.detail(requestId),
         queryFn: () => Promise.resolve(request),
