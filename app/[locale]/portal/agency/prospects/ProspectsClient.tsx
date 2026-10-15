@@ -88,10 +88,11 @@ export default function ProspectsClient() {
   const [segmentFilter, setSegmentFilter] = useState<'all' | 'merchant' | 'agency_partner'>('all');
   const [activeOnly, setActiveOnly] = useState(true);
   const [highOnly, setHighOnly] = useState(false);
+  const [focus, setFocus] = useState<'all' | 'due' | 'reviews'>('all');
   const [pageCursor, setPageCursor] = useState<string | null>(null);
   const [pageHistory, setPageHistory] = useState<Array<string | null>>([]);
   const deferredSearch = useDeferredValue(search);
-  useEffect(() => { setPageCursor(null); setPageHistory([]); }, [deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly]);
+  useEffect(() => { setPageCursor(null); setPageHistory([]); }, [deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly, focus]);
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -112,7 +113,7 @@ export default function ProspectsClient() {
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
-    queryKey: [...queryKeys.prospects.all, 'list', pageCursor, deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly, user?.uid],
+    queryKey: [...queryKeys.prospects.all, 'list', pageCursor, deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly, focus, user?.uid],
     queryFn: () => {
       const params = new URLSearchParams({ limit: '40' });
       if (pageCursor) params.set('cursor', pageCursor);
@@ -121,6 +122,8 @@ export default function ProspectsClient() {
       if (activeOnly) params.set('active_only', 'true');
       if (highOnly) params.set('priority', 'high');
       if (verifiedOnly) params.set('verified_only', 'true');
+      if (focus === 'due') params.set('due_before', new Date().toISOString().slice(0, 10));
+      if (focus === 'reviews') params.set('review_requested', 'true');
       if (myOnly && user?.uid) params.set('owner_uid', user.uid);
       return fetchJson<ListResponse>('/api/portal/agency/prospects?' + params.toString());
     },
@@ -373,6 +376,16 @@ export default function ProspectsClient() {
         </Card>
       )}
 
+      <div className="flex flex-wrap gap-2" role="group" aria-label={he ? 'תור העבודה' : 'Work queue'}>
+        {(['all', 'due', 'reviews'] as const).map(value => (
+          <Button key={value} variant={focus === value ? 'primary' : 'outline'}
+            onClick={() => { setFocus(value); setSelected(null); }}>
+            {value === 'all' ? (he ? 'כל ההזדמנויות' : 'All opportunities') :
+              value === 'due' ? (he ? 'לטיפול עכשיו' : 'Needs attention') :
+                (he ? 'ממתינות לסקירה' : 'Awaiting review')}
+          </Button>
+        ))}
+      </div>
       <div className="space-y-3">
         <p className="text-xs text-surface-500">{he ? 'סיכום העמוד הנוכחי' : 'Current page overview'}</p>
       <div className="grid gap-3 sm:grid-cols-3">
@@ -424,7 +437,7 @@ export default function ProspectsClient() {
       {list.data && rows.length === 0 && <div className="rounded-xl border border-dashed border-surface-200 bg-surface-50 px-6 py-10 text-center dark:border-surface-700 dark:bg-surface-900">
         <p className="font-medium text-surface-800 dark:text-surface-200">{he ? 'אין לידים שמתאימים לסינון הנוכחי' : 'No prospects match this view'}</p>
         <p className="mt-1 text-sm text-surface-500">{he ? 'אפשר להרחיב את החיפוש או לעבור ללידים מהארכיון.' : 'Try a broader search or include archived prospects.'}</p>
-        <Button variant="outline" onClick={() => { setSearch(''); setSegmentFilter('all'); setActiveOnly(false); setHighOnly(false); setVerifiedOnly(false); setMyOnly(false); }}>
+        <Button variant="outline" onClick={() => { setSearch(''); setSegmentFilter('all'); setActiveOnly(false); setHighOnly(false); setVerifiedOnly(false); setMyOnly(false); setFocus('all'); }}>
           {he ? 'ניקוי מסננים' : 'Clear filters'}
         </Button>
       </div>
