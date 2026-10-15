@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Loader2, ShieldCheck, RefreshCw, TrendingUp, Download, BarChart3 } from 'lucide-react';
 import { useSalesAnalytics } from '@/lib/hooks/useSalesAnalytics';
 import { Card } from '@/components/ui/Card';
-import { Link, usePathname, useRouter, useSearchParams } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import { InsightsPanel } from '@/components/portal/sales/InsightsPanel';
 import { ProfitSplitsSection } from '@/components/portal/sales/ProfitSplitsSection';
 import {
