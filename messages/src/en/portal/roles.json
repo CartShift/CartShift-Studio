@@ -6,7 +6,8 @@
       "sales_manager": "Sales Manager",
       "developer": "Developer",
       "member": "Member",
-      "viewer": "Viewer"
+      "viewer": "Viewer",
+      "business_development": "Business Development"
     }
   }
 }
