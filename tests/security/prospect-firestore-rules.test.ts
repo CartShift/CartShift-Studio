@@ -8,6 +8,7 @@ describe('candidate research data is server-only in Firestore', () => {
     expect(rules).toMatch(/match \/agency_prospects\/\{prospectId\}\s*\{\s*allow read, write: if false;/);
     expect(rules).toMatch(/match \/findings\/\{findingId\}\s*\{\s*allow read, write: if false;/);
     expect(rules).toMatch(/match \/contacts\/\{contactId\}\s*\{\s*allow read, write: if false;/);
+    expect(rules).toMatch(/match \/activities\/\{activityId\}\s*\{\s*allow read, write: if false;/);
   });
 
   it('explicitly denies quota and audit collection reads and writes', () => {
