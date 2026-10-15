@@ -688,7 +688,7 @@ export default function ProspectsClient() {
               setSelected(null);
             }}>{he ? 'הבא' : 'Next'}</Button>
         </div>
-      </div>}
+      </div>
     </div>
   );
 }
