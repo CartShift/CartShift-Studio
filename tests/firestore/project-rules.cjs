@@ -29,6 +29,7 @@ async function main() {
         db.doc('portal_users/stranger').set({ accountType: 'CLIENT', isAgency: false, email: 'stranger@example.com' }),
         db.doc('portal_users/viewer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'viewer', email: 'viewer@example.com' }),
         db.doc('portal_users/developer').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'developer', email: 'developer@example.com' }),
+        db.doc('portal_users/adi').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'business_development', name: 'Adi', email: 'adi@example.com' }),
         db.doc('portal_users/suspended').set({ accountType: 'AGENCY', isAgency: true, agencyRole: 'admin', status: 'suspended', email: 'suspended@example.com' }),
         db.doc('portal_users/creatorRemoved').set({ accountType: 'CLIENT', email: 'creator-removed@example.com' }),
         db.doc('portal_users/legacyCreator').set({ accountType: 'CLIENT', email: 'legacy-creator@example.com' }),
@@ -61,6 +62,16 @@ async function main() {
         }),
         db.doc('portal_pricing_requests/legacyQuote').set({
           orgId: 'orgA', status: 'SENT', agencyNotes: 'LEGACY PRIVATE',
+        }),
+        db.doc('marketing_leads/leadDemo').set({
+          email: 'owner@store.co.il', storeUrl: 'https://store.co.il',
+          marketingConsent: false, contactStatus: 'pending', createdAt: new Date(),
+        }),
+        db.doc('agency_prospects/prospect_aabbccddeeff00112233445566778899').set({
+          canonicalDomain: 'store.co.il', stage: 'qualified', ownerUid: 'adi',
+        }),
+        db.doc('agency_prospects/prospect_aabbccddeeff00112233445566778899/activities/private').set({
+          kind: 'note', note: 'Private sales notes',
         }),
         db.doc('portal_payments/privatePayment').set({
           orgId: 'orgA', amount: 200000, manualReference: 'PRIVATE BANK INFO',
@@ -104,9 +115,31 @@ async function main() {
     const removed = context('removed', 'removed@example.com');
     const viewer = context('viewer', 'viewer@example.com');
     const developer = context('developer', 'developer@example.com');
+    const adi = context('adi', 'adi@example.com');
     const suspended = context('suspended', 'suspended@example.com');
     const creatorRemoved = context('creatorRemoved', 'creator-removed@example.com');
     const legacyCreator = context('legacyCreator', 'legacy-creator@example.com');
+    // Business-development users can work with marketing leads but must not
+    // inherit agency-wide customer, commercial, project, or financial reads.
+    await assertSucceeds(adi.doc('portal_users/adi').get());
+    await assertSucceeds(adi.collection('portal_users').where('accountType', '==', 'AGENCY').get());
+    await assertFails(adi.doc('portal_users/client').get());
+    await assertFails(adi.collection('portal_users').get());
+    await assertSucceeds(adi.doc('marketing_leads/leadDemo').get());
+    await assertSucceeds(adi.doc('marketing_leads/leadDemo').update({
+      contactStatus: 'contacted', lastContactedAt: new Date(), updatedAt: new Date(),
+    }));
+    await assertFails(adi.doc('marketing_leads/leadDemo').update({ marketingConsent: true }));
+    await assertFails(adi.doc('portal_organizations/orgA').get());
+    await assertFails(adi.doc('portal_organizations/newAdiOrg').set({ createdBy: 'adi', name: 'Unauthorized' }));
+    await assertFails(adi.doc('portal_projects/prjA').get());
+    await assertFails(adi.doc('portal_requests/quoteSent').get());
+    await assertFails(adi.doc('portal_payments/privatePayment').get());
+    await assertFails(adi.doc('portal_pricing_requests/legacyQuote').get());
+    await assertFails(adi.doc('agency_prospects/prospect_aabbccddeeff00112233445566778899').get());
+    await assertFails(adi.doc('agency_prospects/prospect_aabbccddeeff00112233445566778899/activities/private').get());
+    await assertFails(adi.doc('agency_prospects/prospect_aabbccddeeff00112233445566778899/activities/forged').set({ kind: 'note' }));
+
     await assertFails(suspended.doc('portal_organizations/orgA').get());
     await assertFails(suspended.doc('portal_projects/prjA').get());
     await assertFails(suspended.doc('portal_projects/prjA/private_records/private').get());
