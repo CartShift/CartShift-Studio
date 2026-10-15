@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import {
   Activity,
@@ -10,6 +11,7 @@ import {
   Check,
   Clock,
   Copy,
+  Link2,
   Mail,
   MousePointerClick,
   RefreshCw,
@@ -41,6 +43,8 @@ import { generateGoogleCalendarEventLink } from '@/lib/schedule';
 import { getScheduleUrl } from '@/lib/schedule';
 import type { MarketingLead } from '@/lib/services/portal-marketing';
 import { StoreReviewWorkspace } from '@/components/portal/marketing/StoreReviewWorkspace';
+import { queryKeys } from '@/lib/utils/query-keys';
+import { getPortalPath } from '@/lib/utils/portal-paths';
 
 type LeadFilter = 'all' | 'hot' | 'needsFollowUp';
 
@@ -142,6 +146,25 @@ function leadNeedsFollowUp(lead: MarketingLead) {
 
 export default function MarketingLeadsClient() {
   const t = useTranslations('portal.marketing');
+  const queryClient = useQueryClient();
+  const [trackedLeadIds, setTrackedLeadIds] = useState<string[]>([]);
+  const trackOpportunity = useMutation({
+    mutationFn: async (leadId: string) => {
+      const response = await fetch('/api/portal/agency/prospects/from-marketing-lead', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead_id: leadId }),
+      });
+      if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || 'REQUEST_FAILED');
+      return response.json() as Promise<{ prospect_id: string; created: boolean; duplicate: boolean }>;
+    },
+    onSuccess: async (_result, leadId) => {
+      setTrackedLeadIds(previous => previous.includes(leadId) ? previous : [...previous, leadId]);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
+      toast.success('Lead added to the prospect worklist for human review');
+    },
+    onError: () => toast.error('Could not add this lead to the prospect worklist'),
+  });
   const { dashboard, loading, error, refetch } = useMarketingDashboard();
   const { organizations } = useAgencyClients();
   const updateLead = useUpdateMarketingLead();
@@ -467,6 +490,20 @@ export default function MarketingLeadsClient() {
                             >
                               <Check className="h-4 w-4" />
                             </Button>
+                          )}
+                          {lead.storeUrl && !trackedLeadIds.includes(lead.leadId) && (
+                            <Button size="sm" variant="ghost" title="Track this store as a prospect"
+                              aria-label="Track this store as a prospect"
+                              disabled={trackOpportunity.isPending}
+                              onClick={() => trackOpportunity.mutate(lead.leadId)}>
+                              <Link2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {trackedLeadIds.includes(lead.leadId) && (
+                            <a href={getPortalPath('/agency/prospects/')} title="Open prospect worklist"
+                              className="inline-flex h-8 items-center rounded-md px-2 text-xs text-primary-600 hover:underline">
+                              Prospects ↗
+                            </a>
                           )}
                           <Button
                             size="sm"
