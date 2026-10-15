@@ -49,6 +49,8 @@ export async function updateProspectSales(prospectId: string, raw: unknown, uid:
       throw new Error('PROPOSAL_LINK_REQUIRED');
     }
     if (input.stage === 'suppressed') throw new Error('ELIGIBILITY_REVIEW_REQUIRED');
+    if (input.stage && current.linkedRequestId && ['proposal', 'won'].includes(current.stage) &&
+        input.stage !== current.stage) throw new Error('PROPOSAL_LINK_REQUIRED');
     const patch: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
     if (input.stage) patch.stage = input.stage;
     if (input.owner_uid) patch.ownerUid = input.owner_uid;
