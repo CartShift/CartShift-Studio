@@ -441,7 +441,7 @@ export default function ProspectsClient() {
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       <option value="">{t('unassigned')}</option>
                       {(agencyTeam.data || []).filter(member =>
-                        ['owner', 'admin', 'sales_manager'].includes(member.agencyRole || '') &&
+                        ['owner', 'admin', 'sales_manager', 'business_development'].includes(member.agencyRole || '') &&
                         member.status !== 'inactive' && member.status !== 'suspended'
                       ).map(member => (
                         <option key={member.id} value={member.id}>{member.name || member.email}</option>
