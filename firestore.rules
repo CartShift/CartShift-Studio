@@ -700,15 +700,24 @@ service cloud.firestore {
       allow write: if isAuthenticated() && getUserId() == agencyId;
     }
 
+    // Client-visible connection metadata only; never grant cross-user access.
+    // Credentials live in private_integration_credentials, accessible only via Admin SDK.
     match /agency_integrations/{integrationId} {
-      allow read: if isAuthenticated() && (
-        isAgencyUser() ||
-        integrationId.matches("^" + request.auth.uid + "(_.*|$)")
-      );
-      allow create, update, delete: if isAuthenticated() && (
-        isAgencyUser() || // Allow agency users to manage their own OR shared integrations
-        integrationId.matches("^" + request.auth.uid + "(_.*|$)")
-      );
+      function isConnectionOwner() {
+        return isAuthenticated() &&
+          integrationId == getUserId() + '_google_calendar';
+      }
+      allow read: if isConnectionOwner();
+      allow create: if false;
+      allow update: if isConnectionOwner() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['selectedCalendarId']) &&
+        request.resource.data.get('selectedCalendarId', '') is string &&
+        request.resource.data.get('selectedCalendarId', '').size() <= 256;
+      allow delete: if false;
+    }
+
+    match /private_integration_credentials/{credentialId} {
+      allow read, write: if false;
     }
 
     match /portal_services/{serviceId} {
