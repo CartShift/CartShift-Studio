@@ -78,17 +78,17 @@ export async function getOAuthClient(clientId: string): Promise<OAuthClient | nu
   return doc.exists ? (doc.data() as OAuthClient) : null;
 }
 
-export async function agencyActor(uid: string): Promise<{ uid: string; name: string; email?: string }> {
+export async function agencyActor(uid: string): Promise<{ uid: string; name: string; email?: string; role: string }> {
   const doc = await firestore().collection('portal_users').doc(uid).get();
   const user = doc.data();
   const role = typeof user?.agencyRole === 'string' ? user.agencyRole : '';
   const authorized =
     (user?.accountType === 'AGENCY' || user?.isAgency === true) &&
-    ['owner', 'admin', 'sales_manager', ''].includes(role) &&
+    ['owner', 'admin', 'sales_manager', 'business_development', ''].includes(role) &&
     user?.status !== 'inactive' &&
     user?.status !== 'suspended';
   if (!authorized) throw new Error('FORBIDDEN');
-  return { uid, name: String(user?.name || user?.email || 'CartShift agency'), email: user?.email };
+  return { uid, name: String(user?.name || user?.email || 'CartShift agency'), email: user?.email, role };
 }
 
 export interface TokenGrant {
@@ -107,7 +107,11 @@ export async function requireMcpToken(header: string | null): Promise<TokenGrant
   if (!grant || grant.expiresAt <= Date.now() || grant.resource !== MCP_RESOURCE) {
     throw new Error('UNAUTHENTICATED');
   }
-  await agencyActor(grant.uid); // Rechecks revoked agency access for every request.
+  const actor = await agencyActor(grant.uid); // Rechecks revoked agency access for every request.
+  // Never let business-development OAuth credentials access commercial/client tools.
+  if (actor.role === 'business_development' && grant.scope.some(scope => !scope.startsWith('prospects:'))) {
+    throw new Error('INSUFFICIENT_SCOPE');
+  }
   return grant;
 }
 
