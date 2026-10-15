@@ -3,7 +3,7 @@
 import { useDeferredValue, useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
-import { ExternalLink, Loader2, Plus, RefreshCw, Search, ShieldAlert } from 'lucide-react';
+import { ClipboardCopy, ExternalLink, Loader2, Plus, RefreshCw, Search, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -13,6 +13,7 @@ import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { ProspectActivityPanel, type ProspectActivity } from '@/components/portal/prospects/ProspectActivityPanel';
 import { ProspectProposalLinkPanel } from '@/components/portal/prospects/ProspectProposalLinkPanel';
+import { buildProspectReviewBrief } from '@/lib/domain/prospect-review-brief';
 
 type Prospect = {
   id: string;
@@ -626,6 +627,18 @@ export default function ProspectsClient() {
                 )}
                 {canReview && prospect.technicalStatus === 'approved' && !prospect.linkedRequestId &&
                   <ProspectProposalLinkPanel prospectId={prospect.id} canonicalDomain={prospect.canonicalDomain}/>}
+                {detail.data && <Button variant="outline" onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(buildProspectReviewBrief({
+                      brandName: prospect.brandName, canonicalDomain: prospect.canonicalDomain,
+                      storeUrl: prospect.storeUrl, platform: prospect.platform,
+                      sourceUrl: prospect.sourceUrl, findings: detail.data?.findings || [],
+                    }, he ? 'he' : 'en'));
+                    toast.success(he ? 'תיק הסקירה הועתק — אפשר להדביק ב־ChatGPT' : 'Review brief copied for ChatGPT');
+                  } catch {
+                    toast.error(he ? 'לא ניתן להעתיק ללוח' : 'Could not copy to clipboard');
+                  }
+                }}><ClipboardCopy size={15}/>{he ? 'העתקת תיק סקירה ל־ChatGPT' : 'Copy research brief for ChatGPT'}</Button>}
                 {detail.data && <ProspectActivityPanel prospectId={prospect.id}
                   activities={detail.data.activities || []}
                   canContact={['consent_recorded', 'existing_relationship', 'approved_partner_channel'].includes(prospect.outreachEligibility)}
