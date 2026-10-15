@@ -194,7 +194,14 @@ export async function getGoogleFreeBusy(uid: string, timeMin: string, timeMax: s
     method: 'POST',
     body: JSON.stringify({ timeMin, timeMax, items: [{ id: calendarId }] }),
   });
-  return { busy: data.calendars?.[calendarId]?.busy || [] };
+  const result = data.calendars?.[calendarId];
+  // Google can return HTTP 200 with per-calendar errors. Never interpret
+  // absent/malformed data or an access error as an available calendar.
+  if (!result || !Array.isArray(result.busy) ||
+      (Array.isArray(result.errors) && result.errors.length > 0)) {
+    throw new Error('GOOGLE_AVAILABILITY_UNVERIFIED');
+  }
+  return { busy: result.busy };
 }
 
 export async function disconnectGoogleCalendar(uid: string) {
