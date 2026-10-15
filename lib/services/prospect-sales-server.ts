@@ -155,6 +155,8 @@ export async function linkProspectProposal(prospectId: string, orgId: string,
     throw new Error('INVALID_LINK_ARGUMENTS');
   }
   const { actor, ref } = await refFor(uid, prospectId);
+  // Linking an accepted commercial document changes sales reporting and is founder-only.
+  if (!['owner', 'admin'].includes(actor.role)) throw new Error('FOUNDER_REVIEW_REQUIRED');
   const orgRef = database().collection('portal_organizations').doc(orgId);
   const requestRef = database().collection('portal_requests').doc(requestId);
   const event = database().collection('agency_prospect_audit').doc();
