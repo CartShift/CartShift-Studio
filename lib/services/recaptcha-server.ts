@@ -1,7 +1,8 @@
 /** Verify Google reCAPTCHA v3 action and score, not just the "success" field. */
 export async function verifyRecaptchaToken(
   captchaToken: string,
-  secretKey: string
+  secretKey: string,
+  expectedAction = 'analyze_store'
 ): Promise<boolean> {
   if (!captchaToken || !secretKey) return false;
   try {
@@ -19,7 +20,7 @@ export async function verifyRecaptchaToken(
       hostname?: string;
     };
     return data.success === true &&
-      data.action === 'analyze_store' &&
+      data.action === expectedAction &&
       typeof data.score === 'number' &&
       Number.isFinite(data.score) &&
       data.score >= 0.5 &&

@@ -28,6 +28,9 @@ function formatZodErrors(error: { issues: { message: string }[] }): string {
 }
 
 export async function POST(request: NextRequest) {
+  if (process.env.NODE_ENV === 'production' && process.env.PUBLIC_ANALYZER_ENABLED !== 'true') {
+    return NextResponse.json(createErrorResponse('The instant analyzer is unavailable. Request an expert store review instead.', 503), { status: 503 });
+  }
   try {
     const rateLimit = await enforceApiRateLimit(request, 'analyze-store', {
       maxRequests: RATE_LIMIT_MAX_REQUESTS,

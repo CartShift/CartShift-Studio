@@ -47,7 +47,8 @@
       "en/portal/toast.json",
       "en/portal/workboard.json",
       "en/proposal.json",
-      "en/website.json"
+      "en/website.json",
+      "store-review.json"
     ]
   },
   "nav": {
@@ -840,6 +841,11 @@
         "title": "Changes to This Policy",
         "content": "We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page."
       }
+    },
+    "expertReview": {
+      "title": "Expert store review requests",
+      "description": "When you request an expert store review, we process the name, email, store domain, optional goals and notes you submit to assess the request, conduct a focused review of publicly available store pages, manage the request, and respond with findings or an optional proposal. Authorized CartShift staff can access those request details; reports are private by default and are not published as case studies without additional permission.",
+      "marketing": "Communication about your requested review is separate from optional marketing messages. The marketing checkbox is unchecked by default. Information in review requests may be stored in our internal lead workflow and transferred to our service email provider solely for correspondence and delivery."
     }
   },
   "terms": {
@@ -5929,5 +5935,104 @@
       "primaryButton": "Access Portal",
       "secondaryButton": "Contact Us"
     }
+  },
+  "storeReview": {
+    "badge": "PERSONAL STORE REVIEW",
+    "title": "Your store could work harder.",
+    "titleHighlight": "Let's find out how.",
+    "subtitle": "A real expert looks at your online store, identifies actionable opportunities, and shares a clear set of priorities. No generic instant score, no obligation.",
+    "formTitle": "Request your free expert review",
+    "formDescription": "Tell us where to look. No account or Shopify access required.",
+    "name": "Your name",
+    "namePlaceholder": "Your name",
+    "email": "Work email",
+    "emailPlaceholder": "you@company.com",
+    "storeUrl": "Store website",
+    "storeUrlPlaceholder": "https://your-store.com",
+    "focusLabel": "What would you like to improve?",
+    "focus": {
+      "conversion": "Conversions",
+      "speed": "Speed",
+      "seo": "SEO",
+      "trust": "Customer trust",
+      "checkout": "Cart & checkout"
+    },
+    "notes": "Anything else we should know? (optional)",
+    "notesPlaceholder": "The biggest obstacle for your store...",
+    "optional": "Optional",
+    "marketing": "Send me occasional CartShift growth tips. This is optional.",
+    "privacy": "We'll use your details to assess and respond to this specific request. Marketing is optional and separate. Read our privacy policy.",
+    "privacyLink": "Privacy policy",
+    "submit": "Request my free review",
+    "submitting": "Sending request…",
+    "successTitle": "Your review request is in!",
+    "successText": "We’ve received your store details. Our team will review your request and follow up by email about next steps. No instant report has been generated.",
+    "successReference": "Reference",
+    "errorTitle": "We couldn't submit your request.",
+    "errors": {
+      "INVALID_INPUT": "Please check your details and try again.",
+      "INVALID_STORE_URL": "Please enter a public store website, such as https://your-store.com.",
+      "SECURITY_CHECK_FAILED": "Security verification failed. Please reload and try again.",
+      "INTAKE_PAUSED": "We're not accepting new review requests right now. Please check back later.",
+      "SERVICE_UNAVAILABLE": "The service is temporarily unavailable. Please try again later.",
+      "SAVE_FAILED": "We couldn't securely save the request. Please try again.",
+      "ORIGIN_NOT_ALLOWED": "This request could not be verified.",
+      "GENERIC": "Something went wrong. Please try again.",
+      "RATE_LIMIT": "Too many requests from this connection. Please try again later."
+    },
+    "whatTitle": "What we'll look at",
+    "whatDescription": "A focused review of the parts of your store that shape the buying experience.",
+    "areas": {
+      "ux": "Mobile & user experience",
+      "product": "Product pages & merchandising",
+      "checkout": "Buying friction & checkout",
+      "seo": "SEO & discoverability",
+      "trust": "Trust & reassurance",
+      "performance": "Performance signals"
+    },
+    "deliverTitle": "A review you can actually use",
+    "deliverDescription": "We prioritize the clearest opportunities rather than burying you in automated scores.",
+    "deliverables": {
+      "findings": "3–5 prioritized findings",
+      "evidence": "Concrete examples from your store",
+      "roadmap": "Practical next steps",
+      "proposal": "Optional implementation proposal"
+    },
+    "howTitle": "Simple, personal, transparent",
+    "steps": {
+      "request": {
+        "title": "Tell us about your store",
+        "description": "Share your store URL and the challenge you'd most like to solve."
+      },
+      "review": {
+        "title": "We review it personally",
+        "description": "A CartShift specialist inspects public customer journeys and validates findings."
+      },
+      "next": {
+        "title": "Get useful next steps",
+        "description": "We follow up with prioritized observations and an optional way to work together."
+      }
+    },
+    "finePrint": "A focused initial review is free. It isn't a security, legal, accessibility-compliance, or exhaustive full-site audit. Additional access or deeper work will be agreed separately.",
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "one": {
+        "q": "Is the review really free?",
+        "a": "Yes. The initial expert-led review and prioritised findings are free and come with no obligation to hire us."
+      },
+      "two": {
+        "q": "Do I need to give you Shopify access?",
+        "a": "No. We start with public pages only. If deeper investigation would help, we'll explain what's needed and ask permission first."
+      },
+      "three": {
+        "q": "When will I hear back?",
+        "a": "We'll follow up by email after assessing your request. Timing depends on our review capacity; we won't claim a report was sent until it actually has been."
+      },
+      "four": {
+        "q": "Do you only work with Shopify?",
+        "a": "Shopify is our specialty, but we can assess other e-commerce platforms when the scope fits our expertise."
+      }
+    },
+    "ctaShort": "Free store review"
   }
 }

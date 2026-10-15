@@ -73,6 +73,15 @@ async function main() {
           orgId: 'orgA', requestId: 'reqA', isInternal: true,
           userId: 'agency', content: 'Agency confidential information',
         }),
+        db.doc('human_review_requests/manual-review').set({
+          schemaVersion: 2, requestId: 'manual-review', name: 'Store Owner',
+          email: 'owner@brand.co.il', storeUrl: 'https://brand.co.il',
+          reviewStatus: 'requested', status: 'requested', reviewVisibility: 'private',
+          qualified: false, anonymousInsightConsent: false, namedStoreConsent: false,
+        }),
+        db.doc('store_review_dedupe/fingerprint').set({
+          requestId: 'manual-review', createdAt: new Date(),
+        }),
         db.doc('portal_projects/prjA').set({
           orgId: 'orgA',
           title: 'Theme review',
@@ -107,6 +116,29 @@ async function main() {
     await assertFails(creatorRemoved.doc('portal_organizations/orgRevoked').update({ name: 'Unauthorized' }));
     await assertSucceeds(legacyCreator.doc('portal_organizations/orgLegacy').get());
     await assertSucceeds(legacyCreator.doc('portal_projects/prjLegacy').get());
+
+    // Expert review intake is server-written; agency readers cannot forge customer findings.
+    await assertSucceeds(agency.doc('human_review_requests/manual-review').get());
+    await assertFails(client.doc('human_review_requests/manual-review').get());
+    await assertFails(outsider.doc('human_review_requests/manual-review').get());
+    await assertFails(client.collection('human_review_requests').get());
+    await assertFails(agency.doc('human_review_requests/manual-review').update({
+      reviewStatus: 'delivered',
+    }));
+    await assertFails(agency.doc('human_review_requests/manual-review').update({
+      reviewReport: { summary: 'Forged', findings: [] },
+    }));
+    await assertFails(agency.doc('human_review_requests/manual-review').update({
+      reviewVisibility: 'approved_public_case_study',
+    }));
+    await assertSucceeds(agency.doc('human_review_requests/manual-review').update({
+      qualified: true,
+    }));
+    await assertFails(agency.doc('store_review_dedupe/fingerprint').get());
+    await assertFails(agency.doc('store_review_dedupe/fingerprint').update({ requestId: 'forged' }));
+    await assertFails(client.doc('human_review_requests/manual-review').set({
+      name: 'Fake customer', status: 'delivered',
+    }));
 
     // Internal comments must be protected by Firestore rules, not client-side filtering.
     // Comments are also projected through the secure API, never returned raw.

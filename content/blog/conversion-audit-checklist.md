@@ -244,7 +244,7 @@ Turn the audit into a 30-day improvement plan:
 5. Rewrite weak landing pages.
 6. Re-measure conversion rate by device and traffic source.
 
-If you want to combine conversion diagnostics with SEO and technical checks, start with the [free store analyzer](/tools/store-analyzer), read [Why your store is not converting](/blog/why-your-store-isnt-converting), or review our [Shopify services page](/solutions/shopify).
+If you want to combine conversion diagnostics with SEO and technical checks, start with the [free expert store review](/free-store-review), read [Why your store is not converting](/blog/why-your-store-isnt-converting), or review our [Shopify services page](/solutions/shopify).
 
 ---he---
 
@@ -432,4 +432,4 @@ If you want to combine conversion diagnostics with SEO and technical checks, sta
 
 הפכו את האודיט לתוכנית של 30 יום: לתקן חסמי רכישה, לשפר עמודי מוצר במובייל, להבהיר משלוח והחזרות, להוריד עומס מהירות ואפליקציות, לשכתב עמודי נחיתה חלשים, ואז למדוד מחדש המרות לפי מכשיר ומקור תנועה.
 
-אם תרצו לשלב אודיט המרות עם SEO ובדיקות טכניות, התחילו עם [כלי האודיט החינמי](/tools/store-analyzer), קראו [למה החנות לא ממירה](/blog/why-your-store-isnt-converting), או עברו על [שירותי Shopify](/solutions/shopify).
+אם תרצו לשלב אודיט המרות עם SEO ובדיקות טכניות, התחילו עם [סקירה מקצועית בחינם](/free-store-review), קראו [למה החנות לא ממירה](/blog/why-your-store-isnt-converting), או עברו על [שירותי Shopify](/solutions/shopify).

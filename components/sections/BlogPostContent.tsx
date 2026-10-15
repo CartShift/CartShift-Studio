@@ -81,7 +81,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
         description:
           'We can translate the recommendations into a practical SEO audit, technical fixes, speed work, and conversion improvements built around your store.',
         primary: 'Talk to us about Shopify SEO',
-        secondary: 'Run a free store audit',
+        secondary: 'Request your free expert review',
       };
 
   const expertCard = isHe
@@ -101,12 +101,12 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
       return isHe
         ? [
             { href: '/solutions/shopify', label: 'שירותי Shopify SEO ופיתוח' },
-            { href: '/tools/store-analyzer', label: 'אודיט חנות חינם' },
+            { href: '/free-store-review', label: 'סקירה מקצועית בחינם' },
             { href: '/blog/shopify-seo-audit-checklist', label: 'צ׳קליסט Shopify SEO' },
           ]
         : [
             { href: '/solutions/shopify', label: 'Shopify SEO and development services' },
-            { href: '/tools/store-analyzer', label: 'Run a free Shopify audit' },
+            { href: '/free-store-review', label: 'Request a free expert review' },
             { href: '/blog/shopify-seo-audit-checklist', label: 'Use the Shopify SEO checklist' },
           ];
     }
@@ -114,12 +114,12 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
     if (slug === 'why-your-store-isnt-converting') {
       return isHe
         ? [
-            { href: '/tools/store-analyzer', label: 'בדקו מה חוסם המרות בחנות' },
+            { href: '/free-store-review', label: 'בקשו סקירה אישית של החנות' },
             { href: '/solutions/shopify', label: 'שפרו חוויית משתמש ו-SEO בשופיפיי' },
             { href: '/contact', label: 'קבלו שיחת ייעוץ על צווארי הבקבוק בחנות' },
           ]
         : [
-            { href: '/tools/store-analyzer', label: 'Diagnose conversion blockers in your store' },
+            { href: '/free-store-review', label: 'Request an expert conversion review' },
             { href: '/solutions/shopify', label: 'Improve Shopify UX, SEO, and speed' },
             { href: '/contact', label: 'Book a consultation about your conversion leaks' },
           ];
@@ -128,12 +128,12 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
     return isHe
       ? [
           { href: '/solutions/shopify', label: 'שירותי Shopify ו-SEO' },
-          { href: '/tools/store-analyzer', label: 'כלי אודיט לחנות' },
+          { href: '/free-store-review', label: 'סקירת חנות מקצועית' },
           { href: '/contact', label: 'שיחת ייעוץ ללא עלות' },
         ]
       : [
           { href: '/solutions/shopify', label: 'Shopify and SEO services' },
-          { href: '/tools/store-analyzer', label: 'Free store analyzer' },
+          { href: '/free-store-review', label: 'Free expert store review' },
           { href: '/contact', label: 'Book a free consultation' },
         ];
   })();
@@ -717,7 +717,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                           {helpCta.primary}
                         </Button>
                       </Link>
-                      <Link href="/tools/store-analyzer">
+                      <Link href="/free-store-review">
                         <Button variant="outline" size="lg" className="w-full sm:w-auto">
                           {helpCta.secondary}
                         </Button>
@@ -785,55 +785,18 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                                 clipRule="evenodd"
                               />
                             </svg>
-                            {t('blogPost.storeAnalyzerCta.badge')}
+                            {t('storeReview.badge')}
                           </span>
                           <h3 className="text-lg md:text-xl font-bold text-surface-900 dark:text-white mb-2 leading-tight">
-                            {t(`blogPost.contextualAnalyzer.${contextualIntent}.title`)}
+                            {t('storeReview.deliverTitle')}
                           </h3>
                           <p className="text-surface-600 dark:text-surface-300 text-sm md:text-base mb-4 leading-relaxed">
-                            {t(`blogPost.contextualAnalyzer.${contextualIntent}.description`)}
+                            {t('storeReview.deliverDescription')}
                           </p>
 
-                          {/* Stats */}
-                          <div className="flex items-center gap-4 text-xs text-surface-500 dark:text-surface-400 mb-4 md:mb-0">
-                            <span className="flex items-center gap-1.5">
-                              <svg
-                                className="w-4 h-4 text-accent-500"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              <span className="font-semibold text-surface-700 dark:text-surface-200">
-                                {t('blogPost.storeAnalyzerCta.stats.analyzed')}
-                              </span>
-                              {t('blogPost.storeAnalyzerCta.stats.analyzedLabel')}
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                              <svg
-                                className="w-4 h-4 text-primary-500"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              <span className="font-semibold text-surface-700 dark:text-surface-200">
-                                {t('blogPost.storeAnalyzerCta.stats.avgTime')}
-                              </span>
-                              {t('blogPost.storeAnalyzerCta.stats.avgTimeLabel')}
-                            </span>
+                          <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-surface-500 dark:text-surface-400 md:mb-0">
+                            <span>{t('storeReview.deliverables.findings')}</span>
+                            <span>{t('storeReview.deliverables.evidence')}</span>
                           </div>
                         </div>
 

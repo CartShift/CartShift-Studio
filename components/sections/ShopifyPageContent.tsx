@@ -129,7 +129,7 @@ export const ShopifyPageContent: React.FC = () => {
         description:
           'We work in English and Hebrew, understand Israeli operating rhythms, and help brands translate technical SEO into clear growth priorities for global traffic.',
         primary: 'Book a Shopify SEO consultation',
-        secondary: 'Run a free store audit',
+        secondary: 'Request a free expert review',
       };
 
   return (
@@ -315,7 +315,7 @@ export const ShopifyPageContent: React.FC = () => {
                 </span>
               </Button>
             </Link>
-            <Link href="/tools/store-analyzer">
+            <Link href="/free-store-review">
               <Button size="lg">
                 <span className="flex items-center gap-2">
                   {isHe ? 'בדקו את החנות שלכם' : 'Audit your store now'}
@@ -413,7 +413,7 @@ export const ShopifyPageContent: React.FC = () => {
                       {localTrust.primary}
                     </Button>
                   </Link>
-                  <Link href="/tools/store-analyzer">
+                  <Link href="/free-store-review">
                     <Button variant="outline" size="lg" className="w-full sm:w-auto">
                       {localTrust.secondary}
                     </Button>

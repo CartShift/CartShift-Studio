@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Icon } from '@/components/ui/Icon';
 
-const LAST_UPDATED = 'December 2024';
+const LAST_UPDATED = 'October 2026';
 
 interface SectionProps {
   id: string;
@@ -242,6 +242,12 @@ export default function PrivacyContent() {
             </Section>
 
             {/* Section 3: Information Sharing */}
+            <div className="mb-10 rounded-2xl border border-primary-500/20 bg-primary-500/5 p-5 text-sm text-surface-700 dark:text-surface-200">
+              <h3 className="mb-2 font-bold">{t('expertReview.title')}</h3>
+              <p className="leading-relaxed">{t('expertReview.description')}</p>
+              <p className="mt-3 leading-relaxed">{t('expertReview.marketing')}</p>
+            </div>
+
             <Section id="sharing" number={3} title={t('sections.sharing.title')}>
               <p className="text-surface-600 dark:text-surface-400 mb-6">
                 {t('sections.sharing.intro')}

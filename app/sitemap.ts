@@ -2,7 +2,6 @@ import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/markdown';
 import { getAllCaseStudies } from '@/lib/case-studies';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
-import { ANALYZER_INTENTS } from '@/lib/analyzer/funnel';
 import { adminDb } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-static';
@@ -96,12 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/contact', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools', changeFrequency: 'monthly' as const, priority: 0.7 },
-    { path: '/tools/store-analyzer', changeFrequency: 'weekly' as const, priority: 0.9 },
-    ...ANALYZER_INTENTS.map(intent => ({
-      path: `/tools/store-analyzer/${intent}`,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    })),
+    { path: '/free-store-review', changeFrequency: 'weekly' as const, priority: 0.9 },
     { path: '/tools/client-portal', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/terms', changeFrequency: 'yearly' as const, priority: 0.3 },

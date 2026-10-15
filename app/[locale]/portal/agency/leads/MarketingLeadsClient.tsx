@@ -40,7 +40,7 @@ import {
 import { generateGoogleCalendarEventLink } from '@/lib/schedule';
 import { getScheduleUrl } from '@/lib/schedule';
 import type { MarketingLead } from '@/lib/services/portal-marketing';
-import { useUpdateHumanReview } from '@/lib/hooks/useUpdateHumanReview';
+import { StoreReviewWorkspace } from '@/components/portal/marketing/StoreReviewWorkspace';
 
 type LeadFilter = 'all' | 'hot' | 'needsFollowUp';
 
@@ -145,7 +145,6 @@ export default function MarketingLeadsClient() {
   const { dashboard, loading, error, refetch } = useMarketingDashboard();
   const { organizations } = useAgencyClients();
   const updateLead = useUpdateMarketingLead();
-  const updateReview = useUpdateHumanReview();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<LeadFilter>('all');
   const [funnelDays, setFunnelDays] = useState<7 | 30 | 0>(30);
@@ -601,60 +600,7 @@ export default function MarketingLeadsClient() {
       </Card>
 
       <Card padding="default">
-        <h2 className="mb-4 text-lg font-bold text-surface-900 dark:text-white">
-          {t('humanReviews.title')}
-        </h2>
-        <div className="space-y-3">
-          {(dashboard?.reviews || []).map(review => (
-            <div
-              key={review.requestId}
-              className="grid gap-3 rounded-xl border border-surface-200 p-4 dark:border-white/10 md:grid-cols-[1fr,auto,auto] md:items-center"
-            >
-              <div>
-                <p className="font-bold">{review.email}</p>
-                <p className="text-xs text-surface-500">
-                  {review.storeUrl} · {formatSource(review.primaryIssue)} ·{' '}
-                  {review.partner || t('humanReviews.direct')}
-                </p>
-              </div>
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={Boolean(review.qualified)}
-                  onChange={event =>
-                    updateReview.mutate({
-                      requestId: review.requestId,
-                      qualified: event.target.checked,
-                    })
-                  }
-                />{' '}
-                {t('humanReviews.qualified')}
-              </label>
-              <select
-                aria-label={t('humanReviews.visibility')}
-                value={review.reviewVisibility}
-                onChange={event =>
-                  updateReview.mutate({
-                    requestId: review.requestId,
-                    reviewVisibility: event.target.value as typeof review.reviewVisibility,
-                  })
-                }
-                className="min-h-10 rounded-lg border border-surface-300 bg-transparent px-3 text-sm dark:border-white/15"
-              >
-                <option value="private">{t('humanReviews.private')}</option>
-                <option value="anonymous_educational" disabled={!review.anonymousInsightConsent}>
-                  {t('humanReviews.anonymous')}
-                </option>
-                <option value="approved_public_case_study" disabled={!review.namedStoreConsent}>
-                  {t('humanReviews.public')}
-                </option>
-              </select>
-            </div>
-          ))}
-          {!dashboard?.reviews.length ? (
-            <p className="text-sm text-surface-500">{t('humanReviews.empty')}</p>
-          ) : null}
-        </div>
+        <StoreReviewWorkspace reviews={dashboard?.reviews || []} onRefresh={() => void refetch()} />
       </Card>
 
       {inviteLead && (

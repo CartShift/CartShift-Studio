@@ -38,7 +38,7 @@ This guide owns the broad implementation question: how do you improve SEO across
 | Build or repair the full Shopify SEO foundation             | Continue with this guide                                                 |
 | Decide whether current SEO work is producing useful results | Run a [Shopify SEO review](/blog/shopify-seo-performance-evaluation)     |
 | Work through a page-by-page technical fix list              | Use the [Shopify SEO audit checklist](/blog/shopify-seo-audit-checklist) |
-| Turn technical findings into an implementation plan         | Start with the [free store analyzer](/tools/store-analyzer)              |
+| Turn technical findings into an implementation plan         | Start with the [free expert store review](/free-store-review)              |
 
 Keeping those jobs separate prevents a general guide, an audit checklist, and a performance review from competing for the same search intent.
 
@@ -81,7 +81,7 @@ At minimum, include:
 - internal-link gaps between commercial pages and educational guides
 - organic sessions and assisted conversions from GA4
 
-If you want a practical starting point, run the [free store analyzer](/tools/store-analyzer), then compare its technical findings with the deeper measurement approach in our [Shopify SEO review](/blog/shopify-seo-performance-evaluation).
+If you want a practical starting point, request the [free expert store review](/free-store-review), then compare its technical findings with the deeper measurement approach in our [Shopify SEO review](/blog/shopify-seo-performance-evaluation).
 
 ## Shopify SEO foundations that actually matter
 
@@ -158,7 +158,7 @@ These pages deserve the strongest internal links and the cleanest positioning:
 - Shopify service pages
 - migration pages
 - consultation pages
-- high-converting tools such as a [store analyzer](/tools/store-analyzer)
+- high-converting tools such as a [expert store review](/free-store-review)
 
 ### Tier 2: Pillar content
 
@@ -332,7 +332,7 @@ Start with:
 
 That sequence usually beats random publishing every time.
 
-> Want help with the implementation side? Start with our [Shopify services](/solutions/shopify), run the [free store analyzer](/tools/store-analyzer), or [book a consultation](/contact).
+> Want help with the implementation side? Start with our [Shopify services](/solutions/shopify), request the [free expert store review](/free-store-review), or [book a consultation](/contact).
 
 ---he---
 
@@ -363,7 +363,7 @@ SEO לחנויות Shopify נשען על שבעה מנופים:
 | לבנות או לתקן את כל תשתית ה-Shopify SEO    | המשיכו במדריך הזה                                                   |
 | לבדוק אם עבודת ה-SEO הנוכחית מייצרת תוצאות | הריצו [סקירת Shopify SEO](/blog/shopify-seo-performance-evaluation) |
 | לעבור על רשימת תיקונים טכנית עמוד-אחר-עמוד | השתמשו ב-[צ׳קליסט Shopify SEO](/blog/shopify-seo-audit-checklist)   |
-| להפוך ממצאים טכניים לתוכנית יישום          | התחילו עם [Store Analyzer החינמי](/tools/store-analyzer)            |
+| להפוך ממצאים טכניים לתוכנית יישום          | התחילו עם [expert store review החינמי](/free-store-review)            |
 
 ההפרדה בין המשימות מונעת ממדריך כללי, צ׳קליסט אודיט וסקירת ביצועים להתחרות על אותה כוונת חיפוש.
 
@@ -399,7 +399,7 @@ SEO לחנויות Shopify נשען על שבעה מנופים:
 - בעיות מהירות במובייל שמשפיעות על עמודי רכישה
 - חיבור בין תנועה אורגנית לבין לידים או הכנסות
 
-אפשר להתחיל עם [Store Analyzer החינמי](/tools/store-analyzer), ואז להשוות את הממצאים לגישה הרחבה יותר ב-[סקירת Shopify SEO](/blog/shopify-seo-performance-evaluation).
+אפשר להתחיל עם [expert store review החינמי](/free-store-review), ואז להשוות את הממצאים לגישה הרחבה יותר ב-[סקירת Shopify SEO](/blog/shopify-seo-performance-evaluation).
 
 ## יסודות Shopify SEO שבאמת חשובים
 
@@ -425,7 +425,7 @@ SEO לחנויות Shopify נשען על שבעה מנופים:
 - עמודי שירות Shopify
 - עמודי מיגרציה
 - עמודי יצירת קשר
-- כלים ממירים כמו [Store Analyzer](/tools/store-analyzer)
+- כלים ממירים כמו [expert store review](/free-store-review)
 
 ### 2. עמודי Pillar
 
@@ -474,4 +474,4 @@ SEO לחנויות Shopify נשען על שבעה מנופים:
 
 זה כמעט תמיד ינצח פרסום אקראי.
 
-> רוצים להפוך את ההמלצות לעבודה בפועל? התחילו עם [שירותי Shopify שלנו](/solutions/shopify), הריצו [אודיט חינם לחנות](/tools/store-analyzer), או [קבעו שיחת ייעוץ](/contact).
+> רוצים להפוך את ההמלצות לעבודה בפועל? התחילו עם [שירותי Shopify שלנו](/solutions/shopify), הריצו [אודיט חינם לחנות](/free-store-review), או [קבעו שיחת ייעוץ](/contact).

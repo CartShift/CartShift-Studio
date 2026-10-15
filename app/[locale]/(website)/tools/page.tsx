@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { ArrowRight, BarChart3, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, ClipboardCheck, LayoutDashboard } from 'lucide-react';
 import {
   generateBreadcrumbSchema,
   generateCollectionPageSchema,
@@ -24,7 +24,7 @@ export async function generateMetadata({
         ? 'כלים של CartShift Studio לאבחון חנויות, ניהול פרויקטים ושיפור תהליכי ecommerce.'
         : 'CartShift Studio tools for store audits, project visibility, and sharper ecommerce operations.',
       url: '/tools',
-      keywords: ['ecommerce tools', 'store analyzer', 'client portal', 'shopify audit'],
+      keywords: ['ecommerce tools', 'expert store review', 'client portal', 'shopify audit'],
     },
     locale as 'en' | 'he'
   );
@@ -39,12 +39,12 @@ export default async function ToolsPage({ params }: { params: Promise<{ locale: 
 
   const tools = [
     {
-      title: isHe ? 'בודק החנות החינמי' : 'Free Store Analyzer',
+      title: isHe ? 'סקירה מקצועית בחינם' : 'Free Expert Store Review',
       description: isHe
-        ? 'אבחון מהיר לחנות ecommerce שמזהה פערי SEO, ביצועים, UX ואמון.'
-        : 'A fast ecommerce audit for SEO gaps, performance friction, UX issues, and trust signals.',
-      href: '/tools/store-analyzer',
-      Icon: BarChart3,
+        ? 'סקירה אישית של חנות האונליין, עם ממצאים אמיתיים והמלצות מעשיות.'
+        : 'A personal review of your online store with practical, evidence-backed recommendations.',
+      href: '/free-store-review',
+      Icon: ClipboardCheck,
     },
     {
       title: isHe ? 'פורטל לקוחות' : 'Client Portal',

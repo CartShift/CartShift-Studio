@@ -86,6 +86,11 @@ export interface HumanReviewRequest {
   primaryIssue: string;
   intent?: string;
   status: string;
+  reviewStatus?: string;
+  schemaVersion?: number;
+  name?: string;
+  focus?: string;
+  notes?: string;
   qualified?: boolean;
   reviewVisibility: ReviewVisibility;
   publicAuditSlug: string;

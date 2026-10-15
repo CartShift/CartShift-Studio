@@ -246,7 +246,7 @@ The biggest checkout wins are often calmer than teams expect. Fewer blockers. Fe
 
 That is what checkout optimization is really for.
 
-If you want a sharper technical and conversion read before changing the flow, run the [store analyzer](/tools/store-analyzer), read the [conversion audit checklist](/blog/conversion-audit-checklist), or explore our [Shopify services](/solutions/shopify).
+If you want a sharper technical and conversion read before changing the flow, run the [expert store review](/free-store-review), read the [conversion audit checklist](/blog/conversion-audit-checklist), or explore our [Shopify services](/solutions/shopify).
 
 ---he---
 
@@ -485,4 +485,4 @@ checkout במובייל בדרך כלל נכשל בגלל הצטברות של א
 
 זאת המטרה האמיתית של checkout optimization.
 
-אם אתם רוצים קריאה חדה יותר של טכני והמרות לפני שמשנים את ה-flow, הריצו את [כלי ניתוח החנות](/tools/store-analyzer), קראו את [צ׳קליסט אודיט ההמרות](/blog/conversion-audit-checklist), או עברו על [שירותי Shopify שלנו](/solutions/shopify).
+אם אתם רוצים קריאה חדה יותר של טכני והמרות לפני שמשנים את ה-flow, הריצו את [סקירה מקצועית של החנות](/free-store-review), קראו את [צ׳קליסט אודיט ההמרות](/blog/conversion-audit-checklist), או עברו על [שירותי Shopify שלנו](/solutions/shopify).

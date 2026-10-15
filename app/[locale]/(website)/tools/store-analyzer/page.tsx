@@ -1,92 +1,18 @@
-import { setRequestLocale } from 'next-intl/server';
-import { StoreAnalyzerTemplate } from '@/components/templates/StoreAnalyzerTemplate';
-import type { Metadata } from 'next';
-import {
-  generateMetadata as genMeta,
-  generateBreadcrumbSchema,
-  generateSoftwareApplicationSchema,
-} from '@/lib/seo';
-import Script from 'next/script';
+import { redirect } from 'next/navigation';
 import { isAnalyzerIntent } from '@/lib/analyzer/funnel';
 
-export async function generateMetadata({
-  params,
+export default async function LegacyAnalyzerPage({
+  params, searchParams,
 }: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  return genMeta(
-    {
-      title: 'Free E-Commerce Store Analyzer | Instant Audit Tool',
-      description:
-        'Run a free ecommerce audit for your Shopify, WooCommerce, or Magento store. Spot SEO gaps, UX friction, trust issues, and conversion blockers in minutes.',
-      url: '/tools/store-analyzer',
-      keywords: [
-        'shopify audit',
-        'ecommerce audit tool',
-        'store analyzer',
-        'free store audit',
-        'woocommerce analyzer',
-        'magento audit',
-        'ecommerce performance checker',
-        'online store health check',
-        'conversion rate optimization',
-        'ecommerce seo audit',
-      ],
-    },
-    locale as 'en' | 'he'
-  );
-}
-
-export default async function StoreAnalyzerPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ intent?: string }>;
+  params: Promise<{locale:string}>;
+  searchParams: Promise<Record<string,string|undefined>>;
 }) {
-  const { locale } = await params;
-  const query = await searchParams;
-  setRequestLocale(locale as 'en' | 'he');
-
-  const breadcrumbSchema = generateBreadcrumbSchema(
-    [
-      { name: 'Home', url: '/' },
-      { name: 'Tools', url: '/tools' },
-      { name: 'Store Analyzer', url: '/tools/store-analyzer' },
-    ],
-    locale as 'en' | 'he'
-  );
-
-  const softwareSchema = generateSoftwareApplicationSchema({
-    name: 'E-Commerce Store Analyzer',
-    description:
-      'Free tool that analyzes your online store for performance, SEO, UX, and conversion optimization opportunities.',
-    url: '/tools/store-analyzer',
-    operatingSystem: 'Any',
-    applicationCategory: 'BusinessApplication',
-    offers: {
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    locale: locale as 'en' | 'he',
-  });
-
-  return (
-    <>
-      <Script
-        id="analyzer-breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <Script
-        id="analyzer-software-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
-      />
-      <StoreAnalyzerTemplate
-        initialIntent={isAnalyzerIntent(query.intent) ? query.intent : undefined}
-      />
-    </>
-  );
+  const {locale}=await params;
+  const q=await searchParams;
+  const p=new URLSearchParams();
+  if(isAnalyzerIntent(q.intent))p.set('focus',q.intent);
+  for(const key of ['utm_source','utm_medium','utm_campaign','utm_content']) {
+    if(typeof q[key]==='string')p.set(key,q[key]!.slice(0,160));
+  }
+  redirect('/'+locale+'/free-store-review'+(p.size?'?'+p.toString():''));
 }

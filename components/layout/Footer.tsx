@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
       ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
     ],
     tools: [
-      { name: t('analyzer.hero.title') || 'Store Analyzer', href: '/tools/store-analyzer' },
+      { name: t('storeReview.ctaShort'), href: '/free-store-review' },
       { name: t('nav.clientPortal') || 'Client Portal', href: '/tools/client-portal' },
     ],
     company: [
