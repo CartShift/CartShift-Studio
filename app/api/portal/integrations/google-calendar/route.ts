@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getServerSession } from '@/lib/auth/server-auth';
-import { adminDb } from '@/lib/firebase-admin';
+import { adminAuth, adminDb } from '@/lib/firebase-admin';
 import {
   connectGoogleCalendar, listGoogleCalendars, createGoogleCalendarEvent,
   deleteGoogleCalendarEvent, getGoogleFreeBusy, disconnectGoogleCalendar,
@@ -30,8 +29,10 @@ export async function POST(request: NextRequest) {
   if (origin && origin !== request.nextUrl.origin) {
     return NextResponse.json({ error: 'Forbidden origin' }, { status: 403 });
   }
-  if (!adminDb) return NextResponse.json({ error: 'Unavailable' }, { status: 503 });
-  const session = await getServerSession(request);
+  if (!adminDb || !adminAuth) return NextResponse.json({ error: 'Unavailable' }, { status: 503 });
+  const bearer = request.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
+  if (!bearer) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await adminAuth.verifyIdToken(bearer, true).catch(() => null);
   if (!session?.uid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   // Google credentials are always scoped to the authenticated owner.
   const actor = await adminDb.collection('portal_users').doc(session.uid).get();
