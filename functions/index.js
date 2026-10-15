@@ -3112,130 +3112,34 @@ exports.onTeamInviteCreated = onDocumentCreated(
 // EMAIL QUEUE PROCESSOR (for batch/reliable sending)
 // ============================================
 
-const EMAIL_QUEUE_MAX_ATTEMPTS = 3;
-
-/**
- * Firestore events can be delivered more than once. Claim work inside a transaction
- * so duplicate create/update deliveries cannot both send the same email.
- */
-async function processPendingEmailQueue(emailRef, jobId) {
-  const claimed = await admin.firestore().runTransaction(async tx => {
-    const snapshot = await tx.get(emailRef);
-    if (!snapshot.exists) return null;
-    const email = snapshot.data();
-    const attempts = email.attempts || 0;
-    if (email.status !== 'pending') return null;
-    if (attempts >= EMAIL_QUEUE_MAX_ATTEMPTS) {
-      tx.update(emailRef, { status: 'failed', error: 'max_attempts_exceeded' });
-      return null;
-    }
-    tx.update(emailRef, {
-      status: 'processing',
-      retryAfter: admin.firestore.FieldValue.delete(),
-      attempts: attempts + 1,
-      processingStartedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-    return email;
-  });
-  if (!claimed) return;
-
-  const attemptNumber = (claimed.attempts || 0) + 1;
-  const mayRetry = attemptNumber < EMAIL_QUEUE_MAX_ATTEMPTS;
-  try {
-    if (!SUPPORTED_EMAIL_TEMPLATES.includes(claimed.templateName)) {
-      throw new Error(`Unsupported email_queue templateName: ${claimed.templateName}`);
-    }
-    const result = await sendPortalEmail(
-      claimed.to, claimed.subject, claimed.templateName, claimed.data,
-      {
-        tags: claimed.tags || [],
-        uniqueId: jobId,
-        scheduledAt: claimed.scheduledAt,
-      }
-    );
-    await emailRef.update({
-      status: result.success ? 'sent' : 'failed',
-      emailId: result.id || null,
-      error: result.success ? null : result.error || 'send_failed',
-      retryAfter: result.success || !mayRetry ? admin.firestore.FieldValue.delete() :
-        admin.firestore.Timestamp.fromMillis(Date.now() + 5 * 60 * 1000),
-      result,
-      processedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-  } catch (error) {
-    console.error('[EmailQueue] Processing failed', jobId, error);
-    await emailRef.update({
-      status: 'failed',
-      error: error.message || 'queue_processing_failed',
-      retryAfter: !mayRetry || String(error.message || '').startsWith('Unsupported email_queue')
-        ? admin.firestore.FieldValue.delete()
-        : admin.firestore.Timestamp.fromMillis(Date.now() + 5 * 60 * 1000),
-      processedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-  }
-}
+// Keep Firebase triggers as thin adapters: queue policy and recovery live in
+// functions/runtime/email-queue.js and can be tested without Firebase emulator.
+const { createEmailQueueWorker } = require('./runtime/email-queue');
+const emailQueueWorker = createEmailQueueWorker({
+  admin,
+  sendPortalEmail,
+  supportedTemplates: SUPPORTED_EMAIL_TEMPLATES,
+});
 
 exports.processEmailQueue = onDocumentCreated(
   { document: 'email_queue/{emailId}', secrets: [resendApiKey] },
   async event => {
-    if (!event.data) return;
-    await processPendingEmailQueue(event.data.ref, event.params.emailId);
+    if (event.data) await emailQueueWorker.processPending(event.data.ref, event.params.emailId);
   }
 );
 
-// Only retry records moved back into 'pending' by the recovery schedule.
 exports.processRetriedEmailQueue = onDocumentUpdated(
   { document: 'email_queue/{emailId}', secrets: [resendApiKey] },
   async event => {
     if (!event.data || event.data.before.data().status === 'pending' ||
         event.data.after.data().status !== 'pending') return;
-    await processPendingEmailQueue(event.data.after.ref, event.params.emailId);
+    await emailQueueWorker.processPending(event.data.after.ref, event.params.emailId);
   }
 );
 
-// Recovers abandoned 'processing' records after a function crash. Resend receives
-// the stable job ID as an idempotency key across every attempt.
 exports.recoverEmailQueue = onSchedule(
   { schedule: 'every 60 minutes', maxInstances: 1 },
-  async () => {
-    const queue = admin.firestore().collection('email_queue');
-    const now = Date.now();
-    const cutoff = now - 30 * 60 * 1000;
-    // Only query jobs eligible for work. Paging over terminal failures can
-    // otherwise starve recently interrupted jobs as the collection grows.
-    const [abandoned, retries] = await Promise.all([
-      queue.where('status', '==', 'processing')
-        .where('processingStartedAt', '<=', admin.firestore.Timestamp.fromMillis(cutoff))
-        .limit(100).get(),
-      queue.where('status', '==', 'failed')
-        .where('retryAfter', '<=', admin.firestore.Timestamp.fromMillis(now))
-        .limit(100).get(),
-    ]);
-    for (const doc of [...abandoned.docs, ...retries.docs]) {
-      await admin.firestore().runTransaction(async tx => {
-        const current = await tx.get(doc.ref);
-        const data = current.data();
-        if (!data) return;
-        const abandoned = data.status === 'processing' &&
-          data.processingStartedAt?.toMillis &&
-          data.processingStartedAt.toMillis() <= cutoff;
-        const retryDue = data.status === 'failed' &&
-          data.retryAfter?.toMillis &&
-          data.retryAfter.toMillis() <= now &&
-          (data.attempts || 0) > 0;
-        if (!abandoned && !retryDue) return;
-        tx.update(doc.ref, {
-          status: (data.attempts || 0) >= EMAIL_QUEUE_MAX_ATTEMPTS ? 'failed' : 'pending',
-          error: (data.attempts || 0) >= EMAIL_QUEUE_MAX_ATTEMPTS ? 'max_attempts_exceeded' : 'recovered_interrupted_attempt',
-          retryAfter: admin.firestore.FieldValue.delete(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-      });
-    }
-  }
+  async () => emailQueueWorker.recover()
 );
 
 // ============================================
