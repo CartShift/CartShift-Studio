@@ -39,7 +39,8 @@
           "sales_manager": "Sales Manager - Pipeline & Deals",
           "developer": "Developer - Technical Access",
           "member": "Member - Standard access",
-          "viewer": "Viewer - Read-only access"
+          "viewer": "Viewer - Read-only access",
+          "business_development": "Business Development — prospects & follow-ups"
         },
         "errors": {
           "email": "Please enter a valid email address",
