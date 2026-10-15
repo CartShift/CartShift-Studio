@@ -451,7 +451,7 @@ export default function ScheduleConsultationForm({
                     type="submit"
                     variant="primary"
                     className="flex-1 gap-2"
-                    disabled={loading || !title || !scheduledDate || !scheduledTime}
+                    disabled={loading || (isConnected && checkingAvailability) || !title || !scheduledDate || !scheduledTime}
                   >
                     {loading ? (
                       <>
