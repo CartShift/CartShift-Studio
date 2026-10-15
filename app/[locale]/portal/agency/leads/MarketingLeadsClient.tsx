@@ -484,7 +484,7 @@ export default function MarketingLeadsClient() {
                           >
                             <Calendar className="h-4 w-4" />
                           </a>
-                          {lead.contactStatus !== 'contacted' && (
+                          {lead.contactStatus !== 'contacted' && canContactLead(lead) && (
                             <Button
                               size="sm"
                               variant="ghost"
