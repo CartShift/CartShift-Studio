@@ -47,6 +47,7 @@ export const USER_ROLE = {
   OWNER: 'owner',
   ADMIN: 'admin',
   SALES_MANAGER: 'sales_manager',
+  BUSINESS_DEVELOPMENT: 'business_development',
   DEVELOPER: 'developer',
   MEMBER: 'member',
   VIEWER: 'viewer',
