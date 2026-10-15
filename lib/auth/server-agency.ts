@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 import { getServerSession } from '@/lib/auth/server-auth';
 
-const ALLOWED_AGENCY_ROLES = new Set(['owner', 'admin', 'sales_manager', '']);
+const ALLOWED_AGENCY_ROLES = new Set(['owner', 'admin', 'sales_manager', 'business_development', '']);
 
 export async function requireAgencySession(request?: NextRequest): Promise<{ uid: string; email?: string }> {
   const session = await getServerSession(request);
