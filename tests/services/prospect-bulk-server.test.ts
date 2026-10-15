@@ -31,7 +31,7 @@ const path = (id: string) => 'agency_prospects/' + id;
 beforeEach(() => {
   data.clear(); mock.transactionCalls = 0;
   data.set('portal_users/adi', { accountType: 'AGENCY', agencyRole: 'business_development', status: 'active' });
-  data.set('portal_users/owner', { accountType: 'AGENCY', agencyRole: 'owner', status: 'active' });
+  data.set('portal_users/agency_owner', { accountType: 'AGENCY', agencyRole: 'owner', status: 'active' });
   data.set(path(one), { canonicalDomain: 'one.co.il', stage: 'qualified', doNotContact: false });
   data.set(path(two), { canonicalDomain: 'two.co.il', stage: 'qualified', doNotContact: false });
 });
@@ -58,7 +58,7 @@ describe('bounded worklist bulk operations', () => {
     expect(data.get(path(one))?.archived).toBeUndefined();
   });
   it('rejects revoked owners and invalid staff assignments', async () => {
-    data.get('portal_users/owner')!.status = 'suspended';
+    data.get('portal_users/agency_owner')!.status = 'suspended';
     await expect(bulkUpdateProspectWorklist({ prospect_ids: [one], patch: { owner_uid: 'agency_owner' } }, 'adi'))
       .rejects.toThrow('INVALID_OWNER');
   });
