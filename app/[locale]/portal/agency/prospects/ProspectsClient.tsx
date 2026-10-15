@@ -146,7 +146,7 @@ export default function ProspectsClient() {
     onError: () => toast.error(t('scanFailed')),
   });
   const updateSales = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Record<string, string> }) =>
+    mutationFn: ({ id, patch }: { id: string; patch: Record<string, string | boolean> }) =>
       fetchJson<{ updated: boolean }>('/api/portal/agency/prospects/' + id, {
         method: 'PATCH', body: JSON.stringify(patch),
       }),
