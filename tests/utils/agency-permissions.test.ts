@@ -11,6 +11,15 @@ describe('Agency operations permissions', () => {
     }
   });
 
+  it('gives business development a prospect workspace without client finances', () => {
+    expect(canAccessNav('business_development', PERMISSIONS.VIEW_PROSPECTS)).toBe(true);
+    expect(canAccessNav('business_development', PERMISSIONS.VIEW_MARKETING_LEADS)).toBe(true);
+    expect(canAccessNav('business_development', PERMISSIONS.VIEW_SALES_DASHBOARD)).toBe(false);
+    expect(canAccessNav('business_development', PERMISSIONS.MANAGE_PROFIT_SPLITS)).toBe(false);
+    expect(canAccessNav('business_development', PERMISSIONS.MANAGE_CLIENTS)).toBe(false);
+    expect(canAccessNav('business_development', PERMISSIONS.MANAGE_PRICING)).toBe(false);
+  });
+
   it('grants project editing to delivery roles but not read-only agency roles', () => {
     for (const role of ['owner', 'admin', 'sales_manager', 'developer'] as const) {
       expect(canAccessNav(role, PERMISSIONS.MANAGE_PROJECTS)).toBe(true);
