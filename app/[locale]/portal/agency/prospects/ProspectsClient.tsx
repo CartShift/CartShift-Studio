@@ -12,6 +12,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 import { ProspectActivityPanel, type ProspectActivity } from '@/components/portal/prospects/ProspectActivityPanel';
+import { ProspectProposalLinkPanel } from '@/components/portal/prospects/ProspectProposalLinkPanel';
 
 type Prospect = {
   id: string;
@@ -422,7 +423,7 @@ export default function ProspectsClient() {
       {list.data && rows.length === 0 && <p className="py-10 text-center text-surface-500">{t('empty')}</p>}
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(prospect => (
-          <Card key={prospect.id} className="space-y-3 p-4">
+          <Card key={prospect.id} className={`space-y-3 p-4 ${selected === prospect.id ? 'lg:col-span-2' : ''}`}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="truncate font-semibold text-surface-900 dark:text-white">{prospect.brandName}</h2>
@@ -608,6 +609,8 @@ export default function ProspectsClient() {
                       onClick={() => redact.mutate(prospect.id)}>{t('redactProspect')}</Button>
                   </section>
                 )}
+                {canReview && prospect.technicalStatus === 'approved' && !prospect.linkedRequestId &&
+                  <ProspectProposalLinkPanel prospectId={prospect.id} canonicalDomain={prospect.canonicalDomain}/>}
                 {detail.data && <ProspectActivityPanel prospectId={prospect.id}
                   activities={detail.data.activities || []}
                   canContact={['consent_recorded', 'existing_relationship', 'approved_partner_channel'].includes(prospect.outreachEligibility)}
