@@ -26,7 +26,7 @@ vi.mock('@/lib/firebase-admin', () => ({
         const linked = value.linkedMarketingLeadIds;
         records.set(r.path, { ...previous, ...value,
           ...(linked && typeof linked === 'object' && 'operation' in linked
-            ? { linkedMarketingLeadIds: [...(previous.linkedMarketingLeadIds as string[] || []), linked.value] }
+            ? { linkedMarketingLeadIds: [...(previous.linkedMarketingLeadIds as string[] || []), (linked as { operation: string; value: string }).value] }
             : {}),
         });
       },
