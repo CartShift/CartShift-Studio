@@ -1,28 +1,11 @@
 import 'server-only';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase-admin';
+import { validateGoogleRedirectUri } from '@/lib/services/google-calendar-redirect';
 
 const PUBLIC_COLLECTION = 'agency_integrations';
 const SECRET_COLLECTION = 'private_integration_credentials';
 const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
-
-export function validateGoogleRedirectUri(uri: string): boolean {
-  try {
-    const parsed = new URL(uri);
-    if (parsed.username || parsed.password || parsed.search || parsed.hash) return false;
-    if (parsed.pathname !== '/portal/oauth-callback') return false;
-    const allowed = [
-      'https://cart-shift.com',
-      'https://www.cart-shift.com',
-      'https://portal.cart-shift.com',
-      ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : []),
-      ...(process.env.GOOGLE_OAUTH_ALLOWED_ORIGINS || '').split(',').map(v => v.trim()).filter(Boolean),
-    ];
-    return allowed.includes(parsed.origin);
-  } catch {
-    return false;
-  }
-}
 
 function getDb() {
   if (!adminDb) throw new Error('ADMIN_NOT_CONFIGURED');
@@ -127,7 +110,6 @@ export async function connectGoogleCalendar(uid: string, code: string, redirectU
 
 async function getAccess(uid: string) {
   const data = await loadCredentials(uid);
-  const { clientId, clientSecret } = getGoogleConfiguration();
   const expiryMs = data.tokenExpiry?.toMillis?.() ?? 0;
   const { publicRef, secretRef } = refs(uid);
   const metadata = (await publicRef.get()).data() || {};
@@ -136,6 +118,7 @@ async function getAccess(uid: string) {
   if (expiryMs > Date.now() + 5 * 60_000) return { token: data.accessToken, calendarId };
 
   if (!data.refreshToken) throw new Error('GOOGLE_RECONNECT_REQUIRED');
+  const { clientId, clientSecret } = getGoogleConfiguration();
   const response = await fetch(GOOGLE_TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
