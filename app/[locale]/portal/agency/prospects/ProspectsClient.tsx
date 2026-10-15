@@ -515,6 +515,30 @@ export default function ProspectsClient() {
                       onChange={e => setSalesDraft(p => ({ ...p, due_date: e.target.value }))}
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white"/>
                   </label>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="text-sm text-surface-600 dark:text-surface-300">
+                      {he ? 'סוג הזדמנות' : 'Segment'}
+                      <select value={salesDraft.segment} onChange={event => setSalesDraft(p => ({ ...p, segment: event.target.value as Prospect['segment'] }))}
+                        className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 dark:border-surface-700 dark:bg-surface-800">
+                        <option value="merchant">{he ? 'חנות מסחר' : 'Merchant'}</option>
+                        <option value="agency_partner">{he ? 'סוכנות / שותף' : 'Agency partner'}</option>
+                        <option value="unknown">{he ? 'לא סווג' : 'Unknown'}</option>
+                      </select>
+                    </label>
+                    <label className="text-sm text-surface-600 dark:text-surface-300">
+                      {he ? 'עדיפות' : 'Priority'}
+                      <select value={salesDraft.priority} onChange={event => setSalesDraft(p => ({ ...p, priority: event.target.value as Prospect['priority'] }))}
+                        className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 dark:border-surface-700 dark:bg-surface-800">
+                        <option value="high">{he ? 'גבוהה' : 'High'}</option>
+                        <option value="normal">{he ? 'רגילה' : 'Normal'}</option>
+                        <option value="low">{he ? 'נמוכה' : 'Low'}</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label className="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-300">
+                    <input type="checkbox" checked={salesDraft.archived} onChange={event => setSalesDraft(p => ({ ...p, archived: event.target.checked }))}/>
+                    {he ? 'לשמור בארכיון (מחוץ לרשימת העבודה)' : 'Archive (remove from active worklist)'}
+                  </label>
                   <Button type="submit" disabled={updateSales.isPending}>{t('saveSales')}</Button>
                   <p className="text-xs text-surface-500">{t('approvalReminder')}</p>
                 </form>
@@ -567,7 +591,11 @@ export default function ProspectsClient() {
                       onClick={() => redact.mutate(prospect.id)}>{t('redactProspect')}</Button>
                   </section>
                 )}
-                {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>}
+                {detail.data && <ProspectActivityPanel prospectId={prospect.id}
+                  activities={detail.data.activities || []}
+                  canContact={['consent_recorded', 'existing_relationship', 'approved_partner_channel'].includes(prospect.outreachEligibility)}
+                  canApprove={canReview} reviewStatus={prospect.deepReviewStatus || 'not_requested'}/>}
+                {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>
                 {detail.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
                 {detail.data && detail.data.findings.length === 0 && <p className="text-sm text-surface-500">{t('noFindings')}</p>}
                 {detail.data?.findings.map(finding => (
