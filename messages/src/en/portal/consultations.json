@@ -57,7 +57,13 @@
         "failedToComplete": "Failed to complete consultation",
         "notFound": "Consultation not found",
         "calendarConflict": "There is a calendar conflict. Do you want to proceed anyway?",
-        "cancelConfirm": "Are you sure you want to cancel this consultation?"
+        "cancelConfirm": "Are you sure you want to cancel this consultation?",
+        "calendarAvailabilityChecking": "Checking Google Calendar availability…",
+        "calendarAvailabilityAvailable": "No calendar conflict found",
+        "calendarAvailabilityConflict": "Conflict detected with your calendar",
+        "calendarAvailabilityUnknown": "Couldn't check Google Calendar. This time has NOT been verified as available.",
+        "calendarAvailabilityUnknownConfirm": "Google Calendar availability could not be checked. The selected time may conflict with another event. Schedule anyway?",
+        "calendarConnected": "Google Calendar connected"
       }
     }
   }
