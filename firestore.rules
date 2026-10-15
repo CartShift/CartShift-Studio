@@ -733,6 +733,9 @@ service cloud.firestore {
       match /contacts/{contactId} {
         allow read, write: if false;
       }
+      match /activities/{activityId} {
+        allow read, write: if false;
+      }
     }
 
     match /agency_prospect_scan_quotas/{quotaId} {
