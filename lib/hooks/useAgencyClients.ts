@@ -20,9 +20,9 @@ export type EnhancedOrganization = Organization & {
   hasOtherCurrencies?: boolean;
 };
 
-export function useAgencyClients() {
+export function useAgencyClients(options: { enabled?: boolean } = {}) {
   const { loading: auth, isAgency, userData } = usePortalAuth();
-  const shouldFetch = !auth && isAgency;
+  const shouldFetch = !auth && isAgency && (options.enabled ?? true);
   const canViewRevenue = canAccessNav(userData?.agencyRole || 'owner', PERMISSIONS.VIEW_SALES_DASHBOARD);
 
   const {
