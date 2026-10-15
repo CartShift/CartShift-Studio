@@ -87,6 +87,11 @@ describe('commercial transitions cannot be fabricated by sales staff', () => {
     expect(data.get(storePath)?.stage).toBe('lost');
   });
 
+  it('allows an explicit unassign action without impersonating another teammate', async () => {
+    await updateProspectSales(prospectId, { owner_uid: '', next_action: 'Await reassignment' }, 'adi');
+    expect(data.get(storePath)?.ownerUid).toBe('');
+  });
+
   it('permits non-commercial sales updates on a linked quote without changing its stage', async () => {
     state.role = 'owner';
     await linkProspectProposal(prospectId, orgId, quoteId,
