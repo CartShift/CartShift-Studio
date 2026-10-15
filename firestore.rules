@@ -346,7 +346,7 @@ service cloud.firestore {
           let project = get(/databases/$(database)/documents/portal_projects/$(projectId)).data;
           let deliverableId = request.resource.data.get('deliverableId', '');
           return exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
-            !isAgencyUser() &&
+            (!isAgencyUser() && !isBusinessDevelopmentUser()) &&
             project.get('status', '') != 'ready_to_launch' &&
             project.get('reviewRevisions', {}).get(deliverableId, 0) == request.resource.data.get('revision', 0) &&
             request.resource.data.get('updatedAt', request.time) == request.time &&
@@ -488,8 +488,8 @@ service cloud.firestore {
       allow get: if isAuthenticated() && isAgencyUser();
       allow create: if isAuthenticated() && (
         canCreateAgencyRequest() ||
-        (!isAgencyUser() && isMemberOfOrg(request.resource.data.get('orgId', ''))) ||
-        (!isAgencyUser() && isOrgOwner(request.resource.data.get('orgId', '')))
+        ((!isAgencyUser() && !isBusinessDevelopmentUser()) && isMemberOfOrg(request.resource.data.get('orgId', ''))) ||
+        ((!isAgencyUser() && !isBusinessDevelopmentUser()) && isOrgOwner(request.resource.data.get('orgId', '')))
       ) && validNewProjectLink() &&
       (canCreateAgencyRequest() || (
         !isCommercialDocument(request.resource.data) &&
@@ -517,7 +517,7 @@ service cloud.firestore {
       validNewProjectLink() &&
       ((canCreateAgencyRequest() &&
         (!changesAgencyCommercialFields() || canManageAgencyCommercial())) ||
-       (!isAgencyUser() &&
+       ((!isAgencyUser() && !isBusinessDevelopmentUser()) &&
         !isCommercialDocument(resource.data) &&
         !isCommercialDocument(request.resource.data) &&
         !changesAgencyCommercialFields() &&
@@ -532,7 +532,7 @@ service cloud.firestore {
       ));
       allow delete: if isAuthenticated() && (
         isAgencyManager() ||
-        (!isAgencyUser() && !isCommercialDocument(resource.data) && (
+        ((!isAgencyUser() && !isBusinessDevelopmentUser()) && !isCommercialDocument(resource.data) && (
           resource.data.get('createdBy', '') == getUserId() ||
           isOrgOwner(resource.data.get('orgId', ''))
         ))
