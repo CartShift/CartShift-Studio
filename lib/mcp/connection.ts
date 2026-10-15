@@ -97,6 +97,8 @@ export interface TokenGrant {
   scope: string[];
   resource: string;
   expiresAt: number;
+  /** Derived from live agency record; never trusted from stored OAuth token. */
+  actorRole?: string;
 }
 
 export async function requireMcpToken(header: string | null): Promise<TokenGrant> {
@@ -108,14 +110,13 @@ export async function requireMcpToken(header: string | null): Promise<TokenGrant
     throw new Error('UNAUTHENTICATED');
   }
   const actor = await agencyActor(grant.uid); // Rechecks revoked agency access for every request.
-  // Never let business-development OAuth credentials access commercial/client tools.
-  if (actor.role === 'business_development' && grant.scope.some(scope => !scope.startsWith('prospects:'))) {
-    throw new Error('INSUFFICIENT_SCOPE');
-  }
-  return grant;
+  return { ...grant, actorRole: actor.role };
 }
 
 export function may(grant: TokenGrant, scope: McpScope): void {
+  if (grant.actorRole === 'business_development' && !scope.startsWith('prospects:')) {
+    throw new Error('INSUFFICIENT_SCOPE');
+  }
   if (!grant.scope.includes(scope)) throw new Error('INSUFFICIENT_SCOPE');
 }
 
