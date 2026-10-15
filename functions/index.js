@@ -3131,6 +3131,7 @@ async function processPendingEmailQueue(emailRef, jobId) {
     }
     tx.update(emailRef, {
       status: 'processing',
+      retryAfter: admin.firestore.FieldValue.delete(),
       attempts: attempts + 1,
       processingStartedAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -3155,6 +3156,8 @@ async function processPendingEmailQueue(emailRef, jobId) {
       status: result.success ? 'sent' : 'failed',
       emailId: result.id || null,
       error: result.success ? null : result.error || 'send_failed',
+      retryAfter: result.success ? admin.firestore.FieldValue.delete() :
+        admin.firestore.Timestamp.fromMillis(Date.now() + 5 * 60 * 1000),
       result,
       processedAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -3164,6 +3167,9 @@ async function processPendingEmailQueue(emailRef, jobId) {
     await emailRef.update({
       status: 'failed',
       error: error.message || 'queue_processing_failed',
+      retryAfter: String(error.message || '').startsWith('Unsupported email_queue')
+        ? admin.firestore.FieldValue.delete()
+        : admin.firestore.Timestamp.fromMillis(Date.now() + 5 * 60 * 1000),
       processedAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
@@ -3194,15 +3200,21 @@ exports.recoverEmailQueue = onSchedule(
   { schedule: 'every 60 minutes', maxInstances: 1 },
   async () => {
     const snapshot = await admin.firestore().collection('email_queue')
-      .where('status', '==', 'processing').limit(100).get();
+      .where('status', 'in', ['processing', 'failed']).limit(200).get();
     const cutoff = Date.now() - 30 * 60 * 1000;
     for (const doc of snapshot.docs) {
       await admin.firestore().runTransaction(async tx => {
         const current = await tx.get(doc.ref);
         const data = current.data();
-        if (!data || data.status !== 'processing' ||
-            !data.processingStartedAt?.toMillis ||
-            data.processingStartedAt.toMillis() > cutoff) return;
+        if (!data) return;
+        const abandoned = data.status === 'processing' &&
+          data.processingStartedAt?.toMillis &&
+          data.processingStartedAt.toMillis() <= cutoff;
+        const retryDue = data.status === 'failed' &&
+          data.retryAfter?.toMillis &&
+          data.retryAfter.toMillis() <= Date.now() &&
+          (data.attempts || 0) > 0;
+        if (!abandoned && !retryDue) return;
         tx.update(doc.ref, {
           status: (data.attempts || 0) >= EMAIL_QUEUE_MAX_ATTEMPTS ? 'failed' : 'pending',
           error: (data.attempts || 0) >= EMAIL_QUEUE_MAX_ATTEMPTS ? 'max_attempts_exceeded' : 'recovered_interrupted_attempt',
