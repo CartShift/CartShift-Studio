@@ -45,3 +45,5 @@ jobs:
         run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js
       - name: Compile Firebase Functions TypeScript
         run: pnpm build
+      - name: Test durable email queue transitions
+        run: node --test runtime/email-queue.test.js
