@@ -38,11 +38,11 @@ beforeEach(() => {
 describe('bounded worklist bulk operations', () => {
   it('allows safe batching of priorities and assignments to active agency staff', async () => {
     const result = await bulkUpdateProspectWorklist({
-      prospect_ids: [one, two], patch: { owner_uid: 'owner', priority: 'high' },
+      prospect_ids: [one, two], patch: { owner_uid: 'agency_owner', priority: 'high' },
     }, 'adi');
     expect(result.updated).toBe(2);
     expect(result.message_sent).toBe(false);
-    expect(data.get(path(one))?.ownerUid).toBe('owner');
+    expect(data.get(path(one))?.ownerUid).toBe('agency_owner');
     expect(data.get(path(two))?.priority).toBe('high');
   });
   it('rejects duplicate IDs, empty updates and unbounded batches', () => {
@@ -59,7 +59,7 @@ describe('bounded worklist bulk operations', () => {
   });
   it('rejects revoked owners and invalid staff assignments', async () => {
     data.get('portal_users/owner')!.status = 'suspended';
-    await expect(bulkUpdateProspectWorklist({ prospect_ids: [one], patch: { owner_uid: 'owner' } }, 'adi'))
+    await expect(bulkUpdateProspectWorklist({ prospect_ids: [one], patch: { owner_uid: 'agency_owner' } }, 'adi'))
       .rejects.toThrow('INVALID_OWNER');
   });
 });
