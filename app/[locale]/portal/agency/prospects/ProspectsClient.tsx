@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ExternalLink, Loader2, Plus, RefreshCw, Search, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
@@ -11,6 +11,7 @@ import { queryKeys } from '@/lib/utils/query-keys';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
+import { ProspectActivityPanel, type ProspectActivity } from '@/components/portal/prospects/ProspectActivityPanel';
 
 type Prospect = {
   id: string;
@@ -32,6 +33,9 @@ type Prospect = {
   linkedRequestId: string;
   scanStatus: string;
   lastAuditedAt: string | null;
+  segment: 'merchant' | 'agency_partner' | 'unknown';
+  priority: 'high' | 'normal' | 'low';
+  archived: boolean; activityCount: number; deepReviewStatus: string;
   verifiedIssueCount: number;
   updatedAt: string | null;
 };
@@ -45,7 +49,7 @@ type ContactCandidate = {
   id: string; name: string; role: string; businessEmail: string;
   sourceUrl: string; status: string;
 };
-type DetailResponse = { prospect: Prospect; findings: Finding[]; contacts: ContactCandidate[] };
+type DetailResponse = { prospect: Prospect; findings: Finding[]; contacts: ContactCandidate[]; activities: ProspectActivity[] };
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, { ...options, credentials: 'same-origin',
@@ -56,6 +60,7 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 
 export default function ProspectsClient() {
   const t = useTranslations('portal.prospects');
+  const he = useLocale() === 'he';
   const queryClient = useQueryClient();
   const eligibilityLabels: Record<string, string> = {
     review_required: t('eligibility.review_required'),
@@ -78,6 +83,9 @@ export default function ProspectsClient() {
   const [search, setSearch] = useState('');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [myOnly, setMyOnly] = useState(false);
+  const [segmentFilter, setSegmentFilter] = useState<'all' | 'merchant' | 'agency_partner'>('all');
+  const [activeOnly, setActiveOnly] = useState(true);
+  const [highOnly, setHighOnly] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -88,6 +96,7 @@ export default function ProspectsClient() {
   } | null>(null);
   const [salesDraft, setSalesDraft] = useState({
     stage: 'needs_review', next_action: '', due_date: '', owner_uid: '',
+    segment: 'unknown' as Prospect['segment'], priority: 'normal' as Prospect['priority'], archived: false,
   });
   const [reviewNote, setReviewNote] = useState('');
   const [reviewEvidence, setReviewEvidence] = useState('');
@@ -241,12 +250,21 @@ export default function ProspectsClient() {
   });
   const rows = (list.data?.prospects || []).filter(row =>
     (!verifiedOnly || row.verifiedIssueCount > 0) &&
+    (!activeOnly || !row.archived) &&
+    (segmentFilter === 'all' || row.segment === segmentFilter) &&
+    (!highOnly || row.priority === 'high') &&
     (!myOnly || row.ownerUid === user?.uid) &&
     [row.brandName, row.canonicalDomain, row.stage].some(value =>
       value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
     )
-  ).sort((a, b) => b.verifiedIssueCount - a.verifiedIssueCount ||
-    (a.nextActionAt || '9999').localeCompare(b.nextActionAt || '9999'));
+  ).sort((a, b) => Number(b.priority === 'high') - Number(a.priority === 'high') ||
+    (a.nextActionAt || '9999').localeCompare(b.nextActionAt || '9999') ||
+    b.verifiedIssueCount - a.verifiedIssueCount);
+  const allProspects = list.data?.prospects || [];
+  const activeProspects = allProspects.filter(row => !row.archived);
+  const today = new Date().toISOString().slice(0, 10);
+  const dueCount = activeProspects.filter(row => row.nextActionAt && row.nextActionAt <= today).length;
+  const reviewCount = activeProspects.filter(row => row.deepReviewStatus === 'requested').length;
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6">
@@ -404,7 +422,8 @@ export default function ProspectsClient() {
               <Button variant="outline" onClick={() => {
                 setSelected(p => p === prospect.id ? null : prospect.id);
                 setSalesDraft({ stage: prospect.stage, next_action: prospect.nextAction || '',
-                  due_date: prospect.nextActionAt || '', owner_uid: prospect.ownerUid || '' });
+                  due_date: prospect.nextActionAt || '', owner_uid: prospect.ownerUid || '',
+                  segment: prospect.segment, priority: prospect.priority, archived: prospect.archived });
               }}>
                 {selected === prospect.id ? t('close') : t('evidence')}
               </Button>
@@ -417,7 +436,8 @@ export default function ProspectsClient() {
                     updateSales.mutate({ id: prospect.id, patch: {
                       ...(salesDraft.stage === 'won' ? {} : { stage: salesDraft.stage }),
                       next_action: salesDraft.next_action,
-                      ...(salesDraft.due_date ? { due_date: salesDraft.due_date } : {}),
+                      due_date: salesDraft.due_date,
+                      segment: salesDraft.segment, priority: salesDraft.priority, archived: salesDraft.archived,
                       ...(salesDraft.owner_uid ? { owner_uid: salesDraft.owner_uid } : {}),
                     } });
                   }}>
