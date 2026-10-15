@@ -164,7 +164,8 @@ service cloud.firestore {
         isMemberOfOrg(orgId) ||
         isOrgOwner(orgId)
       );
-      allow create: if isAuthenticated() && request.resource.data.get('createdBy', '') == getUserId();
+      allow create: if isAuthenticated() && !isBusinessDevelopmentUser() &&
+        request.resource.data.get('createdBy', '') == getUserId();
       // Only admins/owners can update (security fix - was allowing any member)
       allow update: if canAdminOrg(orgId);
       allow delete: if false;
