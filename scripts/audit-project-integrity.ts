@@ -8,6 +8,7 @@
  */
 import * as admin from 'firebase-admin';
 import { inspectProjectDocumentGrowth } from '@/lib/domain/project-document-growth';
+import { resolveAuditReference } from '@/lib/domain/project-audit-coverage';
 
 const MAX = 20000;
 function args() {
@@ -29,19 +30,20 @@ function args() {
 
 async function scan(db: admin.firestore.Firestore, collection: string, max: number) {
   const rows: Array<{ id: string; data: admin.firestore.DocumentData }> = [];
+  const base = db.collection(collection).orderBy(admin.firestore.FieldPath.documentId());
   let cursor: admin.firestore.QueryDocumentSnapshot | undefined;
   while (rows.length < max) {
-    let query = db.collection(collection).orderBy(admin.firestore.FieldPath.documentId()).limit(
-      Math.min(200, max - rows.length),
-    );
-    if (cursor) query = query.startAfter(cursor);
-    const page = await query.get();
-    if (page.empty) break;
+    const take = Math.min(200, max - rows.length);
+    const page = await (cursor ? base.startAfter(cursor) : base).limit(take).get();
+    if (page.empty) return { rows, complete: true };
     rows.push(...page.docs.map(doc => ({ id: doc.id, data: doc.data() })));
     cursor = page.docs.at(-1);
-    if (page.size < 200) break;
+    if (page.size < take) return { rows, complete: true };
   }
-  return rows;
+  // One read proves whether the cap really truncated a collection; reaching
+  // the cap alone is not evidence of unseen documents.
+  const next = await base.startAfter(cursor!).limit(1).get();
+  return { rows, complete: next.empty };
 }
 
 async function main() {
@@ -53,10 +55,13 @@ async function main() {
     admin.initializeApp({ projectId, credential });
   }
   const db = admin.firestore();
-  const [requests, projects] = await Promise.all([
+  const [requestScan, projectScan] = await Promise.all([
     scan(db, 'portal_requests', count),
     scan(db, 'portal_projects', count),
   ]);
+  const requests = requestScan.rows;
+  const projects = projectScan.rows;
+  const unverifiedLinks = { projectLinks: 0, originProposals: 0, parentRequests: 0 };
   const projectById = new Map(projects.map(item => [item.id, item.data]));
   const requestById = new Map(requests.map(item => [item.id, item.data]));
   const problems: Array<{ code: string; requestId?: string; projectId?: string }> = [];
@@ -65,17 +70,23 @@ async function main() {
     const row = request.data;
     const commercial = row.isBillable === true || !!row.publicToken || row.requestRole === 'bundle';
     if (row.projectId) {
-      const project = projectById.get(row.projectId);
-      if (!project) problems.push({ code: 'UNRESOLVED_PROJECT_LINK', requestId: request.id, projectId: row.projectId });
-      else if (project.orgId !== row.orgId) problems.push({ code: 'CROSS_ORGANIZATION_LINK', requestId: request.id, projectId: row.projectId });
+      const target = resolveAuditReference(String(row.projectId), projectById, projectScan.complete);
+      if (target.status === 'missing') {
+        problems.push({ code: 'UNRESOLVED_PROJECT_LINK', requestId: request.id, projectId: row.projectId });
+      } else if (target.status === 'unverified') {
+        unverifiedLinks.projectLinks++;
+      } else if (target.value.orgId !== row.orgId) {
+        problems.push({ code: 'CROSS_ORGANIZATION_LINK', requestId: request.id, projectId: row.projectId });
+      }
     }
     if (commercial && ['ACCEPTED', 'PAID'].includes(row.status) && !row.projectId) {
       problems.push({ code: 'APPROVED_PROPOSAL_WITHOUT_PROJECT', requestId: request.id });
     }
     if (row.parentRequestId) {
-      const parent = requestById.get(row.parentRequestId);
-      if (parent && (parent.orgId !== row.orgId ||
-        (parent.projectId && parent.projectId !== row.projectId))) {
+      const parent = resolveAuditReference(String(row.parentRequestId), requestById, requestScan.complete);
+      if (parent.status === 'unverified') unverifiedLinks.parentRequests++;
+      if (parent.status === 'found' && (parent.value.orgId !== row.orgId ||
+        (parent.value.projectId && parent.value.projectId !== row.projectId))) {
         problems.push({ code: 'CHILD_PROJECT_MISMATCH', requestId: request.id });
       }
     }
@@ -100,8 +111,10 @@ async function main() {
       problems.push({ code: 'PROJECT_DOCUMENT_SHAPE_INVALID', projectId: project.id });
     }
     if (data.originProposalId) {
-      const proposal = requestById.get(data.originProposalId);
-      if (!proposal || proposal.orgId !== data.orgId) {
+      const proposal = resolveAuditReference(String(data.originProposalId), requestById, requestScan.complete);
+      if (proposal.status === 'unverified') {
+        unverifiedLinks.originProposals++;
+      } else if (proposal.status === 'missing' || proposal.value.orgId !== data.orgId) {
         problems.push({ code: 'INVALID_ORIGIN_PROPOSAL', projectId: project.id });
       }
     }
@@ -113,7 +126,13 @@ async function main() {
   console.log(JSON.stringify({
     firebaseProject: projectId,
     auditedRequests: requests.length, auditedProjects: projects.length,
-    truncated: requests.length === count || projects.length === count,
+    truncated: !requestScan.complete || !projectScan.complete,
+    scanCoverage: {
+      requests: { inspected: requests.length, complete: requestScan.complete },
+      projects: { inspected: projects.length, complete: projectScan.complete },
+      unverifiedLinks,
+      note: 'Unseen references in truncated scans are unverified, not necessarily broken. Increase --max-docs or validate individually before making changes.',
+    },
     issueCount: problems.length,
     projectDocumentGrowth: {
       note: 'Approximate UTF-8 JSON sizes, not Firestore-encoded bytes; per-field overhead is excluded. Verify large documents before planning a subcollection migration.',

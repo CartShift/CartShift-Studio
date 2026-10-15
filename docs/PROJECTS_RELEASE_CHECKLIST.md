@@ -27,7 +27,7 @@ Run the bounded audit only after confirming the explicit Firebase target and rea
 
 `pnpm audit:portal:projects --project=cartshiftstudio --max-docs=2000`
 
-The output reports broken proposal/project links, potential billing scope issues, and **estimated** UTF-8 JSON sizes for the largest project documents. These are *not* exact Firestore protobuf sizes. Large `workLogs`, `changes`, `updates` or `deliverables` arrays may justify migrating that collection to subcollections, but decide only after reviewing size, contention and read patterns. The audit never writes documents, issues payments or invents ledger entries.
+The output reports broken proposal/project links, potential billing scope issues, and **estimated** UTF-8 JSON sizes for the largest project documents. It also reports whether each collection was completely scanned. Missing linked IDs outside a capped scan are marked **unverified**, not falsely classified as broken. Increase `--max-docs` or inspect those IDs before preparing a migration. These are *not* exact Firestore protobuf sizes. Large `workLogs`, `changes`, `updates` or `deliverables` arrays may justify migrating that collection to subcollections, but decide only after reviewing size, contention and read patterns. The audit never writes documents, issues payments or invents ledger entries.
 
 Run `pnpm test:firestore:rules` locally for Firestore **and Storage** emulator coverage (with Java and the Firebase CLI available). Do not mistake emulator results for active production rules.
 
