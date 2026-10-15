@@ -2,6 +2,7 @@ import 'server-only';
 import { createHash } from 'node:crypto';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
+import { inferProspectSegment } from '@/lib/domain/prospect-activities';
 import { prospectContactCandidateSchema } from '@/lib/domain/prospect-contacts';
 import { adminDb } from '@/lib/firebase-admin';
 import { normalizeProspectStoreUrl, prospectDocumentId, prospectFindingSchema,
@@ -53,6 +54,13 @@ function summary(id: string, data: Record<string, unknown>) {
     linkedOrgId: String(data.linkedOrgId || ''),
     linkedRequestId: String(data.linkedRequestId || ''),
     scanStatus: String(data.scanStatus || 'not_scanned'),
+    segment: inferProspectSegment(String(data.researchNote || ''), String(data.segment || '')),
+    priority: String(data.priority || 'normal'),
+    archived: data.archived === true || (data.archived === undefined && String(data.researchNote || '').includes('ארכיון לא-פעיל')),
+    activityCount: Number(data.activityCount || 0),
+    deepReviewStatus: String(data.deepReviewStatus || 'not_requested'),
+    lastContactedAt: iso(data.lastContactedAt),
+    lastActivityAt: iso(data.lastActivityAt),
     lastScanPageCount: Number(data.lastScanPageCount || 0),
     verifiedIssueCount: Number(data.verifiedIssueCount || 0),
     lastAuditedAt: iso(data.lastAuditedAt),
@@ -110,9 +118,10 @@ export async function getProspect(rawId: string, uid: string) {
   const ref = db().collection(COLLECTION).doc(prospectId);
   const snap = await ref.get();
   if (!snap.exists) throw new Error('Prospect not found');
-  const [findings, contacts] = await Promise.all([
+  const [findings, contacts, activities] = await Promise.all([
     ref.collection('findings').orderBy('createdAt', 'desc').limit(50).get(),
     ref.collection('contacts').orderBy('createdAt', 'desc').limit(30).get(),
+    ref.collection('activities').orderBy('recordedAt', 'desc').limit(60).get(),
   ]);
   return { prospect: summary(prospectId, snap.data() || {}),
     findings: findings.docs.map(doc => ({
@@ -122,6 +131,11 @@ export async function getProspect(rawId: string, uid: string) {
       verificationStatus: doc.data().verificationStatus || 'unverified',
       reviewNote: doc.data().reviewNote || '',
       observedAt: iso(doc.data().createdAt),
+    })),
+    activities: activities.docs.map(doc => ({
+      id: doc.id, kind: doc.data().kind, direction: doc.data().direction,
+      outcome: doc.data().outcome, note: doc.data().note, actorUid: doc.data().actorUid,
+      occurredAt: iso(doc.data().occurredAt), recordedAt: iso(doc.data().recordedAt),
     })),
     contacts: contacts.docs.map(doc => ({
       id: doc.id, role: doc.data().role, name: doc.data().name || '',
