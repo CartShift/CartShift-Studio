@@ -9,7 +9,10 @@ export const prospectSalesUpdateSchema = z.object({
   stage: prospectStageSchema.optional(),
   owner_uid: z.string().regex(/^[a-zA-Z0-9_-]{6,128}$/).optional(),
   next_action: z.string().trim().max(500).optional(),
-  due_date: z.iso.date().optional(),
+  due_date: z.union([z.iso.date(), z.literal('')]).optional(),
+  segment: z.enum(['merchant', 'agency_partner', 'unknown']).optional(),
+  priority: z.enum(['high', 'normal', 'low']).optional(),
+  archived: z.boolean().optional(),
   note: z.string().trim().min(3).max(2000).optional(),
 }).strict().refine(value => Object.values(value).some(item => item !== undefined), 'Empty update');
 
