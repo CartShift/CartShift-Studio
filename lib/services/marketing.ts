@@ -78,7 +78,7 @@ export function getMarketingLeadScoreDelta(
   if (data.source === 'store_analyzer') score += 20;
   if (data.source === 'human_review') score += 45;
   if (data.source === 'newsletter' || data.source === 'newsletter_footer') score += 5;
-  if (data.source === 'blog_sidebar') score += 5;
+  if (data.source === 'blog_sidebar') score += 8;
   if (data.source === 'blog_cta' || data.source === 'service_page_cta') score += 10;
 
   if (typeof data.overallScore === 'number') {

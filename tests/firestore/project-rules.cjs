@@ -103,6 +103,9 @@ async function main() {
     // Firebase Client SDK, including by another agency member or its owner.
     await env.withSecurityRulesDisabled(async admin => {
       const db = admin.firestore();
+      await db.doc('agency_integrations/suspended_google_calendar').set({
+        userId: 'suspended', provider: 'google_calendar', status: 'connected', selectedCalendarId: 'primary',
+      });
       await db.doc('agency_integrations/agency_google_calendar').set({
         userId: 'agency', provider: 'google_calendar',
         status: 'connected', selectedCalendarId: 'primary',
@@ -116,6 +119,8 @@ async function main() {
     await assertFails(developer.doc('agency_integrations/agency_google_calendar').get());
     await assertFails(client.doc('agency_integrations/agency_google_calendar').get());
     await assertFails(suspended.doc('agency_integrations/agency_google_calendar').get());
+    await assertFails(suspended.doc('agency_integrations/suspended_google_calendar').get());
+    await assertFails(suspended.doc('agency_integrations/suspended_google_calendar').update({selectedCalendarId: 'other'}));
     await assertSucceeds(agency.doc('agency_integrations/agency_google_calendar').update({
       selectedCalendarId: 'calendar-safe',
     }));

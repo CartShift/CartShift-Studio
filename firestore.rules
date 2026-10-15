@@ -704,7 +704,7 @@ service cloud.firestore {
     // Credentials live in private_integration_credentials, accessible only via Admin SDK.
     match /agency_integrations/{integrationId} {
       function isConnectionOwner() {
-        return isAuthenticated() &&
+        return isAgencyUser() &&
           integrationId == getUserId() + '_google_calendar';
       }
       allow read: if isConnectionOwner();

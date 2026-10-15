@@ -46,7 +46,7 @@ This branch does **not** automatically deploy Firebase rules or functions.
 - Verify Vercel *production* has `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (not prefixed with `NEXT_PUBLIC_`), and `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`. Verify Vercel `CONTACT_EMAIL` resolves to the correct agency inbox (or deliberately accept the documented fallback `hello@cart-shift.com`).
 - Confirm the Google OAuth console authorizes exactly the callback URI for each allowed origin. Additional origins are set only via server-side `GOOGLE_OAUTH_ALLOWED_ORIGINS`.
 - Capture current production behavior for Calendar login, list, create, free/busy and disconnect with a test agency account.
-- Require targeted automated tests + TypeScript validation to pass. Do not generate Vercel preview deployments.
+- Require targeted automated tests + TypeScript validation to pass. Do not generate Vercel preview deployments. Verified 2026-10-15: Next.js 16.2.7 optimized production build succeeded inside temporary Vercel Sandbox using CI-stub Firebase values (compilation, typechecking, routes). This does NOT validate production secrets or connectivity.
 
 **Gate 1 — Application deploy**
 
@@ -95,4 +95,4 @@ No preview builds or automatic wide CI on every documentation-only change. Prefe
 
 - The Vercel connector returned HTTP 403 when listing environment-variable metadata on 2026-10-15. Production config and credentials are **not verified** by this branch.
 - Google Calendar legacy Cloud Functions remain until the coordinated application/rules migration is proven. Their older token handling must not become the future implementation.
-- Contact inquiry migration and queue worker extraction are implemented in this branch. Newsletter/marketing HTTP migration, full modularization of the Functions entrypoint, complete live OAuth smoke tests, production build and production deployment remain outstanding.
+- Contact inquiry migration and queue worker extraction are implemented in this branch. Newsletter/marketing HTTP migration, full modularization of the Functions entrypoint, complete live OAuth smoke tests, production secret verification, live integration smoke tests and deployment remain outstanding.
