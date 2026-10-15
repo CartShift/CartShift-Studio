@@ -54,6 +54,9 @@ export async function updateProspectSales(prospectId: string, raw: unknown, uid:
     if (input.owner_uid) patch.ownerUid = input.owner_uid;
     if (input.next_action !== undefined) patch.nextAction = input.next_action;
     if (input.due_date !== undefined) patch.nextActionAt = input.due_date;
+    if (input.segment !== undefined) patch.segment = input.segment;
+    if (input.priority !== undefined) patch.priority = input.priority;
+    if (input.archived !== undefined) patch.archived = input.archived;
     tx.update(ref, patch);
     tx.create(event, {
       uid, action: 'prospect.sales_update', targetId: prospectId, actorRole: actor.role,
