@@ -420,7 +420,13 @@ export default function ProspectsClient() {
       </div>
       {list.isLoading && <p role="status" className="text-sm text-surface-500">{t('loading')}</p>}
       {list.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
-      {list.data && rows.length === 0 && <p className="py-10 text-center text-surface-500">{t('empty')}</p>}
+      {list.data && rows.length === 0 && <div className="rounded-xl border border-dashed border-surface-200 bg-surface-50 px-6 py-10 text-center dark:border-surface-700 dark:bg-surface-900">
+        <p className="font-medium text-surface-800 dark:text-surface-200">{he ? 'אין לידים שמתאימים לסינון הנוכחי' : 'No prospects match this view'}</p>
+        <p className="mt-1 text-sm text-surface-500">{he ? 'אפשר להרחיב את החיפוש או לעבור ללידים מהארכיון.' : 'Try a broader search or include archived prospects.'}</p>
+        <Button variant="outline" onClick={() => { setSearch(''); setSegmentFilter('all'); setActiveOnly(false); setHighOnly(false); setVerifiedOnly(false); setMyOnly(false); }}>
+          {he ? 'ניקוי מסננים' : 'Clear filters'}
+        </Button>
+      </div>
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(prospect => (
           <Card key={prospect.id} className={`space-y-3 p-4 ${selected === prospect.id ? 'lg:col-span-2' : ''}`}>
@@ -459,7 +465,10 @@ export default function ProspectsClient() {
             </p>
             <p className="text-xs text-surface-500">{t('scanState')}: {prospect.scanStatus}</p>
             {prospect.nextAction && <p className="text-sm text-surface-600 dark:text-surface-300">{t('nextAction')}: {prospect.nextAction}</p>}
-            {prospect.nextActionAt && <p className="text-xs text-surface-500">{t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span></p>}
+            {prospect.nextActionAt && <p className={`text-xs ${prospect.nextActionAt < today && !['won', 'lost'].includes(prospect.stage) ? 'font-semibold text-amber-700 dark:text-amber-300' : 'text-surface-500'}`}>
+              {prospect.nextActionAt < today && !['won', 'lost'].includes(prospect.stage) ? (he ? 'באיחור · ' : 'Overdue · ') : ''}
+              {t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span>
+            </p>}
             {prospect.verifiedIssueCount > 0 && <p className="text-xs text-surface-500">{t('verifiedCount', { count: prospect.verifiedIssueCount })}</p>}
             {prospect.linkedRequestId && <a
               href={getPortalPath('/requests/' + encodeURIComponent(prospect.linkedRequestId))}
@@ -501,7 +510,10 @@ export default function ProspectsClient() {
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
                         'in_conversation', 'proposal', 'won', 'lost', 'suppressed'].map(stage => (
-                        <option key={stage} value={stage} disabled={stage === 'won' || stage === 'suppressed'}>
+                        <option key={stage} value={stage} disabled={['won', 'suppressed'].includes(stage) ||
+                          (['contact_ready', 'in_conversation'].includes(stage) &&
+                            !['consent_recorded', 'existing_relationship', 'approved_partner_channel'].includes(prospect.outreachEligibility)) ||
+                          (stage === 'proposal' && prospect.technicalStatus !== 'approved')}>
                           {stageLabels[stage] || stage}
                         </option>
                       ))}
@@ -559,6 +571,9 @@ export default function ProspectsClient() {
                   </label>
                   <Button type="submit" disabled={updateSales.isPending}>{t('saveSales')}</Button>
                   <p className="text-xs text-surface-500">{t('approvalReminder')}</p>
+                  {prospect.technicalStatus !== 'approved' && <p className="text-xs text-amber-700 dark:text-amber-300">
+                    {he ? 'לפני יצירת הצעת מחיר נדרש אישור מקצועי.' : 'A technical review is required before proposing work.'}
+                  </p>}
                 </form>
                 {canReview && (
                   <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
