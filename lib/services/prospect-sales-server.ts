@@ -53,7 +53,7 @@ export async function updateProspectSales(prospectId: string, raw: unknown, uid:
         input.stage !== current.stage) throw new Error('PROPOSAL_LINK_REQUIRED');
     const patch: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
     if (input.stage) patch.stage = input.stage;
-    if (input.owner_uid) patch.ownerUid = input.owner_uid;
+    if (input.owner_uid !== undefined) patch.ownerUid = input.owner_uid;
     if (input.next_action !== undefined) patch.nextAction = input.next_action;
     if (input.due_date !== undefined) patch.nextActionAt = input.due_date;
     if (input.segment !== undefined) patch.segment = input.segment;
