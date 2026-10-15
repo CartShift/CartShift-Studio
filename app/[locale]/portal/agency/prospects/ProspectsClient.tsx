@@ -598,6 +598,7 @@ export default function ProspectsClient() {
                   <label className="block text-sm text-surface-600 dark:text-surface-300">
                     {t('stage')}
                     <select value={salesDraft.stage}
+                      disabled={Boolean(prospect.linkedRequestId && ['proposal', 'won'].includes(prospect.stage))}
                       onChange={e => setSalesDraft(p => ({ ...p, stage: e.target.value }))}
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
