@@ -28,6 +28,9 @@ describe('prospect commercial and compliance guards', () => {
       stage: 'proposal', paidAt: '2026-10-14T10:00:00Z',
     }).success).toBe(false);
     expect(prospectSalesUpdateSchema.safeParse({
+      priority: 'high', segment: 'merchant', archived: false, due_date: '',
+    }).success).toBe(true);
+    expect(prospectSalesUpdateSchema.safeParse({
       stage: 'qualified', next_action: 'Schedule an approved business discovery call',
       due_date: '2026-10-20',
     }).success).toBe(true);
