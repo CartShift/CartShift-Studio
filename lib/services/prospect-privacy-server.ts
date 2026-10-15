@@ -27,7 +27,7 @@ export async function redactProspect(prospectId: string, uid: string) {
   let removed = 0;
   // Small, bounded batches avoid Firestore's 500-operation batch limit.
   // Retrying after a partial failure is safe because suppression is sticky.
-  for (const child of ['findings', 'contacts']) {
+  for (const child of ['findings', 'contacts', 'activities']) {
     for (;;) {
       const docs = await ref.collection(child).limit(100).get();
       if (docs.empty || docs.docs.length === 0) break;
