@@ -255,7 +255,8 @@ export async function getFreeBusyIntervals(
     return (response.busy || []).map(slot => ({ start: new Date(slot.start), end: new Date(slot.end) }));
   } catch (error) {
     Logger.warn('Failed to check calendar availability', { error });
-    return [];
+    // A failed lookup is unknown availability, never an empty/available calendar.
+    throw new Error('GOOGLE_CALENDAR_AVAILABILITY_UNVERIFIED');
   }
 }
 
