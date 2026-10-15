@@ -612,7 +612,7 @@ export default function ProspectsClient() {
                       next_action: salesDraft.next_action,
                       due_date: salesDraft.due_date,
                       segment: salesDraft.segment, priority: salesDraft.priority, archived: salesDraft.archived,
-                      ...(salesDraft.owner_uid ? { owner_uid: salesDraft.owner_uid } : {}),
+                      owner_uid: salesDraft.owner_uid,
                     } });
                   }}>
                   <label className="block text-sm text-surface-600 dark:text-surface-300">
