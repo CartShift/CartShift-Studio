@@ -71,7 +71,7 @@ export async function persistContactInquiry(input: ContactFormData): Promise<{ s
     }, { merge: true });
 
     tx.create(marketingEventRef, {
-      leadId, event: 'project_inquiry_started', source: 'contact_form',
+      leadId, type: 'project_inquiry_started', source: 'contact_form',
       locale, createdAt: now,
     });
 
