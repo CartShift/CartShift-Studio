@@ -7,7 +7,7 @@ export const prospectStageSchema = z.enum([
 
 export const prospectSalesUpdateSchema = z.object({
   stage: prospectStageSchema.optional(),
-  owner_uid: z.string().regex(/^[a-zA-Z0-9_-]{6,128}$/).optional(),
+  owner_uid: z.union([z.string().regex(/^[a-zA-Z0-9_-]{6,128}$/), z.literal('')]).optional(),
   next_action: z.string().trim().max(500).optional(),
   due_date: z.union([z.iso.date(), z.literal('')]).optional(),
   segment: z.enum(['merchant', 'agency_partner', 'unknown']).optional(),
