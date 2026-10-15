@@ -73,16 +73,57 @@ export async function listProspects(raw: unknown, uid: string) {
   const input = z.object({
     query: z.string().trim().max(150).optional(),
     limit: z.number().int().min(1).max(100).optional(),
+    cursor: z.string().regex(/^prospect_[a-f0-9]{32}$/).optional(),
+    segment: z.enum(['merchant', 'agency_partner', 'unknown']).optional(),
+    priority: z.enum(['high', 'normal', 'low']).optional(),
+    active_only: z.boolean().optional(),
+    owner_uid: z.string().max(128).optional(),
+    verified_only: z.boolean().optional(),
   }).strict().parse(raw);
-  const snapshot = await db().collection(COLLECTION).orderBy('updatedAt', 'desc').limit(100).get();
-  const all = snapshot.docs.map(doc => summary(doc.id, doc.data()));
-  const filter = (input.query || '').toLocaleLowerCase();
-  const filtered = filter ? all.filter(x =>
-    [x.brandName, x.canonicalDomain, x.stage].some(s => s.toLocaleLowerCase().includes(filter))
-  ) : all;
-  const limit = input.limit || 60;
-  return { prospects: filtered.slice(0, limit), truncated: snapshot.size === 100 || filtered.length > limit,
-    scanningEnabled: process.env.PROSPECT_SCANS_ENABLED === 'true' };
+  const limit = input.limit || 40;
+  const items: ReturnType<typeof summary>[] = [];
+  const search = (input.query || '').toLocaleLowerCase();
+  const collection = db().collection(COLLECTION);
+  let query = collection.orderBy('updatedAt', 'desc');
+  if (input.cursor) {
+    const cursor = await collection.doc(input.cursor).get();
+    if (!cursor.exists) throw new Error('INVALID_PAGE_CURSOR');
+    query = query.startAfter(cursor);
+  }
+  let nextCursor: string | null = null;
+  let truncated = false;
+  // Bounded server-side filtering; cursor progresses by the last scanned document,
+  // so it never silently skips matching results when a page fills mid-batch.
+  for (let page = 0; page < 10; page++) {
+    const batch = await query.limit(100).get();
+    if (batch.empty) { truncated = false; nextCursor = null; break; }
+    let scanned = 0;
+    for (const doc of batch.docs) {
+      scanned++;
+      const item = summary(doc.id, doc.data());
+      nextCursor = doc.id;
+      if (input.segment && item.segment !== input.segment) continue;
+      if (input.priority && item.priority !== input.priority) continue;
+      if (input.active_only && item.archived) continue;
+      if (input.owner_uid && item.ownerUid !== input.owner_uid) continue;
+      if (input.verified_only && item.verifiedIssueCount < 1) continue;
+      if (search && ![item.brandName, item.canonicalDomain, item.stage, item.researchNote]
+        .some(value => value.toLocaleLowerCase().includes(search))) continue;
+      items.push(item);
+      if (items.length === limit) break;
+    }
+    if (items.length === limit) {
+      truncated = scanned < batch.size || batch.size === 100;
+      if (!truncated) nextCursor = null;
+      break;
+    }
+    if (batch.size < 100) { truncated = false; nextCursor = null; break; }
+    truncated = true;
+    const last = batch.docs[batch.docs.length - 1];
+    nextCursor = last.id;
+    query = collection.orderBy('updatedAt', 'desc').startAfter(last);
+  }
+  return { prospects: items, truncated, nextCursor, scanningEnabled: process.env.PROSPECT_SCANS_ENABLED === 'true' };
 }
 
 export async function upsertProspect(raw: unknown, uid: string) {
