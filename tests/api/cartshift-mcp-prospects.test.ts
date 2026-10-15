@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  list: vi.fn(), get: vi.fn(), upsert: vi.fn(), finding: vi.fn(), contact: vi.fn(), scan: vi.fn(), update: vi.fn(), link: vi.fn(), batch: vi.fn(),
+  list: vi.fn(), get: vi.fn(), upsert: vi.fn(), finding: vi.fn(), contact: vi.fn(), scan: vi.fn(), update: vi.fn(), link: vi.fn(), batch: vi.fn(), activity: vi.fn(),
 }));
 vi.mock('@/lib/firebase-admin', () => ({ adminDb: null }));
 vi.mock('@/lib/services/prospect-scan-service', () => ({ scanProspect: mocks.scan }));
+vi.mock('@/lib/services/prospect-activities-server', () => ({ addProspectActivity: mocks.activity }));
 vi.mock('@/lib/services/prospect-sales-server', () => ({ updateProspectSales: mocks.update, linkProspectProposal: mocks.link }));
 vi.mock('@/lib/services/prospects-server', () => ({
   listProspects: mocks.list, getProspect: mocks.get,
@@ -41,6 +42,7 @@ describe('CartShift ChatGPT research connector', () => {
       ['add_prospect_contact_candidate', 'prospects:write'],
       ['update_prospect_sales', 'prospects:write'],
       ['link_prospect_proposal', 'prospects:write'],
+      ['log_prospect_activity', 'prospects:write'],
       ['scan_prospect', 'prospects:scan'],
     ]);
   });
