@@ -36,7 +36,25 @@ service cloud.firestore {
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
                get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
               ) &&
-             !(get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', 'active') in ['suspended', 'inactive']);
+             !(get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', 'active') in ['suspended', 'inactive']) &&
+             get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') != 'business_development';
+    }
+
+    // Business development is *not* a general agency authorization grant.
+    // Separate field-scoped CRM collections are explicitly permitted below.
+    function isBusinessDevelopmentUser() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/portal_users/$(getUserId())) &&
+        (
+          get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('isAgency', false) == true ||
+          get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('accountType', '') == 'AGENCY'
+        ) &&
+        get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('agencyRole', '') == 'business_development' &&
+        !(get(/databases/$(database)/documents/portal_users/$(getUserId())).data.get('status', 'active') in ['suspended', 'inactive']);
+    }
+
+    function isSalesLeadReader() {
+      return isAgencyUser() || isBusinessDevelopmentUser();
     }
 
     // Role-aware agency mutations. Missing agencyRole is retained for legacy owners.
@@ -123,7 +141,8 @@ service cloud.firestore {
 
     match /portal_users/{userId} {
       allow read: if isAuthenticated() && (
-        getUserId() == userId || isAgencyUser()
+        getUserId() == userId || isAgencyUser() ||
+        (isBusinessDevelopmentUser() && resource.data.get('accountType', '') == 'AGENCY')
       );
       allow create: if isAuthenticated() && getUserId() == userId &&
         request.resource.data.get('accountType', 'CLIENT') == 'CLIENT' &&
@@ -747,34 +766,34 @@ service cloud.firestore {
     }
 
     match /marketing_leads/{leadId} {
-      allow read: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isSalesLeadReader();
       allow create: if false;
       allow delete: if false;
       // The client may record a manual contact-status change, never fabricate
       // marketing consent, unsubscribe state, email delivery, or scoring.
-      allow update: if isAuthenticated() && isAgencyUser() &&
+      allow update: if isAuthenticated() && isSalesLeadReader() &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'contactStatus', 'lastContactedAt', 'updatedAt'
         ]) && request.resource.data.get('contactStatus', 'pending') in ['pending', 'contacted'];
     }
 
     match /marketing_email_jobs/{jobId} {
-      allow read: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isSalesLeadReader();
       allow write: if false;
     }
 
     match /marketing_events/{eventId} {
-      allow read: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isSalesLeadReader();
       allow write: if false;
     }
 
     match /marketing_unsubscribes/{leadId} {
-      allow read: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isSalesLeadReader();
       allow write: if false;
     }
 
     match /human_review_requests/{requestId} {
-      allow read: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isSalesLeadReader();
       // Only privileged server routes can edit expert workflow, report and delivery fields.
       // Keep older consent/qualification screens compatible, but enforce original consent.
       allow update: if isAuthenticated() && isAgencyUser()
@@ -796,7 +815,7 @@ service cloud.firestore {
     }
 
     match /analyzer_funnel_events/{eventId} {
-      allow read: if isAuthenticated() && isAgencyUser();
+      allow read: if isAuthenticated() && isSalesLeadReader();
       allow write: if false;
     }
 
