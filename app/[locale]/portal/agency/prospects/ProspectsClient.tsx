@@ -60,6 +60,11 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+function localDateKey(date: Date): string {
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0')].join('-');
+}
+
 export default function ProspectsClient() {
   const t = useTranslations('portal.prospects');
   const he = useLocale() === 'he';
@@ -122,7 +127,7 @@ export default function ProspectsClient() {
       if (activeOnly) params.set('active_only', 'true');
       if (highOnly) params.set('priority', 'high');
       if (verifiedOnly) params.set('verified_only', 'true');
-      if (focus === 'due') params.set('due_before', new Date().toISOString().slice(0, 10));
+      if (focus === 'due') params.set('due_before', localDateKey(new Date()));
       if (focus === 'reviews') params.set('review_requested', 'true');
       if (myOnly && user?.uid) params.set('owner_uid', user.uid);
       return fetchJson<ListResponse>('/api/portal/agency/prospects?' + params.toString());
@@ -281,7 +286,7 @@ export default function ProspectsClient() {
     b.verifiedIssueCount - a.verifiedIssueCount);
   const allProspects = list.data?.prospects || [];
   const activeProspects = allProspects.filter(row => !row.archived);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateKey(new Date());
   const dueCount = activeProspects.filter(row => row.nextActionAt && row.nextActionAt <= today).length;
   const reviewCount = activeProspects.filter(row => row.deepReviewStatus === 'requested').length;
 
