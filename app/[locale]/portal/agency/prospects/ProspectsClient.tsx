@@ -595,7 +595,7 @@ export default function ProspectsClient() {
                   activities={detail.data.activities || []}
                   canContact={['consent_recorded', 'existing_relationship', 'approved_partner_channel'].includes(prospect.outreachEligibility)}
                   canApprove={canReview} reviewStatus={prospect.deepReviewStatus || 'not_requested'}/>}
-                {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>
+                {detail.isLoading && <p className="text-sm text-surface-500">{t('loading')}</p>}
                 {detail.isError && <p role="alert" className="text-sm text-red-600">{t('loadFailed')}</p>}
                 {detail.data && detail.data.findings.length === 0 && <p className="text-sm text-surface-500">{t('noFindings')}</p>}
                 {detail.data?.findings.map(finding => (
