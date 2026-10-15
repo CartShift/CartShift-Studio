@@ -199,8 +199,9 @@ export async function getGoogleFreeBusy(uid: string, timeMin: string, timeMax: s
 
 export async function disconnectGoogleCalendar(uid: string) {
   const { publicRef, secretRef } = refs(uid);
-  const token = await secretRef.get();
-  const accessToken = token.data()?.accessToken;
+  // Legacy connections must also be revoked when disconnected; migrate first.
+  const token = await loadCredentials(uid).catch(() => null);
+  const accessToken = token?.accessToken;
   const db = getDb();
   const batch = db.batch();
   batch.delete(publicRef);
