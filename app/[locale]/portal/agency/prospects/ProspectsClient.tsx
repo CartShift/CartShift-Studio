@@ -272,18 +272,13 @@ export default function ProspectsClient() {
     },
     onError: () => toast.error(t('redactionFailed')),
   });
-  const rows = (list.data?.prospects || []).filter(row =>
-    (!verifiedOnly || row.verifiedIssueCount > 0) &&
-    (!activeOnly || !row.archived) &&
-    (segmentFilter === 'all' || row.segment === segmentFilter) &&
-    (!highOnly || row.priority === 'high') &&
-    (!myOnly || row.ownerUid === user?.uid) &&
-    [row.brandName, row.canonicalDomain, row.stage].some(value =>
-      value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
-    )
-  ).sort((a, b) => Number(b.priority === 'high') - Number(a.priority === 'high') ||
-    (a.nextActionAt || '9999').localeCompare(b.nextActionAt || '9999') ||
-    b.verifiedIssueCount - a.verifiedIssueCount);
+  // Search and filters already run on the server before cursor pagination.
+  // A second client-side filter would hide research-note matches.
+  const rows = (list.data?.prospects || []).slice().sort(
+    (a, b) => Number(b.priority === 'high') - Number(a.priority === 'high') ||
+      (a.nextActionAt || '9999').localeCompare(b.nextActionAt || '9999') ||
+      b.verifiedIssueCount - a.verifiedIssueCount
+  );
   const allProspects = list.data?.prospects || [];
   const activeProspects = allProspects.filter(row => !row.archived);
   const today = localDateKey(new Date());
@@ -515,7 +510,9 @@ export default function ProspectsClient() {
                   onSubmit={e => {
                     e.preventDefault();
                     updateSales.mutate({ id: prospect.id, patch: {
-                      ...(salesDraft.stage === 'won' ? {} : { stage: salesDraft.stage }),
+                      ...(salesDraft.stage !== prospect.stage &&
+                         !['proposal', 'won', 'suppressed'].includes(salesDraft.stage)
+                         ? { stage: salesDraft.stage } : {}),
                       next_action: salesDraft.next_action,
                       due_date: salesDraft.due_date,
                       segment: salesDraft.segment, priority: salesDraft.priority, archived: salesDraft.archived,
@@ -529,7 +526,7 @@ export default function ProspectsClient() {
                       className="mt-1 w-full rounded-lg border border-surface-200 bg-white p-2 text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white">
                       {['needs_review', 'qualified', 'contact_research', 'contact_ready',
                         'in_conversation', 'proposal', 'won', 'lost', 'suppressed'].map(stage => (
-                        <option key={stage} value={stage} disabled={['won', 'suppressed'].includes(stage) ||
+                        <option key={stage} value={stage} disabled={['won', 'proposal', 'suppressed'].includes(stage) ||
                           (['contact_ready', 'in_conversation'].includes(stage) &&
                             !['consent_recorded', 'existing_relationship', 'approved_partner_channel'].includes(prospect.outreachEligibility)) ||
                           (stage === 'proposal' && prospect.technicalStatus !== 'approved')}>
