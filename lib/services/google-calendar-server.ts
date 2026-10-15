@@ -76,19 +76,28 @@ export async function connectGoogleCalendar(uid: string, code: string, redirectU
   });
   if (!response.ok) throw new Error('GOOGLE_TOKEN_EXCHANGE_FAILED');
   const tokens = await response.json() as Record<string, unknown>;
-  if (typeof tokens.access_token !== 'string' || typeof tokens.refresh_token !== 'string' ||
-      typeof tokens.expires_in !== 'number') {
+  if (typeof tokens.access_token !== 'string' || typeof tokens.expires_in !== 'number') {
     throw new Error('GOOGLE_TOKEN_RESPONSE_INVALID');
   }
   const { publicRef, secretRef } = refs(uid);
   const expiry = Timestamp.fromMillis(Date.now() + tokens.expires_in * 1000);
   const db = getDb();
   await db.runTransaction(async tx => {
+    // Google may omit refresh_token for a previously authorized connection.
+    // Retain the existing owner's token rather than disconnecting them.
+    const [previousPrivate, previousPublic] = await Promise.all([
+      tx.get(secretRef),
+      tx.get(publicRef),
+    ]);
+    const previous = previousPrivate.data()?.refreshToken || previousPublic.data()?.refreshToken;
+    const refreshToken = typeof tokens.refresh_token === 'string' && tokens.refresh_token
+      ? tokens.refresh_token : previous;
+    if (!refreshToken) throw new Error('GOOGLE_RECONNECT_REQUIRED');
     tx.set(secretRef, {
       userId: uid,
       provider: 'google_calendar',
       accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
+      refreshToken,
       tokenExpiry: expiry,
       updatedAt: FieldValue.serverTimestamp(),
     });
