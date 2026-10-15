@@ -36,7 +36,7 @@ export const InviteTeamMemberForm = ({
     () =>
       z.object({
         email: z.string().email(t('team.inviteForm.errors.email')),
-        role: z.enum(['admin', 'sales_manager', 'developer', 'member', 'viewer']),
+        role: z.enum(['admin', 'sales_manager', 'business_development', 'developer', 'member', 'viewer']),
       }),
     [t]
   );
@@ -101,6 +101,7 @@ export const InviteTeamMemberForm = ({
       return [
         { value: 'admin', label: t('team.inviteForm.roles.admin') },
         { value: 'sales_manager', label: t('team.inviteForm.roles.sales_manager') },
+        { value: 'business_development', label: t('team.inviteForm.roles.business_development') },
         { value: 'developer', label: t('team.inviteForm.roles.developer') },
         { value: 'member', label: t('team.inviteForm.roles.member') },
         { value: 'viewer', label: t('team.inviteForm.roles.viewer') },
@@ -162,5 +163,5 @@ interface InviteTeamMemberFormProps {
 
 interface InviteFormData {
   email: string;
-  role: 'admin' | 'sales_manager' | 'developer' | 'member' | 'viewer';
+  role: 'admin' | 'sales_manager' | 'business_development' | 'developer' | 'member' | 'viewer';
 }
