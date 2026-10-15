@@ -102,6 +102,7 @@ export const PORTAL_ROLE_KEYS = {
   owner: 'roles.owner',
   admin: 'roles.admin',
   sales_manager: 'roles.sales_manager',
+  business_development: 'roles.business_development',
   developer: 'roles.developer',
   member: 'roles.member',
   viewer: 'roles.viewer',
