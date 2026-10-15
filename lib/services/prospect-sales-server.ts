@@ -185,10 +185,16 @@ export async function linkProspectProposal(prospectId: string, orgId: string,
       throw new Error('PROPOSAL_NOT_FOUND');
     }
     proposalStatus = String(proposal.status || '');
-    if (!['QUOTED', 'ACCEPTED', 'PAID'].includes(proposalStatus)) {
+    const sameLinkedDocument = prospect.data()?.linkedOrgId === orgId &&
+      prospect.data()?.linkedRequestId === requestId;
+    const initialStages = ['QUOTED', 'ACCEPTED', 'PAID'];
+    const reconciliationStages = ['CHANGES_REQUESTED', 'DECLINED', 'EXPIRED', 'CANCELED'];
+    if (!initialStages.includes(proposalStatus) &&
+        !(sameLinkedDocument && reconciliationStages.includes(proposalStatus))) {
       throw new Error('PROPOSAL_NOT_READY');
     }
-    newStage = ['ACCEPTED', 'PAID'].includes(proposalStatus) ? 'won' : 'proposal';
+    newStage = ['ACCEPTED', 'PAID'].includes(proposalStatus) ? 'won' :
+      ['DECLINED', 'EXPIRED', 'CANCELED'].includes(proposalStatus) ? 'lost' : 'proposal';
     tx.update(ref, {
       linkedOrgId: orgId, linkedRequestId: requestId, stage: newStage,
       updatedAt: FieldValue.serverTimestamp(),
