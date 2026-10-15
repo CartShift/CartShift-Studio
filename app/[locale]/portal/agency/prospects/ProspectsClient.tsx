@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useDeferredValue, useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
 import { ExternalLink, Loader2, Plus, RefreshCw, Search, ShieldAlert } from 'lucide-react';
@@ -44,7 +44,7 @@ type Finding = {
   observedUrl: string; evidenceExcerpt: string;
   businessRelevance: string; verificationStatus: string;
 };
-type ListResponse = { prospects: Prospect[]; truncated: boolean; scanningEnabled: boolean };
+type ListResponse = { prospects: Prospect[]; truncated: boolean; nextCursor?: string | null; scanningEnabled: boolean };
 type ContactCandidate = {
   id: string; name: string; role: string; businessEmail: string;
   sourceUrl: string; status: string;
@@ -86,6 +86,10 @@ export default function ProspectsClient() {
   const [segmentFilter, setSegmentFilter] = useState<'all' | 'merchant' | 'agency_partner'>('all');
   const [activeOnly, setActiveOnly] = useState(true);
   const [highOnly, setHighOnly] = useState(false);
+  const [pageCursor, setPageCursor] = useState<string | null>(null);
+  const [pageHistory, setPageHistory] = useState<Array<string | null>>([]);
+  const deferredSearch = useDeferredValue(search);
+  useEffect(() => { setPageCursor(null); setPageHistory([]); }, [deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly]);
   const [selected, setSelected] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -106,8 +110,18 @@ export default function ProspectsClient() {
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
-    queryKey: queryKeys.prospects.all,
-    queryFn: () => fetchJson<ListResponse>('/api/portal/agency/prospects'),
+    queryKey: [...queryKeys.prospects.all, 'list', pageCursor, deferredSearch, segmentFilter, activeOnly, highOnly, verifiedOnly, myOnly, user?.uid],
+    queryFn: () => {
+      const params = new URLSearchParams({ limit: '40' });
+      if (pageCursor) params.set('cursor', pageCursor);
+      if (deferredSearch.trim()) params.set('query', deferredSearch.trim());
+      if (segmentFilter !== 'all') params.set('segment', segmentFilter);
+      if (activeOnly) params.set('active_only', 'true');
+      if (highOnly) params.set('priority', 'high');
+      if (verifiedOnly) params.set('verified_only', 'true');
+      if (myOnly && user?.uid) params.set('owner_uid', user.uid);
+      return fetchJson<ListResponse>('/api/portal/agency/prospects?' + params.toString());
+    },
     staleTime: 30_000,
   });
   const detail = useQuery({
@@ -357,6 +371,8 @@ export default function ProspectsClient() {
         </Card>
       )}
 
+      <div className="space-y-3">
+        <p className="text-xs text-surface-500">{he ? 'סיכום העמוד הנוכחי' : 'Current page overview'}</p>
       <div className="grid gap-3 sm:grid-cols-3">
         {[
           { label: he ? 'לידים פעילים' : 'Active prospects', count: activeProspects.length },
@@ -368,6 +384,7 @@ export default function ProspectsClient() {
             <p className="mt-1 text-2xl font-bold tabular-nums text-surface-900 dark:text-white">{metric.count}</p>
           </div>
         ))}
+      </div>
       </div>
       <div className="relative">
         <Search size={17} className="pointer-events-none absolute start-3 top-3 text-surface-400" />
@@ -652,7 +669,26 @@ export default function ProspectsClient() {
           </Card>
         ))}
       </div>
-      {list.data?.truncated && <p className="text-sm text-surface-500">{t('truncated')}</p>}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-surface-200 pt-4 dark:border-surface-700">
+        <p className="text-xs text-surface-500">
+          {he ? 'התוצאות נטענות במנות כדי לאפשר חיפוש גם במאגר גדול.' : 'Results are paginated for larger prospect lists.'}
+        </p>
+        <div className="flex gap-2">
+          <Button variant="outline" disabled={list.isFetching || pageHistory.length === 0} onClick={() => {
+            const previous = pageHistory[pageHistory.length - 1] ?? null;
+            setPageHistory(history => history.slice(0, -1));
+            setPageCursor(previous);
+            setSelected(null);
+          }}>{he ? 'הקודם' : 'Previous'}</Button>
+          <Button variant="outline" disabled={list.isFetching || !list.data?.truncated || !list.data.nextCursor}
+            onClick={() => {
+              if (!list.data?.nextCursor) return;
+              setPageHistory(history => [...history, pageCursor]);
+              setPageCursor(list.data.nextCursor || null);
+              setSelected(null);
+            }}>{he ? 'הבא' : 'Next'}</Button>
+        </div>
+      </div>}
     </div>
   );
 }
