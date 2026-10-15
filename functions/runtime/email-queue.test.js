@@ -26,9 +26,10 @@ function harness(start = 1_000_000) {
   const db = {
     collection: name => {
       assert.equal(name, 'email_queue');
-      const filters = [];
-      const query = {
-        where: (field, op, value) => { filters.push([field, op, value]); return query; },
+      // Firestore Query.where() is immutable; different recovery queries must
+      // not share filter state in the test adapter.
+      const query = filters => ({
+        where: (field, op, value) => query([...filters, [field, op, value]]),
         limit: count => ({ get: async () => {
           const matched = [...jobs.entries()]
             .filter(([, row]) => filters.every(([field, op, value]) => {
@@ -40,8 +41,8 @@ function harness(start = 1_000_000) {
             .map(([id]) => ({ ref: ref(id) }));
           return { docs: matched };
         } }),
-      };
-      return query;
+      });
+      return query([]);
     },
     runTransaction: async callback => {
       let release;
@@ -53,7 +54,7 @@ function harness(start = 1_000_000) {
         const result = await callback({
           get: async reference => ({
             exists: jobs.has(reference.id),
-            data: () => jobs.get(reference.id),
+            data: () => ({ ...jobs.get(reference.id) }),
           }),
           update: (reference, changes) => writes.push([reference, changes]),
         });
