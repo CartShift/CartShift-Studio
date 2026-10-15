@@ -149,7 +149,7 @@ export default function MarketingLeadsClient() {
   const t = useTranslations('portal.marketing');
   const he = useLocale() === 'he';
   const { userData } = usePortalAuth();
-  const canInvite = userData?.agencyRole !== 'business_development';
+  const canInvite = Boolean(userData) && userData?.agencyRole !== 'business_development';
   const queryClient = useQueryClient();
   const [trackedLeadIds, setTrackedLeadIds] = useState<string[]>([]);
   const trackOpportunity = useMutation({
