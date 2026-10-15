@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
-  session: vi.fn(),
+  verify: vi.fn(),
   profile: vi.fn(),
   connect: vi.fn(),
   list: vi.fn(),
@@ -12,9 +12,9 @@ const mocks = vi.hoisted(() => ({
   disconnect: vi.fn(),
 }));
 
-vi.mock('@/lib/auth/server-auth', () => ({ getServerSession: mocks.session }));
 vi.mock('@/lib/firebase-admin', () => ({
   adminDb: { collection: () => ({ doc: () => ({ get: mocks.profile }) }) },
+  adminAuth: { verifyIdToken: mocks.verify },
 }));
 vi.mock('@/lib/services/google-calendar-server', () => ({
   connectGoogleCalendar: mocks.connect,
@@ -30,7 +30,7 @@ import { POST } from '@/app/api/portal/integrations/google-calendar/route';
 const req = (body: unknown, origin?: string) => new NextRequest(
   'https://portal.cart-shift.com/api/portal/integrations/google-calendar',
   { method: 'POST',
-    headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) },
+    headers: { 'content-type': 'application/json', Authorization: 'Bearer signed-in-token', ...(origin ? { origin } : {}) },
     body: JSON.stringify(body),
   }
 );
@@ -38,7 +38,7 @@ const req = (body: unknown, origin?: string) => new NextRequest(
 describe('Google Calendar private API boundary', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.session.mockResolvedValue({ uid: 'owner-a', emailVerified: true });
+    mocks.verify.mockResolvedValue({ uid: 'owner-a', email_verified: true });
     mocks.profile.mockResolvedValue({
       data: () => ({ accountType: 'AGENCY', agencyRole: 'owner', status: 'active' }),
     });
@@ -53,7 +53,7 @@ describe('Google Calendar private API boundary', () => {
   });
 
   it('requires authentication before reading user data', async () => {
-    mocks.session.mockResolvedValue(null);
+    mocks.verify.mockResolvedValue(null);
     expect((await POST(req({ action: 'list' }))).status).toBe(401);
     expect(mocks.profile).not.toHaveBeenCalled();
   });
