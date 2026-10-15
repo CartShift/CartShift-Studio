@@ -31,6 +31,8 @@ export async function GET(request: NextRequest) {
       active_only: params.get('active_only') === 'true',
       owner_uid: params.get('owner_uid') || undefined,
       verified_only: params.get('verified_only') === 'true',
+      due_before: params.get('due_before') || undefined,
+      review_requested: params.get('review_requested') === 'true',
     }, session.uid), { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) { return errorResponse(error); }
 }
