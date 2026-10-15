@@ -74,6 +74,19 @@ describe('commercial transitions cannot be fabricated by sales staff', () => {
     expect(data.get(storePath)?.linkedRequestId).toBe(quoteId);
     expect(data.get(storePath)?.stage).toBe('proposal');
   });
+  it('reconciles a linked declined quote as lost but never counts it as paid', async () => {
+    state.role = 'owner';
+    await linkProspectProposal(prospectId, orgId, quoteId,
+      'Verified store match and approved scope for the quote.', 'owner');
+    data.get('portal_requests/' + quoteId)!.status = 'DECLINED';
+    const latest = await linkProspectProposal(prospectId, orgId, quoteId,
+      'Checked the same linked commercial document after client declined.', 'owner');
+    expect(latest).toMatchObject({
+      proposal_status: 'DECLINED', sales_stage: 'lost', cash_collected_confirmed: false,
+    });
+    expect(data.get(storePath)?.stage).toBe('lost');
+  });
+
   it('permits non-commercial sales updates on a linked quote without changing its stage', async () => {
     state.role = 'owner';
     await linkProspectProposal(prospectId, orgId, quoteId,
