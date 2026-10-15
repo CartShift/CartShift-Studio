@@ -445,7 +445,7 @@ export default function ProspectsClient() {
         <Button variant="outline" onClick={() => { setSearch(''); setSegmentFilter('all'); setActiveOnly(false); setHighOnly(false); setVerifiedOnly(false); setMyOnly(false); setFocus('all'); }}>
           {he ? 'ניקוי מסננים' : 'Clear filters'}
         </Button>
-      </div>
+      </div>}
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(prospect => (
           <Card key={prospect.id} className={`space-y-3 p-4 ${selected === prospect.id ? 'lg:col-span-2' : ''}`}>
