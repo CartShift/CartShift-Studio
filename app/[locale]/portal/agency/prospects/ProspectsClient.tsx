@@ -184,6 +184,21 @@ export default function ProspectsClient() {
     },
     onError: () => toast.error(t('updateFailed')),
   });
+  const syncLinkedQuote = useMutation({
+    mutationFn: (prospect: Prospect) => fetchJson<{ sales_stage: string }>(
+      '/api/portal/agency/prospects/' + prospect.id + '/link-proposal', {
+        method: 'POST',
+        body: JSON.stringify({
+          org_id: prospect.linkedOrgId, request_id: prospect.linkedRequestId,
+          note: 'Founder-requested synchronization against the actual current linked proposal status.',
+        }),
+      }),
+    onSuccess: async result => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.prospects.all });
+      toast.success(he ? 'השלב עודכן לפי סטטוס ההצעה המאומת' : 'Opportunity stage refreshed from linked quote: ' + result.sales_stage);
+    },
+    onError: () => toast.error(he ? 'לא ניתן לאמת את סטטוס ההצעה כרגע' : 'Could not verify linked quote status'),
+  });
   const bulkUpdate = useMutation({
     mutationFn: async () => {
       const patch: Record<string, string | boolean> = {};
@@ -560,11 +575,16 @@ export default function ProspectsClient() {
               {t('dueDate')}: <span dir="ltr">{prospect.nextActionAt}</span>
             </p>}
             {prospect.verifiedIssueCount > 0 && <p className="text-xs text-surface-500">{t('verifiedCount', { count: prospect.verifiedIssueCount })}</p>}
-            {prospect.linkedRequestId && <a
-              href={getPortalPath('/requests/' + encodeURIComponent(prospect.linkedRequestId))}
-              className="block text-sm text-primary-600 hover:underline dark:text-primary-300">
-              {t('linkedProposal')} <ExternalLink size={12} className="inline" />
-            </a>}
+            {prospect.linkedRequestId && <div className="flex flex-wrap items-center gap-3">
+              <a href={getPortalPath('/requests/' + encodeURIComponent(prospect.linkedRequestId))}
+                className="text-sm text-primary-600 hover:underline dark:text-primary-300">
+                {t('linkedProposal')} <ExternalLink size={12} className="inline" />
+              </a>
+              {canReview && prospect.linkedOrgId && <Button size="sm" variant="outline"
+                disabled={syncLinkedQuote.isPending} onClick={() => syncLinkedQuote.mutate(prospect)}>
+                {he ? 'עדכון סטטוס לפי ההצעה' : 'Sync quote status'}
+              </Button>}
+            </div>}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-surface-500">{eligibilityLabels[prospect.outreachEligibility] || t('noPermission')}</span>
               <Button variant="outline" disabled={!list.data?.scanningEnabled || scan.isPending || prospect.doNotContact} onClick={() => scan.mutate(prospect.id)}>
