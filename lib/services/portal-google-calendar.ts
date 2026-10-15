@@ -5,14 +5,34 @@
  * Uses client-side OAuth with Firebase for token storage.
  */
 
-import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getFirestoreDb, getFirebaseAuth } from '@/lib/firebase';
-import { buildFirebaseFunctionUrl } from './firebase';
 import { ConsultationType, CONSULTATION_TYPE_CONFIG } from '@/lib/types/portal';
 import { Logger } from '@/lib/logger';
 
 // Collection for storing integration credentials
 const INTEGRATIONS_COLLECTION = 'agency_integrations';
+
+/** All Google Calendar operations use the authenticated same-origin server API.
+ * OAuth credentials must never be returned to, or stored by, the browser.
+ */
+async function googleCalendarRequest<T>(action: string, data: Record<string, unknown> = {}): Promise<T> {
+  const auth = getFirebaseAuth();
+  await auth.authStateReady();
+  const user = auth.currentUser;
+  if (!user) throw new Error('User not authenticated');
+  const token = await user.getIdToken();
+  const response = await fetch('/api/portal/integrations/google-calendar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ action, ...data }),
+    cache: 'no-store',
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || 'Google Calendar request failed');
+  return result as T;
+}
+
 
 // Google OAuth configuration
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
@@ -32,8 +52,6 @@ const GOOGLE_CALENDAR_SCOPES = [
 export interface GoogleCalendarConnection {
   connected: boolean;
   email?: string;
-  accessToken?: string;
-  refreshToken?: string;
   tokenExpiry?: Date;
   last?: Date;
   syncedCalendarIds?: string[];
@@ -129,56 +147,9 @@ export async function handleOAuthCallback(
   sessionStorage.removeItem('google_oauth_state');
 
   try {
-    // Exchange code for tokens via Cloud Function (server-side for security)
-    const firebaseFunctionUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
-    if (!firebaseFunctionUrl) {
-      return { success: false, error: 'Firebase Functions URL not configured' };
-    }
-
-    // Build the function URL - extract base and append function name
-    let functionUrl = buildFirebaseFunctionUrl(firebaseFunctionUrl, 'googleCalendarOAuthCallback');
-
-    // Fallback: if buildFirebaseFunctionUrl fails, try to construct manually
-    if (!functionUrl) {
-      try {
-        const baseUrl = new URL(firebaseFunctionUrl);
-        // Remove any existing path and construct new one
-        baseUrl.pathname = '/googleCalendarOAuthCallback';
-        functionUrl = baseUrl.toString();
-      } catch (e) {
-        Logger.error('Failed to build function URL', e);
-        return { success: false, error: 'Invalid Firebase function URL' };
-      }
-    }
-
-    const redirectUri = GOOGLE_REDIRECT_URI;
-    Logger.debug(' Google OAuth code');
-
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, redirectUri }),
+    await googleCalendarRequest<{ connected: true }>('connect', {
+      code, redirectUri: GOOGLE_REDIRECT_URI,
     });
-
-    if (!response.ok) {
-      let errorMessage = 'Failed to connect Google Calendar';
-      try {
-        const error = await response.json();
-        errorMessage = error.message || error.error || errorMessage;
-        Logger.error('OAuth callback error', error);
-      } catch (_e) {
-        const errorText = await response.text();
-        Logger.error('OAuth callback error (non-JSON)', { errorText });
-        errorMessage = errorText || errorMessage;
-      }
-      return { success: false, error: errorMessage };
-    }
-
-    const tokens = await response.json();
-
-    // Store tokens in Firestore
-    await storeGoogleTokens(tokens);
-
     return { success: true };
   } catch (error) {
     Logger.error('OAuth callback error', error);
@@ -187,100 +158,35 @@ export async function handleOAuthCallback(
 }
 
 // ============================================
-// Token Storage
+// Public integration metadata (no secrets)
 // ============================================
 
-/**
- * Stores Google OAuth tokens in Firestore
- */
-async function storeGoogleTokens(tokens: {
-  access_token: string;
-  refresh_token?: string;
-  expires_in: number;
-  scope: string;
-  email?: string;
-}): Promise<void> {
-  const auth = getFirebaseAuth();
-  const db = getFirestoreDb();
-  const user = auth.currentUser;
-
-  if (!user) {
-    throw new Error('User not authenticated');
-  }
-
-  const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
-
-  await setDoc(
-    integrationRef,
-    {
-      userId: user.uid,
-      provider: 'google_calendar',
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token || null,
-      tokenExpiry: Timestamp.fromDate(new Date(Date.now() + tokens.expires_in * 1000)),
-      scope: tokens.scope,
-      email: tokens.email || null,
-      status: 'connected',
-      connectedAt: serverTimestamp(),
-      last: null,
-      syncedCalendarIds: [],
-      selectedCalendarId: 'primary', // Default to primary
-    },
-    { merge: true }
-  );
-}
-
-/**
- * Updates the selected calendar settings
- */
 export async function updateCalendars(selectedCalendarId: string): Promise<void> {
   const auth = getFirebaseAuth();
+  await auth.authStateReady();
   const user = auth.currentUser;
-
-  if (!user) {
-    throw new Error('User not authenticated');
-  }
-
-  const db = getFirestoreDb();
-  const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
-  await setDoc(integrationRef, { selectedCalendarId }, { merge: true });
+  if (!user) throw new Error('User not authenticated');
+  await setDoc(doc(getFirestoreDb(), INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`),
+    { selectedCalendarId }, { merge: true });
 }
 
-/**
- * Gets the current Google Calendar connection status
- */
 export async function getCalendarConnection(): Promise<GoogleCalendarConnection> {
   const auth = getFirebaseAuth();
+  await auth.authStateReady();
   const user = auth.currentUser;
-
-  if (!user) {
-    return { connected: false };
-  }
-
-  const db = getFirestoreDb();
-
+  if (!user) return { connected: false };
   try {
-    const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
-    const docSnap = await getDoc(integrationRef);
-
-    if (!docSnap.exists()) {
-      return { connected: false };
-    }
-
-    const data = docSnap.data();
-
-    // Check if token is expired
-    const tokenExpiry = data.tokenExpiry?.toDate();
-    const isExpired = tokenExpiry && tokenExpiry < new Date();
-
+    const snap = await getDoc(doc(getFirestoreDb(), INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`));
+    if (!snap.exists()) return { connected: false };
+    const data = snap.data();
+    // The server refreshes access tokens: an expired access token does not mean disconnection.
     return {
-      connected: data.status === 'connected' && !isExpired,
+      connected: data.status === 'connected',
       email: data.email,
-      tokenExpiry: tokenExpiry,
+      tokenExpiry: data.tokenExpiry?.toDate(),
       last: data.last?.toDate(),
       syncedCalendarIds: data.syncedCalendarIds || [],
       selectedCalendarId: data.selectedCalendarId || 'primary',
-      error: isExpired ? 'Token expired. Please reconnect.' : undefined,
     };
   } catch (error) {
     Logger.error('Error fetching connection', error);
@@ -288,39 +194,8 @@ export async function getCalendarConnection(): Promise<GoogleCalendarConnection>
   }
 }
 
-/**
- * Disconnects Google Calendar integration
- */
 export async function disconnectCalendar(): Promise<void> {
-  const auth = getFirebaseAuth();
-  const user = auth.currentUser;
-
-  if (!user) {
-    throw new Error('User not authenticated');
-  }
-
-  const db = getFirestoreDb();
-  const integrationRef = doc(db, INTEGRATIONS_COLLECTION, `${user.uid}_google_calendar`);
-
-  // Get current tokens to revoke
-  const docSnap = await getDoc(integrationRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-
-    // Revoke token with Google (best effort)
-    if (data.accessToken) {
-      try {
-        await fetch(`https://oauth2.googleapis.com/revoke?token=${data.accessToken}`, {
-          method: 'POST',
-        });
-      } catch (error) {
-        Logger.warn('Token revocation failed', { error });
-      }
-    }
-  }
-
-  // Delete from Firestore
-  await deleteDoc(integrationRef);
+  await googleCalendarRequest<{ success: boolean }>('disconnect');
 }
 
 // ============================================
@@ -331,131 +206,37 @@ export async function disconnectCalendar(): Promise<void> {
  * Lists the user's calendars
  */
 export async function listCalendars(): Promise<CalendarInfo[]> {
-  const connection = await getCalendarConnection();
-
-  if (!connection.connected) {
-    throw new Error('Google Calendar not connected');
-  }
-
-  try {
-    const auth = getFirebaseAuth();
-    const user = auth.currentUser;
-    if (!user) throw new Error('User not authenticated');
-    const token = await user.getIdToken();
-
-    const firebaseFunctionUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
-    if (!firebaseFunctionUrl) throw new Error('Firebase Functions URL not configured');
-
-    const url = buildFirebaseFunctionUrl(firebaseFunctionUrl, 'googleCalendarListCalendars');
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || 'Failed to list calendars');
-    }
-
-    const data = await response.json();
-    return data.calendars || [];
-  } catch (error) {
-    Logger.error('Error listing calendars', error);
-    throw error;
-  }
+  const response = await googleCalendarRequest<{ calendars: CalendarInfo[] }>('list');
+  return response.calendars || [];
 }
 
 /**
- * Creates a calendar event
+ * Creates an event on the authenticated user's selected calendar.
  */
 export async function createCalendarEvent(
   event: CalendarEvent
 ): Promise<{ eventId: string; meetLink?: string }> {
-  const connection = await getCalendarConnection();
-
-  if (!connection.connected) {
-    throw new Error('Google Calendar not connected');
-  }
-
-  try {
-    const auth = getFirebaseAuth();
-    const user = auth.currentUser;
-    if (!user) throw new Error('User not authenticated');
-    const token = await user.getIdToken();
-
-    const firebaseFunctionUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
-    if (!firebaseFunctionUrl) throw new Error('Firebase Functions URL not configured');
-
-    const url = buildFirebaseFunctionUrl(firebaseFunctionUrl, 'googleCalendarCreateEvent');
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        ...event,
-        startTime: event.startTime.toISOString(),
-        endTime: event.endTime.toISOString(),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || 'Failed to create calendar event');
-    }
-
-    return await response.json();
-  } catch (error) {
-    Logger.error('Error creating calendar event', error);
-    throw error;
-  }
+  return googleCalendarRequest('create', {
+    event: {
+      ...event,
+      startTime: event.startTime.toISOString(),
+      endTime: event.endTime.toISOString(),
+    },
+  });
 }
 
 /**
- * Deletes a calendar event
+ * Deletes an event on the authenticated user's selected calendar.
  */
 export async function deleteCalendarEvent(eventId: string, calendarId?: string): Promise<void> {
-  const connection = await getCalendarConnection();
-  if (!connection.connected) return;
-
   try {
-    const auth = getFirebaseAuth();
-    const user = auth.currentUser;
-    if (!user) throw new Error('User not authenticated');
-    const token = await user.getIdToken();
-
-    const firebaseFunctionUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
-    if (!firebaseFunctionUrl) throw new Error('Firebase Functions URL not configured');
-
-    const url = buildFirebaseFunctionUrl(firebaseFunctionUrl, 'googleCalendarDeleteEvent');
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ eventId, calendarId }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete calendar event');
-    }
+    await googleCalendarRequest('delete', { eventId, calendarId });
   } catch (error) {
-    Logger.error('Error deleting calendar event', error);
-    // Don't throw, just log. Deletion failure shouldn't block the UI flow entirely.
+    Logger.error('Failed to delete calendar event', error);
   }
 }
 
-/**
- * Checks if the integration is properly configured
- */
+/** Whether the OAuth client is configured for connecting a calendar. */
 export function isGoogleCalendarConfigured(): boolean {
   return !!GOOGLE_CLIENT_ID;
 }
@@ -467,59 +248,18 @@ export async function getFreeBusyIntervals(
   timeMin: Date,
   timeMax: Date
 ): Promise<{ start: Date; end: Date }[]> {
-  const connection = await getCalendarConnection();
-
-  if (!connection.connected) {
-    return [];
-  }
-
   try {
-    const auth = getFirebaseAuth();
-    const user = auth.currentUser;
-    if (!user) throw new Error('User not authenticated');
-    const token = await user.getIdToken();
-
-    const firebaseFunctionUrl = process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_URL;
-    if (!firebaseFunctionUrl) throw new Error('Firebase Functions URL not configured');
-
-    const url = buildFirebaseFunctionUrl(firebaseFunctionUrl, 'googleCalendarGetFreeBusy');
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        timeMin: timeMin.toISOString(),
-        timeMax: timeMax.toISOString(),
-      }),
-    });
-
-    if (!response.ok) {
-      // If we fail to check availability, just return empty to avoid blocking
-      Logger.warn('Failed to check availability');
-      return [];
-    }
-
-    const data = await response.json();
-    const busySlots = data.busy || [];
-
-    return busySlots.map((slot: { start: string; end: string }) => ({
-      start: new Date(slot.start),
-      end: new Date(slot.end),
-    }));
+    const response = await googleCalendarRequest<{ busy: { start: string; end: string }[] }>(
+      'freebusy', { timeMin: timeMin.toISOString(), timeMax: timeMax.toISOString() }
+    );
+    return (response.busy || []).map(slot => ({ start: new Date(slot.start), end: new Date(slot.end) }));
   } catch (error) {
-    Logger.error('Error checking free/busy', error);
+    Logger.warn('Failed to check calendar availability', { error });
     return [];
   }
 }
 
-/**
- * Tries to create a calendar event for a consultation.
- * Returns the event details if successful, or null if not connected.
- * This is a "best effort" function - it won't throw errors if calendar is not connected.
- */
+/** Best-effort event creation for a consultation. */
 export async function tryCreateCalendarEventForConsultation(params: {
   title: string;
   description?: string;
