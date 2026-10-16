@@ -19,7 +19,10 @@ function db() {
 export async function requireProspectActor(uid: string) {
   const snap = await db().collection('portal_users').doc(uid).get();
   const data = snap.data();
-  const role = data?.agencyRole;
+  // Legacy agency owners have no agencyRole in older portal user records.
+  // Match the existing Firestore agency-owner rules for those accounts only.
+  const role = data?.agencyRole === undefined || data?.agencyRole === ''
+    ? 'owner' : data?.agencyRole;
   if (!snap.exists || (data?.accountType !== 'AGENCY' && data?.isAgency !== true) ||
       !['owner', 'admin', 'sales_manager'].includes(role) ||
       data?.status === 'inactive' || data?.status === 'suspended') {
