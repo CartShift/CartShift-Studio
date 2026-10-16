@@ -57,7 +57,13 @@
         "failedToComplete": "סימון הפגישה כהושלמה נכשל",
         "notFound": "פגישה לא נמצאה",
         "calendarConflict": "יש התנגשות בלוח השנה. האם אתם רוצים להמשיך בכל זאת?",
-        "cancelConfirm": "האם אתם בטוחים שברצונכם לבטל את הפגישה הזו?"
+        "cancelConfirm": "האם אתם בטוחים שברצונכם לבטל את הפגישה הזו?",
+        "calendarAvailabilityChecking": "בודקים זמינות ביומן Google…",
+        "calendarAvailabilityAvailable": "לא נמצאה התנגשות ביומן",
+        "calendarAvailabilityConflict": "נמצאה התנגשות ביומן שלך",
+        "calendarAvailabilityUnknown": "לא הצלחנו לבדוק את היומן. הזמינות של השעה שנבחרה אינה מאומתת.",
+        "calendarAvailabilityUnknownConfirm": "לא הצלחנו לבדוק את הזמינות ביומן Google. ייתכן שיש פגישה אחרת בשעה שבחרת. להמשיך בכל זאת?",
+        "calendarConnected": "יומן Google מחובר"
       }
     }
   }

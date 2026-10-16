@@ -1,6 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldPath, FieldValue } from 'firebase-admin/firestore';
 import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connection';
 import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 import { COMMERCIAL_TOOL_DEFS, callCommercialTool } from '@/lib/mcp/commercial-tools';
@@ -92,9 +92,13 @@ export const TOOL_DEFS = [
     },
   },
   {
-    name: 'list_work_items', description: 'List current portal_requests for exactly one client organization.',
+    name: 'list_work_items', description: 'Page through portal_requests for exactly one client organization. Use next_cursor to continue.',
     scope: 'work:read',
-    inputSchema: { type: 'object', properties: { org_id: { type: 'string' } }, required: ['org_id'], additionalProperties: false },
+    inputSchema: { type: 'object', properties: {
+      org_id: { type: 'string' },
+      page_size: { type: 'integer', minimum: 1, maximum: 200 },
+      cursor: { type: 'string', minLength: 6, maxLength: 128 },
+    }, required: ['org_id'], additionalProperties: false },
   },
   {
     name: 'get_work_item', description: 'Get a work item, verifying its organization matches.',
@@ -251,15 +255,32 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   }
 
   if (name === 'list_work_items') {
-    const { org_id } = z.object({ org_id: id }).strict().parse(args);
+    const { org_id, page_size = 100, cursor } = z.object({
+      org_id: id,
+      page_size: z.number().int().min(1).max(200).optional(),
+      cursor: id.optional(),
+    }).strict().parse(args);
     await orgExists(org_id);
-    const snap = await requests.where('orgId', '==', org_id).limit(500).get();
-    return { items: snap.docs.map(doc => ({
-      id: doc.id, title: doc.data().title, description: doc.data().description,
-      status: doc.data().status, type: doc.data().type, priority: doc.data().priority,
-      tags: doc.data().tags || [], projectId: doc.data().projectId || null,
-      isCommercial: Boolean(doc.data().isBillable || doc.data().publicToken || doc.data().requestRole === 'bundle'),
-    })), truncated: snap.size === 500 };
+    // Sorting by document ID gives stable, resumable pages. The extra document
+    // establishes whether another page exists, without fetching an entire tenant.
+    let pageQuery = requests
+      .where('orgId', '==', org_id)
+      .orderBy(FieldPath.documentId())
+      .limit(page_size + 1);
+    if (cursor) pageQuery = pageQuery.startAfter(cursor);
+    const snap = await pageQuery.get();
+    const page = snap.docs.slice(0, page_size);
+    const truncated = snap.docs.length > page_size;
+    return {
+      items: page.map(doc => ({
+        id: doc.id, title: doc.data().title, description: doc.data().description,
+        status: doc.data().status, type: doc.data().type, priority: doc.data().priority,
+        tags: doc.data().tags || [], projectId: doc.data().projectId || null,
+        isCommercial: Boolean(doc.data().isBillable || doc.data().publicToken || doc.data().requestRole === 'bundle'),
+      })),
+      truncated,
+      next_cursor: truncated ? page[page.length - 1]?.id ?? null : null,
+    };
   }
 
   if (name === 'get_work_item') {

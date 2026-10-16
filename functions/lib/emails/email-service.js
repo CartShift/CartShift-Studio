@@ -53,7 +53,6 @@ exports.removeFromAudience = removeFromAudience;
 const resend_1 = require("resend");
 const render_1 = require("@react-email/render");
 const crypto = __importStar(require("crypto"));
-// Templates
 const NewRequest_1 = __importDefault(require("./templates/NewRequest"));
 const StatusUpdate_1 = __importDefault(require("./templates/StatusUpdate"));
 const MilestoneCompleted_1 = __importDefault(require("./templates/MilestoneCompleted"));
@@ -79,6 +78,21 @@ function getResendClient(apiKey) {
         resendClient = new resend_1.Resend(apiKey);
     }
     return resendClient;
+}
+function getErrMsg(error) {
+    if (error instanceof Error)
+        return error.message;
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+        return String(error.message);
+    }
+    return String(error);
+}
+function getErrStatus(error) {
+    if (typeof error === 'object' && error !== null && 'statusCode' in error) {
+        const code = error.statusCode;
+        return typeof code === 'number' ? code : undefined;
+    }
+    return undefined;
 }
 const EMAIL_TEMPLATE_REGISTRY = {
     new_request: NewRequest_1.default,
@@ -118,6 +132,11 @@ function normalizeRecipients(to) {
     }
     return [...new Set(recipients)];
 }
+function headerValue(value) {
+    if (Array.isArray(value))
+        return value[0];
+    return value;
+}
 async function sendEmail(apiKey, options, attempt = 1) {
     const client = getResendClient(apiKey);
     if (!client) {
@@ -128,6 +147,7 @@ async function sendEmail(apiKey, options, attempt = 1) {
         const recipients = normalizeRecipients(options.to);
         const html = await (0, exports.renderEmail)(options.templateName, options.data);
         const text = await (0, exports.renderEmailText)(options.templateName, options.data);
+        const idempotencyKey = options.idempotencyKey || generateIdempotencyKey(options.to, options.subject, options.templateName, options.uniqueId);
         const emailPayload = {
             from: exports.EMAIL_CONFIG.from,
             to: recipients,
@@ -141,15 +161,14 @@ async function sendEmail(apiKey, options, attempt = 1) {
                 ...(options.tags || []),
             ],
             headers: {
-                'X-Entity-Ref-ID': options.idempotencyKey ||
-                    generateIdempotencyKey(options.to, options.subject, options.templateName, options.uniqueId),
+                'X-Entity-Ref-ID': idempotencyKey,
                 ...(options.headers || {}),
             },
         };
         if (options.scheduledAt) {
             emailPayload.scheduled_at = options.scheduledAt;
         }
-        const { data: result, error } = await client.emails.send(emailPayload);
+        const { data: result, error } = await client.emails.send(emailPayload, { idempotencyKey });
         if (error) {
             throw { message: error.message, statusCode: 400 };
         }
@@ -157,25 +176,23 @@ async function sendEmail(apiKey, options, attempt = 1) {
         return { success: true, id: result === null || result === void 0 ? void 0 : result.id };
     }
     catch (error) {
-        console.error(`[Email] ❌ Attempt ${attempt} failed:`, error.message);
+        console.error(`[Email] ❌ Attempt ${attempt} failed:`, getErrMsg(error));
         if (attempt < exports.EMAIL_CONFIG.retryAttempts && isRetryableError(error)) {
             const delay = exports.EMAIL_CONFIG.retryDelayMs * Math.pow(2, attempt - 1);
             await new Promise(r => setTimeout(r, delay));
             return sendEmail(apiKey, options, attempt + 1);
         }
-        return { success: false, error: error.message };
+        return { success: false, error: getErrMsg(error) };
     }
 }
 function isRetryableError(error) {
     const retryableCodes = [429, 500, 502, 503, 504];
-    const msg = (error.message || '').toLowerCase();
-    if (error.statusCode && retryableCodes.includes(error.statusCode))
+    const msg = getErrMsg(error).toLowerCase();
+    const statusCode = getErrStatus(error);
+    if (statusCode && retryableCodes.includes(statusCode))
         return true;
     return ['rate limit', 'timeout', 'network', 'econnreset'].some(k => msg.includes(k));
 }
-// ----------------------------------------------------------------------------
-// Logging wrapper
-// ----------------------------------------------------------------------------
 async function sendEmailWithLogging(adminInstance, apiKey, options) {
     const result = await sendEmail(apiKey, options);
     const logEntry = {
@@ -206,9 +223,6 @@ async function sendEmailWithLogging(adminInstance, apiKey, options) {
     }
     return result;
 }
-// ----------------------------------------------------------------------------
-// Utilities (ported from JS)
-// ----------------------------------------------------------------------------
 function generateIdempotencyKey(to, subject, template, uniqueId = '') {
     const toStr = Array.isArray(to) ? to.join(',') : to;
     const normalizedTo = toStr
@@ -220,9 +234,6 @@ function generateIdempotencyKey(to, subject, template, uniqueId = '') {
     const payload = `${normalizedTo}-${subject}-${template}-${stableOrBucket}`;
     return crypto.createHash('sha256').update(payload).digest('hex').slice(0, 64);
 }
-// ----------------------------------------------------------------------------
-// Batch Sending
-// ----------------------------------------------------------------------------
 async function sendBatchEmails(apiKey, emails) {
     const client = getResendClient(apiKey);
     if (!client) {
@@ -255,13 +266,10 @@ async function sendBatchEmails(apiKey, emails) {
         return { success: true, data: result };
     }
     catch (error) {
-        console.error('[Email] ❌ Batch send failed:', error.message);
-        return { success: false, error: error.message };
+        console.error('[Email] ❌ Batch send failed:', getErrMsg(error));
+        return { success: false, error: getErrMsg(error) };
     }
 }
-// ----------------------------------------------------------------------------
-// Scheduling
-// ----------------------------------------------------------------------------
 async function sendScheduledEmail(apiKey, options) {
     if (!options.scheduledAt) {
         throw new Error('scheduledAt is required for scheduled emails');
@@ -279,7 +287,7 @@ async function cancelScheduledEmail(apiKey, emailId) {
         return { success: true, data };
     }
     catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: getErrMsg(error) };
     }
 }
 async function getEmailStatus(apiKey, emailId) {
@@ -293,12 +301,9 @@ async function getEmailStatus(apiKey, emailId) {
         return { success: true, data };
     }
     catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: getErrMsg(error) };
     }
 }
-// ----------------------------------------------------------------------------
-// Webhooks
-// ----------------------------------------------------------------------------
 function verifyWebhookSignature(payload, signature, timestamp, secret) {
     const signedPayload = `${timestamp}.${payload}`;
     const expectedSignature = crypto
@@ -317,9 +322,9 @@ function verifyWebhookSignature(payload, signature, timestamp, secret) {
 }
 function parseWebhookEvent(req, webhookSecret) {
     const payload = JSON.stringify(req.body);
-    const svixId = req.headers['svix-id'];
-    const svixTimestamp = req.headers['svix-timestamp'];
-    const svixSignature = req.headers['svix-signature'];
+    const svixId = headerValue(req.headers['svix-id']);
+    const svixTimestamp = headerValue(req.headers['svix-timestamp']);
+    const svixSignature = headerValue(req.headers['svix-signature']);
     if (!svixId || !svixTimestamp || !svixSignature) {
         throw new Error('Missing webhook headers');
     }
@@ -384,7 +389,7 @@ async function updateEmailLog(admin, emailId, updates) {
         }
     }
     catch (error) {
-        console.error(`[Email] Failed to update log for ${emailId}:`, error.message);
+        console.error(`[Email] Failed to update log for ${emailId}:`, getErrMsg(error));
     }
 }
 async function handleWebhookEvent(admin, event) {
@@ -394,9 +399,6 @@ async function handleWebhookEvent(admin, event) {
         console.log(`[Webhook] Processed ${event.type} for email ${event.data.email_id}`);
     }
 }
-// ----------------------------------------------------------------------------
-// Audience
-// ----------------------------------------------------------------------------
 async function addToAudience(apiKey, contactData) {
     var _a, _b, _c;
     const client = getResendClient(apiKey);
@@ -434,8 +436,8 @@ async function addToAudience(apiKey, contactData) {
         return { success: true, id: data === null || data === void 0 ? void 0 : data.id };
     }
     catch (error) {
-        console.error('[Audience] ❌ Failed to add contact:', error.message);
-        return { success: false, error: error.message };
+        console.error('[Audience] ❌ Failed to add contact:', getErrMsg(error));
+        return { success: false, error: getErrMsg(error) };
     }
 }
 async function updateContact(apiKey, email, updates) {
@@ -449,7 +451,7 @@ async function updateContact(apiKey, email, updates) {
         return { success: true, data };
     }
     catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: getErrMsg(error) };
     }
 }
 async function removeFromAudience(apiKey, email) {
@@ -463,7 +465,7 @@ async function removeFromAudience(apiKey, email) {
         return { success: true, data };
     }
     catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: getErrMsg(error) };
     }
 }
 //# sourceMappingURL=email-service.js.map

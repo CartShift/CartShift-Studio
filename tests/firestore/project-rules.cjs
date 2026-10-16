@@ -107,6 +107,45 @@ async function main() {
     const suspended = context('suspended', 'suspended@example.com');
     const creatorRemoved = context('creatorRemoved', 'creator-removed@example.com');
     const legacyCreator = context('legacyCreator', 'legacy-creator@example.com');
+
+    // Private Google OAuth credentials must never be readable or mutable from
+    // Firebase Client SDK, including by another agency member or its owner.
+    await env.withSecurityRulesDisabled(async admin => {
+      const db = admin.firestore();
+      await db.doc('agency_integrations/suspended_google_calendar').set({
+        userId: 'suspended', provider: 'google_calendar', status: 'connected', selectedCalendarId: 'primary',
+      });
+      await db.doc('agency_integrations/agency_google_calendar').set({
+        userId: 'agency', provider: 'google_calendar',
+        status: 'connected', selectedCalendarId: 'primary',
+      });
+      await db.doc('private_integration_credentials/agency_google_calendar').set({
+        userId: 'agency', accessToken: 'fake-token',
+        refreshToken: 'fake-refresh',
+      });
+    });
+    await assertSucceeds(agency.doc('agency_integrations/agency_google_calendar').get());
+    await assertFails(developer.doc('agency_integrations/agency_google_calendar').get());
+    await assertFails(client.doc('agency_integrations/agency_google_calendar').get());
+    await assertFails(suspended.doc('agency_integrations/agency_google_calendar').get());
+    await assertFails(suspended.doc('agency_integrations/suspended_google_calendar').get());
+    await assertFails(suspended.doc('agency_integrations/suspended_google_calendar').update({selectedCalendarId: 'other'}));
+    await assertSucceeds(agency.doc('agency_integrations/agency_google_calendar').update({
+      selectedCalendarId: 'calendar-safe',
+    }));
+    await assertFails(agency.doc('agency_integrations/agency_google_calendar').update({
+      accessToken: 'should-not-write',
+    }));
+    await assertFails(agency.doc('agency_integrations/agency_google_calendar').set({
+      userId: 'agency', accessToken: 'should-not-write',
+    }));
+    await assertFails(agency.doc('agency_integrations/agency_google_calendar').delete());
+    await assertFails(agency.doc('private_integration_credentials/agency_google_calendar').get());
+    await assertFails(developer.doc('private_integration_credentials/agency_google_calendar').get());
+    await assertFails(agency.doc('private_integration_credentials/agency_google_calendar').update({
+      refreshToken: 'should-not-write',
+    }));
+
     await assertFails(suspended.doc('portal_organizations/orgA').get());
     await assertFails(suspended.doc('portal_projects/prjA').get());
     await assertFails(suspended.doc('portal_projects/prjA/private_records/private').get());

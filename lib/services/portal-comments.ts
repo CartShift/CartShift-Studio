@@ -1,11 +1,10 @@
 import {
   collection,
   doc,
-  addDoc,
+  writeBatch,
   updateDoc,
-  deleteDoc,
+  runTransaction,
   getDocs,
-  getDoc,
   query,
   where,
   onSnapshot,
@@ -45,43 +44,6 @@ function sanitizeContent(content: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
-}
-
-/**
- * Decrements comment count on a request
- */
-async function decrementCommentCount(requestId: string): Promise<void> {
-  const db = getFirestoreDb();
-  const docRef = doc(db, 'portal_requests', requestId);
-  await updateDoc(docRef, {
-    commentCount: increment(-1),
-    updatedAt: serverTimestamp(),
-  });
-}
-
-/**
- * Updates the parent request with the latest comment info
- */
-async function updateRequestLastComment(
-  requestId: string,
-  content: string,
-  userName: string
-): Promise<void> {
-  const db = getFirestoreDb();
-  const docRef = doc(db, 'portal_requests', requestId);
-
-  // Truncate content if too long for summary
-  const preview = content.length > 100 ? content.substring(0, 100) + '...' : content;
-
-  await updateDoc(docRef, {
-    commentCount: increment(1),
-    updatedAt: serverTimestamp(),
-    lastComment: {
-      content: preview,
-      userName,
-      createdAt: Timestamp.now(), // Use client timestamp for immediate consistency or serverTimestamp if preferred
-    },
-  });
 }
 
 // ============================================
@@ -144,21 +106,34 @@ export async function createComment(
   };
 
   try {
-    const docRef = await addDoc(collection(db, COMMENTS_COLLECTION), commentData);
+    // Atomic write: the comment and its parent counter either both persist
+    // or neither does. This avoids orphan comments after a partial failure.
+    const commentRef = doc(collection(db, COMMENTS_COLLECTION));
+    const requestRef = doc(db, 'portal_requests', requestId);
+    const batch = writeBatch(db);
+    batch.set(commentRef, commentData);
 
-    // Internal comments must never replace the client-visible lastComment preview.
-    if (data.isInternal) {
-      await updateDoc(doc(db, 'portal_requests', requestId), {
-        commentCount: increment(1), updatedAt: serverTimestamp(),
-      });
-    } else {
-      await updateRequestLastComment(requestId, sanitizedContent, userName);
+    const requestUpdate: Record<string, unknown> = {
+      commentCount: increment(1),
+      updatedAt: serverTimestamp(),
+    };
+    if (!data.isInternal) {
+      const preview = sanitizedContent.length > 100
+        ? sanitizedContent.substring(0, 100) + '...'
+        : sanitizedContent;
+      requestUpdate.lastComment = {
+        content: preview,
+        userName,
+        createdAt: Timestamp.now(),
+      };
     }
+    batch.update(requestRef, requestUpdate);
+    await batch.commit();
 
     // Return with client-side timestamp (note: actual serverTimestamp is in Firestore)
     const now = Timestamp.now();
     return {
-      id: docRef.id,
+      id: commentRef.id,
       requestId,
       orgId,
       userId,
@@ -367,24 +342,24 @@ export async function deleteComment(commentId: string): Promise<void> {
     return;
   }
   const db = getFirestoreDb();
-  const docRef = doc(db, COMMENTS_COLLECTION, commentId);
+  const commentRef = doc(db, COMMENTS_COLLECTION, commentId);
 
-  // Fetch the comment first to get requestId for count decrement
-  const commentSnap = await getDoc(docRef);
-  if (!commentSnap.exists()) {
-    throw new Error('Comment not found');
-  }
+  // Transactions retry safely on contention: the comment can only be deleted
+  // and its counter decremented together, never as independent writes.
+  await runTransaction(db, async transaction => {
+    const snapshot = await transaction.get(commentRef);
+    if (!snapshot.exists()) throw new Error('Comment not found');
 
-  const commentData = commentSnap.data();
-  const requestId = commentData?.requestId;
+    const requestId = snapshot.data()?.requestId;
+    transaction.delete(commentRef);
 
-  // Delete the comment
-  await deleteDoc(docRef);
-
-  // Decrement the comment count on the parent request
-  if (requestId) {
-    await decrementCommentCount(requestId);
-  }
+    if (typeof requestId === 'string' && requestId) {
+      transaction.update(doc(db, 'portal_requests', requestId), {
+        commentCount: increment(-1),
+        updatedAt: serverTimestamp(),
+      });
+    }
+  });
 }
 
 // ============================================

@@ -6,6 +6,7 @@ on:
       - 'firestore.rules'
       - 'storage.rules'
       - 'tests/firestore/**'
+      - 'tests/storage/**'
       - '.github/workflows/firestore-rules-qa.yml'
   push:
     branches: [main]
@@ -13,6 +14,7 @@ on:
       - 'firestore.rules'
       - 'storage.rules'
       - 'tests/firestore/**'
+      - 'tests/storage/**'
       - '.github/workflows/firestore-rules-qa.yml'
 
 permissions:
@@ -39,4 +41,4 @@ jobs:
       - name: Validate rules and exercise tenant boundaries
         env:
           NODE_PATH: /tmp/cartshift-rules-test/node_modules
-        run: firebase emulators:exec --project demo-cartshift --only firestore,storage -- "node tests/firestore/project-rules.cjs"
+        run: firebase emulators:exec --project demo-cartshift --only firestore,storage -- "node tests/firestore/project-rules.cjs && node tests/storage/tenant-rules.cjs"
