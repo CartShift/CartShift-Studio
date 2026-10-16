@@ -7,12 +7,14 @@ import {
   useEffect,
   useMemo,
   useCallback,
-  ReactNode,
+  type ReactNode,
 } from 'react';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useUserOrganizations } from '@/lib/hooks/useUserOrganizations';
 import type { Organization } from '@/lib/types/portal';
 
+// Selection is per authenticated user, not per tab or agency role.
+// The legacy unscoped storage key must not restore another user's workspace.
 const STORAGE_KEY = 'cartshift_current_org_id';
 
 interface OrgContextValue {
@@ -26,88 +28,85 @@ interface OrgContextValue {
 
 const OrgContext = createContext<OrgContextValue | null>(null);
 
-interface OrgProviderProps {
-  children: ReactNode;
-}
-
-export function OrgProvider({ children }: OrgProviderProps) {
+export function OrgProvider({ children }: { children: ReactNode }) {
   const { userData, loading: auth } = usePortalAuth();
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-
+  const [initializedFor, setInitializedFor] = useState<string | null>(null);
   const organizations = useMemo(
     () => [...new Set(userData?.organizations ?? [])],
     [userData?.organizations]
   );
+  const userId = userData?.id ?? null;
+  const storageKey = userId ? `${STORAGE_KEY}:${userId}` : null;
+  const isAgencyWorkspace = userData?.isAgency === true;
 
-  const {
-    data: fullOrganizations = [],
-    isLoading: loadingOrgs,
-  } = useUserOrganizations();
+  const { data: fetchedOrganizations = [], isLoading: loadingOrgs } = useUserOrganizations();
+  const fullOrganizations = useMemo(
+    () => fetchedOrganizations.filter(org => organizations.includes(org.id)),
+    [fetchedOrganizations, organizations]
+  );
 
   useEffect(() => {
-    if (auth) return;
-
-    const storedOrgId = sessionStorage.getItem(STORAGE_KEY);
-
-    if (storedOrgId) {
-      if (userData?.isAgency || organizations.includes(storedOrgId)) {
-        setCurrentOrgId(storedOrgId);
-        setIsInitialized(true);
-        return;
-      }
+    if (auth || !storageKey) {
+      setCurrentOrgId(null);
+      setInitializedFor(null);
+      return;
     }
 
-    if (userData?.isAgency) {
+    // An agency workspace is global. Selecting a client is an explicit
+    // "view as client" action, never an implicit organization switch.
+    if (isAgencyWorkspace) {
       setCurrentOrgId(null);
-    } else if (organizations.length > 0) {
-      const firstOrg = organizations[0];
-      setCurrentOrgId(firstOrg);
-      sessionStorage.setItem(STORAGE_KEY, firstOrg);
-    } else {
-      setCurrentOrgId(null);
+      setInitializedFor(storageKey);
+      sessionStorage.removeItem(STORAGE_KEY);
+      return;
     }
 
-    setIsInitialized(true);
-  }, [auth, userData?.isAgency, organizations]);
+    const storedId = sessionStorage.getItem(storageKey);
+    const selected = storedId && organizations.includes(storedId)
+      ? storedId : (organizations[0] ?? null);
+    setCurrentOrgId(selected);
+    setInitializedFor(storageKey);
+    if (selected) sessionStorage.setItem(storageKey, selected);
+    else sessionStorage.removeItem(storageKey);
+    sessionStorage.removeItem(STORAGE_KEY);
+  }, [auth, storageKey, isAgencyWorkspace, organizations]);
 
-  const switchOrg = useCallback(
-    (newOrgId: string) => {
-      if (!userData?.isAgency && !organizations.includes(newOrgId)) {
-        console.warn(`[OrgContext] Cannot switch to org ${newOrgId} - user is not a member`);
-        return;
-      }
+  // A stale choice cannot leak through during account / impersonation changes.
+  const orgId = !userId || isAgencyWorkspace
+    ? null
+    : currentOrgId && organizations.includes(currentOrgId)
+      ? currentOrgId
+      : (organizations[0] ?? null);
 
-      setCurrentOrgId(newOrgId);
-      sessionStorage.setItem(STORAGE_KEY, newOrgId);
-    },
-    [organizations, userData?.isAgency]
-  );
+  const switchOrg = useCallback((newOrgId: string) => {
+    if (isAgencyWorkspace || !storageKey || !organizations.includes(newOrgId)) {
+      return;
+    }
+    setCurrentOrgId(newOrgId);
+    sessionStorage.setItem(storageKey, newOrgId);
+  }, [isAgencyWorkspace, storageKey, organizations]);
 
-  const value = useMemo<OrgContextValue>(
-    () => ({
-      orgId: currentOrgId,
-      loading: auth || !isInitialized || loadingOrgs,
-      switchOrg,
-      organizations,
-      fullOrganizations,
-      hasMultipleOrgs: organizations.length > 1,
-    }),
-    [currentOrgId, auth, isInitialized, loadingOrgs, switchOrg, organizations, fullOrganizations]
-  );
+  const value = useMemo<OrgContextValue>(() => ({
+    orgId,
+    loading: auth || !userId || initializedFor !== storageKey ||
+      (!isAgencyWorkspace && loadingOrgs),
+    switchOrg,
+    organizations,
+    fullOrganizations,
+    hasMultipleOrgs: !isAgencyWorkspace && fullOrganizations.length > 1,
+  }), [orgId, auth, userId, initializedFor, storageKey, isAgencyWorkspace,
+    loadingOrgs, switchOrg, organizations, fullOrganizations]);
 
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }
 
 export function useOrg(): OrgContextValue {
   const context = useContext(OrgContext);
-  if (!context) {
-    throw new Error('useOrg must be used within an OrgProvider');
-  }
+  if (!context) throw new Error('useOrg must be used within an OrgProvider');
   return context;
 }
 
 export function useOrgId(): string | null {
-  const { orgId } = useOrg();
-  return orgId;
+  return useOrg().orgId;
 }
