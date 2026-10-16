@@ -103,7 +103,7 @@ export function OrgProvider({ children }: { children: ReactNode }) {
     orgId,
     // Signed-out sessions must finish loading so the portal can redirect to login.
     loading: auth || (Boolean(userId) && (
-      initializedFor !== storageKey || loadingOrgs
+      initializedFor !== storageKey || (!isAgencyWorkspace && loadingOrgs)
     )),
     switchOrg,
     organizations,
