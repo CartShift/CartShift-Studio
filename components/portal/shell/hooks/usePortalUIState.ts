@@ -40,7 +40,7 @@ interface UsePortalUIStateResult {
 
   // Actions
   handleSignOut: () => Promise<void>;
-  handleOrgSwitch: (orgId: string, switchOrg: (orgId: string) => void) => void;
+  handleOrgSwitch: (orgId: string, switchOrg: (orgId: string) => void, isAgency: boolean) => void;
 
   // Route info
   pathname: string;
