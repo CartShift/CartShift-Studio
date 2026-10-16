@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": ".next/tsconfig.build.tsbuildinfo"
+  },
+  "exclude": [
+    "node_modules",
+    "functions",
+    "tests",
+    "scripts",
+    "eslint-plugins",
+    "tailwind.config.backup.ts"
+  ]
+}
