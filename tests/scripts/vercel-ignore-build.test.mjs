@@ -18,6 +18,32 @@ describe("Vercel ignored-build scope", () => {
     expect(shouldIgnoreDeployment(["docs/README.md", "app/[locale]/page.tsx"])).toBe(false);
   });
 
+  it("skips Firebase-only code and infrastructure changes", () => {
+    const firebaseOnly = [
+      "functions/index.js",
+      "functions/pnpm-lock.yaml",
+      "firestore.rules",
+      "storage.rules",
+      "firestore.indexes.json",
+      "firebase.json",
+      ".firebaserc",
+      ".firebaseignore",
+      "apphosting.yaml",
+    ];
+    for (const path of firebaseOnly) {
+      expect(isDeploymentNeutralPath(path)).toBe(true);
+    }
+    expect(shouldIgnoreDeployment(["functions/index.js", "firestore.indexes.json"])).toBe(true);
+  });
+
+  it("builds for mixed Firebase and app changes, or shared dependency changes", () => {
+    expect(shouldIgnoreDeployment(["functions/index.js", "app/page.tsx"])).toBe(false);
+    expect(shouldIgnoreDeployment(["functions/index.js", "pnpm-lock.yaml"])).toBe(false);
+    expect(shouldIgnoreDeployment(["functions/index.js", "pnpm-workspace.yaml"])).toBe(false);
+    expect(isDeploymentNeutralPath("scripts/vercel-ignore-build.mjs")).toBe(false);
+    expect(isDeploymentNeutralPath("scripts/validate-translations.js")).toBe(false);
+  });
+
   it("fails open for an empty diff", () => {
     expect(shouldIgnoreDeployment([])).toBe(false);
   });

@@ -7,12 +7,38 @@ on:
       - "docs/**"
       - "README.md"
       - "DESIGN.md"
+      # Backend-only updates have their own QA workflows; avoid rechecking the Next.js app.
+      - "functions/**"
+      - "tests/functions/**"
+      - "firestore.rules"
+      - "storage.rules"
+      - "firestore.indexes.json"
+      - "tests/firestore/**"
+      - ".github/workflows/functions-qa.yml"
+      - ".github/workflows/firestore-rules-qa.yml"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".firebaseignore"
+      - "apphosting.yaml"
   pull_request:
     branches: [main]
     paths-ignore:
       - "docs/**"
       - "README.md"
       - "DESIGN.md"
+      # Backend-only updates have their own QA workflows; avoid rechecking the Next.js app.
+      - "functions/**"
+      - "tests/functions/**"
+      - "firestore.rules"
+      - "storage.rules"
+      - "firestore.indexes.json"
+      - "tests/firestore/**"
+      - ".github/workflows/functions-qa.yml"
+      - ".github/workflows/firestore-rules-qa.yml"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".firebaseignore"
+      - "apphosting.yaml"
 
   workflow_dispatch:
 
@@ -31,6 +57,7 @@ env:
   NEXT_PUBLIC_FIREBASE_FUNCTION_URL: https://us-central1-ci-stub.cloudfunctions.net/contactForm
   NEXT_PUBLIC_SITE_URL: https://example.com
   NEXT_TELEMETRY_DISABLED: '1'
+  PUPPETEER_SKIP_DOWNLOAD: '1'
 
 jobs:
 
@@ -39,8 +66,6 @@ jobs:
     if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      PUPPETEER_SKIP_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v4
         with:
