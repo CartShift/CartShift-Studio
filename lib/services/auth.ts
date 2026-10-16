@@ -349,6 +349,10 @@ export async function logout(): Promise<void> {
     }
 
     setLoggingOut(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('cartshift_impersonated_account_id');
+      sessionStorage.removeItem('cartshift_current_org_id');
+    }
     syncSessionCookie(null).catch(() => {});
     await signOut(authInstance);
   } catch (error: unknown) {
