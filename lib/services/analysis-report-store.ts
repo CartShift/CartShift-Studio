@@ -76,6 +76,7 @@ export async function getPrivateReportDeliveryStatus(token: string) {
   const data = doc.data();
   if (!data || data.expiresAt?.toDate?.().getTime() < Date.now()) return null;
   const state = data.delivery?.status;
+  if (state === 'exhausted') return 'failed';
   return state === 'sent' || state === 'failed' || state === 'pending' || state === 'retrying'
     ? state
     : 'unconfigured';

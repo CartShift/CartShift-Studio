@@ -4,6 +4,10 @@
 **Date:** 2026-10-15
 **Owner:** CartShift Studio
 
+## Operational release status — 2026-10-16
+
+The backward-compatible Firebase worker/index/limiter slice shipped independently in [#89](https://github.com/CartShift/CartShift-Studio/pull/89), along with current-main authorization rules and verified report retention. See [Firebase release evidence](engineering/FIREBASE_RELEASE_2026-10-16.md). Calendar application configuration, OAuth smoke, credential migration and candidate Calendar restrictions remain subject to the gates below. This release does not imply those gates passed.
+
 ## Decision
 
 Maintain a **modular Next.js monolith deployed to Vercel** for user-driven business operations. Keep Firebase Authentication, Firestore and Storage. Reserve Firebase Functions for Firestore-driven events, reliable scheduled recovery, and expensive/background jobs. Do not introduce NestJS, Kubernetes, an additional queue provider, or a new database without measured needs.

@@ -19,24 +19,32 @@ Retained #29 tests first reproduced nine failures; then all ten atomic/retry tes
 The first backend build attempt failed because its node_modules symlink pointed outside the Turbopack filesystem root. Dependencies were installed inside the worktree before retry; this was a test-environment issue, not an application fix.
 Final combined checks are recorded on the PR after completion. A CI-stub build verifies code, not production credentials.
 
-## Mandatory remaining live gates
-1. Firebase CLI authentication is verified in the remote CartShift engineering environment (CLI 15.34.0). `login:list` and `projects:list` succeeded for active project `cartshiftstudio` (559544522324). Read-only live inventory found 24 ACTIVE Node.js 22 functions and 29 composite indexes in the CLI's default database output. `processRetriedEmailQueue`, `recoverEmailQueue`, and `retryStoreAnalysisReports` are not deployed. Both `(default)` and `cartshift` databases exist (STANDARD, nam5); verify each feature's configured database before index/rule changes. Index readiness and candidate parity have not yet been verified. Local authentication-profile permissions and the absence of Firebase MCP tools remain local limitations, but remote CLI project access is unblocked.
-2. Vercel environment metadata returns HTTP 403. Its local authenticated CLI fallback also fails in the restricted environment. Production GOOGLE_CLIENT_ID/SECRET, Firebase Admin and CONTACT_EMAIL remain unverified.
-3. Use the verified project cartshiftstudio. Back up deployed Firestore/Storage rules and compare to the candidate. Validate with staged agency/client/revoked/suspended accounts before production promotion.
-4. Deploy required indexes and wait until READY before the new count/cursor queries and recovery workers.
-5. Follow ADR-017 ordering: verify configuration/callback origins; deploy app; smoke-test Calendar/contact; dry-run then apply Calendar credential migration; dry-run again; deploy compatible rules; deploy only named workers.
-6. Verify worker claim/retry behavior, Contact persistence/delivery and actual Google OAuth behavior with controlled accounts. Do not send real customer emails during engineering checks.
-7. Store Analyzer #64 still needs named Functions deployment, retention TTL verification and an explicitly authorized recipient/scan/inbox smoke test.
-8. Public expert-review intake remains gated until its documented capacity, configuration and live acceptance checks pass.
+## Completed Firebase release
 
-No production data migration, Firebase deployment, email, payment capture or Shopify publication is performed by this integration.
+PR [#89](https://github.com/CartShift/CartShift-Studio/pull/89) is merged to main at `f6c376fd1571bad7cc5f9ca5cf1a1c03b83559af`. Firebase access is no longer blocked.
+
+- Exact default-database and Storage rules backed up; current-main rules deployed. Five temporary real Auth identities reproduced removed/suspended access bugs before deployment; all 12 checks passed afterward. All fixtures removed. The separate named `cartshift` database remains unchanged.
+- 35 composite indexes READY, including queue/report recovery; existing production-only indexes preserved. The unnecessary single-field-equivalent index was removed. Report expiresAt TTL is ACTIVE.
+- Eight named Functions ACTIVE on Node.js 24; both recovery schedulers ENABLED. Real Firestore transaction tests verified one mock delivery under five contenders and a stable retry key; no real emails sent.
+- Main's release passed 631 app tests, 18 worker tests, TypeScript/lint and an optimized build with 203 generated pages. The report retry terminal-state/UI contract regression was verified RED→GREEN.
+- See [FIREBASE_RELEASE_2026-10-16.md](https://github.com/CartShift/CartShift-Studio/blob/main/docs/engineering/FIREBASE_RELEASE_2026-10-16.md) for source provenance, backup IDs, independent review and live evidence.
+
+## Mandatory remaining application/provider gates
+
+1. Vercel environment metadata still returns HTTP 403; the prior local CLI fallback was unavailable. Current production Calendar credentials/callback origins and the matching analyzer delivery configuration have not been reverified.
+2. Deploy the candidate Calendar/Contact application slice only after ADR-017 configuration/baseline gates. Then smoke-test Calendar OAuth/refresh/disconnect and transactional Contact persistence/delivery with controlled accounts.
+3. One complete legacy Calendar credential document remains. Apply its migration only after the new API is deployed and verified, repeat dry-run, then deploy candidate Calendar restrictions. The rules already released from main deliberately retain the current client connection flow.
+4. Actual authorized Shopify scan/PDF/inbox acceptance remains outstanding for issue #64. Infrastructure, signed authentication checks and mocked-provider tests do not prove real delivery. Do not send customer mail during engineering checks.
+5. Public expert-review intake remains gated by its capacity, configuration and live acceptance checks. Payment PR #32 still requires actual PayPal Sandbox QA.
+
+Production Firebase indexes, main authorization rules and eight named Functions were deployed in #89. No credential data migration, real-recipient email, payment capture or Shopify publication was performed.
 
 ## Superseded branches
-#29 and #66 can be closed only after this replacement PR is published and verified. Closing them means their current code is reconciled; it does not mean their production gates passed.
+#29 and #66 were closed as superseded after reconciliation into #87. Firebase-compatible work then shipped independently in #89; the application/Calendar gates above remain open.
 
 ## Independent review fixes
 - Resend adapter now forwards its stable key as the provider request option; adapter regression reproduced the missing option before passing.
 - Recovery claims up to 25 pending jobs in batches of 3, covering missed original triggers; queue triggers retry and the recovery scheduler has the required secret.
 - Ambiguous request commits are verified via the existing authorized read/projection path before replay; immutable activity rules remain unchanged.
 - Separate payment PR keeps the ledger guard but repeats idempotent derived synchronization, repairing a committed payment after interrupted synchronization.
-- Provider/queue/limiter/analyzer Node suite: 18 tests passed. Final app suite/build are rerun after the request fix.
+- Provider/queue/limiter/analyzer Node suite: 18 tests passed. The combined pre-Firebase integration app suite passed 673 tests and its optimized build passed. Release #89 separately passed 631 tests including the terminal delivery-state regression.
