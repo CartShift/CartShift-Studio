@@ -218,6 +218,9 @@ export async function sendEmail(
     const html = await renderEmail(options.templateName, options.data);
     const text = await renderEmailText(options.templateName, options.data);
 
+    const idempotencyKey = options.idempotencyKey || generateIdempotencyKey(
+      options.to, options.subject, options.templateName, options.uniqueId
+    );
     const emailPayload: ResendEmailPayload = {
       from: EMAIL_CONFIG.from,
       to: recipients,
@@ -231,14 +234,7 @@ export async function sendEmail(
         ...(options.tags || []),
       ],
       headers: {
-        'X-Entity-Ref-ID':
-          options.idempotencyKey ||
-          generateIdempotencyKey(
-            options.to,
-            options.subject,
-            options.templateName,
-            options.uniqueId
-          ),
+        'X-Entity-Ref-ID': idempotencyKey,
         ...(options.headers || {}),
       },
     };
@@ -247,7 +243,7 @@ export async function sendEmail(
       emailPayload.scheduled_at = options.scheduledAt;
     }
 
-    const { data: result, error } = await client.emails.send(emailPayload);
+    const { data: result, error } = await client.emails.send(emailPayload, { idempotencyKey });
 
     if (error) {
       throw { message: error.message, statusCode: 400 };

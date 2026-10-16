@@ -4,6 +4,7 @@ const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const { checkFirestoreRateLimit: checkDistributedRateLimit } = require('./rate-limit');
 const {
   sendEmailWithLogging,
   sendBatchEmails,
@@ -17,8 +18,6 @@ const {
 
 admin.initializeApp();
 
-const contactRateLimitMap = new Map();
-const newsletterRateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const CONTACT_RATE_LIMIT_MAX_REQUESTS = 5;
 const NEWSLETTER_RATE_LIMIT_MAX_REQUESTS = 3;
@@ -65,58 +64,9 @@ function getRateLimitKey(req) {
   return req.ip || 'unknown';
 }
 
-function checkRateLimit(map, key, maxRequests) {
-  const now = Date.now();
-  const record = map.get(key);
-
-  if (!record || now > record.resetTime) {
-    map.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-
-  if (record.count >= maxRequests) {
-    return false;
-  }
-
-  record.count += 1;
-  return true;
-}
-
+// All public endpoints share the same cross-instance transactional limiter.
 async function checkFirestoreRateLimit(key, maxRequests, windowMs = 60 * 60 * 1000) {
-  const ref = admin
-    .firestore()
-    .collection('rate_limits')
-    .doc(key.replace(/[^a-zA-Z0-9]/g, '_')); // Sanitize key
-
-  try {
-    return await admin.firestore().runTransaction(async t => {
-      const doc = await t.get(ref);
-      const now = Date.now();
-
-      if (!doc.exists) {
-        t.set(ref, { count: 1, resetTime: now + windowMs });
-        return true;
-      }
-
-      const data = doc.data();
-
-      if (now > data.resetTime) {
-        t.set(ref, { count: 1, resetTime: now + windowMs });
-        return true;
-      }
-
-      if (data.count >= maxRequests) {
-        return false;
-      }
-
-      t.update(ref, { count: admin.firestore.FieldValue.increment(1) });
-      return true;
-    });
-  } catch (e) {
-    console.error('Rate limit transaction error:', e);
-    // Fail open (allow request) if DB check fails to avoid blocking users during outages
-    return true;
-  }
+  return checkDistributedRateLimit(admin.firestore(), key, maxRequests, windowMs);
 }
 
 const resendApiKey = defineSecret('RESEND_API_KEY', { required: false });
@@ -1946,7 +1896,7 @@ exports.contactForm = onRequest(
 
     try {
       const rateLimitKey = getRateLimitKey(req);
-      if (!checkRateLimit(contactRateLimitMap, rateLimitKey, CONTACT_RATE_LIMIT_MAX_REQUESTS)) {
+      if (!(await checkFirestoreRateLimit(`contact_form_${rateLimitKey}`, CONTACT_RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW))) {
         res.set('Retry-After', '60');
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
       }
@@ -2031,7 +1981,7 @@ exports.newsletterSubscription = onRequest(
     try {
       const rateLimitKey = getRateLimitKey(req);
       if (
-        !checkRateLimit(newsletterRateLimitMap, rateLimitKey, NEWSLETTER_RATE_LIMIT_MAX_REQUESTS)
+        !(await checkFirestoreRateLimit(`newsletter_${rateLimitKey}`, NEWSLETTER_RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW))
       ) {
         res.set('Retry-After', '60');
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
@@ -3112,55 +3062,34 @@ exports.onTeamInviteCreated = onDocumentCreated(
 // EMAIL QUEUE PROCESSOR (for batch/reliable sending)
 // ============================================
 
+// Keep Firebase triggers as thin adapters: queue policy and recovery live in
+// functions/runtime/email-queue.js and can be tested without Firebase emulator.
+const { createEmailQueueWorker } = require('./runtime/email-queue');
+const emailQueueWorker = createEmailQueueWorker({
+  admin,
+  sendPortalEmail,
+  supportedTemplates: SUPPORTED_EMAIL_TEMPLATES,
+});
+
 exports.processEmailQueue = onDocumentCreated(
-  { document: 'email_queue/{emailId}', secrets: [resendApiKey] },
+  { document: 'email_queue/{emailId}', secrets: [resendApiKey], retry: true },
   async event => {
-    const emailDoc = event.data;
-    const email = emailDoc.data();
-
-    if (email.status !== 'pending') return;
-
-    await emailDoc.ref.update({
-      status: 'processing',
-      processingStartedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    try {
-      if (!SUPPORTED_EMAIL_TEMPLATES.includes(email.templateName)) {
-        throw new Error(`Unsupported email_queue templateName: ${email.templateName}`);
-      }
-
-      const result = await sendPortalEmail(
-        email.to,
-        email.subject,
-        email.templateName,
-        email.data,
-        {
-          tags: email.tags || [],
-          uniqueId: event.params.emailId,
-          scheduledAt: email.scheduledAt,
-        }
-      );
-
-      await emailDoc.ref.update({
-        status: result.success ? 'sent' : 'failed',
-        emailId: result.id || null,
-        error: result.success ? null : result.error || 'send_failed',
-        result,
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    } catch (error) {
-      console.error('[EmailQueue] Processing failed', event.params.emailId, error);
-      await emailDoc.ref.update({
-        status: 'failed',
-        error: error.message || 'queue_processing_failed',
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    }
+    if (event.data) await emailQueueWorker.processPending(event.data.ref, event.params.emailId);
   }
+);
+
+exports.processRetriedEmailQueue = onDocumentUpdated(
+  { document: 'email_queue/{emailId}', secrets: [resendApiKey], retry: true },
+  async event => {
+    if (!event.data || event.data.before.data().status === 'pending' ||
+        event.data.after.data().status !== 'pending') return;
+    await emailQueueWorker.processPending(event.data.after.ref, event.params.emailId);
+  }
+);
+
+exports.recoverEmailQueue = onSchedule(
+  { schedule: 'every 60 minutes', maxInstances: 1, timeoutSeconds: 300, secrets: [resendApiKey] },
+  async () => emailQueueWorker.recover()
 );
 
 // ============================================
@@ -4269,8 +4198,7 @@ exports.analyzeStore = onRequest({ cors: true, maxInstances: 2 }, async (req, re
 
 /**
  * Recovery lane for reports abandoned by serverless post-response execution.
- * Runs hourly, processes a small bounded batch, and stops after five attempts.
- * The send function uses the same stable Resend idempotency key as the initial attempt.
+ * The exported Cloud Function name stays unchanged for safe deployment.
  */
 exports.retryStoreAnalysisReports = onSchedule(
   {
@@ -4287,70 +4215,15 @@ exports.retryStoreAnalysisReports = onSchedule(
       console.warn('[Analyzer retry] Delivery key or project ID unavailable');
       return;
     }
-    const baseUrl = process.env.ANALYZER_REPORT_FUNCTION_URL ||
-      `https://us-central1-${project}.cloudfunctions.net/sendStoreAnalysisReport`;
-    const docs = await admin.firestore().collection('store_analysis_reports')
-      .where('delivery.status', 'in', ['pending', 'failed', 'retrying'])
-      .limit(12).get();
-    const now = Date.now();
-
-    for (const doc of docs.docs) {
-      const record = doc.data();
-      const job = record.delivery;
-      const lastAttempt = job?.lastAttemptAt?.toDate?.().getTime() || 0;
-      if (!job?.email || !record?.result || job.attempts >= 5) continue;
-      // Avoid racing the immediate after() sender or a previous scheduled instance.
-      if (now - (lastAttempt || record.createdAt?.toDate?.().getTime() || now) < 30 * 60 * 1000) continue;
-
-      const claim = await admin.firestore().runTransaction(async tx => {
-        const current = await tx.get(doc.ref);
-        const state = current.data()?.delivery;
-        const updated = state?.lastAttemptAt?.toDate?.().getTime() || 0;
-        if (state?.status === 'sent' || state?.attempts >= 5 ||
-            now - (updated || current.data()?.createdAt?.toDate?.().getTime() || now) < 30 * 60 * 1000) {
-          return false;
-        }
-        tx.update(doc.ref, {
-          'delivery.status': 'retrying',
-          'delivery.attempts': admin.firestore.FieldValue.increment(1),
-          'delivery.lastAttemptAt': admin.firestore.FieldValue.serverTimestamp(),
-          'delivery.updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-        });
-        return true;
-      });
-      if (!claim) continue;
-
-      try {
-        const response = await fetch(baseUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Analyzer-Delivery-Key': key },
-          body: JSON.stringify({
-            email: job.email,
-            storeUrl: job.storeUrl,
-            locale: record.locale || 'en',
-            results: record.result,
-            subscribeNewsletter: job.subscribeNewsletter === true,
-            skipLeadCapture: job.skipLeadCapture === true,
-            intent: job.intent,
-            attribution: job.attribution,
-            primaryIssue: job.primaryIssue,
-            reportUrl: `https://cart-shift.com/${record.locale || 'en'}/tools/store-analyzer/report/${doc.id}`,
-            deliveryId: doc.id,
-          }),
-          signal: AbortSignal.timeout(120_000),
-        });
-        if (!response.ok) throw new Error(`Report delivery returned HTTP ${response.status}`);
-        await doc.ref.update({
-          'delivery.status': 'sent',
-          'delivery.updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-        });
-      } catch (error) {
-        console.error('[Analyzer retry] Email attempt failed', doc.id, error.message);
-        await doc.ref.update({
-          'delivery.status': 'failed',
-          'delivery.updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-        });
-      }
-    }
+    const url = process.env.ANALYZER_REPORT_FUNCTION_URL ||
+      'https://us-central1-' + project + '.cloudfunctions.net/sendStoreAnalysisReport';
+    const { retryAnalysisReports } = require('./analyzer/report-retry');
+    const counters = await retryAnalysisReports({
+      db: admin.firestore(),
+      FieldValue: admin.firestore.FieldValue,
+      deliveryKey: key,
+      deliveryUrl: url,
+    });
+    console.log('[Analyzer retry] Completed', counters);
   }
 );

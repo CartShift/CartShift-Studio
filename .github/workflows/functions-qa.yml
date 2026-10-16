@@ -5,12 +5,14 @@ on:
     branches: [main]
     paths:
       - 'functions/**'
+      - 'tests/functions/**'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/functions-qa.yml'
   push:
     branches: [main]
     paths:
       - 'functions/**'
+      - 'tests/functions/**'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/functions-qa.yml'
 
@@ -42,6 +44,10 @@ jobs:
       - name: Lint Firebase Functions entrypoint
         # Functions still uses ESLint 8 + legacy .eslintrc.json.
         # Explicitly select legacy config and lint JS; TypeScript is checked by tsc.
-        run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js
+        run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js runtime/email-queue.js analyzer/report-retry.js rate-limit.js
       - name: Compile Firebase Functions TypeScript
         run: pnpm build
+      - name: Test durable email queue transitions
+        run: node --test runtime/*.test.js
+      - name: Test distributed limits and analyzer retry claims
+        run: node --test ../tests/functions/*.test.cjs
