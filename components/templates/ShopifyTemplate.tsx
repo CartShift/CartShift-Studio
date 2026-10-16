@@ -65,7 +65,7 @@ export const ShopifyTemplate: React.FC = () => {
               }
             ] as const).map(item => (
               <Link key={item.slug}
-                href={{ pathname: '/services/[slug]', params: { slug: item.slug } }}
+                href={'/services/' + item.slug}
                 className="group rounded-2xl border border-surface-200 bg-surface-50 p-6 transition-colors hover:border-primary-500 dark:border-white/10 dark:bg-surface-900">
                 <h3 className="text-xl font-bold group-hover:text-primary-600">{he ? item.he : item.en}</h3>
                 <p className="mt-3 leading-relaxed text-surface-600 dark:text-surface-300">{he ? item.heDesc : item.enDesc}</p>
