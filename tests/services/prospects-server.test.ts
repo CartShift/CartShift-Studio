@@ -55,6 +55,13 @@ beforeEach(() => {
 });
 
 describe('agency prospect persistence and access', () => {
+  it('accepts authenticated legacy agency owners without an explicit agencyRole', async () => {
+    records.set('portal_users/staff', {
+      accountType: 'AGENCY', isAgency: true, status: 'active',
+    });
+    await expect(listProspects({}, 'staff')).resolves.toMatchObject({ prospects: [] });
+  });
+
   it('upserts idempotently and preserves suppression on duplicates', async () => {
     const raw = {
       store_url: 'https://www.shop.co.il/products/first',
