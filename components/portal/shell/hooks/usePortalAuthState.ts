@@ -52,7 +52,7 @@ export function usePortalAuthState({
   const { orgId: contextOrgId, hasMultipleOrgs, fullOrganizations, switchOrg } = useOrg();
 
   const effectiveOrgId = contextOrgId ?? orgIdProp;
-  const isAgency = isAgencyPage || userData?.isAgency;
+  const isAgency = userData?.isAgency === true;
 
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [memberRole, setMemberRole] = useState<UserRole | undefined>(undefined);
