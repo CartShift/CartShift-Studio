@@ -59,19 +59,8 @@ export function usePortalAuthState({
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [hasEverBeenAuthorized, setHasEverBeenAuthorized] = useState(false);
 
-  const displayUserData = (() => {
-    if (isImpersonating && impersonatedAccountId && userData) {
-      const org = fullOrganizations.find(o => o.id === impersonatedAccountId);
-      if (org) {
-        return {
-          ...userData,
-          name: org.name,
-          photoUrl: org.branding?.iconUrl || org.logoUrl || userData.photoUrl,
-        };
-      }
-    }
-    return userData;
-  })();
+  /* Keep the signed-in user's name and avatar stable while switching workspace. */
+  const displayUserData = userData;
 
   useEffect(() => {
     if (userData) {
