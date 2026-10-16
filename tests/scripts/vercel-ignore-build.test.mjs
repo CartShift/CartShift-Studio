@@ -8,6 +8,7 @@ describe("Vercel ignored-build scope", () => {
     expect(isDeploymentNeutralPath("DESIGN.md")).toBe(true);
     expect(isDeploymentNeutralPath("tests/services/analyzer.test.ts")).toBe(true);
     expect(isDeploymentNeutralPath(".github/workflows/ci.yml")).toBe(true);
+    expect(isDeploymentNeutralPath("scripts/ci/plan-checks.mjs")).toBe(true);
     expect(shouldIgnoreDeployment(["README.md", "docs/DEPLOYMENT.md"])).toBe(true);
   });
 
