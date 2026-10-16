@@ -20,6 +20,7 @@ import {
 import { getRequestRole } from '@/lib/domain/request-commercial';
 import { ensureProjectForAcceptedProposal } from '@/lib/services/project-conversion-server';
 import { validateProposalCap, validateProposalContent } from '@/lib/domain/proposal-content';
+import { shouldApplyPaymentEvent } from '@/lib/domain/payment-reconciliation';
 
 const PROPOSALS_COLLECTION = 'portal_requests';
 const LEGACY_PROPOSALS_COLLECTION = 'portal_pricing_requests';
@@ -994,6 +995,10 @@ export async function reconcileProposalPayment(input: {
     const proposal = proposalSnapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
 
+    // PayPal retries and out-of-order webhook delivery must not undo a
+    // confirmed capture/refund. Transactional guard prevents balance drift.
+    if (!shouldApplyPaymentEvent(payment.status, input.status)) return false;
+
     const wasPaid = payment.status === 'paid';
     const now = admin.firestore.FieldValue.serverTimestamp();
     const paymentUpdates: Record<string, unknown> = {
@@ -1055,7 +1060,10 @@ export async function reconcileProposalPayment(input: {
 
     transaction.update(paymentRef, paymentUpdates);
     transaction.update(proposalRef, proposalUpdates);
+    return true;
   });
+  // Replays still repair derived state if a prior attempt committed the ledger
+  // but failed during project, child-request or profit synchronization.
   const payment = (await paymentRef.get()).data() as PaymentDocument | undefined;
   if (payment) await syncProposalDerivedState(payment.requestId);
 }
