@@ -354,8 +354,10 @@ async function validateTranslations() {
     console.log(`✅ Referenced keys exist (${usedKeys.size} static references checked)`);
   }
 
-  // 8. Unused keys (warning only)
-  const joined = fileContents.join('\n');
+  // 8. Expensive, advisory-only unused-key scan. Run explicitly for audits;
+  // it is not a build correctness check and can add many seconds per deploy.
+  if (process.argv.includes('--report-unused')) {
+    const joined = fileContents.join('\n');
   const unusedKeys = [...enKeys].filter(key => {
     if (joined.includes(key)) return false;
     const leaf = key.split('.').pop();
@@ -373,6 +375,7 @@ async function validateTranslations() {
     console.warn('   (Dynamic keys / namespaces may cause false positives)');
   } else {
     console.log('✅ No obvious unused keys found');
+    }
   }
 
   if (hasErrors) {
