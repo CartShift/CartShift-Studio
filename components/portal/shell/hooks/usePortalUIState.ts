@@ -157,9 +157,11 @@ export function usePortalUIState({
 
   // Organization switch handler
   const handleOrgSwitch = useCallback(
-    (orgId: string, switchOrg: (orgId: string) => void) => {
+    (orgId: string, switchOrg: (orgId: string) => void, isAgency: boolean) => {
       switchOrg(orgId);
-      router.push(getPortalPath('/dashboard/'));
+      // An agency client selection scopes work but must not navigate to the
+      // client dashboard or change the signed-in user's role.
+      if (!isAgency) router.push(getPortalPath('/dashboard/'));
     },
     [router]
   );
