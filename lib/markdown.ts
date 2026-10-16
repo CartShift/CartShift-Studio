@@ -141,7 +141,7 @@ function postprocessHtml(htmlContent: string, slug?: string, locale: 'en' | 'he'
   return processed;
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+async function readPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
     const fullPath = path.join(postsDirectory, `${slug}.md`);
     if (!fs.existsSync(fullPath)) {
@@ -248,6 +248,28 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   }
 }
 
+// Markdown sources are bundled with the deployment. Reusing the rendered HTML
+// across its lifetime avoids parsing both language versions again for metadata,
+// related posts, the homepage, and the sitemap on every static build request.
+// Development deliberately bypasses the cache so content edits remain visible.
+const productionPostCache = new Map<string, Promise<BlogPost | null>>();
+let productionSlugs: Set<string> | undefined;
+
+export function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  if (process.env.NODE_ENV !== 'production') return readPostBySlug(slug);
+
+  // Cache only published slugs: arbitrary unknown requests must not grow the map.
+  productionSlugs ??= new Set(getPostSlugs());
+  if (!productionSlugs.has(slug)) return readPostBySlug(slug);
+
+  let post = productionPostCache.get(slug);
+  if (!post) {
+    post = readPostBySlug(slug);
+    productionPostCache.set(slug, post);
+  }
+  return post;
+}
+
 export function getPostSlugs(): string[] {
   if (!fs.existsSync(postsDirectory)) {
     return [];
@@ -258,7 +280,7 @@ export function getPostSlugs(): string[] {
     .map(file => file.replace(/\.md$/, ''));
 }
 
-export async function getAllPosts(): Promise<BlogPost[]> {
+async function readAllPosts(): Promise<BlogPost[]> {
   const slugs = getPostSlugs();
   const posts = await Promise.all(
     slugs.map(async slug => {
@@ -272,6 +294,14 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     .sort((a, b) => {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
+}
+
+let productionAllPosts: Promise<BlogPost[]> | undefined;
+
+export function getAllPosts(): Promise<BlogPost[]> {
+  if (process.env.NODE_ENV !== 'production') return readAllPosts();
+  productionAllPosts ??= readAllPosts();
+  return productionAllPosts;
 }
 
 export async function getCategories(): Promise<string[]> {
