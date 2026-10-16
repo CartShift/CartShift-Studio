@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
-const IGNORED_PREFIXES = [".github/", "docs/", "tests/", "functions/"];
+const IGNORED_PREFIXES = [".github/", "docs/", "tests/", "functions/", "scripts/ci/"];
 // Firebase-only infrastructure is deployed separately from the Next.js app.
 // Keep shared workspace files (e.g. pnpm-lock.yaml) build-relevant.
 const IGNORED_EXACT = new Set([

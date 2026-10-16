@@ -1,21 +1,8 @@
 name: Firestore & Storage Rules QA
 
 on:
-  pull_request:
-    paths:
-      - 'firestore.rules'
-      - 'storage.rules'
-      - 'tests/firestore/**'
-      - 'tests/storage/**'
-      - '.github/workflows/firestore-rules-qa.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'firestore.rules'
-      - 'storage.rules'
-      - 'tests/firestore/**'
-      - 'tests/storage/**'
-      - '.github/workflows/firestore-rules-qa.yml'
+  # Automated by the unified CI quality gate; retain a manual standalone run.
+  workflow_dispatch:
 
 permissions:
   contents: read
