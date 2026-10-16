@@ -290,20 +290,33 @@ export async function signUpWithEmail(
 // This helps suppress spurious "permission-denied" errors from Firestore listeners
 // that may trigger after the auth token is invalidated but before the listeners are detached.
 // We use globalThis to ensure the state is shared across all module instances in a Next.js environment.
-export async function syncSessionCookie(user: User | null): Promise<void> {
+export async function syncSessionCookie(
+  user: User | null,
+  options: { required?: boolean } = {},
+): Promise<void> {
   try {
     if (user) {
       const idToken = await user.getIdToken();
-      await fetch('/api/auth/session', {
+      const response = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
       });
+      // The MCP consent screen uses server-side Firebase sessions. A client-only
+      // login is insufficient and must never be treated as a completed OAuth login.
+      if (options.required) {
+        if (!response.ok) throw new Error('Unable to create a server session for CartShift OAuth');
+        const result = await response.json().catch(() => null) as { status?: string } | null;
+        if (result?.status !== 'success') {
+          throw new Error('Unable to verify the CartShift OAuth server session');
+        }
+      }
     } else {
       await fetch('/api/auth/session', { method: 'DELETE' });
     }
-  } catch {
-    // Session cookie sync is best-effort; client-side auth remains the authority
+  } catch (error) {
+    if (options.required) throw error;
+    // Session cookie sync is best-effort for the normal client portal.
   }
 }
 
