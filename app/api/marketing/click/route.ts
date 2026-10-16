@@ -6,7 +6,8 @@ function getSafeTarget(target: string | null) {
 
   try {
     const url = new URL(target);
-    if (url.hostname === 'cart-shift.com' || url.hostname === 'www.cart-shift.com') {
+    if (url.protocol === 'https:' && !url.username && !url.password && !url.port &&
+        (url.hostname === 'cart-shift.com' || url.hostname === 'www.cart-shift.com')) {
       return url.toString();
     }
   } catch (_error) {

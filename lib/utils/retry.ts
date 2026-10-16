@@ -1,3 +1,11 @@
+/** Only retry failures for which another attempt may succeed. */
+export function isTransientFirebaseError(error: unknown): boolean {
+  if (!error || typeof error !== 'object' || !('code' in error)) return false;
+  const code = String(error.code).replace(/^firestore\//, '');
+  return code === 'unavailable' || code === 'deadline-exceeded' || code === 'aborted' ||
+    code === 'resource-exhausted';
+}
+
 /**
  * Configuration options for the retry logic
  */
@@ -24,7 +32,7 @@ export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions =
     maxAttempts = 3,
     initialDelay = 1000,
     backoffFactor = 2,
-    shouldRetry = () => true,
+    shouldRetry = isTransientFirebaseError,
   } = options;
 
   let lastError: unknown;
@@ -41,13 +49,10 @@ export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions =
         throw error;
       }
 
-      // Wait before next attempt
+      // Wait only for transient failures; never replay validation/auth errors.
+      console.warn(`[Retry] Attempt ${attempt} failed, retrying in ${delay}ms...`);
       await new Promise(resolve => setTimeout(resolve, delay));
-
-      // Increase delay for next attempt
       delay *= backoffFactor;
-
-      console.warn(`[Retry] Attempt ${attempt} failed, retrying in ${delay}ms...`, error);
     }
   }
 

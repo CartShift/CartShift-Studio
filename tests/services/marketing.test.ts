@@ -34,5 +34,6 @@ describe('marketing funnel rules', () => {
     );
     expect(getMarketingLeadScoreDelta({ source: 'store_analyzer', overallScore: 42 })).toBe(35);
     expect(getMarketingLeadScoreDelta({ source: 'newsletter_footer' })).toBe(5);
+    expect(getMarketingLeadScoreDelta({ source: 'blog_sidebar' })).toBe(8);
   });
 });
