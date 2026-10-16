@@ -50,8 +50,8 @@ export const trackCaseStudyScroll = (projectName: string, scrollDepth: number) =
 export const trackPricingView = () => trackEvent('pricing_view');
 
 // Store Analyzer tracking
-export const trackAnalyzerStarted = (storeUrl: string) => {
-  trackEvent('store_analysis_started', { store_url: storeUrl });
+export const trackAnalyzerStarted = (_storeUrl: string) => {
+  trackEvent('store_analysis_started');
 };
 
 export const trackAnalyzerCompleted = (params: {
@@ -64,7 +64,6 @@ export const trackAnalyzerCompleted = (params: {
   hasProductAnalysis: boolean;
 }) => {
   trackEvent('store_analysis_completed', {
-    store_url: params.storeUrl,
     overall_score: params.overallScore,
     platform: params.platform,
     duration_ms: params.duration,
@@ -81,8 +80,6 @@ export const trackAnalyzerFailed = (params: {
   duration?: number;
 }) => {
   trackEvent('store_analysis_failed', {
-    store_url: params.storeUrl,
-    error_message: params.errorMessage,
     error_type: params.errorType,
     duration_ms: params.duration,
   });
@@ -137,7 +134,6 @@ export const trackAnalyzerQuoteClick = (params: {
   fixCount: number;
 }) => {
   trackEvent('analyzer_results_quote', {
-    store_url: params.storeUrl,
     overall_score: params.overallScore,
     fix_count: params.fixCount,
   });
@@ -156,7 +152,8 @@ export const trackOutboundLink = (url: string, linkText?: string) => {
 
 // Error tracking
 export const trackError = (errorMessage: string, errorSource?: string) => {
-  trackEvent('js_error', { error_message: errorMessage, error_source: errorSource });
+  // Never send raw exception messages or URLs; they may contain customer data.
+  trackEvent('js_error', { has_message: Boolean(errorMessage), area: errorSource === 'unhandled_promise' ? 'promise' : 'browser' });
 };
 
 // Portal tracking
@@ -169,12 +166,12 @@ export const trackPortalSignup = () => trackPortalEvent('signup');
 export const trackPortalRequestCreate = (type: string) =>
   trackPortalEvent('request_create', { request_type: type });
 
-export const trackPortalRequestStatusChange = (requestId: string, from: string, to: string) => {
-  trackPortalEvent('status_change', { request_id: requestId, from_status: from, to_status: to });
+export const trackPortalRequestStatusChange = (_requestId: string, from: string, to: string) => {
+  trackPortalEvent('status_change', { from_status: from, to_status: to });
 };
 
-export const trackPortalComment = (requestId: string) =>
-  trackPortalEvent('comment_add', { request_id: requestId });
+export const trackPortalComment = (_requestId: string) =>
+  trackPortalEvent('comment_add');
 export const trackPortalFileUpload = (fileType: string) =>
   trackPortalEvent('file_upload', { file_type: fileType });
 export const trackPortalInviteSent = () => trackPortalEvent('invite_sent');

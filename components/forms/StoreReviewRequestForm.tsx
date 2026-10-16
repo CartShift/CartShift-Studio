@@ -7,7 +7,7 @@ import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { captureAnalyzerAttribution, getAnalyzerAttribution } from '@/lib/services/analyzer-attribution';
-import { isAnalyticsConsentGranted } from '@/lib/analytics-consent';
+import { CONSENT_CHANGED_EVENT, isAnalyticsConsentGranted } from '@/lib/analytics-consent';
 import { trackFunnelEvent } from '@/lib/services/analyzer-events';
 import type { StoreReviewFocus } from '@/lib/domain/store-review';
 
@@ -22,9 +22,17 @@ function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
   const [error, setError] = useState('');
   const [requestId, setRequestId] = useState<string | null>(null);
   const idRef = useRef<string | null>(null);
+  const viewTrackedRef = useRef(false);
   useEffect(() => {
-    if (isAnalyticsConsentGranted()) captureAnalyzerAttribution();
-    trackFunnelEvent('expert_review_page_viewed', { intent: initialFocus || 'generic' });
+    const recordView = () => {
+      if (viewTrackedRef.current || !isAnalyticsConsentGranted()) return;
+      captureAnalyzerAttribution();
+      trackFunnelEvent('expert_review_page_viewed', { intent: initialFocus || 'generic' });
+      viewTrackedRef.current = true;
+    };
+    recordView();
+    window.addEventListener(CONSENT_CHANGED_EVENT, recordView);
+    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, recordView);
   }, [initialFocus]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {

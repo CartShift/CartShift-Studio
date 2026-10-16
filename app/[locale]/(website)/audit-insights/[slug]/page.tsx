@@ -19,18 +19,27 @@ async function getInsight(slug: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const insight = await getInsight(slug);
   if (!insight) return { robots: { index: false, follow: false } };
   const title = `Store audit insight: ${String(insight.primaryIssue).replace(/_/g, ' ')}`;
   const description =
     'A privacy-safe ecommerce audit insight with prioritized recommendations from CartShift Studio.';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
+  const path = `/audit-insights/${slug}`;
   return {
     title,
     description,
-    alternates: { canonical: `/audit-insights/${slug}` },
+    alternates: {
+      canonical: `${siteUrl}/${locale}${path}`,
+      languages: {
+        en: `${siteUrl}/en${path}`,
+        he: `${siteUrl}/he${path}`,
+        'x-default': `${siteUrl}/en${path}`,
+      },
+    },
     openGraph: { title, description, type: 'article' },
   };
 }
