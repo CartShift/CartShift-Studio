@@ -105,13 +105,13 @@ export default function ProspectsClient() {
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
-    queryKey: queryKeys.prospects.all,
+    queryKey: [...queryKeys.prospects.all, user?.uid ?? 'anonymous'],
     queryFn: () => fetchJson<ListResponse>('/api/portal/agency/prospects'),
     enabled: !authLoading && Boolean(user) && userData?.isAgency === true,
     staleTime: 30_000,
   });
   const detail = useQuery({
-    queryKey: queryKeys.prospects.detail(selected || ''),
+    queryKey: [...queryKeys.prospects.detail(selected || ''), user?.uid ?? 'anonymous'],
     queryFn: () => fetchJson<DetailResponse>('/api/portal/agency/prospects/' + selected),
     enabled: Boolean(selected),
     staleTime: 30_000,
