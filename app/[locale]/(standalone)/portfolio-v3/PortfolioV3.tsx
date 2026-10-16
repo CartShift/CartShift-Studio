@@ -52,10 +52,10 @@ export default function PortfolioV3({ locale }: { locale: string }) {
         proofYearsLabel: 'תוכנה בפרודקשן',
         proofCuralife: '4+ שנים',
         proofCuralifeLabel: 'ownership ב-Curalife',
-        proofSync: '85%-',
-        proofSyncLabel: 'כשלי סנכרון',
-        proofPerf: '60%+',
-        proofPerfLabel: 'ביצועי מסלולים מרכזיים',
+        proofIntegration: 'Shopify + CRM',
+        proofIntegrationLabel: 'אינטגרציות',
+        proofFrontend: 'Next.js',
+        proofFrontendLabel: 'פרונטאנד מודרני',
         workEyebrow: 'עבודות נבחרות',
         workTitle: 'פחות דמואים. יותר ownership אמיתי.',
         workIntro:
@@ -84,7 +84,7 @@ export default function PortfolioV3({ locale }: { locale: string }) {
         scroll: 'עבודות',
         curalifeSummary: 'אחריות על חלקים מרכזיים באקוסיסטם Shopify ו-digital health, כולל אינטגרציות, performance ומוצר טלרפואה שנבנה מקצה לקצה.',
         curalifeOwnership: 'Product ownership · Architecture · Full-stack · Shopify · Integrations',
-        curalifeOutcome: '85% פחות כשלי סנכרון, שיפור של 60% בביצועים, ומוצר טלרפואה שהפך לערוץ רכישה והכנסות מרכזי.',
+        curalifeOutcome: 'פיתוח אינטגרציות Shopify–HubSpot, מודרניזציית מסלולי פרונטאנד ובניית מסלול קליטת מטופלים לטלרפואה.',
         starlinkerSummary: 'מוצר תכנון ויזואלי למטרות, משימות, הרגלים והערות על קנבס מחובר, עם agent שפועל בתוך סביבת העבודה.',
         starlinkerOwnership: 'Founder · Product definition · Architecture · AI · Full-stack',
         starlinkerOutcome: 'נבנה מקצה לקצה מהגדרת המוצר ועד חוויית AI שפועלת ישירות בתוך ה-workspace.',
@@ -111,10 +111,10 @@ export default function PortfolioV3({ locale }: { locale: string }) {
         proofYearsLabel: 'production software',
         proofCuralife: '4+ yrs',
         proofCuralifeLabel: 'ownership at Curalife',
-        proofSync: '−85%',
-        proofSyncLabel: 'sync failures',
-        proofPerf: '+60%',
-        proofPerfLabel: 'key-journey performance',
+        proofIntegration: 'Shopify + CRM',
+        proofIntegrationLabel: 'integrations',
+        proofFrontend: 'Next.js',
+        proofFrontendLabel: 'modern frontend',
         workEyebrow: 'Selected work',
         workTitle: 'Less demo reel. More real ownership.',
         workIntro:
@@ -143,7 +143,7 @@ export default function PortfolioV3({ locale }: { locale: string }) {
         scroll: 'Work',
         curalifeSummary: 'Owned major parts of a Shopify commerce and digital-health ecosystem, including integrations, performance and an end-to-end telemedicine acquisition product.',
         curalifeOwnership: 'Product ownership · Architecture · Full-stack · Shopify · Integrations',
-        curalifeOutcome: '85% fewer sync failures, 60% better performance, and a telemedicine product that became a primary acquisition and revenue funnel.',
+        curalifeOutcome: 'Built Shopify–HubSpot integrations, modernized frontend journeys and delivered a telemedicine patient-intake product.',
         starlinkerSummary: 'A visual planning product for goals, tasks, habits and notes on a connected canvas, with an AI agent that can act inside the workspace.',
         starlinkerOwnership: 'Founder · Product definition · Architecture · AI · Full-stack',
         starlinkerOutcome: 'Built end to end from product definition through an AI experience that acts directly inside the workspace.',
@@ -213,8 +213,8 @@ export default function PortfolioV3({ locale }: { locale: string }) {
   const proof = [
     [copy.proofYears, copy.proofYearsLabel],
     [copy.proofCuralife, copy.proofCuralifeLabel],
-    [copy.proofSync, copy.proofSyncLabel],
-    [copy.proofPerf, copy.proofPerfLabel],
+    [copy.proofIntegration, copy.proofIntegrationLabel],
+    [copy.proofFrontend, copy.proofFrontendLabel],
   ];
 
   const experience = cv.recentExperiences.slice(0, 3);

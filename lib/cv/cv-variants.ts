@@ -155,7 +155,7 @@ export const cvVariants: Record<CVVariantId, CVVariantConfig> = {
         highlights: [
           'Defined, architected, and built a HIPAA-compliant telemedicine acquisition product end-to-end, including patient UX, backend logic, integrations, operational tooling, and GCP infrastructure.',
           'Designed an insurance-eligibility normalization layer for complex healthcare APIs, turning variable responses and failure cases into stable product states while protecting sensitive health data.',
-          'The product became the company\'s primary customer-acquisition funnel and a core revenue channel, while driving modernization of Shopify and HubSpot customer systems.',
+          'Delivered a telemedicine acquisition and onboarding product and contributed to modernization of Shopify and HubSpot customer systems.',
         ],
       },
       paragonex: {

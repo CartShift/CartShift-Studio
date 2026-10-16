@@ -27,7 +27,7 @@ export default function CVV3() {
         locationLabel: 'מיקום', authorizationLabel: 'אישור עבודה', emailLabel: 'אימייל', phoneLabel: 'טלפון',
         kicker: "יותם פרג'י · Senior Product Engineer · ברלין", headline: 'בונה מוצרים מורכבים עד לפרודקשן.',
         intro: 'יותר מעשור בהנדסת תוכנה על מוצרי Full-Stack, מסחר ואינטגרציות, ובשנים האחרונות גם מוצרים בסיוע AI. אני נכנס בשלב שבו הדרישות עדיין לא מסודרות ונשאר עד שהמוצר עובד בצורה אמינה אצל משתמשים אמיתיים.',
-        proofYears: '10+ שנים', proofYearsLabel: 'תוכנה בפרודקשן', proofCuralife: '4+ שנים', proofCuralifeLabel: 'אחריות מוצרית ב-Curalife', proofSync: '85%-', proofSyncLabel: 'כשלי סנכרון', proofPerf: '60%+', proofPerfLabel: 'ביצועים במסלולים מרכזיים',
+        proofYears: '10+ שנים', proofYearsLabel: 'תוכנה בפרודקשן', proofCuralife: '4+ שנים', proofCuralifeLabel: 'אחריות מוצרית ב-Curalife', proofIntegration: 'Shopify + CRM', proofIntegrationLabel: 'אינטגרציות', proofFrontend: 'Next.js', proofFrontendLabel: 'פרונטאנד מודרני',
         profileTitle: 'מוצר, ארכיטקטורה והוצאה לפועל באותה יד.', profileBody: 'אני עובד הכי טוב על מוצרים שבהם צריך לחבר בין החלטות מוצריות לעומק טכני: frontend, backend, APIs, אינטגרציות, דאטה, cloud ואילוצי פרודקשן. הניסיון שלי משלב חברות מוצר, מערכות enterprise, e-commerce ועבודה founder-led.',
         recentTitle: 'הניסיון שמגדיר את העבודה שלי היום.', earlierTitle: 'ניסיון הנדסי מוקדם', earlierIntro: 'Enterprise integrations, software development ויזמות טכנולוגית משנת 2011.',
         skillsTitle: 'היכולות שבהן אני הכי חזק.', workTitle: 'מוצרים שממחישים ownership אמיתי.', foundationTitle: 'בסיס מקצועי ותקשורת.', contactTitle: 'מחפש את הבעיה הבאה ששווה לקחת עליה אחריות.', availability: 'ברלין · אזרח האיחוד האירופי', selectedImpact: 'מה המוצר',
@@ -37,14 +37,14 @@ export default function CVV3() {
         locationLabel: 'Location', authorizationLabel: 'Authorization', emailLabel: 'Email', phoneLabel: 'Phone',
         kicker: 'Yotam Faraggi · Senior Product Engineer · Berlin', headline: 'I build complex products all the way to production.',
         intro: '10+ years in software engineering across full-stack products, commerce and integrations, with recent work in AI-assisted products. I work best where requirements are still messy, then stay with the problem until reliable software is in real users’ hands.',
-        proofYears: '10+ yrs', proofYearsLabel: 'production software', proofCuralife: '4+ yrs', proofCuralifeLabel: 'product ownership at Curalife', proofSync: '−85%', proofSyncLabel: 'sync failures', proofPerf: '+60%', proofPerfLabel: 'key-journey performance',
+        proofYears: '10+ yrs', proofYearsLabel: 'production software', proofCuralife: '4+ yrs', proofCuralifeLabel: 'product ownership at Curalife', proofIntegration: 'Shopify + CRM', proofIntegrationLabel: 'integrations', proofFrontend: 'Next.js', proofFrontendLabel: 'modern frontend',
         profileTitle: 'Product, architecture and execution in one loop.', profileBody: 'I am strongest on products where product decisions and technical depth have to move together: frontend, backend, APIs, integrations, data, cloud and production constraints. My background spans product companies, enterprise systems, e-commerce and founder-led software.',
         recentTitle: 'The experience that defines how I work today.', earlierTitle: 'Earlier engineering', earlierIntro: 'Enterprise integrations, software development and entrepreneurship from 2011 onward.',
         skillsTitle: 'The capabilities I rely on most.', workTitle: 'Products that show real ownership.', foundationTitle: 'Foundation & communication.', contactTitle: 'Looking for the next problem worth owning.', availability: 'Berlin · EU citizen', selectedImpact: 'Product',
       };
 
   const sectionReveal = reduceMotion ? { initial: false as const } : { variants: reveal, initial: 'hidden' as const, whileInView: 'visible' as const, viewport: { once: true, amount: 0.16 }, transition: { duration: 0.62, ease } };
-  const proof = [[copy.proofYears, copy.proofYearsLabel], [copy.proofCuralife, copy.proofCuralifeLabel], [copy.proofSync, copy.proofSyncLabel], [copy.proofPerf, copy.proofPerfLabel]];
+  const proof = [[copy.proofYears, copy.proofYearsLabel], [copy.proofCuralife, copy.proofCuralifeLabel], [copy.proofIntegration, copy.proofIntegrationLabel], [copy.proofFrontend, copy.proofFrontendLabel]];
   const profileMeta = [
     [copy.locationLabel, cv.location],
     [copy.authorizationLabel, cv.workAuthorization],
