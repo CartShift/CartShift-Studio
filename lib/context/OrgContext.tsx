@@ -73,7 +73,7 @@ export function OrgProvider({ children }: { children: ReactNode }) {
   }, [auth, storageKey, isAgencyWorkspace, organizations]);
 
   // A stale choice cannot leak through during account / impersonation changes.
-  const orgId = !userId || isAgencyWorkspace
+  const orgId = !userId || isAgencyWorkspace || initializedFor !== storageKey
     ? null
     : currentOrgId && organizations.includes(currentOrgId)
       ? currentOrgId
