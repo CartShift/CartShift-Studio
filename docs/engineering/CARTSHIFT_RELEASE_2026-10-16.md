@@ -20,7 +20,7 @@ The first backend build attempt failed because its node_modules symlink pointed 
 Final combined checks are recorded on the PR after completion. A CI-stub build verifies code, not production credentials.
 
 ## Mandatory remaining live gates
-1. Firebase CLI cannot access local authentication configuration in this restricted session (EPERM); the enabled Firebase plugin advertises no executable Firebase MCP tools here.
+1. Firebase CLI authentication is verified in the remote CartShift engineering environment (CLI 15.34.0). `login:list` and `projects:list` succeeded for active project `cartshiftstudio` (559544522324). Read-only live inventory found 24 ACTIVE Node.js 22 functions and 29 composite indexes in the CLI's default database output. `processRetriedEmailQueue`, `recoverEmailQueue`, and `retryStoreAnalysisReports` are not deployed. Both `(default)` and `cartshift` databases exist (STANDARD, nam5); verify each feature's configured database before index/rule changes. Index readiness and candidate parity have not yet been verified. Local authentication-profile permissions and the absence of Firebase MCP tools remain local limitations, but remote CLI project access is unblocked.
 2. Vercel environment metadata returns HTTP 403. Its local authenticated CLI fallback also fails in the restricted environment. Production GOOGLE_CLIENT_ID/SECRET, Firebase Admin and CONTACT_EMAIL remain unverified.
 3. Use the verified project cartshiftstudio. Back up deployed Firestore/Storage rules and compare to the candidate. Validate with staged agency/client/revoked/suspended accounts before production promotion.
 4. Deploy required indexes and wait until READY before the new count/cursor queries and recovery workers.
