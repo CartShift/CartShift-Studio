@@ -6,9 +6,14 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { SUPPORT_EMAIL } from '@/lib/constants/contact';
+import { useImpersonation } from '@/lib/context/ImpersonationContext';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 
 export function PortalAccessDenied() {
   const t = useTranslations('portal.access');
+  const viewT = useTranslations('portal.impersonation');
+  const { isImpersonating } = usePortalAuth();
+  const { exitImpersonation } = useImpersonation();
 
   return (
     <div className="min-h-screen bg-white dark:bg-surface-950 flex flex-col items-center justify-center p-4">
@@ -25,6 +30,11 @@ export function PortalAccessDenied() {
           </p>
         </div>
         <div className="pt-4 flex flex-col gap-3">
+          {isImpersonating && (
+            <Button variant="primary" className="w-full h-12" onClick={exitImpersonation}>
+              {viewT('exitView')}
+            </Button>
+          )}
           <Link href={getPortalPath('/')}>
             <Button
               variant="primary"
