@@ -42,8 +42,9 @@ export function OrgProvider({ children }: { children: ReactNode }) {
 
   const { data: fetchedOrganizations = [], isLoading: loadingOrgs } = useUserOrganizations();
   const fullOrganizations = useMemo(
-    () => fetchedOrganizations.filter(org => organizations.includes(org.id)),
-    [fetchedOrganizations, organizations]
+    () => isAgencyWorkspace ? fetchedOrganizations :
+      fetchedOrganizations.filter(org => organizations.includes(org.id)),
+    [fetchedOrganizations, organizations, isAgencyWorkspace]
   );
 
   useEffect(() => {
@@ -53,10 +54,11 @@ export function OrgProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // An agency workspace is global. Selecting a client is an explicit
-    // "view as client" action, never an implicit organization switch.
+    // For agency staff, this is a working-client filter, NOT a change of identity.
+    // It is optional; "all clients" is the default.
     if (isAgencyWorkspace) {
-      setCurrentOrgId(null);
+      const storedId = sessionStorage.getItem(storageKey);
+      setCurrentOrgId(storedId || null);
       setInitializedFor(storageKey);
       sessionStorage.removeItem(STORAGE_KEY);
       return;
@@ -73,16 +75,26 @@ export function OrgProvider({ children }: { children: ReactNode }) {
   }, [auth, storageKey, isAgencyWorkspace, organizations]);
 
   // A stale choice cannot leak through during account / impersonation changes.
-  const orgId = !userId || isAgencyWorkspace || initializedFor !== storageKey
+  const orgId = !userId || initializedFor !== storageKey
     ? null
-    : currentOrgId && organizations.includes(currentOrgId)
+    : isAgencyWorkspace
       ? currentOrgId
-      : (organizations[0] ?? null);
+      : currentOrgId && organizations.includes(currentOrgId)
+        ? currentOrgId
+        : (organizations[0] ?? null);
 
   const switchOrg = useCallback((newOrgId: string) => {
-    if (isAgencyWorkspace || !storageKey || !organizations.includes(newOrgId)) {
+    if (!storageKey) return;
+    if (isAgencyWorkspace) {
+      // Agency workflows can explicitly select any client they are permitted
+      // to manage. Authorization remains enforced by Firestore/API rules.
+      const selected = newOrgId.trim().slice(0, 128);
+      setCurrentOrgId(selected || null);
+      if (selected) sessionStorage.setItem(storageKey, selected);
+      else sessionStorage.removeItem(storageKey);
       return;
     }
+    if (!organizations.includes(newOrgId)) return;
     setCurrentOrgId(newOrgId);
     sessionStorage.setItem(storageKey, newOrgId);
   }, [isAgencyWorkspace, storageKey, organizations]);
@@ -91,12 +103,14 @@ export function OrgProvider({ children }: { children: ReactNode }) {
     orgId,
     // Signed-out sessions must finish loading so the portal can redirect to login.
     loading: auth || (Boolean(userId) && (
-      initializedFor !== storageKey || (!isAgencyWorkspace && loadingOrgs)
+      initializedFor !== storageKey || loadingOrgs
     )),
     switchOrg,
     organizations,
     fullOrganizations,
-    hasMultipleOrgs: !isAgencyWorkspace && fullOrganizations.length > 1,
+    hasMultipleOrgs: isAgencyWorkspace
+      ? fullOrganizations.length > 0 || Boolean(orgId)
+      : fullOrganizations.length > 1,
   }), [orgId, auth, userId, initializedFor, storageKey, isAgencyWorkspace,
     loadingOrgs, switchOrg, organizations, fullOrganizations]);
 
