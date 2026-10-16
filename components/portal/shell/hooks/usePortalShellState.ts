@@ -45,7 +45,7 @@ export function usePortalShellState({
   // 5. Wrap handleOrgSwitch to include switchOrg from authState
   const handleOrgSwitch = useCallback(
     (orgId: string) => {
-      uiState.handleOrgSwitch(orgId, authState.switchOrg);
+      uiState.handleOrgSwitch(orgId, authState.switchOrg, authState.isAgency);
     },
     [uiState, authState.switchOrg]
   );
