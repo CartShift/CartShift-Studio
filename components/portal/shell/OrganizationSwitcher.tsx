@@ -19,6 +19,7 @@ export function OrganizationSwitcher({
   currentOrgId,
   onSwitch,
   isExpanded,
+  isAgency = false,
 }: OrganizationSwitcherProps) {
   const t = useTranslations('portal.accessibility');
 
@@ -37,26 +38,43 @@ export function OrganizationSwitcher({
       ? `${org.name} · ${org.id.slice(-6)}`
       : org.name;
 
-  if (!isExpanded || uniqueOrganizations.length <= 1 || !currentOrg) {
+  if (!isExpanded || (!isAgency && (uniqueOrganizations.length <= 1 || !currentOrg))) {
     return null;
   }
+  const fieldLabel = isAgency ? t('workingClient') : t('switchOrganization');
+  const selectedLabel = currentOrg
+    ? orgLabel(currentOrg)
+    : isAgency && currentOrgId
+      ? `Client · ${currentOrgId.slice(-6)}`
+      : t('allClients');
+  const options = isAgency
+    ? [
+        { value: '', label: t('allClients') },
+        ...uniqueOrganizations.map(org => ({ value: org.id, label: orgLabel(org) })),
+        ...(!currentOrg && currentOrgId
+          ? [{ value: currentOrgId, label: selectedLabel }]
+          : []),
+      ]
+    : uniqueOrganizations.map(org => ({ value: org.id, label: orgLabel(org) }));
 
   return (
     <div className="px-3 py-2 border-b border-surface-800/40">
       <div className="mb-1.5 px-1 text-[11px] font-semibold text-surface-400">
-        {t('switchOrganization')}
+        {fieldLabel}
       </div>
       <Select
         value={currentOrgId ?? ''}
-        valueLabel={orgLabel(currentOrg)}
+        valueLabel={selectedLabel}
         onValueChange={onSwitch}
-        aria-label={t('switchOrganization')}
+        aria-label={fieldLabel}
         className="h-9 border-surface-700/60 bg-surface-900/60 text-surface-100 shadow-none hover:bg-surface-800/80 hover:border-surface-600/60 focus:border-primary-400 focus:ring-primary-400/20 dark:border-surface-700/60 dark:bg-surface-900/60 dark:text-surface-100 dark:hover:bg-surface-800/80"
-        options={uniqueOrganizations.map(org => ({
-          value: org.id,
-          label: orgLabel(org),
-        }))}
+        options={options}
       />
+      {isAgency && (
+        <p className="mt-1.5 px-1 text-[10px] leading-relaxed text-surface-500">
+          {t('workingClientHint')}
+        </p>
+      )}
     </div>
   );
 }
