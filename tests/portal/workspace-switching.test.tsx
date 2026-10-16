@@ -47,9 +47,11 @@ describe('workspace identity isolation', () => {
     };
     renderContext();
     await waitFor(() => expect(screen.getByTestId('org')).toHaveTextContent('agency'));
-    expect(screen.getByTestId('count')).toHaveTextContent('false');
+    expect(screen.getByTestId('count')).toHaveTextContent('true');
+    // Explicit agency working-client selection must not activate client view.
     fireEvent.click(screen.getByText('Switch'));
-    expect(screen.getByTestId('org')).toHaveTextContent('agency');
+    expect(screen.getByTestId('org')).toHaveTextContent('org-b');
+    expect(sessionStorage.getItem('cartshift_current_org_id:agency-1')).toBe('org-b');
   });
 
   it('keeps selected organizations isolated when a different user signs in', async () => {
