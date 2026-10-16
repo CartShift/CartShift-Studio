@@ -28,7 +28,10 @@
       "previewFile": "Preview file",
       "downloadFile": "Download file",
       "showVersionHistory": "Show version history",
-      "toggleMilestoneStatus": "Toggle milestone status"
+      "toggleMilestoneStatus": "Toggle milestone status",
+      "workingClient": "Working client",
+      "allClients": "All clients · Agency workspace",
+      "workingClientHint": "Choose a client for work. Your account and role stay the same."
     }
   }
 }
