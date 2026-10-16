@@ -89,8 +89,10 @@ export function OrgProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<OrgContextValue>(() => ({
     orgId,
-    loading: auth || !userId || initializedFor !== storageKey ||
-      (!isAgencyWorkspace && loadingOrgs),
+    // Signed-out sessions must finish loading so the portal can redirect to login.
+    loading: auth || (Boolean(userId) && (
+      initializedFor !== storageKey || (!isAgencyWorkspace && loadingOrgs)
+    )),
     switchOrg,
     organizations,
     fullOrganizations,
