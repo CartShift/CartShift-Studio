@@ -243,7 +243,11 @@ service cloud.firestore {
     // Shared projects are readable by the owning organization; only agency users
     // may edit project scope, launch checks, blockers and client-facing updates.
     match /portal_projects/{projectId} {
-      allow get, list: if resource != null && canAccessOrg(resource.data.get('orgId', ''));
+      // Agency queries span all clients. Keep that read independent of a
+      // document-field constraint so Firestore can authorize unfiltered lists.
+      // Client reads remain constrained to organizations they can access.
+      allow get, list: if isAgencyUser() ||
+        (resource != null && canAccessOrg(resource.data.get('orgId', '')));
       allow create: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') is string &&
         request.resource.data.get('status', '') == 'planning' &&
