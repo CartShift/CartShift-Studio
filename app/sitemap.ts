@@ -36,7 +36,6 @@ function createLocalizedUrls(
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
-  const now = new Date();
 
   const posts = await getAllPosts();
   const caseStudies = getAllCaseStudies('en');
@@ -74,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ? createLocalizedUrls(
           baseUrl,
           `/audit-insights/${data.publicAuditSlug}`,
-          data.updatedAt?.toDate?.() || now,
+          data.updatedAt?.toDate?.(),
           'monthly',
           0.6
         )
@@ -86,6 +85,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
     { path: '', changeFrequency: 'weekly' as const, priority: 1.0 },
     { path: '/solutions/shopify', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/services/shopify-conversion-optimization', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/services/shopify-b2b-integrations', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/services/shopify-performance-seo', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/solutions/wordpress', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/solutions/seo', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/work', changeFrequency: 'weekly' as const, priority: 0.9 },
@@ -108,7 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const staticUrls = staticPages.flatMap(page =>
-    createLocalizedUrls(baseUrl, page.path, now, page.changeFrequency, page.priority)
+    createLocalizedUrls(baseUrl, page.path, undefined, page.changeFrequency, page.priority)
   );
 
   return [...staticUrls, ...portfolioProjectUrls, ...blogUrls, ...caseStudyUrls, ...insightUrls];

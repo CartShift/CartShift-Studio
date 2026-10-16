@@ -3,7 +3,6 @@ import { HomepageIntro } from '@/components/sections/HomepageIntro';
 import { ServicesOverview } from '@/components/sections/ServicesOverview';
 import { WhyChoose } from '@/components/sections/WhyChoose';
 import { Process } from '@/components/sections/Process';
-import { StatsCounter } from '@/components/sections/StatsCounter';
 import { Testimonials } from '@/components/sections/Testimonials';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { PortalTeaser } from '@/components/sections/PortalTeaser';
@@ -13,7 +12,6 @@ import { getAllPosts } from '@/lib/markdown';
 import {
   generateMetadata as genMeta,
   generateWebSiteSchema,
-  generateReviewSchema,
   generateProfessionalServiceSchema,
 } from '@/lib/seo';
 import { setRequestLocale } from 'next-intl/server';
@@ -69,35 +67,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const posts = await getAllPosts();
   const latestPosts = posts.slice(0, 4);
 
-  const reviewSchema = generateReviewSchema([
-    {
-      author: 'Danielle Shamir',
-      text: 'CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless.',
-      rating: 5,
-    },
-    {
-      author: 'Carmel Faraggi',
-      text: 'CartShift Studio transformed Alondon into a sophisticated, high-performance community hub. The new architecture seamlessly handles our complex content.',
-      rating: 5,
-    },
-    {
-      author: 'Tom Robinson',
-      text: 'Working with CartShift Studio was a game-changer for our studio. They created a sleek, high-end digital catalog that perfectly showcases our jewelry collection.',
-      rating: 5,
-    },
-  ]);
-
   return (
     <>
       <Script
         id="website-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <Script
-        id="review-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
       />
       <Script
         id="professional-service-schema"
@@ -109,7 +84,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <ServicesOverview />
       <Process />
       <WhyChoose />
-      <StatsCounter />
       <Testimonials />
       <StoreAnalyzerTeaser />
       <PortalTeaser />

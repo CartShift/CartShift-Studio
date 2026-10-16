@@ -69,10 +69,10 @@ export const CTABanner: React.FC = () => {
                 className="pt-6"
               >
                 <Link
-                  href="/contact"
+                  href="/free-store-review"
                   onClick={() =>
                     trackHighIntentCta({
-                      ctaText: t('ctaBanner.button'),
+                      ctaText: t('storeReview.ctaShort'),
                       ctaLocation: 'global_cta_banner',
                     })
                   }
@@ -82,7 +82,7 @@ export const CTABanner: React.FC = () => {
                     className="h-20 px-12 md:px-16 text-2xl font-black group shadow-glow-primary bg-primary-600 hover:bg-primary-700 transition-all hover:scale-[1.02]"
                   >
                     <span className="flex items-center gap-4">
-                      {t('ctaBanner.button')}
+                      {t('storeReview.ctaShort')}
                       <ArrowRight
                         size={28}
                         className={cn(

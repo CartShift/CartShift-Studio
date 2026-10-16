@@ -18,6 +18,8 @@ const websitePathnames = [
   '/tools/store-analyzer',
   '/free-store-review',
   '/solutions/shopify',
+  '/solutions/seo',
+  '/services/[slug]',
   '/solutions/wordpress',
   '/industries/[industry]',
   '/maintenance',
