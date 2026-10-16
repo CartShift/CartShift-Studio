@@ -49,10 +49,11 @@ export function usePortalAuthState({
     isImpersonating,
     impersonatedAccountId,
   } = usePortalAuth();
-  const { orgId: contextOrgId, hasMultipleOrgs, fullOrganizations, switchOrg } = useOrg();
+  const { orgId: contextOrgId, loading: orgLoading, hasMultipleOrgs, fullOrganizations, switchOrg } = useOrg();
 
   const effectiveOrgId = contextOrgId ?? orgIdProp;
   const isAgency = userData?.isAgency === true;
+  const effectiveLoading = loading || orgLoading;
 
   const [accessDecision, setAccessDecision] = useState<{
     key: string; authorized: boolean; role?: UserRole;
@@ -80,7 +81,7 @@ export function usePortalAuthState({
   useEffect(() => {
     let internalMounted = true;
 
-    const isReadyToCheck = !loading;
+    const isReadyToCheck = !effectiveLoading;
 
     if (!isReadyToCheck) {
       return () => {
@@ -177,6 +178,8 @@ export function usePortalAuthState({
     };
   }, [
     loading,
+    orgLoading,
+    effectiveLoading,
     isAuthenticated,
     userData,
     effectiveOrgId,
@@ -192,7 +195,7 @@ export function usePortalAuthState({
   return {
     userData,
     displayUserData,
-    loading,
+    loading: effectiveLoading,
     accountType,
     isAgency: !!isAgency,
     isImpersonating,
