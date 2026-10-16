@@ -180,7 +180,8 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               organizations={state.fullOrganizations}
               currentOrgId={state.effectiveOrgId ?? null}
               onSwitch={handleOrgSwitch}
-              isExpanded={!state.isAgency && state.isExpanded && state.hasMultipleOrgs}
+              isExpanded={state.isExpanded && state.hasMultipleOrgs}
+              isAgency={state.isAgency}
             />
 
             <SidebarNavigation
