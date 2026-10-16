@@ -21,9 +21,11 @@ export async function getServerSession(request?: NextRequest): Promise<
     const bearerToken = request?.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
     if (!session && !bearerToken) return null;
 
-    const decoded = session
-      ? await adminAuth.verifySessionCookie(session, true)
-      : await adminAuth.verifyIdToken(bearerToken!, true);
+    // Fresh Firebase identity takes precedence over a stale session cookie.
+    // This also avoids silently serving another previously signed-in account.
+    const decoded = bearerToken
+      ? await adminAuth.verifyIdToken(bearerToken, true)
+      : await adminAuth.verifySessionCookie(session!, true);
     return { uid: decoded.uid, email: decoded.email, emailVerified: decoded.email_verified === true };
   } catch {
     return null;
