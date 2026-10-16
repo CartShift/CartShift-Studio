@@ -7,6 +7,7 @@ import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { captureAnalyzerAttribution, getAnalyzerAttribution } from '@/lib/services/analyzer-attribution';
+import { isAnalyticsConsentGranted } from '@/lib/analytics-consent';
 import { trackFunnelEvent } from '@/lib/services/analyzer-events';
 import type { StoreReviewFocus } from '@/lib/domain/store-review';
 
@@ -22,7 +23,7 @@ function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
   const [requestId, setRequestId] = useState<string | null>(null);
   const idRef = useRef<string | null>(null);
   useEffect(() => {
-    captureAnalyzerAttribution();
+    if (isAnalyticsConsentGranted()) captureAnalyzerAttribution();
     trackFunnelEvent('expert_review_page_viewed', { intent: initialFocus || 'generic' });
   }, [initialFocus]);
 

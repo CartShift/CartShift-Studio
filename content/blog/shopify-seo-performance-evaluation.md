@@ -185,7 +185,7 @@ Instead, tag pages by intent:
 | Informational | SEO guide, migration guide        | Qualified internal clicks, assisted sessions |
 | Commercial    | Service page, platform comparison | Contact clicks, inquiry quality              |
 | Transactional | Collection, product page          | Add-to-cart, checkout, purchase              |
-| Diagnostic    | Audit checklist, analyzer page    | Tool starts, consultation requests           |
+| Diagnostic    | Audit checklist, expert review form | Review requests, consultation inquiries           |
 
 ## Technical review: find the drag before adding content
 
@@ -464,7 +464,7 @@ GA4 לא צריך להיות דשבורד גס של "טראפיק SEO עלה א�
 | מידעית      | מדריך SEO, מדריך מיגרציה     | קליקים פנימיים איכותיים, assisted sessions |
 | מסחרית      | עמוד שירות, השוואת פלטפורמות | contact clicks, איכות פנייה                |
 | טרנזקציונית | Collection, עמוד מוצר        | Add-to-cart, checkout, purchase            |
-| אבחונית     | צ׳קליסט אודיט, analyzer      | התחלת כלי, בקשת ייעוץ                      |
+| אבחונית     | צ׳קליסט אודיט, סקירה אנושית | בקשת סקירה, בקשת ייעוץ                      |
 
 ## בדיקה טכנית: מצאו את החיכוך לפני שמוסיפים תוכן
 

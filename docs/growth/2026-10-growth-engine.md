@@ -78,6 +78,15 @@ Phases overlap. SEO outcomes depend on indexing, competition and time; no schedu
 
 These are **hypotheses**, not validated search-volume or keyword-difficulty figures. Confirm with Google Search Console queries, landing pages and competitors before expanding content.
 
+## October 16 follow-up: analytics consent and commercial content
+
+- Google Analytics and non-essential first-party funnel events are consent-gated. They do not run until the visitor accepts the existing cookie preference; a decline denies analytics. This is **not a substitute for a full legal/privacy audit** or a consent management platform.
+- First-touch acquisition attribution is captured on an eligible website landing page **after consent**. Visitors who decline are not assigned browser-stored first/last touch; do not label them as direct traffic or infer conversion-source totals from consented analytics alone.
+- Referrer attribution only stores the referring origin (not query strings or path tokens). Analytics failures must never prevent a successful lead submission.
+- Funnel denominator definitions need a consent-aware note; reconcile persisted lead requests server-side to avoid treating analytics opt-outs as zero conversions.
+- Existing Shopify pillar/checklist/evaluation posts are being aligned to the expert review, with a new original operational guide on stock synchronization failure patterns. Do not promise ranking outcomes.
+- Private client project documentation in Google Drive is internal supporting evidence, **not automatic consent to publish a named case study**.
+
 ## Measurement contract
 
 1. Search Console: indexed/non-indexed canonical URLs, non-brand clicks and impressions, query-page mapping, CTR and positions, segmented by EN/HE and intent. Brand filter documented, with regex/version.

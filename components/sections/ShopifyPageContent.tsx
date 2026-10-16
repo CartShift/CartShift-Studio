@@ -318,7 +318,7 @@ export const ShopifyPageContent: React.FC = () => {
             <Link href="/free-store-review">
               <Button size="lg">
                 <span className="flex items-center gap-2">
-                  {isHe ? 'בדקו את החנות שלכם' : 'Audit your store now'}
+                  {isHe ? 'בקשו סקירה מקצועית בחינם' : 'Request a free expert review'}
                   <Search className="w-5 h-5" />
                 </span>
               </Button>
@@ -445,11 +445,12 @@ export const ShopifyPageContent: React.FC = () => {
               {t('shopify.cta.description')}
             </p>
             <Link
-              href="/contact"
+              href="/free-store-review"
               onClick={() =>
                 trackHighIntentCta({
-                  ctaText: t('shopify.cta.button'),
+                  ctaText: t('storeReview.ctaShort'),
                   ctaLocation: 'shopify_final_cta',
+                  intent: 'expert_store_review',
                 })
               }
             >
@@ -458,7 +459,7 @@ export const ShopifyPageContent: React.FC = () => {
                 className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-shadow"
               >
                 <span className="flex items-center gap-3">
-                  {t('shopify.cta.button')}
+                  {t('storeReview.ctaShort')}
                   <ArrowRight
                     className="w-6 h-6 transition-transform group-hover:translate-x-1 rtl:rotate-180"
                     strokeWidth={2.5}

@@ -26,7 +26,7 @@ Create a priority list first:
 3. top product pages
 4. Shopify service or landing pages
 5. highest-traffic blog posts
-6. conversion paths such as analyzer, contact, cart, and checkout
+6. conversion paths such as the expert review form, contact, cart, and checkout
 
 Your audit should protect and improve those pages first.
 
@@ -172,7 +172,7 @@ SEO that never connects to revenue is incomplete.
 ### Checklist
 
 - [ ] Pages ranking for Shopify SEO link to a consultation path
-- [ ] Pages link to the [store analyzer](/tools/store-analyzer) where relevant
+- [ ] Pages link to the [free expert store review](/free-store-review) where relevant
 - [ ] Conversion and SEO content reinforce each other
 - [ ] CTAs are visible before the user reaches the bottom
 - [ ] Blog posts suggest practical next steps
@@ -246,7 +246,7 @@ A good Shopify SEO audit should end with a prioritized roadmap, not a vague list
 3. עמודי מוצר מובילים
 4. עמודי שירות או landing pages של Shopify
 5. פוסטים עם הכי הרבה טראפיק
-6. מסלולי המרה כמו analyzer, contact, cart ו-checkout
+6. מסלולי המרה כמו טופס סקירת חנות, contact, cart ו-checkout
 
 האודיט צריך להגן ולשפר קודם את העמודים האלה.
 
@@ -374,7 +374,7 @@ Structured data לא יציל תוכן חלש, אבל הוא עוזר למנוע
 SEO שלא מתחבר להכנסות הוא עבודה לא שלמה.
 
 - [ ] עמודים שמדורגים על Shopify SEO מקשרים למסלול ייעוץ
-- [ ] עמודים מקשרים ל[כלי האודיט](/tools/store-analyzer) כשזה רלוונטי
+- [ ] עמודים מקשרים ל[סקירת חנות מקצועית בחינם](/free-store-review) כשזה רלוונטי
 - [ ] תוכן SEO ותוכן המרות מחזקים אחד את השני
 - [ ] CTAs גלויים לפני סוף העמוד
 - [ ] פוסטים מציעים צעד הבא

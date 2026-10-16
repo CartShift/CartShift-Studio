@@ -183,9 +183,9 @@ Internal links are not filler. They tell search engines which pages matter and h
 
 Here is the minimum structure we recommend:
 
-- homepage links to your Shopify service page, analyzer, and Shopify SEO pillar
+- homepage links to your Shopify service page, expert review form, and Shopify SEO pillar
 - Shopify service page links to the Shopify SEO pillar and audit tool
-- the pillar guide links to the service page, analyzer, and conversion resources
+- the pillar guide links to the service page, expert review form, and conversion resources
 - supporting cluster posts point back to the pillar and the service page
 
 Anchor text should vary naturally around themes like:
@@ -448,7 +448,7 @@ SEO לחנויות Shopify נשען על שבעה מנופים:
 
 - עמוד הבית מקשר לעמוד השירות, לכלי האודיט ולמדריך ה-Shopify SEO
 - עמוד השירות מקשר למדריך ה-pillar ולכלי האודיט
-- עמוד ה-pillar מקשר חזרה לעמוד השירות, ל-analyzer ולתוכן על המרות
+- עמוד ה-pillar מקשר חזרה לעמוד השירות, לסקירה המקצועית ולתוכן על המרות
 - עמודי התמיכה מקשרים חזרה ל-pillar ולעמוד השירות
 
 ## טעויות Shopify SEO נפוצות

@@ -6,8 +6,7 @@ import { Button } from './Button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
-
-const COOKIE_CONSENT_KEY = 'cookie_consent';
+import { readCookieConsent, setCookieConsent } from '@/lib/analytics-consent';
 
 interface CookieConsentProps {
   variant?: 'default' | 'compact';
@@ -24,7 +23,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
   const t = useTranslations('common.cookieConsent');
 
   useEffect(() => {
-    const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+    const consent = readCookieConsent();
     if (!consent) {
       const timer = setTimeout(() => setIsVisible(true), delayMs);
       return () => clearTimeout(timer);
@@ -33,12 +32,12 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
   }, [delayMs]);
 
   const handleAccept = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+    setCookieConsent('accepted');
     setIsVisible(false);
   };
 
   const handleDecline = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
+    setCookieConsent('declined');
     setIsVisible(false);
   };
 

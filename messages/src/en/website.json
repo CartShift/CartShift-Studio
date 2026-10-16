@@ -22,16 +22,16 @@
     }
   },
   "hero": {
-    "tag": "Shopify, WordPress & web app experts, built to convert",
-    "titleLine1": "Websites & Stores",
-    "titleLine2": "Built to Convert",
-    "description": "No tech drama. We design and build Shopify stores, WordPress sites, and custom web apps that guide visitors to buy, book, or reach out. And we keep improving after launch.",
+    "tag": "Shopify development and store improvement",
+    "titleLine1": "Shopify Stores",
+    "titleLine2": "Built to Work Better",
+    "description": "Make your Shopify store easier to shop and easier to run. We fix buying friction, improve technical SEO and speed, and build reliable custom integrations without unnecessary rebuilds.",
     "primaryCta": "Get a Free Consultation",
     "secondaryCta": "See Our Work",
     "analyzerCta": "Analyze My Store (Free)",
     "scrollIndicator": "Scroll to explore",
     "intro": {
-      "title": "Your E-commerce Development Partner",
+      "title": "Your Shopify Growth Partner",
       "mission": "Our Mission",
       "features": {
         "shopify": {
@@ -44,13 +44,13 @@
         },
         "conversion": {
           "label": "Conversion Focused",
-          "desc": "Every design decision is backed by data and user behavior."
+          "desc": "Priorities informed by observed customer journeys and available data."
         }
       },
       "paragraphs": [
-        "CartShift Studio is a specialized e-commerce development agency that transforms online businesses through expert Shopify and WordPress solutions. With years of experience building high-converting stores and content-driven websites, we help businesses launch, optimize, and scale their online presence.",
-        "Whether you're launching your first Shopify store, migrating from another platform, or need a custom WordPress website for your content business, we combine technical expertise with a deep understanding of what drives conversions and growth. Our approach is simple: we listen to your goals, build solutions that actually work, and stick around to help you improve.",
-        "We specialize in Shopify development for e-commerce stores that need custom features, performance optimization, and ongoing support. For content-focused businesses, news platforms, and custom websites, we leverage WordPress to create fast, secure, and easy-to-manage sites that rank well in search engines. Every project is tailored to your unique needs, with clean code, thoughtful design, and a focus on results that matter to your business."
+        "Your store is already running. Now it needs the technical attention to work better for customers and the team behind it. CartShift Studio combines hands-on Shopify development with practical ecommerce problem-solving.",
+        "We start with the real obstacles: hard-to-buy product pages, slow mobile experiences, unreliable workflows, confusing SEO signals, or integrations that take too much manual work. We investigate first, prioritize fixes, and explain the tradeoffs clearly.",
+        "From custom themes and B2B operations to inventory integrations, technical SEO, and ongoing improvements, we build maintainable solutions around your business. We also support selected WordPress and custom web projects when they are the right fit."
       ]
     },
     "platforms": {

@@ -1,4 +1,5 @@
 import { sendGAEvent } from '@next/third-parties/google';
+import { isAnalyticsConsentGranted } from '@/lib/analytics-consent';
 
 type EventParams = Record<string, string | number | boolean | undefined>;
 
@@ -11,7 +12,7 @@ const debugLog = (eventName: string, params?: EventParams) => {
 
 export const trackEvent = (eventName: string, params?: EventParams) => {
   debugLog(eventName, params);
-  if (!GA_ID) return;
+  if (!GA_ID || !isAnalyticsConsentGranted()) return;
   sendGAEvent('event', eventName, params ?? {});
 };
 
