@@ -1,47 +1,13 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
-      - "DESIGN.md"
-      # Backend-only updates have their own QA workflows; avoid rechecking the Next.js app.
-      - "functions/**"
-      - "tests/functions/**"
-      - "firestore.rules"
-      - "storage.rules"
-      - "firestore.indexes.json"
-      - "tests/firestore/**"
-      - ".github/workflows/functions-qa.yml"
-      - ".github/workflows/firestore-rules-qa.yml"
-      - "firebase.json"
-      - ".firebaserc"
-      - ".firebaseignore"
-      - "apphosting.yaml"
+  # An always-present quality check makes lightweight branch protection possible.
+  # The job itself decides what to run before installing any dependencies.
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
-      - "DESIGN.md"
-      # Backend-only updates have their own QA workflows; avoid rechecking the Next.js app.
-      - "functions/**"
-      - "tests/functions/**"
-      - "firestore.rules"
-      - "storage.rules"
-      - "firestore.indexes.json"
-      - "tests/firestore/**"
-      - ".github/workflows/functions-qa.yml"
-      - ".github/workflows/firestore-rules-qa.yml"
-      - "firebase.json"
-      - ".firebaserc"
-      - ".firebaseignore"
-      - "apphosting.yaml"
-
+  push:
+    branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
 
@@ -61,71 +27,119 @@ env:
 
 jobs:
 
-  # Keep the existing 'quality' check name for any branch protection rules.
+  # Single required check: path-aware and green on documentation-only PRs.
+  # Dedicated Firebase workflows remain available as manual emergency QA.
   quality:
     if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate translations
-        run: pnpm i18n:merge
-
-      - name: Find previous revision
-        id: changes
-        shell: bash
+      - name: Detect affected areas
+        id: scope
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PUSH_BASE_SHA: ${{ github.event.before }}
         run: |
-          BASE="${PR_BASE_SHA:-$PUSH_BASE_SHA}"
-          if [ -n "$BASE" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
-            echo "base=$BASE" >> "$GITHUB_OUTPUT"
-          else
-            echo 'base=' >> "$GITHUB_OUTPUT"
-          fi
+          BASE="$PR_BASE_SHA"
+          if [ -z "$BASE" ]; then BASE="$PUSH_BASE_SHA"; fi
+          node scripts/ci/plan-checks.mjs "$BASE" >> "$GITHUB_OUTPUT"
 
-      - name: Lint changed code
+      - uses: pnpm/action-setup@v4
+        if: steps.scope.outputs.frontend == 'true' || steps.scope.outputs.functions == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.scope.outputs.frontend == 'true' || steps.scope.outputs.functions == 'true'
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            functions/pnpm-lock.yaml
+
+      - uses: actions/setup-node@v4
+        if: steps.scope.outputs.rules == 'true' && steps.scope.outputs.frontend != 'true' && steps.scope.outputs.functions != 'true'
+        with:
+          node-version: 24
+
+      - name: Install workspace dependencies
+        if: steps.scope.outputs.frontend == 'true' || steps.scope.outputs.functions == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate translations
+        if: steps.scope.outputs.frontend == 'true'
+        run: pnpm i18n:merge
+
+      - name: Lint changed frontend code
+        if: steps.scope.outputs.frontend == 'true'
         shell: bash
         env:
-          BASE_SHA: ${{ steps.changes.outputs.base }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          if [ -z "$BASE_SHA" ] || git diff --name-only "$BASE_SHA" HEAD -- package.json pnpm-lock.yaml eslint.config.mjs tsconfig.json | grep -q .; then
-            echo 'Shared tooling changed (or no base revision): linting entire repository.'
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null || git diff --name-only "$BASE_SHA" HEAD -- package.json pnpm-lock.yaml eslint.config.mjs tsconfig.json tsconfig.build.json | grep -q .; then
+            echo 'Shared tooling changed (or unknown revision): linting application code.'
             pnpm exec eslint . --ext .ts,.tsx,.js,.jsx
           else
-            mapfile -d '' files < <(git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs')
-            if [ "${#files[@]}" -eq 0 ]; then
-              echo 'No changed JS/TS files to lint.'
-            else
-              printf 'Linting %s changed source files.\n' "${#files[@]}"
-              pnpm exec eslint "${files[@]}"
-            fi
+            git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs' ':!functions/**' ':!tests/functions/**' ':!tests/firestore/**' ':!tests/storage/**' | xargs -0 -r pnpm exec eslint
           fi
 
-      - name: Test affected code
+      - name: Test affected frontend code
+        if: steps.scope.outputs.frontend == 'true'
         shell: bash
         env:
-          BASE_SHA: ${{ steps.changes.outputs.base }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          if [ -n "$BASE_SHA" ]; then
+          if [ -n "$BASE_SHA" ] && git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
             pnpm exec vitest run --changed "$BASE_SHA" --passWithNoTests
           else
             pnpm test:run
           fi
+
+      - name: Lint Firebase Functions
+        if: steps.scope.outputs.functions == 'true'
+        working-directory: functions
+        run: ESLINT_USE_FLAT_CONFIG=false pnpm exec eslint index.js runtime/email-queue.js analyzer/report-retry.js rate-limit.js
+
+      - name: Build Firebase Functions
+        if: steps.scope.outputs.functions == 'true'
+        working-directory: functions
+        run: pnpm build
+
+      - name: Test Firebase email queue
+        if: steps.scope.outputs.functions == 'true'
+        working-directory: functions
+        run: node --test runtime/*.test.js
+
+      - name: Test Firebase limits and retries
+        if: steps.scope.outputs.functions == 'true'
+        working-directory: functions
+        run: node --test ../tests/functions/*.test.cjs
+
+      - uses: actions/setup-java@v4
+        if: steps.scope.outputs.rules == 'true'
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install Firebase rules test dependencies
+        if: steps.scope.outputs.rules == 'true'
+        run: |
+          mkdir -p /tmp/cartshift-rules-test
+          npm install --prefix /tmp/cartshift-rules-test --no-audit --no-fund --save=false @firebase/rules-unit-testing@4.0.1 firebase@11.10.0
+          npm install --global --no-audit --no-fund firebase-tools@14
+
+      - name: Validate Firestore and Storage tenant boundaries
+        if: steps.scope.outputs.rules == 'true'
+        env:
+          NODE_PATH: /tmp/cartshift-rules-test/node_modules
+        run: firebase emulators:exec --project demo-cartshift --only firestore,storage -- "node tests/firestore/project-rules.cjs && node tests/storage/tenant-rules.cjs"
+
+      - name: Nothing relevant changed
+        if: steps.scope.outputs.frontend != 'true' && steps.scope.outputs.functions != 'true' && steps.scope.outputs.rules != 'true'
+        run: echo 'Documentation-only update; quality gate passed without installing dependencies.'
 
   # Full checks are deliberately opt-in while CartShift is in active development.
   full:
