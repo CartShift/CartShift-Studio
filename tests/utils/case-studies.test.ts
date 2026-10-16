@@ -21,16 +21,24 @@ describe('case studies normalization', () => {
     expect(study?.evidence).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          value: '99.9% uptime',
-          context: expect.stringContaining('operational dashboards'),
+          value: 'Patient intake flow',
+          context: expect.stringContaining('Next.js'),
+          tone: 'qualitative',
         }),
         expect.objectContaining({
-          value: '85% fewer failures',
-          context: expect.stringContaining('legacy Shopify–HubSpot sync path'),
+          value: 'Connected commerce and CRM',
+          context: expect.stringContaining('commerce, CRM'),
+          tone: 'qualitative',
         }),
       ])
     );
     expect(study?.attribution).toContain('Full Stack Developer & R&D Lead');
+    const hebrewStudy = getCaseStudyBySlug('curalife-metabolic-wellness-platform', 'he');
+    for (const localized of [study, hebrewStudy]) {
+      const publishedClaims = JSON.stringify({ evidence: localized?.evidence, results: localized?.results });
+      expect(publishedClaims).not.toMatch(/85%|60%|99\.9%|Thousands onboarded|אלפים נקלטו/);
+      expect(localized?.evidence.every((item) => item.tone === 'qualitative')).toBe(true);
+    }
     expect(study?.cta?.title).toContain('complex Shopify');
   });
 

@@ -157,8 +157,8 @@ function getProjects(isHebrew: boolean): readonly Project[] {
         : 'Owned major customer-facing product and platform work across Shopify commerce and digital health, including a telemedicine acquisition product built end-to-end.',
       services: 'Product ownership / Full-stack / Shopify',
       impact: isHebrew
-        ? '85% פחות כשלי סנכרון, שיפור של 60% בביצועי מסלולים מרכזיים ומוצר טלרפואה שהפך לערוץ רכישה והכנסות מרכזי.'
-        : '85% fewer sync failures, 60% better performance on key journeys, and a telemedicine product that became a primary acquisition and revenue funnel.',
+        ? 'פיתוח אינטגרציות Shopify–HubSpot, מודרניזציית פרונטאנד ובניית מסלול קליטת מטופלים לטלרפואה.'
+        : 'Built Shopify–HubSpot integrations, modernized customer-facing frontend journeys and delivered a telemedicine intake product.',
       year: '2021–25',
       image: '/images/case-studies/curalife-metabolic-wellness-platform/hero.jpg',
       imageAlt: 'Curalife digital health and commerce experience',

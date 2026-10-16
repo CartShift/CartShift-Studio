@@ -118,9 +118,9 @@ describe('CaseStudyDetailContent', () => {
       evidence: [
         {
           title: 'Integration stability',
-          value: '85% fewer failures',
-          description: 'The replacement integration path reduced sync failures.',
-          context: 'Relative comparison with the legacy sync path.',
+          value: 'Example measured KPI',
+          description: 'Synthetic data used only to test the quantitative display.',
+          context: 'Test fixture, not a real customer claim.',
           tone: 'quantitative',
         },
       ],
@@ -129,7 +129,7 @@ describe('CaseStudyDetailContent', () => {
     render(<CaseStudyDetailContent caseStudy={measuredCaseStudy} />);
 
     expect(screen.getByRole('heading', { name: 'Evidence & Results' })).toBeInTheDocument();
-    expect(screen.getByText('85% fewer failures')).toBeInTheDocument();
+    expect(screen.getByText('Example measured KPI')).toBeInTheDocument();
   });
 
   it('renders in RTL mode for Hebrew locale', () => {
