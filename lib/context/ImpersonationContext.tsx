@@ -10,6 +10,7 @@ import {
   ReactNode,
 } from 'react';
 import { getPortalPath } from '@/lib/utils/portal-paths';
+import { useFirebaseAuth } from '@/lib/hooks/useFirebaseAuth';
 
 const STORAGE_KEY = 'cartshift_impersonated_account_id';
 
@@ -27,32 +28,41 @@ interface ImpersonationContextValue {
 const ImpersonationContext = createContext<ImpersonationContextValue | null>(null);
 
 export function ImpersonationProvider({ children }: { children: ReactNode }) {
-  const [impersonatedAccountId, setImpersonatedAccountId] = useState<string | null>(null);
+  const { user, loading } = useFirebaseAuth();
+  const [selectedClient, setSelectedClient] = useState<{
+    uid: string; orgId: string;
+  } | null>(null);
+  const uid = user?.uid ?? null;
+  const storageKey = uid ? `${STORAGE_KEY}:${uid}` : null;
+  const impersonatedAccountId = !loading && uid && selectedClient?.uid === uid
+    ? selectedClient.orgId : null;
 
-  // Initialize from session storage
+  // Restore an explicit client view only for the SAME Firebase identity.
   useEffect(() => {
-    const storedId = sessionStorage.getItem(STORAGE_KEY);
-    if (storedId) {
-      setImpersonatedAccountId(storedId);
-    }
-  }, []);
+    if (loading) return;
+    const storedId = storageKey ? sessionStorage.getItem(storageKey) : null;
+    setSelectedClient(uid && storedId ? { uid, orgId: storedId } : null);
+    sessionStorage.removeItem(STORAGE_KEY);
+  }, [loading, uid, storageKey]);
 
   const viewAsClient = useCallback((accountId: string) => {
-    setImpersonatedAccountId(accountId);
-    sessionStorage.setItem(STORAGE_KEY, accountId);
+    if (!uid || !storageKey) return;
+    setSelectedClient({ uid, orgId: accountId });
+    sessionStorage.setItem(storageKey, accountId);
 
     // Redirect to the client's dashboard using context-aware path
     window.location.href = getPortalPath('/dashboard/');
-  }, []);
+  }, [uid, storageKey]);
 
   const exitImpersonation = useCallback(() => {
-    setImpersonatedAccountId(null);
+    setSelectedClient(null);
+    if (storageKey) sessionStorage.removeItem(storageKey);
     sessionStorage.removeItem(STORAGE_KEY);
 
     // Redirect back to agency dashboard using context-aware path
 
     window.location.href = getPortalPath('/agency/');
-  }, []);
+  }, [storageKey]);
 
   const value = useMemo(
     () => ({
