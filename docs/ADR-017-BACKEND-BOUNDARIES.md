@@ -97,6 +97,6 @@ No preview builds or automatic wide CI on every documentation-only change. Prefe
 
 ## Known limitations and follow-up
 
-- The Vercel connector returned HTTP 403 when listing environment-variable metadata on 2026-10-15. Production config and credentials are **not verified** by this branch.
+- Vercel CLI access and production Firebase/Google/Contact configuration were verified on 2026-10-16. Missing server Google client ID and Contact destination were populated from the existing authoritative values. All three allowed Google callback URIs were accepted. The legacy refresh grant returns `invalid_grant`, requiring an interactive reconnect; see the coordinated release record.
 - Google Calendar legacy Cloud Functions remain until the coordinated application/rules migration is proven. Their older token handling must not become the future implementation.
 - Contact inquiry migration and queue worker extraction are implemented in this branch. Newsletter/marketing HTTP migration, full modularization of the Functions entrypoint, complete live OAuth smoke tests, production secret verification, live integration smoke tests and deployment remain outstanding.

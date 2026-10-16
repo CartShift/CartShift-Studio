@@ -17,7 +17,7 @@ OAuth continuation/session fixes from #24 are separately merged to main after 63
 Completed before final integration: all 649 backend Vitest tests, TypeScript, translations, Functions lint/build and 14 worker tests; Firestore + Storage emulator suites passed.
 Retained #29 tests first reproduced nine failures; then all ten atomic/retry tests and four existing public-comment security tests passed.
 The first backend build attempt failed because its node_modules symlink pointed outside the Turbopack filesystem root. Dependencies were installed inside the worktree before retry; this was a test-environment issue, not an application fix.
-Final combined checks are recorded on the PR after completion. A CI-stub build verifies code, not production credentials.
+The final combined source passed 674 tests in 142 files, full TypeScript validation, and lint with zero errors/five existing warnings after the required translation generation. The optimized CI-stub production build also passed (204 generated pages). The first overlapping build was killed by the temporary environment's memory limit; the isolated rerun passed. A CI-stub build verifies code, not production credentials.
 
 ## Completed Firebase release
 
@@ -31,11 +31,12 @@ PR [#89](https://github.com/CartShift/CartShift-Studio/pull/89) is merged to mai
 
 ## Mandatory remaining application/provider gates
 
-1. Vercel environment metadata still returns HTTP 403; the prior local CLI fallback was unavailable. Current production Calendar credentials/callback origins and the matching analyzer delivery configuration have not been reverified.
-2. Deploy the candidate Calendar/Contact application slice only after ADR-017 configuration/baseline gates. Then smoke-test Calendar OAuth/refresh/disconnect and transactional Contact persistence/delivery with controlled accounts.
-3. One complete legacy Calendar credential document remains. Apply its migration only after the new API is deployed and verified, repeat dry-run, then deploy candidate Calendar restrictions. The rules already released from main deliberately retain the current client connection flow.
-4. Actual authorized Shopify scan/PDF/inbox acceptance remains outstanding for issue #64. Infrastructure, signed authentication checks and mocked-provider tests do not prove real delivery. Do not send customer mail during engineering checks.
-5. Public expert-review intake remains gated by its capacity, configuration and live acceptance checks. Payment PR #32 still requires actual PayPal Sandbox QA.
+1. Vercel CLI access is verified as the project owner for `cart-shift/cart-shift-studio`. Production `GOOGLE_CLIENT_ID` was added from the matching public/Firebase client ID; `CONTACT_EMAIL` was copied from the existing Firebase destination. Firebase Admin certificate access and project ID are verified. Existing Vercel Google client secret was preserved.
+2. Google accepts the callback URI `/portal/oauth-callback` for all three allowed production origins (`cart-shift.com`, `www.cart-shift.com`, `portal.cart-shift.com`), returning `interaction_required` rather than a redirect/client error. The existing refresh grant returns `invalid_grant` with Vercel credentials. The old Firebase client secret returns `invalid_client`; it was not copied into Vercel. This baseline prevents list/create/delete/free-busy verification until the owner reconnects.
+3. Deploy the validated Calendar/Contact application slice, then complete fresh Calendar OAuth/refresh/disconnect and transactional Contact persistence/delivery with controlled accounts. The existing broken refresh grant is recorded as the pre-deployment baseline.
+4. One complete legacy Calendar credential document remains. Apply its migration only after the new API is deployed and verified, repeat dry-run, then deploy candidate Calendar restrictions. Current rules intentionally retain compatibility during the changeover.
+5. Actual authorized Shopify scan/PDF/inbox acceptance remains outstanding for issue #64. The analyzer delivery key exists as a production Secret; its value is intentionally unreadable. Signed Functions checks and mocked-provider tests do not prove the full Vercel-to-Functions/inbox path. Do not send customer mail during engineering checks.
+6. Public expert-review intake remains gated by its capacity, configuration and live acceptance checks. Payment PR #32 still requires actual PayPal Sandbox QA.
 
 Production Firebase indexes, main authorization rules and eight named Functions were deployed in #89. No credential data migration, real-recipient email, payment capture or Shopify publication was performed.
 
