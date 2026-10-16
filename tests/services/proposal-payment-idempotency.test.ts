@@ -43,7 +43,7 @@ vi.mock('@/lib/firebase-admin', () => ({
   },
 }));
 
-vi.mock('@/lib/services/project-conversion-server', () => ({ ensureProjectForAcceptedProposal: vi.fn().mockResolvedValue(null) }));
+vi.mock('@/lib/services/project-conversion-server', () => ({ ensureProjectForAcceptedProposal: vi.fn().mockResolvedValue('project-1') }));
 import { ensureProjectForAcceptedProposal } from '@/lib/services/project-conversion-server';
 
 import { reconcileProposalPayment } from '@/lib/services/proposals-server';
@@ -106,7 +106,7 @@ describe('transactional PayPal reconciliation', () => {
     state.exposePayment = true;
     vi.mocked(ensureProjectForAcceptedProposal)
       .mockRejectedValueOnce(new Error('Synchronization interrupted'))
-      .mockResolvedValueOnce(null);
+      .mockResolvedValueOnce('project-1');
     await expect(reconcileProposalPayment({ paymentId: 'pay-1', captureId: 'cap-1', status: 'paid' }))
       .rejects.toThrow('Synchronization interrupted');
     expect(state.proposal.amountPaid).toBe(60);
