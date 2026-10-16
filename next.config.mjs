@@ -57,7 +57,11 @@ const nextConfig = {
   },
   reactStrictMode: true,
   typescript: {
+    // Keep full-project type diagnostics in the editor/dev server, but avoid
+    // checking tests and tooling while producing the deployed application.
+    // The production config inherits all strict compiler options.
     ignoreBuildErrors: false,
+    tsconfigPath: process.env.NODE_ENV === 'production' ? 'tsconfig.build.json' : 'tsconfig.json',
   },
 };
 
