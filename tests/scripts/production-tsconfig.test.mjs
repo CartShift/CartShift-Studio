@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { cwd } from 'node:process';
 import { describe, expect, it } from 'vitest';
 
-const root = process.cwd();
+const root = cwd();
 const productionConfig = JSON.parse(readFileSync(join(root, 'tsconfig.build.json'), 'utf8'));
 const defaultConfig = JSON.parse(readFileSync(join(root, 'tsconfig.json'), 'utf8'));
 
