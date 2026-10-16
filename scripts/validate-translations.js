@@ -354,27 +354,28 @@ async function validateTranslations() {
     console.log(`✅ Referenced keys exist (${usedKeys.size} static references checked)`);
   }
 
-  // 8. Expensive, advisory-only unused-key scan. Run explicitly for audits;
-  // it is not a build correctness check and can add many seconds per deploy.
+  // 8. Optional, advisory-only unused-key scan. It is quadratic in the
+  // number of keys and source length, so keep it out of production builds.
+  // Run: node scripts/validate-translations.js --report-unused
   if (process.argv.includes('--report-unused')) {
     const joined = fileContents.join('\n');
-  const unusedKeys = [...enKeys].filter(key => {
-    if (joined.includes(key)) return false;
-    const leaf = key.split('.').pop();
-    // Namespaced usage often only contains the relative key
-    if (leaf && (joined.includes(`'${leaf}'`) || joined.includes(`"${leaf}"`))) return false;
-    const relativePortal = key.startsWith('portal.') ? key.slice('portal.'.length) : null;
-    if (relativePortal && joined.includes(relativePortal)) return false;
-    return true;
-  });
+    const unusedKeys = [...enKeys].filter(key => {
+      if (joined.includes(key)) return false;
+      const leaf = key.split('.').pop();
+      // Namespaced usage often only contains the relative key
+      if (leaf && (joined.includes(`'${leaf}'`) || joined.includes(`"${leaf}"`))) return false;
+      const relativePortal = key.startsWith('portal.') ? key.slice('portal.'.length) : null;
+      if (relativePortal && joined.includes(relativePortal)) return false;
+      return true;
+    });
 
-  if (unusedKeys.length > 0) {
-    console.warn(`\n⚠️  Potential unused translations (${unusedKeys.length}):`);
-    unusedKeys.slice(0, 10).forEach(k => console.warn(`   - ${k}`));
-    if (unusedKeys.length > 10) console.warn(`   ...and ${unusedKeys.length - 10} more`);
-    console.warn('   (Dynamic keys / namespaces may cause false positives)');
-  } else {
-    console.log('✅ No obvious unused keys found');
+    if (unusedKeys.length > 0) {
+      console.warn(`\n⚠️  Potential unused translations (${unusedKeys.length}):`);
+      unusedKeys.slice(0, 10).forEach(k => console.warn(`   - ${k}`));
+      if (unusedKeys.length > 10) console.warn(`   ...and ${unusedKeys.length - 10} more`);
+      console.warn('   (Dynamic keys / namespaces may cause false positives)');
+    } else {
+      console.log('✅ No obvious unused keys found');
     }
   }
 
