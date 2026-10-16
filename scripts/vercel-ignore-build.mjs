@@ -1,8 +1,20 @@
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
-const IGNORED_PREFIXES = [".github/", "docs/", "tests/"];
-const IGNORED_EXACT = new Set(["README.md", "DESIGN.md"]);
+const IGNORED_PREFIXES = [".github/", "docs/", "tests/", "functions/"];
+// Firebase-only infrastructure is deployed separately from the Next.js app.
+// Keep shared workspace files (e.g. pnpm-lock.yaml) build-relevant.
+const IGNORED_EXACT = new Set([
+  "README.md",
+  "DESIGN.md",
+  "firestore.rules",
+  "storage.rules",
+  "firestore.indexes.json",
+  "firebase.json",
+  ".firebaserc",
+  ".firebaseignore",
+  "apphosting.yaml",
+]);
 
 export function isDeploymentNeutralPath(path) {
   if (!path) return true;
@@ -35,7 +47,7 @@ function run() {
     const paths = changedFiles(previousSha, head);
 
     if (shouldIgnoreDeployment(paths)) {
-      console.log("Skipping Vercel build: all changes are documentation/test/CI-only.");
+      console.log("Skipping Vercel build: all changes are outside the Next.js deployment.");
       process.exit(0);
     }
 
