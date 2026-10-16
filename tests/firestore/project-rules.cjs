@@ -217,6 +217,13 @@ async function main() {
       content: 'Forged confidential note',
     }));
     await assertSucceeds(client.doc('portal_projects/prjA').get());
+    // Agency users need an unfiltered projects list; client list queries must
+    // stay tenant-scoped even when documents from other clients exist.
+    await assertSucceeds(agency.collection('portal_projects').get());
+    await assertSucceeds(viewer.collection('portal_projects').get());
+    await assertFails(client.collection('portal_projects').get());
+    await assertSucceeds(client.collection('portal_projects').where('orgId', '==', 'orgA').get());
+    await assertFails(client.collection('portal_projects').where('orgId', '==', 'orgB').get());
     await assertFails(outsider.doc('portal_projects/prjA').get());
     await assertFails(client.doc('portal_projects/prjA').update({ title: 'Forged' }));
     await assertFails(client.collection('portal_projects').add({ orgId: 'orgA', title: 'Injected' }));
