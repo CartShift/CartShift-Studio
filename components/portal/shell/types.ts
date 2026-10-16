@@ -85,6 +85,7 @@ export interface OrganizationSwitcherProps {
   currentOrgId: string | null;
   onSwitch: (orgId: string) => void;
   isExpanded: boolean;
+  isAgency?: boolean;
 }
 
 export interface NotificationPosition {

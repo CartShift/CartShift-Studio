@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { queryKeys } from '@/lib/utils/query-keys';
 import { getPortalPath } from '@/lib/utils/portal-paths';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { useAgencyTeam } from '@/lib/hooks/useAgencyTeam';
 
 type Prospect = {
@@ -48,8 +49,15 @@ type ContactCandidate = {
 type DetailResponse = { prospect: Prospect; findings: Finding[]; contacts: ContactCandidate[] };
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
+  const currentUser = getFirebaseAuth().currentUser;
+  if (!currentUser) throw new Error('unauthenticated');
+  const idToken = await currentUser.getIdToken();
   const response = await fetch(url, { ...options, credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', ...(options?.headers || {}) } });
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options?.headers || {}),
+      Authorization: `Bearer ${idToken}`,
+    } });
   if (!response.ok) throw new Error(response.status === 403 ? 'forbidden' : 'request_failed');
   return response.json() as Promise<T>;
 }
@@ -72,7 +80,7 @@ export default function ProspectsClient() {
     won: t('stageLabels.won'), lost: t('stageLabels.lost'),
     suppressed: t('stageLabels.suppressed'),
   };
-  const { userData, user } = usePortalAuth();
+  const { userData, user, loading: authLoading } = usePortalAuth();
   const agencyTeam = useAgencyTeam();
   const canReview = userData?.agencyRole === 'owner' || userData?.agencyRole === 'admin';
   const [search, setSearch] = useState('');
@@ -97,12 +105,13 @@ export default function ProspectsClient() {
   const [form, setForm] = useState({ store_url: '', brand_name: '', source_url: '', research_note: '' });
 
   const list = useQuery({
-    queryKey: queryKeys.prospects.all,
+    queryKey: [...queryKeys.prospects.all, user?.uid ?? 'anonymous'],
     queryFn: () => fetchJson<ListResponse>('/api/portal/agency/prospects'),
+    enabled: !authLoading && Boolean(user) && userData?.isAgency === true,
     staleTime: 30_000,
   });
   const detail = useQuery({
-    queryKey: queryKeys.prospects.detail(selected || ''),
+    queryKey: [...queryKeys.prospects.detail(selected || ''), user?.uid ?? 'anonymous'],
     queryFn: () => fetchJson<DetailResponse>('/api/portal/agency/prospects/' + selected),
     enabled: Boolean(selected),
     staleTime: 30_000,

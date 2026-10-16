@@ -39,7 +39,7 @@ export default function ProjectsListClient({ initialClientFilter = 'all' }: { in
   const scope = isAgency ? 'all' : orgId;
   const enabled = !authLoading && (isAgency || Boolean(orgId));
   const { data: projects = [], isLoading, error } = useQuery({
-    queryKey: ['client-projects', scope],
+    queryKey: ['client-projects', scope, userData?.id ?? 'anonymous'],
     queryFn: () => listClientProjects(isAgency ? undefined : orgId!),
     enabled,
     staleTime: 30_000,

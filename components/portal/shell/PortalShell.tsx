@@ -120,7 +120,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
   };
 
   // Only show loading state on initial load, not during subsequent navigations
-  const showState = !state.initialLoadComplete && (state.loading || state.isAuthorized === null);
+  const showState = state.loading || state.isAuthorized === null;
 
   // Access denied state - only if explicitly denied (not null/loading)
   const showAccessDenied = !showState && state.isAuthorized === false;
@@ -181,6 +181,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               currentOrgId={state.effectiveOrgId ?? null}
               onSwitch={handleOrgSwitch}
               isExpanded={state.isExpanded && state.hasMultipleOrgs}
+              isAgency={state.isAgency}
             />
 
             <SidebarNavigation

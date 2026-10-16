@@ -28,7 +28,10 @@
       "previewFile": "תצוגה מקדימה של קובץ",
       "downloadFile": "הורדת קובץ",
       "showVersionHistory": "הצג היסטוריית גרסאות",
-      "toggleMilestoneStatus": "החלפת סטטוס אבן דרך"
+      "toggleMilestoneStatus": "החלפת סטטוס אבן דרך",
+      "workingClient": "לקוח פעיל לעבודה",
+      "allClients": "כל הלקוחות · סביבת הסוכנות",
+      "workingClientHint": "בחירת לקוח לעבודה אינה מחליפה את המשתמש או את התפקיד שלך."
     }
   }
 }

@@ -81,9 +81,12 @@ export function usePortalAuth(): UsePortalAuthResult {
   const baseIsAgency = userData?.accountType === ACCOUNT_TYPE.AGENCY;
   const baseAccountType = userData?.accountType || ACCOUNT_TYPE.CLIENT;
 
+  // A stored client-view preference must never change a real client account.
+  const effectiveImpersonation = !!(isImpersonating && impersonatedAccountId && baseIsAgency);
+
   // 13. Apply impersonation overrides
   const finalUserData = useMemo(() => {
-    if (isImpersonating && impersonatedAccountId && baseIsAgency && userData) {
+    if (effectiveImpersonation && impersonatedAccountId && userData) {
       return {
         ...userData,
         accountType: ACCOUNT_TYPE.CLIENT,
@@ -92,11 +95,11 @@ export function usePortalAuth(): UsePortalAuthResult {
       };
     }
     return userData;
-  }, [userData, isImpersonating, impersonatedAccountId, baseIsAgency]);
+  }, [userData, effectiveImpersonation, impersonatedAccountId]);
 
-  const finalIsAgency = isImpersonating && impersonatedAccountId ? false : baseIsAgency;
+  const finalIsAgency = effectiveImpersonation ? false : baseIsAgency;
   const finalAccountType =
-    isImpersonating && impersonatedAccountId ? ACCOUNT_TYPE.CLIENT : baseAccountType;
+    effectiveImpersonation ? ACCOUNT_TYPE.CLIENT : baseAccountType;
 
   return {
     user,
@@ -106,7 +109,7 @@ export function usePortalAuth(): UsePortalAuthResult {
     isAgency: finalIsAgency,
     accountType: finalAccountType,
     error,
-    isImpersonating: !!(isImpersonating && impersonatedAccountId),
+    isImpersonating: effectiveImpersonation,
     impersonatedAccountId,
   };
 }

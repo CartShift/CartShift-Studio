@@ -49,29 +49,28 @@ export function usePortalAuthState({
     isImpersonating,
     impersonatedAccountId,
   } = usePortalAuth();
-  const { orgId: contextOrgId, hasMultipleOrgs, fullOrganizations, switchOrg } = useOrg();
+  const { orgId: contextOrgId, loading: orgLoading, hasMultipleOrgs, fullOrganizations, switchOrg } = useOrg();
 
   const effectiveOrgId = contextOrgId ?? orgIdProp;
-  const isAgency = isAgencyPage || userData?.isAgency;
+  const isAgency = userData?.isAgency === true;
+  const effectiveLoading = loading || orgLoading;
 
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [memberRole, setMemberRole] = useState<UserRole | undefined>(undefined);
+  const [accessDecision, setAccessDecision] = useState<{
+    key: string; authorized: boolean; role?: UserRole;
+  } | null>(null);
+  const accessKey = [
+    userData?.id ?? '', userData?.accountType ?? '', userData?.agencyRole ?? '',
+    isAgencyPage ? 'agency' : 'workspace',
+    isImpersonating ? impersonatedAccountId ?? '' : 'normal',
+    effectiveOrgId ?? '',
+  ].join('|');
+  const isAuthorized = accessDecision?.key === accessKey ? accessDecision.authorized : null;
+  const memberRole = accessDecision?.key === accessKey ? accessDecision.role : undefined;
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [hasEverBeenAuthorized, setHasEverBeenAuthorized] = useState(false);
 
-  const displayUserData = (() => {
-    if (isImpersonating && impersonatedAccountId && userData) {
-      const org = fullOrganizations.find(o => o.id === impersonatedAccountId);
-      if (org) {
-        return {
-          ...userData,
-          name: org.name,
-          photoUrl: org.branding?.iconUrl || org.logoUrl || userData.photoUrl,
-        };
-      }
-    }
-    return userData;
-  })();
+  /* Keep the signed-in user's name and avatar stable while switching workspace. */
+  const displayUserData = userData;
 
   useEffect(() => {
     if (userData) {
@@ -82,7 +81,7 @@ export function usePortalAuthState({
   useEffect(() => {
     let internalMounted = true;
 
-    const isReadyToCheck = !loading || !!userData;
+    const isReadyToCheck = !effectiveLoading;
 
     if (!isReadyToCheck) {
       return () => {
@@ -105,21 +104,29 @@ export function usePortalAuthState({
 
     const markAuthorized = (role?: UserRole) => {
       if (!internalMounted) return;
-      setIsAuthorized(true);
-      if (role) setMemberRole(role);
+      setAccessDecision({ key: accessKey, authorized: true, role });
       setHasEverBeenAuthorized(true);
     };
 
     const markDenied = () => {
       if (!internalMounted) return;
-      setIsAuthorized(false);
+      setAccessDecision({ key: accessKey, authorized: false });
     };
 
     const checkAccess = async () => {
       try {
         if (!userData) return;
 
-        if (isImpersonating && impersonatedAccountId) {
+        if (isAgencyPage && !isAgency) {
+          markDenied();
+          return;
+        }
+
+        if (isImpersonating) {
+          if (!impersonatedAccountId || effectiveOrgId !== impersonatedAccountId) {
+            markDenied();
+            return;
+          }
           markAuthorized(undefined);
           return;
         }
@@ -156,7 +163,8 @@ export function usePortalAuthState({
           return;
         }
 
-        markAuthorized(undefined);
+        if (isAgency) markAuthorized(userData.agencyRole || 'owner');
+        else markDenied();
       } catch (error) {
         Logger.error('Error checking access', error);
         markDenied();
@@ -170,6 +178,8 @@ export function usePortalAuthState({
     };
   }, [
     loading,
+    orgLoading,
+    effectiveLoading,
     isAuthenticated,
     userData,
     effectiveOrgId,
@@ -178,12 +188,14 @@ export function usePortalAuthState({
     isImpersonating,
     impersonatedAccountId,
     initialLoadComplete,
+    isAgency,
+    accessKey,
   ]);
 
   return {
     userData,
     displayUserData,
-    loading,
+    loading: effectiveLoading,
     accountType,
     isAgency: !!isAgency,
     isImpersonating,

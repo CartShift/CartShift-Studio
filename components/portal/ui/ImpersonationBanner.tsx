@@ -1,19 +1,21 @@
 'use client';
 
 import { useImpersonation } from '@/lib/context/ImpersonationContext';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 import { useQuery } from '@tanstack/react-query';
 import { getOrganization } from '@/lib/services/portal-organizations';
 import { Eye, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export function ImpersonationBanner() {
-  const { isImpersonating, impersonatedAccountId, exitImpersonation } = useImpersonation();
+  const { impersonatedAccountId, exitImpersonation } = useImpersonation();
+  const { isImpersonating } = usePortalAuth();
   const t = useTranslations('portal');
 
   const { data: org } = useQuery({
     queryKey: ['organization', impersonatedAccountId],
     queryFn: () => (impersonatedAccountId ? getOrganization(impersonatedAccountId) : null),
-    enabled: !!impersonatedAccountId,
+    enabled: isImpersonating && !!impersonatedAccountId,
     staleTime: Infinity,
   });
 
