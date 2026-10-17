@@ -33,7 +33,6 @@ export default async function FreeStoreReviewPage({
   const { locale } = await params;
   const { focus } = await searchParams;
   setRequestLocale(locale as 'en' | 'he');
-  const he = locale === 'he';
   // All display copy, including the form and FAQ, shares the same translation source.
   const t = await getTranslations({ locale: locale as 'en' | 'he', namespace: 'storeReview' });
   const steps = (['request', 'review', 'next'] as const).map(key => ({
@@ -74,7 +73,7 @@ export default async function FreeStoreReviewPage({
         <h2 className="text-center text-3xl font-bold">{t('whatTitle')}</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-surface-600 dark:text-surface-300">{t('whatDescription')}</p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {areas.map((area,i) => <div key={area.key} className="flex items-center gap-4 rounded-2xl border border-surface-200 bg-white p-5 dark:border-white/10 dark:bg-surface-900">
+          {areas.map(area => <div key={area.key} className="flex items-center gap-4 rounded-2xl border border-surface-200 bg-white p-5 dark:border-white/10 dark:bg-surface-900">
             <area.icon className="h-6 w-6 shrink-0 text-primary-600" aria-hidden="true"/>
             <h3 className="font-semibold">{t(`areas.${area.key}`)}</h3>
           </div>)}
