@@ -23,8 +23,8 @@
   },
   "hero": {
     "tag": "Shopify development and store improvement",
-    "titleLine1": "A Shopify Store Worth",
-    "titleLine2": "Improving, Not Rebuilding",
+    "titleLine1": "Make Your Shopify Store",
+    "titleLine2": "Work Better",
     "description": "Product pages underperforming? A slow storefront? Inventory workflows that need constant attention? We diagnose the friction, prioritize fixes, and implement them without unnecessary rebuilds.",
     "primaryCta": "Book an Intro Call",
     "secondaryCta": "See Our Work",
@@ -597,27 +597,27 @@
     "contextualAnalyzer": {
       "speed": {
         "title": "Could slow loading be costing this store customers?",
-        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "description": "We'll examine mobile loading friction and prioritize the most useful performance investigations before making changes.",
         "button": "Request an Expert Review"
       },
       "seo": {
         "title": "Want to find technical SEO gaps in your store?",
-        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "description": "We'll review publicly visible signs of indexing, site architecture, and product or collection content issues.",
         "button": "Request an Expert Review"
       },
       "conversion": {
         "title": "Not sure what is blocking more sales?",
-        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "description": "We'll walk through product pages and buying journeys to identify where shoppers might lose momentum.",
         "button": "Request an Expert Review"
       },
       "trust": {
         "title": "Are shoppers seeing enough reasons to trust the store?",
-        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "description": "We'll look at whether product details, policies, and reassurance give shoppers what they need to decide.",
         "button": "Request an Expert Review"
       },
       "checkout": {
         "title": "Could cart or checkout friction be wasting traffic?",
-        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "description": "We'll assess the cart and publicly accessible steps toward payment, calling out potential friction.",
         "button": "Request an Expert Review"
       }
     },
