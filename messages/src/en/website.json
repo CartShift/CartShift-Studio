@@ -23,16 +23,16 @@
   },
   "hero": {
     "tag": "Shopify development and store improvement",
-    "titleLine1": "Shopify Stores",
-    "titleLine2": "Built to Work Better",
-    "description": "Make your Shopify store easier to shop and easier to run. We fix buying friction, improve technical SEO and speed, and build reliable custom integrations without unnecessary rebuilds.",
-    "primaryCta": "Get a Free Consultation",
+    "titleLine1": "A Shopify Store Worth",
+    "titleLine2": "Improving, Not Rebuilding",
+    "description": "Product pages underperforming? A slow storefront? Inventory workflows that need constant attention? We diagnose the friction, prioritize fixes, and implement them without unnecessary rebuilds.",
+    "primaryCta": "Book an Intro Call",
     "secondaryCta": "See Our Work",
-    "analyzerCta": "Analyze My Store (Free)",
+    "analyzerCta": "Free Expert Review",
     "scrollIndicator": "Scroll to explore",
     "intro": {
-      "title": "Your Shopify Growth Partner",
-      "mission": "Our Mission",
+      "title": "Shopify Development With Business Context",
+      "mission": "Diagnose First. Build What Matters.",
       "features": {
         "shopify": {
           "label": "Shopify Experts",
@@ -48,9 +48,9 @@
         }
       },
       "paragraphs": [
-        "Your store is already running. Now it needs the technical attention to work better for customers and the team behind it. CartShift Studio combines hands-on Shopify development with practical ecommerce problem-solving.",
-        "We start with the real obstacles: hard-to-buy product pages, slow mobile experiences, unreliable workflows, confusing SEO signals, or integrations that take too much manual work. We investigate first, prioritize fixes, and explain the tradeoffs clearly.",
-        "From custom themes and B2B operations to inventory integrations, technical SEO, and ongoing improvements, we build maintainable solutions around your business. We also support selected WordPress and custom web projects when they are the right fit."
+        "Not every store problem calls for a redesign or another app. Sometimes a product page needs a precise change; sometimes an integration is making operations harder. We start with what actually matters to your business.",
+        "We look at buying journeys, available data, and technical workflows. Then we explain options, constraints, and priorities before agreeing on a scope.",
+        "Shopify is our specialty: themes, buying experience, technical SEO, B2B, and integrations. We also build WordPress and custom web solutions when they fit the work."
       ]
     },
     "platforms": {
@@ -162,9 +162,9 @@
   },
   "shopify": {
     "hero": {
-      "title": "Shopify Experts",
-      "subtitle": "Sell more. Stress less.",
-      "description": "Launch, rebuild, or optimize your Shopify store with a partner who cares about conversion and performance.",
+      "title": "Shopify Development and Store Improvements",
+      "subtitle": "Fix Buying and Operational Friction",
+      "description": "Product pages, technical SEO, inventory, B2B and integrations. Diagnose first, then improve.",
       "badge": "Shopify Growth Partners"
     },
     "services": {
@@ -301,9 +301,9 @@
   },
   "wordpress": {
     "hero": {
-      "title": "WordPress Made Easy",
-      "subtitle": "Fast, secure websites you can manage",
-      "description": "We design and develop WordPress sites that load quickly, rank well, and stay easy to update.",
+      "title": "WordPress Built Around Your Business",
+      "subtitle": "Content, business sites, and WooCommerce where it fits",
+      "description": "Maintainable sites built around publishing and business needs. For commerce, we assess WordPress versus Shopify.",
       "badge": "Web Development Experts"
     },
     "services": {
@@ -324,7 +324,7 @@
         },
         {
           "title": "Content Management",
-          "description": "Custom content management systems, news platforms, and editorial workflows tailored to your needs."
+          "description": "Content types, news sites, and publishing workflows tailored to your team."
         },
         {
           "title": "Speed & Security",
@@ -399,11 +399,11 @@
       "items": [
         {
           "question": "What WordPress development services do you offer?",
-          "answer": "We offer comprehensive WordPress development services for content sites, news platforms, and custom websites. This includes custom theme development, plugin customization, performance optimization, content management setup, migration services, security hardening, and ongoing maintenance and support."
+          "answer": "We build content sites, business sites, and suitable WooCommerce projects, including themes, plugins, technical SEO, performance, and maintenance."
         },
         {
           "question": "Do you build e-commerce sites with WordPress?",
-          "answer": "No, we specialize in Shopify for e-commerce stores. WordPress is ideal for content-driven sites like news platforms, blogs, corporate websites, and custom content management systems. For online stores, we recommend Shopify which offers better e-commerce features and reliability."
+          "answer": "Yes, when WooCommerce suits the business model and existing systems. We have experience with WordPress and WooCommerce projects, while Shopify is our primary commerce specialty. Our recommendation depends on requirements, complexity, and long-term upkeep."
         },
         {
           "question": "How long does it take to develop a WordPress site?",
@@ -576,49 +576,49 @@
   },
   "blogPost": {
     "cta": {
-      "title": "Need help with your ",
-      "titleSpan": "online store?",
-      "description": "From strategy to build to optimization, we've got you covered. Reach out for a free consultation.",
-      "button": "Get in touch"
+      "title": "Recognize This Problem ",
+      "titleSpan": "in Your Store?",
+      "description": "A focused expert review helps identify the friction and decide what to improve first.",
+      "button": "Request an Expert Review"
     },
     "storeAnalyzerCta": {
-      "badge": "Free Tool",
-      "title": "Curious how your store ",
-      "titleSpan": "stacks up?",
-      "description": "Get a free, AI-powered analysis of your Shopify or e-commerce store. Discover hidden issues, performance bottlenecks, and actionable tips to boost conversions.",
-      "button": "Analyze My Store Free",
+      "badge": "Free Expert Review",
+      "title": "Wondering What to Improve First?",
+      "titleSpan": "",
+      "description": "A CartShift specialist reviews your request and publicly accessible store journeys before following up with prioritized findings. This is not an instant automated report.",
+      "button": "Request a Free Expert Review",
       "stats": {
-        "analyzed": "1,200+",
-        "analyzedLabel": "stores analyzed",
-        "avgTime": "< 2 min",
-        "avgTimeLabel": "analysis time"
+        "analyzed": "3–5",
+        "analyzedLabel": "Priority findings",
+        "avgTime": "Human",
+        "avgTimeLabel": "Capacity-based response"
       }
     },
     "contextualAnalyzer": {
       "speed": {
         "title": "Could slow loading be costing this store customers?",
-        "description": "Run a speed-focused store check after applying the ideas in this article.",
-        "button": "Run a free speed check"
+        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "button": "Request an Expert Review"
       },
       "seo": {
         "title": "Want to find technical SEO gaps in your store?",
-        "description": "Check search, metadata, schema, and content signals in under two minutes.",
-        "button": "Run an SEO-focused check"
+        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "button": "Request an Expert Review"
       },
       "conversion": {
         "title": "Not sure what is blocking more sales?",
-        "description": "Find the strongest conversion opportunities before changing the whole store.",
-        "button": "Find my conversion gaps"
+        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "button": "Request an Expert Review"
       },
       "trust": {
         "title": "Are shoppers seeing enough reasons to trust the store?",
-        "description": "Check proof, policies, security, and purchase reassurance.",
-        "button": "Check buyer trust"
+        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "button": "Request an Expert Review"
       },
       "checkout": {
         "title": "Could cart or checkout friction be wasting traffic?",
-        "description": "Check the path to payment before investing more in acquisition.",
-        "button": "Check checkout friction"
+        "description": "We'll review the relevant public journey as part of a personal assessment, not an instant automated report.",
+        "button": "Request an Expert Review"
       }
     },
     "relatedServices": {
@@ -965,15 +965,15 @@
   },
   "contact": {
     "hero": {
-      "title": "Get in Touch",
-      "subtitle": "Have a project in mind? Let's make it real.",
-      "description": "Tell us what you're building and we'll reply within 24 hours.",
+      "title": "Tell us what needs to work better.",
+      "subtitle": "Have a store problem or a new project?",
+      "description": "Share the details and we'll respond based on our availability and the nature of your request.",
       "badge": "Let's Talk"
     },
     "title": "Contact Information",
     "emailLabel": "Email",
-    "quickResponseTitle": "Quick reply",
-    "quickResponseText": "We usually get back to you within 24 hours.",
+    "quickResponseTitle": "Personal Reply",
+    "quickResponseText": "We review inquiries personally and respond according to our availability.",
     "scheduleTitle": "Want to hop on a call?",
     "scheduleText1": "We can do a free 30-minute discovery call to discuss goals, scope, and next steps.",
     "scheduleText2": "Mention it in your message, and we'll coordinate a time that works for you.",
@@ -1010,7 +1010,7 @@
       "submitting": "Sending...",
       "privacy": "We'll only use your information to respond to your inquiry.",
       "successTitle": "Thank you!",
-      "successText": "Got it! We'll reply within 24 hours.",
+      "successText": "Thanks — we've received your message and will respond after reviewing the details.",
       "sendAnother": "Send Another Message"
     }
   },
@@ -1255,7 +1255,7 @@
     "hero": {
       "title": "Our Work",
       "subtitle": "Editorial case studies shaped around the brands behind the build.",
-      "description": "A curated look at the stores, platforms, and websites we designed or rebuilt, using real product screens, documented implementation decisions, and measured results where available.",
+      "description": "The work delivered, the decisions made, and the actual screens. Where results are not verified, we describe qualitative changes without inventing metrics.",
       "badge": "Selected Work",
       "featuredLabel": "Featured Project"
     },
@@ -1271,9 +1271,9 @@
       "webApp": "Web App"
     },
     "cta": {
-      "title": "Ready to join our",
-      "titleSpan": "success stories?",
-      "description": "Let's talk about your project and see how we can help.",
+      "title": "Working Through a Similar",
+      "titleSpan": "Store Challenge?",
+      "description": "Let's look at the current setup, the challenge, and what scope makes sense.",
       "button": "Start Your Project"
     },
     "viewProject": "View Project",
@@ -1325,7 +1325,8 @@
       "evidenceResultsTitle": "Evidence & Results",
       "whatChangedTitle": "What Changed",
       "notesEyebrow": "Deeper Context"
-    }
+    },
+    "filtersNote": "Projects may appear in more than one category."
   },
   "testimonials": {
     "title": "Success Stories",
@@ -1358,42 +1359,42 @@
     ]
   },
   "whyChoose": {
-    "title": "Why Work With Us?",
-    "subtitle": "Not just builders. Real partners.",
+    "title": "Why CartShift?",
+    "subtitle": "A small, hands-on studio with real engineering depth.",
     "items": [
       {
-        "title": "Made for Your Business",
-        "description": "No cookie-cutter templates. We design around your goals, customers, and products.",
+        "title": "Work With the Builders",
+        "description": "Collaborate directly with the people planning and implementing the solution.",
         "icon": "target"
       },
       {
-        "title": "Senior-Led Delivery",
-        "description": "You work directly with experienced specialists. Fewer handoffs, faster progress.",
+        "title": "Think Before Coding",
+        "description": "We challenge unnecessary builds and look for the smallest maintainable fix.",
         "icon": "handshake"
       },
       {
-        "title": "Tech Made Simple",
-        "description": "We handle the complexity and explain choices in plain language.",
+        "title": "Clear Technical Trade-offs",
+        "description": "We explain options, costs, constraints, and risks in practical language.",
         "icon": "bolt"
       },
       {
-        "title": "Growth Focused",
-        "description": "We build with the next step in mind: speed, SEO, analytics, and iteration.",
+        "title": "Built for the Long Term",
+        "description": "Performance, accessibility, technical SEO, and maintainability matter from the start.",
         "icon": "chart-up"
       },
       {
-        "title": "Transparent Process",
-        "description": "Clear timelines, honest updates, and no hidden surprises. You always know where your project stands.",
+        "title": "Visible Progress",
+        "description": "Clear milestones, documentation, and updates without losing business context.",
         "icon": "eye"
       }
     ]
   },
   "servicesOverview": {
-    "title": "Our Core Solutions",
-    "subtitle": "Development and organic growth expertise for businesses that need their website to perform",
+    "title": "What Could Work Better in Your Store?",
+    "subtitle": "Start with the business problem, then choose the technical solution.",
     "shopify": {
-      "title": "E-Commerce Growth",
-      "description": "Everything you need to sell online. We handle design, setup, and performance so you can focus on your products.",
+      "title": "Shopify Development & Optimization",
+      "description": "Improve existing storefronts, product pages, mobile journeys, order and inventory workflows without replacing what works.",
       "features": [
         "Store Setup & Design",
         "Custom Features",
@@ -1402,12 +1403,12 @@
       ]
     },
     "wordpress": {
-      "title": "Custom Web Design",
-      "description": "A website as unique as your brand. Flexible, easy to manage, and built to stand out.",
+      "title": "WordPress & WooCommerce",
+      "description": "Maintainable content-rich and business websites. We assess whether WooCommerce or Shopify is the better fit for commerce.",
       "features": [
         "Custom Design",
         "Easy to Edit",
-        "Online Store Ready",
+        "WooCommerce Where It Fits",
         "SEO Optimized"
       ]
     },
@@ -1423,14 +1424,14 @@
     }
   },
   "ctaBanner": {
-    "badge": "Ready to Scale?",
-    "titlePart1": "Ready to take your business to the",
-    "titlePart2": "next level?",
-    "description": "Bring the vision and we'll build the engine. Clear process, clean code, measurable results.",
-    "button": "Start the Conversation"
+    "badge": "Start With a Review",
+    "titlePart1": "Something in Your Store",
+    "titlePart2": "Could Work Better?",
+    "description": "Tell us where your store gets stuck. We'll assess your request and follow up with initial prioritized findings and practical options, with no obligation.",
+    "button": "Request a Free Expert Review"
   },
   "footer": {
-    "description": "Bold e-commerce builds for artists, makers, and brands. Shopify and WordPress websites that look great, load fast, and sell more.",
+    "description": "CartShift Studio helps Shopify stores improve buying journeys, technical SEO, performance, B2B workflows, and integrations. Direct collaboration, clear priorities, and pragmatic implementation.",
     "solutions": "Solutions",
     "company": "Company",
     "rights": "All rights reserved.",
@@ -1458,29 +1459,29 @@
   },
   "process": {
     "title": "How We Work",
-    "subtitle": "A streamlined process designed for success",
+    "subtitle": "Clear decisions, documented work, and agreed scope.",
     "steps": {
       "discovery": {
-        "title": "Discovery",
-        "description": "We learn about your business, goals, and vision to create a tailored strategy."
+        "title": "Understand the Problem",
+        "description": "Find the friction for customers and staff and establish what we can verify."
       },
       "design": {
-        "title": "Design",
-        "description": "Our designers craft stunning visuals that capture your brand identity."
+        "title": "Prioritize and Plan",
+        "description": "Weigh likely impact, effort, and risk before agreeing on a scope."
       },
       "develop": {
-        "title": "Develop",
-        "description": "We build your store with clean code and optimized performance."
+        "title": "Build and Test",
+        "description": "Implement the agreed changes and test the relevant user journeys."
       },
       "launch": {
-        "title": "Launch",
-        "description": "Your store goes live with full support and ongoing optimization."
+        "title": "Launch and Learn",
+        "description": "Coordinate release, verify the changes, and decide what to improve next."
       }
     }
   },
   "stats": {
     "title": "Our Impact",
-    "subtitle": "Numbers that speak for themselves",
+    "subtitle": "Work and evidence matter more than unverified numbers.",
     "projects": {
       "label": "Projects Delivered"
     },
