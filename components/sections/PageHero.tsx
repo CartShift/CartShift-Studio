@@ -10,7 +10,6 @@ interface PageHeroProps {
   subtitle: string;
   description: string;
   highlightLastWord?: boolean;
-  seoH1?: string;
   compact?: boolean;
   backgroundImage?: string;
   backgroundImageAlt?: string;
@@ -44,7 +43,6 @@ export const PageHero: React.FC<PageHeroProps> = ({
   subtitle,
   description,
   highlightLastWord = true,
-  seoH1,
   compact = false,
   backgroundImage,
   backgroundImageAlt = '',
@@ -103,8 +101,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
               compact ? 'text-4xl md:text-5xl lg:text-6xl' : 'text-5xl md:text-7xl lg:text-8xl'
             )}
           >
-            {seoH1 && <span className="sr-only">{seoH1}</span>}
-            <span aria-hidden={!!seoH1}>
+            <span>
               {highlightLastWord
                 ? (() => {
                     const words = title.split(' ');
