@@ -865,7 +865,8 @@
         "VAT is added where applicable.",
         "SEO Growth works best after an audit or equivalent discovery.",
         "Paid ads and purchased links are not included unless separately scoped.",
-        "High-volume content production is not included unless separately scoped."
+        "High-volume content production is not included unless separately scoped.",
+        "The free store review highlights initial opportunities across the buying journey; a paid SEO audit is a separate deeper examination of organic search."
       ]
     },
     "process": {
@@ -1071,7 +1072,7 @@
       },
       "storeAudit": {
         "name": "Store Audit",
-        "description": "A comprehensive review of your store with actionable recommendations.",
+        "description": "A paid deep dive beyond the free first-pass review, with a documented action plan.",
         "price": "$500",
         "timeline": "3-5 days",
         "features": [
@@ -1123,6 +1124,10 @@
         {
           "question": "What's not included in these prices?",
           "answer": "Third-party costs like app subscriptions, themes (if purchasing one), domain registration, and ongoing hosting are separate. We'll outline everything clearly in your quote."
+        },
+        {
+          "question": "How is the free expert review different from the paid store audit?",
+          "answer": "The free review is a focused first pass over public store pages with prioritized observations. The paid audit goes deeper and its scope, deliverables and walkthrough are agreed in the proposal. You can start with the free review without committing to paid work."
         }
       ]
     },
@@ -1131,6 +1136,12 @@
       "titleSpan": "is right for you?",
       "description": "Book a free 30-minute call. We'll learn about your project and recommend the best path forward.",
       "button": "Book a Free Call"
+    },
+    "freeReview": {
+      "eyebrow": "Not ready for a full audit?",
+      "title": "Start with a free expert review",
+      "description": "A first look at your public buying journey is free. The paid store audit covers separately agreed deeper analysis, documentation and a walkthrough.",
+      "cta": "Request free review"
     }
   },
   "maintenance": {
@@ -1445,7 +1456,7 @@
       "submitting": "Subscribing...",
       "error": "Could not subscribe. Please try again.",
       "sslSecured": "SSL Secured",
-      "shopifyPartner": "Shopify Partner"
+      "shopifyPartner": "Shopify development"
     },
     "links": {
       "shopify": "Shopify Solutions",

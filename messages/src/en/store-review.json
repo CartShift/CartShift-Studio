@@ -102,6 +102,24 @@
       "No obligation",
       "Free"
     ],
-    "workLink": "Explore our work"
+    "workLink": "Explore our work",
+    "scopeComparison": {
+      "title": "Which review is right for you?",
+      "intro": "The free review is an initial look at your public buying journey. Paid engagements are separately scoped deep dives—not the same review with a price tag.",
+      "free": {
+        "title": "Free expert review",
+        "description": "A focused first pass over public store pages with 3–5 prioritized observations and suggested next steps. No admin access required."
+      },
+      "storeAudit": {
+        "title": "Paid full-store audit",
+        "description": "A broader, separately commissioned store review with a detailed action plan, deeper investigation and a walkthrough, as specified in the proposal."
+      },
+      "seoAudit": {
+        "title": "Paid SEO audit",
+        "description": "A search-focused technical and discoverability assessment with documented findings, a baseline and a prioritized SEO roadmap."
+      },
+      "note": "Additional research, implementation and any access to private business data require an agreed scope.",
+      "seoLink": "Explore SEO audit options"
+    }
   }
 }

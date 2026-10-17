@@ -98,6 +98,22 @@ export default async function FreeStoreReviewPage({
         <p className="mx-auto mt-10 max-w-3xl text-center text-sm leading-relaxed text-surface-500">{t('finePrint')}</p>
       </div>
     </section>
+    <section className="border-t border-surface-200 px-4 py-20 dark:border-white/10 sm:px-6">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="text-3xl font-bold">{t('scopeComparison.title')}</h2>
+        <p className="mt-4 max-w-3xl text-surface-600 dark:text-surface-300">{t('scopeComparison.intro')}</p>
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          {(['free', 'storeAudit', 'seoAudit'] as const).map(key => (
+            <div key={key} className="rounded-2xl border border-surface-200 bg-white p-6 dark:border-white/10 dark:bg-surface-900">
+              <h3 className="text-xl font-bold">{t(`scopeComparison.${key}.title`)}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-surface-600 dark:text-surface-300">{t(`scopeComparison.${key}.description`)}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-6 text-sm text-surface-500">{t('scopeComparison.note')}</p>
+        <Link href="/solutions/seo" className="mt-4 inline-flex items-center gap-2 font-semibold text-primary-700 hover:underline dark:text-primary-300">{t('scopeComparison.seoLink')} <ArrowRight className="size-4 rtl:rotate-180" /></Link>
+      </div>
+    </section>
     <section className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
       <h2 className="mb-8 text-center text-3xl font-bold">{t('faqTitle')}</h2>
       <div className="space-y-3">{faq.map(({ question, answer })=><details key={question} className="group rounded-xl border border-surface-200 p-5 dark:border-white/10">

@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MaintenancePageContent } from '@/components/sections/MaintenancePageContent';
 import {
   generateMetadata as genMeta,
@@ -14,12 +14,16 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Maintenance & Support Plans | Keep Your Store Running',
-      description:
-        'Monthly support plans for Shopify stores. Updates, backups, monitoring, and dedicated support. Plans starting at $299/month.',
+      title: isHe ? 'תמיכה ותחזוקה לחנויות Shopify | CartShift Studio' : 'Shopify Support & Maintenance Plans | CartShift Studio',
+      description: isHe
+        ? 'תוכניות תחזוקה ותמיכה לחנויות Shopify: בדיקות תקופתיות, פיתוח ושיפור שוטף לפי היקף מוסכם.'
+        : 'Shopify maintenance and support plans covering agreed store checks, ongoing improvements and development support.',
       url: '/maintenance',
+      // Client-side configuration can hide this offer; avoid indexing an empty gated view.
+      noindex: true,
       keywords: [
         'maintenance plans',
         'Shopify support',
@@ -32,36 +36,16 @@ export async function generateMetadata({
   );
 }
 
-const maintenanceFaqs = [
-  {
-    question: 'What if I need more hours than my plan includes?',
-    answer:
-      "Additional hours are billed at $150/hour. We'll always let you know before any extra work is done.",
-  },
-  {
-    question: 'Can I change plans?',
-    answer:
-      'Yes, you can upgrade or downgrade at any time. Changes take effect at the start of your next billing cycle.',
-  },
-  {
-    question: "What's considered an emergency?",
-    answer:
-      'Site down, checkout broken, or security incidents. Premium plan members get same-day response for emergencies.',
-  },
-  {
-    question: "Do you support stores you didn't build?",
-    answer:
-      "Yes, we take on maintenance for existing stores. We'll do an initial review to understand your setup first.",
-  },
-];
 
 export default async function MaintenancePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
+  const t = await getTranslations({ locale: locale as 'en' | 'he' });
+  const maintenanceFaqs = t.raw('maintenance.faq.items') as { question: string; answer: string }[];
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Maintenance & Support', url: '/maintenance' },
+      { name: t('navigation.home'), url: '/' },
+      { name: t('maintenance.hero.title'), url: '/maintenance' },
     ],
     locale as 'en' | 'he'
   );

@@ -91,8 +91,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/solutions/wordpress', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/solutions/seo', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/work', changeFrequency: 'weekly' as const, priority: 0.9 },
-    { path: '/pricing', changeFrequency: 'monthly' as const, priority: 0.9 },
-    { path: '/maintenance', changeFrequency: 'monthly' as const, priority: 0.8 },
+    // Pricing/maintenance visibility is decided client-side; keep them out of search
+    // until it is enforced on the server and their commercial terms are confirmed.
     { path: '/about', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/contact', changeFrequency: 'monthly' as const, priority: 0.7 },

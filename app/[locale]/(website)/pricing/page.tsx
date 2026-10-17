@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PricingPageContent } from '@/components/sections/PricingPageContent';
 import {
   generateMetadata as genMeta,
@@ -16,12 +16,16 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Pricing & Packages | Shopify & WordPress Development',
-      description:
-        'Transparent pricing for Shopify and WordPress development. Packages starting at $500. No hidden fees. Get a custom quote.',
+      title: isHe ? 'מחירים והיקפי עבודה לפיתוח Shopify | CartShift Studio' : 'Shopify Development Pricing & Project Scopes | CartShift Studio',
+      description: isHe
+        ? 'חבילות פיתוח Shopify, שדרוגים ואודיטים בתשלום. סקירה מקצועית ראשונית בחינם; היקף ותמחור מלא ייקבעו בהצעת עבודה.'
+        : 'Shopify development packages, store improvements and paid deep-dive audits. Free initial expert review; final scope and pricing agreed in a proposal.',
       url: '/pricing',
+      // Page visibility is currently controlled in the client; do not index gated content.
+      noindex: true,
       keywords: [
         'Shopify development pricing',
         'WordPress development cost',
@@ -35,36 +39,16 @@ export async function generateMetadata({
   );
 }
 
-const pricingFaqs = [
-  {
-    question: 'Do you offer payment plans?',
-    answer:
-      'Yes, for projects over $5,000, we typically split payments into milestones: 40% to start, 30% at design approval, and 30% at launch.',
-  },
-  {
-    question: "What if my project doesn't fit these packages?",
-    answer:
-      "These are starting points. We'll scope your project properly and provide a custom quote based on your specific needs.",
-  },
-  {
-    question: 'Are there any hidden fees?',
-    answer:
-      'No. We quote transparently. If something comes up during the project that changes scope, we discuss it before any additional work.',
-  },
-  {
-    question: "What's not included in these prices?",
-    answer:
-      "Third-party costs like app subscriptions, themes (if purchasing one), domain registration, and ongoing hosting are separate. We'll outline everything clearly in your quote.",
-  },
-];
 
 export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
+  const t = await getTranslations({ locale: locale as 'en' | 'he' });
+  const pricingFaqs = t.raw('pricing.faq.items') as { question: string; answer: string }[];
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Pricing', url: '/pricing' },
+      { name: t('navigation.home'), url: '/' },
+      { name: t('pricing.hero.title'), url: '/pricing' },
     ],
     locale as 'en' | 'he'
   );

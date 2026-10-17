@@ -148,6 +148,7 @@ export const PricingPageContent: React.FC = () => {
   faq: { title: string; subtitle?: string; items: Array<{ question: string; answer: string }> };
   cta: { title: string; titleSpan: string; description: string; button: string };
   popularBadge?: string;
+  freeReview: { eyebrow: string; title: string; description: string; cta: string };
 };
   const pricingData = t.raw('pricing' as never) as PricingTranslationData;
 
@@ -189,6 +190,16 @@ export const PricingPageContent: React.FC = () => {
       </div>
 
       <Section background="default" className="relative overflow-hidden">
+        <div className="mb-12 flex flex-col gap-5 rounded-2xl border border-primary-500/20 bg-primary-500/5 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+          <div className="max-w-2xl">
+            <p className="text-sm font-bold text-primary-700 dark:text-primary-300">{pricing.freeReview.eyebrow}</p>
+            <h2 className="mt-2 text-xl font-bold text-surface-900 dark:text-white">{pricing.freeReview.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-surface-600 dark:text-surface-300">{pricing.freeReview.description}</p>
+          </div>
+          <Link href="/free-store-review" className="shrink-0 rounded-xl bg-primary-600 px-6 py-3 text-center font-semibold text-white hover:bg-primary-700">
+            {pricing.freeReview.cta}
+          </Link>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {packages.map(pkg => (
             <PackageCard key={pkg.name} {...pkg} />
