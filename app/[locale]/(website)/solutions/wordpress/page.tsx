@@ -61,7 +61,7 @@ export default async function WordPressPage({ params }: { params: Promise<{ loca
   );
 
   // Use the same locale-specific FAQs for the visible page and structured data.
-  const t = await getTranslations({ locale, namespace: 'wordpress' });
+  const t = await getTranslations({ locale: locale as 'en' | 'he', namespace: 'wordpress' });
   const faqItems = t.raw('faq.items') as Array<{ question: string; answer: string }>;
   const faqSchema = generateFAQPageSchema(faqItems);
 
