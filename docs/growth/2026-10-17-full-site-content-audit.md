@@ -21,6 +21,15 @@ This pass covers the marketing home, about, contact, 3 platform solutions, 3 ded
 3. Start a local optimized server, then run `node scripts/audit-public-pages.mjs http://127.0.0.1:3005`.
 4. Check Vercel production build, custom domain mapping, and runtime errors after release. Do not send a fake lead.
 
+## Verification completed
+
+- Optimized Next.js 16.2.7 production build passed in isolated sandbox using nonfunctional Firebase build placeholders: compiled successfully, TypeScript finished and 210 static pages generated.
+- Translation parity: 52 source files per language; 4,446 leaf keys each, no missing static references.
+- 28 focused Vitest checks passed (content integrity, SEO, marketing redirects).
+- `scripts/audit-public-pages.mjs` passed on **142/142** public routes across both locales, including all 37 articles and nine case studies, plus legacy analyzer redirect behavior.
+- A separate internal link crawl of 11 representative landing pages resolved **62/62** distinct on-site links without HTTP errors.
+- No form submission, user record update, or actual Shopify/Firebase operation was performed by smoke tests. The tests do not measure conversions or user interaction.
+
 ## Remaining human checks
 
 - Confirm published website screenshots, especially Stiletto, against the actual release status before removing the prelaunch label.
