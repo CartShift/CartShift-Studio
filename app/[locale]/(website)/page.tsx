@@ -3,6 +3,7 @@ import { HomepageIntro } from '@/components/sections/HomepageIntro';
 import { ServicesOverview } from '@/components/sections/ServicesOverview';
 import { WhyChoose } from '@/components/sections/WhyChoose';
 import { CaseStudiesTeaser } from '@/components/sections/CaseStudiesTeaser';
+import { Testimonials } from '@/components/sections/Testimonials';
 import { Process } from '@/components/sections/Process';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { PortalTeaser } from '@/components/sections/PortalTeaser';
@@ -70,8 +71,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   // Curate documented work with reviewable deliverables; do not imply measured uplift.
   const selectedCaseSlugs = new Set([
     'i-love-my-honeypot-eco-ecommerce',
+    'stiletto-piercing-disposable-jewelry-supply',
     'alondon-community-portal',
-    'carmel-faraggi-independent-design-studio',
   ]);
   const selectedCaseStudies = getAllCaseStudies(locale).filter(study =>
     selectedCaseSlugs.has(study.slug)
@@ -95,6 +96,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <Process />
       <WhyChoose />
       <CaseStudiesTeaser caseStudies={selectedCaseStudies} locale={locale as 'en' | 'he'} />
+      <Testimonials />
       <StoreAnalyzerTeaser />
       <PortalTeaser />
       <BlogTeaser posts={latestPosts} />

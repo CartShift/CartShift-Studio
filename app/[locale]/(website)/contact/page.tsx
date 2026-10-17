@@ -21,8 +21,8 @@ export async function generateMetadata({
         ? 'שיחת ייעוץ ל-Shopify ול-ecommerce | CartShift Studio'
         : 'Book a Shopify or Ecommerce Consultation | CartShift Studio',
       description: isHe
-        ? 'דברו עם CartShift Studio על Shopify SEO, שדרוג חנות, מיגרציה או בעיות המרה. אנחנו עובדים בעברית ובאנגלית וחוזרים תוך 24 שעות.'
-        : 'Talk with CartShift Studio about Shopify SEO, store rebuilds, migrations, or conversion issues. We work with English and Hebrew-speaking teams and reply within 24 hours.',
+        ? 'דברו עם CartShift Studio על Shopify SEO, שדרוג חנות, מיגרציה או בעיות המרה. אנחנו עובדים בעברית ובאנגלית ומגיבים לפניות באופן אישי בהתאם לזמינות.'
+        : 'Talk with CartShift Studio about Shopify SEO, store rebuilds, migrations, or conversion issues. We work with English and Hebrew-speaking teams and respond personally according to our availability.',
       url: '/contact',
       keywords: [
         ...(isHe
@@ -45,8 +45,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   setRequestLocale(locale as 'en' | 'he');
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Contact', url: '/contact' },
+      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'יצירת קשר' : 'Contact', url: '/contact' },
     ],
     locale as 'en' | 'he'
   );

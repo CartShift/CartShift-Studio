@@ -39,7 +39,7 @@ export const Footer: React.FC = () => {
 
   const socialLinks = [
     { name: 'LinkedIn', href: 'https://linkedin.com/company/cartshiftstudio', icon: 'linkedin' },
-    { name: 'GitHub', href: 'https://github.com/cartshiftstudio', icon: 'github' },
+    { name: 'GitHub', href: 'https://github.com/CartShift', icon: 'github' },
   ];
 
   useEffect(() => {

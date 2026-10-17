@@ -10,11 +10,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Privacy Policy',
-      description:
-        'CartShift Studio privacy policy. Learn how we collect, use, and protect your personal information.',
+      title: isHe ? 'מדיניות פרטיות | CartShift Studio' : 'Privacy Policy | CartShift Studio',
+      description: isHe ? 'כיצד CartShift Studio אוספת, משתמשת ושומרת מידע אישי.' : 'How CartShift Studio handles and protects personal information.',
       url: '/privacy',
       keywords: ['privacy policy', 'data protection', 'GDPR', 'cookie policy'],
     },
@@ -27,8 +27,8 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   setRequestLocale(locale as 'en' | 'he');
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Privacy Policy', url: '/privacy' },
+      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy', url: '/privacy' },
     ],
     locale as 'en' | 'he'
   );

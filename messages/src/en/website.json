@@ -1329,8 +1329,8 @@
     "filtersNote": "Projects may appear in more than one category."
   },
   "testimonials": {
-    "title": "Success Stories",
-    "subtitle": "Real results from real clients",
+    "title": "From Our Clients",
+    "subtitle": "What Our Clients Say About Working Together",
     "items": [
       {
         "quote": "CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our product quiz alone transformed how customers find their perfect products.",
@@ -1356,7 +1356,8 @@
         "industry": "Jewelry & Body Art",
         "rating": 5
       }
-    ]
+    ],
+    "viewProject": "Explore the project"
   },
   "whyChoose": {
     "title": "Why CartShift?",
@@ -2416,7 +2417,7 @@
   "featuredWork": {
     "eyebrow": "Selected projects",
     "title": "What Happens When We Start With the Right Problem?",
-    "description": "Real development work and the decisions behind the stores and sites we helped build. No unverified performance claims.",
+    "description": "Selected projects across commerce and content: the challenge, the solution and what actually changed.",
     "readMore": "Explore the project",
     "viewAll": "View all projects"
   }

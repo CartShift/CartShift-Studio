@@ -10,11 +10,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Terms of Service',
-      description:
-        'CartShift Studio terms of service. Read our terms and conditions for using our website and services.',
+      title: isHe ? 'תנאי שימוש | CartShift Studio' : 'Terms of Service | CartShift Studio',
+      description: isHe ? 'תנאי השימוש באתר ובשירותי CartShift Studio.' : 'Terms for using the CartShift Studio website and services.',
       url: '/terms',
       keywords: ['terms of service', 'terms and conditions', 'legal', 'user agreement'],
     },
@@ -27,8 +27,8 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   setRequestLocale(locale as 'en' | 'he');
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Terms of Service', url: '/terms' },
+      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'תנאי שימוש' : 'Terms of Service', url: '/terms' },
     ],
     locale as 'en' | 'he'
   );

@@ -14,11 +14,13 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isHe = locale === 'he';
   return genMeta(
     {
-      title: 'Client Portal for CartShift Clients | Track Projects, Files, and Requests',
-      description:
-        'A dedicated client workspace for CartShift projects. Approved clients can track requests, review deliverables, share files, and keep communication in one organized place.',
+      title: isHe ? 'פורטל לקוחות | פרויקטים, בקשות וקבצים | CartShift Studio' : 'Client Portal | Projects, Files & Requests | CartShift Studio',
+      description: isHe
+        ? 'מרחב עבודה ללקוחות CartShift למעקב אחר פרויקטים ובקשות, שיתוף קבצים וסקירת תוצרים.'
+        : 'A dedicated CartShift client workspace for project tracking, requests, files and deliverables.',
       url: '/tools/client-portal',
       keywords: [
         'client portal',
@@ -45,9 +47,9 @@ export default async function ClientPortalPage({
 
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Tools', url: '/tools' },
-      { name: 'Client Portal', url: '/tools/client-portal' },
+      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'כלים' : 'Tools', url: '/tools' },
+      { name: locale === 'he' ? 'פורטל לקוחות' : 'Client Portal', url: '/tools/client-portal' },
     ],
     locale as 'en' | 'he'
   );
