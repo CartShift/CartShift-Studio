@@ -90,6 +90,7 @@ type WorkTranslations = {
   cta: { title: string; titleSpan: string; description: string; button: string };
   detail: { selectedScreens: string; evidenceTitle: string };
   viewProject: string;
+  filtersNote: string;
   empty: { title: string; description: string };
 };
 
@@ -262,6 +263,8 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
               </div>
             ))}
           </div>
+
+          <p className="mt-3 text-xs text-surface-600 dark:text-white/65">{work.filtersNote}</p>
 
           <motion.div
             className="mt-8 flex flex-wrap gap-2"
