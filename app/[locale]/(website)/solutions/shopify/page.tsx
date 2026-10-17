@@ -74,7 +74,7 @@ export default async function ShopifyPage({ params }: { params: Promise<{ locale
   );
 
   // Use the same locale-specific FAQs for the visible page and structured data.
-  const t = await getTranslations({ locale, namespace: 'shopify' });
+  const t = await getTranslations({ locale: locale as 'en' | 'he', namespace: 'shopify' });
   const faqItems = t.raw('faq.items') as Array<{ question: string; answer: string }>;
   const faqSchema = generateFAQPageSchema(faqItems);
 
