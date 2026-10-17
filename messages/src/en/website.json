@@ -2412,5 +2412,12 @@
       "primaryButton": "Access Portal",
       "secondaryButton": "Contact Us"
     }
+  },
+  "featuredWork": {
+    "eyebrow": "Selected projects",
+    "title": "What Happens When We Start With the Right Problem?",
+    "description": "Real development work and the decisions behind the stores and sites we helped build. No unverified performance claims.",
+    "readMore": "Explore the project",
+    "viewAll": "View all projects"
   }
 }
