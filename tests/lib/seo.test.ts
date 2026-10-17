@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateServiceSchema } from '@/lib/seo';
+import { generateMetadata, generateServiceSchema } from '@/lib/seo';
 
 describe('generateServiceSchema', () => {
   it('does not emit Product structured data for service pages', () => {
@@ -37,5 +37,17 @@ describe('generateServiceSchema', () => {
       ],
     });
     expect(JSON.stringify(schema)).not.toContain('"@type":"Product"');
+  });
+});
+
+describe('generateMetadata title composition', () => {
+  it('keeps branded titles absolute to avoid duplicate layout suffixes', () => {
+    expect(generateMetadata({ title: 'Shopify Reviews | CartShift Studio', description: 'Sample' }, 'en').title)
+      .toEqual({ absolute: 'Shopify Reviews | CartShift Studio' });
+  });
+
+  it('lets the layout add its suffix to unbranded titles', () => {
+    expect(generateMetadata({ title: 'Shopify SEO Services', description: 'Sample' }, 'he').title)
+      .toBe('Shopify SEO Services');
   });
 });
