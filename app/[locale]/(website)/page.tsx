@@ -2,12 +2,14 @@ import { Hero } from '@/components/sections/Hero';
 import { HomepageIntro } from '@/components/sections/HomepageIntro';
 import { ServicesOverview } from '@/components/sections/ServicesOverview';
 import { WhyChoose } from '@/components/sections/WhyChoose';
+import { CaseStudiesTeaser } from '@/components/sections/CaseStudiesTeaser';
 import { Process } from '@/components/sections/Process';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { PortalTeaser } from '@/components/sections/PortalTeaser';
 import { StoreAnalyzerTeaser } from '@/components/sections/StoreAnalyzerTeaser';
 import { CTABanner } from '@/components/sections/CTABanner';
 import { getAllPosts } from '@/lib/markdown';
+import { getAllCaseStudies } from '@/lib/case-studies';
 import {
   generateMetadata as genMeta,
   generateWebSiteSchema,
@@ -65,6 +67,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const professionalServiceSchema = generateProfessionalServiceSchema();
   const posts = await getAllPosts();
   const latestPosts = posts.slice(0, 4);
+  // Curate documented work with reviewable deliverables; do not imply measured uplift.
+  const selectedCaseSlugs = new Set([
+    'i-love-my-honeypot-eco-ecommerce',
+    'alondon-community-portal',
+    'carmel-faraggi-independent-design-studio',
+  ]);
+  const selectedCaseStudies = getAllCaseStudies(locale).filter(study =>
+    selectedCaseSlugs.has(study.slug)
+  );
 
   return (
     <>
@@ -83,6 +94,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <ServicesOverview />
       <Process />
       <WhyChoose />
+      <CaseStudiesTeaser caseStudies={selectedCaseStudies} locale={locale as 'en' | 'he'} />
       <StoreAnalyzerTeaser />
       <PortalTeaser />
       <BlogTeaser posts={latestPosts} />
