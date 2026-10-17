@@ -72,7 +72,9 @@ export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metad
   };
 
   return {
-    title: config.title,
+    // Next.js appends the layout title template to strings. Preserve branded titles
+    // as absolute so pages already naming CartShift do not duplicate the brand.
+    title: /CartShift/i.test(config.title) ? { absolute: config.title } : config.title,
     description: config.description,
     keywords: config.keywords,
     robots: config.noindex ? { index: false, follow: true } : { index: true, follow: true },
