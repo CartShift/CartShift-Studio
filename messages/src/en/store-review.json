@@ -96,6 +96,12 @@
         "a": "Shopify is our specialty, but we can assess other e-commerce platforms when the scope fits our expertise."
       }
     },
-    "ctaShort": "Free store review"
+    "ctaShort": "Free store review",
+    "trustBadges": [
+      "Human-led",
+      "No obligation",
+      "Free"
+    ],
+    "workLink": "Explore our work"
   }
 }
