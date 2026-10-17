@@ -3,7 +3,6 @@ import { HomepageIntro } from '@/components/sections/HomepageIntro';
 import { ServicesOverview } from '@/components/sections/ServicesOverview';
 import { WhyChoose } from '@/components/sections/WhyChoose';
 import { Process } from '@/components/sections/Process';
-import { Testimonials } from '@/components/sections/Testimonials';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { PortalTeaser } from '@/components/sections/PortalTeaser';
 import { StoreAnalyzerTeaser } from '@/components/sections/StoreAnalyzerTeaser';
@@ -84,7 +83,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <ServicesOverview />
       <Process />
       <WhyChoose />
-      <Testimonials />
       <StoreAnalyzerTeaser />
       <PortalTeaser />
       <BlogTeaser posts={latestPosts} />
