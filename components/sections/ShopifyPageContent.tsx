@@ -62,75 +62,14 @@ export const ShopifyPageContent: React.FC = () => {
     items: FAQItem[];
   };
   const faqItems = faqData?.items || [];
-  const seoFocusAreas = isHe
-    ? [
-        {
-          icon: FileSearch,
-          title: 'אודיט Shopify SEO ממוקד',
-          description:
-            'אנחנו מזהים בעיות אינדוקס, קנוניקל, היררכיית תוכן, כוונת חיפוש וקישורים פנימיים לפני שהן ממשיכות לחסום צמיחה אורגנית.',
-        },
-        {
-          icon: Gauge,
-          title: 'מהירות ו-Core Web Vitals',
-          description:
-            'שיפור LCP, CLS, JS מיותר, מדיה כבדה ואפליקציות שמאטות את החנות ומשפיעות גם על UX וגם על ביצועים אורגניים.',
-        },
-        {
-          icon: Workflow,
-          title: 'הגירה וצמיחה בלי לאבד מומנטום',
-          description:
-            'שומרים על נכסי SEO חשובים בזמן רה-פלטפורמינג, שינוי מבנה או פיתוח פיצ׳רים חדשים שמטרתם להגדיל לידים ומכירות.',
-        },
-      ]
-    : [
-        {
-          icon: FileSearch,
-          title: 'Focused Shopify SEO audits',
-          description:
-            'We uncover indexing, canonical, content hierarchy, search-intent, and internal-linking issues before they keep suppressing organic growth.',
-        },
-        {
-          icon: Gauge,
-          title: 'Speed and Core Web Vitals work',
-          description:
-            'We improve LCP, CLS, redundant JS, heavy media, and app bloat that slows the store down and hurts both UX and rankings.',
-        },
-        {
-          icon: Workflow,
-          title: 'Migration-safe growth implementation',
-          description:
-            'We preserve important SEO signals during rebuilds, migrations, and feature rollouts so growth work does not wipe out existing visibility.',
-        },
-      ];
-
-  const partnerReasons = isHe
-    ? [
-        'אפליקציות נותנות הצעות כלליות. אנחנו מחברים בין SEO, UX, ביצועים ומטרות עסקיות לפי מה שבאמת קורה בחנות שלכם.',
-        'תיקונים טכניים בלי אסטרטגיה יוצרים עבודה חלקית. אנחנו בונים סדר עדיפויות שמחזק גם דירוגים וגם המרות.',
-        'חנויות בצמיחה צריכות מישהו שיכול גם לאבחן וגם ליישם. אצלנו אין מעבר בין “יועץ” ל”מפתח” - אותו צוות מוביל עד ביצוע.',
-      ]
-    : [
-        'Apps can surface generic tips. We connect SEO, UX, performance, and business goals around what is actually happening in your store.',
-        'Technical fixes without prioritization create busywork. We sequence improvements so rankings and conversions can compound together.',
-        'Growing stores need a partner who can both diagnose and implement. We do not stop at recommendations and hand you a backlog.',
-      ];
-
-  const localTrust = isHe
-    ? {
-        title: 'מתאים גם לצוותים בישראל וגם לפעילות גלובלית',
-        description:
-          'אנחנו עובדים בעברית ובאנגלית, רגילים ללוחות זמנים בישראל, ויודעים לבנות עמודי שירות ומסרים שמדברים גם לשוק המקומי וגם לחיפושים באנגלית.',
-        primary: 'שיחת ייעוץ על Shopify SEO',
-        secondary: 'אודיט חינם לחנות',
-      }
-    : {
-        title: 'Built for Israeli teams and international growth',
-        description:
-          'We work in English and Hebrew, understand Israeli operating rhythms, and help brands translate technical SEO into clear growth priorities for global traffic.',
-        primary: 'Book a Shopify SEO consultation',
-        secondary: 'Request a free expert review',
-      };
+  // Keep Hebrew and English marketing claims in one translation source.
+  const seoFocusCopy = t.raw('shopify.editorial.seoFocusAreas') as Array<{ title: string; description: string }>;
+  const seoFocusIcons = [FileSearch, Gauge, Workflow];
+  const seoFocusAreas = seoFocusCopy.map((item, index) => ({ ...item, icon: seoFocusIcons[index] }));
+  const partnerReasons = t.raw('shopify.editorial.partnerReasons') as string[];
+  const localTrust = t.raw('shopify.editorial.localTrust') as {
+    title: string; description: string; primary: string; secondary: string;
+  };
 
   return (
     <div className="bg-background dark:bg-black transition-colors duration-500">

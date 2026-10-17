@@ -48,71 +48,28 @@ export const AboutPageContent: React.FC = () => {
   const valuesItems = t.raw('about.values.items') as Array<{ title: string; description: string }>;
   const expectContent = t.raw('about.expect.content') as string[];
 
-  const copy = isHebrew
-    ? {
-        heroTitle: 'אודות CartShift Studio',
-        heroSubtitle: 'חשיבה מוצרית. עומק טכני. עבודה אנושית.',
-        story: [
-          'CartShift Studio הוא סטודיו קטן למוצר, מסחר ופיתוח Web שנבנה סביב רעיון פשוט: העבודה הדיגיטלית הטובה ביותר נוצרת כשחשיבה עסקית, החלטות מוצר והביצוע הטכני נשארים קרובים זה לזה.',
-          'יותם מביא יותר מעשור של הנדסת תוכנה ומערכות פרודקשן. עדי מחברת פיתוח עם אסטרטגיה עסקית, ניהול לקוחות והבנה של קהל. יחד אנחנו לוקחים בעיה מהקשר עסקי ועד מוצר שעובד באמת.',
-          'אנחנו מקשיבים קודם, מגדירים את הבעיה האמיתית, ואז בונים את הדבר הנכון בצורה נקייה, שקופה וניתנת להמשך.',
-        ],
-        teamTitle: 'מי אנחנו',
-        teamSubtitle: 'האנשים שמאחורי CartShift Studio',
-        expertiseLabel: 'תחומי חוזקה',
-        portfolioLabel: 'הפורטפוליו של יותם',
-        cvLabel: 'קורות החיים של יותם',
-        members: [
-          {
-            name: "יותם פרג'י",
-            role: 'Co-Founder & Senior Product Engineer',
-            bio: 'Senior Product Engineer בברלין עם יותר מ-10 שנות ניסיון בתוכנה לפרודקשן. אני עובד על מוצרים שבהם צריך לחבר החלטות מוצריות לעומק טכני, כולל Full-Stack, מסחר, APIs, אינטגרציות, דאטה, cloud ו-AI. ב-CartShift אני מביא את אותו סטנדרט של ownership מקצה לקצה גם לעבודה עם לקוחות וגם למוצרים שאנחנו בונים בעצמנו.',
-            expertise: 'Product Engineering, Full-Stack, Shopify, APIs & Integrations, AI-assisted Products, Performance & Reliability',
-          },
-          {
-            name: 'עדי זלטר',
-            role: 'Co-Founder · Business Strategy & Web Development',
-            bio: 'עדי מחברת בין פיתוח לבין הצד העסקי של כל פרויקט. הרקע שלה במוזיקה ובחיי הלילה חידד אצלה הבנה של קהל, חוויה ותקשורת, והיום היא מביאה את זה לבניית אתרי WordPress, ניהול פרויקטים ועבודה ישירה עם לקוחות. היא דואגת שהמוצר לא רק יעבוד, אלא גם יהיה ברור, שימושי ומחובר למטרה העסקית שלו.',
-            expertise: 'Business Strategy, WordPress Development, Project Management, Client Relations, Audience Experience, Digital Growth',
-          },
-        ],
-        ctaTitle: 'יש לכם משהו ששווה',
-        ctaTitleSpan: 'לבנות נכון?',
-        ctaDescription: 'חנות, אתר, מערכת פנימית או רעיון שעדיין לא מסודר. נעזור להגדיר את הבעיה, לבחור את היקף העבודה הנכון ולהביא אותה לפרודקשן.',
-        ctaButton: 'דברו איתנו',
-      }
-    : {
-        heroTitle: 'About CartShift Studio',
-        heroSubtitle: 'Product thinking. Technical depth. Human collaboration.',
-        story: [
-          'CartShift Studio is a small product, commerce and web engineering studio built around a simple idea: the best digital work happens when business context, product decisions and technical execution stay close together.',
-          'Yotam brings more than a decade of software engineering and production systems. Adi connects development with business strategy, client leadership and audience understanding. Together, we take a problem from business context to a product that works in the real world.',
-          'We listen first, define the real problem, then build the right thing with clean execution, clear communication and room to keep improving.',
-        ],
-        teamTitle: 'Who We Are',
-        teamSubtitle: 'The people behind CartShift Studio',
-        expertiseLabel: 'Strengths',
-        portfolioLabel: "Yotam's portfolio",
-        cvLabel: "Yotam's CV",
-        members: [
-          {
-            name: 'Yotam Faraggi',
-            role: 'Co-Founder & Senior Product Engineer',
-            bio: 'Berlin-based Senior Product Engineer with 10+ years building and operating production software. I work best where product decisions and technical depth have to move together, across full-stack systems, commerce, APIs, integrations, data, cloud and AI. At CartShift, I bring that same end-to-end ownership to both client work and the products we build ourselves.',
-            expertise: 'Product Engineering, Full-Stack, Shopify, APIs & Integrations, AI-assisted Products, Performance & Reliability',
-          },
-          {
-            name: 'Adi Zelter',
-            role: 'Co-Founder · Business Strategy & Web Development',
-            bio: 'Adi connects development with the business side of every project. Her background in music and nightlife sharpened her understanding of audiences, experience and communication; today she applies that perspective to WordPress development, project leadership and direct client work. She keeps the work useful, clear and connected to the business goal behind it.',
-            expertise: 'Business Strategy, WordPress Development, Project Management, Client Relations, Audience Experience, Digital Growth',
-          },
-        ],
-        ctaTitle: 'Have something worth',
-        ctaTitleSpan: 'building properly?',
-        ctaDescription: 'A store, a website, an internal system, or an idea that is still messy. We can help define the problem, right-size the scope and take it into production.',
-        ctaButton: 'Talk to us',
-      };
+  // The page and the rest of the website use the same localized editorial source.
+  const about = t.raw('about' as never) as {
+    hero: { title: string; subtitle: string };
+    story: { content: string[] };
+    team: { title: string; subtitle: string; expertiseLabel: string; portfolioLabel: string; cvLabel: string; members: Array<{ name: string; role: string; bio: string; expertise: string }> };
+    cta: { title: string; titleSpan: string; description: string; button: string };
+  };
+  const copy = {
+    heroTitle: about.hero.title,
+    heroSubtitle: about.hero.subtitle,
+    story: about.story.content,
+    teamTitle: about.team.title,
+    teamSubtitle: about.team.subtitle,
+    expertiseLabel: about.team.expertiseLabel,
+    portfolioLabel: about.team.portfolioLabel,
+    cvLabel: about.team.cvLabel,
+    members: about.team.members,
+    ctaTitle: about.cta.title,
+    ctaTitleSpan: about.cta.titleSpan,
+    ctaDescription: about.cta.description,
+    ctaButton: about.cta.button,
+  };
 
   const valueIcons = [MessagesSquare, Zap, Activity, CheckCircle];
   const entrance = reduceMotion ? { initial: false as const } : undefined;

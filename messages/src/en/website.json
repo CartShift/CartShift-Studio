@@ -92,21 +92,21 @@
   "about": {
     "hero": {
       "title": "About CartShift Studio",
-      "subtitle": "Technical expertise. Human connection.",
+      "subtitle": "Product thinking. Technical depth. Human collaboration.",
       "badge": "Our Story"
     },
     "story": {
       "title": "Our Story",
       "content": [
-        "It started with a simple idea: build sites that feel premium and perform like machines. One of us is obsessed with clean code. The other is obsessed with customer experience. Together, we bridge both worlds.",
-        "We blend technical depth with a collaborative process. That means fewer surprises, faster decisions, and a launch you actually enjoy.",
-        "No one-size-fits-all templates here. We listen first, then build what your business truly needs, and we keep iterating as you grow."
+        "CartShift Studio is a small product, commerce and web engineering studio built around a simple idea: the best digital work happens when business context, product decisions and technical execution stay close together.",
+        "Yotam brings more than a decade of software engineering and production systems. Adi connects development with business strategy, client leadership and audience understanding. Together, we take a problem from business context to a product that works in the real world.",
+        "We listen first, define the real problem, then build the right thing with clean execution, clear communication and room to keep improving."
       ]
     },
     "team": {
       "title": "Who We Are",
-      "subtitle": "Meet the team behind CartShift Studio",
-      "expertiseLabel": "Expertise:",
+      "subtitle": "The people behind CartShift Studio",
+      "expertiseLabel": "Strengths",
       "members": [
         {
           "name": "Yotam Faraggi",
@@ -116,11 +116,13 @@
         },
         {
           "name": "Adi Zelter",
-          "role": "Business Strategist & Web Developer",
-          "bio": "With a background in the music and nightlife industry, I bring a unique business perspective to web development. I focus on creating professional WordPress websites that help businesses grow and stand out. I believe that a great website is more than just code – it's a strategic business tool. My transition from the nightlife scene to professional web development has given me a deep understanding of audience engagement and the importance of a seamless digital experience.",
-          "expertise": "Business Strategy, WordPress Development, Project Management, Client Relations, Digital Growth"
+          "role": "Co-Founder · Business Strategy & Web Development",
+          "bio": "Adi connects development with the business side of every project. Her background in music and nightlife sharpened her understanding of audiences, experience and communication; today she applies that perspective to WordPress development, project leadership and direct client work. She keeps the work useful, clear and connected to the business goal behind it.",
+          "expertise": "Business Strategy, WordPress Development, Project Management, Client Relations, Audience Experience, Digital Growth"
         }
-      ]
+      ],
+      "portfolioLabel": "Yotam's portfolio",
+      "cvLabel": "Yotam's CV"
     },
     "values": {
       "title": "Our Values",
@@ -154,10 +156,10 @@
       ]
     },
     "cta": {
-      "title": "Let's build something",
-      "titleSpan": "great",
-      "description": "Have an idea (or a mess of notes)? We'll help turn it into a site that sells.",
-      "button": "Get in Touch"
+      "title": "Have something worth",
+      "titleSpan": "building properly?",
+      "description": "A store, a website, an internal system, or an idea that is still messy. We can help define the problem, right-size the scope and take it into production.",
+      "button": "Talk to us"
     }
   },
   "shopify": {
@@ -297,6 +299,33 @@
           "answer": "Getting started is easy! Simply contact us through our contact form or schedule a free consultation. We'll discuss your project requirements, answer any questions, and provide a detailed proposal. There's no obligation, and we're here to help you succeed."
         }
       ]
+    },
+    "editorial": {
+      "seoFocusAreas": [
+        {
+          "title": "Focused Shopify SEO audits",
+          "description": "Review indexing, canonicals, content hierarchy, search intent and internal links to identify observable blockers and opportunities."
+        },
+        {
+          "title": "Performance and Core Web Vitals",
+          "description": "Diagnose LCP, CLS, unnecessary JavaScript, heavy media and app bloat, then prioritize changes that improve the buying experience."
+        },
+        {
+          "title": "Carefully scoped migrations",
+          "description": "Map important SEO URLs, links and content before a platform or site-structure change to reduce visibility risks."
+        }
+      ],
+      "partnerReasons": [
+        "Automated tools can suggest directions. We connect SEO, experience, performance and business goals to what can be verified in your store.",
+        "Rather than hand over an endless punch list, we prioritize by likely impact, effort and risk, then check the outcome.",
+        "The team that diagnoses the work can also plan and implement it, without losing context between advisor and developer."
+      ],
+      "localTrust": {
+        "title": "Working in English and Hebrew",
+        "description": "We understand Israeli commerce teams and international storefronts, tailoring content and working practices to the relevant market.",
+        "primary": "Discuss Shopify improvements",
+        "secondary": "Request a free initial review"
+      }
     }
   },
   "wordpress": {
