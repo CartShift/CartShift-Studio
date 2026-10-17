@@ -114,12 +114,12 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
     if (slug === 'shopify-inventory-sync-problems') {
       return isHe
         ? [
-            { href: '/free-store-review?focus=checkout', label: 'סקירה מקצועית של תהליכי החנות' },
+            { href: '/free-store-review?utm_source=blog&utm_medium=organic&utm_campaign=inventory_sync_review', label: 'סקירה מקצועית של תהליכי החנות' },
             { href: '/services/shopify-b2b-integrations', label: 'פתרונות Shopify לאינטגרציות ומלאי' },
             { href: '/contact', label: 'דברו איתנו על בעיית הסנכרון' },
           ]
         : [
-            { href: '/free-store-review?focus=checkout', label: 'Request an expert store review' },
+            { href: '/free-store-review?utm_source=blog&utm_medium=organic&utm_campaign=inventory_sync_review', label: 'Request an expert store review' },
             { href: '/services/shopify-b2b-integrations', label: 'Shopify inventory and integration solutions' },
             { href: '/contact', label: 'Discuss your inventory sync issue' },
           ];
