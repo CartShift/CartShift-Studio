@@ -122,6 +122,7 @@ interface CaseStudyFrontmatter {
   portfolioOrder?: number;
   siteUrl?: string;
   attribution?: string;
+  projectStage?: string;
   cta?: CaseStudyCTA;
   brand?: Partial<CaseStudyBrand>;
   hero?: Partial<CaseStudyHero>;
