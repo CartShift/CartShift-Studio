@@ -18,9 +18,10 @@ Editorial hierarchy:
 ## Implemented in this branch
 
 - Hebrew and English hero, intro, services, process, trust differentiators, contact copy, blog copy and CTAs revised.
-- The existing expert review intake at `/free-store-review` remains the central conversion destination.
+- The existing expert review intake at `/free-store-review` remains the central conversion destination; landing and form text now share one `storeReview` translation source.
 - WordPress and WooCommerce offering reconciled with Shopify specialization in copy and FAQs.
 - Fixed competing screen-reader-only English H1 text on Shopify, WordPress and SEO service pages. Localized visible heading is now also the accessible heading.
+- Fixed layout metadata title suffix duplication on pages that already mention CartShift in their title.
 - Page-specific JSON-LD FAQ data now draws from the same localized FAQ items as the visible page.
 - Blog inventory article now directs to the relevant integration service or human review, not generic SEO.
 - Clarified that work filters can overlap; the sum of filtered category counts may exceed the total number of projects.
@@ -43,9 +44,9 @@ Editorial hierarchy:
 
 - [x] Source locale key parity and interpolation validation.
 - [x] Targeted ESLint / TypeScript check.
-- [x] 20 targeted Vitest cases including new content-integrity checks.
-- [ ] Complete production build **in an environment with the correct Firebase variables**. Sandbox lacks `NEXT_PUBLIC_FIREBASE_*` required values.
-- [ ] Confirm localized rendered HTML and one meaningful H1 per service page in a deployed build.
+- [x] 22 focused Vitest cases including content integrity and metadata title regression checks.
+- [x] Complete optimized Next.js build with isolated example Firebase variables and scoped Google Fonts access (210 static pages generated). Production service connectivity is a separate check.
+- [x] Check built HTML for 14 Hebrew/English routes: HTTP 200, one H1, correct `lang`/`dir`, and no duplicated CartShift title suffix. Actual production deployment still needs observation.
 - [ ] Verify that `/free-store-review` submission, CRM intake, and tracking events work against the production service.
 - [ ] Review specific case study status and attribution with each client before rewriting project outcomes.
 - [ ] Review Search Console, analytics funnels, and current indexing before making claims about SEO or conversion impact.
