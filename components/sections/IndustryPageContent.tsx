@@ -3,9 +3,6 @@
 import React from 'react';
 import { motion } from '@/lib/motion';
 import { Section, SectionHeader } from '@/components/ui/Section';
-import { Counter } from '@/components/ui/Counter';
-import { useInView } from '@/lib/motion';
-import { useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { PageHero } from '@/components/sections/PageHero';
@@ -83,8 +80,6 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
   const t = useTranslations();
   const locale = useLocale();
   const isHe = isRTLLocale(locale);
-  const statsRef = useRef(null);
-  const isStatsInView = useInView(statsRef, { once: true, margin: '-100px' });
 
   const config = INDUSTRY_CONFIG[industry];
   const IndustryIcon = config.icon;
@@ -213,31 +208,24 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
         </div>
       </Section>
 
-      {/* Stats */}
-      <Section
-        background="default"
-        className="relative overflow-hidden border-y border-surface-200 dark:border-white/5 shadow-2xl"
-      >
-        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {[
-            { value: 150, suffix: '+', label: t('industries.projects') },
-            { value: 98, suffix: '%', label: t('industries.satisfaction') },
-            { value: 2.5, suffix: 'x', label: t('industries.avgGrowth') },
-            { value: 24, suffix: '/7', label: t('industries.support') },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={isStatsInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="p-6"
-            >
-              <div className={`text-4xl md:text-5xl font-bold mb-2 ${config.color}`}>
-                <Counter value={stat.value} suffix={stat.suffix} inView={isStatsInView} />
+      {/* Evidence-led process replaces unsupported project and satisfaction metrics. */}
+      <Section background="default" className="border-y border-surface-200 dark:border-white/10">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="mb-4 text-center font-display text-3xl font-bold text-surface-900 dark:text-white">
+            {t('industries.proof.title')}
+          </h2>
+          <p className="mx-auto mb-10 max-w-3xl text-center text-surface-600 dark:text-surface-300">
+            {t('industries.proof.description')}
+          </p>
+          <div className="grid gap-5 md:grid-cols-3">
+            {(t.raw('industries.proof.steps') as { title: string; description: string }[]).map((step, i) => (
+              <div key={step.title} className="rounded-2xl border border-surface-200 bg-surface-50 p-6 dark:border-white/10 dark:bg-surface-900">
+                <span className="text-sm font-bold text-primary-700 dark:text-primary-300">0{i + 1}</span>
+                <h3 className="mt-3 text-xl font-bold text-surface-900 dark:text-white">{step.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-surface-600 dark:text-surface-300">{step.description}</p>
               </div>
-              <div className="text-sm text-surface-500 dark:text-surface-400">{stat.label}</div>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </Section>
 

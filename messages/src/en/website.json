@@ -1520,61 +1520,79 @@
     "support": "Support",
     "getFreeQuote": "Get a Free Quote",
     "viewOurWork": "View Our Work",
-    "ctaDescription": "Let's discuss your project and see how we can help you grow"
+    "ctaDescription": "Let's discuss your project and see how we can help you grow",
+    "proof": {
+      "title": "How we approach your industry",
+      "description": "We start from the actual customer journey and operations, not a promised industry benchmark.",
+      "steps": [
+        {
+          "title": "Understand the context",
+          "description": "Review representative pages, buyers' questions and the systems that support the business."
+        },
+        {
+          "title": "Choose the right improvements",
+          "description": "Separate urgent blockers from nice-to-have changes, with a practical order of work."
+        },
+        {
+          "title": "Implement and check",
+          "description": "Deliver agreed improvements and validate relevant journeys with the information available."
+        }
+      ]
+    }
   },
   "industriesContent": {
     "fashion": {
       "title": "Fashion & Apparel",
       "subtitle": "E-commerce That Captivates",
-      "description": "Build a stunning fashion store that converts visitors into loyal customers",
+      "description": "Product presentation, sizing clarity and mobile experiences designed around buying decisions.",
       "badge": "Fashion"
     },
     "food": {
       "title": "Food & Beverage",
       "subtitle": "From Kitchen to Customer",
-      "description": "Online ordering, digital menus, and smart reservation systems",
+      "description": "Clear menu information, online ordering and practical commerce journeys.",
       "badge": "Food"
     },
     "health": {
       "title": "Health & Wellness",
       "subtitle": "Help Customers Live Better",
-      "description": "Stores for supplements, fitness gear, and spa products",
+      "description": "Clear product information and responsible buying experiences for wellness brands.",
       "badge": "Health"
     },
     "tech": {
       "title": "Tech & SaaS",
-      "subtitle": "Landing Pages That Convert",
-      "description": "Websites for startups, tech companies, and SaaS products",
+      "subtitle": "Make complex products easier to understand",
+      "description": "Product sites and landing pages with a clear next step for each audience.",
       "badge": "Tech"
     },
     "arts": {
       "title": "Arts & Crafts",
       "subtitle": "Showcase Your Creations",
-      "description": "Stores for artists, creators, and craftspeople",
+      "description": "Creator sites and stores with clear paths from discovery to inquiry or purchase.",
       "badge": "Arts"
     },
     "local": {
       "title": "Local Businesses",
       "subtitle": "Bring Your Business Online",
-      "description": "Websites for small and medium businesses ready to grow",
+      "description": "Maintainable local-business websites with clear services and contact paths.",
       "badge": "Local"
     },
     "benefits": [
       {
-        "title": "Increase Sales",
-        "description": "Conversion-focused design and smooth checkout processes"
+        "title": "Clearer buying journeys",
+        "description": "Help customers find relevant information, judge product fit and move toward checkout."
       },
       {
-        "title": "Fast Performance",
-        "description": "Lightning-fast sites that improve Google rankings and customer satisfaction"
+        "title": "Useful performance improvements",
+        "description": "Identify resource and workflow bottlenecks, then prioritize practical fixes."
       },
       {
-        "title": "Trust & Security",
-        "description": "Secure payments and privacy compliance"
+        "title": "Trustworthy product information",
+        "description": "Surface policies, product information and purchase terms where buyers need them."
       },
       {
-        "title": "Target Audience",
-        "description": "Design and copy that speaks directly to your customers"
+        "title": "Built for your audience and team",
+        "description": "Shape pages and workflows around customer questions and real operational needs."
       }
     ],
     "services": [

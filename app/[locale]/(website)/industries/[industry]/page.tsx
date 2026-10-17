@@ -27,7 +27,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     en: {
       title: 'Fashion & Apparel E-commerce',
       description:
-        'Build a stunning fashion e-commerce store that converts. Shopify & WordPress solutions for fashion brands, clothing stores, and apparel businesses.',
+        'Product discovery, mobile merchandising and buying flows tailored to fashion and apparel stores. Shopify-first implementation where it fits.',
       keywords: [
         'fashion e-commerce',
         'clothing store website',
@@ -38,7 +38,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     },
     he: {
       title: 'חנויות אופנה',
-      description: 'בנו חנות אופנה אונליין מרהיבה שממירה. פתרונות שופיפיי ווורדפרס למותגי אופנה.',
+      description: 'מייעלים מציאת מוצרים, הצגת מידות ותהליך רכישה למותגי אופנה, עם פתרונות Shopify בהתאם לצורך.',
       keywords: ['חנות אופנה אונליין', 'אתר ביגוד', 'מותג אופנה'],
     },
   },
@@ -46,7 +46,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     en: {
       title: 'Food & Beverage Websites',
       description:
-        'Online ordering, digital menus, and reservation systems for restaurants, cafes, and food businesses. Custom solutions that drive orders.',
+        'Clearer digital ordering journeys, product and menu information, and integrations for food brands and hospitality teams.',
       keywords: [
         'restaurant website',
         'food ordering system',
@@ -57,7 +57,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     },
     he: {
       title: 'אתרים למזון ומשקאות',
-      description: 'הזמנות אונליין, תפריטים דיגיטליים ומערכות הזמנות למסעדות ועסקי מזון.',
+      description: 'שיפור תהליך הזמנה מקוון, הצגת תפריטים ומוצרים ואינטגרציות מתאימות לעסקי מזון ואירוח.',
       keywords: ['אתר מסעדה', 'הזמנות אונליין', 'תפריט דיגיטלי'],
     },
   },
@@ -65,7 +65,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     en: {
       title: 'Health & Wellness E-commerce',
       description:
-        'E-commerce solutions for supplements, fitness equipment, and wellness brands. Build trust and drive conversions.',
+        'Useful product information, trust cues and clearer buying experiences for wellness and health-related commerce, with attention to sensitive claims.',
       keywords: [
         'health e-commerce',
         'supplements store',
@@ -76,7 +76,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     },
     he: {
       title: 'חנויות בריאות ואיכות חיים',
-      description: 'פתרונות מסחר אלקטרוני לתוספי תזונה, כושר ומותגי בריאות.',
+      description: 'חוויית קנייה ברורה ומידע מוצר מדויק למותגי בריאות ואיכות חיים, תוך זהירות בטענות רגישות.',
       keywords: ['חנות תוספי תזונה', 'אתר בריאות', 'חנות כושר'],
     },
   },
@@ -84,7 +84,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     en: {
       title: 'Tech & SaaS Websites',
       description:
-        'High-converting landing pages and websites for tech startups and SaaS products. Modern design that showcases innovation.',
+        'Product-focused websites and landing pages that clarify complex software offerings and guide users to relevant next steps.',
       keywords: [
         'SaaS website',
         'tech startup website',
@@ -95,7 +95,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     },
     he: {
       title: 'אתרים לטכנולוגיה ו-SaaS',
-      description: 'דפי נחיתה ואתרים ממירים לסטארטאפים ומוצרי SaaS.',
+      description: 'אתרי מוצר ודפי נחיתה שמסבירים פתרונות טכנולוגיים מורכבים ומקלים על יצירת קשר.',
       keywords: ['אתר סטארטאפ', 'דף נחיתה', 'אתר טכנולוגיה'],
     },
   },
@@ -103,7 +103,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     en: {
       title: 'Arts & Crafts E-commerce',
       description:
-        'Beautiful online stores for artists, creators, and craftspeople. Showcase your work and sell directly to fans.',
+        'Portfolios, creator-led storefronts and clear paths from discovering work to making an inquiry or purchase.',
       keywords: [
         'artist website',
         'crafts e-commerce',
@@ -114,7 +114,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     },
     he: {
       title: 'חנויות לאמנות ויצירה',
-      description: 'חנויות אונליין יפהפיות לאמנים, יוצרים ובעלי מלאכה.',
+      description: 'תיקי עבודות וחנויות ליוצרים עם דרך ברורה מהיכרות עם העבודה לפנייה או רכישה.',
       keywords: ['אתר אמנים', 'חנות יצירות', 'מכירת אמנות אונליין'],
     },
   },
@@ -122,7 +122,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     en: {
       title: 'Local Business Websites',
       description:
-        'Professional websites for small and medium businesses ready to grow online. Local SEO optimized.',
+        'Maintainable websites for local businesses, with clear service information, accessible contact paths and practical local-search foundations.',
       keywords: [
         'local business website',
         'small business website',
@@ -133,7 +133,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
     },
     he: {
       title: 'אתרים לעסקים מקומיים',
-      description: 'אתרים מקצועיים לעסקים קטנים ובינוניים שמוכנים לצמוח אונליין.',
+      description: 'אתרים נוחים לתחזוקה לעסקים מקומיים עם שירותים ברורים, יצירת קשר נגישה ותשתית SEO מקומי.',
       keywords: ['אתר לעסק קטן', 'אתר עסקי', 'עסק מקומי'],
     },
   },
@@ -168,14 +168,14 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
 
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: '/' },
-      { name: 'Industries', url: '/' },
+      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'תעשיות' : 'Industries', url: '/' },
       { name: meta.title, url: `/industries/${industry}` },
     ],
     locale as 'en' | 'he'
   );
 
-  const serviceSchema = generateServiceSchema(`${meta.title} Development`, meta.description, {
+  const serviceSchema = generateServiceSchema(meta.title, meta.description, {
     url: `/industries/${industry}`,
     locale: locale as 'en' | 'he',
   });

@@ -51,3 +51,28 @@ describe('public website content integrity', () => {
     });
   }
 });
+
+describe('industry proof and commercial offer boundaries', () => {
+  for (const { name, site, review } of locales) {
+    it(`${name}: industry proof describes process rather than fabricated metrics`, () => {
+      expect(site.industries.proof.steps).toHaveLength(3);
+      expect(JSON.stringify(site.industries.proof)).not.toMatch(/(?:150\+|98%|2\.5x|24\/7)/);
+    });
+
+    it(`${name}: free and paid reviews have distinct promises`, () => {
+      expect(review.scopeComparison.free.description.length).toBeGreaterThan(55);
+      expect(review.scopeComparison.storeAudit.description.length).toBeGreaterThan(55);
+      expect(review.scopeComparison.seoAudit.description.length).toBeGreaterThan(55);
+      expect(site.pricing.faq.items.some(item =>
+        /(?:free|בחינם)/i.test(item.question) && /(?:audit|אודיט)/i.test(item.question)
+      )).toBe(true);
+    });
+
+    it(`${name}: customer quotes stay available as provided`, () => {
+      expect(site.testimonials.items.length).toBeGreaterThanOrEqual(3);
+      expect(site.testimonials.items.every(item =>
+        item.quote.length > 50 && item.author && item.company
+      )).toBe(true);
+    });
+  }
+});
