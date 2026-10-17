@@ -69,18 +69,18 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
   const helpCta = isHe
     ? {
         badge: 'צריכים עזרה ביישום?',
-        title: 'רוצים שנבצע את העבודה בפועל על החנות?',
+        title: 'רוצים לתרגם את המדריך לשיפור ממשי בחנות?',
         description:
-          'אם אתם מעדיפים לקצר את הדרך, נוכל להפוך את ההמלצות לאודיט מסודר, תיקונים טכניים, שיפורי מהירות ועבודה שמביאה יותר לידים ומכירות.',
-        primary: 'דברו איתנו על Shopify SEO',
-        secondary: 'הריצו אודיט חינם לחנות',
+          'אפשר להתחיל בסקירה ממוקדת של החנות, להבין מה חשוב לתקן ולבחור יחד את השיפורים המתאימים. בלי הבטחה לתוצאות לפני שנבדקו נתונים.',
+        primary: 'לשירותי Shopify ו־SEO',
+        secondary: 'בקשו סקירה מקצועית בחינם',
       }
     : {
         badge: 'Need help implementing this?',
-        title: 'Want us to turn this into actual Shopify growth work?',
+        title: 'Want to apply the ideas to your own store?',
         description:
-          'We can translate the recommendations into a practical SEO audit, technical fixes, speed work, and conversion improvements built around your store.',
-        primary: 'Talk to us about Shopify SEO',
+          'Start with a focused expert review, identify the opportunities relevant to your store, and agree on practical next steps.',
+        primary: 'Explore Shopify & SEO services',
         secondary: 'Request your free expert review',
       };
 
@@ -108,6 +108,20 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
             { href: '/solutions/shopify', label: 'Shopify SEO and development services' },
             { href: '/free-store-review', label: 'Request a free expert review' },
             { href: '/blog/shopify-seo-audit-checklist', label: 'Use the Shopify SEO checklist' },
+          ];
+    }
+
+    if (slug === 'shopify-inventory-sync-problems') {
+      return isHe
+        ? [
+            { href: '/free-store-review?focus=checkout', label: 'סקירה מקצועית של תהליכי החנות' },
+            { href: '/services/shopify-b2b-integrations', label: 'פתרונות Shopify לאינטגרציות ומלאי' },
+            { href: '/contact', label: 'דברו איתנו על בעיית הסנכרון' },
+          ]
+        : [
+            { href: '/free-store-review?focus=checkout', label: 'Request an expert store review' },
+            { href: '/services/shopify-b2b-integrations', label: 'Shopify inventory and integration solutions' },
+            { href: '/contact', label: 'Discuss your inventory sync issue' },
           ];
     }
 
