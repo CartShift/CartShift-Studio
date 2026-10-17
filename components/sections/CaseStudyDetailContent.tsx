@@ -202,6 +202,9 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
               <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-surface-500 dark:text-white/60">
                 {caseStudy.client}
               </p>
+              {caseStudy.projectStage && (
+                <p className="mb-4 inline-flex rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-2 text-sm font-semibold text-primary-800 dark:text-primary-200">{caseStudy.projectStage}</p>
+              )}
               <h1 className="max-w-4xl text-4xl font-bold leading-[0.92] tracking-[-0.04em] text-surface-950 sm:text-5xl lg:text-7xl dark:text-white">
                 {caseStudy.title}
               </h1>

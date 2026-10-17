@@ -28,6 +28,7 @@ describe('public website content integrity', () => {
           site.contact.form.successText,
         ].join(' ');
         expect(contact).not.toMatch(/(?:24 hours|24 שעות)/i);
+        expect(site.heroForm.subtitle + ' ' + site.heroForm.successText).not.toMatch(/(?:24 hours|24 שעות|תוך 24)/i);
       });
 
       it('explains that WooCommerce may fit without contradicting Shopify specialization', () => {

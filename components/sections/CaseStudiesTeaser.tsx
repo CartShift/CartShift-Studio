@@ -55,6 +55,7 @@ export async function CaseStudiesTeaser({ caseStudies, locale }: CaseStudiesTeas
                 <p className="mb-3 text-xs font-semibold text-surface-500 dark:text-surface-400">
                   {study.platform} · {study.industry}
                 </p>
+                {study.projectStage && <p className="mb-2 text-xs font-semibold text-primary-700 dark:text-primary-300">{study.projectStage}</p>}
                 <h3 className="text-xl font-bold leading-snug">{study.title}</h3>
                 <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
                   {study.summary}

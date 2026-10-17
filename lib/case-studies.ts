@@ -71,6 +71,7 @@ export interface CaseStudyMeta {
   portfolioOrder?: number;
   siteUrl?: string;
   attribution?: string;
+  projectStage?: string;
   cta?: CaseStudyCTA;
   brand: CaseStudyBrand;
   hero: CaseStudyHero;
@@ -97,6 +98,7 @@ interface HebrewTranslation {
   industry?: string;
   duration?: string;
   attribution?: string;
+  projectStage?: string;
   cta?: CaseStudyCTA;
   hero?: Partial<CaseStudyHero>;
   overview?: Partial<CaseStudyOverview>;
@@ -225,6 +227,7 @@ export function normalizeCaseStudyRecord(
   const results = (isHebrew && heTranslations.results) || data.results || [];
   const testimonial = (isHebrew && heTranslations.testimonial) || data.testimonial;
   const attribution = (isHebrew && heTranslations.attribution) || data.attribution || '';
+  const projectStage = (isHebrew && heTranslations.projectStage) || data.projectStage || '';
   const cta = (isHebrew && heTranslations.cta) || data.cta;
   const hero = mergeLocalizedObject<CaseStudyHero>(
     data.hero as CaseStudyHero | undefined,
@@ -268,6 +271,7 @@ export function normalizeCaseStudyRecord(
       typeof data.portfolioOrder === 'number' ? data.portfolioOrder : undefined,
     siteUrl: data.siteUrl || '',
     attribution,
+    projectStage,
     cta,
     brand,
     hero: resolvedHero,

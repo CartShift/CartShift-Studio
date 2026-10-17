@@ -135,7 +135,7 @@ export const PortalTeaser: React.FC = () => {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <div className="px-6 py-1.5 rounded-full bg-surface-200/50 dark:bg-surface-700/50 text-xs font-medium text-surface-500 dark:text-surface-400">
-                    portal.cartshift.studio
+                    portal.cart-shift.com
                   </div>
                 </div>
               </div>
@@ -147,17 +147,17 @@ export const PortalTeaser: React.FC = () => {
                   {[
                     {
                       label: t('portalTeaser.preview.active'),
-                      value: '3',
+                      value: '—',
                       color: 'text-primary-600 dark:text-primary-400',
                     },
                     {
                       label: t('portalTeaser.preview.pending'),
-                      value: '1',
+                      value: '—',
                       color: 'text-yellow-600 dark:text-yellow-400',
                     },
                     {
                       label: t('portalTeaser.preview.completed'),
-                      value: '12',
+                      value: '—',
                       color: 'text-green-600 dark:text-green-400',
                     },
                   ].map((stat, i) => (
@@ -227,8 +227,8 @@ export const PortalTeaser: React.FC = () => {
               className="absolute -top-6 -end-6 p-4 rounded-2xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 shadow-premium backdrop-blur-xl"
             >
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-green-500 dark:bg-green-400 animate-pulse ring-4 ring-green-500/20" />
-                <span className="text-sm font-bold text-green-700 dark:text-green-400 uppercase tracking-widest">
+                <div className="h-3 w-3 rounded-full bg-surface-400 dark:bg-surface-500" />
+                <span className="text-sm font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest">
                   {t('portalTeaser.preview.liveUpdates')}
                 </span>
               </div>

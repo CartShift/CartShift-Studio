@@ -2,6 +2,7 @@
 title: 'Stiletto Piercing Supply Storefront'
 slug: 'stiletto-piercing-disposable-jewelry-supply'
 client: 'Stiletto Piercing'
+projectStage: 'New Shopify theme in review — not yet launched'
 industry: 'Professional Beauty & Piercing'
 platform: 'Shopify'
 duration: ''
@@ -98,6 +99,7 @@ services:
   - 'Brand-Led Merchandising'
 
 he:
+  projectStage: 'תבנית Shopify חדשה בבדיקת לקוח — לפני השקה'
   cta:
     title: 'מוכרים קטלוג B2B טכני ב-Shopify?'
     description: 'אפשר להפוך מוצרים מורכבים, תקנים ומדיניות רכישה לברורים יותר עבור קונים מקצועיים.'

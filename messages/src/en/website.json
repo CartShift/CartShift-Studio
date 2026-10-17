@@ -65,9 +65,9 @@
   },
   "heroForm": {
     "title": "Get a Free Consultation",
-    "subtitle": "Share a few details about your project and we'll get back to you within 24 hours.",
+    "subtitle": "Tell us about your project and we'll follow up personally, subject to availability.",
     "successTitle": "Thanks!",
-    "successText": "We'll be in touch within 24 hours.",
+    "successText": "We received your request and will follow up based on our availability.",
     "fields": {
       "name": "Name",
       "namePlaceholder": "Your name",
@@ -575,7 +575,7 @@
       "request1": "Homepage redesign",
       "request2": "Add product filters",
       "request3": "Speed optimization",
-      "liveUpdates": "Live updates"
+      "liveUpdates": "Illustrative interface preview"
     }
   },
   "storeAnalyzerTeaser": {
