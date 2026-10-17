@@ -23,7 +23,6 @@ export const ShopifyTemplate: React.FC = () => {
         title={t('shopify.hero.title')}
         subtitle={t('shopify.hero.subtitle')}
         description={t('shopify.hero.description')}
-        seoH1="Shopify SEO and Development Services | Audits, Speed, Migration, and Growth"
       />
       <div className="bg-surface-50 dark:bg-black border-b border-surface-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
