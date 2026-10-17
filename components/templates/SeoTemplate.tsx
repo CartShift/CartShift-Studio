@@ -32,7 +32,6 @@ export const SeoTemplate: React.FC = () => {
         title={t('seo.hero.title')}
         subtitle={t('seo.hero.subtitle')}
         description={t('seo.hero.description')}
-        seoH1={t('seo.hero.seoH1')}
         highlightLastWord={false}
       >
         <div className="relative mx-auto max-w-4xl text-start">
