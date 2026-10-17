@@ -234,7 +234,7 @@
         },
         {
           "title": "Design & Development",
-          "description": "Our team builds your store with a focus on conversion optimization and performance. We create custom themes or customize existing ones to match your brand, implement all necessary features, integrate payment gateways and shipping solutions, and ensure mobile responsiveness. Throughout development, you'll see regular demos and have opportunities to provide feedback."
+          "description": "We build your store with a focus on conversion optimization and performance. We create custom themes or customize existing ones to match your brand, implement all necessary features, integrate payment gateways and shipping solutions, and ensure mobile responsiveness. Throughout development, you'll see regular demos and have opportunities to provide feedback."
         },
         {
           "title": "Testing & Optimization",
@@ -262,7 +262,7 @@
         },
         {
           "question": "How long does it take to set up a Shopify store?",
-          "answer": "The timeline depends on the complexity of your requirements. A basic store setup typically takes 1-2 weeks, while a fully customized store with advanced features can take 4-8 weeks. We'll provide a detailed timeline during our initial consultation based on your specific needs."
+          "answer": "Timelines depend on the current store, technical scope, access, and review process. After discovery we provide a realistic estimate and milestones."
         },
         {
           "question": "Can you migrate my existing store to Shopify?",
@@ -270,11 +270,11 @@
         },
         {
           "question": "Do you provide ongoing support after the store is launched?",
-          "answer": "Absolutely. We offer ongoing support and maintenance packages to ensure your store continues to perform optimally. This includes regular updates, security monitoring, performance optimization, bug fixes, and feature additions as your business grows."
+          "answer": "We offer scoped ongoing maintenance and improvements, including fixes, features, performance, and integrations. Response times and coverage are agreed separately."
         },
         {
           "question": "How much does Shopify development cost?",
-          "answer": "Pricing varies based on project scope and requirements. We provide custom quotes tailored to your specific needs rather than fixed packages. During our free consultation, we'll discuss your goals and provide a transparent pricing proposal that delivers maximum ROI for your investment."
+          "answer": "Pricing depends on scope, existing code, integrations, and required testing. After discovery we provide a clear proposal separating essential work from optional improvements."
         },
         {
           "question": "Can you customize Shopify themes?",
@@ -286,11 +286,11 @@
         },
         {
           "question": "What payment gateways can you integrate?",
-          "answer": "We can integrate all major payment gateways supported by Shopify, including Shopify Payments, PayPal, Stripe, Authorize.net, and many others. We'll help you choose the best payment solution for your business and handle the complete integration."
+          "answer": "We'll evaluate the payment providers supported by Shopify for your store and country, then help configure and test the suitable options within platform limits."
         },
         {
           "question": "Can you build custom Shopify apps?",
-          "answer": "Yes, we develop custom Shopify apps to add unique functionality to your store. Whether you need custom checkout features, inventory management tools, or integrations with third-party services, we can build tailored solutions that meet your specific business needs."
+          "answer": "Where themes or existing apps are insufficient, we can scope custom apps and integrations within Shopify's APIs and your plan's capabilities."
         },
         {
           "question": "How do I get started with your Shopify development services?",
@@ -368,7 +368,7 @@
         },
         {
           "title": "Design & Development",
-          "description": "Our team creates custom WordPress themes tailored to your brand, or customizes existing themes to match your vision. We develop custom post types, taxonomies, and content management workflows that make it easy for your team to publish and manage content. We implement all necessary features, ensure responsive design, and optimize for performance and SEO from the ground up."
+          "description": "We create custom WordPress themes tailored to your brand, or customizes existing themes to match your vision. We develop custom post types, taxonomies, and content management workflows that make it easy for your team to publish and manage content. We implement all necessary features, ensure responsive design, and optimize for performance and SEO from the ground up."
         },
         {
           "title": "Content Migration & Setup",
@@ -407,11 +407,11 @@
         },
         {
           "question": "How long does it take to develop a WordPress site?",
-          "answer": "The timeline varies based on project complexity. A basic content site typically takes 2-3 weeks, while a fully customized site with advanced features can take 6-10 weeks. We'll provide a detailed timeline during our consultation."
+          "answer": "Timing depends on content volume, templates, integrations, and approvals. We'll outline a realistic schedule after discovery."
         },
         {
           "question": "Can you migrate my existing WordPress site?",
-          "answer": "Yes, we handle WordPress migrations from various hosting providers and can help optimize your site during the migration process. We ensure all content, media, and settings are safely transferred to your new hosting environment."
+          "answer": "Yes. We can plan WordPress hosting moves or site migrations, check backups, content, media, and URLs, and validate the transfer before handover."
         },
         {
           "question": "Do you provide WordPress hosting and maintenance?",
@@ -419,7 +419,7 @@
         },
         {
           "question": "How much does WordPress development cost?",
-          "answer": "Pricing depends on your project requirements. We provide custom quotes based on your specific needs rather than fixed packages. During our free consultation, we'll discuss your goals and provide transparent pricing that delivers maximum value."
+          "answer": "Pricing depends on page count, content complexity, design, and integrations. We'll review the requirements and propose a defined scope before work starts."
         },
         {
           "question": "Can you customize WordPress themes?",
@@ -431,7 +431,7 @@
         },
         {
           "question": "What types of sites are best for WordPress?",
-          "answer": "WordPress is ideal for content-driven sites including news platforms, blogs, corporate websites, portfolios, membership sites, and custom content management systems. For e-commerce stores, we recommend Shopify for better performance and e-commerce features."
+          "answer": "WordPress suits publishing, news sites, business websites, portfolios, and custom content workflows. For commerce, WooCommerce or Shopify may be suitable depending on the requirements."
         },
         {
           "question": "How do I get started with your WordPress development services?",
@@ -583,8 +583,8 @@
     },
     "storeAnalyzerCta": {
       "badge": "Free Expert Review",
-      "title": "Wondering What to Improve First?",
-      "titleSpan": "",
+      "title": "Wondering What Your Store",
+      "titleSpan": "Should Improve First?",
       "description": "A CartShift specialist reviews your request and publicly accessible store journeys before following up with prioritized findings. This is not an instant automated report.",
       "button": "Request a Free Expert Review",
       "stats": {
