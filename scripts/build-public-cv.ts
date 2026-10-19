@@ -32,6 +32,26 @@ async function main() {
         await document.fonts.ready;
       });
 
+      // Preserve the original two-column geometry. If a longer translation or
+      // expanded skill list exceeds the sidebar, fit only its content rather
+      // than clipping it or shrinking the entire page.
+      await page.evaluate(() => {
+        const sidebar = document.querySelector<HTMLElement>('.side');
+        if (!sidebar || sidebar.scrollHeight <= sidebar.clientHeight + 2) return;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'cv-side-content';
+        while (sidebar.firstChild) wrap.appendChild(sidebar.firstChild);
+        sidebar.appendChild(wrap);
+
+        for (let percent = 100; percent >= 82; percent--) {
+          const factor = percent / 100;
+          wrap.style.zoom = String(factor);
+          wrap.style.width = `${100 / factor}%`;
+          if (sidebar.scrollHeight <= sidebar.clientHeight + 2) break;
+        }
+      });
+
       const clipping = await page.evaluate(() => {
         const tolerance = 2;
         return ['.page', '.hero', '.main', '.side'].flatMap(selector => {
