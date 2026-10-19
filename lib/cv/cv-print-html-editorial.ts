@@ -107,7 +107,7 @@ const editorialStyles = `
   background:#d2cec8;
 }
 .main > .section-title:first-child::before,
-.side > .section-title:first-child::before {
+.side .section-title:first-child::before {
   content:"";
   display:block;
   width:.8mm;
