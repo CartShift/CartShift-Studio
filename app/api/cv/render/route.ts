@@ -1,6 +1,7 @@
 import { inflateRawSync } from 'node:zlib';
 import { launchAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
 import { renderCvHtml } from '@/lib/cv/cv-print-html';
+import { renderEditorialCvHtml } from '@/lib/cv/cv-print-html-editorial';
 import { resolveCvPdfAssets } from '@/lib/cv/cv-media';
 import {
   cvVariantIds,
@@ -80,7 +81,9 @@ function decodeCompressedPayload(encoded: string) {
   return JSON.parse(inflated.toString('utf8')) as unknown;
 }
 
-async function renderPdfBuffer(resolved: ResolvedCVVariant) {
+type CVPrintDesign = 'classic' | 'editorial';
+
+async function renderPdfBuffer(resolved: ResolvedCVVariant, design: CVPrintDesign = 'classic') {
   const browser = await launchAnalyzerBrowser(25_000).catch(error => {
     throw new CVRenderError(
       `Unable to launch CV PDF browser: ${error instanceof Error ? error.message : 'unknown error'}`
@@ -89,7 +92,10 @@ async function renderPdfBuffer(resolved: ResolvedCVVariant) {
 
   try {
     const resolvedAssets = await resolveCvPdfAssets();
-    const html = renderCvHtml(resolved.cv, resolvedAssets);
+    const html =
+      design === 'editorial'
+        ? renderEditorialCvHtml(resolved.cv, resolvedAssets)
+        : renderCvHtml(resolved.cv, resolvedAssets);
     const page = await browser.newPage();
 
     try {
@@ -98,6 +104,20 @@ async function renderPdfBuffer(resolved: ResolvedCVVariant) {
       await page.evaluate(async () => {
         if ('fonts' in document) await document.fonts.ready;
       });
+
+      // Only the experimental layout is checked for clipped content. The
+      // approved production design keeps its current behavior unchanged.
+      if (design === 'editorial') {
+        const clipped = await page.evaluate(() =>
+          ['.hero', '.main', '.side'].filter(selector => {
+            const element = document.querySelector<HTMLElement>(selector);
+            return element && element.scrollHeight - element.clientHeight > 3;
+          })
+        );
+        if (clipped.length) {
+          throw new CVRenderError(`Editorial CV overflows: ${clipped.join(', ')}`);
+        }
+      }
 
       const pdf = await page.pdf({
         format: 'A4',
@@ -127,11 +147,15 @@ function sanitizeFilename(filename: string) {
 
 async function pdfResponse(
   resolved: ResolvedCVVariant,
-  options: { inline?: boolean; cache?: boolean } = {}
+  options: { inline?: boolean; cache?: boolean; design?: CVPrintDesign } = {}
 ) {
-  const buffer = await renderPdfBuffer(resolved);
+  const buffer = await renderPdfBuffer(resolved, options.design);
   const disposition = options.inline ? 'inline' : 'attachment';
-  const filename = sanitizeFilename(resolved.filename);
+  const filename = sanitizeFilename(
+    options.design === 'editorial'
+      ? resolved.filename.replace(/\.pdf$/i, ' - Editorial.pdf')
+      : resolved.filename
+  );
 
   return new Response(new Uint8Array(buffer), {
     status: 200,
@@ -164,11 +188,16 @@ export async function GET(request: Request) {
   const payload = url.searchParams.get('payload');
   const variant = url.searchParams.get('variant');
   const inline = url.searchParams.get('inline') === '1';
+  const requestedDesign = url.searchParams.get('design');
+  if (requestedDesign && requestedDesign !== 'editorial') {
+    return jsonResponse({ error: 'Unknown CV design. Supported: editorial.' }, 400);
+  }
+  const design: CVPrintDesign = requestedDesign === 'editorial' ? 'editorial' : 'classic';
 
   try {
     if (payload) {
       const tailoredInput = parseCVTailoringInput(decodeCompressedPayload(payload));
-      return pdfResponse(resolveTailoredCV(tailoredInput), { inline, cache: false });
+      return pdfResponse(resolveTailoredCV(tailoredInput), { inline, cache: false, design });
     }
 
     if (variant) {
@@ -179,7 +208,7 @@ export async function GET(request: Request) {
         );
       }
 
-      return pdfResponse(resolveCVVariant(variant as CVVariantId), { inline, cache: true });
+      return pdfResponse(resolveCVVariant(variant as CVVariantId), { inline, cache: true, design });
     }
 
     return jsonResponse({
@@ -189,6 +218,7 @@ export async function GET(request: Request) {
       usage: {
         namedVariant: '/api/cv/render?variant=fullstack-healthcare',
         inlineNamedVariant: '/api/cv/render?variant=product-frontend&inline=1',
+        editorialPreview: '/api/cv/render?variant=default&design=editorial&inline=1',
         tailoredGet:
           'Deflate-raw a JSON tailoring payload, base64url encode it, then pass it as ?payload=<value>.',
         tailoredPost: 'POST the same tailoring payload as application/json.',
@@ -215,8 +245,13 @@ export async function POST(request: Request) {
       return jsonResponse({ error: 'CV tailoring payload is too large' }, 413);
     }
 
+    const requestedDesign = new URL(request.url).searchParams.get('design');
+    if (requestedDesign && requestedDesign !== 'editorial') {
+      return jsonResponse({ error: 'Unknown CV design. Supported: editorial.' }, 400);
+    }
+    const design: CVPrintDesign = requestedDesign === 'editorial' ? 'editorial' : 'classic';
     const input = parseCVTailoringInput(JSON.parse(text) as unknown);
-    return pdfResponse(resolveTailoredCV(input), { cache: false });
+    return pdfResponse(resolveTailoredCV(input), { cache: false, design });
   } catch (error) {
     return errorResponse(error);
   }
