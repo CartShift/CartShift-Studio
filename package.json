@@ -6,7 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent && node scripts/validate-translations.js",
+    "prebuild": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent && node scripts/validate-translations.js && pnpm exec tsx scripts/build-public-cv.ts",
     "predev": "node scripts/validate-env.mjs --silent && node scripts/merge-translations.js --silent",
     "dev": "node dev-pro.mjs",
     "dev:web": "next dev",

@@ -7,6 +7,7 @@ import {
   type CVPrintDesign,
 } from '@/lib/cv/cv-print-html-editorial';
 import { resolveCvPdfAssets } from '@/lib/cv/cv-media';
+import { CV_STATIC_INLINE_PATH, CV_STATIC_DOWNLOAD_PATH } from '@/lib/cv/cv-static';
 import {
   cvVariantIds,
   listCVVariants,
@@ -18,7 +19,7 @@ import { parseCVTailoringInput, resolveTailoredCV } from '@/lib/cv/cv-tailoring'
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const MAX_ENCODED_PAYLOAD_CHARS = 16_000;
 const MAX_DECOMPRESSED_PAYLOAD_BYTES = 32_000;
@@ -192,16 +193,32 @@ function errorResponse(error: unknown) {
 }
 
 export async function GET(request: Request) {
-  if (isRateLimited(request)) {
-    return jsonResponse({ error: 'Too many CV render requests. Try again shortly.' }, 429);
-  }
-
   const url = new URL(request.url);
   const payload = url.searchParams.get('payload');
   const variant = url.searchParams.get('variant');
   const inline = url.searchParams.get('inline') === '1';
+
   try {
     const design = resolveCVPrintDesign(url.searchParams.get('design'));
+
+    // The publicly linked master CV is generated in the build pipeline.
+    // Never boot headless Chromium during an ordinary recruiter download.
+    if (!payload && variant === 'default' && design === 'editorial') {
+      const publicPath = inline ? CV_STATIC_INLINE_PATH : CV_STATIC_DOWNLOAD_PATH;
+      return new Response(null, {
+        status: 307,
+        headers: {
+          Location: new URL(publicPath, url.origin).toString(),
+          'Cache-Control': 'no-store',
+          'X-CV-Renderer': 'static-build',
+        },
+      });
+    }
+
+    if (isRateLimited(request)) {
+      return jsonResponse({ error: 'Too many CV render requests. Try again shortly.' }, 429);
+    }
+
     if (payload) {
       const tailoredInput = parseCVTailoringInput(decodeCompressedPayload(payload));
       return pdfResponse(resolveTailoredCV(tailoredInput), { inline, cache: false, design });
@@ -215,26 +232,26 @@ export async function GET(request: Request) {
         );
       }
 
-      // Do not serve a stale CV across deployments; keep the canonical download current.
       return pdfResponse(resolveCVVariant(variant as CVVariantId), { inline, cache: false, design });
     }
 
     return jsonResponse({
       endpoint: '/api/cv/render',
-      renderer: 'chromium-html',
+      renderer: 'static-master-with-chromium-dynamic-variants',
       variants: listCVVariants(),
       usage: {
         namedVariant: '/api/cv/render?variant=fullstack-healthcare',
-        inlineNamedVariant: '/api/cv/render?variant=product-frontend&inline=1',
+        inlineMaster: '/api/cv/render?variant=default&inline=1',
         classicFallback: '/api/cv/render?variant=default&design=classic&inline=1',
         tailoredGet:
           'Deflate-raw a JSON tailoring payload, base64url encode it, then pass it as ?payload=<value>.',
         tailoredPost: 'POST the same tailoring payload as application/json.',
       },
       safeguards: [
+        'Master CV is pre-rendered and validated at build time.',
         'Company, role title, employment dates, duration, and location cannot be overridden.',
         'Payload sizes and text lengths are bounded.',
-        'Render requests are rate-limited on a best-effort per-instance basis.',
+        'Dynamic render requests are rate-limited on a best-effort per-instance basis.',
       ],
     });
   } catch (error) {

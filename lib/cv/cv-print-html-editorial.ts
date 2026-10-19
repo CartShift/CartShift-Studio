@@ -10,7 +10,6 @@ export function resolveCVPrintDesign(requested: string | null): CVPrintDesign {
   throw new Error('Unknown CV design. Supported designs: editorial, classic.');
 }
 
-
 /**
  * Editorial print treatment. Classic print HTML remains available for rollback.
  * Uses the original CV data and keeps its single-page A4 layout.
@@ -108,7 +107,7 @@ const editorialStyles = `
   background:#d2cec8;
 }
 .main > .section-title:first-child::before,
-.side > .section-title:first-child::before {
+.side .section-title:first-child::before {
   content:"";
   display:block;
   width:.8mm;
@@ -199,9 +198,9 @@ const editorialStyles = `
   line-height:1.27;
 }
 
-.side .section-title { margin-bottom:3.75mm; }
+.side .section-title { margin-bottom:2.5mm; }
 .side .section-title h2 { font-size:8.15pt; }
-.product { margin-bottom:4.15mm; }
+.product { margin-bottom:2.35mm; }
 .product-icon {
   border-radius:1.15mm;
   box-shadow:none;
@@ -230,9 +229,9 @@ const editorialStyles = `
 .side-rule {
   height:.2mm;
   background:#dfdcd7;
-  margin:4.1mm 0 4mm;
+  margin:2.35mm 0 2.35mm;
 }
-.skill { margin-bottom:3mm; }
+.skill { margin-bottom:1.8mm; }
 .skill-name {
   color:#343039;
   font-size:6.5pt;
@@ -245,7 +244,7 @@ const editorialStyles = `
   font-size:6.18pt;
   line-height:1.34;
 }
-.edu { margin-bottom:3mm; }
+.edu { margin-bottom:2.15mm; }
 .edu-name {
   color:#353139;
   font-size:7.1pt;
@@ -259,7 +258,7 @@ const editorialStyles = `
 }
 .language {
   font-size:6.9pt;
-  line-height:1.82;
+  line-height:1.66;
 }
 .language .l { color:#353139; font-weight:700; }
 .language .v { color:#716c75; }
