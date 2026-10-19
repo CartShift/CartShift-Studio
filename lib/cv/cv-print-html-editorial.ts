@@ -1,8 +1,18 @@
 import type { CVData } from './cv-data';
 import { renderCvHtml } from './cv-print-html';
 
+export type CVPrintDesign = 'classic' | 'editorial';
+
+/** Editorial is the production default; classic remains an explicit rollback. */
+export function resolveCVPrintDesign(requested: string | null): CVPrintDesign {
+  if (!requested || requested === 'editorial') return 'editorial';
+  if (requested === 'classic') return 'classic';
+  throw new Error('Unknown CV design. Supported designs: editorial, classic.');
+}
+
+
 /**
- * Opt-in editorial print treatment. The production print HTML is not modified.
+ * Editorial print treatment. Classic print HTML remains available for rollback.
  * Uses the original CV data and keeps its single-page A4 layout.
  */
 const editorialStyles = `
