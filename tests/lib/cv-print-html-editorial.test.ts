@@ -61,8 +61,13 @@ describe('CV editorial PDF design (production default)', () => {
     expect(editorial).toContain('font-size:29pt');
     expect(editorial).toContain('filter:grayscale(.86) saturate(.35)');
     expect(editorial).toContain('filter:grayscale(.88) saturate(.4)');
-    expect(editorial).toContain('CURRICULUM VITAE');
-    expect(editorial).toContain('background:#6257a8');
+    expect(editorial).not.toContain('CURRICULUM VITAE');
+    expect(editorial).not.toContain('.hero-grid::before');
+    expect(editorial).toContain('border-top:1.05mm solid #7060a5');
+    expect(editorial).toContain('color:#594a86');
+    expect(editorial).toContain('background:#7868ae');
+    expect(editorial).toContain('background:#f7f6fa');
+    expect(editorial).toContain('filter:grayscale(.65) saturate(.7)');
   });
 
   it('keeps the entire approved CV content and exact number of selected products', () => {
