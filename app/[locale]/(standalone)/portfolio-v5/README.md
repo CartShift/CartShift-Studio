@@ -26,3 +26,7 @@ The route is a standalone App Router page and deliberately has no navigation lin
 4. Visual browser QA required before declaring production-ready; no preview deployment was created automatically.
 
 This is an experiment, not an authorized reproduction of Sharlee artwork or branding.
+
+## Dedicated experiences
+
+Work, About, and Contact now have standalone pages in both locales. Navigation, copy, and CSS are shared. Pages remain noindex while experimental.

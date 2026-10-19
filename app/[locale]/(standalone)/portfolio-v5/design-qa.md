@@ -28,6 +28,10 @@
 - Imagery: procedural original CSS, significantly less dimensional than reference; toroidal mask work is an interim refinement.
 - Copy/content: deliberately adapted to Yotam Faraggi and actual projects, not copied from Sharlee.
 
+## New routing
+
+Work, About and Contact were added as independent routes with shared navigation. Their responsive rendering and interaction behavior still require in-browser verification.
+
 ## Required next QA iteration
 
 1. Capture source and implementation at 1440×900 and 390×844 on the same browser engine and density.

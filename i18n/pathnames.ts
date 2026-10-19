@@ -68,6 +68,9 @@ const standalonePathnames = [
   '/cv',
   '/yotam',
   '/portfolio-v5',
+  '/portfolio-v5/work',
+  '/portfolio-v5/about',
+  '/portfolio-v5/contact',
   '/proposal/[token]',
   '/proposal/[token]/payment/[paymentToken]',
 ] as const;
