@@ -173,19 +173,21 @@ export default function FluidField({ paused = false }: Props) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let gl: WebGL2RenderingContext | null = null;
-    try {
-      gl = canvas.getContext('webgl2', {
-        alpha: true,
-        antialias: false,
-        depth: false,
-        stencil: false,
-        premultipliedAlpha: false,
-        powerPreference: 'low-power',
-      });
-    } catch {
-      // The original CSS sculptures stay visible when WebGL is unavailable.
-    }
+    const gl = (() => {
+      try {
+        return canvas.getContext('webgl2', {
+          alpha: true,
+          antialias: false,
+          depth: false,
+          stencil: false,
+          premultipliedAlpha: false,
+          powerPreference: 'low-power',
+        });
+      } catch {
+        // Keep the decorative CSS fallback if graphics initialization is blocked.
+        return null;
+      }
+    })();
     if (!gl) return;
 
     const vs = compile(gl, vertex, gl.VERTEX_SHADER);
