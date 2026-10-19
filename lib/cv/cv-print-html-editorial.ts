@@ -5,7 +5,255 @@ import { renderCvHtml } from './cv-print-html';
  * Opt-in editorial print treatment. The production print HTML is not modified.
  * Uses the original CV data and keeps its single-page A4 layout.
  */
-const editorialStyles = "\n/*\n * Editorial A4 treatment: the original 51 mm header, 246 mm body and\n * 138.5/71.5 mm content split remain intact. No content is dropped.\n * Inspired by the portfolio's warm paper, charcoal ink and violet accent.\n */\n.hero {\n  height:51mm;\n  padding:6mm 9mm 4mm;\n  background:#eceae5;\n  color:#242226;\n  border-top:1.05mm solid #242226;\n  border-bottom:.22mm solid #d4d0c9;\n}\n.hero::before, .hero::after { display:none; }\n.hero-grid { display:block; }\n.hero-grid::before {\n  content:\"CURRICULUM VITAE\";\n  position:absolute;\n  top:.7mm;\n  right:0;\n  color:#837e83;\n  font-size:6.1pt;\n  font-weight:700;\n  letter-spacing:1.15pt;\n}\n.portrait { display:none; }\n.identity { padding-top:0; }\n.name {\n  margin:0;\n  color:#242226;\n  font-size:29pt;\n  line-height:1.05;\n  letter-spacing:-.85pt;\n  font-weight:700;\n}\n.role-title {\n  margin-top:1.55mm;\n  font-size:10.65pt;\n  line-height:1.14;\n  letter-spacing:-.1pt;\n  color:#514b56;\n  font-weight:600;\n}\n.summary {\n  max-width:189mm;\n  margin-top:1.75mm;\n  font-size:7.55pt;\n  line-height:1.32;\n  color:#555158;\n}\n.contact-row {\n  gap:2.9mm;\n  margin-top:1.35mm;\n  font-size:7.0pt;\n  line-height:1.13;\n  color:#444149;\n}\n.contact-row.secondary { margin-top:1.05mm; }\n.contact-item { min-height:3mm; }\n.contact-row a { color:#494553; }\n.contact-icon { color:#6257a8; width:2.85mm; height:2.85mm; }\n.divider { background:#d0ccc6; height:2.6mm; }\n.hero .contact-item strong { color:#6257a8 !important; }\n\n.body { height:246mm; }\n.main {\n  padding:5.9mm 5.8mm 4mm 8.3mm;\n  background:#fff;\n}\n.side {\n  padding:5.9mm 7mm 4mm 5.2mm;\n  background:#f6f5f2;\n  border-left:.22mm solid #e3dfd9;\n}\n.section-title {\n  gap:1.85mm;\n  margin-bottom:3.6mm;\n  color:#343139;\n}\n.section-icon { display:none; }\n.section-title h2 {\n  font-size:8.45pt;\n  letter-spacing:.73pt;\n  font-weight:700;\n}\n.section-title .line {\n  height:.2mm;\n  margin-left:1.5mm;\n  opacity:1;\n  background:#d2cec8;\n}\n.main > .section-title:first-child::before,\n.side > .section-title:first-child::before {\n  content:\"\";\n  display:block;\n  width:.8mm;\n  height:3.4mm;\n  flex:none;\n  background:#6257a8;\n}\n\n.job {\n  padding-bottom:3.5mm;\n  margin-bottom:3.4mm;\n  border-bottom:.2mm solid #e6e3de;\n}\n.job-logo {\n  border:.2mm solid #e6e3de;\n  border-radius:1.1mm;\n  box-shadow:none;\n}\n.job-logo img,\n.mini-logo img {\n  filter:grayscale(.86) saturate(.35);\n  opacity:.88;\n}\n.job-title {\n  color:#29262d;\n  font-size:9.45pt;\n  line-height:1.14;\n  font-weight:700;\n}\n.job-meta { color:#726d75; }\n.meta-date { font-size:6.05pt; }\n.meta-place { color:#726d75; font-size:5.9pt; }\n.meta-place::before { color:#8a8294; }\n.company-line {\n  color:#524c5a;\n  font-size:7.35pt;\n  font-weight:700;\n}\n.badge {\n  padding:.7mm 1.5mm .6mm;\n  border:.17mm solid #e0dce6;\n  border-radius:.75mm;\n  background:#efedf3;\n  color:#514958;\n  font-size:5.4pt;\n  font-weight:700;\n  letter-spacing:.14pt;\n}\n.job-intro {\n  margin:1.4mm 0 1.5mm;\n  color:#605c64;\n  font-size:7.03pt;\n  line-height:1.31;\n}\n.bullets { color:#4e4b52; }\n.bullets li {\n  margin-bottom:.95mm;\n  font-size:6.94pt;\n  line-height:1.31;\n}\n.bullets li::marker { color:#706780; }\n\n.earlier-title { margin-bottom:2.35mm; }\n.earlier-row {\n  min-height:14mm;\n  padding:1.2mm 0;\n}\n.mini-logo {\n  color:#514958;\n  border:.2mm solid #e0dcd7;\n  border-radius:1.1mm;\n}\n.er-title {\n  color:#302d33;\n  font-size:7.45pt;\n  line-height:1.16;\n  font-weight:700;\n}\n.er-date { color:#726d75; font-size:5.9pt; }\n.er-company {\n  color:#554f5b;\n  font-size:6.25pt;\n  font-weight:700;\n}\n.er-desc {\n  color:#625e65;\n  font-size:6.0pt;\n  line-height:1.27;\n}\n\n.side .section-title { margin-bottom:3.75mm; }\n.side .section-title h2 { font-size:8.15pt; }\n.product { margin-bottom:4.15mm; }\n.product-icon {\n  border-radius:1.15mm;\n  box-shadow:none;\n  filter:grayscale(.88) saturate(.4);\n  opacity:.88;\n}\n.p-title {\n  margin-top:.15mm;\n  color:#302d33;\n  font-size:7.75pt;\n  line-height:1.12;\n  font-weight:700;\n}\n.p-link {\n  margin-top:.55mm;\n  color:#5d548c;\n  font-size:5.8pt;\n  font-weight:700;\n}\n.p-desc {\n  margin-top:.65mm;\n  color:#625d65;\n  font-size:6.4pt;\n  line-height:1.32;\n}\n.side-rule {\n  height:.2mm;\n  background:#dfdcd7;\n  margin:4.1mm 0 4mm;\n}\n.skill { margin-bottom:3mm; }\n.skill-name {\n  color:#343039;\n  font-size:6.5pt;\n  letter-spacing:.27pt;\n  font-weight:700;\n}\n.skill-list {\n  margin-top:.65mm;\n  color:#656068;\n  font-size:6.18pt;\n  line-height:1.34;\n}\n.edu { margin-bottom:3mm; }\n.edu-name {\n  color:#353139;\n  font-size:7.1pt;\n  font-weight:700;\n}\n.edu-desc {\n  margin-top:.65mm;\n  color:#656068;\n  font-size:6.15pt;\n  line-height:1.3;\n}\n.language {\n  font-size:6.9pt;\n  line-height:1.82;\n}\n.language .l { color:#353139; font-weight:700; }\n.language .v { color:#716c75; }\n";
+const editorialStyles = `
+/*
+ * Editorial A4 treatment: the original 51 mm header, 246 mm body and
+ * 138.5/71.5 mm content split remain intact. No content is dropped.
+ * Inspired by the portfolio's warm paper, charcoal ink and violet accent.
+ */
+.hero {
+  height:51mm;
+  padding:6mm 9mm 4mm;
+  background:#eceae5;
+  color:#242226;
+  border-top:1.05mm solid #242226;
+  border-bottom:.22mm solid #d4d0c9;
+}
+.hero::before, .hero::after { display:none; }
+.hero-grid { display:block; }
+.hero-grid::before {
+  content:"CURRICULUM VITAE";
+  position:absolute;
+  top:.7mm;
+  right:0;
+  color:#837e83;
+  font-size:6.1pt;
+  font-weight:700;
+  letter-spacing:1.15pt;
+}
+.portrait { display:none; }
+.identity { padding-top:0; }
+.name {
+  margin:0;
+  color:#242226;
+  font-size:29pt;
+  line-height:1.05;
+  letter-spacing:-.85pt;
+  font-weight:700;
+}
+.role-title {
+  margin-top:1.55mm;
+  font-size:10.65pt;
+  line-height:1.14;
+  letter-spacing:-.1pt;
+  color:#514b56;
+  font-weight:600;
+}
+.summary {
+  max-width:189mm;
+  margin-top:1.75mm;
+  font-size:7.55pt;
+  line-height:1.32;
+  color:#555158;
+}
+.contact-row {
+  gap:2.9mm;
+  margin-top:1.35mm;
+  font-size:7.0pt;
+  line-height:1.13;
+  color:#444149;
+}
+.contact-row.secondary { margin-top:1.05mm; }
+.contact-item { min-height:3mm; }
+.contact-row a { color:#494553; }
+.contact-icon { color:#6257a8; width:2.85mm; height:2.85mm; }
+.divider { background:#d0ccc6; height:2.6mm; }
+.hero .contact-item strong { color:#6257a8 !important; }
+
+.body { height:246mm; }
+.main {
+  padding:5.9mm 5.8mm 4mm 8.3mm;
+  background:#fff;
+}
+.side {
+  padding:5.9mm 7mm 4mm 5.2mm;
+  background:#f6f5f2;
+  border-left:.22mm solid #e3dfd9;
+}
+.section-title {
+  gap:1.85mm;
+  margin-bottom:3.6mm;
+  color:#343139;
+}
+.section-icon { display:none; }
+.section-title h2 {
+  font-size:8.45pt;
+  letter-spacing:.73pt;
+  font-weight:700;
+}
+.section-title .line {
+  height:.2mm;
+  margin-left:1.5mm;
+  opacity:1;
+  background:#d2cec8;
+}
+.main > .section-title:first-child::before,
+.side > .section-title:first-child::before {
+  content:"";
+  display:block;
+  width:.8mm;
+  height:3.4mm;
+  flex:none;
+  background:#6257a8;
+}
+
+.job {
+  padding-bottom:3.5mm;
+  margin-bottom:3.4mm;
+  border-bottom:.2mm solid #e6e3de;
+}
+.job-logo {
+  border:.2mm solid #e6e3de;
+  border-radius:1.1mm;
+  box-shadow:none;
+}
+.job-logo img,
+.mini-logo img {
+  filter:grayscale(.86) saturate(.35);
+  opacity:.88;
+}
+.job-title {
+  color:#29262d;
+  font-size:9.45pt;
+  line-height:1.14;
+  font-weight:700;
+}
+.job-meta { color:#726d75; }
+.meta-date { font-size:6.05pt; }
+.meta-place { color:#726d75; font-size:5.9pt; }
+.meta-place::before { color:#8a8294; }
+.company-line {
+  color:#524c5a;
+  font-size:7.35pt;
+  font-weight:700;
+}
+.badge {
+  padding:.7mm 1.5mm .6mm;
+  border:.17mm solid #e0dce6;
+  border-radius:.75mm;
+  background:#efedf3;
+  color:#514958;
+  font-size:5.4pt;
+  font-weight:700;
+  letter-spacing:.14pt;
+}
+.job-intro {
+  margin:1.4mm 0 1.5mm;
+  color:#605c64;
+  font-size:7.03pt;
+  line-height:1.31;
+}
+.bullets { color:#4e4b52; }
+.bullets li {
+  margin-bottom:.95mm;
+  font-size:6.94pt;
+  line-height:1.31;
+}
+.bullets li::marker { color:#706780; }
+
+.earlier-title { margin-bottom:2.35mm; }
+.earlier-row {
+  min-height:14mm;
+  padding:1.2mm 0;
+}
+.mini-logo {
+  color:#514958;
+  border:.2mm solid #e0dcd7;
+  border-radius:1.1mm;
+}
+.er-title {
+  color:#302d33;
+  font-size:7.45pt;
+  line-height:1.16;
+  font-weight:700;
+}
+.er-date { color:#726d75; font-size:5.9pt; }
+.er-company {
+  color:#554f5b;
+  font-size:6.25pt;
+  font-weight:700;
+}
+.er-desc {
+  color:#625e65;
+  font-size:6.0pt;
+  line-height:1.27;
+}
+
+.side .section-title { margin-bottom:3.75mm; }
+.side .section-title h2 { font-size:8.15pt; }
+.product { margin-bottom:4.15mm; }
+.product-icon {
+  border-radius:1.15mm;
+  box-shadow:none;
+  filter:grayscale(.88) saturate(.4);
+  opacity:.88;
+}
+.p-title {
+  margin-top:.15mm;
+  color:#302d33;
+  font-size:7.75pt;
+  line-height:1.12;
+  font-weight:700;
+}
+.p-link {
+  margin-top:.55mm;
+  color:#5d548c;
+  font-size:5.8pt;
+  font-weight:700;
+}
+.p-desc {
+  margin-top:.65mm;
+  color:#625d65;
+  font-size:6.4pt;
+  line-height:1.32;
+}
+.side-rule {
+  height:.2mm;
+  background:#dfdcd7;
+  margin:4.1mm 0 4mm;
+}
+.skill { margin-bottom:3mm; }
+.skill-name {
+  color:#343039;
+  font-size:6.5pt;
+  letter-spacing:.27pt;
+  font-weight:700;
+}
+.skill-list {
+  margin-top:.65mm;
+  color:#656068;
+  font-size:6.18pt;
+  line-height:1.34;
+}
+.edu { margin-bottom:3mm; }
+.edu-name {
+  color:#353139;
+  font-size:7.1pt;
+  font-weight:700;
+}
+.edu-desc {
+  margin-top:.65mm;
+  color:#656068;
+  font-size:6.15pt;
+  line-height:1.3;
+}
+.language {
+  font-size:6.9pt;
+  line-height:1.82;
+}
+.language .l { color:#353139; font-weight:700; }
+.language .v { color:#716c75; }
+`;
 
 export function renderEditorialCvHtml(
   cv: CVData,
