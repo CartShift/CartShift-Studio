@@ -151,7 +151,7 @@ function compile(gl: WebGL2RenderingContext, source: string, shaderType: number)
   gl.compileShader(shader);
   if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
   if (process.env.NODE_ENV !== 'production') {
-    console.warn('[Portfolio FluidField]', gl.getShaderInfoLog(shader));
+    console.warn('[Portfolio FluidField] Shader error:', gl.getShaderInfoLog(shader));
   }
   gl.deleteShader(shader);
   return null;
@@ -159,97 +159,251 @@ function compile(gl: WebGL2RenderingContext, source: string, shaderType: number)
 
 export default function FluidField({ paused = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointer = useRef({ x: 0, y: 0 });
-  const pauseRef = useRef(paused);
-  useEffect(() => { pauseRef.current = paused; }, [paused]);
-  const [ready, setReady] = useState(false);
+  const pausedRef = useRef(paused);
+  const wakeRef = useRef<(() => void) | null>(null);
+  const [rendered, setRendered] = useState(false);
+  const [contextGeneration, setContextGeneration] = useState(0);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+    wakeRef.current?.();
+  }, [paused]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const gl = canvas.getContext('webgl2', {
-      alpha: true, antialias: true, depth: false, stencil: false,
-      premultipliedAlpha: false, powerPreference: 'low-power',
-    });
+
+    let gl: WebGL2RenderingContext | null = null;
+    try {
+      gl = canvas.getContext('webgl2', {
+        alpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        premultipliedAlpha: false,
+        powerPreference: 'low-power',
+      });
+    } catch {
+      // The original CSS sculptures stay visible when WebGL is unavailable.
+    }
     if (!gl) return;
+
     const vs = compile(gl, vertex, gl.VERTEX_SHADER);
     const fs = compile(gl, fragment, gl.FRAGMENT_SHADER);
-    if (!vs || !fs) return;
+    if (!vs || !fs) {
+      if (vs) gl.deleteShader(vs);
+      if (fs) gl.deleteShader(fs);
+      return;
+    }
+
     const program = gl.createProgram();
-    if (!program) return;
+    if (!program) {
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      return;
+    }
+
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
     gl.linkProgram(program);
     gl.deleteShader(vs);
     gl.deleteShader(fs);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      if (process.env.NODE_ENV !== 'production') console.warn('[Portfolio FluidField]', gl.getProgramInfoLog(program));
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[Portfolio FluidField] Program error:', gl.getProgramInfoLog(program));
+      }
       gl.deleteProgram(program);
       return;
     }
+
     const buffer = gl.createBuffer();
+    if (!buffer) {
+      gl.deleteProgram(program);
+      return;
+    }
+
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      gl.STATIC_DRAW,
+    );
     gl.useProgram(program);
-    const pos = gl.getAttribLocation(program, 'a_position');
-    gl.enableVertexAttribArray(pos);
-    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-    const resolution = gl.getUniformLocation(program, 'u_resolution');
-    const time = gl.getUniformLocation(program, 'u_time');
-    const move = gl.getUniformLocation(program, 'u_pointer');
-    let raf = 0;
-    let visible = true;
-    let previous = -100;
-    const started = performance.now();
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1, 900 / Math.max(rect.width, 1), rect.width < 700 ? 0.84 : 1);
-      canvas.width = Math.max(1, Math.round(rect.width * pixelRatio));
-      canvas.height = Math.max(1, Math.round(rect.height * pixelRatio));
-      gl.viewport(0,0,canvas.width,canvas.height);
-      previous = -100;
-    };
-    const observer = new IntersectionObserver(([entry]) => {visible = entry.isIntersecting;}, {threshold:.01});
-    observer.observe(canvas);
-    const onLost = (e: Event) => { e.preventDefault(); visible = false; setReady(false); };
-    const onPointer = (event: PointerEvent) => {
-      pointer.current.x = (event.clientX / Math.max(window.innerWidth,1) - .5);
-      pointer.current.y = (event.clientY / Math.max(window.innerHeight,1) - .5);
-    };
-    window.addEventListener('pointermove', onPointer, {passive:true});
-    canvas.addEventListener('webglcontextlost', onLost);
-    window.addEventListener('resize', resize, {passive:true});
-    resize();
-    let frozen = false;
-    const draw = (now: number) => {
-      raf = window.requestAnimationFrame(draw);
-      const still = pauseRef.current || motionQuery.matches;
-      if (!visible || document.hidden || (still && frozen && previous !== -100)) return;
-      if (now - previous < 50) return;
-      previous = now;
-      gl.useProgram(program);
-      gl.uniform2f(resolution, canvas.width, canvas.height);
-      gl.uniform1f(time, still ? 0 : (now - started) * .001);
-      gl.uniform2f(move, pointer.current.x, pointer.current.y);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-      frozen = still;
-      if (!canvas.dataset.rendered) { canvas.dataset.rendered = 'true'; setReady(true); }
-    };
-    raf = window.requestAnimationFrame(draw);
-    return () => {
-      window.cancelAnimationFrame(raf);
-      observer.disconnect();
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('pointermove', onPointer);
-      canvas.removeEventListener('webglcontextlost', onLost);
+    const position = gl.getAttribLocation(program, 'a_position');
+    if (position === -1) {
       gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
+      return;
+    }
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+    const resolution = gl.getUniformLocation(program, 'u_resolution');
+    const time = gl.getUniformLocation(program, 'u_time');
+    const pointer = gl.getUniformLocation(program, 'u_pointer');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const frameInterval = 1000 / (coarsePointer ? 18 : 24);
+    const target = { x: 0, y: 0 };
+    let current = { x: 0, y: 0 };
+    let active = true;
+    let visible = true;
+    let lost = false;
+    let raf = 0;
+    let needFrame = true;
+    let previousFrame = 0;
+    let previousMotionFrame = 0;
+    let animationTime = 0;
+    let firstFrame = true;
+
+    const canRender = () => active && !lost && visible && !document.hidden;
+    const isStatic = () => pausedRef.current || reducedMotion.matches;
+
+    const schedule = () => {
+      if (!raf && canRender() && (needFrame || !isStatic())) {
+        raf = window.requestAnimationFrame(draw);
+      }
     };
-  }, []);
+
+    const draw = (now: number) => {
+      raf = 0;
+      if (!canRender()) return;
+      if (!needFrame && now - previousFrame < frameInterval) {
+        schedule();
+        return;
+      }
+      const still = isStatic();
+      const delta = previousMotionFrame ? Math.min((now - previousMotionFrame) / 1000, 0.08) : 0;
+      previousMotionFrame = now;
+      if (!still) animationTime += delta;
+      previousFrame = now;
+      needFrame = false;
+
+      if (!still) {
+        current = {
+          x: current.x + (target.x - current.x) * 0.075,
+          y: current.y + (target.y - current.y) * 0.075,
+        };
+      }
+
+      gl.useProgram(program);
+      gl.uniform2f(resolution, canvas.width, canvas.height);
+      gl.uniform1f(time, reducedMotion.matches ? 0 : animationTime);
+      gl.uniform2f(pointer, current.x, current.y);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      if (firstFrame) {
+        firstFrame = false;
+        canvas.dataset.rendered = 'true';
+        setRendered(true);
+      }
+      if (!still) schedule();
+    };
+
+    const wake = () => {
+      needFrame = true;
+      previousMotionFrame = 0;
+      schedule();
+    };
+    wakeRef.current = wake;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      // Capped pixel count protects mobile GPU and battery without changing CSS size.
+      const scale = Math.min(
+        window.devicePixelRatio || 1,
+        1.25,
+        Math.sqrt(550_000 / (rect.width * rect.height)),
+      );
+      const width = Math.max(1, Math.round(rect.width * scale));
+      const height = Math.max(1, Math.round(rect.height * scale));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+        gl.viewport(0, 0, width, height);
+        wake();
+      }
+    };
+
+    const onPointer = (event: PointerEvent) => {
+      if (isStatic() || event.pointerType === 'touch') return;
+      target.x = event.clientX / window.innerWidth - 0.5;
+      target.y = event.clientY / window.innerHeight - 0.5;
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden && raf) {
+        window.cancelAnimationFrame(raf);
+        raf = 0;
+      }
+      if (!document.hidden) wake();
+    };
+
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      lost = true;
+      canvas.removeAttribute('data-rendered');
+      setRendered(false);
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    };
+
+    const onContextRestored = () => {
+      // The effect recreates all shaders, buffers and uniforms on the restored context.
+      setContextGeneration(value => value + 1);
+    };
+
+    const observer = typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(([entry]) => {
+          visible = entry.isIntersecting;
+          if (!visible && raf) {
+            window.cancelAnimationFrame(raf);
+            raf = 0;
+          }
+          if (visible) wake();
+        }, { threshold: 0.01 })
+      : null;
+    observer?.observe(canvas);
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(resize)
+      : null;
+    resizeObserver?.observe(canvas);
+
+    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('pointermove', onPointer, { passive: true });
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    canvas.addEventListener('webglcontextlost', onContextLost);
+    canvas.addEventListener('webglcontextrestored', onContextRestored);
+    reducedMotion.addEventListener('change', wake);
+
+    resize();
+    schedule();
+
+    return () => {
+      active = false;
+      wakeRef.current = null;
+      if (raf) window.cancelAnimationFrame(raf);
+      observer?.disconnect();
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('pointermove', onPointer);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      canvas.removeEventListener('webglcontextlost', onContextLost);
+      canvas.removeEventListener('webglcontextrestored', onContextRestored);
+      reducedMotion.removeEventListener('change', wake);
+      if (!gl.isContextLost()) {
+        gl.deleteBuffer(buffer);
+        gl.deleteProgram(program);
+      }
+    };
+  }, [contextGeneration]);
 
   return (
-    <div className={'v5-fluid-field' + (ready ? ' v5-fluid-field--ready' : '')} aria-hidden="true">
+    <div className={'v5-fluid-field' + (rendered ? ' v5-fluid-field--ready' : '')} aria-hidden="true">
       <div className="v5-fluid-fallback">
         <i /><i /><i /><i />
       </div>

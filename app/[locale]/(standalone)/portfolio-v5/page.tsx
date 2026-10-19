@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import PortfolioV5 from './PortfolioV5';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -25,7 +25,5 @@ export default async function PortfolioV5Page({ params }: Props) {
   const { locale } = await params;
   const activeLocale = locale === 'he' ? 'he' : 'en';
   setRequestLocale(activeLocale);
-  const t = await getTranslations({ locale: activeLocale, namespace: 'cv' });
-
-  return <PortfolioV5 locale={activeLocale} email={t('email')} />;
+  return <PortfolioV5 locale={activeLocale} />;
 }

@@ -20,7 +20,7 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
         {isHebrew ? 'דלג לתוכן' : 'Skip to content'}
       </a>
       <V5Navigation locale={locale} section={kind} />
-      <div id="v5-content" className="v5-subpage-main">
+      <div id="v5-content" className="v5-subpage-main" tabIndex={-1}>
         {kind === 'work' && (
           <>
             <section className="v5-inner-hero v5-shell">
