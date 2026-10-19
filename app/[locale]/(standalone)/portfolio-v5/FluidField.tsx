@@ -160,6 +160,8 @@ function compile(gl: WebGL2RenderingContext, source: string, shaderType: number)
 export default function FluidField({ paused = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointer = useRef({ x: 0, y: 0 });
+  const pauseRef = useRef(paused);
+  useEffect(() => { pauseRef.current = paused; }, [paused]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -202,7 +204,7 @@ export default function FluidField({ paused = false }: Props) {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5, 1050 / Math.max(rect.width, 1));
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1, 900 / Math.max(rect.width, 1), rect.width < 700 ? 0.84 : 1);
       canvas.width = Math.max(1, Math.round(rect.width * pixelRatio));
       canvas.height = Math.max(1, Math.round(rect.height * pixelRatio));
       gl.viewport(0,0,canvas.width,canvas.height);
@@ -211,20 +213,27 @@ export default function FluidField({ paused = false }: Props) {
     const observer = new IntersectionObserver(([entry]) => {visible = entry.isIntersecting;}, {threshold:.01});
     observer.observe(canvas);
     const onLost = (e: Event) => { e.preventDefault(); visible = false; setReady(false); };
+    const onPointer = (event: PointerEvent) => {
+      pointer.current.x = (event.clientX / Math.max(window.innerWidth,1) - .5);
+      pointer.current.y = (event.clientY / Math.max(window.innerHeight,1) - .5);
+    };
+    window.addEventListener('pointermove', onPointer, {passive:true});
     canvas.addEventListener('webglcontextlost', onLost);
     window.addEventListener('resize', resize, {passive:true});
     resize();
+    let frozen = false;
     const draw = (now: number) => {
       raf = window.requestAnimationFrame(draw);
-      const still = paused || motionQuery.matches;
-      if (!visible || document.hidden || (still && previous !== -100 && !(!ready))) return;
-      if (now - previous < 34) return;
+      const still = pauseRef.current || motionQuery.matches;
+      if (!visible || document.hidden || (still && frozen && previous !== -100)) return;
+      if (now - previous < 50) return;
       previous = now;
       gl.useProgram(program);
       gl.uniform2f(resolution, canvas.width, canvas.height);
       gl.uniform1f(time, still ? 0 : (now - started) * .001);
       gl.uniform2f(move, pointer.current.x, pointer.current.y);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+      frozen = still;
       if (!canvas.dataset.rendered) { canvas.dataset.rendered = 'true'; setReady(true); }
     };
     raf = window.requestAnimationFrame(draw);
@@ -232,20 +241,15 @@ export default function FluidField({ paused = false }: Props) {
       window.cancelAnimationFrame(raf);
       observer.disconnect();
       window.removeEventListener('resize', resize);
+      window.removeEventListener('pointermove', onPointer);
       canvas.removeEventListener('webglcontextlost', onLost);
       gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
     };
-  }, [paused]);
+  }, []);
 
   return (
-    <div className={'v5-fluid-field' + (ready ? ' v5-fluid-field--ready' : '')}
-      aria-hidden="true"
-      onPointerMove={(event) => {
-        const r = event.currentTarget.getBoundingClientRect();
-        pointer.current.x = (event.clientX / Math.max(r.width,1) - .5);
-        pointer.current.y = (event.clientY / Math.max(r.height,1) - .5);
-      }}>
+    <div className={'v5-fluid-field' + (ready ? ' v5-fluid-field--ready' : '')} aria-hidden="true">
       <div className="v5-fluid-fallback">
         <i /><i /><i /><i />
       </div>
