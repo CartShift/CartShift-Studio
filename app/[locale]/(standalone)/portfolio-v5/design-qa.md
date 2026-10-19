@@ -38,3 +38,7 @@ Work, About and Contact were added as independent routes with shared navigation.
 2. Compare images together in a single side-by-side artifact, including hero and menu states.
 3. Test desktop/mobile menu, Escape/focus trap, locale switch, project links and reduced-motion setting.
 4. Inspect console and ensure no horizontal overflow, then update this file to **final result: passed** only when all P0–P2 findings are resolved.
+
+## 2026-10-20 visual iteration (pending new browser capture)
+
+User-provided mobile screenshots directly ground the critical findings: headings in Work and Contact are dark on dark, outlined hero/about letters visually overlap, and project cards repeat nearly identical generic blobs. Added explicit high-contrast heading colors, re-authored hero/about/contact typography, and replaced generic project-card artwork with screenshots of Yotam's own portfolio projects. The supplied captures are 705px-wide screenshot images of mobile states; they were not normalized to source screenshots. After deployment, renewed visual screenshots and interactive browser checks are still required; **final result: blocked** until verified. The source reference site's assets remain unused.

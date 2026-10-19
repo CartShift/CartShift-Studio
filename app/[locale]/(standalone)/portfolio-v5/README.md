@@ -30,3 +30,7 @@ This is an experiment, not an authorized reproduction of Sharlee artwork or bran
 ## Dedicated experiences
 
 Work, About, and Contact now have standalone pages in both locales. Navigation, copy, and CSS are shared. Pages remain noindex while experimental.
+
+## Editorial refinement
+
+Landing work cards now feature actual evidence screenshots from our own `portfolio-showcase` model, replacing non-descriptive sphere placeholders. The Work index likewise uses project-specific images. Styling refinements live in a separate scoped `portfolio-v5-refresh.css` file; reduced motion remains supported. The experimental portfolio remains noindex.

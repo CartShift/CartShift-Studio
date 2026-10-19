@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 import { translations, type PortfolioV5Locale } from './v5-copy';
 import V5Navigation from './V5Navigation';
@@ -42,7 +43,14 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
                       <h2>{project.title}</h2>
                       <p>{project.descriptor}</p>
                     </div>
-                    <span className={'v5-work-row-object v5-work-row-object--' + (index % 4)} aria-hidden="true" />
+                    <span className={'v5-work-row-preview v5-work-row-preview--' + (index % 4)} aria-hidden="true">
+                      {project.hero && (
+                        <Image src={project.hero.src} alt="" fill
+                          unoptimized={project.hero.src.startsWith('http')}
+                          sizes="(max-width: 680px) 48px, 140px"
+                          className="v5-work-row-image" />
+                      )}
+                    </span>
                     <span className="v5-work-year">{project.year}</span>
                     <span className="v5-work-row-arrow" aria-hidden="true">↗</span>
                   </a>
