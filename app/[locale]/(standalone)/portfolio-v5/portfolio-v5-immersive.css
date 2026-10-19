@@ -188,3 +188,34 @@
   .v5-fluid-canvas, .v5-fluid-fallback, .v5-fluid-fallback i,
   .v5-immersive-links a { animation: none !important; transition: none !important; }
 }
+
+
+/* On desktop, the project screenshot reveals itself like a floating editorial thumbnail. */
+@media (hover: hover) and (min-width: 900px) {
+  .v5-subpage--work .v5-work-row-preview {
+    transform: rotate(-9deg) scale(.91);
+    transform-origin: center;
+    will-change: transform;
+    z-index: 3;
+  }
+  .v5-subpage--work .v5-work-row:hover .v5-work-row-preview,
+  .v5-subpage--work .v5-work-row:focus-visible .v5-work-row-preview {
+    transform: rotate(-3deg) scale(1.38) translateY(-3px);
+    box-shadow: 0 24px 50px rgba(72,62,114,.22);
+  }
+}
+.v5-immersive-content {
+  animation: v5-hero-appear 1000ms cubic-bezier(.18,.7,.23,1) both;
+}
+@keyframes v5-hero-appear {
+  from { opacity: 0; transform: translateY(17px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.v5-immersive-home .v5-menu-panel nav a {
+  transition: color 250ms, transform 350ms;
+}
+.v5-immersive-home .v5-menu-panel nav a:hover { transform: translateX(6px); }
+@media (prefers-reduced-motion: reduce) {
+  .v5-immersive-content { animation: none !important; }
+  .v5-immersive-home .v5-menu-panel nav a { transition: none; }
+}

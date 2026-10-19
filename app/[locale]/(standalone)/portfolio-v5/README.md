@@ -34,3 +34,9 @@ Work, About, and Contact now have standalone pages in both locales. Navigation, 
 ## Editorial refinement
 
 Landing work cards now feature actual evidence screenshots from our own `portfolio-showcase` model, replacing non-descriptive sphere placeholders. The Work index likewise uses project-specific images. Styling refinements live in a separate scoped `portfolio-v5-refresh.css` file; reduced motion remains supported. The experimental portfolio remains noindex.
+
+## Immersive reference-fidelity rebuild — 2026-10-20
+
+The homepage is intentionally now a single interactive viewport like the Sharlee compositional model. Work, About and Contact remain fully functional standalone routes. A new original WebGL2 component procedurally ray-marches four iridescent toroidal organic forms and adjusts them by pointer and gentle time-based motion; it imports **no source-site images, fonts, materials, code or 3D assets**. The canvas includes a no-WebGL CSS fallback and respects reduced motion, hidden documents and offscreen pause.
+
+Desktop Work is intentionally type-first, with hover-based previews of the site's own project artifacts. At 390×844 the main text remains clear of the corner forms. Build and browser QA follow before merge; this is a design experiment and stays noindex.
