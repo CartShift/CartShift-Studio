@@ -70,11 +70,13 @@ describe('CV editorial PDF design (production default)', () => {
     expect(editorial).toContain('filter:grayscale(.65) saturate(.7)');
   });
 
-  it('keeps the entire approved CV content and exact number of selected products', () => {
+  it('keeps the entire approved CV content and exactly three selected products', () => {
     const classicBody = classic.slice(classic.indexOf('<div class="body">'));
     const editorialBody = editorial.slice(editorial.indexOf('<div class="body">'));
     expect(editorialBody).toEqual(classicBody);
-    expect(editorial.match(/class="product-icon"/g)).toHaveLength(4);
+    expect(editorial.match(/class="product-icon"/g)).toHaveLength(3);
+    expect(editorial).not.toContain('WakeMyWay');
+    expect(editorial).not.toContain('wakemyway.vercel.app');
     expect(editorial.match(/class="earlier-row"/g)).toHaveLength(6);
     expect(editorial.match(/class="job"/g)).toHaveLength(3);
   });

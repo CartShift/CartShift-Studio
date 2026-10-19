@@ -42,14 +42,6 @@ const printProjects = [
       'AI-assisted planning product with a real-time voice agent, permissioned actions, live UI updates, and undo.',
   },
   {
-    key: 'wakemyway',
-    name: 'WakeMyWay',
-    href: 'https://wakemyway.vercel.app',
-    displayHref: 'wakemyway.vercel.app ↗',
-    description:
-      'Local-first conversational Android alarm with reliability-first scheduling, adaptive wake routines, local voice, and motion evidence.',
-  },
-  {
     key: 'rightflow',
     name: 'RightFlow',
     href: 'https://right-flow.com',
@@ -136,9 +128,6 @@ function iconSvg(name: 'briefcase' | 'cube' | 'gear' | 'cap' | 'globe' | 'user')
 function projectLogo(key: (typeof printProjects)[number]['key']): string {
   if (key === 'starlinker') {
     return `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="13" fill="#091b39"/><ellipse cx="31" cy="33" rx="20" ry="9" fill="none" stroke="#8aa5ff" stroke-width="4" transform="rotate(-12 31 33)"/><circle cx="47" cy="25" r="4" fill="#c9d6ff"/><circle cx="23" cy="37" r="3" fill="#6d7fe8"/></svg>`;
-  }
-  if (key === 'wakemyway') {
-    return `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="13" fill="#08142F"/><path d="M22 39a10 10 0 0 1 20 0H22Z" fill="#FF9F6D"/><path d="M8 39c5 0 7-4 11-4s6 5 10 5 5-5 9-5 6 4 10 4 5-3 8-3" fill="none" stroke="#F8F7F4" stroke-width="3" stroke-linecap="round"/></svg>`;
   }
   if (key === 'rightflow') {
     return `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="13" fill="#0B5F90"/><text x="12" y="31" fill="#fff" font-size="20" font-family="Arial" font-weight="700">RF</text><path d="M8 47c9-8 17-8 25 0s15 8 23 0" fill="none" stroke="#46d6ef" stroke-width="3" stroke-linecap="round"/><text x="13" y="54" fill="#aeeeff" font-size="5" font-family="Arial">01</text></svg>`;

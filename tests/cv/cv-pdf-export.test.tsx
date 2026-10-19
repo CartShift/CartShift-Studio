@@ -51,15 +51,15 @@ describe('CV PDF export source', () => {
   it('contains all approved product links and thumbnails', () => {
     expect(html).toContain('StarLinker');
     expect(html).toContain('https://starlinker.io');
-    expect(html).toContain('WakeMyWay');
-    expect(html).toContain('https://wakemyway.vercel.app');
+    expect(html).not.toContain('WakeMyWay');
+    expect(html).not.toContain('https://wakemyway.vercel.app');
     expect(html).toContain('RightFlow');
     expect(html).toContain('https://right-flow.com');
     expect(html).toContain('Liquid Loom');
     expect(html).toContain('https://github.com/yotamon/Liquid-Loom');
 
     // Project thumbnails are inline SVG so they remain crisp in the generated PDF.
-    expect(html.match(/class="product-icon"/g)?.length).toBe(4);
+    expect(html.match(/class="product-icon"/g)?.length).toBe(3);
   });
 
   it('uses stable date/location columns instead of overlapping metadata', () => {

@@ -22,10 +22,11 @@ describe('CV browser print template', () => {
 
   it('renders all selected products with clickable destinations', () => {
     expect(html).toContain('https://starlinker.io');
-    expect(html).toContain('https://wakemyway.vercel.app');
+    expect(html).not.toContain('https://wakemyway.vercel.app');
     expect(html).toContain('https://right-flow.com');
     expect(html).toContain('https://github.com/yotamon/Liquid-Loom');
-    expect(html).toContain('WakeMyWay');
+    expect(html).not.toContain('WakeMyWay');
+    expect(html.match(/class="product-icon"/g)).toHaveLength(3);
     expect(html).toContain('Liquid Loom');
   });
 
