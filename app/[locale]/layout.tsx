@@ -104,12 +104,13 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  // Enable static rendering by providing the locale to next-intl
-  setRequestLocale(locale as 'en' | 'he');
-
+  // Reject invalid route segments before configuring next-intl. Requests such as
+  // /xmlrpc.php or /icon-512.png must become 404s, not malformed locales.
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  setRequestLocale(locale);
 
   const direction = locale === 'he' ? 'rtl' : 'ltr';
   const isRtl = locale === 'he';
