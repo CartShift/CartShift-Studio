@@ -1,52 +1,60 @@
 # Portfolio V5 — Fluid Studio
 
-A self-contained, original fluid-art portfolio experiment inspired by the *interaction principles* of the Sharlee portfolio. **No images, fonts, illustrations, logos, or other source-site assets were copied.** The hero sculptures and work illustrations are purpose-built CSS artwork.
+An original experimental portfolio for Yotam Faraggi in the CartShift Studio repository. Inspired by the editorial composition and playful materiality of https://itssharl.ee/, but **no images, 3D models, fonts, brand assets, shaders, or code were copied**. All decorative artwork is ours.
 
-## Preview paths
+## Routes
 
-- /en/portfolio-v5
-- /he/portfolio-v5
+| Locale | Home | Work | About | Contact |
+| --- | --- | --- | --- | --- |
+| English | /en/portfolio-v5 | /en/portfolio-v5/work | /en/portfolio-v5/about | /en/portfolio-v5/contact |
+| Hebrew | /he/portfolio-v5 | /he/portfolio-v5/work | /he/portfolio-v5/about | /he/portfolio-v5/contact |
 
-The route is a standalone App Router page and deliberately has no navigation link in the main CartShift website. Metadata uses noindex/nofollow while the design is exploratory.
+This is an isolated, **noindex / nofollow** experiment; the primary CartShift website is unchanged. Portfolio content and projects are based on our existing \`lib/portfolio-showcase.ts\` data, not fictitious case studies.
 
-## Implementation
+## Architecture
 
-- No added packages, external fonts, remote media, WebGL, or tracking code.
-- Content is Yotam's own professional portfolio, reusing factual project descriptions and case-study links from the existing showcase model.
-- Light-reactive glossy organic forms are implemented using original CSS gradients, highlights, masks, shadows and subtly different toroidal silhouettes.
-- Hero mouse parallax, animated sculptures, motion pause, keyboard-operable full-screen menu, English/Hebrew locale switch, real case-study links and contact link.
-- Mobile layout and prefers-reduced-motion support.
-- All styles are scoped under v5 classes and no global CSS rules were modified.
+- **Homepage:** \`PortfolioV5.tsx\` is the minimal interactive landing page. \`FluidField.tsx\` contains the optional WebGL2 ray-marching renderer and its CSS fallback.
+- **Navigation:** \`V5Navigation.tsx\` is shared across routes. Uses Next.js links with prefetch disabled and a native modal \`<dialog>\` (browser-managed keyboard focus, Escape behavior, and background inertness).
+- **Detail pages:** \`PortfolioV5Detail.tsx\` is a Server Component. Work indexes real projects and original local previews; About and Contact are fully rendered on the server. This keeps data and noninteractive markup out of client bundles.
+- **Copy:** \`v5-copy.ts\` contains both languages. Metadata is generated from each route's server page.
+- **CSS:** \`portfolio-v5.css\` is the original experiment's foundation, \`portfolio-v5-refresh.css\` contains editorial styles for shared/detail screens, and \`portfolio-v5-immersive.css\` contains the one-screen experience and new accessibility overrides. **The legacy layers are retained to preserve the look of the existing detail pages**; any future consolidation must be followed by fresh visual regression testing.
 
-## QA
+## Rendering and performance
 
-1. Verify the current source content and translations from the repo.
-2. Run pnpm exec tsc --noEmit and pnpm exec eslint on the files.
-3. Test desktop/mobile, mobile menu, Escape/Tab focus, locale switch, reduced motion, project links, and mailto.
-4. Visual browser QA required before declaring production-ready; no preview deployment was created automatically.
+The visual effect uses four original iridescent implicit toroidal sculptures rendered via GLSL ES 3.00. The central region is empty for typography. No Three.js or external asset fetch is required.
 
-This is an experiment, not an authorized reproduction of Sharlee artwork or branding.
+The renderer:
 
-## Dedicated experiences
+- Limits drawing to about **24 FPS on precise pointers** and **18 FPS on coarse/touch pointers**.
+- Caps the drawing buffer at **550,000 pixels** to avoid unconstrained high-DPI GPU work.
+- Does **not schedule ongoing frames** when the user pauses, requests reduced motion, the tab is hidden, or the scene is outside the viewport.
+- Rebuilds buffers/programs after \`webglcontextlost\` / \`webglcontextrestored\`.
+- Responds to element resizing via \`ResizeObserver\`, with window-resize fallback.
+- Keeps original CSS sculptures visible if WebGL initialization fails; content and navigation never depend on successful WebGL.
 
-Work, About, and Contact now have standalone pages in both locales. Navigation, copy, and CSS are shared. Pages remain noindex while experimental.
+## Accessibility
 
-## Editorial refinement
+- Proper heading structure, skip links that can focus the target, keyboard-operable navigation, visible focus rings and multilingual labels.
+- Native \`<dialog>\` focus containment, keyboard Escape and restored trigger focus.
+- Motion pause button with \`aria-pressed\` and translated label.
+- \`prefers-reduced-motion\`, \`prefers-contrast: more\`, and \`forced-colors\` accommodations.
+- Decorative scene elements marked as decorative, avoiding screen-reader noise.
 
-Landing work cards now feature actual evidence screenshots from our own `portfolio-showcase` model, replacing non-descriptive sphere placeholders. The Work index likewise uses project-specific images. Styling refinements live in a separate scoped `portfolio-v5-refresh.css` file; reduced motion remains supported. The experimental portfolio remains noindex.
+## Testing
 
-## Immersive reference-fidelity rebuild — 2026-10-20
+The QA script is **manual / on-demand**, not an always-running GitHub Action or Preview deployment. It uses existing dependencies (\`puppeteer-core\` and \`@sparticuz/chromium\`):
 
-The homepage is intentionally now a single interactive viewport like the Sharlee compositional model. Work, About and Contact remain fully functional standalone routes. A new original WebGL2 component procedurally ray-marches four iridescent toroidal organic forms and adjusts them by pointer and gentle time-based motion; it imports **no source-site images, fonts, materials, code or 3D assets**. The canvas includes a no-WebGL CSS fallback and respects reduced motion, hidden documents and offscreen pause.
+\`\`\`bash
+PORTFOLIO_V5_BASE_URL=https://cart-shift.com pnpm qa:portfolio-v5
 
-Desktop Work is intentionally type-first, with hover-based previews of the site's own project artifacts. At 390×844 the main text remains clear of the corner forms. Build and browser QA follow before merge; this is a design experiment and stays noindex.
+# Or with a local server
+PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 pnpm qa:portfolio-v5
+\`\`\`
 
-## Reliability and accessibility hardening (2026-10-20)
+Checks English/Hebrew routes, 390px mobile and 1440px desktop, horizontal overflow, primary routes, accessible dialog/Escape/focus return, pause and resume, visible fallback if WebGL is unavailable, console errors and noindex. Screenshots are saved under \`tmp/portfolio-v5-qa\` when requested; this folder should remain untracked.
 
-- The WebGL renderer now caps GPU work by both pixel count and frame interval, stops scheduling frames when motion is paused / reduced, the document is hidden, or the artwork is offscreen, and rebuilds resources after a context loss/restoration.
-- WebGL2 is optional; original CSS artwork remains a static fallback when unavailable. Stronger-contrast and forced-color modes preserve legibility.
-- The navigation uses an actual native modal `<dialog>`, which makes background content inert and delegates focus containment and Escape to the browser. Navigation links are internal Next.js Links with prefetch disabled.
-- Decorative elements are hidden from assistive technology, skip links focus the main heading, and motion controls are translated and labelled.
-- A browser QA runner lives at `scripts/qa-portfolio-v5.mjs`. It runs on request, not on every CI build. It requires only existing dependencies and can inspect the local server or production by setting `PORTFOLIO_V5_BASE_URL`.
+Always run focused ESLint, project type-check and production smoke checks before declaring a new version complete. A full visual review (including high-DPI devices, small landscape screens, and touch navigation) is still necessary; automated tests cannot judge all aesthetics.
 
-Example: `PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-portfolio-v5.mjs`.
+## Deployment
+
+Only deploy after branch checks; use one production deployment on \`main\`. Do not run unnecessary Preview builds. The code does not add analytics or user tracking.

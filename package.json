@@ -27,6 +27,7 @@
     "firebase:deploy:functions": "cd functions && pnpm install && cd .. && firebase deploy --only functions",
     "vercel:deploy": "vercel --prod",
     "vercel:logs": "vercel logs",
+    "qa:portfolio-v5": "node scripts/qa-portfolio-v5.mjs",
     "analyze": "next experimental-analyze",
     "seo:monitor": "node scripts/seo-monitor.mjs",
     "seo:monitor:json": "node scripts/seo-monitor.mjs --json",

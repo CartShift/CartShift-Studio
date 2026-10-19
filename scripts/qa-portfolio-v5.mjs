@@ -76,6 +76,9 @@ async function main() {
           assert(focusedTrigger, 'focus did not return to menu trigger');
           await page.click('.v5-motion-button');
           assert(await page.$eval('.v5-motion-button', button => button.getAttribute('aria-pressed') === 'true'), 'motion pause failed');
+          // Users can still navigate with motion paused; requestAnimationFrame is suspended.
+          await page.click('.v5-motion-button');
+          assert(await page.$eval('.v5-motion-button', button => button.getAttribute('aria-pressed') === 'false'), 'motion resume failed');
         }
         if (screenshots) await page.screenshot({ path: output + '/' + name + '.png' });
         assert(errors.length === 0, name + ': uncaught errors: ' + errors.join(', '));
