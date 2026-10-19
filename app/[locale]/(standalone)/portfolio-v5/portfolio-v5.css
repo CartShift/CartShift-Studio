@@ -34,6 +34,7 @@
   display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
   color: #505775;
 }
+.v5-header--open { color: #f4f3fa; }
 .v5-brand { display: inline-flex; align-items: center; gap: 13px; min-height: 48px; }
 .v5-brand-mark {
   display: inline-flex; align-items: center; position: relative; justify-content: center;
@@ -67,6 +68,8 @@
   display: flex; flex-direction: column; justify-content: space-between;
   animation: v5-menu-enter .35s cubic-bezier(.2,.7,.25,1) both;
 }
+.v5-panel-close { position: absolute; inset-block-start: 91px; inset-inline-end: clamp(25px,10vw,170px); padding: 10px 2px; border: 0; background: transparent; color: #f1f0f6; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .1em; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; }
+.v5-panel-close span { font-size: 25px; font-weight: 300; }
 .v5-menu-panel nav { width: min(950px,100%); }
 .v5-menu-panel nav a {
   display: grid; grid-template-columns: 45px 1fr 44px; gap: 10px;

@@ -164,7 +164,7 @@ export default function PortfolioV5({ locale, email }: Props) {
     >
       <a className="v5-skip-link" href="#work">{t.skip}</a>
 
-      <header className="v5-header">
+      <header className={"v5-header" + (menuOpen ? " v5-header--open" : "")}>
         <a className="v5-brand" href="#top" aria-label={isHebrew ? 'יותם פרג׳י - ראשי' : 'Yotam Faraggi - Home'}>
           <span className="v5-brand-mark" aria-hidden="true">yf<span>✳</span></span>
           <span className="v5-brand-name">YOTAM<br />FARAGGI</span>
@@ -214,6 +214,7 @@ export default function PortfolioV5({ locale, email }: Props) {
           aria-modal="true"
           aria-label={t.menuNav}
         >
+          <button className="v5-panel-close" type="button" onClick={() => setMenuOpen(false)}>{t.close} <span aria-hidden="true">×</span></button>
           <nav aria-label={t.menuNav}>
             {navigation.map(item => (
               <a href={item.href} key={item.href} onClick={() => setMenuOpen(false)}>
