@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const language = locale === 'he' ? 'he' : 'en';
   return {
-    title: (language === 'he' ? 'עליי' : 'About') + ' | Yotam Faraggi — Fluid Portfolio',
+    title: { absolute: (language === 'he' ? 'עליי' : 'About') + ' | Yotam Faraggi — Fluid Portfolio' },
     robots: { index: false, follow: false },
   };
 }

@@ -8,11 +8,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const he = locale === 'he';
   const title = he
-    ? "יותם פרג'י | ניסוי פורטפוליו — Fluid Studio"
-    : 'Yotam Faraggi | Fluid Studio — Portfolio Experiment';
+    ? "יותם פרג׳י — מהנדס מוצר עצמאי"
+    : 'Yotam Faraggi — Independent Product Engineer';
 
   return {
-    title,
+    title: { absolute: title },
     description: he
       ? 'ניסוי פורטפוליו אינטראקטיבי של יותם פרג׳י, עם אמנות מקורית ותנועה.'
       : 'An experimental, interactive portfolio for product engineer Yotam Faraggi, featuring original generative artwork.',

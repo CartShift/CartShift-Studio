@@ -350,3 +350,18 @@
 @media (max-width:680px) {
   .v5-page .v5-work-row-preview { width: 45px; border-width: 2px; box-shadow: 1px 4px 9px rgba(59,55,97,.13); }
 }
+
+
+.v5-work-row-fallback {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: clamp(26px,2.8vw,44px); font-weight: 800; letter-spacing: -.08em;
+  color: #54597a; text-transform: uppercase;
+  background: radial-gradient(circle at 20% 14%,#f3f6e5,#c1cdf6 65%,#9da6e2);
+}
+.v5-work-row-fallback span {
+  position: absolute; inset-block-start: 7%; inset-inline-end: 11%;
+  font-size: .38em; color: #7b6abd; letter-spacing: 0;
+}
+@media(max-width:680px) {
+  .v5-work-row-fallback { font-size: 14px; }
+}
