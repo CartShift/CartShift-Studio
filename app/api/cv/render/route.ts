@@ -108,12 +108,21 @@ async function renderPdfBuffer(resolved: ResolvedCVVariant, design: CVPrintDesig
       // Only the experimental layout is checked for clipped content. The
       // approved production design keeps its current behavior unchanged.
       if (design === 'editorial') {
-        const clipped = await page.evaluate(() =>
-          ['.hero', '.main', '.side'].filter(selector => {
+        const clipped = await page.evaluate(() => {
+          const tolerancePx = 2;
+          return ['.page', '.hero', '.main', '.side'].flatMap(selector => {
             const element = document.querySelector<HTMLElement>(selector);
-            return element && element.scrollHeight - element.clientHeight > 3;
-          })
-        );
+            if (!element) return [selector + ': missing'];
+            const issues: string[] = [];
+            if (element.scrollHeight - element.clientHeight > tolerancePx) {
+              issues.push(selector + ': vertical');
+            }
+            if (element.scrollWidth - element.clientWidth > tolerancePx) {
+              issues.push(selector + ': horizontal');
+            }
+            return issues;
+          });
+        });
         if (clipped.length) {
           throw new CVRenderError(`Editorial CV overflows: ${clipped.join(', ')}`);
         }
