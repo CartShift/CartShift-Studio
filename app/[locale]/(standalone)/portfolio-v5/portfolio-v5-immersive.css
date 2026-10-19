@@ -238,3 +238,35 @@
 @media (max-width:680px) and (max-height:700px) {
   .v5-immersive-hero { min-height: 640px; height: 640px; }
 }
+
+
+/* Legibility for users requesting stronger contrast and Windows high-contrast mode. */
+@media (prefers-contrast: more) {
+  .v5-immersive-title > span {
+    color: #27304b;
+    -webkit-text-fill-color: #27304b;
+    -webkit-text-stroke: 0;
+  }
+  .v5-immersive-title strong {
+    color: #27304b;
+    -webkit-text-fill-color: #27304b;
+  }
+  .v5-immersive-subtitle,
+  .v5-immersive-links a,
+  .v5-immersive-footer,
+  .v5-immersive-pretitle { color: #27304b; }
+  .v5-fluid-field { opacity: .32; }
+}
+@media (forced-colors: active) {
+  .v5-immersive-hero { background: Canvas; }
+  .v5-immersive-title > span,
+  .v5-immersive-title strong {
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+    -webkit-text-stroke: 0;
+  }
+  .v5-fluid-field { display: none; }
+  .v5-immersive-subtitle, .v5-immersive-footer, .v5-immersive-pretitle {
+    color: CanvasText;
+  }
+}

@@ -123,6 +123,9 @@ vec3 colorize(vec3 p, vec3 normal, float id, vec3 ray) {
 void main(){
   vec2 uv = (gl_FragCoord.xy - .5 * u_resolution.xy) / u_resolution.y * 3.0;
   uv += u_pointer * .075;
+  // The center of the composition is deliberately free of sculpture.
+  // Avoid expensive ray marching under the headline.
+  if (abs(uv.y) < .35) { outColor = vec4(0.0); return; }
   vec3 ro = vec3(uv, 4.8);
   vec3 rd = vec3(0.0,0.0,-1.0);
   float t = 0.0;

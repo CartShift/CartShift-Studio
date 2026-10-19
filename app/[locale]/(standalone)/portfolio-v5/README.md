@@ -40,3 +40,13 @@ Landing work cards now feature actual evidence screenshots from our own `portfol
 The homepage is intentionally now a single interactive viewport like the Sharlee compositional model. Work, About and Contact remain fully functional standalone routes. A new original WebGL2 component procedurally ray-marches four iridescent toroidal organic forms and adjusts them by pointer and gentle time-based motion; it imports **no source-site images, fonts, materials, code or 3D assets**. The canvas includes a no-WebGL CSS fallback and respects reduced motion, hidden documents and offscreen pause.
 
 Desktop Work is intentionally type-first, with hover-based previews of the site's own project artifacts. At 390×844 the main text remains clear of the corner forms. Build and browser QA follow before merge; this is a design experiment and stays noindex.
+
+## Reliability and accessibility hardening (2026-10-20)
+
+- The WebGL renderer now caps GPU work by both pixel count and frame interval, stops scheduling frames when motion is paused / reduced, the document is hidden, or the artwork is offscreen, and rebuilds resources after a context loss/restoration.
+- WebGL2 is optional; original CSS artwork remains a static fallback when unavailable. Stronger-contrast and forced-color modes preserve legibility.
+- The navigation uses an actual native modal `<dialog>`, which makes background content inert and delegates focus containment and Escape to the browser. Navigation links are internal Next.js Links with prefetch disabled.
+- Decorative elements are hidden from assistive technology, skip links focus the main heading, and motion controls are translated and labelled.
+- A browser QA runner lives at `scripts/qa-portfolio-v5.mjs`. It runs on request, not on every CI build. It requires only existing dependencies and can inspect the local server or production by setting `PORTFOLIO_V5_BASE_URL`.
+
+Example: `PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-portfolio-v5.mjs`.
