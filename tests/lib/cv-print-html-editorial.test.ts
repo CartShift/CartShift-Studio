@@ -1,17 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import { getEnglishCVData } from '@/lib/cv/cv-data';
 import { renderCvHtml } from '@/lib/cv/cv-print-html';
-import { renderEditorialCvHtml } from '@/lib/cv/cv-print-html-editorial';
+import { renderEditorialCvHtml, resolveCVPrintDesign } from '@/lib/cv/cv-print-html-editorial';
 
-describe('CV editorial PDF design (opt-in)', () => {
+describe('CV editorial PDF design (production default)', () => {
   const cv = getEnglishCVData();
   const classic = renderCvHtml(cv);
   const editorial = renderEditorialCvHtml(cv);
 
+  it('defaults every production CV render to editorial while allowing classic rollback', () => {
+    expect(resolveCVPrintDesign(null)).toBe('editorial');
+    expect(resolveCVPrintDesign('')).toBe('editorial');
+    expect(resolveCVPrintDesign('editorial')).toBe('editorial');
+    expect(resolveCVPrintDesign('classic')).toBe('classic');
+    expect(() => resolveCVPrintDesign('unknown')).toThrow('Unknown CV design');
+  });
+
   it('does not change the approved classic PDF template', () => {
     expect(classic).toContain('class="portrait"');
     expect(classic).toContain('height:51mm');
-    expect(classic).not.toContain('Opt-in CV treatment');
+    expect(classic).not.toContain('Editorial A4 treatment');
   });
 
   it('keeps the original single-page A4 two-column structure', () => {
@@ -38,7 +46,7 @@ describe('CV editorial PDF design (opt-in)', () => {
   });
 
   it('overrides the original decorative hero with a restrained neutral palette', () => {
-    expect(editorial).toContain('Opt-in CV treatment');
+    expect(editorial).toContain('Editorial A4 treatment');
     expect(editorial).toContain('.hero::before, .hero::after { display:none; }');
     expect(editorial).toContain('background:#eceae5');
     expect(editorial).toContain('background:#f6f5f2');
