@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 import { translations, type PortfolioV5Locale } from './v5-copy';
@@ -12,7 +10,7 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
   const t = translations[locale];
   const isHebrew = locale === 'he';
   const homeHref = '/' + locale + '/portfolio-v5';
-  const projects = getPortfolioShowcases(locale);
+  const projects = kind === 'work' ? getPortfolioShowcases(locale) : [];
 
   return (
     <main className={'v5-page v5-subpage v5-subpage--' + kind} dir={isHebrew ? 'rtl' : 'ltr'}>
@@ -26,7 +24,7 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
             <section className="v5-inner-hero v5-shell">
               <div className="v5-inner-heading">
                 <span className="v5-section-kicker">{t.workEyebrow}</span>
-                <h1>{isHebrew ? 'עבודות.' : 'Work.'}<sup>{projects.length.toString().padStart(2, '0')}</sup></h1>
+                <h1>{isHebrew ? 'עבודות.' : 'Work.'}<sup aria-label={isHebrew ? projects.length + ' פרויקטים' : projects.length + ' projects'}>{projects.length.toString().padStart(2, '0')}</sup></h1>
                 <p>{t.workLead}</p>
               </div>
             </section>
