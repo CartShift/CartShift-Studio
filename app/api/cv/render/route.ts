@@ -1,6 +1,11 @@
 import { inflateRawSync } from 'node:zlib';
 import { launchAnalyzerBrowser } from '@/lib/services/puppeteer-launch';
 import { renderCvHtml } from '@/lib/cv/cv-print-html';
+import {
+  renderEditorialCvHtml,
+  resolveCVPrintDesign,
+  type CVPrintDesign,
+} from '@/lib/cv/cv-print-html-editorial';
 import { resolveCvPdfAssets } from '@/lib/cv/cv-media';
 import {
   cvVariantIds,
@@ -80,7 +85,7 @@ function decodeCompressedPayload(encoded: string) {
   return JSON.parse(inflated.toString('utf8')) as unknown;
 }
 
-async function renderPdfBuffer(resolved: ResolvedCVVariant) {
+async function renderPdfBuffer(resolved: ResolvedCVVariant, design: CVPrintDesign = 'editorial') {
   const browser = await launchAnalyzerBrowser(25_000).catch(error => {
     throw new CVRenderError(
       `Unable to launch CV PDF browser: ${error instanceof Error ? error.message : 'unknown error'}`
@@ -89,7 +94,10 @@ async function renderPdfBuffer(resolved: ResolvedCVVariant) {
 
   try {
     const resolvedAssets = await resolveCvPdfAssets();
-    const html = renderCvHtml(resolved.cv, resolvedAssets);
+    const html =
+      design === 'editorial'
+        ? renderEditorialCvHtml(resolved.cv, resolvedAssets)
+        : renderCvHtml(resolved.cv, resolvedAssets);
     const page = await browser.newPage();
 
     try {
@@ -98,6 +106,29 @@ async function renderPdfBuffer(resolved: ResolvedCVVariant) {
       await page.evaluate(async () => {
         if ('fonts' in document) await document.fonts.ready;
       });
+
+      // Validate the production editorial design before returning the PDF.
+      // The legacy classic renderer is retained unchanged for rollback.
+      if (design === 'editorial') {
+        const clipped = await page.evaluate(() => {
+          const tolerancePx = 2;
+          return ['.page', '.hero', '.main', '.side'].flatMap(selector => {
+            const element = document.querySelector<HTMLElement>(selector);
+            if (!element) return [selector + ': missing'];
+            const issues: string[] = [];
+            if (element.scrollHeight - element.clientHeight > tolerancePx) {
+              issues.push(selector + ': vertical');
+            }
+            if (element.scrollWidth - element.clientWidth > tolerancePx) {
+              issues.push(selector + ': horizontal');
+            }
+            return issues;
+          });
+        });
+        if (clipped.length) {
+          throw new CVRenderError(`Editorial CV overflows: ${clipped.join(', ')}`);
+        }
+      }
 
       const pdf = await page.pdf({
         format: 'A4',
@@ -127,11 +158,15 @@ function sanitizeFilename(filename: string) {
 
 async function pdfResponse(
   resolved: ResolvedCVVariant,
-  options: { inline?: boolean; cache?: boolean } = {}
+  options: { inline?: boolean; cache?: boolean; design?: CVPrintDesign } = {}
 ) {
-  const buffer = await renderPdfBuffer(resolved);
+  const buffer = await renderPdfBuffer(resolved, options.design);
   const disposition = options.inline ? 'inline' : 'attachment';
-  const filename = sanitizeFilename(resolved.filename);
+  const filename = sanitizeFilename(
+    options.design === 'classic'
+      ? resolved.filename.replace(/\.pdf$/i, ' - Classic.pdf')
+      : resolved.filename
+  );
 
   return new Response(new Uint8Array(buffer), {
     status: 200,
@@ -144,6 +179,7 @@ async function pdfResponse(
         : 'private, no-store',
       'X-Robots-Tag': 'noindex, nofollow, noarchive',
       'X-CV-Renderer': 'chromium-html',
+      'X-CV-Design': options.design ?? 'editorial',
     },
   });
 }
@@ -164,11 +200,11 @@ export async function GET(request: Request) {
   const payload = url.searchParams.get('payload');
   const variant = url.searchParams.get('variant');
   const inline = url.searchParams.get('inline') === '1';
-
   try {
+    const design = resolveCVPrintDesign(url.searchParams.get('design'));
     if (payload) {
       const tailoredInput = parseCVTailoringInput(decodeCompressedPayload(payload));
-      return pdfResponse(resolveTailoredCV(tailoredInput), { inline, cache: false });
+      return pdfResponse(resolveTailoredCV(tailoredInput), { inline, cache: false, design });
     }
 
     if (variant) {
@@ -179,7 +215,8 @@ export async function GET(request: Request) {
         );
       }
 
-      return pdfResponse(resolveCVVariant(variant as CVVariantId), { inline, cache: true });
+      // Do not serve a stale CV across deployments; keep the canonical download current.
+      return pdfResponse(resolveCVVariant(variant as CVVariantId), { inline, cache: false, design });
     }
 
     return jsonResponse({
@@ -189,6 +226,7 @@ export async function GET(request: Request) {
       usage: {
         namedVariant: '/api/cv/render?variant=fullstack-healthcare',
         inlineNamedVariant: '/api/cv/render?variant=product-frontend&inline=1',
+        classicFallback: '/api/cv/render?variant=default&design=classic&inline=1',
         tailoredGet:
           'Deflate-raw a JSON tailoring payload, base64url encode it, then pass it as ?payload=<value>.',
         tailoredPost: 'POST the same tailoring payload as application/json.',
@@ -215,8 +253,9 @@ export async function POST(request: Request) {
       return jsonResponse({ error: 'CV tailoring payload is too large' }, 413);
     }
 
+    const design = resolveCVPrintDesign(new URL(request.url).searchParams.get('design'));
     const input = parseCVTailoringInput(JSON.parse(text) as unknown);
-    return pdfResponse(resolveTailoredCV(input), { cache: false });
+    return pdfResponse(resolveTailoredCV(input), { cache: false, design });
   } catch (error) {
     return errorResponse(error);
   }
