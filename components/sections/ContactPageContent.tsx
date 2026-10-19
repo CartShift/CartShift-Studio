@@ -237,43 +237,52 @@ export const ContactPageContent: React.FC = () => {
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
+                    <label htmlFor="contact-name" className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
                       {t('contact.form.nameLabel')}
                     </label>
                     <input
+                      id="contact-name"
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={errors.name ? 'contact-name-error' : undefined}
                       {...register('name', { required: true })}
                       placeholder={t('contact.form.namePlaceholder')}
                       className="w-full h-16 px-6 rounded-2xl bg-surface-50 dark:bg-white/5 border border-surface-200 dark:border-white/5 text-surface-900 dark:text-white placeholder:text-surface-400 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none hover:bg-white dark:hover:bg-white/[0.08]"
                     />
                     {errors.name && (
-                      <p className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
+                      <p id="contact-name-error" role="alert" className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
                         {isRtl ? 'אנא הזינו שם' : 'Please enter your name'}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
+                    <label htmlFor="contact-email" className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
                       {t('contact.form.emailLabel')}
                     </label>
                     <input
+                      id="contact-email"
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? 'contact-email-error' : undefined}
                       {...register('email', { required: true, pattern: /^\S+@\S+$/i })}
                       placeholder={t('contact.form.emailPlaceholder')}
                       style={{ direction: 'ltr' }}
                       className="w-full h-16 px-6 rounded-2xl bg-surface-50 dark:bg-white/5 border border-surface-200 dark:border-white/5 text-surface-900 dark:text-white placeholder:text-surface-400 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none hover:bg-white dark:hover:bg-white/[0.08]"
                     />
                     {errors.email && (
-                      <p className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
+                      <p id="contact-email-error" role="alert" className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
                         {isRtl ? 'אנא הזינו אימייל תקין' : 'Please enter a valid email'}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
+                    <label htmlFor="contact-projectType" className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
                       {t('contact.form.projectTypeLabel')}
                     </label>
                     <select
+                      id="contact-projectType"
+                      aria-invalid={Boolean(errors.projectType)}
+                      aria-describedby={errors.projectType ? 'contact-projectType-error' : undefined}
                       {...register('projectType', { required: true })}
                       className="w-full h-16 px-6 rounded-2xl bg-surface-50 dark:bg-white/5 border border-surface-200 dark:border-white/5 text-surface-900 dark:text-white focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none appearance-none hover:bg-white dark:hover:bg-white/[0.08]"
                     >
@@ -285,24 +294,27 @@ export const ContactPageContent: React.FC = () => {
                       <option value="other">{t('contact.form.options.other')}</option>
                     </select>
                     {errors.projectType && (
-                      <p className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
+                      <p id="contact-projectType-error" role="alert" className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
                         {isRtl ? 'בחרו סוג פרויקט' : 'Please choose a project type'}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
+                    <label htmlFor="contact-message" className="block text-sm font-black text-surface-500 dark:text-surface-400 uppercase tracking-widest mb-3 ps-2">
                       {t('contact.form.messageLabel')}
                     </label>
                     <textarea
                       rows={5}
+                      id="contact-message"
+                      aria-invalid={Boolean(errors.message)}
+                      aria-describedby={errors.message ? 'contact-message-error' : undefined}
                       {...register('message', { required: true })}
                       placeholder={t('contact.form.messagePlaceholder')}
                       className="w-full p-6 rounded-2xl bg-surface-50 dark:bg-white/5 border border-surface-200 dark:border-white/5 text-surface-900 dark:text-white placeholder:text-surface-400 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none resize-none hover:bg-white dark:hover:bg-white/[0.08]"
                     />
                     {errors.message && (
-                      <p className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
+                      <p id="contact-message-error" role="alert" className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
                         {isRtl
                           ? 'ספרו לנו קצת על הפרויקט'
                           : 'Please tell us a bit about the project'}
@@ -311,7 +323,7 @@ export const ContactPageContent: React.FC = () => {
                   </div>
 
                   {error && (
-                    <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                    <div role="alert" className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
                       {error}
                     </div>
                   )}
