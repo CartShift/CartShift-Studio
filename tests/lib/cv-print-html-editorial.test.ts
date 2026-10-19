@@ -40,8 +40,29 @@ describe('CV editorial PDF design (opt-in)', () => {
   it('overrides the original decorative hero with a restrained neutral palette', () => {
     expect(editorial).toContain('Opt-in CV treatment');
     expect(editorial).toContain('.hero::before, .hero::after { display:none; }');
-    expect(editorial).toContain('background:#f0efeb');
-    expect(editorial).toContain('background:#f7f6f3');
+    expect(editorial).toContain('background:#eceae5');
+    expect(editorial).toContain('background:#f6f5f2');
     expect(editorial).toContain('.section-icon { display:none; }');
+  });
+
+  it('uses readable type, measured spacing, and a consistent neutral logo treatment', () => {
+    expect(editorial).toContain('font-size:6.94pt');
+    expect(editorial).toContain('font-size:6.4pt');
+    expect(editorial).toContain('font-size:6.18pt');
+    expect(editorial).toContain('font-size:9.45pt');
+    expect(editorial).toContain('font-size:29pt');
+    expect(editorial).toContain('filter:grayscale(.86) saturate(.35)');
+    expect(editorial).toContain('filter:grayscale(.88) saturate(.4)');
+    expect(editorial).toContain('CURRICULUM VITAE');
+    expect(editorial).toContain('background:#6257a8');
+  });
+
+  it('keeps the entire approved CV content and exact number of selected products', () => {
+    const classicBody = classic.slice(classic.indexOf('<div class="body">'));
+    const editorialBody = editorial.slice(editorial.indexOf('<div class="body">'));
+    expect(editorialBody).toEqual(classicBody);
+    expect(editorial.match(/class="product-icon"/g)).toHaveLength(4);
+    expect(editorial.match(/class="earlier-row"/g)).toHaveLength(6);
+    expect(editorial.match(/class="job"/g)).toHaveLength(3);
   });
 });
