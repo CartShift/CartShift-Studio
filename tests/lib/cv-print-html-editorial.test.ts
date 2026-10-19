@@ -17,8 +17,8 @@ describe('CV editorial PDF design (opt-in)', () => {
   it('keeps the original single-page A4 two-column structure', () => {
     expect(editorial).toContain('@page { size: A4; margin: 0; }');
     expect(editorial).toContain('width:210mm; height:297mm');
-    expect(editorial).toContain('height:46mm');
-    expect(editorial).toContain('height:251mm');
+    expect(editorial).toContain('height:51mm');
+    expect(editorial).toContain('height:246mm');
     expect(editorial).toContain('grid-template-columns:138.5mm 71.5mm');
     expect(editorial.match(/class="page"/g)).toHaveLength(1);
   });
