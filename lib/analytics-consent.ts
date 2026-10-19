@@ -6,6 +6,7 @@
  */
 export const COOKIE_CONSENT_KEY = 'cookie_consent';
 export const CONSENT_CHANGED_EVENT = 'cartshift:consent-changed';
+export const OPEN_COOKIE_PREFERENCES_EVENT = 'cartshift:open-cookie-preferences';
 
 export type CookieConsentValue = 'accepted' | 'declined';
 
@@ -33,4 +34,10 @@ export function setCookieConsent(value: CookieConsentValue): boolean {
   } catch {
     return false;
   }
+}
+
+/** Reopen the existing consent choices without overwriting the saved preference. */
+export function openCookiePreferences(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event(OPEN_COOKIE_PREFERENCES_EVENT));
 }
