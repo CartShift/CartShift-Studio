@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type PointerEvent } from 'react';
+import Image from 'next/image';
 import { translations } from './v5-copy';
 import V5Navigation from './V5Navigation';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
@@ -59,15 +60,15 @@ export default function PortfolioV5({ locale, email }: Props) {
         <div className="v5-hero-copy">
           <div className="v5-eyebrow"><span className="v5-eyebrow-dot" />{t.experiment}</div>
           <h1 id="v5-hero-title">
-            <span className="v5-type-outline">{t.hello}</span>
-            <span className="v5-type-solid">{t.name}</span>
-            <span className="v5-type-outline">{t.bridge}</span>
-            <span className="v5-type-solid v5-type-last">{t.payoff}</span>
+            <span className="v5-type-intro">{t.hello}</span>
+            <span className="v5-type-name">{t.name}</span>
+            <span className="v5-type-bridge">{t.bridge}</span>
+            <span className="v5-type-payoff">{t.payoff}</span>
           </h1>
           <p className="v5-hero-description">{t.intro}</p>
           <div className="v5-hero-actions">
-            <a href={'/' + locale + '/portfolio-v5/work'}><span aria-hidden="true">↗</span>{t.seeWork}</a>
-            <a href={'/' + locale + '/portfolio-v5/about'}><span aria-hidden="true">↗</span>{t.seeAbout}</a>
+            <a className="v5-primary-action" href={'/' + locale + '/portfolio-v5/work'}>{t.seeWork}<span aria-hidden="true">↗</span></a>
+            <a className="v5-text-action" href={'/' + locale + '/portfolio-v5/about'}>{t.seeAbout}<span aria-hidden="true">↗</span></a>
           </div>
         </div>
         <div className="v5-hero-bottom">
@@ -87,7 +88,7 @@ export default function PortfolioV5({ locale, email }: Props) {
           <div className="v5-projects">
             {projects.map((project, index) => (
               <a
-                className={'v5-project v5-project--' + project.slug}
+                className={'v5-project v5-project--' + project.slug + (index === 0 ? ' v5-project--featured' : '')}
                 href={'/' + locale + '/portfolio/' + project.slug}
                 key={project.slug}
                 aria-label={project.title + ' — ' + t.caseStudy}
@@ -97,15 +98,27 @@ export default function PortfolioV5({ locale, email }: Props) {
                   <span>{project.year}</span>
                 </div>
                 <div className="v5-project-illustration" aria-hidden="true">
-                  <span className="v5-art-shadow" />
-                  <span className="v5-art-core" />
-                  <span className="v5-art-shine" />
-                  <span className="v5-art-orbit" />
+                  <div className="v5-project-atmosphere" />
+                  <div className="v5-project-frame">
+                    {project.hero ? (
+                      <Image
+                        src={project.hero.src}
+                        alt=""
+                        fill
+                        sizes={index === 0 ? '(max-width: 680px) 90vw, 70vw' : '(max-width: 680px) 90vw, 44vw'}
+                        unoptimized={project.hero.src.startsWith('http')}
+                        className="v5-project-screen"
+                      />
+                    ) : <span className="v5-project-placeholder">{project.title}</span>}
+                  </div>
+                  <span className="v5-project-detail" aria-hidden="true">{project.technologies.slice(0, 2).join(' / ')}</span>
                 </div>
                 <div className="v5-project-info">
-                  <div>
+                  <div className="v5-project-info-content">
+                    <span className="v5-project-number">SELECTED PROJECT / 0{index + 1}</span>
                     <h3>{project.title}</h3>
                     <p>{project.summary}</p>
+                    <span className="v5-project-cta">{t.caseStudy} <span aria-hidden="true">↗</span></span>
                   </div>
                   <span className="v5-project-arrow" aria-hidden="true">↗</span>
                 </div>
