@@ -12,5 +12,41 @@
       "**": false,
       "main": true
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/cv/yotam-faraggi-senior-full-stack-product-engineer-cv.pdf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"yotam-faraggi-senior-full-stack-product-engineer-cv.pdf\""
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600"
+        }
+      ]
+    },
+    {
+      "source": "/cv/yotam-faraggi-senior-full-stack-product-engineer-cv-inline.pdf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "inline; filename=\"yotam-faraggi-senior-full-stack-product-engineer-cv.pdf\""
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600"
+        }
+      ]
+    }
+  ]
 }
