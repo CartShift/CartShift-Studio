@@ -138,7 +138,7 @@ export default function PortfolioV5({ locale, email }: Props) {
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKeyDown);
-      toggleRef.current?.focus();
+      toggleRef.current?.focus({ preventScroll: true });
     };
   }, [menuOpen]);
 

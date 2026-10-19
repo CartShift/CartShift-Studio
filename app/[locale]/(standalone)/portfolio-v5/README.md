@@ -13,7 +13,7 @@ The route is a standalone App Router page and deliberately has no navigation lin
 
 - No added packages, external fonts, remote media, WebGL, or tracking code.
 - Content is Yotam's own professional portfolio, reusing factual project descriptions and case-study links from the existing showcase model.
-- Light-reactive glossy organic forms are implemented using original CSS gradients, highlights, shadows and subtly different silhouettes.
+- Light-reactive glossy organic forms are implemented using original CSS gradients, highlights, masks, shadows and subtly different toroidal silhouettes.
 - Hero mouse parallax, animated sculptures, motion pause, keyboard-operable full-screen menu, English/Hebrew locale switch, real case-study links and contact link.
 - Mobile layout and prefers-reduced-motion support.
 - All styles are scoped under v5 classes and no global CSS rules were modified.
