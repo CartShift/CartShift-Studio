@@ -270,3 +270,24 @@
     color: CanvasText;
   }
 }
+
+
+/* WCAG typography contrast corrections verified against the 2026-10-20 mobile audit.
+   Preserve the muted palette while making every secondary label readable. */
+.v5-page.v5-subpage--work .v5-inner-heading sup,
+.v5-page.v5-subpage--work .v5-work-count,
+.v5-page.v5-subpage--work .v5-work-year { color: #626880; }
+.v5-page.v5-subpage--work .v5-work-row p { color: #625f7a; }
+.v5-page .v5-about-skills div span:first-child { color: #6a617f; }
+
+.v5-page.v5-subpage--contact { color: #f4f3fa; }
+.v5-page.v5-subpage--contact .v5-contact-links,
+.v5-page.v5-subpage--contact .v5-contact-links a,
+.v5-page.v5-subpage--contact .v5-subpage-footer a { color: #f4f3fa; }
+.v5-page.v5-subpage--contact .v5-subpage-footer,
+.v5-page.v5-subpage--contact .v5-subpage-footer span { color: #deddeb; }
+
+.v5-immersive-title:focus-visible {
+  outline: 3px solid #7168a2;
+  outline-offset: 8px;
+}
