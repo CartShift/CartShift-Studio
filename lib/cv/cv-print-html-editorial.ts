@@ -25,21 +25,11 @@ const editorialStyles = `
   padding:6mm 9mm 4mm;
   background:#eceae5;
   color:#242226;
-  border-top:1.05mm solid #242226;
+  border-top:1.05mm solid #7060a5;
   border-bottom:.22mm solid #d4d0c9;
 }
 .hero::before, .hero::after { display:none; }
 .hero-grid { display:block; }
-.hero-grid::before {
-  content:"CURRICULUM VITAE";
-  position:absolute;
-  top:.7mm;
-  right:0;
-  color:#837e83;
-  font-size:6.1pt;
-  font-weight:700;
-  letter-spacing:1.15pt;
-}
 .portrait { display:none; }
 .identity { padding-top:0; }
 .name {
@@ -55,7 +45,7 @@ const editorialStyles = `
   font-size:10.65pt;
   line-height:1.14;
   letter-spacing:-.1pt;
-  color:#514b56;
+  color:#594a86;
   font-weight:600;
 }
 .summary {
@@ -74,10 +64,10 @@ const editorialStyles = `
 }
 .contact-row.secondary { margin-top:1.05mm; }
 .contact-item { min-height:3mm; }
-.contact-row a { color:#494553; }
-.contact-icon { color:#6257a8; width:2.85mm; height:2.85mm; }
+.contact-row a { color:#5d5085; }
+.contact-icon { color:#7463ad; width:2.85mm; height:2.85mm; }
 .divider { background:#d0ccc6; height:2.6mm; }
-.hero .contact-item strong { color:#6257a8 !important; }
+.hero .contact-item strong { color:#6a5aa0 !important; }
 
 .body { height:246mm; }
 .main {
@@ -86,13 +76,13 @@ const editorialStyles = `
 }
 .side {
   padding:5.9mm 7mm 4mm 5.2mm;
-  background:#f6f5f2;
+  background:#f7f6fa;
   border-left:.22mm solid #e3dfd9;
 }
 .section-title {
   gap:1.85mm;
   margin-bottom:3.6mm;
-  color:#343139;
+  color:#413a53;
 }
 .section-icon { display:none; }
 .section-title h2 {
@@ -113,7 +103,7 @@ const editorialStyles = `
   width:.8mm;
   height:3.4mm;
   flex:none;
-  background:#6257a8;
+  background:#7868ae;
 }
 
 .job {
@@ -142,7 +132,7 @@ const editorialStyles = `
 .meta-place { color:#726d75; font-size:5.9pt; }
 .meta-place::before { color:#8a8294; }
 .company-line {
-  color:#524c5a;
+  color:#51466e;
   font-size:7.35pt;
   font-weight:700;
 }
@@ -204,8 +194,8 @@ const editorialStyles = `
 .product-icon {
   border-radius:1.15mm;
   box-shadow:none;
-  filter:grayscale(.88) saturate(.4);
-  opacity:.88;
+  filter:grayscale(.65) saturate(.7);
+  opacity:.93;
 }
 .p-title {
   margin-top:.15mm;
@@ -216,7 +206,7 @@ const editorialStyles = `
 }
 .p-link {
   margin-top:.55mm;
-  color:#5d548c;
+  color:#61509b;
   font-size:5.8pt;
   font-weight:700;
 }
