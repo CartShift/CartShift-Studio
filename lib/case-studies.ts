@@ -324,10 +324,13 @@ export function getCaseStudyBySlug(slug: string, locale: string = 'en'): CaseStu
 }
 
 export function getAllCaseStudies(locale: string = 'en'): CaseStudyMeta[] {
+  // Route segments and bot requests are untrusted. Never pass arbitrary values
+  // to Intl localeCompare, which throws RangeError for malformed locale names.
+  const safeLocale = locale === 'he' ? 'he' : 'en';
   const slugs = getCaseStudySlugs();
   const caseStudies = slugs
     .map(slug => {
-      const study = getCaseStudyBySlug(slug, locale);
+      const study = getCaseStudyBySlug(slug, safeLocale);
       if (!study) return null;
 
       // Return metadata only (without full content)
@@ -341,7 +344,7 @@ export function getAllCaseStudies(locale: string = 'en'): CaseStudyMeta[] {
       (a.portfolioOrder ?? Number.MAX_SAFE_INTEGER) -
         (b.portfolioOrder ?? Number.MAX_SAFE_INTEGER) ||
       Number(b.featured) - Number(a.featured) ||
-      a.title.localeCompare(b.title, locale)
+      a.title.localeCompare(b.title, safeLocale)
   );
 }
 
