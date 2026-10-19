@@ -41,8 +41,9 @@ export default function V5Navigation({ locale, section, motionPaused = false, on
   }, [menuOpen]);
 
   useEffect(() => {
+    const dialog = dialogRef.current;
     return () => {
-      if (dialogRef.current?.open) dialogRef.current.close();
+      if (dialog?.open) dialog.close();
     };
   }, []);
 
