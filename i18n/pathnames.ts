@@ -67,6 +67,7 @@ const portalPathnames = [
 const standalonePathnames = [
   '/cv',
   '/yotam',
+  '/portfolio-v5',
   '/proposal/[token]',
   '/proposal/[token]/payment/[paymentToken]',
 ] as const;
