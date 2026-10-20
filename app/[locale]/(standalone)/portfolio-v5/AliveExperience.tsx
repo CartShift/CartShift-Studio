@@ -80,7 +80,7 @@ const labels = {
     caseStudy: 'Read the full case study',
     selectProject: 'Explore another project',
     intro: 'Five products. One curiosity: making difficult things feel intuitive.',
-    powered: 'Answers grounded in public project descriptions. No private systems or client data are exposed.',
+    powered: 'Grounded in public project facts. Dictation may be processed by your browser provider. No private systems are accessed.',
     offline: 'Live AI is not enabled yet. You are exploring a transparent guided tour.',
     error: 'The live guide is unavailable right now. Explore a project on the right or try again.',
   },
@@ -114,7 +114,7 @@ const labels = {
     caseStudy: 'לסיפור הפרויקט המלא',
     selectProject: 'פרויקטים נוספים',
     intro: 'חמישה מוצרים. סקרנות אחת: להפוך מערכות מורכבות לחוויות אינטואיטיביות.',
-    powered: 'התשובות מבוססות על תיאורי פרויקטים פומביים בלבד. אין גישה למערכות פרטיות או למידע לקוחות.',
+    powered: 'מבוסס על מידע פומבי בלבד. הכתבה קולית עשויה להיות מעובדת אצל ספק הדפדפן. אין גישה למערכות פרטיות.',
     offline: 'ה-AI החי עדיין לא הופעל. זהו סיור מודרך ושקוף.',
     error: 'מדריך ה-AI אינו זמין כרגע. אפשר לחקור פרויקטים או לנסות שוב.',
   },
@@ -131,6 +131,7 @@ export default function AliveExperience({ locale, projects }: Props) {
   const busyRef = useRef(false);
   const recognitionRef = useRef<SpeechRecognizer | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const voiceAbortRef = useRef<AbortController | null>(null);
   const audioUrlRef = useRef<string | null>(null);
   const voiceRef = useRef(false);
   const serial = useRef(0);
@@ -150,6 +151,8 @@ export default function AliveExperience({ locale, projects }: Props) {
   const active = projects.find(project => project.slug === activeSlug) ?? projects[0];
 
   function stopAudio() {
+    voiceAbortRef.current?.abort();
+    voiceAbortRef.current = null;
     audioRef.current?.pause();
     audioRef.current = null;
     if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
@@ -170,6 +173,7 @@ export default function AliveExperience({ locale, projects }: Props) {
   useEffect(() => () => {
     requestRef.current?.abort();
     try { recognitionRef.current?.stop(); } catch { /* Closed */ }
+    voiceAbortRef.current?.abort();
     audioRef.current?.pause();
     if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
   }, []);
@@ -210,12 +214,15 @@ export default function AliveExperience({ locale, projects }: Props) {
   async function speak(reply: Reply) {
     if (!voiceRef.current || !reply.voiceToken || !capability.voice) return;
     stopAudio();
+    const voiceController = new AbortController();
+    voiceAbortRef.current = voiceController;
     try {
       const response = await fetch('/api/yotam/alive/voice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: reply.answer, locale, token: reply.voiceToken }),
         cache: 'no-store',
+        signal: voiceController.signal,
       });
       if (!response.ok || !dialogRef.current?.open || !voiceRef.current) return;
       const url = URL.createObjectURL(await response.blob());
@@ -226,7 +233,7 @@ export default function AliveExperience({ locale, projects }: Props) {
       audio.onended = () => stopAudio();
       await audio.play();
     } catch {
-      setNotice(t.needVoice);
+      if (!voiceController.signal.aborted) setNotice(t.needVoice);
     }
   }
 
@@ -296,7 +303,7 @@ export default function AliveExperience({ locale, projects }: Props) {
         const transcript = event.results[0]?.[0]?.transcript?.trim();
         if (transcript) void send(transcript);
       };
-      recognition.onerror = () => { setListening(false); setNotice(t.noMic); };
+      recognition.onerror = () => { setListening(false); setNotice(he ? 'לא ניתן לגשת למיקרופון. בדקו הרשאות בדפדפן.' : 'Microphone unavailable. Check your browser permissions.'); };
       recognition.onend = () => setListening(false);
       recognitionRef.current = recognition;
       recognition.start();
