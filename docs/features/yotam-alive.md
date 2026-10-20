@@ -5,11 +5,22 @@
 The new entry point sits inside the editorial V5 homepage at `/{en|he}/yotam`.
 It opens a native accessible dialog with two surfaces: a text-first conversation
 and a living, localized exploration of the **existing public portfolio data**.
+The workbench also exposes code-split, client-only interactive micro-demos for all
+five products and a deterministic Challenge Me architecture exercise.
 It does not change the CartShift studio site, client portal or canonical projects.
 
 - The workbench uses authentic, already-published project media and descriptions.
 - "Under the hood" displays **documented** engineering highlights, not a made-up architecture diagram.
 - A guided tour always works, even when AI services are unavailable.
+- Each case has its own **clearly labeled synthetic simulation**. These are not
+  read/write integrations with the original applications; there are no customer records.
+- Challenge Me takes a user-stated problem plus priority and scale constraints and
+  presents a structured **example** playbook, risk, trade-off and related case.
+  It does not pretend to be a custom AI consultation or save user input.
+- Explicit natural-language requests for demos/challenges can trigger only
+  allowlisted UI views; project names take precedence over topic matching.
+- The text transcript includes a direct action to follow its selected workbench
+  view, useful on narrow/mobile layouts.
 - When enabled, the live guide uses OpenAI Responses with strict structured output.
   Only allowlisted local projects/views are actionable; no links, arbitrary scripts,
   database reads or admin actions are exposed to the model.
@@ -63,16 +74,32 @@ to generate arbitrary statements impersonating Yotam.
 
 ## QA / release checklist
 
-1. `pnpm exec vitest run tests/lib/yotam-alive.test.ts`
+1. `pnpm exec vitest run tests/lib/yotam-alive.test.ts tests/lib/yotam-alive-challenge.test.ts tests/components/alive-lab.test.tsx tests/api/yotam-alive.route.test.ts`
 2. `pnpm exec tsc --noEmit`
 3. `pnpm exec eslint "app/[locale]/(standalone)/portfolio-v5/AliveExperience.tsx" "app/api/yotam/alive/**/*.ts" lib/yotam-alive.ts`
 4. Desktop/mobile: open/close/Escape/focus, project switching, guided prompts,
    Hebrew RTL, long project names, scroll position, reduced motion.
 5. Verify unauthenticated AI request caps and no secret disclosure.
-6. Verify missing keys show **guided**, not a deceptive AI or voice demo.
-7. Opt into microphone on supported browsers; test denied/unsupported permissions.
-8. Only after a verified custom voice ID exists: test consent, audio playback,
+6. Exercise five interactive mini-labs in both languages on narrow and wide
+   layouts. Check that simulated data is clearly labeled and no integrations run.
+7. Verify missing keys show **guided**, not a deceptive AI or voice demo.
+8. Opt into microphone on supported browsers; test denied/unsupported permissions.
+9. Only after a verified custom voice ID exists: test consent, audio playback,
    origin rejection, modified text/token, expiry and rate limits.
 
 No preview deployment is required to review the code. Do not declare voice
 cloning operational until configured and tested with the authorized recording.
+
+## Validation record — October 20, 2026
+
+- Isolated sandbox: 23 / 23 targeted tests passing, changed-code ESLint clean,
+  repository-wide TypeScript clean **after** generating translated files.
+- Local HTTP response: /en/yotam and /he/yotam both 200, ALIVE present.
+- API smoke: origin-matched guided demo 200; cross-origin request 403;
+  paid AI / voice both correctly reported as disabled.
+- One subsequent matcher precedence fix and regression assertion were committed
+  after the final sandbox ended; that tiny update still needs a new CI run.
+- Headless Chromium launch was possible after OS library installation, but
+  browser navigation crashed with a detached frame. Therefore full visual/keyboard
+  QA and production build remain explicitly **unverified**. Do not claim otherwise.
+- No production merge or public deployment has been performed.
