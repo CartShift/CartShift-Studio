@@ -26,7 +26,7 @@ const bodySchema = z.object({
 function capabilities() {
   return {
     ai: process.env.YOTAM_ALIVE_AI_ENABLED === 'true' && Boolean(process.env.OPENAI_API_KEY),
-    voice: Boolean(process.env.ELEVENLABS_API_KEY &&
+    voice: process.env.YOTAM_ALIVE_AI_ENABLED === 'true' && Boolean(process.env.OPENAI_API_KEY) && Boolean(process.env.ELEVENLABS_API_KEY &&
       process.env.ELEVENLABS_YOTAM_VOICE_ID &&
       process.env.YOTAM_ALIVE_VOICE_SIGNING_KEY),
   };
