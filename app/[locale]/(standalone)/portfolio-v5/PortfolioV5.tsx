@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 import V5Navigation from './V5Navigation';
 import FluidField from './FluidField';
-import AliveExperience from './AliveExperience';
 
 type Props = { locale: 'en' | 'he' };
 
@@ -105,7 +104,6 @@ export default function PortfolioV5({ locale }: Props) {
             <Link href={home + '/work'}>{labels.workAll} <span aria-hidden="true">↗</span></Link>
             <Link href={home + '/about'}>{labels.about} <span aria-hidden="true">↗</span></Link>
           </nav>
-          <AliveExperience locale={locale} projects={projects} />
         </div>
         <div className="v5-immersive-footer v5-editorial-hero-footer">
           <span className="v5-immersive-location">{labels.location} <i aria-hidden="true" /></span>
