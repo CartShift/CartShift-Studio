@@ -74,9 +74,8 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return noStore({ error: 'Invalid request' }, 400);
 
   const { locale, question, history } = parsed.data;
-  if (!capabilities().ai) {
-    return noStore({ ...guidedPortfolioAnswer(question, locale), mode: 'guided', voiceToken: null });
-  }
+  const guided = () => noStore({ ...guidedPortfolioAnswer(question, locale), mode: 'guided', voiceToken: null });
+  if (!capabilities().ai) return guided();
 
   let limit;
   try {
@@ -86,9 +85,9 @@ export async function POST(request: NextRequest) {
       tooManyRequestsMessage: 'Conversation limit reached. Please come back shortly.',
     });
   } catch {
-    return noStore({ error: 'AI is temporarily unavailable', mode: 'guided' }, 503);
+    return guided();
   }
-  if ('response' in limit) return limit.response;
+  if ('response' in limit) return limit.response.status === 429 ? guided() : limit.response;
 
   const system = [
     'You are the clearly identified AI portfolio guide for Yotam Faraggi, a Berlin-based senior product engineer.',
@@ -137,13 +136,13 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(18_000),
       cache: 'no-store',
     });
-    if (!api.ok) return noStore({ error: 'AI is temporarily unavailable', mode: 'guided' }, 503);
+    if (!api.ok) return guided();
     const result = await api.json() as { output?: ApiOutput[] };
     const text = result.output?.flatMap(item => item.content ?? [])
       .find(item => item.type === 'output_text')?.text;
-    if (!text) return noStore({ error: 'No response available', mode: 'guided' }, 503);
+    if (!text) return guided();
     const answer = aliveDirectiveSchema.safeParse(JSON.parse(text));
-    if (!answer.success) return noStore({ error: 'Invalid model response', mode: 'guided' }, 503);
+    if (!answer.success) return guided();
     return noStore({
       ...answer.data,
       mode: 'ai',
