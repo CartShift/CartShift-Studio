@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {
   const voice = process.env.ELEVENLABS_YOTAM_VOICE_ID;
   if (!secret || !key || !voice) return NextResponse.json({ error: 'Voice unavailable' }, { status: 503 });
   const origin = request.headers.get('origin');
-  if (!origin || (() => { try { return new URL(origin).host !== request.nextUrl.host; } catch { return true; } })()) {
+  const host = request.headers.get('host') || request.nextUrl.host;
+  if (!origin || (() => { try { return new URL(origin).host !== host; } catch { return true; } })()) {
     return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
   }
   if (Number(request.headers.get('content-length') || 0) > 3500) {
