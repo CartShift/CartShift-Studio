@@ -135,3 +135,17 @@
   .v5-transition-wipe { display: none !important; }
   .v5-custom-cursor { display: none !important; }
 }
+
+
+/* A quiet progress rail, only on scrollable inner pages. Transform is GPU-friendly. */
+.v5-scroll-progress {
+  position: fixed; z-index: 190; inset-block-start: 0; inset-inline: 0;
+  width: 100%; height: 3px; pointer-events: none;
+  background: linear-gradient(90deg,#83e0d0,#afa0ef,#eaafd0);
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .1s linear;
+}
+.v5-scroll-progress--rtl { transform-origin: right center; }
+@media (prefers-reduced-motion: reduce) {
+  .v5-scroll-progress { transition: none !important; }
+}

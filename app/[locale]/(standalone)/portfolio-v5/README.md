@@ -62,3 +62,9 @@ Only deploy after branch checks; use one production deployment on \`main\`. Do n
 ## Career experience page
 
 `experience/page.tsx` is a standalone, **server-rendered**, bilingual career narrative with an original dark editorial intro, detailed recent timeline, compact earlier career timeline, skill groups, education, languages, download CV link and contact CTA. It consumes `buildCVData()` using `messages/src/{en,he}/cv.json`; company names, role titles, date ranges and highlights are not duplicated or fabricated. Its styling is isolated in `portfolio-v5-experience.css`. The Experience route is linked in the modal navigation and from About, and keeps the experiment's noindex policy. The PDF points to the CV already produced by the normal build.
+
+## Motion system (2026-10-20)
+
+Shared client boundary `PortfolioMotion.tsx` wraps all Portfolio V5 routes in the existing standalone layout. It provides a scoped editorial page wipe when navigating among portfolio routes (with a fail-safe timeout), staggered hero entrance, intersection-based reveals for Work, About, Contact and Experience, a fine-pointer-only lightweight cursor, tactile Work previews, animated modal menu, ambient sculpture motion and long-page reading progress. All decorative effects run on transform/opacity wherever possible. Hash jumps, external links, downloads, keyboard activation, native browser history and links outside this portfolio are not intercepted. The page and content are fully usable with scripts disabled or reduced motion enabled. The reference site's implementation/assets are not copied.
+
+Avoid adding new animation libraries, looping scroll events or uncontrolled RAFs. QA should check both visual polish and that route changes actually finish, including normal and reduced motion. On-demand `pnpm qa:portfolio-v5` remains the regression entry point.

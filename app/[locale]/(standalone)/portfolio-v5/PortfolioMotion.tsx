@@ -37,6 +37,8 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
   const timers = useRef<number[]>([]);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const isHomepage = /^\/(?:en|he)\/portfolio-v5$/.test(pathname);
 
   const clearTimers = useCallback(() => {
     for (const id of timers.current) window.clearTimeout(id);
@@ -127,6 +129,28 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
     };
   }, [pathname]);
 
+  // A passive, RAF-throttled reading progress indicator on longer inner pages.
+  useEffect(() => {
+    const node = progressRef.current;
+    if (!node || isHomepage) return;
+    let frame = 0;
+    const render = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      node.style.transform = 'scaleX(' + progress + ')';
+    };
+    const request = () => { if (!frame) frame = window.requestAnimationFrame(render); };
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request, { passive: true });
+    request();
+    return () => {
+      window.removeEventListener('scroll', request);
+      window.removeEventListener('resize', request);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [pathname, isHomepage]);
+
   // A pointer-following editorial cursor; no continuous RAF when stationary.
   useEffect(() => {
     const node = cursorRef.current;
@@ -165,7 +189,10 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
       }
       if (!raf) raf = window.requestAnimationFrame(tick);
     };
-    const hide = () => { node.dataset.visible = 'false'; };
+    const hide = (event: PointerEvent) => {
+      // Moving between descendants is not leaving the document.
+      if (!event.relatedTarget) node.dataset.visible = 'false';
+    };
     document.addEventListener('pointermove', move, { passive: true });
     document.addEventListener('pointerout', hide, { passive: true });
     window.addEventListener('blur', hide);
@@ -186,6 +213,8 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
       </div>
       <div className={'v5-transition-wipe v5-transition-wipe--' + phase}
         aria-hidden="true"><span>YF<sup>✳</sup></span></div>
+      {!isHomepage && <div className={'v5-scroll-progress' + (pathname.startsWith('/he/') ? ' v5-scroll-progress--rtl' : '')}
+        ref={progressRef} aria-hidden="true" />}
       <div className="v5-custom-cursor" ref={cursorRef} aria-hidden="true" />
     </div>
   );
