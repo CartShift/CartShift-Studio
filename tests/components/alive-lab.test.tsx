@@ -29,7 +29,7 @@ describe('ALIVE interactive project simulations', () => {
     fireEvent.click(screen.getByRole('button', { name: /Confirm awake/i }));
     expect(screen.getAllByText('Awake')).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: /Start over/i }));
-    expect(screen.getByText(/Scheduled/)).toBeTruthy();
+    expect(screen.getAllByText('Scheduled')).toHaveLength(2);
   });
 
   it('links a sample lead to a project only after stage transitions', () => {
