@@ -78,7 +78,25 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
                 </div>
               </div>
               <div className="v5-about-visual">
-                <div className="v5-about-disc" aria-hidden="true"><span /><i /></div>
+                <figure className="v5-about-portrait">
+                  <div className="v5-about-portrait-stage">
+                    <span className="v5-about-portrait-halo" aria-hidden="true" />
+                    <span className="v5-about-portrait-monogram" aria-hidden="true">YF.</span>
+                    <Image
+                      src="/images/cv/yotam-studio-cv.png"
+                      alt={isHebrew ? 'דיוקן של יותם פרג׳י' : 'Portrait of Yotam Faraggi'}
+                      fill
+                      priority
+                      sizes="(max-width: 680px) calc(100vw - 48px), (max-width: 1024px) 46vw, 520px"
+                      className="v5-about-portrait-image"
+                    />
+                    <span className="v5-about-portrait-edition" aria-hidden="true">PERSON / 001</span>
+                  </div>
+                  <figcaption className="v5-about-portrait-caption">
+                    <span>{isHebrew ? 'יותם פרג׳י' : 'Yotam Faraggi'}</span>
+                    <span>{isHebrew ? 'ברלין · גרמניה' : 'Berlin · Germany'}</span>
+                  </figcaption>
+                </figure>
                 <div className="v5-about-skills">
                   {t.areas.map((area, index) => (
                     <div key={area}>

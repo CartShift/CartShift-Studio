@@ -26,6 +26,7 @@ const cases = [
   { locale: 'en', page: 'experience', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'experience', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'about', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'about', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'contact', width: 390, height: 844, mobile: true },
   { locale: 'he', page: 'work', width: 390, height: 844, mobile: true },
   { locale: 'he', page: 'experience', width: 390, height: 844, mobile: true },
@@ -72,6 +73,18 @@ async function main() {
           assert(await page.$('main[data-project] img'), name + ': original project media missing');
           assert((await page.$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
           assert(!(await page.$('.v5-case-study')), name + ': generic replacement template should not render');
+        }
+        if (test.page === 'about') {
+          const portrait = await page.$('.v5-about-portrait-image');
+          assert(portrait, name + ': About portrait is missing');
+          const img = await page.$eval('.v5-about-portrait-image', el => ({
+            src: el.getAttribute('src'),
+            alt: el.getAttribute('alt'),
+          }));
+          assert(img.src?.includes('yotam-studio-cv.png') || img.src?.includes('yotam-studio-cv'),
+            name + ': wrong portrait asset');
+          assert(img.alt?.includes(test.locale === 'he' ? 'יותם' : 'Yotam'),
+            name + ': portrait accessibility label missing');
         }
         if (test.page === 'experience') {
           const counts = await page.evaluate(() => ({
