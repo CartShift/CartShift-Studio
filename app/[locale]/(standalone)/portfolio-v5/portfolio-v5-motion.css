@@ -1,0 +1,137 @@
+/* Portfolio V5 — authored motion language. Transform/opacity only; no scroll-jacking.
+   The theme must be functional without JS and when prefers-reduced-motion is enabled. */
+.v5-motion-root { position: relative; isolation: isolate; }
+.v5-motion-surface { animation: v5-route-appear .72s cubic-bezier(.22,1,.36,1) both; }
+@keyframes v5-route-appear {
+  from { opacity: .4; transform: translate3d(0,12px,0); }
+  to { opacity: 1; transform: translate3d(0,0,0); }
+}
+.v5-transition-wipe {
+  position: fixed; inset: 0; z-index: 300;
+  pointer-events: none; display: grid; place-items: center;
+  background: radial-gradient(ellipse at 85% 20%,#7666b3,#37334f 63%,#24263c);
+  color: #eae8fa; transform: translate3d(0,102%,0);
+  visibility: hidden; overflow: hidden;
+}
+.v5-transition-wipe::before {
+  content: ""; position: absolute; width: min(80vw,690px); aspect-ratio: 1;
+  inset-inline-end: -18%; inset-block-start: -55%; border-radius: 48%;
+  background: radial-gradient(circle at 23% 20%,#e5fce9,#90dbd1 45%,#b6a0e9 80%);
+  opacity: .35; filter: blur(25px);
+}
+.v5-transition-wipe span {
+  z-index: 1; font-size: clamp(48px,9vw,110px); letter-spacing: -.16em;
+  font-weight: 830; opacity: 0; transform: translateY(30px);
+}
+.v5-transition-wipe span sup { font-size: .2em; vertical-align: top; color: #aee3d4; letter-spacing: 0; }
+.v5-transition-wipe--cover {
+  visibility: visible; pointer-events: auto;
+  transform: translate3d(0,0,0);
+  transition: transform .49s cubic-bezier(.76,0,.24,1),visibility 0s;
+}
+.v5-transition-wipe--cover span {
+  animation: v5-wipe-mark-in .49s cubic-bezier(.19,1,.22,1) both;
+}
+.v5-transition-wipe--reveal {
+  visibility: visible; transform: translate3d(0,-102%,0);
+  transition: transform .66s cubic-bezier(.76,0,.24,1),visibility 0s .66s;
+}
+.v5-transition-wipe--reveal span { opacity: 1; transform: translateY(0); }
+@keyframes v5-wipe-mark-in { to { opacity: 1; transform: translateY(0); } }
+
+.v5-motion-surface[data-v5-reveal-ready] [data-v5-reveal]:not([data-v5-visible]) {
+  opacity: 0; transform: translate3d(0,30px,0);
+}
+.v5-motion-surface [data-v5-reveal] {
+  transition: opacity .78s cubic-bezier(.2,.7,.2,1), transform .78s cubic-bezier(.2,.7,.2,1);
+  transition-delay: var(--v5-reveal-delay,0ms);
+}
+.v5-motion-surface [data-v5-reveal][data-v5-visible] {
+  opacity: 1; transform: translate3d(0,0,0);
+}
+
+/* Fullscreen hero is a sequence, not one crossfade. */
+.v5-immersive-pretitle { animation: v5-type-arrival .82s .13s both cubic-bezier(.16,1,.3,1); }
+.v5-immersive-title > span:first-child { animation: v5-type-arrival .95s .23s both cubic-bezier(.16,1,.3,1); }
+.v5-immersive-title > span:last-child { animation: v5-type-arrival 1.04s .37s both cubic-bezier(.16,1,.3,1); }
+.v5-immersive-subtitle { animation: v5-type-arrival .85s .58s both cubic-bezier(.16,1,.3,1); }
+.v5-immersive-links { animation: v5-type-arrival .8s .72s both cubic-bezier(.16,1,.3,1); }
+.v5-immersive-footer { animation: v5-type-arrival .8s .85s both cubic-bezier(.16,1,.3,1); }
+@keyframes v5-type-arrival {
+  from { opacity: 0; transform: translate3d(0,32px,0); filter: blur(7px); }
+  to { opacity: 1; transform: translate3d(0,0,0); filter: blur(0); }
+}
+.v5-immersive-links a { position: relative; }
+.v5-immersive-links a::after,
+.v5-exp-actions a::after,.v5-inline-link::after {
+  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform .42s cubic-bezier(.22,1,.36,1);
+}
+.v5-immersive-links a:hover::after,.v5-immersive-links a:focus-visible::after,
+.v5-exp-actions a:hover::after,.v5-inline-link:hover::after { transform: scaleX(1); }
+.v5-exp-actions a,.v5-inline-link { position: relative; }
+
+/* Projects get a tactile reaction but keep the entire row clickable. */
+@media (hover: hover) and (pointer: fine) {
+  .v5-work-row { position: relative; }
+  .v5-work-row h2,.v5-work-row .v5-work-row-arrow {
+    transition: transform .52s cubic-bezier(.16,1,.3,1), color .32s ease;
+  }
+  .v5-work-row:hover h2 { transform: translate3d(11px,0,0); }
+  .v5-page[dir="rtl"] .v5-work-row:hover h2 { transform: translate3d(-11px,0,0); }
+  .v5-work-row:hover .v5-work-row-arrow { transform: translate3d(5px,-5px,0) rotate(7deg); }
+  .v5-subpage--work .v5-work-row:hover .v5-work-row-preview {
+    transform: translate3d(var(--v5-parallax-x,0px),var(--v5-parallax-y,0px),0) rotate(-3deg) scale(1.35);
+  }
+}
+.v5-about-skills > div { transition: padding .4s cubic-bezier(.16,1,.3,1), color .3s; }
+.v5-about-skills > div:hover { padding-inline: 16px 8px; color: #7261ba; }
+.v5-experience .v5-exp-job { transition: background-color .4s; }
+.v5-experience .v5-exp-job:hover { background: rgba(174,166,210,.075); }
+.v5-experience .v5-exp-job .v5-exp-dot { transition: transform .45s, background-color .45s; }
+.v5-experience .v5-exp-job:hover .v5-exp-dot { transform: scale(1.38); background: #8a6fd5; }
+.v5-experience .v5-exp-orbit--one { animation: v5-orbit-drift 10s ease-in-out infinite alternate; }
+.v5-experience .v5-exp-orbit--two { animation: v5-orbit-drift 12s ease-in-out infinite alternate-reverse; }
+@keyframes v5-orbit-drift { from { margin-top: -15px; } to { margin-top: 17px; } }
+.v5-experience .v5-exp-outro-art { animation: v5-orbit-drift 9s ease-in-out infinite alternate; }
+
+/* Rich navigation menu with rhythm and a distinct entrance for every label. */
+.v5-menu-panel[open] nav a {
+  animation: v5-menu-link-in .62s cubic-bezier(.2,1,.3,1) both;
+}
+.v5-menu-panel[open] nav a:nth-child(1) { animation-delay: .04s; }
+.v5-menu-panel[open] nav a:nth-child(2) { animation-delay: .10s; }
+.v5-menu-panel[open] nav a:nth-child(3) { animation-delay: .16s; }
+.v5-menu-panel[open] nav a:nth-child(4) { animation-delay: .22s; }
+.v5-menu-panel[open] nav a:nth-child(5) { animation-delay: .28s; }
+@keyframes v5-menu-link-in {
+  from { opacity: 0; transform: translate3d(0,26px,0); }
+  to { opacity: 1; transform: translate3d(0,0,0); }
+}
+
+/* Only on hardware with a fine pointer — native pointer remains for accessibility. */
+.v5-custom-cursor { display: none; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) {
+  .v5-custom-cursor {
+    position: fixed; display: block; inset: 0 auto auto 0;
+    z-index: 210; width: 32px; height: 32px; border: 1.5px solid #ffffff;
+    border-radius: 50%; margin: -16px 0 0 -16px; opacity: 0;
+    mix-blend-mode: difference;
+    transition: opacity .25s, width .25s, height .25s, margin .25s, background .25s;
+    will-change: transform;
+  }
+  .v5-custom-cursor[data-visible="true"] { opacity: .85; }
+  .v5-custom-cursor[data-hover="true"] {
+    width: 54px; height: 54px; margin: -27px 0 0 -27px; background: #ffffff;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v5-motion-surface,.v5-motion-surface *, .v5-motion-surface *::before, .v5-motion-surface *::after,
+  .v5-transition-wipe,.v5-transition-wipe *, .v5-custom-cursor {
+    animation: none !important; transition-duration: 0s !important; scroll-behavior: auto !important;
+  }
+  .v5-motion-surface [data-v5-reveal] { opacity: 1 !important; transform: none !important; }
+  .v5-transition-wipe { display: none !important; }
+  .v5-custom-cursor { display: none !important; }
+}
