@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   ArrowRight, ArrowUpRight, AudioLines, Check,
   LoaderCircle, Mic2,
@@ -10,7 +11,8 @@ import {
 } from 'lucide-react';
 import type { PortfolioShowcaseProject } from '@/lib/portfolio-showcase';
 import type { AliveView } from '@/lib/yotam-alive';
-import { ChallengeLab, ProjectMiniLab } from './AliveLab';
+const ChallengeLab = dynamic(() => import('./AliveLab').then(module => module.ChallengeLab), { ssr: false });
+const ProjectMiniLab = dynamic(() => import('./AliveLab').then(module => module.ProjectMiniLab), { ssr: false });
 
 type Locale = 'en' | 'he';
 type Capability = { ai: boolean; voice: boolean };
@@ -21,7 +23,7 @@ type Reply = {
   mode: 'ai' | 'guided';
   voiceToken: string | null;
 };
-type Message = { id: number; role: 'user' | 'assistant'; content: string; mode?: 'ai' | 'guided' };
+type Message = { id: number; role: 'user' | 'assistant'; content: string; mode?: 'ai' | 'guided'; project?: string; view?: AliveView };
 type SpeechRecognizer = {
   lang: string;
   interimResults: boolean;
@@ -84,7 +86,10 @@ const labels = {
     selectProject: 'Explore another project',
     intro: 'Five products. One curiosity: making difficult things feel intuitive.',
     powered: 'Grounded in public project facts. Dictation may be processed by your browser provider. No private systems are accessed.',
-    offline: 'Live AI is not enabled yet. You are exploring a transparent guided tour.',
+    offline: 'Guided tour mode — live AI may be off, busy, or rate-limited.',
+    viewSelected: 'Explore selected work',
+    openDemo: 'Try the interactive demo',
+    openChallenge: 'Open Challenge Me',
     error: 'The live guide is unavailable right now. Explore a project on the right or try again.',
   },
   he: {
@@ -120,7 +125,10 @@ const labels = {
     selectProject: 'פרויקטים נוספים',
     intro: 'חמישה מוצרים. סקרנות אחת: להפוך מערכות מורכבות לחוויות אינטואיטיביות.',
     powered: 'מבוסס על מידע פומבי בלבד. הכתבה קולית עשויה להיות מעובדת אצל ספק הדפדפן. אין גישה למערכות פרטיות.',
-    offline: 'ה-AI החי עדיין לא הופעל. זהו סיור מודרך ושקוף.',
+    offline: 'מצב סיור מודרך — ה-AI החי עשוי להיות כבוי, עמוס או מוגבל.',
+    viewSelected: 'לראות את הפרויקט',
+    openDemo: 'לנסות את הדמו',
+    openChallenge: 'לפתוח את Challenge Me',
     error: 'מדריך ה-AI אינו זמין כרגע. אפשר לחקור פרויקטים או לנסות שוב.',
   },
 };
@@ -132,6 +140,7 @@ export default function AliveExperience({ locale, projects }: Props) {
   const launcherRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
+  const workbenchRef = useRef<HTMLElement>(null);
   const requestRef = useRef<AbortController | null>(null);
   const busyRef = useRef(false);
   const recognitionRef = useRef<SpeechRecognizer | null>(null);
@@ -271,6 +280,7 @@ export default function AliveExperience({ locale, projects }: Props) {
       setMode(answer.mode);
       setMessages(previous => [...previous, {
         id: ++serial.current, role: 'assistant', content: answer.answer, mode: answer.mode,
+        project: answer.project, view: answer.view,
       }]);
       if (answer.view === 'challenge') setTab('challenge');
       else if (answer.project !== 'none' && projects.some(project => project.slug === answer.project)) {
@@ -289,6 +299,20 @@ export default function AliveExperience({ locale, projects }: Props) {
       busyRef.current = false;
       setBusy(false);
     }
+  }
+
+  function followMessage(message: Message) {
+    if (message.view === 'challenge') {
+      setTab('challenge');
+    } else if (message.project && projects.some(project => project.slug === message.project)) {
+      setActiveSlug(message.project);
+      setTab(message.view === 'demo' ? 'demo' : message.view === 'architecture' ? 'engineering' : 'experience');
+      setView(message.view === 'architecture' ? 'architecture' : 'project');
+    } else return;
+    window.requestAnimationFrame(() => workbenchRef.current?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    }));
   }
 
   function startDictation() {
@@ -390,6 +414,12 @@ export default function AliveExperience({ locale, projects }: Props) {
                       {message.role === 'user' ? (he ? 'אתם' : 'YOU') : 'YOTAM / AI'}
                     </span>
                     <p>{message.content}</p>
+                    {message.role === 'assistant' && (message.view === 'challenge' || (message.project && message.project !== 'none')) && (
+                      <button className="alive-chat-action" type="button" onClick={() => followMessage(message)}>
+                        {message.view === 'challenge' ? t.openChallenge : message.view === 'demo' ? t.openDemo : t.viewSelected}
+                        <ArrowUpRight size={15}/>
+                      </button>
+                    )}
                   </div>
                 ))}
                 {busy && <p className="alive-typing" role="status"><LoaderCircle size={17} className="alive-spin" />{he ? 'בוחן את העבודות…' : 'Exploring the work…'}</p>}
@@ -419,7 +449,7 @@ export default function AliveExperience({ locale, projects }: Props) {
               </div>
             </section>
 
-            <aside className={'alive-workbench' + (tab === 'challenge' ? ' alive-workbench--challenge' : '')} aria-label={tab === 'challenge' ? t.challenge : t.project}>
+            <aside ref={workbenchRef} className={'alive-workbench' + (tab === 'challenge' ? ' alive-workbench--challenge' : '')} aria-label={tab === 'challenge' ? t.challenge : t.project}>
               {tab === 'challenge' ? (
                 <ChallengeLab locale={locale} onExplore={slug => { setActiveSlug(slug); setView('project'); setTab('demo'); }} />
               ) : (<>
