@@ -33,6 +33,15 @@ describe('YOTAM / ALIVE public knowledge', () => {
     expect(answer.answer).toMatch(/guided tour/i);
   });
 
+  it('turns explicit requests into only allowlisted interactive views', () => {
+    const demo = guidedPortfolioAnswer('Show me a StarLinker demo', 'en');
+    const challenge = guidedPortfolioAnswer('Challenge my product idea', 'en');
+    expect(demo.view).toBe('demo');
+    expect(demo.project).toBe('starlinker');
+    expect(challenge.view).toBe('challenge');
+    expect(challenge.project).toBe('none');
+  });
+
   it('rejects navigation outside the project allowlist', () => {
     expect(aliveDirectiveSchema.safeParse({
       answer: 'Open internal portal',
