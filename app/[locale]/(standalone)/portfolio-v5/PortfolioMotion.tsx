@@ -189,9 +189,11 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
       }
       if (!raf) raf = window.requestAnimationFrame(tick);
     };
-    const hide = (event: PointerEvent) => {
+    const hide = (event: Event) => {
       // Moving between descendants is not leaving the document.
-      if (!event.relatedTarget) node.dataset.visible = 'false';
+      if (!(event instanceof PointerEvent) || !event.relatedTarget) {
+        node.dataset.visible = 'false';
+      }
     };
     document.addEventListener('pointermove', move, { passive: true });
     document.addEventListener('pointerout', hide, { passive: true });
