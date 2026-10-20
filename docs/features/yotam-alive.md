@@ -2,9 +2,17 @@
 
 ## Scope
 
-The new entry point sits inside the editorial V5 homepage at `/{en|he}/yotam`.
-It opens a native accessible dialog with two surfaces: a text-first conversation
-and a living, localized exploration of the **existing public portfolio data**.
+The entry point is a discreet fixed chat bubble in the corner of **all** personal
+portfolio routes under `/{en|he}/yotam`. It does not take up any space in the
+home hero. The launcher and panel are portaled to `document.body` to avoid
+scroll/transform clipping, and use RTL-aware logical positioning.
+
+By default it opens a **compact, non-modal native dialog** so visitors can keep
+browsing and scrolling the portfolio. The header's expand control (or a related
+project action in a chat answer) opens the wider, two-column workbench. The
+expanded view is opt-in and offers a one-click return to the small chat.
+Closing restores focus to the launcher and cancels pending audio/network work.
+The conversation and workbench still use **existing public portfolio data**.
 The workbench also exposes code-split, client-only interactive micro-demos for all
 five products and a deterministic Challenge Me architecture exercise.
 It does not change the CartShift studio site, client portal or canonical projects.
@@ -74,11 +82,13 @@ to generate arbitrary statements impersonating Yotam.
 
 ## QA / release checklist
 
-1. `pnpm exec vitest run tests/lib/yotam-alive.test.ts tests/lib/yotam-alive-challenge.test.ts tests/components/alive-lab.test.tsx tests/api/yotam-alive.route.test.ts`
+1. `pnpm exec vitest run tests/components/alive-widget.test.tsx tests/lib/yotam-alive.test.ts tests/lib/yotam-alive-challenge.test.ts tests/components/alive-lab.test.tsx tests/api/yotam-alive.route.test.ts`
 2. `pnpm exec tsc --noEmit`
 3. `pnpm exec eslint "app/[locale]/(standalone)/portfolio-v5/AliveExperience.tsx" "app/api/yotam/alive/**/*.ts" lib/yotam-alive.ts`
-4. Desktop/mobile: open/close/Escape/focus, project switching, guided prompts,
-   Hebrew RTL, long project names, scroll position, reduced motion.
+4. Desktop/mobile: launcher stays fixed and unobtrusive across all `/yotam`
+   routes; the compact panel is non-modal; open/close/Escape/focus, expand/collapse,
+   project switching, guided prompts, Hebrew RTL, long project names, scroll
+   position, safe-area/virtual keyboard and reduced motion.
 5. Verify unauthenticated AI request caps and no secret disclosure.
 6. Exercise five interactive mini-labs in both languages on narrow and wide
    layouts. Check that simulated data is clearly labeled and no integrations run.
@@ -92,14 +102,11 @@ cloning operational until configured and tested with the authorized recording.
 
 ## Validation record — October 20, 2026
 
-- Isolated sandbox: 23 / 23 targeted tests passing, changed-code ESLint clean,
-  repository-wide TypeScript clean **after** generating translated files.
-- Local HTTP response: /en/yotam and /he/yotam both 200, ALIVE present.
-- API smoke: origin-matched guided demo 200; cross-origin request 403;
-  paid AI / voice both correctly reported as disabled.
-- One subsequent matcher precedence fix and regression assertion were committed
-  after the final sandbox ended; that tiny update still needs a new CI run.
-- Headless Chromium launch was possible after OS library installation, but
-  browser navigation crashed with a detached frame. Therefore full visual/keyboard
-  QA and production build remain explicitly **unverified**. Do not claim otherwise.
-- No production merge or public deployment has been performed.
+- Baseline ALIVE was previously merged to `main` in PR #107.
+- Floating-widget branch: **27 / 27** focused Vitest tests passed, ESLint clean,
+  and repository TypeScript clean after translation generation. These checks
+  preceded the final purely stylistic launcher reduction and mobile aria label.
+- No Preview build created. Actual browser visual QA for the new compact panel
+  is not yet confirmed; test mobile viewport, RTL alignment, scroll and focus.
+- AI/voice credentials remain disabled by default. The UX never implies an
+  authorized voice recording exists when none is configured.
