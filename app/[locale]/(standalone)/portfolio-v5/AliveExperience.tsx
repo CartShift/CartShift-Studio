@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { PortfolioShowcaseProject } from '@/lib/portfolio-showcase';
 import type { AliveView } from '@/lib/yotam-alive';
+import { ChallengeLab, ProjectMiniLab } from './AliveLab';
 
 type Locale = 'en' | 'he';
 type Capability = { ai: boolean; voice: boolean };
@@ -77,6 +78,8 @@ const labels = {
     technologies: 'Built with',
     experience: 'Experience',
     underHood: 'Under the hood',
+    demo: 'Try the system',
+    challenge: 'Challenge me',
     caseStudy: 'Read the full case study',
     selectProject: 'Explore another project',
     intro: 'Five products. One curiosity: making difficult things feel intuitive.',
@@ -111,6 +114,8 @@ const labels = {
     technologies: 'טכנולוגיות',
     experience: 'החוויה',
     underHood: 'מאחורי הקלעים',
+    demo: 'לנסות את המערכת',
+    challenge: 'תאתגרו אותי',
     caseStudy: 'לסיפור הפרויקט המלא',
     selectProject: 'פרויקטים נוספים',
     intro: 'חמישה מוצרים. סקרנות אחת: להפוך מערכות מורכבות לחוויות אינטואיטיביות.',
@@ -146,7 +151,7 @@ export default function AliveExperience({ locale, projects }: Props) {
   const [activeSlug, setActiveSlug] = useState(projects[0]?.slug ?? 'starlinker');
   const [view, setView] = useState<'project' | 'architecture'>('project');
   const [mode, setMode] = useState<'guided' | 'ai'>('guided');
-  const [tab, setTab] = useState<'experience' | 'engineering'>('experience');
+  const [tab, setTab] = useState<'experience' | 'engineering' | 'demo' | 'challenge'>('experience');
 
   const active = projects.find(project => project.slug === activeSlug) ?? projects[0];
 
@@ -345,6 +350,9 @@ export default function AliveExperience({ locale, projects }: Props) {
               <div><strong>YOTAM / ALIVE</strong><small>{t.identity}</small></div>
             </div>
             <div className="alive-header-end">
+              <button className="alive-challenge-open" type="button" onClick={() => setTab(current => current === 'challenge' ? 'experience' : 'challenge')} aria-pressed={tab === 'challenge'}>
+                <Sparkles size={15}/>{t.challenge}<ArrowUpRight size={15}/>
+              </button>
               <span className="alive-mode"><span className="alive-live-dot" />{mode === 'ai' ? t.ai : t.guided}</span>
               <button type="button" className="alive-icon-button alive-close" onClick={closeExperience} aria-label={t.close}>
                 <X size={21} />
@@ -410,7 +418,10 @@ export default function AliveExperience({ locale, projects }: Props) {
               </div>
             </section>
 
-            <aside className="alive-workbench" aria-label={t.project}>
+            <aside className={'alive-workbench' + (tab === 'challenge' ? ' alive-workbench--challenge' : '')} aria-label={tab === 'challenge' ? t.challenge : t.project}>
+              {tab === 'challenge' ? (
+                <ChallengeLab locale={locale} onExplore={slug => { setActiveSlug(slug); setView('project'); setTab('demo'); }} />
+              ) : (<>
               <div className="alive-workbench-top">
                 <span className="alive-index">02 / THE WORKBENCH</span>
                 <span className="alive-workbench-counter">{String(projects.findIndex(p => p.slug === activeSlug) + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}</span>
@@ -427,9 +438,13 @@ export default function AliveExperience({ locale, projects }: Props) {
                   onClick={() => { setTab('experience'); setView('project'); }}>{t.experience}</button>
                 <button type="button" className={tab === 'engineering' ? 'is-active' : ''} aria-pressed={tab === 'engineering'}
                   onClick={() => { setTab('engineering'); setView('architecture'); }}>{t.underHood}</button>
+                <button type="button" className={tab === 'demo' ? 'is-active' : ''} aria-pressed={tab === 'demo'}
+                  onClick={() => { setTab('demo'); setView('project'); }}>{t.demo}</button>
               </div>
-              <div className="alive-stage" key={active?.slug + view}>
-                {tab === 'experience' ? (
+              <div className={'alive-stage' + (tab === 'demo' ? ' alive-stage--lab' : '')} key={active?.slug + tab + view}>
+                {tab === 'demo' ? (
+                  <ProjectMiniLab locale={locale} slug={active?.slug ?? ''} />
+                ) : tab === 'experience' ? (
                   <>
                     <div className="alive-stage-image">
                       {active?.hero ? (
@@ -481,6 +496,7 @@ export default function AliveExperience({ locale, projects }: Props) {
                     </button>)}
                 </div>
               </div>
+              </>)}
             </aside>
           </div>
           <footer className="alive-footer">
