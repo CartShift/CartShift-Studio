@@ -87,7 +87,7 @@ export default async function V5ExperiencePage({ params }: Props) {
   // Editing the CV records updates this page without duplicating employers or dates.
   const cv = buildCVData(lang === 'he' ? hebrewCv.cv : englishCv.cv);
   const t = pageCopy[lang];
-  const home = '/' + lang + '/portfolio-v5';
+  const home = '/' + lang + '/yotam';
   const rtl = lang === 'he';
 
   return (

@@ -9,7 +9,7 @@ type Props = { locale: PortfolioV5Locale; kind: Kind; email: string };
 export default function PortfolioV5Detail({ locale, kind, email }: Props) {
   const t = translations[locale];
   const isHebrew = locale === 'he';
-  const homeHref = '/' + locale + '/portfolio-v5';
+  const homeHref = '/' + locale + '/yotam';
   const projects = kind === 'work' ? getPortfolioShowcases(locale) : [];
 
   return (

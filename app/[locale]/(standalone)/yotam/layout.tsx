@@ -1,4 +1,9 @@
 import { getMessages, setRequestLocale } from 'next-intl/server';
+import '../portfolio-v5/portfolio-v5.css';
+import '../portfolio-v5/portfolio-v5-refresh.css';
+import '../portfolio-v5/portfolio-v5-immersive.css';
+import '../portfolio-v5/portfolio-v5-motion.css';
+import PortfolioMotion from '../portfolio-v5/PortfolioMotion';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { BaseClientProviders } from '@/components/providers/BaseClientProviders';
@@ -22,7 +27,7 @@ export default async function YotamLayout({
       messages={pickClientMessages(messages, ['cv', 'common', 'portal'])}
     >
       <GoogleAnalytics />
-      <AnalyticsProvider>{children}</AnalyticsProvider>
+      <AnalyticsProvider><PortfolioMotion>{children}</PortfolioMotion></AnalyticsProvider>
     </BaseClientProviders>
   );
 }
