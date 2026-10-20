@@ -8,7 +8,17 @@ import '../portfolio-v5/yotam-alive.css';
 import '../portfolio-v5/yotam-alive-labs.css';
 import '../portfolio-v5/yotam-alive-widget.css';
 import PortfolioMotion from '../portfolio-v5/PortfolioMotion';
+import AliveExperience from '../portfolio-v5/AliveExperience';
+import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 
-export default function PersonalPortfolioLayout({ children }: { children: React.ReactNode }) {
-  return <PortfolioMotion>{children}</PortfolioMotion>;
+export default async function PersonalPortfolioLayout({ children, params }: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const language = locale === 'he' ? 'he' : 'en';
+  return <>
+    <PortfolioMotion>{children}</PortfolioMotion>
+    <AliveExperience locale={language} projects={getPortfolioShowcases(language)} />
+  </>;
 }
