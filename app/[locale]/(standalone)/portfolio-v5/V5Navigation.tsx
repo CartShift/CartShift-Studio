@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { translations, type PortfolioV5Locale } from './v5-copy';
 
-type Section = 'work' | 'about' | 'contact';
+type Section = 'work' | 'experience' | 'about' | 'contact';
 type Props = {
   locale: PortfolioV5Locale;
   section?: Section;
@@ -24,8 +24,9 @@ export default function V5Navigation({ locale, section, motionPaused = false, on
   const navigation = [
     { label: t.home, href: homeHref, number: '01' },
     { label: t.work, href: homeHref + '/work', number: '02' },
-    { label: t.about, href: homeHref + '/about', number: '03' },
-    { label: t.contact, href: homeHref + '/contact', number: '04' },
+    { label: t.experience, href: homeHref + '/experience', number: '03' },
+    { label: t.about, href: homeHref + '/about', number: '04' },
+    { label: t.contact, href: homeHref + '/contact', number: '05' },
   ];
 
   useEffect(() => {

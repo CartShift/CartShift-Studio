@@ -4,10 +4,10 @@ An original experimental portfolio for Yotam Faraggi in the CartShift Studio rep
 
 ## Routes
 
-| Locale | Home | Work | About | Contact |
-| --- | --- | --- | --- | --- |
-| English | /en/portfolio-v5 | /en/portfolio-v5/work | /en/portfolio-v5/about | /en/portfolio-v5/contact |
-| Hebrew | /he/portfolio-v5 | /he/portfolio-v5/work | /he/portfolio-v5/about | /he/portfolio-v5/contact |
+| Locale | Home | Work | Experience | About | Contact |
+| --- | --- | --- | --- | --- | --- |
+| English | /en/portfolio-v5 | /en/portfolio-v5/work | /en/portfolio-v5/experience | /en/portfolio-v5/about | /en/portfolio-v5/contact |
+| Hebrew | /he/portfolio-v5 | /he/portfolio-v5/work | /he/portfolio-v5/experience | /he/portfolio-v5/about | /he/portfolio-v5/contact |
 
 This is an isolated, **noindex / nofollow** experiment; the primary CartShift website is unchanged. Portfolio content and projects are based on our existing \`lib/portfolio-showcase.ts\` data, not fictitious case studies.
 
@@ -58,3 +58,7 @@ Always run focused ESLint, project type-check and production smoke checks before
 ## Deployment
 
 Only deploy after branch checks; use one production deployment on \`main\`. Do not run unnecessary Preview builds. The code does not add analytics or user tracking.
+
+## Career experience page
+
+`experience/page.tsx` is a standalone, **server-rendered**, bilingual career narrative with an original dark editorial intro, detailed recent timeline, compact earlier career timeline, skill groups, education, languages, download CV link and contact CTA. It consumes `buildCVData()` using `messages/src/{en,he}/cv.json`; company names, role titles, date ranges and highlights are not duplicated or fabricated. Its styling is isolated in `portfolio-v5-experience.css`. The Experience route is linked in the modal navigation and from About, and keeps the experiment's noindex policy. The PDF points to the CV already produced by the normal build.

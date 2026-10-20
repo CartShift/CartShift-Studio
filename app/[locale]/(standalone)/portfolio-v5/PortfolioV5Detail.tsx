@@ -69,7 +69,7 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
                 <p className="v5-about-body">{t.aboutBody}</p>
                 <p className="v5-about-aside">{t.aboutNote}</p>
                 <div className="v5-about-extras">
-                  <a href={'/' + locale + '/cv'} className="v5-inline-link">
+                  <a href={homeHref + '/experience'} className="v5-inline-link">
                     {isHebrew ? 'לצפייה בקורות החיים' : 'Explore my experience'} <span aria-hidden="true">↗</span>
                   </a>
                   <a href={homeHref + '/contact'} className="v5-inline-link">

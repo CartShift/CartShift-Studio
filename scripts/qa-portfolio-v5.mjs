@@ -18,9 +18,12 @@ const cases = [
   { locale: 'en', page: '', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: '', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'experience', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'experience', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'about', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'contact', width: 390, height: 844, mobile: true },
   { locale: 'he', page: 'work', width: 390, height: 844, mobile: true },
+  { locale: 'he', page: 'experience', width: 390, height: 844, mobile: true },
   { locale: 'he', page: 'about', width: 390, height: 844, mobile: true },
   { locale: 'he', page: 'contact', width: 390, height: 844, mobile: true },
 ];
