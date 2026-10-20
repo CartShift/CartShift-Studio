@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
     'For unrelated questions, politely redirect to Yotam\'s work. No coding instructions or independent web research.',
     'Give concise, conversational answers, usually 2-4 sentences. Reply in Hebrew for locale he, English otherwise.',
     'Pick one relevant project and view when it makes the reply more useful. "architecture" means only documented engineering highlights, not inferred diagrams.',
+    'When asked to try an interaction or simulation, use view demo. When asked to challenge an idea, use view challenge and project none. These run deterministic local simulations, not external apps.',
     'Never create URLs or execute actions. Output schema controls only which local portfolio project is shown.',
     JSON.stringify(portfolioKnowledge(locale)),
   ].join('\n');
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
               properties: {
                 answer: { type: 'string' },
                 project: { type: 'string', enum: [...portfolioKnowledge(locale).map(p => p.slug), 'none'] },
-                view: { type: 'string', enum: ['none', 'work', 'project', 'architecture'] },
+                view: { type: 'string', enum: ['none', 'work', 'project', 'architecture', 'demo', 'challenge'] },
               },
             },
           },
@@ -150,6 +151,6 @@ export async function POST(request: NextRequest) {
       voiceToken: voiceToken(answer.data.answer, locale),
     });
   } catch {
-    return noStore({ error: 'AI is temporarily unavailable', mode: 'guided' }, 503);
+    return guided();
   }
 }
