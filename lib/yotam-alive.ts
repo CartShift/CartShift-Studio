@@ -43,9 +43,12 @@ export function guidedPortfolioAnswer(question: string, locale: AliveLocale): Al
   if (/challenge|test my idea|תאתגר|אתגר אותי|רעיון למוצר/.test(q)) {
     return { answer: locale === 'he' ? 'אפשר לפתוח את Challenge Me, לבחור בעיה ואילוצים ולחקור מתווה הנדסי לדוגמה.' : 'Opening Challenge Me: describe a problem, choose constraints and explore an explicit engineering playbook.', project: 'none', view: 'challenge' };
   }
-  const found = projects.find(project =>
+  // An explicit project name always wins over broad topical keywords.
+  const named = projects.find(project =>
     q.includes(project.title.toLowerCase()) ||
-    q.includes(project.slug.replace('-studio', '')) ||
+    q.includes(project.slug.replace('-studio', ''))
+  );
+  const found = named ?? projects.find(project =>
     (project.slug === 'wakemyway' && /alarm|android|השכמה|שעון/.test(q)) ||
     (project.slug === 'rightflow' && /document|verification|pension|מסמכ|אימות|פנסי/.test(q)) ||
     (project.slug === 'starlinker' && /\b(ai|agent|graph|agents)\b|סוכן|בינה|ארכיטקטור|architecture/.test(q)) ||
