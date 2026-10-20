@@ -10,7 +10,7 @@ export const maxDuration = 25;
 const bodySchema = z.object({
   text: z.string().min(1).max(1600),
   locale: z.enum(['en', 'he']),
-  token: z.string().regex(/^\\d{10}\\.[a-f0-9]{64}$/),
+  token: z.string().regex(/^\d{10}\.[a-f0-9]{64}$/),
 }).strict();
 
 export async function POST(request: NextRequest) {
