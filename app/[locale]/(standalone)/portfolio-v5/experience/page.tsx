@@ -101,7 +101,7 @@ export default async function V5ExperiencePage({ params }: Props) {
         <div className="v5-exp-hero-inner v5-shell">
           <span className="v5-exp-overline">{t.kicker}</span>
           <h1 id="v5-experience-content" tabIndex={-1}>
-            <span>{t.titleTop}</span>
+            <span>{t.titleTop}{' '}</span>
             <em>{t.titleBottom}</em>
           </h1>
           <div className="v5-exp-intro">

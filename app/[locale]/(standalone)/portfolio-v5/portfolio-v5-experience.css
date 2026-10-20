@@ -166,3 +166,6 @@
 @media(prefers-reduced-motion:reduce) {
   .v5-exp-orbit,.v5-exp-outro-art { animation: none !important; transition: none !important; }
 }
+
+/* Rechecked against the tinted section background: small kicker labels reach WCAG AA contrast. */
+.v5-exp-early .v5-exp-kicker { color: #49435f; }
