@@ -106,7 +106,7 @@ async function main() {
           await page.waitForFunction(() => document.querySelector('.v5-transition-wipe')
             ?.classList.contains('v5-transition-wipe--idle'), { timeout: 5_000 });
           await page.waitForSelector('.v5-work-row', { timeout: 8_000 });
-          assert((await page.$('.v5-work-row')).length > 0,
+          assert((await page.evaluate(() => document.querySelectorAll('.v5-work-row').length)) > 0,
             'portfolio page transition did not reveal the destination');
         }
         assert(errors.length === 0, name + ': uncaught errors: ' + errors.join(', '));
