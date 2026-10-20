@@ -162,10 +162,10 @@ export function buildChallengePlan(
     summary: base.summary,
     stages: [...base.stages],
     architecture: [...base.architecture],
-    decision: base.decision,
+    decision: `${base.decision} ${priorityCopy[locale][priority]}`,
     tradeoff: base.tradeoff,
     risk: base.risk,
-    nextStep: base.nextStep,
+    nextStep: `${base.nextStep} ${scaleCopy[locale][scale]}`,
     relatedProject: base.relatedProject,
   };
 }
