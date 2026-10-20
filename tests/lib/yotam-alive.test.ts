@@ -25,6 +25,11 @@ describe('YOTAM / ALIVE public knowledge', () => {
     expect(result.project).toBe('cartshift-studio');
   });
 
+  it('prioritizes a named project even when another topic is mentioned', () => {
+    const result = guidedPortfolioAnswer('Show me the AI automation in CartShift', 'en');
+    expect(result.project).toBe('cartshift-studio');
+  });
+
   it('routes commerce and product operations to CartShift', () => {
     const answer = guidedPortfolioAnswer('Tell me about Shopify and commerce operations', 'en');
     expect(answer.project).toBe('cartshift-studio');
