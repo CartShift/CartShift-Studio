@@ -58,6 +58,16 @@ export function guidedPortfolioAnswer(question: string, locale: AliveLocale): Al
       view: /architecture|ארכיטקטור|how|איך|trade.?off|decision|החלט/.test(q) ? 'architecture' : 'project',
     };
   }
+  if (/team|responsib|experience|hire|skills|הצוות|ניסיון|יכולות|תפקיד/.test(q)) {
+    const studio = projects.find(project => project.slug === 'cartshift-studio')!;
+    return {
+      answer: locale === 'he'
+        ? `יותם הוביל את ההנדסה וארכיטקטורת המוצר ב-${studio.title}. תחומי האחריות המתועדים כוללים: ${studio.highlights.join(' · ')}. בחרו פרויקט בצד כדי לראות עוד.`
+        : `Yotam is the lead engineer and product architect behind ${studio.title}. Documented responsibilities include ${studio.highlights.join(' · ')}. Choose a project to see more.`,
+      project: 'cartshift-studio',
+      view: 'project',
+    };
+  }
   return {
     answer: locale === 'he'
       ? 'זהו מצב סיור מודרך המבוסס על פרויקטים פומביים, לא תשובת AI חופשית. אפשר לבחור למטה פרויקט או לשאול על AI, מסמכים, Android, מסחר או מוזיקה.'
