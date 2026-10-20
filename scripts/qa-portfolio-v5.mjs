@@ -20,6 +20,8 @@ const cases = [
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/starlinker', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/wakemyway', width: 1440, height: 900, mobile: false },
+  { locale: 'en', page: 'work/rightflow', width: 390, height: 844, mobile: true },
+  { locale: 'he', page: 'work/cartshift-studio', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: 'work/ensemblis', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'experience', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'experience', width: 1440, height: 900, mobile: false },
@@ -62,9 +64,14 @@ async function main() {
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
         if (test.page?.startsWith('work/')) {
-          assert(await page.$('.v5-case-study'), name + ': missing portfolio case-study layout');
-          assert(await page.$('.v5-case-cover img'), name + ': missing case-study hero');
-          assert(await page.$('.v5-case-decisions li'), name + ': missing engineering decisions');
+          const story = await page.$('main[data-project]');
+          assert(story, name + ': bespoke project story not rendered');
+          const storySlug = await page.$eval('main[data-project]', node => node.getAttribute('data-project'));
+          assert(storySlug === test.page.split('/')[1], name + ': wrong project story: ' + storySlug);
+          assert(await page.$('main[data-project] h1'), name + ': project headline missing');
+          assert(await page.$('main[data-project] img'), name + ': original project media missing');
+          assert((await page.$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
+          assert(!(await page.$('.v5-case-study')), name + ': generic replacement template should not render');
         }
         if (test.page === 'experience') {
           const counts = await page.evaluate(() => ({

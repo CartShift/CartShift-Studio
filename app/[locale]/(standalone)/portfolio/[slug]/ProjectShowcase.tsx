@@ -9,6 +9,8 @@ type Props = {
   project: PortfolioShowcaseProject;
   nextProject: PortfolioShowcaseProject | null;
   locale: string;
+  /** Keep bespoke project stories reusable at legacy and current portfolio routes. */
+  projectBasePath?: string;
 };
 
 type StoryProps = {
@@ -206,8 +208,8 @@ function EngineeringDecisions({
 }
 
 function SharedHeader({ project, locale, isHebrew }: { project: PortfolioShowcaseProject; locale: string; isHebrew: boolean }) {
-  const portfolioHref = `/${locale}/yotam#work`;
-  const cvHref = `/${locale}/yotam#experience`;
+  const portfolioHref = `/${locale}/yotam/work`;
+  const cvHref = `/${locale}/yotam/experience`;
 
   return (
     <header className="absolute inset-x-0 top-0 z-40 px-5 py-5 text-white sm:px-8 sm:py-7 lg:px-12">
@@ -861,9 +863,9 @@ function ProjectCredits({ project, isHebrew, tone, lead }: { project: PortfolioS
   );
 }
 
-function NextProject({ nextProject, locale, isHebrew }: { nextProject: PortfolioShowcaseProject; locale: string; isHebrew: boolean }) {
+function NextProject({ nextProject, projectBasePath, isHebrew }: { nextProject: PortfolioShowcaseProject; projectBasePath: string; isHebrew: boolean }) {
   return (
-    <a href={`/${locale}/portfolio/${nextProject.slug}`} className="group block bg-[#0f0f11] px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-32">
+    <a href={`${projectBasePath}/${nextProject.slug}`} className="group block bg-[#0f0f11] px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-32">
       <div className="mx-auto max-w-[1680px]">
         <div className="flex items-center justify-between border-b border-white/18 pb-5">
           <Label light>{nextProject.number} · {isHebrew ? 'הפרויקט הבא' : 'Next project'}</Label>
@@ -883,13 +885,13 @@ function NextProject({ nextProject, locale, isHebrew }: { nextProject: Portfolio
   );
 }
 
-export default function ProjectShowcase({ project, nextProject, locale }: Props) {
+export default function ProjectShowcase({ project, nextProject, locale, projectBasePath = `/${locale}/portfolio` }: Props) {
   const isHebrew = locale === 'he';
   const reduceMotion = useReducedMotion();
   const [activeMedia, setActiveMedia] = useState<ShowcaseMedia | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
-  const portfolioHref = `/${locale}/yotam#work`;
+  const portfolioHref = `/${locale}/yotam/work`;
 
   useEffect(() => {
     if (!activeMedia) return;
@@ -948,7 +950,7 @@ export default function ProjectShowcase({ project, nextProject, locale }: Props)
       {project.slug === 'wakemyway' ? <WakeMyWayStory {...storyProps} /> : null}
       {project.slug === 'cartshift-studio' ? <CartShiftStory {...storyProps} /> : null}
 
-      {nextProject ? <NextProject nextProject={nextProject} locale={locale} isHebrew={isHebrew} /> : null}
+      {nextProject ? <NextProject nextProject={nextProject} projectBasePath={projectBasePath} isHebrew={isHebrew} /> : null}
 
       <footer className="bg-[#0f0f11] px-5 py-6 text-white sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1680px] items-center justify-between border-t border-white/12 pt-6 text-[8px] font-semibold uppercase tracking-[0.16em] text-white/52 sm:text-[9px]">

@@ -56,7 +56,9 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!pendingRef.current || pathname !== pendingRef.current) return;
     const route = pathname.match(/^\/(?:en|he)\/yotam(?:\/([^/]+))?/)?.[1] || '';
-    const selector = route === 'work' ? '.v5-subpage--work'
+    const isProjectStory = /^\/(?:en|he)\/yotam\/work\/[^/]+\/?$/.test(pathname);
+    const selector = isProjectStory ? '[data-project]'
+      : route === 'work' ? '.v5-subpage--work'
       : route === 'experience' ? '.v5-experience'
       : route === 'about' ? '.v5-subpage--about'
       : route === 'contact' ? '.v5-subpage--contact'
