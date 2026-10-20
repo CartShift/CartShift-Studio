@@ -1,60 +1,13 @@
-/* YOTAM / ALIVE — a distinct editorial layer, scoped to the personal portfolio. */
-.alive-entry {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px 32px;
-  align-items: end;
-  width: min(100%, 900px);
-  margin-block-start: clamp(37px, 5vw, 70px);
-  padding-block: 20px 13px;
-  border-block-start: 1px solid rgba(36, 37, 53, .23);
-  color: #262638;
-  text-align: start;
-}
-.alive-entry-copy { max-width: 580px; }
-.alive-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 10px; letter-spacing: .13em; font-weight: 750; line-height: 1.5; }
+/* YOTAM / ALIVE — shared typography and workbench styles. Floating chat overrides follow last. */
 .alive-live-dot {
   display: inline-block;
   flex: none;
   height: 7px; width: 7px; border-radius: 50%;
-  background: #69c6a0; box-shadow: 0 0 0 4px rgba(105,198,160,.16);
+  background: #69c6a0;
+  box-shadow: 0 0 0 4px rgba(105,198,160,.16);
 }
-.alive-entry h2 {
-  margin: 17px 0 8px; font-size: clamp(23px, 2.4vw, 37px);
-  line-height: 1.1; font-weight: 630; letter-spacing: -.052em;
-  text-wrap: balance;
-}
-.alive-entry h2 em {
-  font-family: Georgia, 'Times New Roman', serif;
-  color: #7863c0; font-weight: 400; letter-spacing: -.06em;
-}
-.alive-entry p { margin: 0; max-width: 490px; font-size: 13px; line-height: 1.6; color: #555569; }
-.alive-launch {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 13px; min-height: 62px; padding: 9px 16px 9px 10px;
-  border: 1px solid #29293c; background: #252638; color: #f8f7f6;
-  border-radius: 80px; font-weight: 690; font-size: 12px; white-space: nowrap;
-  cursor: pointer; transition: transform .25s, background .25s, box-shadow .25s;
-}
-.alive-launch:hover, .alive-launch:focus-visible {
-  transform: translateY(-3px); background: #4c427a;
-  box-shadow: 0 15px 36px rgba(69,57,111,.22);
-}
-.alive-launch-rings {
-  display: grid; place-items: center; width: 42px; height: 42px;
-  border: 1px solid rgba(255,255,255,.23); border-radius: 50%;
-  background: #7570c8; color: #fff; position: relative;
-}
-.alive-launch-rings::after {
-  content: ''; position: absolute; inset: -5px; border: 1px solid rgba(255,255,255,.3);
-  border-radius: 50%; animation: alive-pulse 3.8s ease-in-out infinite;
-}
-.alive-entry-aside { grid-column: 1 / -1; font-size: 9px; font-weight: 750; letter-spacing: .15em; color: #77798a; }
-@keyframes alive-pulse { 0%,100% { transform: scale(.9); opacity: .45; } 55% { transform: scale(1.13); opacity: 1; } }
 
-/* Native dialog lives in the browser top layer, outside the site's stacking contexts. */
+/* Shared ALIVE dialog and workbench styles. */
 .alive-dialog {
   position: fixed; inset: 0; margin: auto;
   padding: 0; border: 1px solid #434357; border-radius: 17px;
@@ -251,8 +204,6 @@
   .alive-architecture { min-height: 350px; }
 }
 @media (max-width: 800px) {
-  .alive-entry { grid-template-columns: 1fr; }
-  .alive-launch { justify-self: start; }
   .alive-dialog { border-radius: 0; width: 100vw; height: 100dvh; border: 0; }
   .alive-main { overflow-y: auto; display: flex; flex-direction: column; }
   .alive-conversation { flex: none; min-height: min(630px,78dvh); }
@@ -262,8 +213,6 @@
   .alive-architecture { min-height: 320px; }
 }
 @media (max-width: 520px) {
-  .alive-entry { margin-block-start: 31px; }
-  .alive-entry h2 { font-size: 26px; }
   .alive-header { min-height: 70px; padding: 12px 17px; }
   .alive-wordmark strong { font-size: 10px; }
   .alive-wordmark small { font-size: 9px; }
@@ -281,5 +230,5 @@
   .alive-footer { font-size: 8px; padding-inline: 17px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .alive-entry *, .alive-dialog * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .alive-dialog * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
