@@ -44,7 +44,8 @@ function sameOrigin(request: NextRequest) {
   const origin = request.headers.get('origin');
   if (!origin) return false;
   try {
-    return new URL(origin).host === request.nextUrl.host;
+    const host = request.headers.get('host') || request.nextUrl.host;
+    return new URL(origin).host === host;
   } catch {
     return false;
   }
