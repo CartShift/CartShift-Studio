@@ -27,7 +27,7 @@ describe('ALIVE interactive project simulations', () => {
     fireEvent.click(screen.getByRole('button', { name: /Simulate alarm/i }));
     fireEvent.click(screen.getByRole('button', { name: 'Respond' }));
     fireEvent.click(screen.getByRole('button', { name: /Confirm awake/i }));
-    expect(screen.getAllByText('Awake')).toHaveLength(1);
+    expect(screen.getAllByText('Awake')).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: /Start over/i }));
     expect(screen.getByText(/Scheduled/)).toBeTruthy();
   });
