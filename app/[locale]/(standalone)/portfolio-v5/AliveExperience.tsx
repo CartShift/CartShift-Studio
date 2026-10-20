@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { createPortal } from 'react-dom';
 import {
   ArrowRight, ArrowUpRight, AudioLines, Check,
-  LoaderCircle, Mic2,
+  LoaderCircle, Maximize2, MessageCircle, Mic2, Minimize2,
   Sparkles, Volume2, VolumeX, X,
 } from 'lucide-react';
 import type { PortfolioShowcaseProject } from '@/lib/portfolio-showcase';
@@ -58,14 +59,16 @@ const labels = {
     entryTitle: 'Don\'t just read about me.',
     entryAccent: 'Ask my work.',
     entryDescription: 'A living guide to the products, decisions and engineering behind this portfolio.',
-    entryAction: 'Enter the experience',
+    entryAction: 'Ask about my work',
+    expand: 'Explore projects and demos',
+    collapse: 'Back to compact chat',
     entryAside: 'TYPE · EXPLORE · SPEAK',
     close: 'Close experience',
     subtitle: 'Talk to the portfolio',
     identity: 'AI guide · not Yotam himself',
     guided: 'Guided tour',
     ai: 'Live AI',
-    ready: 'Start with a question, or follow a thread.',
+    ready: 'Ask a question or explore a project.',
     placeholder: 'Ask about a project, a technical decision, or how I work…',
     send: 'Send message',
     listening: 'Listening…',
@@ -84,7 +87,7 @@ const labels = {
     challenge: 'Challenge me',
     caseStudy: 'Read the full case study',
     selectProject: 'Explore another project',
-    intro: 'Five products. One curiosity: making difficult things feel intuitive.',
+    intro: 'Five projects, a lot of decisions. Where should we start?',
     powered: 'Grounded in public project facts. Dictation may be processed by your browser provider. No private systems are accessed.',
     offline: 'Guided tour mode — live AI may be off, busy, or rate-limited.',
     viewSelected: 'Explore selected work',
@@ -97,14 +100,16 @@ const labels = {
     entryTitle: 'אל תקראו רק עליי.',
     entryAccent: 'תשאלו את העבודות שלי.',
     entryDescription: 'מדריך חי למוצרים, להחלטות ולחשיבה ההנדסית מאחורי הפורטפוליו.',
-    entryAction: 'להיכנס לחוויה',
+    entryAction: 'שאלו על העבודות שלי',
+    expand: 'לגלות פרויקטים ודמואים',
+    collapse: 'חזרה לצ׳אט קטן',
     entryAside: 'לכתוב · לגלות · לדבר',
     close: 'סגירת החוויה',
     subtitle: 'לדבר עם הפורטפוליו',
     identity: 'מדריך AI · לא יותם עצמו',
     guided: 'סיור מודרך',
     ai: 'AI חי',
-    ready: 'אפשר להתחיל בשאלה או לבחור נושא.',
+    ready: 'אפשר לשאול שאלה או לגלות פרויקט.',
     placeholder: 'שאלו על פרויקט, החלטה הנדסית או על דרך העבודה שלי…',
     send: 'שליחת הודעה',
     listening: 'מקשיב…',
@@ -123,7 +128,7 @@ const labels = {
     challenge: 'תאתגרו אותי',
     caseStudy: 'לסיפור הפרויקט המלא',
     selectProject: 'פרויקטים נוספים',
-    intro: 'חמישה מוצרים. סקרנות אחת: להפוך מערכות מורכבות לחוויות אינטואיטיביות.',
+    intro: 'חמישה פרויקטים, הרבה החלטות. מאיפה נתחיל?',
     powered: 'מבוסס על מידע פומבי בלבד. הכתבה קולית עשויה להיות מעובדת אצל ספק הדפדפן. אין גישה למערכות פרטיות.',
     offline: 'מצב סיור מודרך — ה-AI החי עשוי להיות כבוי, עמוס או מוגבל.',
     viewSelected: 'לראות את הפרויקט',
@@ -149,7 +154,9 @@ export default function AliveExperience({ locale, projects }: Props) {
   const audioUrlRef = useRef<string | null>(null);
   const voiceRef = useRef(false);
   const serial = useRef(0);
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [capability, setCapability] = useState<Capability>({ ai: false, voice: false });
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -184,6 +191,8 @@ export default function AliveExperience({ locale, projects }: Props) {
     stopAudio();
   }
 
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => () => {
     requestRef.current?.abort();
     try { recognitionRef.current?.stop(); } catch { /* Closed */ }
@@ -198,8 +207,10 @@ export default function AliveExperience({ locale, projects }: Props) {
   }, [messages, busy, open]);
 
   function openExperience() {
-    dialogRef.current?.showModal();
+    // A non-modal dialog: visitors can keep browsing the portfolio while chatting.
+    dialogRef.current?.show();
     setOpen(true);
+    setExpanded(false);
     setNotice('');
     window.setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 60);
     fetch('/api/yotam/alive', { cache: 'no-store' })
@@ -215,8 +226,14 @@ export default function AliveExperience({ locale, projects }: Props) {
   function closeExperience() {
     dialogRef.current?.close();
     setOpen(false);
+    setExpanded(false);
     stopSession();
     launcherRef.current?.focus({ preventScroll: true });
+  }
+
+  function expandExperience(nextTab?: 'experience' | 'engineering' | 'demo' | 'challenge') {
+    if (nextTab) setTab(nextTab);
+    setExpanded(true);
   }
 
   function navigateProject(slug: string) {
@@ -309,6 +326,7 @@ export default function AliveExperience({ locale, projects }: Props) {
       setTab(message.view === 'demo' ? 'demo' : message.view === 'architecture' ? 'engineering' : 'experience');
       setView(message.view === 'architecture' ? 'architecture' : 'project');
     } else return;
+    setExpanded(true);
     window.requestAnimationFrame(() => workbenchRef.current?.scrollIntoView({
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       block: 'start',
@@ -350,35 +368,44 @@ export default function AliveExperience({ locale, projects }: Props) {
     if (!enabled) stopAudio();
   }
 
-  return (
-    <>
-      <div className="alive-entry" aria-label={t.eyebrow}>
-        <div className="alive-entry-copy">
-          <span className="alive-eyebrow"><span className="alive-live-dot" /> {t.eyebrow}</span>
-          <h2>{t.entryTitle} <em>{t.entryAccent}</em></h2>
-          <p>{t.entryDescription}</p>
-        </div>
-        <button ref={launcherRef} className="alive-launch" type="button" onClick={openExperience}>
-          <span className="alive-launch-rings" aria-hidden="true"><AudioLines size={24} /></span>
-          <span>{t.entryAction}</span>
-          <ArrowUpRight size={20} aria-hidden="true" />
-        </button>
-        <span className="alive-entry-aside">{t.entryAside}</span>
-      </div>
+  // Portaling to document.body prevents transforms and overflow in the portfolio
+  // hero from trapping a position:fixed chat widget.
+  if (!mounted) return null;
 
-      <dialog ref={dialogRef} className="alive-dialog" dir={he ? 'rtl' : 'ltr'}
+  return createPortal(
+    <div className="alive-widget-root" dir={he ? 'rtl' : 'ltr'}>
+      <button ref={launcherRef} className={'alive-launch' + (open ? ' alive-launch--open' : '')}
+        type="button" onClick={openExperience} aria-label={t.entryAction}
+        aria-expanded={open} aria-controls="alive-widget-dialog"
+        tabIndex={open ? -1 : 0}>
+        <span className="alive-launch-icon" aria-hidden="true"><MessageCircle size={19} strokeWidth={1.85}/></span>
+        <span className="alive-launch-label">{t.entryAction}</span>
+        <span className="alive-launch-indicator" aria-hidden="true" />
+      </button>
+
+      <dialog id="alive-widget-dialog" ref={dialogRef}
+        className={'alive-dialog alive-dialog--' + (expanded ? 'expanded' : 'compact')}
+        dir={he ? 'rtl' : 'ltr'}
         aria-labelledby="alive-dialog-title"
-        onClose={() => { setOpen(false); stopSession(); }}>
+        aria-modal="false"
+        onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); closeExperience(); } }}
+        onClose={() => { setOpen(false); setExpanded(false); stopSession(); }}>
         <div className="alive-shell">
           <header className="alive-header">
             <div className="alive-wordmark"><span className="alive-symbol">Y<span aria-hidden="true">✳</span></span>
               <div><strong>YOTAM / ALIVE</strong><small>{t.identity}</small></div>
             </div>
             <div className="alive-header-end">
-              <button className="alive-challenge-open" type="button" onClick={() => setTab(current => current === 'challenge' ? 'experience' : 'challenge')} aria-pressed={tab === 'challenge'}>
+              <button className="alive-challenge-open" type="button" onClick={() => expandExperience(tab === 'challenge' ? 'experience' : 'challenge')} aria-pressed={tab === 'challenge'}>
                 <Sparkles size={15}/>{t.challenge}<ArrowUpRight size={15}/>
               </button>
               <span className="alive-mode"><span className="alive-live-dot" />{mode === 'ai' ? t.ai : t.guided}</span>
+              <button type="button" className="alive-icon-button alive-resize" aria-label={expanded ? t.collapse : t.expand}
+                title={expanded ? t.collapse : t.expand}
+                aria-expanded={expanded}
+                onClick={() => setExpanded(value => !value)}>
+                {expanded ? <Minimize2 size={16}/> : <Maximize2 size={16}/>}
+              </button>
               <button type="button" className="alive-icon-button alive-close" onClick={closeExperience} aria-label={t.close}>
                 <X size={21} />
               </button>
@@ -536,6 +563,7 @@ export default function AliveExperience({ locale, projects }: Props) {
           </footer>
         </div>
       </dialog>
-    </>
+    </div>,
+    document.body,
   );
 }
