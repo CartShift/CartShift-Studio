@@ -48,7 +48,7 @@ export function guidedPortfolioAnswer(question: string, locale: AliveLocale): Al
     q.includes(project.slug.replace('-studio', '')) ||
     (project.slug === 'wakemyway' && /alarm|android|השכמה|שעון/.test(q)) ||
     (project.slug === 'rightflow' && /document|verification|pension|מסמכ|אימות|פנסי/.test(q)) ||
-    (project.slug === 'starlinker' && /ai|agent|graph|סוכן|בינה|ארכיטקטור|architecture/.test(q)) ||
+    (project.slug === 'starlinker' && /\b(ai|agent|graph|agents)\b|סוכן|בינה|ארכיטקטור|architecture/.test(q)) ||
     (project.slug === 'ensemblis' && /music|artist|release|מוזיק|אמנ/.test(q)) ||
     (project.slug === 'cartshift-studio' && /commerce|shopify|business|מסחר|חנות/.test(q))
   );
