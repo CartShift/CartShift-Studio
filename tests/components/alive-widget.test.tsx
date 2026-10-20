@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AliveExperience from '@/app/[locale]/(standalone)/portfolio-v5/AliveExperience';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
@@ -19,7 +19,6 @@ describe('ALIVE floating portfolio chat', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    document.querySelectorAll('.alive-widget-root').forEach(node => node.remove());
   });
 
   it('starts as a small corner launcher without adding a hero section', async () => {
