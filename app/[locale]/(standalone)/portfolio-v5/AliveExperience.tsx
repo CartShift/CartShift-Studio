@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ArrowDownRight, ArrowRight, ArrowUpRight, AudioLines, Check,
-  ChevronRight, CornerDownLeft, LoaderCircle, Mic2, Send,
+  ArrowRight, ArrowUpRight, AudioLines, Check,
+  LoaderCircle, Mic2,
   Sparkles, Volume2, VolumeX, X,
 } from 'lucide-react';
 import type { PortfolioShowcaseProject } from '@/lib/portfolio-showcase';
@@ -232,7 +232,7 @@ export default function AliveExperience({ locale, projects }: Props) {
 
   async function send(text: string) {
     const value = text.trim();
-    if (!value || busyRef.current) return;
+    if (!value || busyRef.current || !dialogRef.current?.open) return;
     busyRef.current = true;
     setBusy(true);
     setNotice('');
@@ -279,6 +279,7 @@ export default function AliveExperience({ locale, projects }: Props) {
   }
 
   function startDictation() {
+    if (busyRef.current) return;
     if (listening) {
       recognitionRef.current?.stop();
       setListening(false);
