@@ -272,9 +272,10 @@ export default function AliveExperience({ locale, projects }: Props) {
       setMessages(previous => [...previous, {
         id: ++serial.current, role: 'assistant', content: answer.answer, mode: answer.mode,
       }]);
-      if (answer.project !== 'none' && projects.some(project => project.slug === answer.project)) {
+      if (answer.view === 'challenge') setTab('challenge');
+      else if (answer.project !== 'none' && projects.some(project => project.slug === answer.project)) {
         setActiveSlug(answer.project);
-        setTab(answer.view === 'architecture' ? 'engineering' : 'experience');
+        setTab(answer.view === 'demo' ? 'demo' : answer.view === 'architecture' ? 'engineering' : 'experience');
         setView(answer.view === 'architecture' ? 'architecture' : 'project');
       } else if (answer.view === 'work') {
         setTab('experience');
