@@ -1,0 +1,231 @@
+/*
+ * ALIVE / FLOATING CHAT
+ * Subtle on the portfolio, useful only when invited into the conversation.
+ * Scoped overrides intentionally follow the full-size ALIVE and lab styles.
+ */
+.alive-widget-root {
+  position: static;
+  font-family: var(--font-outfit), Arial, sans-serif;
+}
+.alive-widget-root[dir="rtl"] { font-family: var(--font-rubik), Arial, sans-serif; }
+.alive-widget-root .alive-launch {
+  position: fixed;
+  z-index: 2147482000;
+  inset: auto;
+  inset-inline-end: clamp(14px, 2.4vw, 30px);
+  inset-block-end: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 5px 14px 5px 6px;
+  background: rgba(32, 31, 47, .94);
+  border: 1px solid rgba(255,255,255,.19);
+  color: #faf9ff;
+  border-radius: 99px;
+  box-shadow: 0 7px 24px rgba(20, 17, 38, .18);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: -.015em;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: transform .2s ease, background .2s ease, opacity .2s ease, box-shadow .2s ease;
+}
+.alive-widget-root[dir="rtl"] .alive-launch { padding: 5px 6px 5px 14px; }
+.alive-widget-root .alive-launch:hover {
+  transform: translateY(-2px);
+  background: #39344f;
+  box-shadow: 0 11px 29px rgba(20,17,38,.23);
+}
+.alive-widget-root .alive-launch:focus-visible {
+  outline: 3px solid #aa99e8;
+  outline-offset: 3px;
+}
+.alive-launch-icon {
+  width: 38px; height: 38px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: #69608f;
+  color: #fff;
+}
+.alive-launch-label { white-space: nowrap; }
+.alive-launch-indicator {
+  align-self: center; flex: none; height: 6px; width: 6px;
+  border-radius: 50%; background: #8bd5ad;
+  box-shadow: 0 0 0 3px rgba(139,213,173,.11);
+}
+.alive-widget-root .alive-launch--open {
+  opacity: 0; transform: translateY(5px); pointer-events: none;
+}
+
+/* Native non-modal dialog (show(), not showModal()): browsing remains interactive. */
+.alive-widget-root .alive-dialog {
+  position: fixed;
+  z-index: 2147482001;
+  inset: auto;
+  inset-inline-end: clamp(14px, 2.4vw, 30px);
+  inset-block-end: calc(20px + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  max-width: none; max-height: none;
+  border: 1px solid rgba(211,204,232,.38);
+  border-radius: 15px;
+  background: #202131; color: #f3f0fb;
+  box-shadow: 0 23px 75px rgba(16,14,32,.30), 0 3px 14px rgba(16,14,32,.15);
+  overflow: hidden;
+  isolation: isolate;
+  overscroll-behavior: contain;
+}
+.alive-widget-root .alive-dialog:not([open]) { display: none; }
+.alive-widget-root .alive-dialog[open] { animation: alive-widget-arrive .18s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes alive-widget-arrive {
+  from { opacity: 0; transform: translateY(9px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Everyday state: a chat, not an intrusive app takeover. */
+.alive-widget-root .alive-dialog--compact {
+  width: min(388px, calc(100vw - 28px));
+  height: min(566px, calc(100dvh - 78px - env(safe-area-inset-bottom, 0px)));
+  min-height: 275px;
+}
+.alive-dialog--compact .alive-shell { min-height: 0; }
+.alive-dialog--compact .alive-header {
+  min-height: 65px; padding: 11px 15px; gap: 8px;
+  background: #202131;
+}
+.alive-dialog--compact .alive-wordmark { gap: 9px; min-width: 0; }
+.alive-dialog--compact .alive-symbol { width: 33px; height: 33px; font-size: 20px; }
+.alive-dialog--compact .alive-wordmark strong { font-size: 10px; letter-spacing: .095em; white-space: nowrap; }
+.alive-dialog--compact .alive-wordmark small { font-size: 9px; margin-top: 2px; letter-spacing: 0; white-space: nowrap; }
+.alive-dialog--compact .alive-header-end { gap: 6px; }
+.alive-dialog--compact .alive-header-end .alive-challenge-open { display: none; }
+.alive-dialog--compact .alive-mode { display: none; }
+.alive-dialog--compact .alive-icon-button { width: 31px; height: 31px; border-color: rgba(255,255,255,.14); }
+.alive-dialog--compact .alive-main {
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  overflow: hidden;
+  min-height: 0;
+}
+.alive-dialog--compact .alive-conversation {
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(0,1fr) auto;
+}
+.alive-dialog--compact .alive-chat-heading { padding: 17px 18px 9px; }
+.alive-dialog--compact .alive-chat-heading .alive-index { display: none; }
+.alive-dialog--compact .alive-chat-heading h2 {
+  font-size: 23px; font-weight: 650; letter-spacing: -.05em;
+  margin: 0 0 5px; line-height: 1.15;
+}
+.alive-dialog--compact .alive-chat-heading p {
+  font-size: 11px; margin: 0; line-height: 1.5; color: #ada9c3;
+}
+.alive-dialog--compact .alive-transcript {
+  min-height: 0; padding: 7px 16px 10px;
+  scrollbar-width: thin;
+}
+.alive-dialog--compact .alive-onboarding { gap: 13px; padding: 5px 0 14px; }
+.alive-dialog--compact .alive-onboarding-art { display: none; }
+.alive-dialog--compact .alive-onboarding > p {
+  font-size: 13px; font-weight: 470; color: #ddd9e9; line-height: 1.45;
+}
+.alive-dialog--compact .alive-prompts { gap: 7px; }
+.alive-dialog--compact .alive-prompts button {
+  min-height: 42px; padding: 10px 12px; border-radius: 6px;
+  background: #2e2e43; border-color: #494659; font-size: 11px; line-height: 1.35;
+}
+.alive-dialog--compact .alive-message { max-width: 100%; margin-block: 11px 15px; }
+.alive-dialog--compact .alive-message-role { margin-bottom: 6px; font-size: 9px; }
+.alive-dialog--compact .alive-message p { font-size: 12px; line-height: 1.55; }
+.alive-dialog--compact .alive-message--user { margin-inline-start: 11%; padding: 12px 13px; }
+.alive-dialog--compact .alive-chat-action { font-size: 10px; }
+.alive-dialog--compact .alive-composer { padding: 9px 12px 12px; background: #202131; }
+.alive-dialog--compact .alive-composer form { padding: 3px; border-radius: 7px; gap: 1px; }
+.alive-dialog--compact .alive-composer input {
+  min-height: 40px; padding: 8px; font-size: 12px;
+}
+.alive-dialog--compact .alive-control { width: 30px; height: 36px; }
+.alive-dialog--compact .alive-control svg { width: 16px; height: 16px; }
+.alive-dialog--compact .alive-send { width: 34px; height: 36px; }
+.alive-dialog--compact .alive-fineprint {
+  margin-top: 7px; max-width: 330px;
+  font-size: 9px; line-height: 1.4; color: #aba6be;
+}
+.alive-dialog--compact .alive-fineprint svg { display: none; }
+.alive-dialog--compact .alive-notice { margin-bottom: 7px; font-size: 10px; }
+.alive-dialog--compact .alive-workbench,
+.alive-dialog--compact .alive-footer { display: none; }
+
+/* Deliberately opt in to the richer project demos / Challenge Me. */
+.alive-widget-root .alive-dialog--expanded {
+  width: min(1070px, calc(100vw - 34px));
+  height: min(742px, calc(100dvh - 34px));
+  min-height: 320px;
+  border-radius: 16px;
+}
+.alive-dialog--expanded .alive-header { min-height: 69px; padding: 11px 22px; }
+.alive-dialog--expanded .alive-header-end { gap: 9px; }
+.alive-dialog--expanded .alive-resize { border-color: rgba(255,255,255,.24); }
+.alive-dialog--expanded .alive-chat-heading { padding: 23px 22px 10px; }
+.alive-dialog--expanded .alive-chat-heading h2 { font-size: clamp(35px,3.5vw,52px); }
+.alive-dialog--expanded .alive-transcript { padding-inline: 22px; }
+.alive-dialog--expanded .alive-composer { padding: 12px 16px; }
+.alive-dialog--expanded .alive-workbench { padding: 24px; }
+.alive-dialog--expanded .alive-workbench-heading { margin-block: 15px 13px; }
+.alive-dialog--expanded .alive-workbench-heading h3 { font-size: clamp(36px,4vw,55px); }
+.alive-dialog--expanded .alive-footer { padding: 9px 22px; }
+
+/* Locale direction is applied to both the portal and the dialog. */
+.alive-dialog[dir="rtl"] .alive-header-end,
+.alive-dialog[dir="rtl"] .alive-message { text-align: start; }
+.alive-dialog :is(button,input,textarea,select,a):focus-visible {
+  outline: 2px solid #bbaafc; outline-offset: 2px;
+}
+@media (max-width: 800px) {
+  .alive-widget-root .alive-dialog--expanded {
+    inset: 0; width: 100vw; height: 100dvh;
+    border: 0; border-radius: 0;
+  }
+  .alive-dialog--expanded .alive-main { display: flex; overflow-y: auto; flex-direction: column; }
+  .alive-dialog--expanded .alive-conversation { min-height: min(590px, 80dvh); flex: none; }
+  .alive-dialog--expanded .alive-workbench { display: flex; overflow: visible; min-height: 460px; flex: none; }
+}
+@media (max-width: 520px) {
+  .alive-widget-root .alive-launch {
+    width: 49px; height: 49px; min-height: 49px;
+    justify-content: center; gap: 0; padding: 5px;
+    inset-inline-end: 14px;
+    inset-block-end: calc(15px + env(safe-area-inset-bottom, 0px));
+  }
+  .alive-widget-root .alive-launch-icon { width: 37px; height: 37px; }
+  .alive-widget-root .alive-launch-label,
+  .alive-widget-root .alive-launch-indicator { display: none; }
+  .alive-widget-root .alive-dialog--compact {
+    inset-inline-end: 12px;
+    inset-block-end: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: calc(100vw - 24px);
+    height: min(565px, calc(100dvh - 76px - env(safe-area-inset-bottom, 0px)));
+    border-radius: 12px;
+  }
+  .alive-dialog--compact .alive-header { min-height: 61px; padding: 9px 13px; }
+  .alive-dialog--compact .alive-chat-heading { padding: 15px 16px 7px; }
+  .alive-dialog--compact .alive-chat-heading h2 { font-size: 22px; }
+  .alive-dialog--compact .alive-transcript { padding-inline: 13px; }
+  .alive-dialog--compact .alive-composer { padding: 9px 10px 10px; }
+  .alive-dialog--expanded .alive-header { padding: 10px 12px; gap: 5px; }
+  .alive-dialog--expanded .alive-header-end { gap: 5px; }
+  .alive-dialog--expanded .alive-chat-heading h2 { font-size: 33px; }
+  .alive-dialog--expanded .alive-workbench { padding: 20px 16px; }
+}
+@media (max-height: 530px) and (min-width: 801px) {
+  .alive-widget-root .alive-dialog--compact { height: calc(100dvh - 32px); }
+  .alive-widget-root .alive-dialog--expanded { height: calc(100dvh - 18px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .alive-widget-root .alive-launch,
+  .alive-widget-root .alive-dialog,
+  .alive-widget-root .alive-dialog[open],
+  .alive-widget-root .alive-launch * { animation: none !important; transition: none !important; }
+}
