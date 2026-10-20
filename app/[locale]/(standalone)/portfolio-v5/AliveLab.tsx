@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Activity, ArrowLeft, ArrowRight, Check, CheckCircle2, Circle,
+  Activity, ArrowRight, Check, CheckCircle2, Circle,
   Command, GitBranch, LockKeyhole, RotateCcw, ShieldCheck, Sparkles,
 } from 'lucide-react';
 import {
