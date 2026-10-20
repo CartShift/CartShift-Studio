@@ -203,7 +203,7 @@ export default function AliveExperience({ locale, projects }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: 'smooth' });
+    transcriptRef.current?.scrollTo?.({ top: transcriptRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy, open]);
 
   function openExperience() {
