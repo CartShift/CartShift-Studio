@@ -396,7 +396,8 @@ export default function AliveExperience({ locale, projects }: Props) {
               <div><strong>YOTAM / ALIVE</strong><small>{t.identity}</small></div>
             </div>
             <div className="alive-header-end">
-              <button className="alive-challenge-open" type="button" onClick={() => expandExperience(tab === 'challenge' ? 'experience' : 'challenge')} aria-pressed={tab === 'challenge'}>
+              <button className="alive-challenge-open" type="button" aria-label={t.challenge}
+                onClick={() => expandExperience(tab === 'challenge' ? 'experience' : 'challenge')} aria-pressed={tab === 'challenge'}>
                 <Sparkles size={15}/>{t.challenge}<ArrowUpRight size={15}/>
               </button>
               <span className="alive-mode"><span className="alive-live-dot" />{mode === 'ai' ? t.ai : t.guided}</span>
