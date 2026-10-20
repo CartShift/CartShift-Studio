@@ -1,28 +1,10 @@
-import { getMessages, setRequestLocale } from 'next-intl/server';
-import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
-import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
-import { BaseClientProviders } from '@/components/providers/BaseClientProviders';
-import { pickClientMessages } from '@/lib/i18n/client-messages';
+import '../portfolio-v5/portfolio-v5.css';
+import '../portfolio-v5/portfolio-v5-refresh.css';
+import '../portfolio-v5/portfolio-v5-immersive.css';
+import '../portfolio-v5/portfolio-v5-motion.css';
+import '../portfolio-v5/portfolio-v5-experience.css';
+import PortfolioMotion from '../portfolio-v5/PortfolioMotion';
 
-export default async function YotamLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const activeLocale = locale as 'en' | 'he';
-  setRequestLocale(activeLocale);
-  const messages = await getMessages();
-
-  return (
-    <BaseClientProviders
-      locale={activeLocale}
-      messages={pickClientMessages(messages, ['cv', 'common', 'portal'])}
-    >
-      <GoogleAnalytics />
-      <AnalyticsProvider>{children}</AnalyticsProvider>
-    </BaseClientProviders>
-  );
+export default function PersonalPortfolioLayout({ children }: { children: React.ReactNode }) {
+  return <PortfolioMotion>{children}</PortfolioMotion>;
 }

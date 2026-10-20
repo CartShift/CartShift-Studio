@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import './yotam-profile.css';
-import YotamProfile from './YotamProfile';
+import PortfolioV5 from '../portfolio-v5/PortfolioV5';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -10,7 +9,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const validLocale = locale as 'en' | 'he';
+  const validLocale = locale === 'he' ? 'he' : 'en';
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const title = validLocale === 'he'
     ? "יותם פרג'י | Senior Product Engineer בברלין"
@@ -20,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : 'Professional profile of Yotam Faraggi, a Berlin-based Senior Product Engineer with 10+ years in production software across full-stack products, commerce, APIs, integrations, cloud and product engineering.';
 
   return {
-    title,
+    title: { absolute: title },
     description,
     robots: { index: true, follow: true },
     alternates: {
@@ -47,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function YotamProfilePage({ params }: Props) {
   const { locale } = await params;
-  const validLocale = locale as 'en' | 'he';
+  const validLocale = locale === 'he' ? 'he' : 'en';
   setRequestLocale(validLocale);
 
   const t = await getTranslations({ locale: validLocale, namespace: 'cv' });
@@ -106,14 +105,7 @@ export default async function YotamProfilePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <style>{`
-        .yotam-profile-contrast :is(h1, h2, h3, h4, h5, h6)[class*='text-[#1d1d1f]'] {
-          color: #1d1d1f !important;
-        }
-      `}</style>
-      <div className="yotam-profile-contrast">
-        <YotamProfile />
-      </div>
+      <PortfolioV5 locale={validLocale} />
     </>
   );
 }

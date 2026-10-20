@@ -67,6 +67,10 @@ const portalPathnames = [
 const standalonePathnames = [
   '/cv',
   '/yotam',
+  '/yotam/work',
+  '/yotam/experience',
+  '/yotam/about',
+  '/yotam/contact',
   '/portfolio-v5',
   '/portfolio-v5/work',
   '/portfolio-v5/experience',

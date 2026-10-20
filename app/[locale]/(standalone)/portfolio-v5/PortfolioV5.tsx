@@ -11,7 +11,7 @@ type Props = { locale: 'en' | 'he' };
 export default function PortfolioV5({ locale }: Props) {
   const t = translations[locale];
   const [paused, setPaused] = useState(false);
-  const home = '/' + locale + '/portfolio-v5';
+  const home = '/' + locale + '/yotam';
   const he = locale === 'he';
 
   return (

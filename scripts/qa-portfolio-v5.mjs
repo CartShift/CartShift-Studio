@@ -3,8 +3,8 @@
  * On-demand browser smoke checks for Portfolio V5.
  * Uses dependencies already included in CartShift. Does not deploy or mutate data.
  * Usage:
- *   PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-portfolio-v5.mjs
- *   PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 node scripts/qa-portfolio-v5.mjs
+ *   PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-yotam.mjs
+ *   PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 node scripts/qa-yotam.mjs
  */
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
@@ -12,7 +12,7 @@ import { mkdir } from 'node:fs/promises';
 
 const base = (process.env.PORTFOLIO_V5_BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
 const screenshots = process.env.V5_QA_SCREENSHOTS === '1';
-const output = './tmp/portfolio-v5-qa';
+const output = './tmp/yotam-qa';
 const cases = [
   { locale: 'en', page: '', width: 390, height: 844, mobile: true },
   { locale: 'en', page: '', width: 1440, height: 900, mobile: false },
@@ -42,7 +42,7 @@ async function main() {
   const failures = [];
   try {
     for (const test of cases) {
-      const path = '/' + test.locale + '/portfolio-v5' + (test.page ? '/' + test.page : '');
+      const path = '/' + test.locale + '/yotam' + (test.page ? '/' + test.page : '');
       const name = test.locale + '-' + (test.page || 'home') + '-' + (test.mobile ? 'mobile' : 'desktop');
       const page = await browser.newPage();
       const errors = [];
@@ -53,7 +53,9 @@ async function main() {
         const response = await page.goto(base + path, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         assert(response && [200, 304].includes(response.status()), name + ': bad HTTP status ' + response?.status());
         assert(await page.$('h1'), name + ': missing h1');
-        assert(await page.$('meta[name="robots"][content*="noindex"]'), name + ': experiment missing noindex metadata');
+        assert(!(await page.$('meta[name="robots"][content*="noindex"]')), name + ': personal portfolio unexpectedly noindex');
+        const canonical = await page.$eval('link[rel="canonical"]', element => element.getAttribute('href'));
+        assert(canonical?.endsWith(path), name + ': wrong canonical URL ' + canonical);
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
         if (test.page === 'experience') {
@@ -70,8 +72,8 @@ async function main() {
         }
         if (!test.page) {
           await page.waitForSelector('.v5-immersive-title', { visible: true });
-          assert(await page.$('a[href$="/portfolio-v5/work"]'), name + ': missing work link');
-          assert(await page.$('a[href$="/portfolio-v5/about"]'), name + ': missing about link');
+          assert(await page.$('a[href$="/yotam/work"]'), name + ': missing work link');
+          assert(await page.$('a[href$="/yotam/about"]'), name + ': missing about link');
           const canvas = await page.$('.v5-fluid-canvas');
           assert(canvas, name + ': missing procedural artwork canvas');
           await page.waitForFunction(() => document.querySelector('.v5-fluid-canvas')?.dataset.rendered === 'true',
@@ -101,7 +103,7 @@ async function main() {
           const wipe = await page.$eval('.v5-transition-wipe', node =>
             node.classList.contains('v5-transition-wipe--cover'));
           assert(wipe, 'portfolio page transition did not start');
-          await page.waitForFunction(() => location.pathname.endsWith('/portfolio-v5/work'),
+          await page.waitForFunction(() => location.pathname.endsWith('/yotam/work'),
             { timeout: 20_000 });
           await page.waitForFunction(() => document.querySelector('.v5-transition-wipe')
             ?.classList.contains('v5-transition-wipe--idle'), { timeout: 5_000 });

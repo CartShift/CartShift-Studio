@@ -18,9 +18,9 @@ export default function V5Navigation({ locale, section, motionPaused = false, on
   const [menuOpen, setMenuOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const homeHref = '/' + locale + '/portfolio-v5';
+  const homeHref = '/' + locale + '/yotam';
   const otherLocale = isHebrew ? 'en' : 'he';
-  const languageHref = '/' + otherLocale + '/portfolio-v5' + (section ? '/' + section : '');
+  const languageHref = '/' + otherLocale + '/yotam' + (section ? '/' + section : '');
   const navigation = [
     { label: t.home, href: homeHref, number: '01' },
     { label: t.work, href: homeHref + '/work', number: '02' },

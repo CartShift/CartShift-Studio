@@ -102,6 +102,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/terms', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/yotam', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/yotam/work', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/yotam/experience', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/yotam/about', changeFrequency: 'monthly' as const, priority: 0.7 },
+    { path: '/yotam/contact', changeFrequency: 'monthly' as const, priority: 0.6 },
     ...industries.map(industry => ({
       path: `/industries/${industry}`,
       changeFrequency: 'monthly' as const,

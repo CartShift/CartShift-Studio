@@ -26,7 +26,7 @@ function motionEnabled() {
 }
 
 function belongsToPortfolio(path: string) {
-  return /^\/(?:en|he)\/portfolio-v5(?:\/|$)/.test(path);
+  return /^\/(?:en|he)\/yotam(?:\/|$)/.test(path);
 }
 
 export default function PortfolioMotion({ children }: { children: ReactNode }) {
@@ -38,7 +38,7 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const isHomepage = /^\/(?:en|he)\/portfolio-v5$/.test(pathname);
+  const isHomepage = /^\/(?:en|he)\/yotam$/.test(pathname);
 
   const clearTimers = useCallback(() => {
     for (const id of timers.current) window.clearTimeout(id);
@@ -47,7 +47,7 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!pendingRef.current || pathname !== pendingRef.current) return;
-    const route = pathname.match(/^\/(?:en|he)\/portfolio-v5(?:\/([^/]+))?/)?.[1] || '';
+    const route = pathname.match(/^\/(?:en|he)\/yotam(?:\/([^/]+))?/)?.[1] || '';
     const selector = route === 'work' ? '.v5-subpage--work'
       : route === 'experience' ? '.v5-experience'
       : route === 'about' ? '.v5-subpage--about'
