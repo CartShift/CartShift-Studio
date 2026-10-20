@@ -179,3 +179,17 @@
 @media (prefers-reduced-motion:reduce) {
   .alive-alarm-bars i, .alive-lab-pulse, .alive-challenge-result { animation: none !important; }
 }
+
+/* A conversational answer can lead directly to its visual proof. */
+.alive-chat-action {
+  display: inline-flex; justify-content: space-between; align-items: center; gap: 10px;
+  margin-top: 13px; padding: 10px 12px; border: 1px solid #8376bf; border-radius: 4px;
+  color: #ede7ff; background: #3c3958; font-size: 11px; font-weight: 750;
+  text-align: start; transition: background .18s ease, transform .18s ease;
+}
+.alive-chat-action:hover { background: #575079; transform: translateY(-1px); }
+.alive-workbench { scroll-margin-block-start: 16px; }
+@media(max-width:800px) {
+  .alive-chat-action { min-height: 44px; }
+  .alive-workbench { scroll-margin-block-start: 0; }
+}
