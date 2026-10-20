@@ -105,6 +105,51 @@ async function main() {
           assert((await page.$$('.v5-editorial-project')).length === 5, name + ': expected five featured projects');
           assert((await page.$$('.v5-editorial-project-visual img')).length === 5, name + ': missing product previews');
           assert(await page.$('a[href$="/yotam/work/starlinker"]'), name + ': missing canonical case study link');
+          // Regression: global heading colors must never disappear against
+          // editorial dark and light surfaces (also check WebKit text fill).
+          const headlineContrasts = await page.evaluate(() => {
+            const selectors = [
+              ['#v5-editorial-work-title', '.v5-editorial-work'],
+              ...Array.from({ length: 5 }, (_, i) => [
+                '.v5-editorial-project:nth-child(' + (i + 1) + ') .v5-editorial-project-story h3',
+                '.v5-editorial-work',
+              ]),
+              ['#v5-editorial-manifesto-title', '.v5-editorial-manifesto'],
+              ['#v5-editorial-contact-title', '.v5-editorial-outro'],
+            ];
+            const channels = value => {
+              const match = value.match(/rgba?\(([^)]+)\)/);
+              if (!match) return null;
+              return match[1].split(/[,\s]+/).slice(0, 3).map(Number);
+            };
+            const luminance = rgb => rgb
+              .map(channel => {
+                const srgb = channel / 255;
+                return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+              })
+              .reduce((sum, component, i) => sum + component * [0.2126, 0.7152, 0.0722][i], 0);
+            return selectors.map(([headingSelector, surfaceSelector]) => {
+              const heading = document.querySelector(headingSelector);
+              const surface = document.querySelector(surfaceSelector);
+              if (!heading || !surface) return { headingSelector, ratio: 0, error: 'missing node' };
+              const computed = getComputedStyle(heading);
+              const ink = channels(computed.webkitTextFillColor || computed.color);
+              const background = channels(getComputedStyle(surface).backgroundColor);
+              if (!ink || !background) return { headingSelector, ratio: 0, error: 'unrecognized color' };
+              const a = luminance(ink);
+              const b = luminance(background);
+              return {
+                headingSelector,
+                ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05),
+              };
+            });
+          });
+          for (const { headingSelector, ratio, error } of headlineContrasts) {
+            assert(ratio >= 4.5,
+              name + ': invisible editorial heading ' + headingSelector +
+              ' (contrast ' + ratio.toFixed(2) + ', expected >= 4.5)' +
+              (error ? ' ' + error : ''));
+          }
           const canvas = await page.$('.v5-fluid-canvas');
           assert(canvas, name + ': missing procedural artwork canvas');
           await page.waitForFunction(() => document.querySelector('.v5-fluid-canvas')?.dataset.rendered === 'true',

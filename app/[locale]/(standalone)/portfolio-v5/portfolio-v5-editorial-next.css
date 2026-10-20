@@ -185,6 +185,26 @@
   font-weight: 650;
   text-wrap: balance;
 }
+/*
+ * Global headings receive a direct dark text color in app/globals.css.
+ * A section's inherited foreground does not override that declaration.
+ * Give every editorial headline an explicit surface-aware foreground,
+ * including WebKit text fill, so headings remain legible on every theme.
+ */
+.v5-editorial-home .v5-editorial-work .v5-editorial-heading-grid h2,
+.v5-editorial-home .v5-editorial-work .v5-editorial-project-story h3 {
+  color: #f1f0f6;
+  -webkit-text-fill-color: #f1f0f6;
+}
+.v5-editorial-home .v5-editorial-manifesto h2 {
+  color: #272738;
+  -webkit-text-fill-color: #272738;
+}
+.v5-editorial-home .v5-editorial-outro h2 {
+  color: #222237;
+  -webkit-text-fill-color: #222237;
+}
+
 .v5-editorial-heading-grid p {
   max-width: 365px;
   color: #cbc9d7;
@@ -310,7 +330,7 @@
   letter-spacing: -.075em;
   overflow-wrap: anywhere;
 }
-.v5-editorial-project-story h3 span { color: #b4a6fc; }
+.v5-editorial-project-story h3 span { color: #b4a6fc; -webkit-text-fill-color: #b4a6fc; }
 .v5-editorial-project-story p {
   max-width: 440px;
   color: #cac8da;
@@ -357,6 +377,7 @@
 .v5-editorial-manifesto h2 em,
 .v5-editorial-outro h2 em {
   color: #7864c8;
+  -webkit-text-fill-color: #7864c8;
   font-family: Georgia, 'Times New Roman', serif;
   font-weight: 400;
   font-style: italic;
