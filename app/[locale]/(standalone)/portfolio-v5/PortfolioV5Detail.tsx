@@ -35,17 +35,17 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
               </div>
               <div className="v5-work-list">
                 {projects.map((project, index) => (
-                  <a href={'/' + locale + '/portfolio/' + project.slug} className="v5-work-row" key={project.slug}>
+                  <a href={homeHref + '/work/' + project.slug} className="v5-work-row" key={project.slug}>
                     <span className="v5-work-count">{(index + 1).toString().padStart(2, '0')}</span>
                     <div>
                       <h2>{project.title}</h2>
                       <p>{project.descriptor}</p>
                     </div>
                     <span className={'v5-work-row-preview v5-work-row-preview--' + (index % 4)} aria-hidden="true">
-                      {project.hero?.src.startsWith('/') ? (
+                      {project.hero ? (
                         <Image src={project.hero.src} alt="" fill
-                          unoptimized={project.hero.src.startsWith('http')}
-                          sizes="(max-width: 680px) 48px, 140px"
+                          unoptimized={/^https?:\/\//.test(project.hero.src)}
+                          sizes="(max-width: 680px) 90vw, (max-width: 1100px) 45vw, 60vw"
                           className="v5-work-row-image" />
                       ) : (
                         <span className="v5-work-row-fallback">{project.title.slice(0, 2)}<span aria-hidden="true">✳</span></span>

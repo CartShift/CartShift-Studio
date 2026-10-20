@@ -18,6 +18,9 @@ const cases = [
   { locale: 'en', page: '', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: '', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/starlinker', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/wakemyway', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/ensemblis', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'experience', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'experience', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'about', width: 390, height: 844, mobile: true },
@@ -43,7 +46,7 @@ async function main() {
   try {
     for (const test of cases) {
       const path = '/' + test.locale + '/yotam' + (test.page ? '/' + test.page : '');
-      const name = test.locale + '-' + (test.page || 'home') + '-' + (test.mobile ? 'mobile' : 'desktop');
+      const name = test.locale + '-' + (test.page || 'home').replaceAll('/', '-') + '-' + (test.mobile ? 'mobile' : 'desktop');
       const page = await browser.newPage();
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
@@ -58,6 +61,11 @@ async function main() {
         assert(canonical?.endsWith(path), name + ': wrong canonical URL ' + canonical);
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
+        if (test.page?.startsWith('work/')) {
+          assert(await page.$('.v5-case-study'), name + ': missing portfolio case-study layout');
+          assert(await page.$('.v5-case-cover img'), name + ': missing case-study hero');
+          assert(await page.$('.v5-case-decisions li'), name + ': missing engineering decisions');
+        }
         if (test.page === 'experience') {
           const counts = await page.evaluate(() => ({
             recent: document.querySelectorAll('.v5-exp-timeline > li').length,
@@ -74,6 +82,9 @@ async function main() {
           await page.waitForSelector('.v5-immersive-title', { visible: true });
           assert(await page.$('a[href$="/yotam/work"]'), name + ': missing work link');
           assert(await page.$('a[href$="/yotam/about"]'), name + ': missing about link');
+          assert((await page.$$('.v5-editorial-project')).length === 5, name + ': expected five featured projects');
+          assert((await page.$$('.v5-editorial-project-visual img')).length === 5, name + ': missing product previews');
+          assert(await page.$('a[href$="/yotam/work/starlinker"]'), name + ': missing canonical case study link');
           const canvas = await page.$('.v5-fluid-canvas');
           assert(canvas, name + ': missing procedural artwork canvas');
           await page.waitForFunction(() => document.querySelector('.v5-fluid-canvas')?.dataset.rendered === 'true',
