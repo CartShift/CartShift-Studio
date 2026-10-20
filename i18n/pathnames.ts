@@ -4,6 +4,7 @@ export const appLocales = ['en', 'he'] as const;
 
 const websitePathnames = [
   '/',
+  '/studio',
   '/about',
   '/blog',
   '/blog/[slug]',

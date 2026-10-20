@@ -13,7 +13,6 @@ import { getAllPosts } from '@/lib/markdown';
 import { getAllCaseStudies } from '@/lib/case-studies';
 import {
   generateMetadata as genMeta,
-  generateWebSiteSchema,
   generateProfessionalServiceSchema,
 } from '@/lib/seo';
 import { setRequestLocale } from 'next-intl/server';
@@ -35,7 +34,7 @@ export async function generateMetadata({
       description: isHe
         ? 'CartShift Studio עוזרת לצוותי ecommerce לצמוח דרך פיתוח Shopify, SEO טכני, מיגרציות, שיפור מהירות ואופטימיזציה ממוקדת המרות בעברית ובאנגלית.'
         : 'CartShift Studio helps ecommerce teams grow through Shopify development, technical SEO, migration support, speed optimization, and conversion-focused implementation in English and Hebrew.',
-      url: '/',
+      url: '/studio',
       keywords: [
         ...(isHe
           ? [
@@ -64,7 +63,6 @@ export async function generateMetadata({
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he');
-  const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he');
   const professionalServiceSchema = generateProfessionalServiceSchema();
   const posts = await getAllPosts();
   const latestPosts = posts.slice(0, 4);
@@ -80,11 +78,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
   return (
     <>
-      <Script
-        id="website-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
       <Script
         id="professional-service-schema"
         type="application/ld+json"

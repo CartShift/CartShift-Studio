@@ -84,6 +84,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages = [
     { path: '', changeFrequency: 'weekly' as const, priority: 1.0 },
+    { path: '/studio', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/portfolio-v5/work', changeFrequency: 'monthly' as const, priority: 0.8 },
+    { path: '/portfolio-v5/experience', changeFrequency: 'monthly' as const, priority: 0.75 },
+    { path: '/portfolio-v5/about', changeFrequency: 'monthly' as const, priority: 0.7 },
+    { path: '/portfolio-v5/contact', changeFrequency: 'monthly' as const, priority: 0.6 },
     { path: '/solutions/shopify', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/services/shopify-conversion-optimization', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/services/shopify-b2b-integrations', changeFrequency: 'monthly' as const, priority: 0.8 },
@@ -101,7 +106,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/tools/client-portal', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/terms', changeFrequency: 'yearly' as const, priority: 0.3 },
-    { path: '/yotam', changeFrequency: 'monthly' as const, priority: 0.9 },
     ...industries.map(industry => ({
       path: `/industries/${industry}`,
       changeFrequency: 'monthly' as const,
