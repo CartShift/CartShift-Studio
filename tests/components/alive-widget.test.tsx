@@ -43,7 +43,7 @@ describe('ALIVE floating portfolio chat', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Explore projects and demos' }));
     expect(dialog.classList.contains('alive-dialog--expanded')).toBe(true);
-    expect(screen.getByText('StarLinker')).toBeTruthy();
+    expect(screen.getAllByText('StarLinker').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Back to compact chat' }));
     expect(dialog.classList.contains('alive-dialog--compact')).toBe(true);
 
