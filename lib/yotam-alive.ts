@@ -4,13 +4,13 @@ import { getPortfolioShowcases, portfolioShowcaseOrder } from '@/lib/portfolio-s
 export const aliveProjectSlugs = portfolioShowcaseOrder;
 export type AliveProjectSlug = (typeof aliveProjectSlugs)[number];
 export type AliveLocale = 'en' | 'he';
-export type AliveView = 'none' | 'work' | 'project' | 'architecture';
+export type AliveView = 'none' | 'work' | 'project' | 'architecture' | 'demo' | 'challenge';
 
 const slugSchema = z.enum([...aliveProjectSlugs, 'none'] as const);
 export const aliveDirectiveSchema = z.object({
   answer: z.string().min(1).max(1600),
   project: slugSchema,
-  view: z.enum(['none', 'work', 'project', 'architecture']),
+  view: z.enum(['none', 'work', 'project', 'architecture', 'demo', 'challenge']),
 }).strict();
 
 export type AliveDirective = z.infer<typeof aliveDirectiveSchema>;
@@ -40,6 +40,9 @@ export function portfolioKnowledge(locale: AliveLocale) {
 export function guidedPortfolioAnswer(question: string, locale: AliveLocale): AliveDirective {
   const q = question.toLowerCase();
   const projects = getPortfolioShowcases(locale);
+  if (/challenge|test my idea|תאתגר|אתגר אותי|רעיון למוצר/.test(q)) {
+    return { answer: locale === 'he' ? 'אפשר לפתוח את Challenge Me, לבחור בעיה ואילוצים ולחקור מתווה הנדסי לדוגמה.' : 'Opening Challenge Me: describe a problem, choose constraints and explore an explicit engineering playbook.', project: 'none', view: 'challenge' };
+  }
   const found = projects.find(project =>
     q.includes(project.title.toLowerCase()) ||
     q.includes(project.slug.replace('-studio', '')) ||
@@ -55,7 +58,7 @@ export function guidedPortfolioAnswer(question: string, locale: AliveLocale): Al
         ? `${found.title}: ${found.summary} התפקיד של יותם: ${found.role}. נקודות הנדסיות מתועדות: ${found.highlights.join(' · ')}.`
         : `${found.title}: ${found.summary} Yotam's role: ${found.role}. Documented engineering highlights: ${found.highlights.join(' · ')}.`,
       project: found.slug as AliveProjectSlug,
-      view: /architecture|ארכיטקטור|how|איך|trade.?off|decision|החלט/.test(q) ? 'architecture' : 'project',
+      view: /demo|simulate|try it|show it|דמו|תדגים|לנסות|סימולצ/.test(q) ? 'demo' : /architecture|ארכיטקטור|how|איך|trade.?off|decision|החלט/.test(q) ? 'architecture' : 'project',
     };
   }
   if (/team|responsib|experience|hire|skills|הצוות|ניסיון|יכולות|תפקיד/.test(q)) {
