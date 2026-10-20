@@ -20,6 +20,11 @@ describe('YOTAM / ALIVE public knowledge', () => {
     expect(answer.answer).toContain('StarLinker');
   });
 
+  it('does not confuse a commerce term containing ai with an AI agent', () => {
+    const result = guidedPortfolioAnswer('How did you handle retail commerce?', 'en');
+    expect(result.project).toBe('cartshift-studio');
+  });
+
   it('routes commerce and product operations to CartShift', () => {
     const answer = guidedPortfolioAnswer('Tell me about Shopify and commerce operations', 'en');
     expect(answer.project).toBe('cartshift-studio');
