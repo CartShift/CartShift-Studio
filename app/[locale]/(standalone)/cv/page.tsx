@@ -6,5 +6,5 @@ type Props = {
 
 export default async function CVPage({ params }: Props) {
   const { locale } = await params;
-  permanentRedirect(`/${locale}/yotam#experience`);
+  permanentRedirect(`/${locale === 'he' ? 'he' : 'en'}/portfolio-v5/experience`);
 }

@@ -38,7 +38,7 @@ export default function PortfolioV5({ locale }: Props) {
         </div>
         <div className="v5-immersive-footer">
           <span className="v5-immersive-location">{he ? 'ברלין, גרמניה' : 'Berlin, Germany'} <i aria-hidden="true" /></span>
-          <span>© {new Date().getFullYear()} · Yotam Faraggi</span>
+          <Link href={'/' + locale + '/studio'} prefetch={false} aria-label={he ? 'האתר העסקי של CartShift Studio' : 'Visit my studio, CartShift Studio'}>CartShift Studio ↗</Link>
           <Link href={home + '/contact'} prefetch={false}>{he ? 'בואו נדבר' : 'Let’s talk'} <span aria-hidden="true">↗</span></Link>
         </div>
       </section>

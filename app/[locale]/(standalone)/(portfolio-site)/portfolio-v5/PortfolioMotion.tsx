@@ -26,7 +26,7 @@ function motionEnabled() {
 }
 
 function belongsToPortfolio(path: string) {
-  return /^\/(?:en|he)\/portfolio-v5(?:\/|$)/.test(path);
+  return /^\/(?:en|he)(?:\/(?:portfolio-v5(?:\/|$))|\/?$)/.test(path);
 }
 
 export default function PortfolioMotion({ children }: { children: ReactNode }) {
@@ -38,7 +38,7 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const isHomepage = /^\/(?:en|he)\/portfolio-v5$/.test(pathname);
+  const isHomepage = /^\/(?:en|he)(?:\/portfolio-v5)?\/?$/.test(pathname);
 
   const clearTimers = useCallback(() => {
     for (const id of timers.current) window.clearTimeout(id);

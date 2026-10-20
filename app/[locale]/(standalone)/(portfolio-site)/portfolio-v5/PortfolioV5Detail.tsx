@@ -9,7 +9,8 @@ type Props = { locale: PortfolioV5Locale; kind: Kind; email: string };
 export default function PortfolioV5Detail({ locale, kind, email }: Props) {
   const t = translations[locale];
   const isHebrew = locale === 'he';
-  const homeHref = '/' + locale + '/portfolio-v5';
+  const homeHref = '/' + locale;
+  const portfolioHref = homeHref + '/portfolio-v5';
   const projects = kind === 'work' ? getPortfolioShowcases(locale) : [];
 
   return (
@@ -69,10 +70,10 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
                 <p className="v5-about-body">{t.aboutBody}</p>
                 <p className="v5-about-aside">{t.aboutNote}</p>
                 <div className="v5-about-extras">
-                  <a href={homeHref + '/experience'} className="v5-inline-link">
+                  <a href={portfolioHref + '/experience'} className="v5-inline-link">
                     {isHebrew ? 'לצפייה בקורות החיים' : 'Explore my experience'} <span aria-hidden="true">↗</span>
                   </a>
-                  <a href={homeHref + '/contact'} className="v5-inline-link">
+                  <a href={portfolioHref + '/contact'} className="v5-inline-link">
                     {t.contact} <span aria-hidden="true">↗</span>
                   </a>
                 </div>
@@ -111,7 +112,7 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
       <footer className="v5-subpage-footer v5-shell">
         <a href={homeHref}>YF<span>✳</span></a>
         <span>© {new Date().getFullYear()} · {t.copyright}</span>
-        <a href={homeHref + '/contact'}>{isHebrew ? 'לדבר איתי' : 'Get in touch'} ↗</a>
+        <a href={portfolioHref + '/contact'}>{isHebrew ? 'לדבר איתי' : 'Get in touch'} ↗</a>
       </footer>
     </main>
   );

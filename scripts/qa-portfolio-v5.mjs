@@ -42,7 +42,7 @@ async function main() {
   const failures = [];
   try {
     for (const test of cases) {
-      const path = '/' + test.locale + '/portfolio-v5' + (test.page ? '/' + test.page : '');
+      const path = '/' + test.locale + (test.page ? '/portfolio-v5/' + test.page : '');
       const name = test.locale + '-' + (test.page || 'home') + '-' + (test.mobile ? 'mobile' : 'desktop');
       const page = await browser.newPage();
       const errors = [];
@@ -53,7 +53,9 @@ async function main() {
         const response = await page.goto(base + path, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         assert(response && [200, 304].includes(response.status()), name + ': bad HTTP status ' + response?.status());
         assert(await page.$('h1'), name + ': missing h1');
-        assert(await page.$('meta[name="robots"][content*="noindex"]'), name + ': experiment missing noindex metadata');
+        assert(!(await page.$('meta[name="robots"][content*="noindex"]')), name + ': public portfolio must be indexable');
+        const canonical = await page.$eval('link[rel="canonical"]', node => node.getAttribute('href'));
+        assert(canonical?.endsWith(path), name + ': incorrect canonical URL: ' + canonical);
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
         if (test.page === 'experience') {

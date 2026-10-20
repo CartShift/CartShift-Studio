@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { portfolioMetadata } from '../seo';
 import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 import { buildCVData } from '@/lib/cv/cv-data';
@@ -69,13 +70,7 @@ const pageCopy = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const lang: Locale = locale === 'he' ? 'he' : 'en';
-  return {
-    title: { absolute: lang === 'he' ? 'ניסיון מקצועי | יותם פרג׳י' : 'Experience | Yotam Faraggi' },
-    description: lang === 'he'
-      ? 'המסלול המקצועי של יותם פרג׳י — פיתוח מוצר, Full-Stack, אינטגרציות, בריאות, פינטק ומסחר.'
-      : 'The professional journey of Yotam Faraggi across product engineering, full-stack development, healthcare, fintech and commerce.',
-    robots: { index: false, follow: false },
-  };
+  return portfolioMetadata(lang, 'experience');
 }
 
 export default async function V5ExperiencePage({ params }: Props) {
@@ -87,7 +82,8 @@ export default async function V5ExperiencePage({ params }: Props) {
   // Editing the CV records updates this page without duplicating employers or dates.
   const cv = buildCVData(lang === 'he' ? hebrewCv.cv : englishCv.cv);
   const t = pageCopy[lang];
-  const home = '/' + lang + '/portfolio-v5';
+  const home = '/' + lang;
+  const portfolioHref = home + '/portfolio-v5';
   const rtl = lang === 'he';
 
   return (
@@ -218,8 +214,8 @@ export default async function V5ExperiencePage({ params }: Props) {
           <h2 id="v5-exp-outro-title">{t.nextTitle}</h2>
           <p>{t.nextIntro}</p>
           <div className="v5-exp-actions">
-            <Link href={home + '/contact'} prefetch={false}>{t.contact}<span aria-hidden="true">↗</span></Link>
-            <Link href={home + '/work'} prefetch={false}>{t.explore}<span aria-hidden="true">↗</span></Link>
+            <Link href={portfolioHref + '/contact'} prefetch={false}>{t.contact}<span aria-hidden="true">↗</span></Link>
+            <Link href={portfolioHref + '/work'} prefetch={false}>{t.explore}<span aria-hidden="true">↗</span></Link>
             <a href={CV_STATIC_DOWNLOAD_PATH} download>{t.download}<span aria-hidden="true">↓</span></a>
           </div>
         </div>
