@@ -96,6 +96,18 @@ async function main() {
           assert(await page.$eval('.v5-motion-button', button => button.getAttribute('aria-pressed') === 'false'), 'motion resume failed');
         }
         if (screenshots) await page.screenshot({ path: output + '/' + name + '.png' });
+        if (name === 'en-home-desktop' && process.env.V5_QA_SKIP_MOTION !== '1') {
+          await page.click('.v5-immersive-links a[href$="/work"]');
+          const wipe = await page.$eval('.v5-transition-wipe', node =>
+            node.classList.contains('v5-transition-wipe--cover'));
+          assert(wipe, 'portfolio page transition did not start');
+          await page.waitForFunction(() => location.pathname.endsWith('/portfolio-v5/work'),
+            { timeout: 20_000 });
+          await page.waitForFunction(() => document.querySelector('.v5-transition-wipe')
+            ?.classList.contains('v5-transition-wipe--idle'), { timeout: 5_000 });
+          assert((await page.$('.v5-work-row')).length > 0,
+            'portfolio page transition did not reveal the destination');
+        }
         assert(errors.length === 0, name + ': uncaught errors: ' + errors.join(', '));
         console.log('PASS ' + name + ' HTTP ' + response.status() + ' / width ' + width + 'px');
       } catch (error) {
