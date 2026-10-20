@@ -47,15 +47,36 @@ export default function PortfolioMotion({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!pendingRef.current || pathname !== pendingRef.current) return;
-    clearTimers();
-    // Wait one paint so the new RSC payload has committed before revealing it.
-    const frame = window.requestAnimationFrame(() => setPhase('reveal'));
-    const finish = window.setTimeout(() => {
-      setPhase('idle');
-      pendingRef.current = null;
-    }, 730);
-    timers.current.push(finish);
-    return () => window.cancelAnimationFrame(frame);
+    const route = pathname.match(/^\/(?:en|he)\/portfolio-v5(?:\/([^/]+))?/)?.[1] || '';
+    const selector = route === 'work' ? '.v5-subpage--work'
+      : route === 'experience' ? '.v5-experience'
+      : route === 'about' ? '.v5-subpage--about'
+      : route === 'contact' ? '.v5-subpage--contact'
+      : '.v5-immersive-home';
+    const direction = pathname.startsWith('/he/') ? 'rtl' : 'ltr';
+    let frame = 0;
+    let settled = false;
+    const revealWhenReady = () => {
+      if (settled || pendingRef.current !== pathname) return;
+      // usePathname can update before streamed RSC content mounts.
+      // Only uncover once the matching page is in the DOM.
+      if (!surfaceRef.current?.querySelector('main' + selector + '[dir="' + direction + '"]')) return;
+      settled = true;
+      clearTimers();
+      observer.disconnect();
+      frame = window.requestAnimationFrame(() => setPhase('reveal'));
+      timers.current.push(window.setTimeout(() => {
+        setPhase('idle');
+        pendingRef.current = null;
+      }, 730));
+    };
+    const observer = new MutationObserver(revealWhenReady);
+    if (surfaceRef.current) observer.observe(surfaceRef.current, { childList: true, subtree: true });
+    revealWhenReady();
+    return () => {
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [pathname, clearTimers]);
 
   useEffect(() => {
