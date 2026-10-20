@@ -137,7 +137,7 @@ export default async function V5ExperiencePage({ params }: Props) {
                     <h3 dir="auto">{job.title}</h3>
                     {job.location && <p className="v5-exp-job-location">{job.location}</p>}
                   </div>
-                  <p className="v5-exp-job-period" aria-label={t.period} dir="auto">{job.duration}</p>
+                  <p className="v5-exp-job-period" aria-label={t.period + ': ' + job.duration} dir="auto">{job.duration}</p>
                 </div>
                 {job.description && <p className="v5-exp-job-description">{job.description}</p>}
                 <div className="v5-exp-highlights">

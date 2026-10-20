@@ -56,6 +56,18 @@ async function main() {
         assert(await page.$('meta[name="robots"][content*="noindex"]'), name + ': experiment missing noindex metadata');
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
+        if (test.page === 'experience') {
+          const counts = await page.evaluate(() => ({
+            recent: document.querySelectorAll('.v5-exp-timeline > li').length,
+            earlier: document.querySelectorAll('.v5-exp-early-list > li').length,
+            skills: document.querySelectorAll('.v5-exp-skill').length,
+            pdf: !!document.querySelector('.v5-exp-actions a[download]'),
+          }));
+          assert(counts.recent === 3, name + ': expected 3 detailed recent roles');
+          assert(counts.earlier === 6, name + ': expected 6 earlier roles');
+          assert(counts.skills === 6, name + ': expected 6 skill families');
+          assert(counts.pdf, name + ': missing CV download');
+        }
         if (!test.page) {
           await page.waitForSelector('.v5-immersive-title', { visible: true });
           assert(await page.$('a[href$="/portfolio-v5/work"]'), name + ': missing work link');
