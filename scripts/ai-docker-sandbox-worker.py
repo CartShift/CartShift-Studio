@@ -7,6 +7,7 @@ import json
 import os
 import platform
 import pwd
+import re
 import selectors
 import signal
 import subprocess
@@ -29,6 +30,45 @@ HEARTBEAT_SECONDS = 30
 MAX_DRAINED_BYTES = 2_000_000
 MAX_COMMAND_SECONDS = 600
 UNSAFE_MARKER = Path("/tmp/cartshift-worker-unsafe")
+
+
+# Docker exec has a separate stdout transport. Emit only bounded metadata to
+# PID 1's existing log pipe; never tee commands, output, URLs, input or tokens.
+DOCKER_ACTIVITY_LOG = False
+ACTIVITY_EVENTS = frozenset((
+    'worker_started', 'worker_stopped', 'connected', 'connection_error',
+    'connection_recovered', 'heartbeat', 'job_started', 'job_progress',
+    'job_finished', 'result_acknowledged', 'result_unacknowledged',
+    'session_state', 'session_input_acknowledged', 'guardian_error'))
+ACTIVITY_LABELS = frozenset(('channel', 'job_id', 'session_id', 'status', 'error'))
+ACTIVITY_NUMBERS = frozenset(('timeout_seconds', 'duration_ms', 'exit_code',
+    'stdout_bytes', 'stderr_bytes', 'output_bytes', 'worker_version'))
+
+
+def activity(event, **fields):
+    if not DOCKER_ACTIVITY_LOG or event not in ACTIVITY_EVENTS:
+        return
+    record = {'time': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+              'source': 'cartshift-worker', 'event': event}
+    for key, value in fields.items():
+        if key in ACTIVITY_LABELS and isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9_-]{1,80}', value):
+            record[key] = value
+        elif key in ACTIVITY_NUMBERS and type(value) is int and -255 <= value <= 10_000_000:
+            record[key] = value
+        elif key in ('timed_out', 'output_truncated', 'busy') and type(value) is bool:
+            record[key] = value
+    line = (json.dumps(record, separators=(',', ':')) + '\n').encode('ascii')
+    # One atomic write below PIPE_BUF; a full/unavailable logging pipe must
+    # never delay command draining, cancellation, heartbeat or timeout handling.
+    fd = None
+    try:
+        fd = os.open('/proc/1/fd/1', os.O_WRONLY | os.O_NONBLOCK | os.O_CLOEXEC)
+        os.write(fd, line)
+    except OSError:
+        pass
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -133,6 +173,8 @@ def execute(job):
         account = pwd.getpwuid(os.geteuid())
         clean_env = {"HOME": account.pw_dir, "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
                      "LANG": "C.UTF-8", "USER": account.pw_name, "LOGNAME": account.pw_name}
+        activity('job_started', job_id=job.get('job_id'), timeout_seconds=timeout)
+        last_progress = started
         process = subprocess.Popen(["/bin/sh", "-c", command], cwd=str(cwd),
                                    stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    env=clean_env, start_new_session=True)
@@ -141,7 +183,12 @@ def execute(job):
             selector.register(process.stderr, selectors.EVENT_READ, stderr)
             deadline = started + timeout
             while selector.get_map() or process.poll() is None:
-                remaining_time = deadline - time.monotonic()
+                now = time.monotonic()
+                if now - last_progress >= HEARTBEAT_SECONDS:
+                    activity('job_progress', job_id=job.get('job_id'), duration_ms=int((now - started) * 1000),
+                             stdout_bytes=len(stdout), stderr_bytes=len(stderr))
+                    last_progress = now
+                remaining_time = deadline - now
                 if remaining_time <= 0:
                     timed_out = True
                     kill_group(process)
@@ -184,6 +231,9 @@ def execute(job):
             # Every cleanup failure stops polling until the container is restarted.
             UNSAFE_MARKER.touch(mode=0o600)
             raise RuntimeError("Command cleanup failed; container restart required") from None
+    activity('job_finished', job_id=job.get('job_id'), exit_code=max(-255, min(255, exit_code)),
+             duration_ms=int((time.monotonic() - started) * 1000), stdout_bytes=len(stdout),
+             stderr_bytes=len(stderr), timed_out=timed_out, output_truncated=truncated)
     return {"action": "complete", "job_id": job["job_id"], "lease_token": job["lease_token"],
             "exit_code": max(-255, min(255, exit_code)),
             "stdout": stdout.decode("utf-8", errors="replace"), "stderr": stderr.decode("utf-8", errors="replace"),
@@ -196,11 +246,13 @@ def report_completion(completion, deadline=None):
     while time.monotonic() < deadline:
         try:
             if call_api(completion).get("acknowledged") is True:
+                activity('result_acknowledged', job_id=completion.get('job_id'))
                 return True
         except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
             pass
         attempt += 1
         time.sleep(min(10, 2 ** min(attempt, 3)))
+    activity('result_unacknowledged', job_id=completion.get('job_id'))
     print("Result not acknowledged before lease expiry; command was not rerun.", file=sys.stderr, flush=True)
     return False
 
@@ -212,6 +264,7 @@ def busy_heartbeat_loop(stop_event, busy_event):
         if busy_event.is_set():
             try:
                 call_api({"action": "heartbeat", "busy": True, "worker_version": 3})
+                activity('heartbeat', busy=True, worker_version=3)
             except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
                 pass
 
@@ -220,32 +273,55 @@ def sessions_sync_loop(stop_event, guardian):
     epoch = str(uuid.uuid4())
     endpoint = API_URL.removesuffix('/worker') + '/sessions/worker'
     snapshot = None
+    last_state = last_ack = None
+    connected = False
+    failures = 0
     while not stop_event.is_set():
         try:
             snapshot = guardian.sync()
         except (TimeoutError, ValueError, RuntimeError, OSError):
+            activity('guardian_error')
             stop_event.set()  # Broken local IPC is fatal; supervisor must restart.
             return
         try:
             result = call_api({'action': 'sync', 'version': 3, 'epoch': epoch, 'session': snapshot}, endpoint=endpoint)
         except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError):
+            failures += 1
+            if failures == 1 or failures % 20 == 0:
+                activity('connection_error', channel='sessions')
             # HTTPS outages do not interfere with the guardian's local deadlines.
             stop_event.wait(3)
             continue
+        if not connected or failures:
+            activity('connection_recovered' if connected else 'connected', channel='sessions')
+            connected = True
+            failures = 0
         try:
             snapshot = guardian.sync(result.get('session'))
         except (TimeoutError, ValueError, RuntimeError, OSError):
+            activity('guardian_error')
             stop_event.set()
             return
+        if snapshot:
+            state = (snapshot.get('session_id'), snapshot.get('status'))
+            if state != last_state:
+                activity('session_state', session_id=state[0], status=state[1],
+                         exit_code=snapshot.get('exit_code'), output_bytes=len(snapshot.get('output', '').encode('utf-8')))
+                last_state = state
+            ack = (snapshot.get('session_id'), snapshot.get('ack_input_id'))
+            if ack[1] and ack != last_ack:
+                activity('session_input_acknowledged', session_id=ack[0])
+                last_ack = ack
         active = snapshot and snapshot.get('status') not in ('completed', 'failed', 'stopped', 'expired')
         stop_event.wait(1 if active else 30)
 
 
 def main():
-    global TOKEN
+    global TOKEN, DOCKER_ACTIVITY_LOG
     protect_credential()
     TOKEN = sys.stdin.readline(256).strip() if "--token-stdin" in sys.argv else os.environ.pop("SANDBOX_WORKER_TOKEN", "")
     verify_identity()
+    DOCKER_ACTIVITY_LOG = True
     os.chdir(WORKSPACE)
     lock = open("/tmp/cartshift-sandbox-worker.lock", "a")
     try:
@@ -254,6 +330,9 @@ def main():
         print("A sandbox worker is already running.", file=sys.stderr)
         return 0
     print("Sandbox worker started in verified container; outbound polling only.", flush=True)
+    activity('worker_started', worker_version=3)
+    connected = False
+    failures = 0
     idle_delay = POLL_INTERVAL_SECONDS
     last_heartbeat = 0.0
     # The verified launcher preloads this module from owner-held, hash-checked
@@ -273,7 +352,12 @@ def main():
                 heartbeat = time.monotonic() - last_heartbeat >= HEARTBEAT_SECONDS
                 request = {"action": "poll", "worker_version": 3, **({"heartbeat": True} if heartbeat else {})}
                 job = call_api(request).get("job")
+                if not connected or failures:
+                    activity('connection_recovered' if connected else 'connected', channel='jobs')
+                    connected = True
+                    failures = 0
                 if heartbeat:
+                    activity('heartbeat', busy=False, worker_version=3)
                     last_heartbeat = time.monotonic()
                 if isinstance(job, dict):
                     idle_delay = POLL_INTERVAL_SECONDS
@@ -291,6 +375,9 @@ def main():
             except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError) as error:
                 if UNSAFE_MARKER.exists():
                     return 1
+                failures += 1
+                if failures == 1 or failures % 20 == 0:
+                    activity('connection_error', channel='jobs', error=type(error).__name__)
                 code = error.code if isinstance(error, urllib.error.HTTPError) else ""
                 print("Worker poll error: " + type(error).__name__ + " " + str(code), file=sys.stderr, flush=True)
             heartbeat_stop.wait(idle_delay)
@@ -299,6 +386,7 @@ def main():
         heartbeat_stop.set()
         sessions_thread.join(timeout=22)
         guardian.close()
+        activity('worker_stopped')
 
 
 

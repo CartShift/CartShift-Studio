@@ -14,6 +14,64 @@ worker = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(worker)
 
 
+class ActivityLoggingTests(unittest.TestCase):
+    def test_metadata_only_atomic_nonblocking_sink(self):
+        with patch.object(worker, 'DOCKER_ACTIVITY_LOG', True), patch.object(worker.os, 'open', return_value=123) as opened, patch.object(worker.os, 'write') as written, patch.object(worker.os, 'close') as closed:
+            worker.activity('job_finished', job_id='safe-job', exit_code=124, timed_out=True,
+                            command='private command', stdout='private output', token='private credential',
+                            status='invalid\nforged', duration_ms=1000)
+        opened.assert_called_once_with('/proc/1/fd/1', os.O_WRONLY | os.O_NONBLOCK | os.O_CLOEXEC)
+        closed.assert_called_once_with(123)
+        fd, raw = written.call_args.args
+        self.assertEqual(fd, 123)
+        self.assertLess(len(raw), 4096)
+        self.assertEqual(raw.count(b'\n'), 1)
+        data = json.loads(raw)
+        self.assertEqual(data['job_id'], 'safe-job')
+        self.assertEqual(data['exit_code'], 124)
+        self.assertTrue(data['timed_out'])
+        self.assertFalse({'command', 'stdout', 'token', 'status'} & data.keys())
+        self.assertNotIn(b'private', raw)
+
+    def test_unavailable_or_full_pipe_cannot_fail_worker(self):
+        with patch.object(worker, 'DOCKER_ACTIVITY_LOG', True), patch.object(worker.os, 'open', side_effect=PermissionError):
+            worker.activity('heartbeat', busy=True)
+        with patch.object(worker, 'DOCKER_ACTIVITY_LOG', True), patch.object(worker.os, 'open', return_value=123), patch.object(worker.os, 'write', side_effect=BlockingIOError), patch.object(worker.os, 'close') as closed:
+            worker.activity('heartbeat', busy=True)
+        closed.assert_called_once_with(123)
+
+    def test_unknown_events_and_disabled_logging_do_not_open_sink(self):
+        with patch.object(worker.os, 'open') as opened:
+            worker.activity('job_started')
+            with patch.object(worker, 'DOCKER_ACTIVITY_LOG', True):
+                worker.activity('arbitrary-secret')
+        opened.assert_not_called()
+
+    def test_real_job_events_do_not_include_command_or_output(self):
+        events = []
+        with patch.object(worker, 'activity', side_effect=lambda event, **fields: events.append((event, fields))):
+            result = worker.execute({'job_id': 'logging-test', 'lease_token': 'private-lease',
+                'command': 'printf private-output', 'cwd': '/workspace', 'timeout_seconds': 2})
+        self.assertEqual(result['stdout'], 'private-output')
+        self.assertEqual([event for event, _ in events], ['job_started', 'job_finished'])
+        self.assertNotIn('private', json.dumps(events))
+        self.assertEqual(events[-1][1]['stdout_bytes'], 14)
+
+    def test_progress_event_for_long_running_command(self):
+        with patch.object(worker, 'HEARTBEAT_SECONDS', .05), patch.object(worker, 'activity') as logged:
+            worker.execute({'job_id': 'progress-test', 'lease_token': 'private-lease',
+                'command': 'sleep .2', 'cwd': '/workspace', 'timeout_seconds': 2})
+        self.assertIn('job_progress', [call.args[0] for call in logged.call_args_list])
+
+    def test_real_timeout_is_visible(self):
+        with patch.object(worker, 'activity') as logged:
+            result = worker.execute({'job_id': 'timeout-test', 'lease_token': 'private-lease',
+                'command': 'sleep 3', 'cwd': '/workspace', 'timeout_seconds': 1})
+        self.assertEqual(result['exit_code'], 124)
+        finished = [call for call in logged.call_args_list if call.args == ('job_finished',)][0]
+        self.assertTrue(finished.kwargs['timed_out'])
+
+
 class WorkerExecutionTests(unittest.TestCase):
     def run_job(self, command, timeout=3, cwd='/workspace'):
         return worker.execute({'job_id': 'regression-job-1234', 'lease_token': 'test-lease-' * 4,
