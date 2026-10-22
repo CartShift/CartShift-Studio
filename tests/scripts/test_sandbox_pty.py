@@ -15,6 +15,13 @@ def desired():
     item['expires_at']=int((time.time()+60)*1000)
     return item
 class PTYTests(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+        temporary = tempfile.TemporaryDirectory(prefix='cartshift-pty-fixture-')
+        self.addCleanup(temporary.cleanup)
+        metadata = patch.object(pty, 'META', Path(temporary.name))
+        metadata.start()
+        self.addCleanup(metadata.stop)
     def guardian(self,code):
         original=pty.GuardianState.__init__
         def fixture(state): original(state,[sys.executable,'-u','-c',code])
@@ -125,4 +132,26 @@ class PTYTests(unittest.TestCase):
                 self.assertTrue(all(e.endswith('/sandbox/sessions/worker') for _,e in calls))
             finally:
                 stop.set(); thread.join(timeout=2)
+    def test_confirm_sends_carriage_return_to_raw_terminal(self):
+        code = "import os,tty,sys; tty.setraw(0); print('ready'); data=b''.join(os.read(0,1) for _ in range(2)); print('enter='+str(data[-1])); sys.exit(0 if data==b'n\\r' else 1)"
+        g=self.guardian(code); item=desired(); item['provider']='github'
+        g.sync(item); self.wait(g,lambda s:'ready' in s['output'])
+        item['pending_input']=dict(input_id='raw-confirm',input_type='confirm',input='n')
+        g.sync(item); snap=self.wait(g,lambda s:s['status'] in pty.TERMINAL)
+        self.assertEqual(snap['exit_code'],0)
+        self.assertIn('enter=13',snap['output'])
+    def test_confirm_preserves_canonical_line_input(self):
+        g=self.guardian("value=input('confirm: '); print('accepted='+value)")
+        item=desired(); item['provider']='github'
+        g.sync(item); self.wait(g,lambda s:'confirm:' in s['output'])
+        item['pending_input']=dict(input_id='line-confirm',input_type='confirm',input='n')
+        g.sync(item); snap=self.wait(g,lambda s:s['status'] in pty.TERMINAL)
+        self.assertEqual(snap['exit_code'],0)
+        self.assertIn('accepted=n',snap['output'])
+    def test_terminal_has_fixed_dimensions(self):
+        code="import os,sys; size=os.get_terminal_size(0); print('size='+str(tuple(size))); sys.exit(0 if tuple(size)==(120,30) else 1)"
+        g=self.guardian(code); g.sync(desired())
+        snap=self.wait(g,lambda s:s['status'] in pty.TERMINAL)
+        self.assertEqual(snap['exit_code'],0)
+        self.assertIn('size=(120, 30)',snap['output'])
 if __name__=='__main__': unittest.main()
