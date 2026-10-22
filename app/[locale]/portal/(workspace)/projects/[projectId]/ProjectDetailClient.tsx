@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
+import { saveAgencyProjectWorkMode } from '@/lib/services/agency-work-modes';
 import { hasPermission, PERMISSIONS } from '@/lib/utils/permissions';
 import { USER_ROLE } from '@/lib/types/portal';
 import ProjectOperationsPanel from '@/components/portal/projects/ProjectOperationsPanel';
@@ -232,6 +233,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     userData?.agencyRole ?? USER_ROLE.OWNER,
     PERMISSIONS.MANAGE_PROJECTS
   );
+  const canClassify = canEditProjects && ['owner', 'admin'].includes(userData?.agencyRole ?? 'owner');
   const key = useMemo(() => ['client-project', id], [id]);
   const { data: project, isLoading, error } = useQuery({
     queryKey: key, queryFn: () => getClientProject(id), enabled: !authLoading && Boolean(user),
@@ -328,6 +330,24 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         </select> : <span className="rounded-full bg-primary-50 px-3 py-1 text-sm font-semibold text-primary-700 dark:bg-primary-900/20 dark:text-primary-300">
           {PROJECT_STATUS_LABELS[project.status]?.[locale === 'he' ? 'he' : 'en']}
         </span>}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        {canClassify ? (
+          <label className="flex items-center gap-2 text-xs font-semibold text-surface-500">
+            {locale === 'he' ? 'אופי התקשרות' : 'Engagement'}
+            <select aria-label={locale === 'he' ? 'אופי ההתקשרות בפרויקט' : 'Project engagement mode'}
+              value={project.workMode || 'commercial'} disabled={saving}
+              onChange={e => void execute(async () => {
+                await saveAgencyProjectWorkMode(project.orgId, project.id, e.target.value as 'commercial' | 'pro_bono');
+              })}
+              className="portal-focus-ring min-h-10 rounded-lg border border-surface-200 bg-white px-3 text-sm dark:border-surface-700 dark:bg-surface-900">
+              <option value="commercial">{locale === 'he' ? 'מסחרי' : 'Commercial'}</option>
+              <option value="pro_bono">Pro Bono</option>
+            </select>
+          </label>
+        ) : project.workMode === 'pro_bono' ? (
+          <span className="rounded-md border border-surface-200 px-2 py-1 text-xs font-semibold dark:border-surface-700">Pro Bono</span>
+        ) : null}
       </div>
       <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-surface-600 dark:text-surface-300">{project.summary || t('noSummary')}</p>
       <div className="mt-5 grid gap-2 sm:grid-cols-3">
@@ -488,14 +508,14 @@ export default function ProjectDetailClient({ id }: { id: string }) {
             <p className="text-xs text-surface-500">
               {locale === 'he' ? 'תחזית עלות עבודה (לא סכום החוזה)' : 'Estimated work cost (not contract price)'}
             </p>
-            <p className="mt-1 font-bold">{money(budget.minCents)} – {money(budget.maxCents)}</p>
+            <p className="mt-1 font-bold">{project.workMode === 'pro_bono' ? (locale === 'he' ? 'ללא חיוב' : 'Not billable') : money(budget.minCents) + ' – ' + money(budget.maxCents)}</p>
           </div>
           <div className="rounded-xl bg-surface-50 p-3 dark:bg-surface-800">
             <p className="text-xs text-surface-500">{t('loggedHours')}</p>
             <p className="mt-1 font-bold">{hours.toLocaleString(locale)}h / {project.scope.maxHours}h</p>
           </div>
         </div>
-        {canEditProjects && <ScopeEditor key={project.id} project={project}
+        {canEditProjects && project.workMode !== 'pro_bono' && <ScopeEditor key={project.id} project={project}
           save={scope => execute(() => updateClientProject(id, { scope }))}/>}
         <p className="mt-3 text-xs text-surface-500">
           {locale === 'he'

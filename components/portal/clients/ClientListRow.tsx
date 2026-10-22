@@ -21,6 +21,7 @@ export interface AgencyClient extends Organization {
   requestCount?: number;
   revenueCurrency?: Currency;
   hasOtherCurrencies?: boolean;
+  defaultWorkMode?: 'commercial' | 'pro_bono';
 }
 
 interface ClientListRowProps {
@@ -67,6 +68,9 @@ export function ClientListRow({
                   ? t(`agency.clients.badge.${client.status}` as Parameters<typeof t>[0])
                   : 'Active'}
               </Badge>
+              {client.defaultWorkMode === 'pro_bono' && (
+                <Badge variant="gray" className="min-h-5 px-2 text-xs font-semibold">Pro Bono</Badge>
+              )}
               {!client.defaultCurrency && (
                 <span className="rounded-md border border-amber-300/70 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-800 dark:text-amber-300"
                   title={locale === 'he' ? 'יש להגדיר מטבע בהגדרות הלקוח' : 'Configure currency in the client profile'}>
@@ -136,14 +140,14 @@ export function ClientListRow({
               icon: <ArrowUpRight size={14} />,
               onClick: () => router.push(getPortalPath(`/agency/clients/${client.id}/`)),
             },
-            {
+            ...(client.defaultWorkMode !== 'pro_bono' ? [{
               label: t('pricing.newOffer'),
               icon: <FilePlus2 size={14} />,
               onClick: () => {
                 switchOrg(client.id);
                 router.push(getPortalPath('/pricing/new/'));
               },
-            },
+            }] : []),
             {
               label: t('agency.clients.viewAsClient'),
               icon: <Eye size={14} />,

@@ -14,6 +14,8 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { updateOrganization } from '@/lib/services/portal-organizations';
+import { getAgencyClientWorkMode, saveAgencyClientWorkMode } from '@/lib/services/agency-work-modes';
+import type { WorkMode } from '@/lib/domain/work-engagement';
 import { getAgencyTeam } from '@/lib/services/portal-agency';
 import { PortalUser, Organization } from '@/lib/types/portal';
 import { useTranslations, useLocale } from 'next-intl';
@@ -73,6 +75,9 @@ export const EditClientModal = ({
   const [loading, set] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agencyMembers, setAgencyMembers] = useState<PortalUser[]>([]);
+  const [workMode, setWorkMode] = useState<WorkMode>('commercial');
+  const [internalRelationshipNote, setInternalRelationshipNote] = useState('');
+  const [modeLoading, setModeLoading] = useState(false);
   const t = useTranslations('portal');
   const locale = useLocale();
 
@@ -130,6 +135,21 @@ export const EditClientModal = ({
     });
   }, [organization, reset]);
 
+  // Classification and relationship notes are private to the agency.
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    setModeLoading(true);
+    getAgencyClientWorkMode(organization.id).then(data => {
+      if (!active) return;
+      setWorkMode(data.defaultWorkMode);
+      setInternalRelationshipNote(data.internalRelationshipNote || '');
+    }).catch(err => {
+      if (active) setError(err instanceof Error ? err.message : String(err));
+    }).finally(() => { if (active) setModeLoading(false); });
+    return () => { active = false; };
+  }, [isOpen, organization.id]);
+
   // Fetch agency members on mount
   useEffect(() => {
     const fetchMembers = async () => {
@@ -150,6 +170,12 @@ export const EditClientModal = ({
     setError(null);
 
     try {
+      if (modeLoading) throw new Error('Work mode is still loading');
+      await saveAgencyClientWorkMode({
+        orgId: organization.id,
+        defaultWorkMode: workMode,
+        internalRelationshipNote,
+      });
       await updateOrganization(organization.id, {
         name: data.name,
         website: data.website || undefined,
@@ -212,6 +238,31 @@ export const EditClientModal = ({
               className="font-outfit"
             />
 
+            <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
+              <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">
+                {locale === 'he' ? 'סיווג פנימי בסוכנות' : 'Agency-only engagement'}
+              </p>
+              <div className="space-y-3">
+                <PortalFormField label={locale === 'he' ? 'ברירת מחדל לעבודות חדשות' : 'Default for new work'}>
+                  <Select value={workMode} disabled={modeLoading} onChange={e => setWorkMode(e.target.value as WorkMode)}
+                    options={[
+                      { value: 'commercial', label: locale === 'he' ? 'מסחרי' : 'Commercial' },
+                      { value: 'pro_bono', label: 'Pro Bono' },
+                    ]}/>
+                </PortalFormField>
+                <label className="grid gap-1.5 text-sm font-medium">
+                  {locale === 'he' ? 'הערה פנימית (לא גלויה ללקוח)' : 'Private note (not visible to clients)'}
+                  <textarea value={internalRelationshipNote} maxLength={1500}
+                    onChange={e => setInternalRelationshipNote(e.target.value)}
+                    className="portal-focus-ring min-h-20 w-full rounded-xl border border-surface-200 bg-white p-3 text-sm dark:border-surface-700 dark:bg-surface-900"
+                    disabled={modeLoading}/>
+                </label>
+                <p className="text-xs text-surface-500">
+                  {locale === 'he' ? 'הסיווג לא משנה תשלומים או פרויקטים קיימים.' :
+                    'Changing this default does not alter existing projects or payments.'}
+                </p>
+              </div>
+            </div>
             <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
               <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">{t('organization.primaryContact.title')}</p>
               <div className="space-y-3">
@@ -294,7 +345,7 @@ export const EditClientModal = ({
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" loading={loading} className="flex-1 font-outfit">
+            <Button type="submit" loading={loading} disabled={modeLoading || Boolean(error)} className="flex-1 font-outfit">
               {loading ? t('common.saving') : t('common.saveChanges')}
             </Button>
           </ModalFooter>
