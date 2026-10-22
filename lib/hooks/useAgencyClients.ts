@@ -50,7 +50,7 @@ export function useAgencyClients() {
   const { data: workModes = [], isLoading: loadingModes, error: modesError } = useQuery({
     queryKey: ['agency-client-work-modes'],
     queryFn: listAgencyClientWorkModes,
-    enabled: Boolean(shouldFetch && canViewRevenue),
+    enabled: Boolean(shouldFetch),
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
@@ -66,7 +66,7 @@ export function useAgencyClients() {
 
   return {
     organizations: enhancedOrganizations,
-    loading: auth || (shouldFetch && (isLoadingOrgs || (canViewRevenue && (isLoadingRevenue || loadingModes)))),
+    loading: auth || (shouldFetch && (isLoadingOrgs || (canViewRevenue && isLoadingRevenue) || loadingModes)),
     error: orgsError instanceof Error ? orgsError.message : (modesError instanceof Error ? modesError.message : (orgsError as string | null)),
     userData,
   };

@@ -523,7 +523,8 @@ service cloud.firestore {
       !changesServerManagedCommercialFields() &&
       !editsSignedCommercialTerms() &&
       request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
-      validNewProjectLink() && !prohibitsProBonoCommercialWrite() &&
+      validNewProjectLink() &&
+      (!prohibitsProBonoCommercialWrite() || isCommercialDocument(resource.data)) &&
       ((canCreateAgencyRequest() &&
         (!changesAgencyCommercialFields() || canManageAgencyCommercial())) ||
        (!isAgencyUser() &&

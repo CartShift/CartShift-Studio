@@ -53,6 +53,11 @@ async function main() {
           isBillable: true, publicAccessEnabled: true,
           agencyNotes: 'NEVER EXPOSE', publishedProposal: { totalAmount: 200000 },
         }),
+        db.doc('portal_requests/legacyFreeOrgCommercial').set({
+          orgId: 'orgFree', title: 'Historic paid quote', status: 'ACCEPTED',
+          isBillable: true, amountPaid: 10000, balanceDue: 0,
+          createdBy: 'agency',
+        }),
         db.doc('portal_requests/quoteAccepted').set({
           orgId: 'orgA', title: 'Signed agreement', status: 'ACCEPTED',
           isBillable: true, publicToken: 'signed-token', proposalVersion: 1,
@@ -281,6 +286,11 @@ async function main() {
     }));
     await assertFails(agency.doc('portal_requests/freeWork').update({
       isBillable: true, lineItems: [{ quantity: 1, unitPrice: 25000 }],
+    }));
+    // Historic commercial documents remain editable for legitimate operational
+    // notes even after the agency switches its *future* default to pro bono.
+    await assertSucceeds(agency.doc('portal_requests/legacyFreeOrgCommercial').update({
+      lastComment: { content: 'Settlement follow-up', userName: 'Agency' },
     }));
 
     // A revoked member must not read the former tenant or mutate its requests.

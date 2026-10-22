@@ -21,6 +21,7 @@ import { PortalUser, Organization } from '@/lib/types/portal';
 import { useTranslations, useLocale } from 'next-intl';
 import { Select } from '@/components/ui/Select';
 import { PortalFormField } from '@/components/portal/ui/PortalFormField';
+import { usePortalAuth } from '@/lib/hooks/usePortalAuth';
 
 type TranslationFunction = ReturnType<typeof useTranslations<'portal'>>;
 
@@ -80,6 +81,8 @@ export const EditClientModal = ({
   const [modeLoading, setModeLoading] = useState(false);
   const t = useTranslations('portal');
   const locale = useLocale();
+  const { userData } = usePortalAuth();
+  const canManageWorkMode = ['owner', 'admin'].includes(userData?.agencyRole ?? 'owner');
 
   const schema = editOrgSchema(t);
   const {
@@ -137,8 +140,9 @@ export const EditClientModal = ({
 
   // Classification and relationship notes are private to the agency.
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !canManageWorkMode) return;
     let active = true;
+    setError(null);
     setModeLoading(true);
     getAgencyClientWorkMode(organization.id).then(data => {
       if (!active) return;
@@ -148,7 +152,7 @@ export const EditClientModal = ({
       if (active) setError(err instanceof Error ? err.message : String(err));
     }).finally(() => { if (active) setModeLoading(false); });
     return () => { active = false; };
-  }, [isOpen, organization.id]);
+  }, [isOpen, organization.id, canManageWorkMode]);
 
   // Fetch agency members on mount
   useEffect(() => {
@@ -170,12 +174,14 @@ export const EditClientModal = ({
     setError(null);
 
     try {
-      if (modeLoading) throw new Error('Work mode is still loading');
-      await saveAgencyClientWorkMode({
-        orgId: organization.id,
-        defaultWorkMode: workMode,
-        internalRelationshipNote,
-      });
+      if (canManageWorkMode) {
+        if (modeLoading) throw new Error('Work mode is still loading');
+        await saveAgencyClientWorkMode({
+          orgId: organization.id,
+          defaultWorkMode: workMode,
+          internalRelationshipNote,
+        });
+      }
       await updateOrganization(organization.id, {
         name: data.name,
         website: data.website || undefined,
@@ -238,7 +244,7 @@ export const EditClientModal = ({
               className="font-outfit"
             />
 
-            <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
+            {canManageWorkMode && <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
               <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">
                 {locale === 'he' ? 'סיווג פנימי בסוכנות' : 'Agency-only engagement'}
               </p>
@@ -262,7 +268,7 @@ export const EditClientModal = ({
                     'Changing this default does not alter existing projects or payments.'}
                 </p>
               </div>
-            </div>
+            </div>}
             <div className="border-t border-surface-200 pt-4 dark:border-surface-800">
               <p className="mb-3 text-xs font-black uppercase tracking-widest text-surface-400">{t('organization.primaryContact.title')}</p>
               <div className="space-y-3">
@@ -345,7 +351,7 @@ export const EditClientModal = ({
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" loading={loading} disabled={modeLoading || Boolean(error)} className="flex-1 font-outfit">
+            <Button type="submit" loading={loading} disabled={(canManageWorkMode && modeLoading) || Boolean(error)} className="flex-1 font-outfit">
               {loading ? t('common.saving') : t('common.saveChanges')}
             </Button>
           </ModalFooter>
