@@ -133,7 +133,7 @@ export function PortalHeader({
       {...(viewTransitionName && { 'view-transition-name': viewTransitionName })}
       className="portal-header flex items-center justify-between px-3 md:px-5 sticky top-0 z-header h-[var(--portal-header-height)]"
     >
-      <div className="flex items-center gap-3 md:gap-4">
+      <div className="flex min-w-0 items-center gap-1 sm:gap-3 md:gap-4">
         <button
           id="portal-mobile-menu-button"
           onClick={onMobileMenuToggle}
@@ -169,7 +169,7 @@ export function PortalHeader({
         </button>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
         <div className="flex items-center gap-2">
           {/* Controls wrapper - Language & Theme */}
           <div className="hidden sm:flex items-center gap-1.5 p-1 bg-surface-100/70 dark:bg-white/[0.045] rounded-xl border border-surface-200/60 dark:border-white/[0.07] shadow-inner">
@@ -181,7 +181,7 @@ export function PortalHeader({
           {/* Help */}
           <Link
             href={helpHref}
-            className="portal-focus-ring min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100/80 dark:hover:bg-surface-800/50 transition-colors"
+            className="portal-focus-ring hidden sm:flex min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100/80 dark:hover:bg-surface-800/50 transition-colors"
             aria-label={t('accessibility.helpCenter')}
           >
             <HelpCircle size={20} aria-hidden />
