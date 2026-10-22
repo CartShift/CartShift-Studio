@@ -74,9 +74,17 @@ export async function POST(request: Request) {
         const result = await callTool(name, body.params?.arguments || {}, grant);
         return reply(body.id, { content: [{ type: 'text', text: JSON.stringify(result) }], isError: false });
       } catch (error) {
-        const safeMessage = error instanceof Error &&
+        const sandboxErrors: Record<string, string> = {
+          SANDBOX_NOT_CONFIGURED: 'SANDBOX_NOT_CONFIGURED: the sandbox owner or worker credential is missing on this deployment.',
+          SANDBOX_FORBIDDEN: 'SANDBOX_FORBIDDEN: this account is not the configured sandbox owner.',
+          INVALID_WORKDIR: 'INVALID_WORKDIR: choose a directory inside /workspace without traversal.',
+          JOB_NOT_FOUND: 'JOB_NOT_FOUND: no sandbox result is available for this owner and job ID.',
+        };
+        const sandboxMessage = name.startsWith('sandbox_') && error instanceof Error
+          ? sandboxErrors[error.message] : undefined;
+        const safeMessage = sandboxMessage || (error instanceof Error &&
           (error.name === 'ZodError' || /^(Client not found|Organization not found|Work item not found|Empty |Too many work items|Unknown tool|Arguments)/.test(error.message))
-          ? error.message : 'Operation could not be completed; review the client ID, permissions and server logs';
+          ? error.message : 'Operation could not be completed; review the client ID, permissions and server logs');
         return reply(body.id, { content: [{ type: 'text', text: safeMessage }], isError: true });
       }
     }
