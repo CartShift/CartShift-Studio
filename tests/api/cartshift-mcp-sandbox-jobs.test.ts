@@ -89,4 +89,11 @@ describe('CartShift owner-only sandbox job submission', () => {
     await expect(getSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
       .rejects.toThrow('JOB_NOT_FOUND');
   });
+  it.each([[0, 'completed'], [7, 'failed'], [124, 'timed_out']])('reports command exit %s as %s', async (exitCode, status) => {
+    mocks.read.mockResolvedValue({ exists: true, data: () => ({ ownerUid: owner.uid,
+      status: 'completed', exitCode, stdout: 'real output', stderr: '', createdAt: Date.now() }) });
+    await expect(getSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
+      .resolves.toMatchObject({ status, exit_code: exitCode, stdout: 'real output' });
+  });
+
 });

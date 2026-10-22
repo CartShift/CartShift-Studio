@@ -58,6 +58,8 @@ export async function getSandboxCommand(grant: TokenGrant, input: unknown) {
   const data = snap.data()!;
   const status = data.status === 'queued' && Date.now() > data.expiresAt ? 'expired'
     : data.status === 'leased' && Date.now() > data.leaseExpiresAt ? 'worker_lost'
+    : data.status === 'completed' && data.exitCode === 124 ? 'timed_out'
+    : data.status === 'completed' && data.exitCode !== 0 ? 'failed'
     : data.status;
   return {
     job_id, status, created_at: data.createdAt,
@@ -82,8 +84,12 @@ export async function leaseSandboxJob() {
     const claim = await db.runTransaction(async tx => {
       const fresh = await tx.get(doc.ref);
       const data = fresh.data();
-      if (!data || data.status !== 'queued' || data.expiresAt <= now ||
+      if (!data || data.status !== 'queued' ||
           data.ownerUid !== process.env.SANDBOX_OWNER_UID) return null;
+      if (data.expiresAt <= now) {
+        tx.update(doc.ref, { status: 'expired', finishedAt: now });
+        return null;
+      }
       tx.update(doc.ref, {
         status: 'leased', startedAt: now,
         leaseExpiresAt: now + LEASE_MS,
@@ -114,6 +120,17 @@ export async function completeSandboxJob(input: unknown) {
   return firestore().runTransaction(async tx => {
     const snap = await tx.get(ref);
     const data = snap.data();
+    const completionHash = tokenHash(JSON.stringify(args));
+    const leaseHash = tokenHash(args.lease_token);
+    // A lost HTTPS response must not turn a successfully stored result into
+    // an error. Accept only the identical result with the original lease.
+    if (data?.status === 'completed' &&
+        typeof data.completedLeaseTokenHash === 'string' &&
+        constantEquals(data.completedLeaseTokenHash, leaseHash) &&
+        typeof data.completionHash === 'string' &&
+        constantEquals(data.completionHash, completionHash)) {
+      return { acknowledged: true };
+    }
     if (!data || data.status !== 'leased' || typeof data.leaseTokenHash !== 'string' ||
         !constantEquals(data.leaseTokenHash, tokenHash(args.lease_token)) ||
         Date.now() > data.leaseExpiresAt) {
@@ -123,7 +140,7 @@ export async function completeSandboxJob(input: unknown) {
       status: 'completed', finishedAt: Date.now(),
       exitCode: args.exit_code, stdout: args.stdout, stderr: args.stderr,
       durationMs: args.duration_ms, outputTruncated: args.output_truncated,
-      leaseTokenHash: null,
+      leaseTokenHash: null, completedLeaseTokenHash: leaseHash, completionHash,
     });
     return { acknowledged: true };
   });

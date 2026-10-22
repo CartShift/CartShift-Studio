@@ -64,9 +64,7 @@ Commands run with `/bin/sh -c`, a selected working directory below
 change/delete files **inside** the container: preserve development work in
 Git and backups. Do not make the container privileged or share host files.
 
-For preview environments, set `SANDBOX_WORKER_URL` on the worker to the
-preview endpoint, but only if the preview domain is accessible to the
-worker. The normal URL is
+The worker pins the production HTTPS hostname and path and refuses preview endpoints. The URL is
 `https://portal.cart-shift.com/api/cartshift-mcp/sandbox/worker`.
 
 ## ChatGPT acceptance check
@@ -94,3 +92,27 @@ alone is not proof Android tool discovery works.
 - Add operator controls (worker presence/heartbeat, queue concurrency,
   cancellation, output redaction, longer-running task support).
 - Run expanded integration/security testing before operational use.
+
+## Activation and reliability update (2026-10-22)
+
+The existing tool names and OAuth scopes remain unchanged. The backend now accepts identical completion retries, retires expired queued jobs, bounds streamed request bodies (including JSON escaping expansion), and reports `failed`/`timed_out` separately from successful `completed` results. Queued jobs expire after ten minutes; an unreported lease becomes `worker_lost`. A lost job is never silently rerun: an owner may submit a new job explicitly.
+
+The stdlib-only Python worker uses the actual UID-1000 account home (`/home/node`), validates the exact Linux ARM64 identity, resolves workdirs under `/workspace`, suppresses endpoint redirects, kills command process groups and reaps detached descendants with a Linux child-subreaper on timeout/output limits/completion, closes pipes, and retains completion delivery retries until the lease deadline. Its production credential can be supplied through `--token-stdin`; it is absent from command arguments and child environments. PR_SET_DUMPABLE=0 prevents same-UID command processes from inspecting worker memory through `/proc`. A flock permits one worker per container. Failed descendant cleanup blocks further jobs until a container restart. Arbitrary preview endpoints are now intentionally refused; the production HTTPS hostname/path is pinned to prevent credential forwarding.
+
+For this Windows setup, the owner-side `cartshift-worker-supervisor.ps1` validates the owned restricted runtime and the owner-held worker source SHA-256 before invoking one fixed `docker exec` command as UID 1000. The worker runs inside Docker; Windows never receives development commands. The dedicated token is protected with current-user DPAPI and a private owner ACL on Windows, then supplied over stdin after a verified source bootstrap. Isolated Python (`-I`) imports only its read-only standard library; no container-writable script or user-site import executes at credential startup, and the hash is checked on the exact source bytes executed. No host credential store is mounted or copied into the container. A Windows logon task keeps the supervisor running and reconnects after Docker/container restarts. This requires the owner Windows session, Docker Desktop, and network connectivity to remain available.
+
+Owner deployment procedure: generate a fresh random 48-byte URL-safe credential, configure SANDBOX_OWNER_UID and SANDBOX_WORKER_TOKEN as production secrets in the verified CartShift Vercel project, store only the dedicated worker credential in owner-protected storage, deploy, and sign out any temporary platform CLI session. Never copy broad platform credentials into the running worker. In the executed setup, a temporary public-key handoff transfers ciphertext only; temporary plaintext setup credentials are removed before any queued command runs.
+
+Validation commands:
+
+```bash
+python3 -m unittest discover -s tests/scripts -p test_sandbox_worker.py
+COREPACK_HOME=/home/node/.cache/corepack pnpm exec vitest run tests/api/cartshift-mcp-*.test.ts
+COREPACK_HOME=/home/node/.cache/corepack pnpm exec tsc -p tsconfig.build.json --noEmit
+```
+
+Test Android through the existing CartShift app after refreshing its tool list. Require an actual completed queue job showing `1000`, `Linux`, `aarch64`, `ai-docker-sandbox`, and `/workspace`, then write/read `/workspace/experiments/mobile-proof.txt`. Public `tools/list` or the separate cloud `sandbox_ping` alone cannot establish Docker execution or Android tool availability.
+
+### Worker credential trust boundary
+
+The worker runs as the same UID 1000 as development commands. Its credential is excluded from child arguments and environments; isolated Python imports and a non-dumpable process protect ordinary process inspection. This does not establish a security boundary against arbitrary hostile code already running under the same UID, including interference during worker startup. Use this owner-only runner for trusted development commands. Windows personal files, Docker control, and host credentials remain outside the container. Cleanup failures stop polling and require a container restart.
