@@ -11,6 +11,7 @@ import re
 import select
 import signal
 import socket
+import struct
 import subprocess
 import termios
 import time
@@ -198,6 +199,8 @@ class GuardianState:
             raise ValueError('Invalid expiry')
         self.ttl = min(ttl, max(0, expiry / 1000 - time.time()))
         master, slave = pty.openpty()
+        # Supply usable geometry before any CLI queries its terminal width.
+        fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 30, 120, 0, 0))
         attrs = termios.tcgetattr(slave)
         attrs[3] &= ~(termios.ECHO | termios.ECHONL)
         termios.tcsetattr(slave, termios.TCSANOW, attrs)
@@ -241,7 +244,9 @@ class GuardianState:
                 if len(self.seen_inputs) >= 100: raise ValueError('Input limit')
                 self.seen_inputs.add(iid) # Deduplicate before writing, including response loss.
                 if entry['input_type'] == 'verification_code': self.redactor.values.append(value)
-                os.write(self.master, (value + '\n').encode())
+                # A terminal Enter sends CR: raw prompt UIs require it, while
+                # canonical ICRNL translates it to LF for line-based readers.
+                os.write(self.master, (value + '\r').encode())
                 self.activity = time.monotonic()
             self.snapshot['ack_input_id'] = iid
     def tick(self):
