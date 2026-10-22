@@ -53,7 +53,7 @@ export function PortalPageHeader({
         <h1 className="portal-page-title">{title}</h1>
         {description && <p className="portal-page-subtitle">{description}</p>}
       </div>
-      {action && <div className="flex shrink-0 flex-wrap items-center gap-2.5">{action}</div>}
+      {action && <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2.5 sm:shrink-0">{action}</div>}
     </header>
   );
 }
