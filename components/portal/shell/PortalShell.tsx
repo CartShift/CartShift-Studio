@@ -203,7 +203,7 @@ export function PortalShell({ children, orgId, isAgency: isAgencyPage = false }:
               state.isSidebarOpen
                 ? 'md:ps-[var(--sidebar-width-expanded)]'
                 : 'md:ps-[var(--sidebar-width-collapsed)]',
-              'pb-16 md:pb-0' // Add padding for bottom nav on mobile
+              'pb-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] md:pb-0' // Reserve full bottom-nav height including safe area
             )}
           >
             <ImpersonationBanner />
