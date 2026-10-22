@@ -78,6 +78,7 @@ export default function AgencyClientsClient() {
   const [showMyClientsOnly, setShowMyClientsOnly] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ClientStatus[]>([]);
   const [planFilter, setPlanFilter] = useState<ClientPlan[]>([]);
+  const [engagementFilter, setEngagementFilter] = useState<'all' | 'commercial' | 'pro_bono'>('all');
   const [revenueRange, setRevenueRange] = useState({ min: 0, max: 10000000 });
   const [isRepairing, setIsRepairing] = useState(false);
   const [orgToDelete, setOrgToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -141,6 +142,8 @@ export default function AgencyClientsClient() {
         return false;
       }
 
+      if (engagementFilter !== 'all' && org.defaultWorkMode !== engagementFilter) return false;
+
       // Plan filter
       if (planFilter.length > 0) {
         const orgPlan = org.plan || 'free';
@@ -166,6 +169,7 @@ export default function AgencyClientsClient() {
     showMyClientsOnly,
     statusFilter,
     planFilter,
+    engagementFilter,
     revenueRange,
     user?.uid,
   ]);
@@ -328,6 +332,13 @@ export default function AgencyClientsClient() {
           inputClassName="h-11 bg-surface-50 dark:bg-surface-900/50"
         />
         <div className="flex items-center gap-3 flex-wrap">
+          <select value={engagementFilter} aria-label={locale === 'he' ? 'סינון אופי התקשרות' : 'Engagement filter'}
+            onChange={event => setEngagementFilter(event.target.value as typeof engagementFilter)}
+            className="portal-focus-ring h-11 rounded-xl border border-surface-200 bg-white px-3 text-sm dark:border-surface-700 dark:bg-surface-900">
+            <option value="all">{locale === 'he' ? 'כל סוגי ההתקשרות' : 'All engagements'}</option>
+            <option value="commercial">{locale === 'he' ? 'מסחרי' : 'Commercial'}</option>
+            <option value="pro_bono">Pro Bono</option>
+          </select>
           <div className="text-xs font-medium text-surface-500 dark:text-surface-400 px-2 tabular-nums">
             {filteredOrgs.length} {t('agency.clients.activeAccounts')}
           </div>
@@ -460,6 +471,9 @@ export default function AgencyClientsClient() {
                 <h3 className="text-lg font-bold text-surface-900 dark:text-white mb-2 leading-tight">
                   {org.name}
                 </h3>
+                {org.defaultWorkMode === 'pro_bono' && (
+                  <span className="mb-3 inline-flex rounded-md border border-surface-200 px-2 py-1 text-xs font-semibold text-surface-600 dark:border-surface-700 dark:text-surface-300">Pro Bono</span>
+                )}
 
                 <div className="flex items-center gap-2 mb-5">
                   <ShieldCheck

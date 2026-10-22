@@ -37,6 +37,7 @@ export async function ensureProjectForAcceptedProposal(proposalId: string): Prom
     const now = admin.firestore.FieldValue.serverTimestamp();
     if (project.exists) {
       if (project.data()?.orgId !== proposal.orgId) throw new Error('PROJECT_ORG_MISMATCH');
+      if (project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
       const updates: Record<string, unknown> = {
         linkedProposalIds: admin.firestore.FieldValue.arrayUnion(proposalId),
         updatedAt: now,
@@ -73,7 +74,7 @@ export async function ensureProjectForAcceptedProposal(proposalId: string): Prom
         summary: projectSummaryFromProposal(proposal as {
           description?: string; proposalContent?: ProposalContent;
         }),
-        nextStep: '', status: 'planning', template: 'custom',
+        nextStep: '', status: 'planning', template: 'custom', workMode: 'commercial',
         ...buildProjectTemplate('custom', locale),
         blockers: [], deliverables: [], workLogs: [], changes: [], updates: [],
         reviewRevisions: {},

@@ -19,6 +19,7 @@ import { getPortalPath } from '@/lib/utils/portal-paths';
 import { getStatusBadgeVariant } from '@/lib/utils/portal-helpers';
 import { getStatusTranslationKey } from '@/lib/i18n/portal-translation-keys';
 import { summarizeAgencyRequests } from '@/lib/domain/agency-dashboard-requests';
+import { countActiveProBonoProjects } from '@/lib/domain/work-engagement';
 
 const activeProjectStatuses = new Set(['planning', 'in_progress', 'client_review', 'blocked', 'ready_to_launch']);
 export default function AgencyDashboardClient() {
@@ -49,6 +50,7 @@ export default function AgencyDashboardClient() {
   );
   const activeProjects = projects.filter(project => activeProjectStatuses.has(project.status));
   const blockedProjects = activeProjects.filter(project => project.blockers?.some(blocker => !blocker.resolved));
+  const proBonoProjects = countActiveProBonoProjects(projects);
 
   const proposalStateLabels: Record<string, string> = {
     DRAFT: t('proposalState.DRAFT'),
@@ -84,9 +86,10 @@ export default function AgencyDashboardClient() {
         </div>
       )}
 
-      <div aria-busy={loading} className={'grid grid-cols-2 gap-3 ' + (canManagePricing ? 'lg:grid-cols-4' : 'lg:grid-cols-3')}>
+      <div aria-busy={loading} className={'grid grid-cols-2 gap-3 ' + (canManagePricing ? 'lg:grid-cols-5' : 'lg:grid-cols-4')}>
         <PortalMetricCard icon={AlertCircle} label={t('attention')} value={loading ? '…' : attention.length} tone="warning" />
         <PortalMetricCard icon={FolderKanban} label={t('activeProjects')} value={loading ? '…' : activeProjects.length} tone="primary" />
+        <PortalMetricCard icon={Users} label={portal('projects.proBono')} value={loading ? '…' : proBonoProjects} tone="neutral" />
         <PortalMetricCard icon={Clock3} label={t('waitingClient')} value={loading ? '…' : waiting} tone="neutral" />
         {canManagePricing && <PortalMetricCard icon={FileText} label={t('openProposals')} value={loading ? '…' : openProposals.length} tone="success" />}
       </div>
