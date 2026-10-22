@@ -5,6 +5,8 @@ import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connecti
 import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 import { COMMERCIAL_TOOL_DEFS, callCommercialTool } from '@/lib/mcp/commercial-tools';
 import { PROSPECT_TOOL_DEFS, callProspectTool } from '@/lib/mcp/prospect-tools';
+import { sandboxPing } from '@/lib/mcp/sandbox-probe';
+import { submitSandboxCommand, getSandboxCommand } from '@/lib/mcp/sandbox-jobs';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -46,6 +48,29 @@ const requestFields = z.object({
 }).strict();
 
 export const TOOL_DEFS = [
+  {
+    name: 'sandbox_run_command',
+    description: 'Queue a shell command for execution ONLY in the owner\'s restricted Linux ARM64 Docker sandbox. Requires sandbox owner authorization and a separately connected sandbox worker; returns a job ID, not immediate command output.',
+    scope: 'work:write',
+    inputSchema: { type: 'object', required: ['command'], properties: {
+      command: { type: 'string', minLength: 1, maxLength: 2000 },
+      cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace)' },
+      timeout_seconds: { type: 'integer', minimum: 1, maximum: 120 },
+    }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_get_result',
+    description: 'Read the status, stdout, stderr and exit code of a sandbox command job belonging to the specifically authorized sandbox owner.',
+    scope: 'work:read',
+    inputSchema: { type: 'object', required: ['job_id'],
+      properties: { job_id: { type: 'string' } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_ping',
+    description: 'Check whether the separate AI Docker Mobile Probe cloud endpoint is reachable from CartShift MCP. Read-only connectivity experiment; does not access Docker, terminals or files.',
+    scope: 'clients:read',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
   {
     name: 'list_clients', description: 'List authorized agency client organizations. Search by name, website or Shopify domain.',
     scope: 'clients:read',
@@ -160,6 +185,12 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (!tool) throw new Error('Unknown tool');
   may(grant, tool.scope);
   const args = getArgs(input);
+  if (name === 'sandbox_run_command') return submitSandboxCommand(grant, args);
+  if (name === 'sandbox_get_result') return getSandboxCommand(grant, args);
+  if (name === 'sandbox_ping') {
+    z.object({}).strict().parse(args);
+    return sandboxPing();
+  }
   if (EXTENDED_TOOL_DEFS.some(item => item.name === name)) {
     return callExtendedTool(name, args, grant);
   }
