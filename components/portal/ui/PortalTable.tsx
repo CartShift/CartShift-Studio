@@ -50,7 +50,7 @@ export function PortalTable({ children, className, ...props }: PortalTableProps)
 
 export function PortalTableScroll({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('overflow-x-auto', className)} {...props}>
+    <div className={cn('max-w-full overflow-x-auto overscroll-x-contain', className)} {...props}>
       {children}
     </div>
   );
