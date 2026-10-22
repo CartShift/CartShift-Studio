@@ -577,7 +577,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
               {locale === 'he' ? 'ביטול בקשת שינוי' : 'Withdraw change request'}
             </button>
           )}
-          {isAgency && change.status === 'proposed' && changeOrderSourceId &&
+          {isAgency && project.workMode !== 'pro_bono' && change.status === 'proposed' && changeOrderSourceId &&
             reviews.some(review => review.deliverableId === 'change:' + change.id &&
               review.revision === 1 && review.decision === 'approved') &&
             !reviews.some(review => review.deliverableId === 'change:' + change.id &&

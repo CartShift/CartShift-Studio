@@ -108,6 +108,9 @@ export async function saveProjectWorkMode(
         Number(item.amountPaid || 0) > 0;
     });
     if (input.workMode === 'pro_bono' && hasCommercial) throw new Error('EXISTING_COMMERCIAL_WORK');
+    if (input.workMode === 'pro_bono' && Number(stored.scope?.rateCents || 0) > 0) {
+      throw new Error('NONZERO_RATE');
+    }
     // A completed pro-bono project is not a retroactive commercial engagement.
     if (prior === 'pro_bono' && input.workMode === 'commercial' &&
         (related.size > 0 || stored.status !== 'planning')) {

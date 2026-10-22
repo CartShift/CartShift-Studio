@@ -17,7 +17,8 @@ export async function PATCH(request: NextRequest) {
     const message = error instanceof Error ? error.message : 'UNKNOWN';
     const status = message === 'UNAUTHENTICATED' ? 401 : message === 'FORBIDDEN' ? 403 :
       message === 'NOT_FOUND' ? 404 : message === 'EXISTING_COMMERCIAL_WORK' ||
-      message === 'CREATE_NEW_COMMERCIAL_PROJECT' || message === 'TOO_MANY_REQUESTS' ? 409 : 500;
+      message === 'CREATE_NEW_COMMERCIAL_PROJECT' || message === 'TOO_MANY_REQUESTS' ||
+      message === 'NONZERO_RATE' ? 409 : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }

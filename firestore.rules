@@ -266,6 +266,8 @@ service cloud.firestore {
       allow update: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['workMode']) &&
+        (request.resource.data.get('workMode', 'commercial') != 'pro_bono' ||
+          request.resource.data.get('scope', {}).get('rateCents', 0) == 0) &&
         (request.resource.data.get('status', '') != 'ready_to_launch' ||
           (resource.data.get('status', '') == 'ready_to_launch' &&
            !request.resource.data.diff(resource.data).affectedKeys().hasAny([
