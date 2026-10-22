@@ -6,7 +6,7 @@ import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 import { COMMERCIAL_TOOL_DEFS, callCommercialTool } from '@/lib/mcp/commercial-tools';
 import { PROSPECT_TOOL_DEFS, callProspectTool } from '@/lib/mcp/prospect-tools';
 import { sandboxPing } from '@/lib/mcp/sandbox-probe';
-import { submitSandboxCommand, getSandboxCommand } from '@/lib/mcp/sandbox-jobs';
+import { submitSandboxCommand, getSandboxCommand, getSandboxStatus, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -50,18 +50,32 @@ const requestFields = z.object({
 export const TOOL_DEFS = [
   {
     name: 'sandbox_run_command',
-    description: 'Queue a shell command for execution ONLY in the owner\'s restricted Linux ARM64 Docker sandbox. Requires sandbox owner authorization and a separately connected sandbox worker; returns a job ID, not immediate command output.',
+    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active v2 worker.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['command'], properties: {
       command: { type: 'string', minLength: 1, maxLength: 2000 },
       cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace)' },
-      timeout_seconds: { type: 'integer', minimum: 1, maximum: 120 },
+      timeout_seconds: { type: 'integer', minimum: 1, maximum: 600 },
+      wait_seconds: { type: 'integer', minimum: 0, maximum: 15, description: 'Optional short wait for completed output; 0 queues without waiting.' },
     }, additionalProperties: false },
   },
   {
     name: 'sandbox_get_result',
     description: 'Read the status, stdout, stderr and exit code of a sandbox command job belonging to the specifically authorized sandbox owner.',
     scope: 'work:read',
+    inputSchema: { type: 'object', required: ['job_id'],
+      properties: { job_id: { type: 'string' } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_status',
+    description: 'Check actual sandbox worker heartbeat, capabilities and last seen timestamp. Unlike sandbox_ping this reflects the authenticated Docker worker.',
+    scope: 'work:read',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_cancel_command',
+    description: 'Cancel an owner sandbox command ONLY if it has not yet been leased to the Docker worker; running commands are not cancelled.',
+    scope: 'work:write',
     inputSchema: { type: 'object', required: ['job_id'],
       properties: { job_id: { type: 'string' } }, additionalProperties: false },
   },
@@ -187,6 +201,8 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   const args = getArgs(input);
   if (name === 'sandbox_run_command') return submitSandboxCommand(grant, args);
   if (name === 'sandbox_get_result') return getSandboxCommand(grant, args);
+  if (name === 'sandbox_status') { z.object({}).strict().parse(args); return getSandboxStatus(grant); }
+  if (name === 'sandbox_cancel_command') return cancelSandboxCommand(grant, args);
   if (name === 'sandbox_ping') {
     z.object({}).strict().parse(args);
     return sandboxPing();
