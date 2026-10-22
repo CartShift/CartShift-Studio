@@ -706,6 +706,12 @@
       "fieldPath": "purgeAt",
       "ttl": true,
       "indexes": []
+    },
+    {
+      "collectionGroup": "sandbox_auth_sessions",
+      "fieldPath": "purgeAt",
+      "ttl": true,
+      "indexes": []
     }
   ]
 }

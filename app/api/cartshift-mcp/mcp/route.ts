@@ -78,11 +78,19 @@ export async function POST(request: Request) {
           SANDBOX_NOT_CONFIGURED: 'SANDBOX_NOT_CONFIGURED: the sandbox owner or worker credential is missing on this deployment.',
           SANDBOX_FORBIDDEN: 'SANDBOX_FORBIDDEN: this account is not the configured sandbox owner.',
           INVALID_WORKDIR: 'INVALID_WORKDIR: choose a directory inside /workspace without traversal.',
+          SANDBOX_SESSIONS_WORKER_UNAVAILABLE: 'SANDBOX_SESSIONS_WORKER_UNAVAILABLE: a fresh interactive worker handshake is required.',
+          SANDBOX_SESSION_ACTIVE: 'SANDBOX_SESSION_ACTIVE: stop the active login session before starting another.',
+          SANDBOX_SESSION_NOT_FOUND: 'SANDBOX_SESSION_NOT_FOUND: no session is available for this owner and ID.',
+          SANDBOX_SESSION_CLOSED: 'SANDBOX_SESSION_CLOSED: this login session has ended or is stopping.',
+          SANDBOX_SESSION_INPUT_PENDING: 'SANDBOX_SESSION_INPUT_PENDING: wait for the previous input acknowledgement.',
+          SANDBOX_SESSION_INVALID_INPUT: 'SANDBOX_SESSION_INVALID_INPUT: provide only a supported confirmation or provider verification code.',
           JOB_NOT_FOUND: 'JOB_NOT_FOUND: no sandbox result is available for this owner and job ID.',
         };
         const sandboxMessage = name.startsWith('sandbox_') && error instanceof Error
           ? sandboxErrors[error.message] : undefined;
-        const safeMessage = sandboxMessage || (error instanceof Error &&
+        const sessionValidation = ['sandbox_start_session', 'sandbox_read_session', 'sandbox_send_input', 'sandbox_stop_session'].includes(name) && error instanceof Error && error.name === 'ZodError'
+          ? 'Invalid login session arguments.' : undefined;
+        const safeMessage = sessionValidation || sandboxMessage || (error instanceof Error &&
           (error.name === 'ZodError' || /^(Client not found|Organization not found|Work item not found|Empty |Too many work items|Unknown tool|Arguments)/.test(error.message))
           ? error.message : 'Operation could not be completed; review the client ID, permissions and server logs');
         return reply(body.id, { content: [{ type: 'text', text: safeMessage }], isError: true });

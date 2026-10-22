@@ -16,6 +16,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from pathlib import Path
 
 API_URL = os.environ.get("SANDBOX_WORKER_URL", "https://portal.cart-shift.com/api/cartshift-mcp/sandbox/worker")
@@ -57,9 +58,9 @@ def verify_identity():
         raise RuntimeError("Worker requires the production CartShift HTTPS endpoint")
 
 
-def call_api(payload):
+def call_api(payload, endpoint=None):
     body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(API_URL, body, method="POST", headers={
+    request = urllib.request.Request(endpoint or API_URL, body, method="POST", headers={
         "Authorization": "Bearer " + TOKEN, "Content-Type": "application/json", "Accept": "application/json"})
     with urllib.request.build_opener(NoRedirect()).open(request, timeout=20) as response:
         if response.status != 200:
@@ -210,9 +211,34 @@ def busy_heartbeat_loop(stop_event, busy_event):
     while not stop_event.wait(HEARTBEAT_SECONDS):
         if busy_event.is_set():
             try:
-                call_api({"action": "heartbeat", "busy": True})
+                call_api({"action": "heartbeat", "busy": True, "worker_version": 3})
             except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
                 pass
+
+
+def sessions_sync_loop(stop_event, guardian):
+    epoch = str(uuid.uuid4())
+    endpoint = API_URL.removesuffix('/worker') + '/sessions/worker'
+    snapshot = None
+    while not stop_event.is_set():
+        try:
+            snapshot = guardian.sync()
+        except (TimeoutError, ValueError, RuntimeError, OSError):
+            stop_event.set()  # Broken local IPC is fatal; supervisor must restart.
+            return
+        try:
+            result = call_api({'action': 'sync', 'version': 3, 'epoch': epoch, 'session': snapshot}, endpoint=endpoint)
+        except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError):
+            # HTTPS outages do not interfere with the guardian's local deadlines.
+            stop_event.wait(3)
+            continue
+        try:
+            snapshot = guardian.sync(result.get('session'))
+        except (TimeoutError, ValueError, RuntimeError, OSError):
+            stop_event.set()
+            return
+        active = snapshot and snapshot.get('status') not in ('completed', 'failed', 'stopped', 'expired')
+        stop_event.wait(1 if active else 30)
 
 
 def main():
@@ -230,15 +256,22 @@ def main():
     print("Sandbox worker started in verified container; outbound polling only.", flush=True)
     idle_delay = POLL_INTERVAL_SECONDS
     last_heartbeat = 0.0
+    # The verified launcher preloads this module from owner-held, hash-checked
+    # memory. Normal script imports are available only for development tooling.
+    from sandbox_pty import Guardian
+    guardian = Guardian()  # Must precede ALL threads and stateless subprocesses.
     heartbeat_stop, worker_busy = threading.Event(), threading.Event()
+    sessions_thread = threading.Thread(target=sessions_sync_loop,
+        args=(heartbeat_stop, guardian), name="sandbox-auth-sessions", daemon=True)
+    sessions_thread.start()
     heartbeat_thread = threading.Thread(target=busy_heartbeat_loop,
         args=(heartbeat_stop, worker_busy), name="sandbox-busy-heartbeat", daemon=True)
     heartbeat_thread.start()
     try:
-        while True:
+        while not heartbeat_stop.is_set():
             try:
                 heartbeat = time.monotonic() - last_heartbeat >= HEARTBEAT_SECONDS
-                request = {"action": "poll", **({"heartbeat": True} if heartbeat else {})}
+                request = {"action": "poll", "worker_version": 3, **({"heartbeat": True} if heartbeat else {})}
                 job = call_api(request).get("job")
                 if heartbeat:
                     last_heartbeat = time.monotonic()
@@ -260,9 +293,12 @@ def main():
                     return 1
                 code = error.code if isinstance(error, urllib.error.HTTPError) else ""
                 print("Worker poll error: " + type(error).__name__ + " " + str(code), file=sys.stderr, flush=True)
-            time.sleep(idle_delay)
+            heartbeat_stop.wait(idle_delay)
+        return 1
     finally:
         heartbeat_stop.set()
+        sessions_thread.join(timeout=22)
+        guardian.close()
 
 
 
