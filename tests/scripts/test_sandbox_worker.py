@@ -80,6 +80,37 @@ class WorkerExecutionTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'restart required'):
                     worker.verify_identity()
 
+    def slow_heartbeat_job(self, command):
+        import threading
+        stop, busy = threading.Event(), threading.Event()
+        busy.set()
+        def slow_call(_payload):
+            time.sleep(2)
+            return {'acknowledged': True}
+        loop = getattr(worker, 'busy_heartbeat_loop', lambda *_: None)
+        with patch.object(worker, 'HEARTBEAT_SECONDS', .05), patch.object(worker, 'call_api', side_effect=slow_call) as send:
+            thread = threading.Thread(target=loop, args=(stop, busy), daemon=True)
+            thread.start()
+            try:
+                result = self.run_job(command, timeout=1)
+            finally:
+                stop.set()
+                thread.join(timeout=3)
+            self.assertTrue(send.called)
+            self.assertFalse(thread.is_alive())
+        return result
+
+    def test_slow_heartbeat_does_not_delay_timeout(self):
+        result = self.slow_heartbeat_job('sleep 10')
+        self.assertEqual(result['exit_code'], 124)
+        self.assertLess(result['duration_ms'], 1500)
+
+    def test_slow_heartbeat_preserves_successful_output(self):
+        result = self.slow_heartbeat_job('sleep .5; printf success')
+        self.assertEqual(result['exit_code'], 0)
+        self.assertEqual(result['stdout'], 'success')
+        self.assertLess(result['duration_ms'], 1000)
+
     def test_combined_output_bound(self):
         result = self.run_job("python3 -c 'import sys; sys.stdout.write(\"x\"*50000)'")
         self.assertTrue(result['output_truncated'])

@@ -11,6 +11,7 @@ import selectors
 import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -121,7 +122,6 @@ def execute(job):
     stdout, stderr = bytearray(), bytearray()
     truncated, timed_out, exit_code, process = False, False, -1, None
     drained_bytes = 0
-    last_heartbeat = started
     try:
         command, timeout = job["command"], job["timeout_seconds"]
         if not isinstance(command, str) or not 1 <= len(command) <= 2000:
@@ -140,13 +140,6 @@ def execute(job):
             selector.register(process.stderr, selectors.EVENT_READ, stderr)
             deadline = started + timeout
             while selector.get_map() or process.poll() is None:
-                now = time.monotonic()
-                if now - last_heartbeat >= HEARTBEAT_SECONDS:
-                    try:
-                        call_api({"action": "heartbeat", "busy": True})
-                    except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
-                        pass  # Execution must not be killed by transient heartbeat errors.
-                    last_heartbeat = time.monotonic()
                 remaining_time = deadline - time.monotonic()
                 if remaining_time <= 0:
                     timed_out = True
@@ -211,6 +204,17 @@ def report_completion(completion, deadline=None):
     return False
 
 
+def busy_heartbeat_loop(stop_event, busy_event):
+    # One daemon thread per worker, never per command. Network I/O must not
+    # block the selector's output draining or deadline enforcement.
+    while not stop_event.wait(HEARTBEAT_SECONDS):
+        if busy_event.is_set():
+            try:
+                call_api({"action": "heartbeat", "busy": True})
+            except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
+                pass
+
+
 def main():
     global TOKEN
     protect_credential()
@@ -226,27 +230,40 @@ def main():
     print("Sandbox worker started in verified container; outbound polling only.", flush=True)
     idle_delay = POLL_INTERVAL_SECONDS
     last_heartbeat = 0.0
-    while True:
-        try:
-            heartbeat = time.monotonic() - last_heartbeat >= HEARTBEAT_SECONDS
-            request = {"action": "poll", **({"heartbeat": True} if heartbeat else {})}
-            job = call_api(request).get("job")
-            if heartbeat:
-                last_heartbeat = time.monotonic()
-            if isinstance(job, dict):
-                idle_delay = POLL_INTERVAL_SECONDS
-                deadline = time.monotonic() + job["timeout_seconds"] + 70
-                report_completion(execute(job), deadline)
-            else:
-                idle_delay = min(MAX_IDLE_POLL_SECONDS, idle_delay * 1.5)
-        except KeyboardInterrupt:
-            return 0
-        except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError) as error:
-            if UNSAFE_MARKER.exists():
-                return 1
-            code = error.code if isinstance(error, urllib.error.HTTPError) else ""
-            print("Worker poll error: " + type(error).__name__ + " " + str(code), file=sys.stderr, flush=True)
-        time.sleep(idle_delay)
+    heartbeat_stop, worker_busy = threading.Event(), threading.Event()
+    heartbeat_thread = threading.Thread(target=busy_heartbeat_loop,
+        args=(heartbeat_stop, worker_busy), name="sandbox-busy-heartbeat", daemon=True)
+    heartbeat_thread.start()
+    try:
+        while True:
+            try:
+                heartbeat = time.monotonic() - last_heartbeat >= HEARTBEAT_SECONDS
+                request = {"action": "poll", **({"heartbeat": True} if heartbeat else {})}
+                job = call_api(request).get("job")
+                if heartbeat:
+                    last_heartbeat = time.monotonic()
+                if isinstance(job, dict):
+                    idle_delay = POLL_INTERVAL_SECONDS
+                    deadline = time.monotonic() + job["timeout_seconds"] + 70
+                    worker_busy.set()
+                    try:
+                        completion = execute(job)
+                    finally:
+                        worker_busy.clear()
+                    report_completion(completion, deadline)
+                else:
+                    idle_delay = min(MAX_IDLE_POLL_SECONDS, idle_delay * 1.5)
+            except KeyboardInterrupt:
+                return 0
+            except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError) as error:
+                if UNSAFE_MARKER.exists():
+                    return 1
+                code = error.code if isinstance(error, urllib.error.HTTPError) else ""
+                print("Worker poll error: " + type(error).__name__ + " " + str(code), file=sys.stderr, flush=True)
+            time.sleep(idle_delay)
+    finally:
+        heartbeat_stop.set()
+
 
 
 if __name__ == "__main__":
