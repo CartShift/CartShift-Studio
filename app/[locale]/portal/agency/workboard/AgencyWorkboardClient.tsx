@@ -105,7 +105,7 @@ export default function AgencyWorkboardClient() {
       projectFilter === 'all' || (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
 
     return (
-      <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden md:block')}>
+      <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden lg:block')}>
         <DroppableColumn
           id={column.id}
           title={column.title}
@@ -223,7 +223,7 @@ export default function AgencyWorkboardClient() {
       />
 
       {/* Mobile Column Tabs */}
-      <div className="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide snap-x">
+      <div className="flex lg:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide snap-x">
         {columns.map(col => {
           const columnRequests = getRequestsForColumn(col);
           const isActive = activeMobileTab === col.id;
@@ -259,7 +259,7 @@ export default function AgencyWorkboardClient() {
       </div>
 
       {/* Columns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 min-[1040px]:grid-cols-3 min-[1440px]:grid-cols-5 gap-4 items-start pb-20 mt-4 md:mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-[1280px]:grid-cols-3 min-[1680px]:grid-cols-5 gap-4 items-start pb-20 mt-4 md:mt-6">
         {columns.map(column => renderColumn(column, activeMobileTab !== column.id))}
       </div>
 
