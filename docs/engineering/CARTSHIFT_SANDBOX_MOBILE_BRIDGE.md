@@ -116,3 +116,82 @@ Test Android through the existing CartShift app after refreshing its tool list. 
 ### Worker credential trust boundary
 
 The worker runs as the same UID 1000 as development commands. Its credential is excluded from child arguments and environments; isolated Python imports and a non-dumpable process protect ordinary process inspection. This does not establish a security boundary against arbitrary hostile code already running under the same UID, including interference during worker startup. Use this owner-only runner for trusted development commands. Windows personal files, Docker control, and host credentials remain outside the container. Cleanup failures stop polling and require a container restart.
+
+
+## Operations v2 (staged, backwards-compatible)
+
+The v2 release adds **owner-only** `sandbox_status` and `sandbox_cancel_command`
+plus optional `wait_seconds: 1..15` to `sandbox_run_command`. Calls without
+`wait_seconds` retain the queued job ID contract. The wait uses a bounded
+Firestore document listener on the Vercel server, not busy polling from ChatGPT.
+
+`sandbox_status` is driven by an actual authenticated worker heartbeat, never
+by the unrelated cloud `sandbox_ping`. A v2 worker piggybacks a heartbeat
+on approximately one idle poll per 30 seconds; during long commands it sends
+periodic busy heartbeats. An absent heartbeat cannot prove an older worker
+is offline. A v2 heartbeat older than 90 seconds is considered stale.
+
+The worker polls every 3 seconds initially and backs off toward 30 seconds
+when idle, reducing sustained idle reads by roughly 90% relative to a 3-second
+constant rate (not an observed billing claim). New jobs can take up to 30
+seconds to start after extended inactivity. A push channel / long polling
+should be separately evaluated before optimizing further.
+
+v2 commands support up to 600 seconds, **only** while the server has a fresh
+v2 heartbeat. Otherwise the server rejects requests over 120 seconds with
+`SANDBOX_WORKER_UPDATE_REQUIRED`. Leases extend with the requested execution
+timeout; expired jobs are never silently rerun. The 24 KB returned-output
+cap remains, but ordinary truncation no longer kills otherwise successful
+commands. An exceptional stream exceeding 2 MB **does** terminate the
+command (exit 125) to contain abusive output.
+
+`sandbox_cancel_command` atomically cancels **queued** work only. Once leased,
+the command is already executing and cancellation returns `cancelled: false`.
+Never present this as a kill switch for running production operations.
+
+Every newly submitted job has a `purgeAt` Firestore Timestamp set to seven
+days after submission. Deploy the `sandbox_command_jobs.purgeAt` TTL field
+override via `firebase deploy --only firestore:indexes` after reviewing
+the current live index inventory. Firestore TTL is asynchronous and only
+applies to new documents carrying the timestamp; older queue records need
+a separately audited cleanup. Output redaction removes recognizable OAuth
+tokens, authorization bearer strings, GitHub tokens and PEM private keys
+before writing results. It is **best effort**: commands can still contain
+secrets and must never echo credentials or copy them into queue payloads.
+
+### Upgrade and rollback procedure
+
+1. Keep the already-active Windows supervisor and old worker running while
+   deploying the backwards-compatible Vercel MCP changes.
+2. Run targeted MCP tests, production type-check and real worker subprocess
+   tests. Deploy the TTL field policy separately and verify its state.
+3. Review the pinned SHA-256 of `scripts/ai-docker-sandbox-worker.py` and
+   update the **owner-side** supervisor's allowlisted source hash to the
+   exact reviewed release. Because the supervisor verifies source bytes
+   executed, simply replacing the container file will *not* safely
+   activate it. Never disable the hash check.
+4. Restart the supervisor through its existing authorized Windows mechanism.
+   Confirm `sandbox_status` is `online`, version 2, with a recent heartbeat.
+   Verify fast wait, queued cancellation, exit 7, timeout, truncation,
+   and >120-second compatibility using harmless fixtures.
+5. Roll back worker and server together if a regression is found.
+   Do not run unattended privileged Firebase/GCP operations from an
+   unverified worker version.
+
+### Credential boundaries
+
+Firebase CLI interactive sign-in persists Google OAuth tokens under the
+container user's config directory. This is broader than the worker's
+separate minimal-purpose credential, and arbitrary trusted commands under
+the same UID can access that login. Prefer short-lived, least-privilege
+production credentials, explicitly log out after administration, and
+never pass credentials through MCP command strings, Git, stdout, or logs.
+The existing worker credential is excluded from child environments;
+this does not isolate the owner's Firebase CLI session.
+
+### Remaining hardening
+
+An auditable privileged credential broker, safe live running-job
+cancellation, reliable long-term log streaming, and retention-aware
+cleanup of historical jobs remain separate engineering projects. Do not
+represent them as delivered by Operations v2.
