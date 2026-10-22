@@ -2,23 +2,33 @@ import 'server-only';
 import type { NextRequest } from 'next/server';
 import * as admin from 'firebase-admin';
 import { adminDb } from '@/lib/firebase-admin';
-import { requireAgencySession } from '@/lib/auth/server-agency';
+import { getServerSession } from '@/lib/auth/server-auth';
 import type { WorkMode } from '@/lib/domain/work-engagement';
 import { normalizeWorkMode } from '@/lib/domain/work-engagement';
 
 const META = 'agency_client_metadata';
 const AUDIT = 'agency_work_mode_audit';
 
+async function requireStaff(request: NextRequest): Promise<{ uid: string; manager: boolean }> {
+  const session = await getServerSession(request);
+  if (!session) throw new Error('UNAUTHENTICATED');
+  if (!adminDb) throw new Error('ADMIN_NOT_CONFIGURED');
+  const snapshot = await adminDb.collection('portal_users').doc(session.uid).get();
+  const actor = snapshot.data();
+  if (!(actor?.isAgency === true || actor?.accountType === 'AGENCY') ||
+      actor?.status === 'suspended' || actor?.status === 'inactive') throw new Error('FORBIDDEN');
+  const role = actor?.agencyRole ?? 'owner';
+  return { uid: session.uid, manager: ['owner', 'admin'].includes(role) };
+}
+
 async function requireManager(request: NextRequest): Promise<string> {
-  const session = await requireAgencySession(request);
-  const snapshot = await adminDb!.collection('portal_users').doc(session.uid).get();
-  const role = snapshot.data()?.agencyRole ?? 'owner';
-  if (!['owner', 'admin'].includes(role)) throw new Error('FORBIDDEN');
-  return session.uid;
+  const actor = await requireStaff(request);
+  if (!actor.manager) throw new Error('FORBIDDEN');
+  return actor.uid;
 }
 
 export async function listAgencyWorkModes(request: NextRequest) {
-  await requireAgencySession(request);
+  const actor = await requireStaff(request);
   const db = adminDb!;
   const orgId = new URL(request.url).searchParams.get('orgId');
   if (orgId) {
@@ -29,7 +39,10 @@ export async function listAgencyWorkModes(request: NextRequest) {
     return {
       orgId,
       defaultWorkMode: normalizeWorkMode(data?.defaultWorkMode),
-      internalRelationshipNote: typeof data?.internalRelationshipNote === 'string' ? data.internalRelationshipNote : '',
+      // Non-manager staff need the billing default for safe project creation,
+      // never the private friendship/relationship memo.
+      internalRelationshipNote: actor.manager && typeof data?.internalRelationshipNote === 'string'
+        ? data.internalRelationshipNote : '',
     };
   }
   const snaps = await db.collection(META).limit(500).get();

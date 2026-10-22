@@ -109,7 +109,8 @@
       "nextAction": "Next follow-up action",
       "awaitingApproval": "Awaiting change-order approval",
       "approveScope": "Approve additional scope",
-      "prepareUpdateDraft": "Prepare update draft"
+      "prepareUpdateDraft": "Prepare update draft",
+      "proBono": "Pro Bono projects"
     }
   }
 }

@@ -294,8 +294,10 @@ export async function callCommercialTool(name: string, raw: unknown, grant: Toke
     const ref = requests.doc(input.proposal_id);
     let changed = false;
     await db.runTransaction(async tx => {
-      const snap = await tx.get(ref);
+      const [snap, project] = await Promise.all([tx.get(ref), tx.get(projects.doc(input.project_id))]);
       if (!snap.exists || snap.data()?.orgId !== input.org_id) throw new Error('Proposal not found for this client');
+      if (!project.exists || project.data()?.orgId !== input.org_id) throw new Error('Project not found for this client');
+      if (project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
       if (snap.data()?.projectId === input.project_id) return;
       if (snap.data()?.lockedAt || ['ACCEPTED', 'PAID'].includes(snap.data()?.status)) {
         throw new Error('Accepted or paid proposal linkage cannot be silently changed');

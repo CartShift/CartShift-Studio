@@ -642,7 +642,12 @@ export async function ensureProposalPublicToken(proposalId: string): Promise<str
           project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
     } else {
       const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
-      if (meta.data()?.defaultWorkMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+      // Accepted historic commitments remain collectible when an agency changes
+      // its default for *future* standalone work to pro bono.
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
     }
     if (data.publicToken) {
       if (data.publicAccessEnabled !== true) {
@@ -686,7 +691,10 @@ export async function queueProposalOfferEmail(
           project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
     } else {
       const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
-      if (meta.data()?.defaultWorkMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
     }
     if (!['DRAFT', 'QUOTED', 'CHANGES_REQUESTED'].includes(proposal.status)) {
       throw new Error('NOT_SENDABLE');
@@ -793,7 +801,10 @@ export async function createProposalInstallment(
           project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
     } else {
       const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
-      if (meta.data()?.defaultWorkMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
     }
     if (proposal.status !== 'ACCEPTED') throw new Error('NOT_ACCEPTED');
 
@@ -851,7 +862,10 @@ export async function recordManualProposalPayment(
           project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
     } else {
       const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
-      if (meta.data()?.defaultWorkMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
     }
     if (proposal.status !== 'ACCEPTED' && proposal.status !== 'PAID') {
       throw new Error('NOT_ACCEPTED');

@@ -230,7 +230,10 @@ async function createPayment(input: {
       }
     } else {
       const meta = await transaction.get(database.collection('agency_client_metadata').doc(request.orgId));
-      if (meta.data()?.defaultWorkMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'].includes(request.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
     }
     if (request.publicToken && request.paymentRequired) throw new Error('PROPOSAL_MANAGED');
     if (!request.isBillable) throw new Error('NOT_BILLABLE');
