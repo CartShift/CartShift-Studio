@@ -131,6 +131,42 @@ class Redactor:
             out = out.replace(value, '[REDACTED]')
         return out
 
+class TerminalQueries:
+    """Answer only bounded cursor-position requests from the local CLI."""
+    def __init__(self):
+        self.pending = bytearray()
+        self.row, self.column = 1, 1
+        self.responses = 0
+    def feed(self, data):
+        replies = bytearray()
+        for value in data:
+            if value == 27:
+                self.pending = bytearray((27,))
+                continue
+            if not self.pending:
+                continue
+            if len(self.pending) == 1:
+                if value == 91: self.pending.append(value)
+                else: self.pending.clear()
+                continue
+            self.pending.append(value)
+            if len(self.pending) > 64:
+                self.pending.clear()
+                continue
+            if 64 <= value <= 126:
+                sequence = bytes(self.pending)
+                self.pending.clear()
+                position = re.fullmatch(rb'\x1b\[([0-9]*)(?:;([0-9]*))?[Hf]', sequence)
+                if position:
+                    self.row = min(30, max(1, int(position[1] or b'1')))
+                    self.column = min(120, max(1, int(position[2] or b'1')))
+                elif sequence == b'\x1b[6n':
+                    self.responses += 1
+                    if self.responses > 64:
+                        raise OverflowError('Terminal query limit')
+                    replies.extend(f'\x1b[{self.row};{self.column}R'.encode('ascii'))
+        return replies
+
 class GuardianState:
     # fixture_command exists only for direct subprocess tests; never a protocol field.
     def __init__(self, fixture_command=None):
@@ -190,6 +226,8 @@ class GuardianState:
         if not isinstance(sid, str) or not 1 <= len(sid) <= 128: raise ValueError('Invalid session')
         self.redactor = Redactor()
         self.seen_inputs.clear()
+        self.terminal_queries = TerminalQueries()
+        self.terminal_replies = bytearray()
         self.snapshot = dict(session_id=sid, status='running', output='', output_start=0, cursor=0, exit_code=None, reason=None, ack_input_id=None)
         self.started = self.activity = time.monotonic()
         self.ttl, self.idle, self.provider, self.drained = ttl, idle, provider, 0
@@ -249,18 +287,32 @@ class GuardianState:
                 os.write(self.master, (value + '\r').encode())
                 self.activity = time.monotonic()
             self.snapshot['ack_input_id'] = iid
+    def flush_terminal_replies(self):
+        if self.terminal_replies:
+            try:
+                written = os.write(self.master, self.terminal_replies)
+                del self.terminal_replies[:written]
+            except BlockingIOError:
+                pass  # Retry on the next guardian tick, without extending idle TTL.
     def tick(self):
         if not self.process: return
         now = time.monotonic()
         if now - self.started >= self.ttl: self.finish('expired', 'ttl_expired'); return
         if now - self.activity >= self.idle: self.finish('expired', 'idle_expired'); return
         try:
+            self.flush_terminal_replies()
             for _ in range(16):
                 chunk = os.read(self.master, 4096)
                 if not chunk: break
                 self.drained += len(chunk)
+                self.terminal_replies.extend(self.terminal_queries.feed(chunk))
+                if len(self.terminal_replies) > 1024:
+                    self.finish('failed', 'output_flood'); return
+                self.flush_terminal_replies()
                 self.append(self.redactor.feed(chunk))
                 if self.drained > MAX_FLOOD: self.finish('failed', 'output_flood'); return
+        except OverflowError:
+            self.finish('failed', 'output_flood'); return
         except BlockingIOError: pass
         except OSError: pass # Linux PTY EIO when its slave closes.
         self.persist()
