@@ -93,6 +93,21 @@ async function main() {
         db.doc('portal_projects/prjB').set({
           orgId: 'orgB', title: 'Another client', status: 'planning',
         }),
+        db.doc('portal_organizations/orgFree').set({
+          name: 'Pro Bono test', createdBy: 'agency',
+        }),
+        db.doc('agency_client_metadata/orgFree').set({
+          defaultWorkMode: 'pro_bono',
+          internalRelationshipNote: 'Never expose friend relationship',
+        }),
+        db.doc('agency_work_mode_audit/auditFree').set({
+          action: 'private', orgId: 'orgFree',
+        }),
+        db.doc('portal_projects/prjFree').set({
+          orgId: 'orgFree', title: 'Free delivery', status: 'in_progress',
+          workMode: 'pro_bono',
+          scope: { minHours: 0, maxHours: 0, rateCents: 0, currency: 'ILS' },
+        }),
       ]);
     });
 
@@ -232,6 +247,40 @@ async function main() {
     await assertFails(agency.doc('portal_projects/prjA').update({ status: 'ready_to_launch' }));
     await assertFails(agency.collection('portal_projects').add({
       orgId: 'orgA', title: 'Premature launch', status: 'ready_to_launch',
+    }));
+
+    // A pro-bono relationship is agency-private. Even owners edit the
+    // commercial classification through the audited Admin SDK endpoint.
+    await assertFails(agency.doc('agency_client_metadata/orgFree').get());
+    await assertFails(client.doc('agency_client_metadata/orgFree').get());
+    await assertFails(agency.doc('agency_client_metadata/orgFree').update({
+      defaultWorkMode: 'commercial',
+    }));
+    await assertFails(agency.doc('agency_work_mode_audit/auditFree').get());
+    await assertSucceeds(agency.doc('portal_projects/prjFree').get());
+    await assertFails(agency.doc('portal_projects/prjFree').update({
+      workMode: 'commercial',
+    }));
+    await assertFails(agency.doc('portal_projects/prjFree').update({
+      scope: { minHours: 1, maxHours: 4, rateCents: 25000, currency: 'ILS' },
+    }));
+    await assertSucceeds(agency.doc('portal_requests/freeWork').set({
+      orgId: 'orgFree', projectId: 'prjFree', title: 'Free QA',
+      description: 'Testing', status: 'NEW', priority: 'NORMAL',
+    }));
+    await assertFails(agency.doc('portal_requests/freeQuote').set({
+      orgId: 'orgFree', projectId: 'prjFree', title: 'Unauthorized quote',
+      isBillable: true, status: 'DRAFT',
+    }));
+    await assertFails(agency.doc('portal_requests/standaloneFreeQuote').set({
+      orgId: 'orgFree', title: 'Unauthorized standalone quote',
+      isBillable: true, status: 'DRAFT',
+    }));
+    await assertSucceeds(agency.doc('portal_requests/freeWork').update({
+      title: 'Updated free QA',
+    }));
+    await assertFails(agency.doc('portal_requests/freeWork').update({
+      isBillable: true, lineItems: [{ quantity: 1, unitPrice: 25000 }],
     }));
 
     // A revoked member must not read the former tenant or mutate its requests.
