@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   read: vi.fn(),
   doc: vi.fn(),
   collection: vi.fn(),
+  transaction: vi.fn(),
+  update: vi.fn(),
 }));
 
 vi.mock('@/lib/mcp/connection', () => ({
@@ -12,12 +14,14 @@ vi.mock('@/lib/mcp/connection', () => ({
   tokenHash: (s: string) => s,
   firestore: () => ({
     collection: mocks.collection,
+    runTransaction: mocks.transaction,
   }),
 }));
 
 import {
   authorizeSandboxOwner, authorizeSandboxWorker,
-  submitSandboxCommand, getSandboxCommand,
+  submitSandboxCommand, getSandboxCommand, getSandboxStatus, cancelSandboxCommand,
+  redactSandboxOutput, recordSandboxHeartbeat,
 } from '@/lib/mcp/sandbox-jobs';
 
 const owner = {
@@ -37,6 +41,7 @@ describe('CartShift owner-only sandbox job submission', () => {
       id: 'sandbox-job-12345678',
       create: mocks.created,
       get: mocks.read,
+      set: vi.fn(),
     });
     mocks.collection.mockReturnValue({ doc: mocks.doc });
   });
@@ -94,6 +99,64 @@ describe('CartShift owner-only sandbox job submission', () => {
       status: 'completed', exitCode, stdout: 'real output', stderr: '', createdAt: Date.now() }) });
     await expect(getSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
       .resolves.toMatchObject({ status, exit_code: exitCode, stdout: 'real output' });
+  });
+
+  it('adds an actual Firestore TTL Timestamp to new job records', async () => {
+    await submitSandboxCommand(owner, { command: 'echo safe' });
+    const data = mocks.created.mock.calls[0][0];
+    expect(typeof data.purgeAt.toMillis).toBe('function');
+    expect(data.purgeAt.toMillis()).toBeGreaterThan(data.expiresAt);
+  });
+
+  it('reports worker heartbeat and capabilities without exposing connection secrets', async () => {
+    mocks.read.mockResolvedValue({ exists: true,
+      data: () => ({ lastSeenAt: Date.now(), version: 2, busy: false }) });
+    await expect(getSandboxStatus(owner)).resolves.toMatchObject({
+      connected: true, state: 'online', max_command_seconds: 600, busy: false,
+    });
+  });
+
+  it('requires a current v2 heartbeat for long commands', async () => {
+    mocks.read.mockResolvedValue({ exists: false, data: () => undefined });
+    await expect(submitSandboxCommand(owner, { command: 'sleep 150', timeout_seconds: 150 }))
+      .rejects.toThrow('SANDBOX_WORKER_UPDATE_REQUIRED');
+    expect(mocks.created).not.toHaveBeenCalled();
+    mocks.read.mockResolvedValue({ exists: true,
+      data: () => ({ lastSeenAt: Date.now(), version: 2 }) });
+    await submitSandboxCommand(owner, { command: 'sleep 150', timeout_seconds: 150 });
+    expect(mocks.created).toHaveBeenCalledTimes(1);
+  });
+
+  it('redacts credential-like strings before persisting logs', () => {
+    const raw = 'Bearer ' + 'x'.repeat(45) +
+      '\\naccess_token=abcd1234abcdefgh\\nghp_' + 'Y'.repeat(38);
+    const redacted = redactSandboxOutput(raw);
+    expect(redacted).not.toContain('x'.repeat(45));
+    expect(redacted).not.toContain('abcd1234abcdefgh');
+    expect(redacted).not.toContain('ghp_');
+  });
+
+  it('only cancels an owned queued job inside a transaction', async () => {
+    const data = { ownerUid: owner.uid, status: 'queued', expiresAt: Date.now() + 50_000 };
+    mocks.transaction.mockImplementation(async callback => callback({
+      get: async () => ({ data: () => data }), update: mocks.update,
+    }));
+    await expect(cancelSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
+      .resolves.toMatchObject({ cancelled: true, status: 'cancelled' });
+    expect(mocks.update).toHaveBeenCalledWith(expect.anything(),
+      expect.objectContaining({ status: 'cancelled' }));
+    data.status = 'leased';
+    await expect(cancelSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
+      .resolves.toMatchObject({ cancelled: false, status: 'leased' });
+  });
+
+  it('records v2 heartbeat with worker state only', async () => {
+    const set = vi.fn();
+    mocks.doc.mockReturnValueOnce({ set });
+    await recordSandboxHeartbeat(true);
+    expect(set).toHaveBeenCalledWith(expect.objectContaining({
+      busy: true, version: 2, lastSeenAt: expect.any(Number),
+    }), { merge: true });
   });
 
 });

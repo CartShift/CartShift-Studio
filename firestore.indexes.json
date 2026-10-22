@@ -700,6 +700,12 @@
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": []
+    },
+    {
+      "collectionGroup": "sandbox_command_jobs",
+      "fieldPath": "purgeAt",
+      "ttl": true,
+      "indexes": []
     }
   ]
 }

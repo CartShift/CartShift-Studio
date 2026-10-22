@@ -1,5 +1,5 @@
 import {
-  authorizeSandboxWorker, completeSandboxJob, leaseSandboxJob,
+  authorizeSandboxWorker, completeSandboxJob, leaseSandboxJob, recordSandboxHeartbeat,
 } from '@/lib/mcp/sandbox-jobs';
 
 export const runtime = 'nodejs';
@@ -43,8 +43,16 @@ export async function POST(request: Request) {
   }
   const args = body as Record<string, unknown>;
   try {
-    if (args.action === 'poll' && Object.keys(args).length === 1) {
-      return json({ job: await leaseSandboxJob() });
+    if (args.action === 'poll' &&
+        (Object.keys(args).length === 1 || (Object.keys(args).length === 2 && args.heartbeat === true))) {
+      const job = await leaseSandboxJob();
+      // Heartbeat every ~30s when idle, and whenever the worker begins a job.
+      if (job) await recordSandboxHeartbeat(true);
+      else if (args.heartbeat === true) await recordSandboxHeartbeat();
+      return json({ job });
+    }
+    if (args.action === 'heartbeat' && args.busy === true && Object.keys(args).length === 2) {
+      return json(await recordSandboxHeartbeat(true));
     }
     if (args.action === 'complete') {
       const { action: _action, ...completion } = args;
