@@ -85,6 +85,17 @@ class WorkerExecutionTests(unittest.TestCase):
         self.assertTrue(result['output_truncated'])
         self.assertLessEqual(len(result['stdout'].encode()) + len(result['stderr'].encode()), 24000)
 
+    def test_truncation_does_not_kill_successful_command(self):
+        result = self.run_job("python3 -c 'import sys;sys.stdout.write(\"x\"*50000)'; printf TAIL >&2")
+        self.assertTrue(result['output_truncated'])
+        self.assertEqual(result['exit_code'], 0)
+        self.assertLessEqual(len(result['stdout'].encode()) + len(result['stderr'].encode()), worker.MAX_OUTPUT)
+
+    def test_longer_than_legacy_timeout_is_accepted(self):
+        result = self.run_job('echo longer-job', timeout=121)
+        self.assertEqual(result['exit_code'], 0)
+        self.assertEqual(result['stdout'].strip(), 'longer-job')
+
     def test_invalid_and_symlink_workdir(self):
         for directory in ['/etc', '/workspace/../etc', '/workspace/not-a-real-directory']:
             self.assertNotEqual(self.run_job('pwd', cwd=directory)['exit_code'], 0)
