@@ -59,16 +59,17 @@ export async function getSandboxStatus(grant: TokenGrant) {
   const online = age !== null && age >= 0 && age < WORKER_ONLINE_MS;
   return { connected: online, state: online ? 'online' : 'offline',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
+    busy: online && data?.busy === true,
     max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
     capabilities: online && data?.version >= 2
       ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation'] : [],
   };
 }
 
-export async function recordSandboxHeartbeat() {
+export async function recordSandboxHeartbeat(busy = false) {
   configured();
   await firestore().collection(WORKER_STATE).doc('primary').set({
-    lastSeenAt: Date.now(), version: 2,
+    lastSeenAt: Date.now(), version: 2, busy,
   }, { merge: true });
   return { acknowledged: true };
 }
