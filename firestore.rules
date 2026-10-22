@@ -151,6 +151,15 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Entirely agency-private CRM classification and audit history.
+    // All reads and writes go through authenticated Admin SDK endpoints.
+    match /agency_client_metadata/{orgId} {
+      allow read, write: if false;
+    }
+    match /agency_work_mode_audit/{recordId} {
+      allow read, write: if false;
+    }
+
     match /portal_members/{memberId} {
       allow read: if isAuthenticated() && (
         isAgencyUser() ||
@@ -256,6 +265,7 @@ service cloud.firestore {
       // Editing gates after readiness requires atomically reopening the project.
       allow update: if canEditAgencyProjects() &&
         request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['workMode']) &&
         (request.resource.data.get('status', '') != 'ready_to_launch' ||
           (resource.data.get('status', '') == 'ready_to_launch' &&
            !request.resource.data.diff(resource.data).affectedKeys().hasAny([
@@ -368,6 +378,18 @@ service cloud.firestore {
           data.get('requestRole', '') in ['bundle', 'bundle_item'];
       }
 
+      function prohibitsProBonoCommercialWrite() {
+        let projectId = request.resource.data.get('projectId', '');
+        let orgId = request.resource.data.get('orgId', '');
+        let proBonoProject = projectId is string && projectId != '' &&
+          exists(/databases/$(database)/documents/portal_projects/$(projectId)) &&
+          get(/databases/$(database)/documents/portal_projects/$(projectId)).data.get('workMode', 'commercial') == 'pro_bono';
+        let proBonoStandalone = (projectId == null || projectId == '') &&
+          exists(/databases/$(database)/documents/agency_client_metadata/$(orgId)) &&
+          get(/databases/$(database)/documents/agency_client_metadata/$(orgId)).data.get('defaultWorkMode', 'commercial') == 'pro_bono';
+        return isCommercialDocument(request.resource.data) && (proBonoProject || proBonoStandalone);
+      }
+
       function validNewProjectLink() {
         let projectId = request.resource.data.get('projectId', '');
         return projectId == null || projectId == '' ||
@@ -475,7 +497,7 @@ service cloud.firestore {
         canCreateAgencyRequest() ||
         (!isAgencyUser() && isMemberOfOrg(request.resource.data.get('orgId', ''))) ||
         (!isAgencyUser() && isOrgOwner(request.resource.data.get('orgId', '')))
-      ) && validNewProjectLink() &&
+      ) && validNewProjectLink() && !prohibitsProBonoCommercialWrite() &&
       (canCreateAgencyRequest() || (
         !isCommercialDocument(request.resource.data) &&
         request.resource.data.get('status', '') == 'NEW' &&
@@ -499,7 +521,7 @@ service cloud.firestore {
       !changesServerManagedCommercialFields() &&
       !editsSignedCommercialTerms() &&
       request.resource.data.get('orgId', '') == resource.data.get('orgId', '') &&
-      validNewProjectLink() &&
+      validNewProjectLink() && !prohibitsProBonoCommercialWrite() &&
       ((canCreateAgencyRequest() &&
         (!changesAgencyCommercialFields() || canManageAgencyCommercial())) ||
        (!isAgencyUser() &&

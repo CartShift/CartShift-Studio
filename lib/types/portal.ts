@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import type { WorkMode } from '@/lib/domain/work-engagement';
 import type { ProposalContent } from '@/lib/domain/proposal-content';
 import type { RequestProfitSplitResponsibility } from '@/lib/types/profit-split';
 
@@ -188,6 +189,13 @@ export interface Service {
 // ============================================
 // CORE TYPES
 // ============================================
+
+export interface AgencyClientWorkMode {
+  orgId: string;
+  defaultWorkMode: WorkMode;
+  /** Never store this on Organization or any client-readable document. */
+  internalRelationshipNote?: string;
+}
 
 export interface Organization {
   id: string;

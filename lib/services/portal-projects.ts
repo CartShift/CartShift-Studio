@@ -46,6 +46,15 @@ export async function createClientProject(input: {
   const initial = buildProjectTemplate(input.template, input.locale || 'en');
   const organization = await getDoc(doc(getFirestoreDb(), 'portal_organizations', input.orgId));
   if (!organization.exists()) throw new Error('Client organization not found');
+  // Client defaults are agency-private, but the new project's work mode is client-safe.
+  const token = await user.getIdToken();
+  const modeResponse = await fetch('/api/portal/agency/client-work-modes?orgId=' + encodeURIComponent(input.orgId), {
+    headers: { Authorization: 'Bearer ' + token },
+    cache: 'no-store',
+  });
+  if (!modeResponse.ok) throw new Error('Unable to determine project billing mode');
+  const modeData = await modeResponse.json() as { defaultWorkMode?: 'commercial' | 'pro_bono' };
+  const workMode = modeData.defaultWorkMode === 'pro_bono' ? 'pro_bono' : 'commercial';
   const savedCurrency = organization.data()?.defaultCurrency;
   const currency = savedCurrency === 'ILS' || savedCurrency === 'USD' || savedCurrency === 'EUR'
     ? savedCurrency : 'ILS';
@@ -53,6 +62,7 @@ export async function createClientProject(input: {
     orgId: input.orgId,
     title: input.title.trim(),
     template: input.template,
+    workMode,
     summary: input.summary?.trim() || '',
     nextStep: '',
     status: 'planning' as ProjectStatus,
