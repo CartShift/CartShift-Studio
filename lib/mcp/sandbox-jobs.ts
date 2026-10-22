@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { hasFreshSandboxSessionsHandshake } from '@/lib/mcp/sandbox-sessions';
 import { randomBytes } from 'node:crypto';
 import { Timestamp } from 'firebase-admin/firestore';
 import { z } from 'zod';
@@ -57,19 +58,20 @@ export async function getSandboxStatus(grant: TokenGrant) {
   const data = snap.data();
   const age = typeof data?.lastSeenAt === 'number' ? Date.now() - data.lastSeenAt : null;
   const online = age !== null && age >= 0 && age < WORKER_ONLINE_MS;
+  const interactive = online && data?.version >= 3 && await hasFreshSandboxSessionsHandshake();
   return { connected: online, state: online ? 'online' : data ? 'offline' : 'unverified',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
     busy: online && data?.busy === true,
     max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
     capabilities: online && data?.version >= 2
-      ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation'] : [],
+      ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation', ...(interactive ? ['interactive_auth_sessions'] : [])] : [],
   };
 }
 
-export async function recordSandboxHeartbeat(busy = false) {
+export async function recordSandboxHeartbeat(busy = false, version: 2 | 3 = 2) {
   configured();
   await firestore().collection(WORKER_STATE).doc('primary').set({
-    lastSeenAt: Date.now(), version: 2, busy,
+    lastSeenAt: Date.now(), version, busy,
   }, { merge: true });
   return { acknowledged: true };
 }

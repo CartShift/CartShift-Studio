@@ -1,0 +1,15 @@
+# Persistent sandbox development authentication
+
+Use bash /workspace/scripts/devctl PROVIDER ACTION [args...]. Providers: supabase, github, vercel, firebase, shopify. Actions: status, version, help, login, run. Working CLIs are pinned in /workspace/toolchain/versions.json and package-lock.json; recovery instructions are in /workspace/toolchain/RECOVERY.md.
+
+OAuth login uses a real terminal. Supabase uses --no-browser and a one-time eight-hex verification code; GitHub, Vercel and Shopify use device authorization; Firebase uses --no-localhost and a one-time 4/ authorization code. Do not paste persistent access or refresh tokens, passwords or keys into chat or commands. A URL-printing xdg-open helper under /workspace/toolchain/bin keeps headless device flows alive without opening a listener or reaching the host.
+
+Credentials persist only under /workspace/.auth/PROVIDER on the workspace named volume. Provider and XDG directories are mode0700, CLI credential files mode0600. They are outside repositories and excluded by workspace .gitignore. These identities are explicitly authorized by the owner. ChatGPT connector credentials are never imported. A named volume survives restart but needs a separate encrypted owner backup for disaster recovery.
+
+Fresh-shell checks: devctl supabase status; devctl github run api user --jq .login; devctl vercel run whoami; devctl firebase run login:list and projects:list. Shopify requires its supported CLI account/resource check after login; never inspect auth files to infer success. Git HTTPS uses a global credential helper that invokes devctl github run auth git-credential; never run credential fill into logs.
+
+All projects and jobs share Unix UID1000: stored credentials are accessible to code trusted by that user. Keep untrusted projects away from production identities. Provider OAuth scopes are controlled by their official CLIs; review browser grants and revoke stale sessions in the provider account. No public callback, tunnel, Docker socket or extra service is required.
+
+Mobile bridge V3: sandbox_start_session(provider), sandbox_read_session(session_id,cursor), sandbox_send_input(session_id,input_type,input), sandbox_stop_session(session_id). One owner-only fixed devctl login PTY at a time. TTL60..900sec, idle30..300sec; read polling does not extend idle time. Device approvals happen in your browser; only confirmation answers and provider-specific one-time codes can enter the PTY. Arbitrary passwords, shell input and pasted API tokens are rejected. After a worker restart, a competing epoch may take up to90sec to expire. Existing stateless command stdin/background cleanup is preserved.
+
+Adding a future provider requires an explicit review: install a pinned CLI in /workspace/toolchain, add a provider branch to devctl, add the provider enum and input grammar to both server and worker, and add safe redaction/PTY tests. Reuse the existing session endpoint, persistent provider home and outbound worker; do not add a service or grant broader network/host access. Never configure arbitrary command strings through MCP.

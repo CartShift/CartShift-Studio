@@ -42,17 +42,20 @@ export async function POST(request: Request) {
     return json({ error: 'invalid_request' }, 400);
   }
   const args = body as Record<string, unknown>;
+  const version = args.worker_version === undefined ? 2 : args.worker_version;
+  if (version !== 2 && version !== 3) return json({ error: 'invalid_worker_version' }, 400);
+  const keys = Object.keys(args).filter(key => key !== 'worker_version');
   try {
     if (args.action === 'poll' &&
-        (Object.keys(args).length === 1 || (Object.keys(args).length === 2 && args.heartbeat === true))) {
+        (keys.length === 1 || (keys.length === 2 && args.heartbeat === true))) {
       const job = await leaseSandboxJob();
       // Heartbeat every ~30s when idle, and whenever the worker begins a job.
-      if (job) await recordSandboxHeartbeat(true);
-      else if (args.heartbeat === true) await recordSandboxHeartbeat();
+      if (job) await recordSandboxHeartbeat(true, version);
+      else if (args.heartbeat === true) await recordSandboxHeartbeat(false, version);
       return json({ job });
     }
-    if (args.action === 'heartbeat' && args.busy === true && Object.keys(args).length === 2) {
-      return json(await recordSandboxHeartbeat(true));
+    if (args.action === 'heartbeat' && args.busy === true && keys.length === 2) {
+      return json(await recordSandboxHeartbeat(true, version));
     }
     if (args.action === 'complete') {
       const { action: _action, ...completion } = args;

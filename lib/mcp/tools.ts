@@ -5,6 +5,7 @@ import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connecti
 import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 import { COMMERCIAL_TOOL_DEFS, callCommercialTool } from '@/lib/mcp/commercial-tools';
 import { PROSPECT_TOOL_DEFS, callProspectTool } from '@/lib/mcp/prospect-tools';
+import { startSandboxSession, readSandboxSession, sendSandboxSessionInput, stopSandboxSession } from '@/lib/mcp/sandbox-sessions';
 import { sandboxPing } from '@/lib/mcp/sandbox-probe';
 import { persistClientWorkMode, persistProjectWorkMode } from '@/lib/services/agency-work-modes-server';
 import { normalizeWorkMode } from '@/lib/domain/work-engagement';
@@ -50,6 +51,23 @@ const requestFields = z.object({
 }).strict();
 
 export const TOOL_DEFS = [
+  {
+    name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh v3 worker handshake; only fixed provider login commands run.', scope: 'work:write',
+    inputSchema: { type: 'object', required: ['provider'], properties: { provider: { type: 'string', enum: ['supabase', 'github', 'vercel', 'firebase', 'shopify'] }, cwd: { type: 'string', default: '/workspace' }, ttl_seconds: { type: 'integer', minimum: 60, maximum: 900, default: 600 }, idle_timeout_seconds: { type: 'integer', minimum: 30, maximum: 300, default: 180 } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_read_session', description: 'Read redacted login output since a code-point cursor. Reports output gaps; reads do not extend the idle timeout.', scope: 'work:read',
+    inputSchema: { type: 'object', required: ['session_id'], properties: { session_id: { type: 'string', format: 'uuid' }, cursor: { type: 'integer', minimum: 0, default: 0 } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_send_input', description: 'Send a bounded confirmation or provider verification code to an owned login session. Never accepts passwords or access tokens. Input is omitted from results and audit.', scope: 'work:write',
+    inputSchema: { type: 'object', required: ['session_id', 'input_type', 'input'], properties: { session_id: { type: 'string', format: 'uuid' }, input_type: { type: 'string', enum: ['confirm', 'verification_code'] }, input: { type: 'string', maxLength: 512 } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_stop_session', description: 'Stop an owned provider login session and erase pending input.', scope: 'work:write',
+    inputSchema: { type: 'object', required: ['session_id'], properties: { session_id: { type: 'string', format: 'uuid' } }, additionalProperties: false },
+  },
+
   {
     name: 'sandbox_run_command',
     description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active v2 worker.',
@@ -230,6 +248,10 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (!tool) throw new Error('Unknown tool');
   may(grant, tool.scope);
   const args = getArgs(input);
+  if (name === 'sandbox_start_session') return startSandboxSession(grant, args);
+  if (name === 'sandbox_read_session') return readSandboxSession(grant, args);
+  if (name === 'sandbox_send_input') return sendSandboxSessionInput(grant, args);
+  if (name === 'sandbox_stop_session') return stopSandboxSession(grant, args);
   if (name === 'sandbox_run_command') return submitSandboxCommand(grant, args);
   if (name === 'sandbox_get_result') return getSandboxCommand(grant, args);
   if (name === 'sandbox_status') { z.object({}).strict().parse(args); return getSandboxStatus(grant); }
