@@ -52,11 +52,10 @@ export async function listAgencyWorkModes(request: NextRequest) {
   })) };
 }
 
-export async function saveAgencyWorkMode(
-  request: NextRequest,
+export async function persistClientWorkMode(
+  uid: string,
   input: { orgId: string; defaultWorkMode: WorkMode; internalRelationshipNote?: string },
 ) {
-  const uid = await requireManager(request);
   const db = adminDb!;
   const ref = db.collection(META).doc(input.orgId);
   await db.runTransaction(async tx => {
@@ -84,11 +83,17 @@ export async function saveAgencyWorkMode(
   return { orgId: input.orgId, defaultWorkMode: input.defaultWorkMode };
 }
 
-export async function saveProjectWorkMode(
+export async function saveAgencyWorkMode(
   request: NextRequest,
+  input: { orgId: string; defaultWorkMode: WorkMode; internalRelationshipNote?: string },
+) {
+  return persistClientWorkMode(await requireManager(request), input);
+}
+
+export async function persistProjectWorkMode(
+  uid: string,
   input: { orgId: string; projectId: string; workMode: WorkMode },
 ) {
-  const uid = await requireManager(request);
   const db = adminDb!;
   const ref = db.collection('portal_projects').doc(input.projectId);
   await db.runTransaction(async tx => {
@@ -128,4 +133,11 @@ export async function saveProjectWorkMode(
     });
   });
   return { projectId: input.projectId, workMode: input.workMode };
+}
+
+export async function saveProjectWorkMode(
+  request: NextRequest,
+  input: { orgId: string; projectId: string; workMode: WorkMode },
+) {
+  return persistProjectWorkMode(await requireManager(request), input);
 }
