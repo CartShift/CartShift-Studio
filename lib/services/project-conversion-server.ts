@@ -73,7 +73,7 @@ export async function ensureProjectForAcceptedProposal(proposalId: string): Prom
         summary: projectSummaryFromProposal(proposal as {
           description?: string; proposalContent?: ProposalContent;
         }),
-        nextStep: '', status: 'planning', template: 'custom',
+        nextStep: '', status: 'planning', template: 'custom', workMode: 'commercial',
         ...buildProjectTemplate('custom', locale),
         blockers: [], deliverables: [], workLogs: [], changes: [], updates: [],
         reviewRevisions: {},

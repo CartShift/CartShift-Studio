@@ -142,6 +142,9 @@ export async function callCommercialTool(name: string, raw: unknown, grant: Toke
     await db.runTransaction(async tx => {
       const snap = await tx.get(ref);
       if (!snap.exists || snap.data()?.orgId !== input.org_id) throw new Error('Project not found for this client');
+      if (snap.data()?.workMode === 'pro_bono' && input.hourly_rate_minor > 0) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
       const scope = { minHours: input.min_hours, maxHours: input.max_hours,
         rateCents: input.hourly_rate_minor, currency: input.currency };
       if (JSON.stringify(snap.data()?.scope) === JSON.stringify(scope)) return;
@@ -241,6 +244,7 @@ export async function callCommercialTool(name: string, raw: unknown, grant: Toke
     await db.runTransaction(async tx => {
       const [current, project] = await Promise.all([tx.get(ref), tx.get(projects.doc(input.project_id))]);
       if (!project.exists || project.data()?.orgId !== input.org_id) throw new Error('Project not found for this client');
+      if (project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
       if (current.exists) {
         if (current.data()?.orgId !== input.org_id) throw new Error('Conflicting proposal');
         return;

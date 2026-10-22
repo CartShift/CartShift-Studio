@@ -127,6 +127,11 @@ export async function createPricingRequest(
 
   await waitForAuth();
   const db = getFirestoreDb();
+  if (data.projectId) {
+    const project = await getDoc(doc(db, 'portal_projects', data.projectId));
+    if (!project.exists() || project.data()?.orgId !== orgId) throw new Error('INVALID_PROJECT');
+    if (project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+  }
   const orgSnapshot = await getDoc(doc(db, 'portal_organizations', orgId));
   if (!orgSnapshot.exists()) throw new Error('Client organization not found');
   validateNewQuoteCurrency(orgSnapshot.data().defaultCurrency, data.currency);
