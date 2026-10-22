@@ -49,6 +49,9 @@ export async function POST(request: Request) {
       if (args.heartbeat === true) await recordSandboxHeartbeat();
       return json({ job: await leaseSandboxJob() });
     }
+    if (args.action === 'heartbeat' && args.busy === true && Object.keys(args).length === 2) {
+      return json(await recordSandboxHeartbeat(true));
+    }
     if (args.action === 'complete') {
       const { action: _action, ...completion } = args;
       void _action;
