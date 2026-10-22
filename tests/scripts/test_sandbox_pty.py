@@ -2,6 +2,7 @@ import datetime
 import importlib.util
 from pathlib import Path
 import sys,time,unittest
+import os
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts'))
@@ -154,4 +155,51 @@ class PTYTests(unittest.TestCase):
         snap=self.wait(g,lambda s:s['status'] in pty.TERMINAL)
         self.assertEqual(snap['exit_code'],0)
         self.assertIn('size=(120, 30)',snap['output'])
+    def test_split_cursor_queries_and_clamped_positions(self):
+        terminal=pty.TerminalQueries()
+        self.assertEqual(terminal.feed(b'\x1b[999;99'),b'')
+        self.assertEqual(terminal.feed(b'9f\x1b['),b'')
+        self.assertEqual(terminal.feed(b'6n'),b'\x1b[30;120R')
+        self.assertEqual(terminal.feed(b'\x1b[0;0H\x1b[6n'),b'\x1b[1;1R')
+        self.assertEqual(terminal.feed(b'\x1b[5n'),b'')
+    def test_terminal_query_memory_and_response_limits(self):
+        terminal=pty.TerminalQueries()
+        self.assertEqual(terminal.feed(b'\x1b['+b'9'*5000),b'')
+        self.assertLessEqual(len(terminal.pending),64)
+        terminal.feed(b'\x1b[6n'*64)
+        with self.assertRaises(OverflowError): terminal.feed(b'\x1b[6n')
+    def test_raw_cli_waiting_for_cursor_report_then_confirm(self):
+        code="import os,tty,sys; tty.setraw(0); os.write(1,b'\\x1b[999;999f\\x1b[6n'); response=b''\nwhile not response.endswith(b'R'): response+=os.read(0,1)\nprint('ready'); value=b''.join(os.read(0,1) for _ in range(2)); sys.exit(0 if response==b'\\x1b[30;120R' and value==b'n\\r' else 1)"
+        g=self.guardian(code); item=desired(); item['provider']='github'
+        g.sync(item); self.wait(g,lambda s:'ready' in s['output'])
+        item['pending_input']=dict(input_id='cursor-confirm',input_type='confirm',input='n')
+        g.sync(item); snap=self.wait(g,lambda s:s['status'] in pty.TERMINAL)
+        self.assertEqual(snap['exit_code'],0)
+    def test_terminal_replies_handle_backpressure_and_partial_write(self):
+        state=pty.GuardianState(); state.master=99999
+        state.terminal_replies=bytearray(b'report'); state.activity=123
+        with patch.object(pty.os,'write',side_effect=BlockingIOError()):
+            state.flush_terminal_replies()
+        self.assertEqual(state.terminal_replies,b'report')
+        with patch.object(pty.os,'write',return_value=2):
+            state.flush_terminal_replies()
+        self.assertEqual(state.terminal_replies,b'port')
+        self.assertEqual(state.activity,123)
+    @unittest.skipUnless(os.environ.get('CARTSHIFT_TEST_REAL_GH_DECLINE')=='1','Opt-in: decline existing GitHub authentication only')
+    def test_real_installed_github_decline_completes(self):
+        import ctypes
+        self.assertEqual(ctypes.CDLL(None).prctl(36,1,0,0,0),0)
+        state=pty.GuardianState()
+        self.addCleanup(state.finish,'stopped','stopped')
+        item=desired(); item['provider']='github'; state.apply(item)
+        deadline=time.monotonic()+4; declined=False
+        while time.monotonic()<deadline and state.process:
+            state.tick()
+            if not declined and 're-authenticate?' in state.snapshot['output'] and state.terminal_queries.responses>=2:
+                item['pending_input']=dict(input_id='real-gh-decline-only',input_type='confirm',input='n')
+                state.apply(item); declined=True
+            time.sleep(.02)
+        self.assertTrue(declined,'Expected existing-auth confirmation; no other input was sent')
+        self.assertEqual(state.snapshot['status'],'completed')
+        self.assertEqual(state.snapshot['exit_code'],0)
 if __name__=='__main__': unittest.main()
