@@ -57,7 +57,7 @@ export async function getSandboxStatus(grant: TokenGrant) {
   const data = snap.data();
   const age = typeof data?.lastSeenAt === 'number' ? Date.now() - data.lastSeenAt : null;
   const online = age !== null && age >= 0 && age < WORKER_ONLINE_MS;
-  return { connected: online, state: online ? 'online' : 'offline',
+  return { connected: online, state: online ? 'online' : data ? 'offline' : 'unverified',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
     busy: online && data?.busy === true,
     max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
@@ -93,6 +93,8 @@ export async function cancelSandboxCommand(grant: TokenGrant, input: unknown) {
 async function awaitJob(ref: FirebaseFirestore.DocumentReference, jobId: string, seconds: number) {
   return new Promise<Record<string, unknown>>((resolve, reject) => {
     let stopped = false;
+    // Subscription is assigned after finish() is defined, then disposed at most once.
+    // eslint-disable-next-line prefer-const
     let unsubscribe: (() => void) | undefined;
     const finish = (result?: Record<string, unknown>, error?: Error) => {
       if (stopped) return;
