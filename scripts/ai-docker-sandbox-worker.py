@@ -11,6 +11,7 @@ import selectors
 import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -22,6 +23,10 @@ TOKEN = ""
 WORKSPACE = Path("/workspace").resolve(strict=True)
 MAX_OUTPUT = 24_000
 POLL_INTERVAL_SECONDS = 3
+MAX_IDLE_POLL_SECONDS = 30
+HEARTBEAT_SECONDS = 30
+MAX_DRAINED_BYTES = 2_000_000
+MAX_COMMAND_SECONDS = 600
 UNSAFE_MARKER = Path("/tmp/cartshift-worker-unsafe")
 
 
@@ -116,11 +121,12 @@ def execute(job):
     started = time.monotonic()
     stdout, stderr = bytearray(), bytearray()
     truncated, timed_out, exit_code, process = False, False, -1, None
+    drained_bytes = 0
     try:
         command, timeout = job["command"], job["timeout_seconds"]
         if not isinstance(command, str) or not 1 <= len(command) <= 2000:
             raise ValueError("Invalid command")
-        if type(timeout) is not int or not 1 <= timeout <= 120:
+        if type(timeout) is not int or not 1 <= timeout <= MAX_COMMAND_SECONDS:
             raise ValueError("Invalid timeout")
         cwd = within_workspace(job["cwd"])
         account = pwd.getpwuid(os.geteuid())
@@ -144,16 +150,20 @@ def execute(job):
                     if not chunk:
                         selector.unregister(key.fileobj)
                         continue
+                    drained_bytes += len(chunk)
                     remaining = max(0, MAX_OUTPUT - len(stdout) - len(stderr))
                     key.data.extend(chunk[:remaining])
                     if len(chunk) > remaining:
                         truncated = True
+                    # Truncation is NOT a command failure. An actual flood is
+                    # still terminated to protect the single-worker container.
+                    if drained_bytes > MAX_DRAINED_BYTES:
                         kill_group(process)
                         break
-                if truncated:
+                if drained_bytes > MAX_DRAINED_BYTES:
                     break
         process.wait(timeout=5)
-        exit_code = 124 if timed_out else process.returncode
+        exit_code = 124 if timed_out else 125 if drained_bytes > MAX_DRAINED_BYTES else process.returncode
         if timed_out:
             stderr.extend(b"\nCommand timed out."[:max(0, MAX_OUTPUT - len(stdout) - len(stderr))])
     except Exception as error:
@@ -176,7 +186,7 @@ def execute(job):
     return {"action": "complete", "job_id": job["job_id"], "lease_token": job["lease_token"],
             "exit_code": max(-255, min(255, exit_code)),
             "stdout": stdout.decode("utf-8", errors="replace"), "stderr": stderr.decode("utf-8", errors="replace"),
-            "duration_ms": min(200_000, int((time.monotonic() - started) * 1000)), "output_truncated": truncated}
+            "duration_ms": min((MAX_COMMAND_SECONDS + 60) * 1000, int((time.monotonic() - started) * 1000)), "output_truncated": truncated}
 
 
 def report_completion(completion, deadline=None):
@@ -194,6 +204,17 @@ def report_completion(completion, deadline=None):
     return False
 
 
+def busy_heartbeat_loop(stop_event, busy_event):
+    # One daemon thread per worker, never per command. Network I/O must not
+    # block the selector's output draining or deadline enforcement.
+    while not stop_event.wait(HEARTBEAT_SECONDS):
+        if busy_event.is_set():
+            try:
+                call_api({"action": "heartbeat", "busy": True})
+            except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
+                pass
+
+
 def main():
     global TOKEN
     protect_credential()
@@ -207,20 +228,42 @@ def main():
         print("A sandbox worker is already running.", file=sys.stderr)
         return 0
     print("Sandbox worker started in verified container; outbound polling only.", flush=True)
-    while True:
-        try:
-            job = call_api({"action": "poll"}).get("job")
-            if isinstance(job, dict):
-                deadline = time.monotonic() + 170
-                report_completion(execute(job), deadline)
-        except KeyboardInterrupt:
-            return 0
-        except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError) as error:
-            if UNSAFE_MARKER.exists():
-                return 1
-            code = error.code if isinstance(error, urllib.error.HTTPError) else ""
-            print("Worker poll error: " + type(error).__name__ + " " + str(code), file=sys.stderr, flush=True)
-        time.sleep(POLL_INTERVAL_SECONDS)
+    idle_delay = POLL_INTERVAL_SECONDS
+    last_heartbeat = 0.0
+    heartbeat_stop, worker_busy = threading.Event(), threading.Event()
+    heartbeat_thread = threading.Thread(target=busy_heartbeat_loop,
+        args=(heartbeat_stop, worker_busy), name="sandbox-busy-heartbeat", daemon=True)
+    heartbeat_thread.start()
+    try:
+        while True:
+            try:
+                heartbeat = time.monotonic() - last_heartbeat >= HEARTBEAT_SECONDS
+                request = {"action": "poll", **({"heartbeat": True} if heartbeat else {})}
+                job = call_api(request).get("job")
+                if heartbeat:
+                    last_heartbeat = time.monotonic()
+                if isinstance(job, dict):
+                    idle_delay = POLL_INTERVAL_SECONDS
+                    deadline = time.monotonic() + job["timeout_seconds"] + 70
+                    worker_busy.set()
+                    try:
+                        completion = execute(job)
+                    finally:
+                        worker_busy.clear()
+                    report_completion(completion, deadline)
+                else:
+                    idle_delay = min(MAX_IDLE_POLL_SECONDS, idle_delay * 1.5)
+            except KeyboardInterrupt:
+                return 0
+            except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError) as error:
+                if UNSAFE_MARKER.exists():
+                    return 1
+                code = error.code if isinstance(error, urllib.error.HTTPError) else ""
+                print("Worker poll error: " + type(error).__name__ + " " + str(code), file=sys.stderr, flush=True)
+            time.sleep(idle_delay)
+    finally:
+        heartbeat_stop.set()
+
 
 
 if __name__ == "__main__":
