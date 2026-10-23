@@ -52,7 +52,7 @@ import {
   syncSandboxSessions,
   redactSessionOutput,
 } from '@/lib/mcp/sandbox-sessions';
-import { getSandboxStatus } from '@/lib/mcp/sandbox-jobs';
+import { getSandboxStatus, authorizeSandboxSessionWorker } from '@/lib/mcp/sandbox-jobs';
 import { POST } from '@/app/api/cartshift-mcp/sandbox/sessions/worker/route';
 const owner = {
   uid: 'owner',
@@ -92,6 +92,19 @@ describe('owner-only persistent sandbox authentication', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllEnvs();
+  });
+  it('isolates auth session transport with an independent bearer token after cutover', () => {
+    const original = 'Bearer ' + 'a'.repeat(48);
+    const isolated = 'Bearer ' + 'b'.repeat(48);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'b'.repeat(48));
+    expect(authorizeSandboxSessionWorker(original)).toBe(true); // staging
+    expect(authorizeSandboxSessionWorker(isolated)).toBe(true);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
+    expect(authorizeSandboxSessionWorker(original)).toBe(false);
+    expect(authorizeSandboxSessionWorker(isolated)).toBe(true);
+    expect(authorizeSandboxSessionWorker('Bearer garbage')).toBe(false);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', '');
+    expect(authorizeSandboxSessionWorker(isolated)).toBe(false);
   });
   it('requires owner, scope, fresh sessions handshake and one active session', async () => {
     await expect(
