@@ -48,6 +48,18 @@ describe('sandbox one-use leases and completion retries', () => {
     await expect(leaseSandboxJob()).resolves.toBeNull();
     expect(state.data.status).toBe('expired');
   });
+  it('never leases V4-only artifacts to a legacy worker', async () => {
+    state.data = { ownerUid: 'owner', status: 'queued', kind: 'artifact_read',
+      artifactPath: 'results/fixture.bin', offset: 0, length: 100,
+      timeoutSeconds: 20, expiresAt: Date.now() + 60_000 };
+    await expect(leaseSandboxJob(3)).resolves.toBeNull();
+    expect(state.update).not.toHaveBeenCalled();
+    await expect(leaseSandboxJob(4)).resolves.toMatchObject({
+      kind: 'artifact_read', artifact_path: 'results/fixture.bin',
+      offset: 0, length: 100,
+    });
+    expect(state.update).toHaveBeenCalledTimes(1);
+  });
   it('never leases a job already claimed by another worker', async () => {
     await expect(leaseSandboxJob()).resolves.toBeNull();
     expect(state.update).not.toHaveBeenCalled();
