@@ -92,6 +92,8 @@ switch ($Action) {
       '--read-only','--cap-drop','ALL','--security-opt','no-new-privileges',
       '--pids-limit','200','--memory','2g','--cpus','2',
       '--tmpfs','/tmp:rw,nosuid,nodev,size=256m',
+      '--env','HOME=/tmp','--env','npm_config_cache=/tmp/.npm',
+      '--env','COREPACK_HOME=/tmp/.cache/corepack',
       '--mount',$mount,'--workdir','/app',
       '--publish',"127.0.0.1:${HostPort}:${ContainerPort}",
       '--label',$label,'--entrypoint','/bin/sh',$imageId,
