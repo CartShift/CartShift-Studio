@@ -171,6 +171,19 @@ export function authorizeSandboxWorker(header: string | null): boolean {
   return Boolean(token && token.length >= 32 && match && constantEquals(match[1], token));
 }
 
+/** Separate HTTPS credential for the isolated auth-sidecar session channel.
+ * During staging, legacy V3 clients remain valid. After the sidecar starts,
+ * SANDBOX_AUTH_WORKER_ENFORCE=true revokes the build worker's session access.
+ */
+export function authorizeSandboxSessionWorker(header: string | null): boolean {
+  const isolated = process.env.SANDBOX_AUTH_WORKER_TOKEN;
+  const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
+  const matchesAuth = Boolean(isolated && isolated.length >= 32 && match &&
+    constantEquals(match[1], isolated));
+  if (process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true') return matchesAuth;
+  return matchesAuth || authorizeSandboxWorker(header);
+}
+
 export async function submitSandboxCommand(grant: TokenGrant, input: unknown) {
   authorizeSandboxOwner(grant);
   const args = commandInput.parse(input);
