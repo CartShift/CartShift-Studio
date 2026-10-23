@@ -103,8 +103,12 @@ def verify_identity():
     else:
         if platform.node() != 'ai-docker-sandbox' or not (WORKSPACE / 'README.md').is_file():
             raise RuntimeError("Refusing build worker outside verified container")
-        if ROLE == 'build' and (WORKSPACE / '.auth').exists():
-            if any((WORKSPACE / '.auth').iterdir()):
+        if ROLE == 'build':
+            auth_shadow = WORKSPACE / '.auth'
+            if (not auth_shadow.is_dir() or not os.path.ismount(auth_shadow)
+                    or not (os.statvfs(auth_shadow).f_flag & os.ST_RDONLY)):
+                raise RuntimeError("Build worker requires a read-only auth shadow mount")
+            if any(auth_shadow.iterdir()):
                 raise RuntimeError("Credential home remains exposed to build worker")
     if len(TOKEN) < 32 or any(c not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-" for c in TOKEN):
         raise RuntimeError("Missing or invalid worker credential")
