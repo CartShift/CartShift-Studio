@@ -2,7 +2,7 @@
 <# Read-only Windows diagnostics. Does not print credentials or command lines. #>
 [CmdletBinding()]
 param(
-  [string]$Container = 'ai-docker-sandbox',
+  [string]$Container = 'ai-dev-workspace',
   [string]$Volume = 'ai-dev-sandbox-workspace',
   [string]$SupervisorTaskName = 'CartShiftSandboxWorker',
   [string]$BackupDir,
@@ -10,6 +10,7 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'Common-SandboxHost.ps1')
 $results = [ordered]@{
   at = (Get-Date).ToUniversalTime().ToString('o')
   docker_reachable = $false
@@ -25,16 +26,19 @@ function Mark([string]$check, [bool]$ok, [string]$details) {
   $results.checks += @{ check = $check; ok = $ok; details = $details }
 }
 try {
-  & docker info --format '{{.ServerVersion}}' *> $null
+  Invoke-HostDocker info --format '{{.ServerVersion}}' *> $null
   if ($LASTEXITCODE -ne 0) { throw 'Docker Desktop unavailable' }
   $results.docker_reachable = $true
-  & docker volume inspect $Volume *> $null
+  Invoke-HostDocker volume inspect $Volume *> $null
   $results.workspace_volume_exists = ($LASTEXITCODE -eq 0)
   Mark 'persistent_volume' $results.workspace_volume_exists 'Named Docker volume'
-  $containerInfo = & docker inspect $Container --format '{{json .HostConfig}}'
+  $owned=Get-SandboxSpec $Container
+  Assert-SandboxRestrictions $owned
+  Assert-SandboxMount $owned '/workspace' $Volume $true
+  $containerInfo = Invoke-HostDocker inspect $Container --format '{{json .HostConfig}}'
   if ($LASTEXITCODE -ne 0) { throw 'Sandbox container not found' }
   $hostConfig = $containerInfo | ConvertFrom-Json
-  $running = (& docker inspect $Container --format '{{.State.Running}}').Trim()
+  $running = (Invoke-HostDocker inspect $Container --format '{{.State.Running}}').Trim()
   $results.container_running = ($running -eq 'true')
   Mark 'container_running' $results.container_running 'Host availability depends on Windows being awake'
   Mark 'not_privileged' (-not [bool]$hostConfig.Privileged) 'Privileged must remain disabled'
@@ -42,10 +46,10 @@ try {
   Mark 'no_host_network' ($hostConfig.NetworkMode -ne 'host') 'No host network namespace'
   Mark 'no_docker_socket' (-not @($hostConfig.Binds | Where-Object { $_ -match 'docker\.sock' }).Count) 'No Docker socket bind'
   if ($results.container_running) {
-    $top = (& docker top $Container) -join "`n"
+    $top = (Invoke-HostDocker top $Container) -join "`n"
     $results.worker_process_seen = $top.Contains('--token-stdin')
   }
-  Mark 'worker_process_seen' $results.worker_process_seen 'Hash-verified worker process identified'
+  Mark 'worker_process_seen' $results.worker_process_seen 'Worker transport process seen; source hashes require supervisor verification'
   $task = Get-ScheduledTask -TaskName $SupervisorTaskName -ErrorAction SilentlyContinue
   if ($task) {
     $results.host_task_found = $true

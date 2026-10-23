@@ -10,6 +10,7 @@ import pwd
 import re
 import selectors
 import signal
+import stat
 import subprocess
 import sys
 import threading
@@ -34,6 +35,12 @@ CANCEL_POLL_SECONDS = 5
 MAX_DRAINED_BYTES = 2_000_000
 MAX_COMMAND_SECONDS = 600
 UNSAFE_MARKER = Path("/tmp/cartshift-worker-unsafe")
+ACTIVE_JOB_MARKER = Path("/tmp/cartshift-active-command")
+JOB_RECOVERY_GUARD = False
+BACKUP_REQUEST = Path('/tmp/cartshift-backup-request')
+BACKUP_BUILD_READY = Path('/tmp/cartshift-backup-build-ready')
+BACKUP_AUTH_READY = Path('/tmp/cartshift-backup-auth-ready')
+BACKUP_REQUEST_MAX_AGE_SECONDS = 3600
 
 
 # Docker exec has a separate stdout transport. Emit only bounded metadata to
@@ -87,8 +94,8 @@ def protect_credential():
 
 
 def verify_identity():
-    if UNSAFE_MARKER.exists():
-        raise RuntimeError("Container restart required after failed process cleanup")
+    if UNSAFE_MARKER.exists() or ACTIVE_JOB_MARKER.exists():
+        raise RuntimeError("Container restart required after incomplete process cleanup")
     base = (os.geteuid() == 1000 and platform.system() == "Linux"
             and platform.machine() == "aarch64" and WORKSPACE == Path("/workspace"))
     if ROLE not in ('legacy', 'build', 'auth') or not base:
@@ -100,6 +107,14 @@ def verify_identity():
                 not (WORKSPACE / 'toolchain').is_dir() or
                 (WORKSPACE / 'projects').exists()):
             raise RuntimeError("Refusing auth worker with shared project access")
+        auth_home = WORKSPACE / '.auth'
+        tool_mounts = (WORKSPACE / 'scripts', WORKSPACE / 'toolchain')
+        if not os.path.ismount(auth_home) or any(not os.path.ismount(path) for path in tool_mounts):
+            raise RuntimeError("Auth worker requires separate credential and tool mounts")
+        if os.statvfs(auth_home).f_flag & os.ST_RDONLY:
+            raise RuntimeError("Auth worker requires a writable credential mount")
+        if any(not (os.statvfs(path).f_flag & os.ST_RDONLY) for path in tool_mounts):
+            raise RuntimeError("Auth worker requires read-only scripts and toolchain mounts")
     else:
         if platform.node() != 'ai-docker-sandbox' or not (WORKSPACE / 'README.md').is_file():
             raise RuntimeError("Refusing build worker outside verified container")
@@ -234,6 +249,7 @@ def execute(job, cancel_event=None):
     stdout, stderr = bytearray(), bytearray()
     truncated, timed_out, cancelled, exit_code, process = False, False, False, -1, None
     drained_bytes = 0
+    marked = False
     try:
         command, timeout = job["command"], job["timeout_seconds"]
         if not isinstance(command, str) or not 1 <= len(command) <= 2000:
@@ -244,6 +260,10 @@ def execute(job, cancel_event=None):
         account = pwd.getpwuid(os.geteuid())
         clean_env = {"HOME": account.pw_dir, "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
                      "LANG": "C.UTF-8", "USER": account.pw_name, "LOGNAME": account.pw_name}
+        if JOB_RECOVERY_GUARD:
+            fd = os.open(ACTIVE_JOB_MARKER, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+            os.close(fd)
+            marked = True
         activity('job_started', job_id=job.get('job_id'), timeout_seconds=timeout)
         last_progress = started
         process = subprocess.Popen(["/bin/sh", "-c", command], cwd=str(cwd),
@@ -302,6 +322,8 @@ def execute(job, cancel_event=None):
                     process.stdout.close()
                     process.stderr.close()
             cleanup_adopted_children(baseline_children)
+            if marked:
+                ACTIVE_JOB_MARKER.unlink()
         except Exception:
             # Every cleanup failure stops polling until the container is restarted.
             UNSAFE_MARKER.touch(mode=0o600)
@@ -332,6 +354,72 @@ def report_completion(completion, deadline=None):
     return False
 
 
+def _backup_read_marker(path):
+    fd = None
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+        info = os.fstat(fd)
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
+                or info.st_nlink != 1 or info.st_size > 33):
+            raise RuntimeError('Unsafe backup maintenance marker')
+        return info, os.read(fd, 34)
+    except FileNotFoundError:
+        return None
+    except OSError:
+        raise RuntimeError('Unsafe backup maintenance marker') from None
+    finally:
+        if fd is not None: os.close(fd)
+
+
+def _backup_clear_ready(path):
+    if _backup_read_marker(path) is not None:
+        try: path.unlink()
+        except FileNotFoundError: pass
+
+
+def backup_pause_requested(ready_path, *, idle):
+    """Publish this channel's idle barrier for a bounded owner-created nonce.
+
+    The caller must refrain from leasing/applying work whenever this returns
+    True. Host backup requires all role-specific ready files to match the fresh
+    request nonce before pausing any container. Markers contain no secrets.
+    """
+    request = _backup_read_marker(BACKUP_REQUEST)
+    if request is None:
+        _backup_clear_ready(ready_path)
+        return False
+    info, payload = request
+    age = time.time() - info.st_mtime
+    if age < -60:
+        raise RuntimeError('Invalid backup maintenance timestamp')
+    if age >= BACKUP_REQUEST_MAX_AGE_SECONDS:
+        _backup_clear_ready(ready_path)
+        return False
+    if re.fullmatch(rb'[a-f0-9]{32}\n?', payload) is None:
+        raise RuntimeError('Invalid backup maintenance request')
+    if not idle:
+        _backup_clear_ready(ready_path)
+        return True
+    nonce = payload.rstrip(b'\n') + b'\n'
+    ready = _backup_read_marker(ready_path)
+    if ready is None or ready[1] != nonce:
+        _backup_clear_ready(ready_path)
+        fd = os.open(ready_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        try:
+            remaining = nonce
+            while remaining:
+                written = os.write(fd, remaining)
+                if written <= 0: raise RuntimeError('Cannot publish backup readiness')
+                remaining = remaining[written:]
+        finally:
+            os.close(fd)
+    return True
+
+
+def _auth_session_active(snapshot):
+    return bool(snapshot and snapshot.get('status') not in ('completed', 'failed', 'stopped', 'expired'))
+
+
 def busy_heartbeat_loop(stop_event, busy_event, job_state=None):
     # Poll independently of stdout draining/deadlines. A stale HTTP response
     # can only signal the event belonging to its own job.
@@ -360,6 +448,9 @@ def sessions_sync_loop(stop_event, guardian):
     while not stop_event.is_set():
         try:
             snapshot = guardian.sync()
+            if backup_pause_requested(BACKUP_AUTH_READY, idle=not _auth_session_active(snapshot)):
+                stop_event.wait(.25)
+                continue
         except (TimeoutError, ValueError, RuntimeError, OSError):
             activity('guardian_error')
             stop_event.set()  # Broken local IPC is fatal; supervisor must restart.
@@ -378,6 +469,11 @@ def sessions_sync_loop(stop_event, guardian):
             connected = True
             failures = 0
         try:
+            # A request can arrive during HTTPS; never apply its returned desired
+            # session after publishing readiness for the local idle guardian.
+            if backup_pause_requested(BACKUP_AUTH_READY, idle=not _auth_session_active(snapshot)):
+                stop_event.wait(.25)
+                continue
             snapshot = guardian.sync(result.get('session'))
         except (TimeoutError, ValueError, RuntimeError, OSError):
             activity('guardian_error')
@@ -393,16 +489,17 @@ def sessions_sync_loop(stop_event, guardian):
             if ack[1] and ack != last_ack:
                 activity('session_input_acknowledged', session_id=ack[0])
                 last_ack = ack
-        active = snapshot and snapshot.get('status') not in ('completed', 'failed', 'stopped', 'expired')
+        active = _auth_session_active(snapshot)
         stop_event.wait(1 if active else 30)
 
 
 def main():
-    global TOKEN, DOCKER_ACTIVITY_LOG
+    global TOKEN, DOCKER_ACTIVITY_LOG, JOB_RECOVERY_GUARD
     protect_credential()
     TOKEN = sys.stdin.readline(256).strip() if "--token-stdin" in sys.argv else os.environ.pop("SANDBOX_WORKER_TOKEN", "")
     verify_identity()
     DOCKER_ACTIVITY_LOG = True
+    JOB_RECOVERY_GUARD = True
     os.chdir(WORKSPACE)
     lock = open("/tmp/cartshift-sandbox-worker.lock", "a")
     try:
@@ -445,6 +542,9 @@ def main():
     try:
         while not heartbeat_stop.is_set():
             try:
+                if backup_pause_requested(BACKUP_BUILD_READY, idle=not worker_busy.is_set()):
+                    heartbeat_stop.wait(.25)
+                    continue
                 heartbeat = time.monotonic() - last_heartbeat >= HEARTBEAT_SECONDS
                 request = {"action": "poll", "worker_version": 4, **({"heartbeat": True} if heartbeat else {})}
                 job = call_api(request).get("job")

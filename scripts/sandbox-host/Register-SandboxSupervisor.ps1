@@ -17,9 +17,9 @@ $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $pwsh = (Get-Command pwsh -ErrorAction Stop).Source
 # InteractiveToken uses the currently signed-in DPAPI identity; no password is
 # stored in Task Scheduler. This task will not run without owner logon.
-$action = New-ScheduledTaskAction -Execute $pwsh -Argument ('-NoProfile -NonInteractive -File "' + $script.Replace('"','') + '"')
+$action = New-ScheduledTaskAction -Execute $pwsh -Argument ('-NoProfile -NonInteractive -WindowStyle Hidden -File "' + $script.Replace('"','') + '"')
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $currentUser
-$settings = New-ScheduledTaskSettingsSet -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) `
+$settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) `
   -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -AllowStartIfOnBatteries `
   -DontStopIfGoingOnBatteries -StartWhenAvailable
 $principal = New-ScheduledTaskPrincipal -UserId $currentUser -LogonType Interactive -RunLevel Limited

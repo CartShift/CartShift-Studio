@@ -61,13 +61,13 @@ export async function POST(request: Request) {
     if (version === 4 && args.action === 'heartbeat' && args.busy === true &&
         keys.length === 4 && typeof args.job_id === 'string' &&
         typeof args.lease_token === 'string') {
-      await recordSandboxHeartbeat(true, version);
       return json({ acknowledged: true,
         cancel_requested: await sandboxCancellationRequested(args.job_id, args.lease_token) });
     }
     if (args.action === 'complete') {
-      const { action: _action, ...completion } = args;
+      const { action: _action, worker_version: _version, ...completion } = args;
       void _action;
+      void _version;
       return json(await completeSandboxJob(completion));
     }
     return json({ error: 'unknown_action' }, 400);

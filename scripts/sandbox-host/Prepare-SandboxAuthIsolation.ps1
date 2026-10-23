@@ -1,126 +1,109 @@
 #Requires -Version 7.3
-<#
-Staged credential isolation. Prepare makes copies without changing the live
-sandbox. The destructive finalize stage is deliberately gated by explicit
-owner verification and never reads or prints a provider credential.
-#>
 [CmdletBinding(SupportsShouldProcess,ConfirmImpact='High')]
 param(
-  [Parameter(Mandatory)][ValidateSet('Prepare','CreateSidecar','Verify','Finalize')]
-  [string]$Action,
-  [string]$WorkspaceVolume='ai-dev-sandbox-workspace',
-  [string]$AuthVolume='ai-dev-sandbox-provider-auth',
-  [string]$ToolsVolume='ai-dev-sandbox-auth-tools',
-  [string]$BuildContainer='ai-docker-sandbox',
-  [string]$AuthContainer='ai-auth-sandbox',
-  [switch]$RestoreVerified,
-  [switch]$AuthWorkerVerified,
-  [switch]$AuthTokenEnforced
+ [Parameter(Mandatory)][ValidateSet('Prepare','CreateSidecar','Verify','Finalize')][string]$Action,
+ [string]$WorkspaceVolume='ai-dev-sandbox-workspace',
+ [string]$AuthVolume='ai-dev-sandbox-provider-auth',
+ [string]$ToolsVolume='ai-dev-sandbox-auth-tools',
+ [string]$BuildContainer='ai-dev-workspace',
+ [string]$AuthContainer='ai-auth-sandbox',
+ [ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ToolsManifestSha256,
+ [switch]$RestoreVerified,[switch]$AuthWorkerVerified,[switch]$AuthTokenEnforced
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
-$image='busybox:1.36.1'
-function Docker([string[]]$argv) {
-  $output=@(& docker @argv 2>&1)
-  if ($LASTEXITCODE -ne 0) { throw "Docker command failed (exit $LASTEXITCODE)." }
-  return $output
-}
-function ExistingVolume([string]$name) {
-  & docker volume inspect $name *> $null
-  return $LASTEXITCODE -eq 0
-}
-if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw 'Docker CLI required.' }
-if (-not (ExistingVolume $WorkspaceVolume)) { throw 'Existing workspace volume not found.' }
-$imageId=((Docker @('inspect','--format','{{.Image}}',$BuildContainer)) -join '').Trim()
-if ($imageId -notmatch '^sha256:[0-9a-f]{64}$') { throw 'Cannot identify the pinned sandbox image.' }
-
+. (Join-Path $PSScriptRoot 'Common-SandboxHost.ps1')
+if ($Action -eq 'Finalize') { throw 'Credential deletion is disabled. Preserve every original volume and credential for rollback.' }
+$base=Get-SandboxSpec $BuildContainer
+Assert-SandboxRestrictions $base
+Assert-SandboxMount $base '/workspace' $WorkspaceVolume $true
+$image=$base.image
+Assert-SandboxImage $image
+Assert-SandboxVolumeOwner $WorkspaceVolume
+$snapshot=@'
+import hashlib,json,os,pathlib,shutil
+src=pathlib.Path('/workspace'); dst=pathlib.Path('/out')
+allowed=[src/'scripts',src/'toolchain']
+def inside(p,roots): return any(p==r or r in p.parents for r in roots)
+for folder,roots in [('.auth',[src/'.auth']),('scripts',allowed),('toolchain',allowed)]:
+ base=src/folder
+ if not base.is_dir() or base.is_symlink(): raise RuntimeError('Invalid source directory')
+ for parent,dirs,files in os.walk(base,followlinks=False):
+  for name in dirs+files:
+   p=pathlib.Path(parent)/name
+   if p.is_symlink() and not inside(p.resolve(strict=True),roots): raise RuntimeError('Snapshot link escapes approved roots')
+dev=src/'scripts/devctl'
+if not dev.is_file() or dev.is_symlink(): raise RuntimeError('devctl must be a reviewed regular file')
+shutil.copytree(src/'.auth',pathlib.Path('/auth'),dirs_exist_ok=True,symlinks=True)
+for name in ('scripts','toolchain'): shutil.copytree(src/name,dst/name,dirs_exist_ok=True,symlinks=True)
+entries={}
+for name in ('scripts','toolchain'):
+ for parent,dirs,files in os.walk(dst/name,followlinks=False):
+  for f in sorted(dirs+files):
+   p=pathlib.Path(parent)/f; key=str(p.relative_to(dst))
+   if p.is_symlink(): entries[key]={'link':os.readlink(p)}
+   elif p.is_file(): entries[key]={'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'mode':p.stat().st_mode&511}
+manifest=json.dumps(entries,sort_keys=True,separators=(',',':')).encode()
+(dst/'scripts/.sandbox-tools-manifest.json').write_bytes(manifest)
+print('CLI manifest SHA256: '+hashlib.sha256(manifest).hexdigest())
+'@
+$validate=@'
+import hashlib,json,os,pathlib,sys
+root=pathlib.Path('/workspace')
+raw=(root/'scripts/.sandbox-tools-manifest.json').read_bytes()
+if hashlib.sha256(raw).hexdigest()!=sys.argv[1].lower(): raise RuntimeError('Unreviewed snapshot manifest')
+entries=json.loads(raw); actual=set()
+for name in ('scripts','toolchain'):
+ for parent,dirs,files in os.walk(root/name,followlinks=False):
+  for f in dirs+files:
+   p=pathlib.Path(parent)/f; key=str(p.relative_to(root))
+   if key=='scripts/.sandbox-tools-manifest.json': continue
+   if p.is_symlink():
+    actual.add(key); target=p.resolve(strict=True)
+    if not any(target==root/n or root/n in target.parents for n in ('scripts','toolchain')): raise RuntimeError('Escaping snapshot link')
+    if entries.get(key)!={'link':os.readlink(p)}: raise RuntimeError('Changed snapshot link')
+   elif p.is_file():
+    actual.add(key)
+    if entries.get(key)!={'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'mode':p.stat().st_mode&511}: raise RuntimeError('Changed snapshot file')
+if actual!=set(entries): raise RuntimeError('Incomplete snapshot')
+'@
 switch ($Action) {
-  'Prepare' {
-    if ((ExistingVolume $AuthVolume) -or (ExistingVolume $ToolsVolume)) {
-      throw 'Destination volumes already exist; do not overwrite an existing credential snapshot.'
-    }
-    if ($PSCmdlet.ShouldProcess("$AuthVolume + $ToolsVolume",'Create isolated copies of current credential and CLI homes')) {
-      Docker @('image','inspect',$image) | Out-Null
-      Docker @('volume','create',$AuthVolume) | Out-Null
-      Docker @('volume','create',$ToolsVolume) | Out-Null
-      $auth="type=volume,source=$AuthVolume,target=/auth"
-      $tools="type=volume,source=$ToolsVolume,target=/tools"
-      # Init root-owned volume directory once, with only CHOWN permission.
-      Docker @('run','--rm','--network','none','--cap-drop','ALL','--cap-add','CHOWN',
-        '--security-opt','no-new-privileges','--mount',$auth,'--mount',$tools,
-        $image,'sh','-ec','chown 1000:1000 /auth /tools') | Out-Null
-      # All secret copying happens inside a short-lived, networkless UID1000
-      # helper. Nothing is written to the Windows filesystem or output logs.
-      $src="type=volume,source=$WorkspaceVolume,target=/source,readonly"
-      $copy=@('set -eu','test -d /source/.auth','test -x /source/scripts/devctl',
-        'test -d /source/toolchain',
-        'mkdir -p /tools/toolchain /tools/scripts',
-        'cd /source/.auth && tar -cf - . | tar -xf - -C /auth',
-        'cd /source/toolchain && tar -cf - . | tar -xf - -C /tools/toolchain',
-        'cp /source/scripts/devctl /tools/scripts/devctl',
-        'chmod 700 /tools/scripts/devctl',
-        'test -d /auth/github && test -x /tools/scripts/devctl') -join '; '
-      Docker @('run','--rm','--user','1000:1000','--network','none','--read-only',
-        '--cap-drop','ALL','--security-opt','no-new-privileges',
-        '--mount',$src,'--mount',$auth,'--mount',$tools,$image,'sh','-ec',$copy) | Out-Null
-      Write-Output 'Prepared isolated credential and toolchain volumes; live container unchanged.'
-      Write-Output 'Review CLI binary hashes before enabling the isolated auth worker.'
-    }
+ 'Prepare' {
+  if ($PSCmdlet.ShouldProcess("$AuthVolume + $ToolsVolume",'Snapshot quiesced credentials and CLI closure')) {
+   if (-not $RestoreVerified) { throw 'Verify an independently recoverable off-host backup and staging restore, then pass -RestoreVerified.' }
+   Assert-SandboxVolumeQuiescent $WorkspaceVolume
+   New-SandboxVolume $AuthVolume; New-SandboxVolume $ToolsVolume
+   # Only CHOWN on new empty destination roots; no access to source credentials.
+   Invoke-SandboxDocker run --rm --network none --read-only --user 0:0 --cap-drop ALL --cap-add CHOWN --security-opt no-new-privileges --entrypoint /bin/sh --mount "type=volume,source=$AuthVolume,target=/auth" --mount "type=volume,source=$ToolsVolume,target=/out" $image -ec 'chown 1000:1000 /auth /out' | Out-Null
+   Invoke-SandboxDocker run --rm --network none --read-only --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges --entrypoint python3 --mount "type=volume,source=$WorkspaceVolume,target=/workspace,readonly" --mount "type=volume,source=$AuthVolume,target=/auth" --mount "type=volume,source=$ToolsVolume,target=/out" $image -I -c $snapshot
+   Write-Output 'Snapshot preserved originals. Review CLI manifest and retain its SHA256 for CreateSidecar.'
   }
-  'CreateSidecar' {
-    if (-not (ExistingVolume $AuthVolume) -or -not (ExistingVolume $ToolsVolume)) {
-      throw 'Run Prepare first.'
-    }
-    & docker container inspect $AuthContainer *> $null
-    if ($LASTEXITCODE -eq 0) { throw 'Auth sidecar already exists; refusing to overwrite.' }
-    if ($PSCmdlet.ShouldProcess($AuthContainer,'Create isolated OAuth sidecar with private credential volume')) {
-      $args=@('run','--detach','--name',$AuthContainer,'--hostname',$AuthContainer,
-        '--user','1000:1000','--read-only','--restart','unless-stopped',
-        '--cap-drop','ALL','--security-opt','no-new-privileges',
-        '--pids-limit','120','--memory','1g','--cpus','1',
-        '--tmpfs','/tmp:rw,nosuid,nodev,size=128m',
-        '--mount',"type=volume,source=$AuthVolume,target=/workspace/.auth",
-        '--mount',"type=volume,source=$ToolsVolume,target=/workspace/scripts,volume-subpath=scripts,readonly",
-        '--mount',"type=volume,source=$ToolsVolume,target=/workspace/toolchain,volume-subpath=toolchain,readonly",
-        '--label','io.cartshift.sandbox.auth=isolated-v1',
-        '--entrypoint','/bin/sh',$imageId,'-c','sleep infinity')
-      Docker $args | Out-Null
-      Write-Output 'Isolated auth sidecar created without a projects mount or Docker socket.'
-      Write-Output 'Install a separately authenticated, hash-verified auth-only worker before enforcing token separation.'
-    }
+ }
+ 'CreateSidecar' {
+  if (-not $ToolsManifestSha256) { throw 'Supply the independently reviewed CLI manifest SHA256.' }
+  Assert-SandboxVolumeOwner $AuthVolume
+  Assert-SandboxVolumeOwner $ToolsVolume
+  Invoke-HostDocker container inspect $AuthContainer *> $null
+  if ($LASTEXITCODE -eq 0) { throw 'Sidecar already exists; never replace an existing container.' }
+  if ($PSCmdlet.ShouldProcess($AuthContainer,'Create sidecar from verified immutable CLI snapshot')) {
+   $mounts=@('--mount',"type=volume,source=$ToolsVolume,target=/workspace/scripts,volume-subpath=scripts,readonly",'--mount',"type=volume,source=$ToolsVolume,target=/workspace/toolchain,volume-subpath=toolchain,readonly")
+   Invoke-SandboxDocker run --rm --network none --read-only --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges --entrypoint python3 @mounts $image -I -c $validate $ToolsManifestSha256 | Out-Null
+   Invoke-SandboxDocker run --detach --name $AuthContainer --hostname ai-auth-sandbox --network $base.host.NetworkMode --user 1000:1000 --read-only --restart unless-stopped --cap-drop ALL --security-opt no-new-privileges --pids-limit 120 --memory 1g --cpus 1 --tmpfs '/tmp:rw,nosuid,nodev,size=128m,mode=1777' --log-opt max-size=5m --log-opt max-file=3 --add-host host.docker.internal:127.0.0.1 --add-host gateway.docker.internal:127.0.0.1 --mount "type=volume,source=$AuthVolume,target=/workspace/.auth" @mounts --label sandbox.owner=ai-dev-sandbox --label io.cartshift.sandbox.auth=isolated-v1 --label "io.cartshift.sandbox.tools-manifest=$ToolsManifestSha256" --entrypoint /usr/bin/tini $image -- /bin/sh -c 'sleep infinity' | Out-Null
   }
-  'Verify' {
-    $labels=((Docker @('inspect','--format','{{index .Config.Labels "io.cartshift.sandbox.auth"}}',$AuthContainer)) -join '').Trim()
-    if ($labels -ne 'isolated-v1') { throw 'Container identity mismatch.' }
-    $mounts=((Docker @('inspect','--format','{{json .Mounts}}',$AuthContainer)) -join '') | ConvertFrom-Json
-    $paths=@($mounts | ForEach-Object Destination)
-    if ('/workspace/.auth' -notin $paths -or '/workspace/scripts' -notin $paths -or '/workspace/toolchain' -notin $paths) {
-      throw 'Required isolated mounts absent.'
-    }
-    if (@($paths | Where-Object { $_ -match '/projects|docker.sock' }).Count) {
-      throw 'Auth worker has forbidden project/Docker mounts.'
-    }
-    Docker @('exec',$AuthContainer,'sh','-ec',
-      'test "$(id -u)" = 1000 && test -d /workspace/.auth/github && test -x /workspace/scripts/devctl && test ! -e /workspace/projects') | Out-Null
-    Write-Output 'Auth sidecar identity, mount isolation and UID validated (credential content not printed).'
-  }
-  'Finalize' {
-    if (-not ($RestoreVerified -and $AuthWorkerVerified -and $AuthTokenEnforced)) {
-      throw 'Require off-host verified restore, working auth worker and enforced separate session token.'
-    }
-    $running=((Docker @('inspect','--format','{{.State.Running}}',$BuildContainer)) -join '').Trim()
-    if ($running -ne 'false') { throw 'STOP the main sandbox and old supervisor before finalizing.' }
-    if ($PSCmdlet.ShouldProcess("$WorkspaceVolume/.auth",
-        'IRREVERSIBLY erase OLD live credential copies from the development volume')) {
-      $mnt="type=volume,source=$WorkspaceVolume,target=/data"
-      # This deletion is opt-in only AFTER backups, isolated auth login, and
-      # backend token enforcement have been verified by the owner.
-      Docker @('run','--rm','--user','1000:1000','--network','none',
-        '--cap-drop','ALL','--security-opt','no-new-privileges',
-        '--mount',$mnt,$image,'sh','-ec',
-        'test -d /data/.auth; rm -rf /data/.auth; test ! -e /data/.auth') | Out-Null
-      Write-Output 'Old credential files erased from live workspace (not from historical backups).'
-      Write-Output 'Restart the main worker in role=build and rotate any formerly shared tokens.'
-    }
-  }
+ }
+ 'Verify' {
+  if (-not $ToolsManifestSha256) { throw 'Supply the reviewed CLI manifest SHA256.' }
+  Assert-SandboxVolumeOwner $AuthVolume
+  Assert-SandboxVolumeOwner $ToolsVolume
+  $spec=Get-SandboxSpec $AuthContainer
+  Assert-SandboxRestrictions $spec
+  if ($spec.hostname -ne 'ai-auth-sandbox' -or $spec.host.NetworkMode -ne $base.host.NetworkMode -or $spec.image -ne $image -or $spec.labels.'io.cartshift.sandbox.auth' -ne 'isolated-v1' -or $spec.labels.'io.cartshift.sandbox.tools-manifest' -ne $ToolsManifestSha256) { throw 'Sidecar source identity mismatch.' }
+  Assert-SandboxMount $spec '/workspace/.auth' $AuthVolume $true
+  Assert-SandboxMount $spec '/workspace/scripts' $ToolsVolume $false
+  Assert-SandboxMount $spec '/workspace/toolchain' $ToolsVolume $false
+  if (@($spec.mounts | Where-Object { $_.Type -eq 'volume' }).Count -ne 3) { throw 'Unexpected sidecar volume.' }
+  Invoke-SandboxDocker exec $AuthContainer python3 -I -c $validate $ToolsManifestSha256 | Out-Null
+  Invoke-SandboxDocker exec $AuthContainer sh -ec 'test "$(id -u)" = 1000; test ! -e /workspace/projects; test -d /workspace/.auth' | Out-Null
+  Write-Output 'Sidecar source manifest, exact mounts, privilege boundary and UID verified.'
+ }
 }

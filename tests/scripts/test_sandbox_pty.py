@@ -23,6 +23,9 @@ class PTYTests(unittest.TestCase):
         metadata = patch.object(pty, 'META', Path(temporary.name))
         metadata.start()
         self.addCleanup(metadata.stop)
+        for name,filename in (('BACKUP_REQUEST','backup-request'),('BACKUP_BUILD_READY','backup-build-ready'),('BACKUP_AUTH_READY','backup-auth-ready')):
+            marker=patch.object(worker,name,Path(temporary.name)/filename)
+            marker.start(); self.addCleanup(marker.stop)
     def guardian(self,code):
         original=pty.GuardianState.__init__
         def fixture(state): original(state,[sys.executable,'-u','-c',code])
@@ -190,6 +193,95 @@ class PTYTests(unittest.TestCase):
             state.flush_terminal_replies()
         self.assertEqual(state.terminal_replies,b'port')
         self.assertEqual(state.activity,123)
+    def test_recovery_discovers_unrecorded_descendants_before_killing_parent(self):
+        import ctypes,json,subprocess,signal
+        self.assertEqual(ctypes.CDLL(None).prctl(36,1,0,0,0),0)
+        parent=subprocess.Popen([sys.executable,'-u','-c',
+            "import subprocess,time; child=subprocess.Popen(['sleep','30'],start_new_session=True); print(child.pid,flush=True); time.sleep(30)"],stdout=subprocess.PIPE,text=True)
+        child=int(parent.stdout.readline().strip())
+        try:
+            record=pty.META/'unrecorded-child.json'
+            record.write_text(json.dumps(dict(guardian=99999999,guardian_ticks='1',
+                children=[dict(pid=parent.pid,ticks=pty.ticks(parent.pid))])))
+            pty.recover(); parent.wait(timeout=3)
+            deadline=time.monotonic()+2
+            while pty.ticks(child) is not None and time.monotonic()<deadline:
+                try: os.waitpid(child,os.WNOHANG)
+                except ChildProcessError: pass
+                time.sleep(.01)
+            self.assertIsNone(pty.ticks(child))
+        finally:
+            for pid in (child,parent.pid):
+                try: os.kill(pid,signal.SIGKILL)
+                except ProcessLookupError: pass
+            parent.wait(); parent.stdout.close()
+    def test_concurrent_sync_keeps_each_request_with_its_response(self):
+        import json,threading
+        class Transport:
+            def __init__(self): self.message=None; self.overlap=False
+            def sendall(self,data):
+                if self.message is not None: self.overlap=True
+                self.message=json.loads(data)['desired']
+                time.sleep(.01) # Give another caller a chance to interleave.
+            def recv(self,size):
+                message=self.message; self.message=None
+                return (json.dumps(dict(session=message))+'\n').encode()
+        guardian=object.__new__(pty.Guardian)
+        guardian.socket=Transport(); guardian.buffer=b''
+        guardian._sync_lock=threading.Lock()
+        barrier=threading.Barrier(6); errors=[]
+        def request(number):
+            try:
+                barrier.wait()
+                for turn in range(3):
+                    item=dict(caller=number,turn=turn)
+                    self.assertEqual(guardian.sync(item),item)
+            except BaseException as error: errors.append(error)
+        threads=[threading.Thread(target=request,args=(number,)) for number in range(6)]
+        for thread in threads: thread.start()
+        for thread in threads: thread.join(timeout=3)
+        self.assertFalse(any(thread.is_alive() for thread in threads))
+        self.assertEqual(errors,[])
+        self.assertFalse(guardian.socket.overlap)
+    def pending_input_state(self):
+        state=pty.GuardianState(); state.master=99999; state.process=object()
+        state.provider='supabase'; state.activity=123
+        state.snapshot=dict(session_id='queued-input',ack_input_id=None)
+        item=dict(session_id='queued-input',status='running',pending_input=dict(
+            input_id='queued-once',input_type='verification_code',input='aabb0099'))
+        return state,item
+    def test_input_backpressure_does_not_ack_or_drop_input(self):
+        state,item=self.pending_input_state()
+        with patch.object(pty.os,'write',side_effect=BlockingIOError()):
+            state.apply(item); state.apply(item)
+        self.assertIsNone(state.snapshot['ack_input_id'])
+        self.assertEqual(state.pending_input_bytes,b'aabb0099\r')
+        self.assertEqual(state.activity,123)
+        delivered=[]
+        def complete(fd,data): delivered.append(bytes(data)); return len(data)
+        with patch.object(pty.os,'write',side_effect=complete): state.flush_input()
+        self.assertEqual(delivered,[b'aabb0099\r'])
+        self.assertEqual(state.snapshot['ack_input_id'],'queued-once')
+        with patch.object(pty.os,'write') as write:
+            state.apply(item)
+        write.assert_not_called()
+    def test_input_partial_writes_ack_only_complete_delivery(self):
+        state,item=self.pending_input_state(); delivered=[]
+        def partial(fd,data):
+            delivered.append(bytes(data[:2])); return min(2,len(data))
+        with patch.object(pty.os,'write',side_effect=partial):
+            state.apply(item)
+            self.assertIsNone(state.snapshot['ack_input_id'])
+            self.assertEqual(state.pending_input_bytes,b'bb0099\r')
+            while state.pending_input_bytes: state.flush_input()
+        self.assertEqual(b''.join(delivered),b'aabb0099\r')
+        self.assertEqual(state.snapshot['ack_input_id'],'queued-once')
+    def test_input_queue_rejects_second_entry_until_delivery(self):
+        state,item=self.pending_input_state()
+        with patch.object(pty.os,'write',side_effect=BlockingIOError()): state.apply(item)
+        item['pending_input']['input_id']='second-entry'
+        with self.assertRaisesRegex(ValueError,'pending'): state.apply(item)
+        self.assertLessEqual(len(state.pending_input_bytes),513)
     @unittest.skipUnless(os.environ.get('CARTSHIFT_TEST_REAL_GH_DECLINE')=='1','Opt-in: decline existing GitHub authentication only')
     def test_real_installed_github_decline_completes(self):
         import ctypes

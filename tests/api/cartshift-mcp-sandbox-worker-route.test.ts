@@ -18,6 +18,16 @@ describe('sandbox worker request boundaries', () => {
     expect(result.status).toBe(200);
     expect(mocks.complete).toHaveBeenCalledOnce();
   });
+  it('accepts version-tagged completions without passing transport metadata to the strict result schema', async () => {
+    const payload = { action: 'complete', worker_version: 4, job_id: 'sandbox-job-12345678',
+      lease_token: 'l'.repeat(40), exit_code: 0, stdout: 'safe fixture', stderr: '',
+      duration_ms: 12, output_truncated: false };
+    const result = await POST(new Request('https://example.com', { method: 'POST', body: JSON.stringify(payload) }));
+    expect(result.status).toBe(200);
+    expect(mocks.complete.mock.calls[0][0]).not.toHaveProperty('worker_version');
+    expect(mocks.complete.mock.calls[0][0]).not.toHaveProperty('action');
+    expect(mocks.complete.mock.calls[0][0]).toMatchObject({ job_id: payload.job_id, stdout: payload.stdout });
+  });
   it('rejects oversized streamed bodies even without content-length', async () => {
     const body = JSON.stringify({ action: 'complete', stdout: 'x'.repeat(200001) });
     const result = await POST(new Request('https://example.com', { method: 'POST', body }));
@@ -47,9 +57,17 @@ describe('sandbox worker request boundaries', () => {
     expect((await POST(req({ ...payload, extra: true }))).status).toBe(400);
     expect((await POST(req({ ...payload, worker_version: 3 }))).status).toBe(400);
   });
+  it('does not refresh status for an invalid lease heartbeat', async () => {
+    mocks.cancel.mockRejectedValueOnce(new Error('INVALID_OR_EXPIRED_LEASE'));
+    const response = await POST(new Request('https://example.com', { method: 'POST', body: JSON.stringify({
+      action: 'heartbeat', busy: true, worker_version: 4, job_id: 'stale-job', lease_token: 'wrong-token',
+    }) }));
+    expect(response.status).toBe(409);
+    expect(mocks.heartbeat).not.toHaveBeenCalled();
+  });
   it('recognizes bounded periodic poll heartbeats without extra writes on ordinary polls', async () => {
     mocks.lease.mockResolvedValue(null);
-    const req = body => new Request('https://example.com', { method: 'POST',
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST',
       body: JSON.stringify(body) });
     expect((await POST(req({ action: 'poll' }))).status).toBe(200);
     expect(mocks.heartbeat).not.toHaveBeenCalled();

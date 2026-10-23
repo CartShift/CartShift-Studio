@@ -166,7 +166,7 @@ describe('CartShift owner-only sandbox job submission', () => {
   });
 
   it('requests running cancellation only with an authenticated V4 heartbeat', async () => {
-    const lease = { ownerUid: owner.uid, status: 'leased', leaseExpiresAt: Date.now() + 20_000 };
+    const lease = { ownerUid: owner.uid, workerVersion: 4, status: 'leased', leaseExpiresAt: Date.now() + 20_000 };
     mocks.transaction.mockImplementation(async callback => {
       const get = vi.fn().mockResolvedValueOnce({ data: () => lease })
         .mockResolvedValueOnce({ data: () => ({ version: 4, lastSeenAt: Date.now() }) });
@@ -176,6 +176,17 @@ describe('CartShift owner-only sandbox job submission', () => {
       .resolves.toMatchObject({ cancelled: false, status: 'cancel_requested' });
     expect(mocks.update).toHaveBeenCalledWith(expect.anything(),
       expect.objectContaining({ cancelRequestedAt: expect.any(Number) }));
+  });
+
+  it.each([[3, 4, false], [4, 3, true]])('uses leased V%s capability despite global V%s heartbeat', async (leased, global, requested) => {
+    const lease = { ownerUid: owner.uid, workerVersion: leased, status: 'leased', leaseExpiresAt: Date.now() + 20_000 };
+    mocks.transaction.mockImplementation(async callback => callback({
+      get: vi.fn().mockResolvedValueOnce({ data: () => lease })
+        .mockResolvedValueOnce({ data: () => ({ version: global, lastSeenAt: Date.now() }) }), update: mocks.update,
+    }));
+    const result = await cancelSandboxCommand(owner, { job_id: 'sandbox-job-12345678' });
+    expect(result.status).toBe(requested ? 'cancel_requested' : 'leased');
+    expect(mocks.update).toHaveBeenCalledTimes(requested ? 1 : 0);
   });
 
   it('records v2 heartbeat with worker state only', async () => {

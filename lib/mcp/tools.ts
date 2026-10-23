@@ -52,7 +52,7 @@ const requestFields = z.object({
 
 export const TOOL_DEFS = [
   {
-    name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh v3 worker handshake; only fixed provider login commands run.', scope: 'work:write',
+    name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh auth-worker handshake; only fixed provider login commands run.', scope: 'work:write',
     inputSchema: { type: 'object', required: ['provider'], properties: { provider: { type: 'string', enum: ['supabase', 'github', 'vercel', 'firebase', 'shopify'] }, cwd: { type: 'string', default: '/workspace' }, ttl_seconds: { type: 'integer', minimum: 60, maximum: 900, default: 600 }, idle_timeout_seconds: { type: 'integer', minimum: 30, maximum: 300, default: 180 } }, additionalProperties: false },
   },
   {
@@ -70,7 +70,7 @@ export const TOOL_DEFS = [
 
   {
     name: 'sandbox_run_command',
-    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active v2 worker.',
+    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active V2+ worker; running cancellation and artifacts require V4.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['command'], properties: {
       command: { type: 'string', minLength: 1, maxLength: 2000 },
@@ -109,7 +109,7 @@ export const TOOL_DEFS = [
   },
   {
     name: 'sandbox_cancel_command',
-    description: 'Cancel a queued job immediately or request cooperative cancellation of a running v3 worker job. Check the result for confirmation.',
+    description: 'Cancel a queued job immediately or request cooperative cancellation of a running V4 worker job. Check the result for confirmation.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['job_id'],
       properties: { job_id: { type: 'string' } }, additionalProperties: false },

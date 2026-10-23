@@ -111,6 +111,7 @@ describe('owner-only persistent sandbox authentication', () => {
     vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
     await expect(startSandboxSession(owner, { provider: 'github', cwd: '/workspace/projects/demo' }))
       .rejects.toThrow('SANDBOX_SESSION_INVALID_AUTH_CWD');
+    await syncSandboxSessions({ action: 'sync', version: 3, epoch, session: null }, 'isolated');
     await expect(startSandboxSession(owner, { provider: 'github' })).resolves.toMatchObject({
       provider: 'github',
     });
@@ -150,6 +151,28 @@ describe('owner-only persistent sandbox authentication', () => {
       busy: false,
     });
     expect((await getSandboxStatus(owner)).capabilities).not.toContain('interactive_auth_sessions');
+  });
+  it('requires isolated handshake provenance after enforcement', async () => {
+    await sync();
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
+    await expect(startSandboxSession(owner, { provider: 'github' })).rejects.toThrow('WORKER_UNAVAILABLE');
+    expect((await getSandboxStatus(owner)).capabilities).not.toContain('interactive_auth_sessions');
+    await syncSandboxSessions({ action: 'sync', version: 3, epoch: nextEpoch, session: null }, 'isolated');
+    await expect(startSandboxSession(owner, { provider: 'github' })).resolves.toMatchObject({ provider: 'github' });
+    const status = await getSandboxStatus(owner);
+    expect(status.capabilities).toContain('interactive_auth_sessions');
+    expect(status.auth_worker_connected).toBe(true);
+    expect(status.auth_worker_credential).toBe('isolated');
+    expect(status.limitations).not.toContain('shared_uid_provider_credentials');
+    expect(status.limitations).toContain('auth_runtime_isolation_unverified');
+  });
+  it('records credential provenance at the authenticated session route', async () => {
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'b'.repeat(48));
+    const response = await POST(new Request('https://example.com', { method: 'POST', headers: {
+      authorization: 'Bearer ' + 'b'.repeat(48),
+    }, body: JSON.stringify({ action: 'sync', version: 3, epoch, session: null }) }));
+    expect(response.status).toBe(200);
+    expect(row('control').credentialClass).toBe('isolated');
   });
   it('preserves provider OAuth URLs and UUID parameters while masking only the submitted code', () => {
     const urls = [

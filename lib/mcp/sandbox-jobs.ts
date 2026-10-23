@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { hasFreshSandboxSessionsHandshake } from '@/lib/mcp/sandbox-sessions';
+import { getSandboxSessionsWorkerStatus } from '@/lib/mcp/sandbox-sessions';
 import { randomBytes } from 'node:crypto';
 import { Timestamp } from 'firebase-admin/firestore';
 import { z } from 'zod';
@@ -67,16 +67,21 @@ export async function getSandboxStatus(grant: TokenGrant) {
   const data = snap.data();
   const age = typeof data?.lastSeenAt === 'number' ? Date.now() - data.lastSeenAt : null;
   const online = age !== null && age >= 0 && age < WORKER_ONLINE_MS;
-  const interactive = online && data?.version >= 3 && await hasFreshSandboxSessionsHandshake();
+  const auth = await getSandboxSessionsWorkerStatus();
+  const interactive = auth.connected;
+  const enforced = process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true';
   return { connected: online, state: online ? 'online' : data ? 'offline' : 'unverified',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
     busy: online && data?.busy === true,
-    limitations: ['shared_uid_provider_credentials', 'no_managed_dev_services', 'host_backup_not_remotely_verified'],
+    auth_worker_connected: auth.connected, auth_worker_credential: auth.credential,
+    auth_worker_enforced: enforced,
+    limitations: [enforced ? 'auth_runtime_isolation_unverified' : 'shared_uid_provider_credentials',
+      'managed_dev_services_unverified', 'host_backup_not_remotely_verified'],
     max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
-    capabilities: online && data?.version >= 2
+    capabilities: [...(online && data?.version >= 2
       ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation',
-          ...(data?.version >= 4 ? ['cancel_running', 'artifact_chunks'] : []),
-          ...(interactive ? ['interactive_auth_sessions'] : [])] : [],
+          ...(data?.version >= 4 ? ['cancel_running', 'artifact_chunks'] : [])] : []),
+      ...(interactive ? ['interactive_auth_sessions'] : [])],
   };
 }
 
@@ -89,13 +94,21 @@ export async function recordSandboxHeartbeat(busy = false, version: 2 | 3 | 4 = 
 }
 
 export async function sandboxCancellationRequested(jobId: string, leaseToken: string): Promise<boolean> {
-  const snap = await firestore().collection(JOBS).doc(jobId).get();
-  const data = snap.data();
-  return !!data && data.ownerUid === process.env.SANDBOX_OWNER_UID &&
-    data.status === 'leased' && data.leaseExpiresAt > Date.now() &&
-    typeof data.leaseTokenHash === 'string' &&
-    constantEquals(data.leaseTokenHash, tokenHash(leaseToken)) &&
-    typeof data.cancelRequestedAt === 'number';
+  const ref = firestore().collection(JOBS).doc(jobId);
+  return firestore().runTransaction(async tx => {
+    const data = (await tx.get(ref)).data();
+    const now = Date.now();
+    if (!data || data.ownerUid !== process.env.SANDBOX_OWNER_UID ||
+        data.status !== 'leased' || data.leaseExpiresAt <= now ||
+        typeof data.leaseTokenHash !== 'string' ||
+        !constantEquals(data.leaseTokenHash, tokenHash(leaseToken)))
+      throw new Error('INVALID_OR_EXPIRED_LEASE');
+    // Update liveness only while the matching job lease is still valid.
+    tx.set(firestore().collection(WORKER_STATE).doc('primary'), {
+      lastSeenAt: now, version: 4, busy: true,
+    }, { merge: true });
+    return typeof data.cancelRequestedAt === 'number';
+  });
 }
 
 export async function cancelSandboxCommand(grant: TokenGrant, input: unknown) {
@@ -107,9 +120,7 @@ export async function cancelSandboxCommand(grant: TokenGrant, input: unknown) {
     const data = doc.data();
     if (!data || data.ownerUid !== grant.uid) throw new Error('JOB_NOT_FOUND');
     if (data.status === 'leased' && data.leaseExpiresAt > Date.now()) {
-      const state = (await tx.get(firestore().collection(WORKER_STATE).doc('primary'))).data();
-      if (state && state.version >= 4 && typeof state.lastSeenAt === 'number' &&
-          state.lastSeenAt <= Date.now() && Date.now() - state.lastSeenAt < WORKER_ONLINE_MS) {
+      if (data.workerVersion >= 4) {
         tx.update(ref, { cancelRequestedAt: Date.now() });
         return { job_id, cancelled: false, status: 'cancel_requested' };
       }
@@ -175,14 +186,19 @@ export function authorizeSandboxWorker(header: string | null): boolean {
  * During staging, legacy V3 clients remain valid. After the sidecar starts,
  * SANDBOX_AUTH_WORKER_ENFORCE=true revokes the build worker's session access.
  */
-export function authorizeSandboxSessionWorker(header: string | null): boolean {
+export function sandboxSessionWorkerCredential(header: string | null): 'isolated' | 'legacy' | null {
   const isolated = process.env.SANDBOX_AUTH_WORKER_TOKEN;
   const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
   const distinct = Boolean(isolated && isolated.length >= 32 &&
     !constantEquals(isolated, process.env.SANDBOX_WORKER_TOKEN ?? ''));
   const matchesAuth = Boolean(distinct && match && constantEquals(match[1], isolated!));
-  if (process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true') return matchesAuth;
-  return matchesAuth || authorizeSandboxWorker(header);
+  if (matchesAuth) return 'isolated';
+  return process.env.SANDBOX_AUTH_WORKER_ENFORCE !== 'true' && authorizeSandboxWorker(header)
+    ? 'legacy' : null;
+}
+
+export function authorizeSandboxSessionWorker(header: string | null): boolean {
+  return sandboxSessionWorkerCredential(header) !== null;
 }
 
 export async function submitSandboxCommand(grant: TokenGrant, input: unknown) {
@@ -271,7 +287,7 @@ export async function leaseSandboxJob(workerVersion: 2 | 3 | 4 = 2) {
         return null;
       }
       tx.update(doc.ref, {
-        status: 'leased', startedAt: now,
+        status: 'leased', startedAt: now, workerVersion,
         leaseExpiresAt: now + Math.max(LEASE_MS, data.timeoutSeconds * 1000 + 90_000),
         leaseTokenHash: tokenHash(leaseToken),
       });
