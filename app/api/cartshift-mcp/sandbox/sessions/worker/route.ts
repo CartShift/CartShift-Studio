@@ -1,4 +1,4 @@
-import { authorizeSandboxWorker } from '@/lib/mcp/sandbox-jobs';
+import { authorizeSandboxSessionWorker } from '@/lib/mcp/sandbox-jobs';
 import { syncSandboxSessions } from '@/lib/mcp/sandbox-sessions';
 
 export const runtime = 'nodejs';
