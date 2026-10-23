@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   try {
     if (args.action === 'poll' &&
         (keys.length === 1 || (keys.length === 2 && args.heartbeat === true))) {
-      const job = await leaseSandboxJob();
+      const job = await leaseSandboxJob(version);
       // Heartbeat every ~30s when idle, and whenever the worker begins a job.
       if (job) await recordSandboxHeartbeat(true, version);
       else if (args.heartbeat === true) await recordSandboxHeartbeat(false, version);
