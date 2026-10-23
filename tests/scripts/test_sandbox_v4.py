@@ -16,6 +16,17 @@ spec.loader.exec_module(worker)
 
 
 class SandboxV4Tests(unittest.TestCase):
+    def test_isolated_roles_fail_closed_in_legacy_unsegmented_container(self):
+        with patch.object(worker, 'TOKEN', 'a' * 48):
+            with patch.object(worker, 'ROLE', 'legacy'):
+                worker.verify_identity()  # existing V3 compatible startup
+            with patch.object(worker, 'ROLE', 'build'):
+                with self.assertRaisesRegex(RuntimeError, 'shadow mount'):
+                    worker.verify_identity()
+            with patch.object(worker, 'ROLE', 'auth'):
+                with self.assertRaisesRegex(RuntimeError, 'shared project access'):
+                    worker.verify_identity()
+
     def test_cancellation_kills_running_process_group(self):
         cancelled = threading.Event()
         timer = threading.Timer(.2, cancelled.set)
