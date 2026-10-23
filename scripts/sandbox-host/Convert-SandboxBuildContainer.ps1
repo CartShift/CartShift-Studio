@@ -17,8 +17,8 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
-function Docker([string[]]$args) {
-  $value=@(& docker @args 2>&1)
+function Docker([string[]]$argv) {
+  $value=@(& docker @argv 2>&1)
   if ($LASTEXITCODE -ne 0) { throw "Docker failed with exit $LASTEXITCODE" }
   return $value
 }
@@ -43,7 +43,7 @@ switch ($Action) {
     if ($PSCmdlet.ShouldProcess($CandidateName,'Create read-only-root candidate without the legacy auth mount')) {
       & docker volume inspect $ShadowVolume *> $null
       if ($LASTEXITCODE -ne 0) { Docker @('volume','create',$ShadowVolume) | Out-Null }
-      $args=@('run','--detach','--name',$CandidateName,'--hostname','ai-docker-sandbox',
+      $runArgs=@('run','--detach','--name',$CandidateName,'--hostname','ai-docker-sandbox',
         '--user','1000:1000','--read-only','--restart','unless-stopped',
         '--cap-drop','ALL','--security-opt','no-new-privileges',
         '--pids-limit','512','--memory','8g','--cpus','4',
@@ -52,7 +52,7 @@ switch ($Action) {
         '--mount',"type=volume,source=$ShadowVolume,target=/workspace/.auth,readonly",
         '--label','io.cartshift.sandbox.build=credential-isolated-v1',
         $image)
-      Docker $args | Out-Null
+      Docker $runArgs | Out-Null
       Write-Output 'Isolated build candidate created; old container untouched.'
       Write-Output 'Run Verify before changing the owner-held supervisor target.'
     }
