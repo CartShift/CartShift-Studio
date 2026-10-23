@@ -22,6 +22,9 @@ from pathlib import Path
 
 API_URL = os.environ.get("SANDBOX_WORKER_URL", "https://portal.cart-shift.com/api/cartshift-mcp/sandbox/worker")
 TOKEN = ""
+# Legacy keeps the deployed V3 single-container behavior until the owner
+# activates dedicated build/auth workers. New roles never share OAuth homes.
+ROLE = os.environ.get("SANDBOX_WORKER_ROLE", "legacy")
 WORKSPACE = Path("/workspace").resolve(strict=True)
 MAX_OUTPUT = 24_000
 POLL_INTERVAL_SECONDS = 3
@@ -86,10 +89,23 @@ def protect_credential():
 def verify_identity():
     if UNSAFE_MARKER.exists():
         raise RuntimeError("Container restart required after failed process cleanup")
-    if not (os.geteuid() == 1000 and platform.system() == "Linux"
-            and platform.machine() == "aarch64" and platform.node() == "ai-docker-sandbox"
-            and WORKSPACE == Path("/workspace") and (WORKSPACE / "README.md").is_file()):
-        raise RuntimeError("Refusing to run outside the verified ARM64 Docker sandbox")
+    base = (os.geteuid() == 1000 and platform.system() == "Linux"
+            and platform.machine() == "aarch64" and WORKSPACE == Path("/workspace"))
+    if ROLE not in ('legacy', 'build', 'auth') or not base:
+        raise RuntimeError("Invalid worker role or container identity")
+    if ROLE == 'auth':
+        if (platform.node() != 'ai-auth-sandbox' or
+                not (WORKSPACE / '.auth').is_dir() or
+                not (WORKSPACE / 'scripts/devctl').is_file() or
+                not (WORKSPACE / 'toolchain').is_dir() or
+                (WORKSPACE / 'projects').exists()):
+            raise RuntimeError("Refusing auth worker with shared project access")
+    else:
+        if platform.node() != 'ai-docker-sandbox' or not (WORKSPACE / 'README.md').is_file():
+            raise RuntimeError("Refusing build worker outside verified container")
+        if ROLE == 'build' and (WORKSPACE / '.auth').exists():
+            if any((WORKSPACE / '.auth').iterdir()):
+                raise RuntimeError("Credential home remains exposed to build worker")
     if len(TOKEN) < 32 or any(c not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-" for c in TOKEN):
         raise RuntimeError("Missing or invalid worker credential")
     url = urllib.parse.urlsplit(API_URL)
@@ -398,13 +414,27 @@ def main():
     last_heartbeat = 0.0
     # The verified launcher preloads this module from owner-held, hash-checked
     # memory. Normal script imports are available only for development tooling.
-    from sandbox_pty import Guardian
-    guardian = Guardian()  # Must precede ALL threads and stateless subprocesses.
+    guardian = None
     heartbeat_stop, worker_busy = threading.Event(), threading.Event()
     job_state = {}
-    sessions_thread = threading.Thread(target=sessions_sync_loop,
-        args=(heartbeat_stop, guardian), name="sandbox-auth-sessions", daemon=True)
-    sessions_thread.start()
+    sessions_thread = None
+    if ROLE != 'build':
+        from sandbox_pty import Guardian
+        guardian = Guardian()  # Must precede worker threads and commands.
+        sessions_thread = threading.Thread(target=sessions_sync_loop,
+            args=(heartbeat_stop, guardian), name="sandbox-auth-sessions", daemon=True)
+        sessions_thread.start()
+    if ROLE == 'auth':
+        # Session-only: no poll, no command leases, no build tool access.
+        try:
+            while not heartbeat_stop.wait(2):
+                pass
+        finally:
+            heartbeat_stop.set()
+            sessions_thread.join(timeout=22)
+            guardian.close()
+            activity('worker_stopped')
+        return 1
     heartbeat_thread = threading.Thread(target=busy_heartbeat_loop,
         args=(heartbeat_stop, worker_busy, job_state), name="sandbox-busy-heartbeat", daemon=True)
     heartbeat_thread.start()
@@ -449,8 +479,10 @@ def main():
         return 1
     finally:
         heartbeat_stop.set()
-        sessions_thread.join(timeout=22)
-        guardian.close()
+        if sessions_thread is not None:
+            sessions_thread.join(timeout=22)
+        if guardian is not None:
+            guardian.close()
         activity('worker_stopped')
 
 
