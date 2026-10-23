@@ -237,12 +237,12 @@ export async function getSandboxCommand(grant: TokenGrant, input: unknown) {
   return publicJobResult(job_id, data);
 }
 
-export async function leaseSandboxJob() {
+export async function leaseSandboxJob(workerVersion: 2 | 3 | 4 = 2) {
   configured();
   const db = firestore();
   const jobs = db.collection(JOBS);
-  // A single-field status index is enough; scan at most 20 pending jobs.
-  const candidates = await jobs.where('status', '==', 'queued').limit(20).get();
+  // A single-field status index is enough; scan a bounded backlog for compatible jobs.
+  const candidates = await jobs.where('status', '==', 'queued').limit(50).get();
   for (const doc of candidates.docs) {
     const leaseToken = randomBytes(32).toString('base64url');
     const now = Date.now();
@@ -250,7 +250,8 @@ export async function leaseSandboxJob() {
       const fresh = await tx.get(doc.ref);
       const data = fresh.data();
       if (!data || data.status !== 'queued' ||
-          data.ownerUid !== process.env.SANDBOX_OWNER_UID) return null;
+          data.ownerUid !== process.env.SANDBOX_OWNER_UID ||
+          (data.kind === 'artifact_read' && workerVersion < 4)) return null;
       if (data.expiresAt <= now) {
         tx.update(doc.ref, { status: 'expired', finishedAt: now });
         return null;
