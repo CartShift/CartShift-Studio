@@ -17,7 +17,7 @@ function Initialize-SandboxHost {
   $contextRaw=& $script:SandboxDockerExe context inspect
   if ($LASTEXITCODE -ne 0) { throw 'Docker context unavailable.' }
   $context=@($contextRaw | ConvertFrom-Json)
-  if ($context.Count -ne 1 -or $context[0].Endpoints.docker.Host -notlike 'npipe://*') { throw 'Only local Docker Desktop named pipes are allowed.' }
+  if ($context.Count -ne 1 -or $context[0].Endpoints.docker.Host -cnotmatch '^npipe:/{4}[.]/pipe/[A-Za-z0-9_.-]+$') { throw 'Only local Docker Desktop named pipes are allowed.' }
   $script:SandboxDockerEndpoint=$context[0].Endpoints.docker.Host
   $info=Invoke-HostDocker info --format '{{json .}}' | ConvertFrom-Json
   if ($LASTEXITCODE -ne 0 -or $info.OSType -ne 'linux' -or $info.Architecture -notin @('aarch64','arm64')) { throw 'Local Linux ARM64 Docker Desktop required.' }

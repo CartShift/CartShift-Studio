@@ -2,7 +2,7 @@
 
 ## Current stage
 
-PR122 remains unmerged. Source/security fixes and Windows checks are complete enough for compatible backend staging. Full credential-isolation cutover is gated on an independently recoverable off-laptop backup. No original container, volume, authentication home or working controller has been deleted or replaced by an isolated candidate.
+PR122 remains unmerged. Source/security fixes and Windows checks pass for compatible backend staging. Current main c4d39db3 was integrated, preserving Northflank and Apps Script support. Full credential-isolation cutover is gated on an independently recoverable off-laptop backup. No original container, volume, authentication home or working controller has been deleted or replaced by an isolated candidate.
 
 ## Verified baseline and backups
 
@@ -22,8 +22,8 @@ Encrypted streaming backup covers all required volumes without plaintext staging
 
 ## Tests already run
 
-- 139 MCP tests passed across14 files, including full12000-byte binary completion/result/base64/hash round trip and mixed/stale lease regressions.
-- 70 Python checks before final host-barrier suite, one optional real-provider login test skipped. Host snapshot and nonce fixture tests recorded separately; rerun after integrating current main.
+- 140 MCP tests passed across14 files, including full12000-byte binary completion/result/base64/hash round trip and mixed/stale lease regressions.
+- 80 Python checks after integrating current main, one optional real-provider login test skipped (79 passed). Includes four snapshot and ten nonce/ACL fixture tests.
 - Production tsconfig.build.json typecheck passed after standard translation generation; generated translation files restored byte-for-byte. Broad developer typecheck still needs existing functions email dependencies; no sandbox production TS error remains.
 - Windows parsing, fixed native stdin/argv forwarding, mount/privilege refusal, normal Windows paths and mocked WhatIf checks passed.
 - Real managed dev container ai-dev-v4-managed-proof served only127.0.0.1:13004, mounted only its project subtree, ran nonroot/read-only/caps-dropped, and preserved restart-count state through Docker restart. It survived normal stateless command cleanup. It is now stopped; container/project preserved. This was a dependency-free server fixture, not a full Next/Vite application build.
