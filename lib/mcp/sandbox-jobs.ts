@@ -13,12 +13,14 @@ const MAX_OUTPUT = 24_000;
 const JOB_RETENTION_MS = 7 * 24 * 60 * 60_000;
 const WORKER_ONLINE_MS = 90_000;
 const MAX_COMMAND_SECONDS = 600;
+const MAX_ARTIFACT_CHUNK = 12_000;
 const WORKER_STATE = 'sandbox_worker_state';
 
 function jobStatus(data: FirebaseFirestore.DocumentData) {
   return data.status === 'queued' && Date.now() > data.expiresAt ? 'expired'
     : data.status === 'leased' && Date.now() > data.leaseExpiresAt ? 'worker_lost'
     : data.status === 'completed' && data.exitCode === 124 ? 'timed_out'
+    : data.status === 'completed' && data.exitCode === 130 && data.cancelRequestedAt ? 'cancelled'
     : data.status === 'completed' && data.exitCode !== 0 ? 'failed'
     : data.status;
 }
@@ -33,6 +35,7 @@ function publicJobResult(jobId: string, data: FirebaseFirestore.DocumentData) {
     duration_ms: data.durationMs ?? null,
     output_truncated: Boolean(data.outputTruncated),
     output_redacted: Boolean(data.outputRedacted),
+    cancel_requested: Boolean(data.cancelRequestedAt),
   };
 }
 
@@ -44,6 +47,12 @@ export function redactSandboxOutput(value: string): string {
     .replace(/(Bearer\s+)[A-Za-z0-9._~+/-]{20,}={0,2}/gi, '$1[REDACTED]')
     .replace(/\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|ya29\.[A-Za-z0-9._-]{15,})\b/g, '[REDACTED TOKEN]')
     .replace(/((?:access_token|refresh_token|client_secret|private_key|api_key|FIREBASE_TOKEN|GOOGLE_APPLICATION_CREDENTIALS)\s*[:=]\s*["']?)[^\s"',}]{8,}/gi, '$1[REDACTED]');
+}
+
+async function workerIsV4(): Promise<boolean> {
+  const data = (await firestore().collection(WORKER_STATE).doc('primary').get()).data();
+  return !!data && data.version >= 4 && typeof data.lastSeenAt === 'number' &&
+    Date.now() - data.lastSeenAt < WORKER_ONLINE_MS && Date.now() >= data.lastSeenAt;
 }
 
 async function workerIsV2(): Promise<boolean> {
@@ -62,18 +71,31 @@ export async function getSandboxStatus(grant: TokenGrant) {
   return { connected: online, state: online ? 'online' : data ? 'offline' : 'unverified',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
     busy: online && data?.busy === true,
+    limitations: ['shared_uid_provider_credentials', 'no_managed_dev_services', 'host_backup_not_remotely_verified'],
     max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
     capabilities: online && data?.version >= 2
-      ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation', ...(interactive ? ['interactive_auth_sessions'] : [])] : [],
+      ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation',
+          ...(data?.version >= 4 ? ['cancel_running', 'artifact_chunks'] : []),
+          ...(interactive ? ['interactive_auth_sessions'] : [])] : [],
   };
 }
 
-export async function recordSandboxHeartbeat(busy = false, version: 2 | 3 = 2) {
+export async function recordSandboxHeartbeat(busy = false, version: 2 | 3 | 4 = 2) {
   configured();
   await firestore().collection(WORKER_STATE).doc('primary').set({
     lastSeenAt: Date.now(), version, busy,
   }, { merge: true });
   return { acknowledged: true };
+}
+
+export async function sandboxCancellationRequested(jobId: string, leaseToken: string): Promise<boolean> {
+  const snap = await firestore().collection(JOBS).doc(jobId).get();
+  const data = snap.data();
+  return !!data && data.ownerUid === process.env.SANDBOX_OWNER_UID &&
+    data.status === 'leased' && data.leaseExpiresAt > Date.now() &&
+    typeof data.leaseTokenHash === 'string' &&
+    constantEquals(data.leaseTokenHash, tokenHash(leaseToken)) &&
+    typeof data.cancelRequestedAt === 'number';
 }
 
 export async function cancelSandboxCommand(grant: TokenGrant, input: unknown) {
@@ -84,6 +106,14 @@ export async function cancelSandboxCommand(grant: TokenGrant, input: unknown) {
     const doc = await tx.get(ref);
     const data = doc.data();
     if (!data || data.ownerUid !== grant.uid) throw new Error('JOB_NOT_FOUND');
+    if (data.status === 'leased' && data.leaseExpiresAt > Date.now()) {
+      const state = (await tx.get(firestore().collection(WORKER_STATE).doc('primary'))).data();
+      if (state && state.version >= 4 && typeof state.lastSeenAt === 'number' &&
+          state.lastSeenAt <= Date.now() && Date.now() - state.lastSeenAt < WORKER_ONLINE_MS) {
+        tx.update(ref, { cancelRequestedAt: Date.now() });
+        return { job_id, cancelled: false, status: 'cancel_requested' };
+      }
+    }
     if (data.status !== 'queued' || data.expiresAt < Date.now()) {
       return { job_id, cancelled: false, status: jobStatus(data) };
     }
@@ -163,6 +193,41 @@ export async function submitSandboxCommand(grant: TokenGrant, input: unknown) {
   return { job_id: ref.id, status: 'queued', dockerConnected: 'unverified' };
 }
 
+export async function getSandboxRecentJobs(grant: TokenGrant, input: unknown) {
+  authorizeSandboxOwner(grant);
+  const { limit } = z.object({ limit: z.number().int().min(1).max(30).default(15) }).strict().parse(input);
+  const docs = await firestore().collection(JOBS).where('ownerUid', '==', grant.uid)
+    .orderBy('createdAt', 'desc').limit(limit).get();
+  return { jobs: docs.docs.map(doc => {
+    const data = doc.data();
+    return { job_id: doc.id, kind: data.kind ?? 'command', status: jobStatus(data),
+      cancel_requested: Boolean(data.cancelRequestedAt), created_at: data.createdAt,
+      started_at: data.startedAt ?? null, finished_at: data.finishedAt ?? null,
+      duration_ms: data.durationMs ?? null, exit_code: data.exitCode ?? null };
+  }) };
+}
+
+export async function submitSandboxArtifactRead(grant: TokenGrant, input: unknown) {
+  authorizeSandboxOwner(grant);
+  const args = z.object({
+    path: z.string().min(1).max(300).regex(/^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/),
+    offset: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).default(0),
+    length: z.number().int().min(1).max(MAX_ARTIFACT_CHUNK).default(MAX_ARTIFACT_CHUNK),
+    wait_seconds: z.number().int().min(0).max(15).default(0),
+  }).strict().parse(input);
+  if (args.path.split('/').some(part => part === '.' || part === '..' || part.startsWith('.')))
+    throw new Error('INVALID_ARTIFACT_PATH');
+  if (!(await workerIsV4())) throw new Error('SANDBOX_WORKER_UPDATE_REQUIRED');
+  const now = Date.now();
+  const ref = firestore().collection(JOBS).doc();
+  await ref.create({ ownerUid: grant.uid, kind: 'artifact_read', artifactPath: args.path,
+    offset: args.offset, length: args.length, timeoutSeconds: 20, status: 'queued',
+    createdAt: now, expiresAt: now + JOB_MAX_AGE_MS,
+    purgeAt: Timestamp.fromMillis(now + JOB_RETENTION_MS) });
+  if (args.wait_seconds > 0) return await awaitJob(ref, ref.id, args.wait_seconds);
+  return { job_id: ref.id, status: 'queued', dockerConnected: 'unverified' };
+}
+
 export async function getSandboxCommand(grant: TokenGrant, input: unknown) {
   authorizeSandboxOwner(grant);
   const { job_id } = z.object({ job_id: z.string().min(12).max(128) }).strict().parse(input);
@@ -195,10 +260,12 @@ export async function leaseSandboxJob() {
         leaseExpiresAt: now + Math.max(LEASE_MS, data.timeoutSeconds * 1000 + 90_000),
         leaseTokenHash: tokenHash(leaseToken),
       });
-      return {
-        job_id: doc.id, command: data.command, cwd: data.cwd,
-        timeout_seconds: data.timeoutSeconds, lease_token: leaseToken,
-      };
+      return data.kind === 'artifact_read'
+        ? { job_id: doc.id, kind: 'artifact_read', artifact_path: data.artifactPath,
+            offset: data.offset, length: data.length, timeout_seconds: data.timeoutSeconds,
+            lease_token: leaseToken }
+        : { job_id: doc.id, command: data.command, cwd: data.cwd,
+            timeout_seconds: data.timeoutSeconds, lease_token: leaseToken };
     });
     if (claim) return claim;
   }

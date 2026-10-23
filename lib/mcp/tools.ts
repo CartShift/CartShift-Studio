@@ -9,7 +9,7 @@ import { startSandboxSession, readSandboxSession, sendSandboxSessionInput, stopS
 import { sandboxPing } from '@/lib/mcp/sandbox-probe';
 import { persistClientWorkMode, persistProjectWorkMode } from '@/lib/services/agency-work-modes-server';
 import { normalizeWorkMode } from '@/lib/domain/work-engagement';
-import { submitSandboxCommand, getSandboxCommand, getSandboxStatus, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
+import { submitSandboxCommand, submitSandboxArtifactRead, getSandboxCommand, getSandboxStatus, getSandboxRecentJobs, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -80,11 +80,26 @@ export const TOOL_DEFS = [
     }, additionalProperties: false },
   },
   {
+    name: 'sandbox_read_artifact',
+    description: 'Queue a bounded binary-safe read of a file under /workspace/artifacts. Retrieve base64 and SHA-256 chunk metadata with sandbox_get_result; no arbitrary filesystem reads.',
+    scope: 'work:read',
+    inputSchema: { type: 'object', required: ['path'], properties: {
+      path: { type: 'string', description: 'Relative path under /workspace/artifacts' },
+      offset: { type: 'integer', minimum: 0, default: 0 },
+      length: { type: 'integer', minimum: 1, maximum: 12000, default: 12000 },
+      wait_seconds: { type: 'integer', minimum: 0, maximum: 15, default: 0 },
+    }, additionalProperties: false },
+  },
+  {
     name: 'sandbox_get_result',
     description: 'Read the status, stdout, stderr and exit code of a sandbox command job belonging to the specifically authorized sandbox owner.',
     scope: 'work:read',
     inputSchema: { type: 'object', required: ['job_id'],
       properties: { job_id: { type: 'string' } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_recent_jobs', description: 'List up to 30 recent owner-only sandbox jobs with statuses and timings, never command text or output.', scope: 'work:read',
+    inputSchema: { type: 'object', properties: { limit: { type: 'integer', minimum: 1, maximum: 30, default: 15 } }, additionalProperties: false },
   },
   {
     name: 'sandbox_status',
@@ -94,7 +109,7 @@ export const TOOL_DEFS = [
   },
   {
     name: 'sandbox_cancel_command',
-    description: 'Cancel an owner sandbox command ONLY if it has not yet been leased to the Docker worker; running commands are not cancelled.',
+    description: 'Cancel a queued job immediately or request cooperative cancellation of a running v3 worker job. Check the result for confirmation.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['job_id'],
       properties: { job_id: { type: 'string' } }, additionalProperties: false },
@@ -253,7 +268,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (name === 'sandbox_send_input') return sendSandboxSessionInput(grant, args);
   if (name === 'sandbox_stop_session') return stopSandboxSession(grant, args);
   if (name === 'sandbox_run_command') return submitSandboxCommand(grant, args);
+  if (name === 'sandbox_read_artifact') return submitSandboxArtifactRead(grant, args);
   if (name === 'sandbox_get_result') return getSandboxCommand(grant, args);
+  if (name === 'sandbox_recent_jobs') return getSandboxRecentJobs(grant, args);
   if (name === 'sandbox_status') { z.object({}).strict().parse(args); return getSandboxStatus(grant); }
   if (name === 'sandbox_cancel_command') return cancelSandboxCommand(grant, args);
   if (name === 'sandbox_ping') {

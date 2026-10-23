@@ -1,5 +1,7 @@
 # CartShift MCP → AI Docker Sandbox bridge
 
+**Current V4 release/operations guide:** [SANDBOX_PLATFORM_V4_OPERATIONS.md](./SANDBOX_PLATFORM_V4_OPERATIONS.md). Older v2/v3 sections below are historical and should not be used to activate V4.
+
 This is an experimental, owner-only command runner reached through the **existing
 CartShift MCP** (which is already visible in ChatGPT on Android). It does not
 provide Docker access until a separately authenticated worker is running in

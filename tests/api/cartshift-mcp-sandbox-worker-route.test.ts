@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn() }));
+const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn(), cancel: vi.fn() }));
 vi.mock('@/lib/mcp/sandbox-jobs', () => ({ authorizeSandboxWorker: mocks.authorize,
-  leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete, recordSandboxHeartbeat: mocks.heartbeat }));
+  leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete, recordSandboxHeartbeat: mocks.heartbeat, sandboxCancellationRequested: mocks.cancel }));
 import { POST } from '@/app/api/cartshift-mcp/sandbox/worker/route';
 
 describe('sandbox worker request boundaries', () => {
@@ -31,8 +31,20 @@ describe('sandbox worker request boundaries', () => {
     expect(mocks.heartbeat).toHaveBeenCalledWith(false, 3);
     expect((await POST(req({ action: 'heartbeat', busy: true, worker_version: 3 }))).status).toBe(200);
     expect(mocks.heartbeat).toHaveBeenCalledWith(true, 3);
-    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 4 }))).status).toBe(400);
+    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 5 }))).status).toBe(400);
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3, arbitrary: true }))).status).toBe(400);
+  });
+  it('accepts lease-bound V4 cancellation queries only', async () => {
+    mocks.cancel.mockResolvedValue(true);
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST', body: JSON.stringify(body) });
+    const payload = { action: 'heartbeat', busy: true, worker_version: 4,
+      job_id: 'real-job', lease_token: 'lease-secret' };
+    const response = await POST(req(payload));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ cancel_requested: true });
+    expect(mocks.cancel).toHaveBeenCalledWith('real-job', 'lease-secret');
+    expect((await POST(req({ ...payload, extra: true }))).status).toBe(400);
+    expect((await POST(req({ ...payload, worker_version: 3 }))).status).toBe(400);
   });
   it('recognizes bounded periodic poll heartbeats without extra writes on ordinary polls', async () => {
     mocks.lease.mockResolvedValue(null);

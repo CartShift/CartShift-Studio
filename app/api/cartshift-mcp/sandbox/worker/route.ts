@@ -1,5 +1,6 @@
 import {
   authorizeSandboxWorker, completeSandboxJob, leaseSandboxJob, recordSandboxHeartbeat,
+  sandboxCancellationRequested,
 } from '@/lib/mcp/sandbox-jobs';
 
 export const runtime = 'nodejs';
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
   }
   const args = body as Record<string, unknown>;
   const version = args.worker_version === undefined ? 2 : args.worker_version;
-  if (version !== 2 && version !== 3) return json({ error: 'invalid_worker_version' }, 400);
+  if (version !== 2 && version !== 3 && version !== 4) return json({ error: 'invalid_worker_version' }, 400);
   const keys = Object.keys(args).filter(key => key !== 'worker_version');
   try {
     if (args.action === 'poll' &&
@@ -56,6 +57,13 @@ export async function POST(request: Request) {
     }
     if (args.action === 'heartbeat' && args.busy === true && keys.length === 2) {
       return json(await recordSandboxHeartbeat(true, version));
+    }
+    if (version === 4 && args.action === 'heartbeat' && args.busy === true &&
+        keys.length === 4 && typeof args.job_id === 'string' &&
+        typeof args.lease_token === 'string') {
+      await recordSandboxHeartbeat(true, version);
+      return json({ acknowledged: true,
+        cancel_requested: await sandboxCancellationRequested(args.job_id, args.lease_token) });
     }
     if (args.action === 'complete') {
       const { action: _action, ...completion } = args;

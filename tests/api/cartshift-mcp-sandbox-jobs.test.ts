@@ -20,7 +20,7 @@ vi.mock('@/lib/mcp/connection', () => ({
 
 import {
   authorizeSandboxOwner, authorizeSandboxWorker,
-  submitSandboxCommand, getSandboxCommand, getSandboxStatus, cancelSandboxCommand,
+  submitSandboxCommand, submitSandboxArtifactRead, getSandboxCommand, getSandboxStatus, cancelSandboxCommand,
   redactSandboxOutput, recordSandboxHeartbeat,
 } from '@/lib/mcp/sandbox-jobs';
 
@@ -148,6 +148,34 @@ describe('CartShift owner-only sandbox job submission', () => {
     data.status = 'leased';
     await expect(cancelSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
       .resolves.toMatchObject({ cancelled: false, status: 'leased' });
+  });
+
+  it('gates artifact access behind a fresh V4 worker and confines paths', async () => {
+    mocks.read.mockResolvedValue({ exists: true, data: () => ({ version: 4, lastSeenAt: Date.now() }) });
+    await expect(submitSandboxArtifactRead(owner, { path: 'reports/result.zip', offset: 5, length: 12000 }))
+      .resolves.toMatchObject({ job_id: 'sandbox-job-12345678' });
+    expect(mocks.created).toHaveBeenCalledWith(expect.objectContaining({
+      kind: 'artifact_read', artifactPath: 'reports/result.zip', offset: 5, length: 12000,
+    }));
+    await expect(submitSandboxArtifactRead(owner, { path: '../.auth/github' })).rejects.toThrow();
+    await expect(submitSandboxArtifactRead(owner, { path: '.hidden' })).rejects.toThrow();
+    await expect(submitSandboxArtifactRead(owner, { path: 'file.txt', length: 12001 })).rejects.toThrow();
+    mocks.read.mockResolvedValue({ data: () => ({ version: 3, lastSeenAt: Date.now() }) });
+    await expect(submitSandboxArtifactRead(owner, { path: 'good.txt' }))
+      .rejects.toThrow('SANDBOX_WORKER_UPDATE_REQUIRED');
+  });
+
+  it('requests running cancellation only with an authenticated V4 heartbeat', async () => {
+    const lease = { ownerUid: owner.uid, status: 'leased', leaseExpiresAt: Date.now() + 20_000 };
+    mocks.transaction.mockImplementation(async callback => {
+      const get = vi.fn().mockResolvedValueOnce({ data: () => lease })
+        .mockResolvedValueOnce({ data: () => ({ version: 4, lastSeenAt: Date.now() }) });
+      return callback({ get, update: mocks.update });
+    });
+    await expect(cancelSandboxCommand(owner, { job_id: 'sandbox-job-12345678' }))
+      .resolves.toMatchObject({ cancelled: false, status: 'cancel_requested' });
+    expect(mocks.update).toHaveBeenCalledWith(expect.anything(),
+      expect.objectContaining({ cancelRequestedAt: expect.any(Number) }));
   });
 
   it('records v2 heartbeat with worker state only', async () => {
