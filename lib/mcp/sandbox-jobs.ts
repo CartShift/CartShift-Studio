@@ -178,8 +178,9 @@ export function authorizeSandboxWorker(header: string | null): boolean {
 export function authorizeSandboxSessionWorker(header: string | null): boolean {
   const isolated = process.env.SANDBOX_AUTH_WORKER_TOKEN;
   const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
-  const matchesAuth = Boolean(isolated && isolated.length >= 32 && match &&
-    constantEquals(match[1], isolated));
+  const distinct = Boolean(isolated && isolated.length >= 32 &&
+    !constantEquals(isolated, process.env.SANDBOX_WORKER_TOKEN ?? ''));
+  const matchesAuth = Boolean(distinct && match && constantEquals(match[1], isolated!));
   if (process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true') return matchesAuth;
   return matchesAuth || authorizeSandboxWorker(header);
 }
