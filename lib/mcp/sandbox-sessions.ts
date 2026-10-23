@@ -186,6 +186,9 @@ export async function startSandboxSession(grant: TokenGrant, input: unknown) {
   authorizeSandboxOwner(grant);
   may(grant, 'work:write');
   const args = startSchema.parse(input);
+  // The isolated authentication container intentionally has no project mount.
+  if (process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true' && args.cwd !== '/workspace')
+    throw new Error('SANDBOX_SESSION_INVALID_AUTH_CWD');
   if (args.cwd.split('/').some(s => s === '.' || s === '..')) throw new Error('INVALID_WORKDIR');
   const { db, sessions, control } = refs();
   const sessionId = randomUUID();
