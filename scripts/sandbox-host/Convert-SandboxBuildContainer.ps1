@@ -51,7 +51,7 @@ switch ($Action) {
         '--mount',"type=volume,source=$WorkspaceVolume,target=/workspace",
         '--mount',"type=volume,source=$ShadowVolume,target=/workspace/.auth,readonly",
         '--label','io.cartshift.sandbox.build=credential-isolated-v1',
-        $image)
+        $image,'sleep','infinity')
       Docker $runArgs | Out-Null
       Write-Output 'Isolated build candidate created; old container untouched.'
       Write-Output 'Run Verify before changing the owner-held supervisor target.'
