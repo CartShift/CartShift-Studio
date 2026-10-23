@@ -26,6 +26,16 @@
     "shopify": {
       "version": "4.9.4",
       "package": "@shopify/cli"
+    },
+    "northflank": {
+      "version": "0.13.0",
+      "package": "@northflank/cli",
+      "path": "/workspace/toolchain/whatsapp-admin/node_modules/.bin/northflank"
+    },
+    "apps-script": {
+      "version": "3.4.1",
+      "package": "@google/clasp",
+      "path": "/workspace/toolchain/whatsapp-admin/node_modules/.bin/clasp"
     }
   }
 }

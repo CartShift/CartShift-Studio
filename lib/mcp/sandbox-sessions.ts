@@ -23,7 +23,7 @@ const statuses = z.enum([
 ]);
 const startSchema = z
   .object({
-    provider: z.enum(['supabase', 'github', 'vercel', 'firebase', 'shopify']),
+    provider: z.enum(['supabase', 'github', 'vercel', 'firebase', 'shopify', 'northflank', 'apps-script']),
     cwd: z
       .string()
       .max(300)
@@ -293,7 +293,7 @@ export async function sendSandboxSessionInput(grant: TokenGrant, input: unknown)
         ? /^(?:y|yes|n|no)?$/i.test(args.input)
         : data.provider === 'supabase'
           ? /^[0-9a-f]{8}$/i.test(args.input)
-          : data.provider === 'firebase' && /^4\/[A-Za-z0-9._~-]+$/.test(args.input);
+          : (data.provider === 'firebase' || data.provider === 'apps-script') && /^4\/[A-Za-z0-9._~-]+$/.test(args.input);
     if (!allowed) throw new Error('SANDBOX_SESSION_INVALID_INPUT');
     const verificationHash = args.input_type === 'verification_code' ? tokenHash(args.input) : null;
     if (verificationHash && data.lastVerificationHash === verificationHash)

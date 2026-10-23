@@ -16,7 +16,7 @@ import subprocess
 import termios
 import time
 
-PROVIDERS = frozenset(('supabase', 'github', 'vercel', 'firebase', 'shopify'))
+PROVIDERS = frozenset(('supabase', 'github', 'vercel', 'firebase', 'shopify', 'northflank', 'apps-script'))
 TERMINAL = frozenset(('completed', 'failed', 'stopped', 'expired'))
 UNSET = object()
 MAX_OUTPUT = 24000
@@ -28,13 +28,13 @@ SECRET = re.compile(r'(?:gh[pousr]_[A-Za-z0-9_-]+|github_pat_[A-Za-z0-9_-]+|sbp_
 def valid_input(provider, kind, value):
     if not isinstance(value, str) or len(value) > 512 or any(ord(c) < 32 or ord(c) == 127 for c in value):
         return False
-    if provider == 'firebase' and kind == 'verification_code' and value.startswith('4/') and SECRET.search(value[2:]):
+    if provider in ('firebase', 'apps-script') and kind == 'verification_code' and value.startswith('4/') and SECRET.search(value[2:]):
         return False
-    if SECRET.search(value) and not (provider == 'firebase' and kind == 'verification_code' and re.fullmatch(r'4/[A-Za-z0-9._~-]+', value)):
+    if SECRET.search(value) and not (provider in ('firebase', 'apps-script') and kind == 'verification_code' and re.fullmatch(r'4/[A-Za-z0-9._~-]+', value)):
         return False
     if kind == 'confirm':
         return value.lower() in ('', 'y', 'yes', 'n', 'no')
-    return kind == 'verification_code' and ((provider == 'supabase' and re.fullmatch(r'[a-fA-F0-9]{8}', value) is not None) or (provider == 'firebase' and re.fullmatch(r'4/[A-Za-z0-9._~-]+', value) is not None))
+    return kind == 'verification_code' and ((provider == 'supabase' and re.fullmatch(r'[a-fA-F0-9]{8}', value) is not None) or (provider in ('firebase', 'apps-script') and re.fullmatch(r'4/[A-Za-z0-9._~-]+', value) is not None))
 
 def ticks(pid):
     try:

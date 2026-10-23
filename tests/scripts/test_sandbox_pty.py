@@ -38,6 +38,10 @@ class PTYTests(unittest.TestCase):
     def test_input(self):
         self.assertTrue(pty.valid_input('supabase','verification_code','aabb0099'))
         self.assertTrue(pty.valid_input('firebase','verification_code','4/once-only'))
+        self.assertTrue(pty.valid_input('apps-script','verification_code','4/once-only'))
+        self.assertFalse(pty.valid_input('northflank','verification_code','4/once-only'))
+        self.assertIn('northflank', pty.PROVIDERS)
+        self.assertIn('apps-script', pty.PROVIDERS)
         for provider in pty.PROVIDERS:
             for value in ('password','ghp_abc123','eyJabc.def.ghi','a\nb','y\r'):
                 self.assertFalse(pty.valid_input(provider,'verification_code',value))
