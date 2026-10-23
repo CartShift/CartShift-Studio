@@ -128,6 +128,11 @@ class PTYTests(unittest.TestCase):
                 self.wait(g,lambda s:'login active' in s['output'])
                 result=worker.execute(dict(job_id='fixture',lease_token='fixture',command='sleep 1.2; echo done',cwd='/workspace',timeout_seconds=3))
                 self.assertEqual(result['exit_code'],0)
+                # Let the independently scheduled transport publish its next
+                # 1s poll; a busy CI runner can delay the tick beyond 1.2s.
+                deadline=time.monotonic()+2
+                while len(calls)<2 and time.monotonic()<deadline:
+                    time.sleep(.05)
                 self.assertGreaterEqual(len(calls),2)
                 self.assertTrue(all(p['version']==3 for p,_ in calls))
                 self.assertTrue(all(e.endswith('/sandbox/sessions/worker') for _,e in calls))
