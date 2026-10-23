@@ -106,6 +106,15 @@ describe('owner-only persistent sandbox authentication', () => {
     vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', '');
     expect(authorizeSandboxSessionWorker(isolated)).toBe(false);
   });
+  it('rejects non-root workdirs after isolated-auth enforcement', async () => {
+    await sync();
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
+    await expect(startSandboxSession(owner, { provider: 'github', cwd: '/workspace/projects/demo' }))
+      .rejects.toThrow('SANDBOX_SESSION_INVALID_AUTH_CWD');
+    await expect(startSandboxSession(owner, { provider: 'github' })).resolves.toMatchObject({
+      provider: 'github',
+    });
+  });
   it('requires owner, scope, fresh sessions handshake and one active session', async () => {
     await expect(
       startSandboxSession({ ...owner, uid: 'other' }, { provider: 'github' })
