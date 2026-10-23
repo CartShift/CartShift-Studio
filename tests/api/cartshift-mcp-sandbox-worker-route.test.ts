@@ -29,6 +29,7 @@ describe('sandbox worker request boundaries', () => {
     const req = (body: unknown) => new Request('https://example.com', { method: 'POST', body: JSON.stringify(body) });
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3 }))).status).toBe(200);
     expect(mocks.heartbeat).toHaveBeenCalledWith(false, 3);
+    expect(mocks.lease).toHaveBeenCalledWith(3);
     expect((await POST(req({ action: 'heartbeat', busy: true, worker_version: 3 }))).status).toBe(200);
     expect(mocks.heartbeat).toHaveBeenCalledWith(true, 3);
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 5 }))).status).toBe(400);
