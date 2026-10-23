@@ -7,7 +7,7 @@ function json(body: unknown, status = 200) {
   return Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 }
 export async function POST(request: Request) {
-  if (!authorizeSandboxWorker(request.headers.get('authorization')))
+  if (!authorizeSandboxSessionWorker(request.headers.get('authorization')))
     return json({ error: 'unauthorized' }, 401);
   if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES)
     return json({ error: 'request_too_large' }, 413);
