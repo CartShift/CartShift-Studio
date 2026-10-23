@@ -53,7 +53,7 @@ const requestFields = z.object({
 export const TOOL_DEFS = [
   {
     name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh auth-worker handshake; only fixed provider login commands run.', scope: 'work:write',
-    inputSchema: { type: 'object', required: ['provider'], properties: { provider: { type: 'string', enum: ['supabase', 'github', 'vercel', 'firebase', 'shopify'] }, cwd: { type: 'string', default: '/workspace' }, ttl_seconds: { type: 'integer', minimum: 60, maximum: 900, default: 600 }, idle_timeout_seconds: { type: 'integer', minimum: 30, maximum: 300, default: 180 } }, additionalProperties: false },
+    inputSchema: { type: 'object', required: ['provider'], properties: { provider: { type: 'string', enum: ['supabase', 'github', 'vercel', 'firebase', 'shopify', 'northflank', 'apps-script'] }, cwd: { type: 'string', default: '/workspace' }, ttl_seconds: { type: 'integer', minimum: 60, maximum: 900, default: 600 }, idle_timeout_seconds: { type: 'integer', minimum: 30, maximum: 300, default: 180 } }, additionalProperties: false },
   },
   {
     name: 'sandbox_read_session', description: 'Read redacted login output since a code-point cursor. Reports output gaps; reads do not extend the idle timeout.', scope: 'work:read',

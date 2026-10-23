@@ -11,7 +11,7 @@ Use the existing owner-only ChatGPT → CartShift MCP → outbound Windows ARM64
 
 Workers remain UID1000, read-only root, caps ALL dropped, no-new-privileges, without published ports. Controllers pin local Docker named pipe, exact image, ownership and exact mounts. Distinct CurrentUser-DPAPI tokens travel only over stdin. Reviewed worker/PTY hashes are verified on Windows and inside isolated Python memory.
 
-Chmod0700 does not isolate same-UID secrets. Snapshot credentials only while old users are quiescent; never refresh two copies concurrently. Reject links escaping the immutable scripts/toolchain closure and verify the owner-reviewed file/link manifest. Preserve all old files/volumes: destructive Finalize is disabled. Fixed mobile login supports GitHub, Supabase, Vercel, Firebase and Shopify; additional existing provider homes/wrappers are preserved. Credentialed push/deploy operations cannot run from credential-blind build jobs. Use existing authenticated integrations or a separately reviewed narrow broker; never remount credentials to restore convenience.
+Chmod0700 does not isolate same-UID secrets. Snapshot credentials only while old users are quiescent; never refresh two copies concurrently. Reject links escaping the immutable scripts/toolchain closure and verify the owner-reviewed file/link manifest. Preserve all old files/volumes: destructive Finalize is disabled. Fixed mobile login supports GitHub, Supabase, Vercel, Firebase, Shopify, Northflank and Apps Script; existing provider homes/wrappers are preserved. Credentialed push/deploy operations cannot run from credential-blind build jobs. Use existing authenticated integrations or a separately reviewed narrow broker; never remount credentials to restore convenience.
 
 ## Protocol
 

@@ -178,6 +178,7 @@ describe('owner-only persistent sandbox authentication', () => {
     const urls = [
       'https://supabase.com/dashboard/cli/login?session_id=12345678-abcd-4abc-8abc-123456789abc&token_name=mobile&public_key=abcdef12',
       'https://auth.firebase.tools/login?session=12345678-abcd-4abc-8abc-123456789abc&code_challenge=abcdef12',
+      'https://app.northflank.com/cli/login#sessionToken=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     ];
     for (const url of urls) expect(redactSessionOutput(url)).toBe(url);
     expect(redactSessionOutput('Verification: cafe1234', 'cafe1234')).toBe(
@@ -280,6 +281,20 @@ describe('owner-only persistent sandbox authentication', () => {
         input: '4/valid.code~-_123',
       })
     ).resolves.toMatchObject({ accepted: true });
+  });
+  it('authorizes fixed Northflank and Apps Script sessions with scoped input', async () => {
+    await sync();
+    const nf = await startSandboxSession(owner, { provider: 'northflank' });
+    await expect(sendSandboxSessionInput(owner, {
+      session_id: nf.session_id, input_type: 'verification_code', input: '4/not-for-northflank',
+    })).rejects.toThrow('INVALID_INPUT');
+    await sync(snapshot(nf.session_id, '', { status: 'completed' }));
+    const apps = await startSandboxSession(owner, { provider: 'apps-script' });
+    const valid = await sendSandboxSessionInput(owner, {
+      session_id: apps.session_id, input_type: 'verification_code', input: '4/short-lived-oauth-code',
+    });
+    expect(valid.accepted).toBe(true);
+    expect(JSON.stringify(valid)).not.toContain('short-lived-oauth-code');
   });
   it('deduplicates pending and acknowledged verification codes and erases only matching ack', async () => {
     const s = await start();
