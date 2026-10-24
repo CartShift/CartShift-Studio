@@ -35,6 +35,8 @@ heartbeat or 90 seconds without control-plane contact. Only **after Docker
 restart succeeds** does its `fenced` acknowledgement release the old reservation
 and register a new boot identity. Lease expiry alone never releases a scope.
 A repeated acknowledgement for the same boot UUID cannot clear its new job.
+Fencing compares the expected prior boot UUID atomically, so delayed old HTTPS
+requests cannot overwrite a newer incarnation after a timeout/retry.
 
 On a backend outage the watchdog fences work after 90 seconds without contact;
 this deliberately trades availability for a bounded local process lifetime.
@@ -150,9 +152,14 @@ by hand while their containers may contain live processes.
   stayed online before host migration. Vercel connector env inspection returned
   403; existing authenticated `devctl vercel run` CLI verified the exact linked
   CartShift project and production variable metadata without exporting secrets.
-- Broad developer typecheck includes pre-existing localization/dependency errors.
-  Normal translation generation narrowed production typecheck to existing
-  CaseStudiesTeaser namespace error; no sandbox-file TypeScript error observed.
+- Fresh production typecheck passed after normal translation generation with
+  incremental caching disabled; generated files were restored byte-for-byte.
+  The initial one-error result was stale incremental type information. Broad
+  developer typecheck still includes existing localization/dependency errors.
+- Full Vitest run: 849 tests passed; two CV assertions failed in
+  tests/cv/cv-optimization.test.tsx, and tests/emails/email-service.test.ts could
+  not import its absent resend dependency. Sandbox/MCP tests passed. These
+  unrelated failures are recorded rather than hidden or changed in this PR.
 
 This ledger distinguishes staged Docker proof from live MCP acceptance. Do not
 claim Android or physical Windows reboot verification until actually performed.
