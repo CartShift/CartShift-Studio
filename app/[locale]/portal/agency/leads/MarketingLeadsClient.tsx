@@ -515,10 +515,10 @@ export default function MarketingLeadsClient() {
                 </PortalTableBody>
               </PortalTableElement>
             </PortalTableScroll>
-            {filteredLeads.length === 0 && (
-              <div className="py-14 text-center text-sm text-surface-500">{t('leads.empty')}</div>
-            )}
           </PortalTable>
+          {filteredLeads.length === 0 && (
+            <div className="py-14 text-center text-sm text-surface-500">{t('leads.empty')}</div>
+          )}
         </Card>
 
         <div className="space-y-6">
