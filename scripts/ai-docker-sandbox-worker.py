@@ -93,6 +93,15 @@ def protect_credential():
         raise RuntimeError("Cannot protect worker credential")
 
 
+def is_mountpoint(path):
+    # os.path.ismount cannot recognize bind/nested Docker volume mounts when
+    # both sides have the same st_dev. Linux mountinfo is authoritative.
+    if os.path.ismount(path):
+        return True
+    target = str(path)
+    return any(len(fields := line.split()) > 5 and fields[4] == target
+               for line in Path('/proc/self/mountinfo').read_text().splitlines())
+
 def verify_identity():
     if UNSAFE_MARKER.exists() or ACTIVE_JOB_MARKER.exists():
         raise RuntimeError("Container restart required after incomplete process cleanup")
@@ -109,7 +118,7 @@ def verify_identity():
             raise RuntimeError("Refusing auth worker with shared project access")
         auth_home = WORKSPACE / '.auth'
         tool_mounts = (WORKSPACE / 'scripts', WORKSPACE / 'toolchain')
-        if not os.path.ismount(auth_home) or any(not os.path.ismount(path) for path in tool_mounts):
+        if not is_mountpoint(auth_home) or any(not is_mountpoint(path) for path in tool_mounts):
             raise RuntimeError("Auth worker requires separate credential and tool mounts")
         if os.statvfs(auth_home).f_flag & os.ST_RDONLY:
             raise RuntimeError("Auth worker requires a writable credential mount")
@@ -120,7 +129,7 @@ def verify_identity():
             raise RuntimeError("Refusing build worker outside verified container")
         if ROLE == 'build':
             auth_shadow = WORKSPACE / '.auth'
-            if (not auth_shadow.is_dir() or not os.path.ismount(auth_shadow)
+            if (not auth_shadow.is_dir() or not is_mountpoint(auth_shadow)
                     or not (os.statvfs(auth_shadow).f_flag & os.ST_RDONLY)):
                 raise RuntimeError("Build worker requires a read-only auth shadow mount")
             if any(auth_shadow.iterdir()):

@@ -6,6 +6,7 @@ import os
 import threading
 import time
 import unittest
+from unittest import mock
 from pathlib import Path
 from unittest.mock import patch
 
@@ -138,6 +139,13 @@ class SandboxV4Tests(unittest.TestCase):
         self.assertEqual(calls[-1]['worker_version'],4)
         self.assertEqual(calls[-1]['job_id'],'job-123')
 
+
+
+class NestedMountInfoTests(unittest.TestCase):
+    def test_same_device_nested_mount_uses_exact_kernel_mountpoint(self):
+        with mock.patch.object(worker.os.path,'ismount',return_value=False), mock.patch.object(worker.Path,'read_text',return_value='41 1 0:42 / /workspace/.auth ro - ext4 /dev/sda rw\n'):
+            self.assertTrue(worker.is_mountpoint(worker.Path('/workspace/.auth')))
+            self.assertFalse(worker.is_mountpoint(worker.Path('/workspace/.auth-other')))
 
 
 class BackupMaintenanceTests(unittest.TestCase):

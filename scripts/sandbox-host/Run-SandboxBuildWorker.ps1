@@ -75,7 +75,7 @@ try {
    Assert-SandboxMount $spec '/home/node' $HomeVolume $true
    Assert-SandboxMount $spec '/home/node/.desktop-commander-device' $DeviceAuthVolume $true
    if (@($spec.mounts | Where-Object { $_.Type -eq 'volume' }).Count -ne 4) { throw 'Unexpected build mount.' }
-   Invoke-SandboxDocker exec $Container python3 -I -c 'import os,pathlib; p=pathlib.Path("/workspace/.auth"); assert os.geteuid()==1000 and os.path.ismount(p) and os.statvfs(p).f_flag & os.ST_RDONLY and not any(p.iterdir())' | Out-Null
+   Invoke-SandboxDocker exec $Container python3 -I -c 'import os,pathlib; p=pathlib.Path("/workspace/.auth"); assert os.geteuid()==1000 and any(len(f:=line.split())>5 and f[4]==str(p) for line in pathlib.Path("/proc/self/mountinfo").read_text().splitlines()) and os.statvfs(p).f_flag & os.ST_RDONLY and not any(p.iterdir())' | Out-Null
    }
    $credential=(Get-Content -LiteralPath $DpapiTokenFile -Raw).Trim() | ConvertTo-SecureString
    $ptr=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($credential)

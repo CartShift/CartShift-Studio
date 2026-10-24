@@ -29,7 +29,7 @@ function ConfirmCandidate {
  Assert-SandboxMount $spec '/home/node' $HomeVolume $true
  Assert-SandboxMount $spec '/home/node/.desktop-commander-device' $DeviceAuthVolume $true
  if (@($spec.mounts | Where-Object { $_.Type -eq 'volume' }).Count -ne 4 -or ($spec.host.PortBindings -and @($spec.host.PortBindings.PSObject.Properties).Count)) { throw 'Unexpected candidate volume or published port.' }
- Invoke-SandboxDocker exec $CandidateName python3 -I -c 'import os,pathlib; p=pathlib.Path("/workspace/.auth"); assert os.geteuid()==1000 and os.path.ismount(p) and os.statvfs(p).f_flag & os.ST_RDONLY and not any(p.iterdir()); assert os.access("/home/node",os.W_OK); assert not pathlib.Path("/var/run/docker.sock").exists()' | Out-Null
+ Invoke-SandboxDocker exec $CandidateName python3 -I -c 'import os,pathlib; p=pathlib.Path("/workspace/.auth"); assert os.geteuid()==1000 and any(len(f:=line.split())>5 and f[4]==str(p) for line in pathlib.Path("/proc/self/mountinfo").read_text().splitlines()) and os.statvfs(p).f_flag & os.ST_RDONLY and not any(p.iterdir()); assert os.access("/home/node",os.W_OK); assert not pathlib.Path("/var/run/docker.sock").exists()' | Out-Null
  Write-Output 'Candidate exact source mounts, clean writable home and empty read-only credential shadow verified.'
 }
 switch ($Action) {
