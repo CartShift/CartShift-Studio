@@ -26,10 +26,12 @@ TOKEN = ""
 # Legacy keeps the deployed V3 single-container behavior until the owner
 # activates dedicated build/auth workers. New roles never share OAuth homes.
 ROLE = os.environ.get("SANDBOX_WORKER_ROLE", "legacy")
+PARALLEL_SLOT = int(os.environ.get("SANDBOX_WORKER_SLOT", "0"))
+WORKER_ID = uuid.uuid4().hex
 WORKSPACE = Path("/workspace").resolve(strict=True)
 MAX_OUTPUT = 24_000
 POLL_INTERVAL_SECONDS = 3
-MAX_IDLE_POLL_SECONDS = 30
+MAX_IDLE_POLL_SECONDS = 5 if PARALLEL_SLOT else 30
 HEARTBEAT_SECONDS = 30
 CANCEL_POLL_SECONDS = 5
 MAX_DRAINED_BYTES = 2_000_000
@@ -61,6 +63,8 @@ def activity(event, **fields):
         return
     record = {'time': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
               'source': 'cartshift-worker', 'event': event}
+    if PARALLEL_SLOT:
+        record.update(slot=PARALLEL_SLOT, worker_id=WORKER_ID)
     for key, value in fields.items():
         if key in ACTIVITY_LABELS and isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9_-]{1,80}', value):
             record[key] = value
@@ -102,11 +106,14 @@ def is_mountpoint(path):
     return any(len(fields := line.split()) > 5 and fields[4] == target
                for line in Path('/proc/self/mountinfo').read_text().splitlines())
 
+
 def verify_identity():
     if UNSAFE_MARKER.exists() or ACTIVE_JOB_MARKER.exists():
         raise RuntimeError("Container restart required after incomplete process cleanup")
     base = (os.geteuid() == 1000 and platform.system() == "Linux"
             and platform.machine() == "aarch64" and WORKSPACE == Path("/workspace"))
+    if PARALLEL_SLOT and (ROLE != "build" or not 1 <= PARALLEL_SLOT <= 8):
+        raise RuntimeError("Parallel slots require isolated build role")
     if ROLE not in ('legacy', 'build', 'auth') or not base:
         raise RuntimeError("Invalid worker role or container identity")
     if ROLE == 'auth':
@@ -143,7 +150,14 @@ def verify_identity():
         raise RuntimeError("Worker requires the production CartShift HTTPS endpoint")
 
 
+def worker_payload(payload, endpoint=None):
+    if PARALLEL_SLOT and endpoint is None:
+        return {**payload, "worker_version": 5, "slot": PARALLEL_SLOT, "worker_id": WORKER_ID}
+    return payload
+
+
 def call_api(payload, endpoint=None):
+    payload = worker_payload(payload, endpoint)
     body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     request = urllib.request.Request(endpoint or API_URL, body, method="POST", headers={
         "Authorization": "Bearer " + TOKEN, "Content-Type": "application/json", "Accept": "application/json"})
@@ -158,6 +172,8 @@ def call_api(payload, endpoint=None):
 
 def within_workspace(path_str):
     path = Path(path_str).resolve(strict=True)
+    if PARALLEL_SLOT and str(path) != os.path.normpath(path_str):
+        raise ValueError("Parallel commands require canonical cwd, without symlink aliases")
     if not path.is_dir() or not path.is_relative_to(WORKSPACE):
         raise ValueError("Command working directory must be inside /workspace")
     return path
@@ -444,6 +460,9 @@ def busy_heartbeat_loop(stop_event, busy_event, job_state=None):
                 if current and result.get('cancel_requested') is True:
                     current[2].set()
                 activity('heartbeat', busy=True, worker_version=4)
+            except urllib.error.HTTPError as error:
+                if PARALLEL_SLOT and current and error.code in (401, 403, 409):
+                    current[2].set()  # revoked/expired lease: stop only this job
             except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError):
                 pass
 
@@ -506,6 +525,10 @@ def sessions_sync_loop(stop_event, guardian):
 def main():
     global TOKEN, DOCKER_ACTIVITY_LOG, JOB_RECOVERY_GUARD
     protect_credential()
+    # Termination must clean the active process group through execute/finally.
+    def terminate(_signal, _frame):
+        raise KeyboardInterrupt
+    signal.signal(signal.SIGTERM, terminate)
     TOKEN = sys.stdin.readline(256).strip() if "--token-stdin" in sys.argv else os.environ.pop("SANDBOX_WORKER_TOKEN", "")
     verify_identity()
     DOCKER_ACTIVITY_LOG = True

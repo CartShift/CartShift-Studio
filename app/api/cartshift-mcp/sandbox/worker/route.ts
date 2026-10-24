@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { claimPoolJob, poolHeartbeat, poolIdentity } from '@/lib/mcp/sandbox-pool';
 import {
   authorizeSandboxWorker, completeSandboxJob, leaseSandboxJob, recordSandboxHeartbeat,
   sandboxCancellationRequested,
@@ -44,6 +46,26 @@ export async function POST(request: Request) {
   }
   const args = body as Record<string, unknown>;
   const version = args.worker_version === undefined ? 2 : args.worker_version;
+  if (version === 5) {
+    try {
+      if (args.action === 'poll') {
+        const parsed = poolIdentity.extend({ action: z.literal('poll'), worker_version: z.literal(5), heartbeat: z.boolean().optional() }).strict().parse(args);
+        return json({ job: await claimPoolJob(parsed) });
+      }
+      if (args.action === 'heartbeat') {
+        const parsed = poolIdentity.extend({ action: z.literal('heartbeat'), worker_version: z.literal(5), busy: z.literal(true),
+          job_id: z.string().min(12).max(128), lease_token: z.string().min(32).max(128) }).strict().parse(args);
+        return json(await poolHeartbeat(parsed, parsed.job_id, parsed.lease_token));
+      }
+      if (args.action === 'complete') {
+        const { action: _action, worker_version: _version, slot, ...completion } = args;
+        poolIdentity.parse({ slot, worker_id: args.worker_id });
+        return json(await completeSandboxJob(completion));
+      }
+      return json({ error: 'unknown_action' }, 400);
+    } catch (error) { return error instanceof z.ZodError
+      ? json({ error: 'invalid_request' }, 400) : json({ error: 'job_operation_failed' }, 409); }
+  }
   if (version !== 2 && version !== 3 && version !== 4) return json({ error: 'invalid_worker_version' }, 400);
   const keys = Object.keys(args).filter(key => key !== 'worker_version');
   try {

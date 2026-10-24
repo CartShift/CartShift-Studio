@@ -74,7 +74,8 @@ export const TOOL_DEFS = [
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['command'], properties: {
       command: { type: 'string', minLength: 1, maxLength: 2000 },
-      cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace)' },
+      cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace). Independent task directories need no Git repository; overlapping task directories are serialized in V5.' },
+      exclusive_workspace: { type: 'boolean', default: false, description: 'V5: reserve the whole workspace for cross-task/shared tool modifications. Default-cwd commands run concurrently; scope writes with cwd or request this reservation.' },
       timeout_seconds: { type: 'integer', minimum: 1, maximum: 600 },
       wait_seconds: { type: 'integer', minimum: 0, maximum: 15, description: 'Optional short wait for completed output; 0 queues without waiting.' },
     }, additionalProperties: false },

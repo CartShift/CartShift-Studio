@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn(), cancel: vi.fn() }));
+const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn(), cancel: vi.fn(), poolClaim: vi.fn(), poolBeat: vi.fn() }));
 vi.mock('@/lib/mcp/sandbox-jobs', () => ({ authorizeSandboxWorker: mocks.authorize,
   leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete, recordSandboxHeartbeat: mocks.heartbeat, sandboxCancellationRequested: mocks.cancel }));
+vi.mock('@/lib/mcp/sandbox-pool', async importOriginal => ({
+  ...await importOriginal<typeof import('@/lib/mcp/sandbox-pool')>(), claimPoolJob: mocks.poolClaim, poolHeartbeat: mocks.poolBeat,
+}));
 import { POST } from '@/app/api/cartshift-mcp/sandbox/worker/route';
 
 describe('sandbox worker request boundaries', () => {
@@ -44,6 +47,20 @@ describe('sandbox worker request boundaries', () => {
     expect(mocks.heartbeat).toHaveBeenCalledWith(true, 3);
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 5 }))).status).toBe(400);
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3, arbitrary: true }))).status).toBe(400);
+  });
+  it('dispatches V5 identities and preserves lease-bound cancellation and completion', async () => {
+    const identity = { worker_version: 5, slot: 1, worker_id: 'a'.repeat(32) };
+    const request = (body: object) => new Request('https://example.com', { method: 'POST', body: JSON.stringify({ ...identity, ...body }) });
+    mocks.poolClaim.mockResolvedValue({ job_id: 'job-123456789' });
+    expect((await POST(request({ action: 'poll' }))).status).toBe(200);
+    expect(mocks.poolClaim).toHaveBeenCalledWith(expect.objectContaining(identity));
+    mocks.poolBeat.mockResolvedValue({ acknowledged: true, cancel_requested: true });
+    const response = await POST(request({ action: 'heartbeat', busy: true, job_id: 'job-123456789', lease_token: 'l'.repeat(40) }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ cancel_requested: true });
+    expect((await POST(request({ action: 'complete', job_id: 'job-123456789', lease_token: 'l'.repeat(40), exit_code: 0, stdout: '', stderr: '', duration_ms: 1, output_truncated: false }))).status).toBe(200);
+    expect(mocks.complete).toHaveBeenCalledWith(expect.objectContaining({ worker_id: identity.worker_id }));
+    expect(mocks.complete.mock.calls[0][0]).not.toHaveProperty('slot');
   });
   it('accepts lease-bound V4 cancellation queries only', async () => {
     mocks.cancel.mockResolvedValue(true);

@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { poolEnabled, poolStatus } from '@/lib/mcp/sandbox-pool';
 import { getSandboxSessionsWorkerStatus } from '@/lib/mcp/sandbox-sessions';
 import { randomBytes } from 'node:crypto';
 import { Timestamp } from 'firebase-admin/firestore';
@@ -35,6 +36,7 @@ function publicJobResult(jobId: string, data: FirebaseFirestore.DocumentData) {
     duration_ms: data.durationMs ?? null,
     output_truncated: Boolean(data.outputTruncated),
     output_redacted: Boolean(data.outputRedacted),
+    worker_id: data.workerId ?? null, worker_slot: data.workerSlot ?? null,
     cancel_requested: Boolean(data.cancelRequestedAt),
   };
 }
@@ -50,12 +52,14 @@ export function redactSandboxOutput(value: string): string {
 }
 
 async function workerIsV4(): Promise<boolean> {
+  if (poolEnabled()) return (await poolStatus()).connected;
   const data = (await firestore().collection(WORKER_STATE).doc('primary').get()).data();
   return !!data && data.version >= 4 && typeof data.lastSeenAt === 'number' &&
     Date.now() - data.lastSeenAt < WORKER_ONLINE_MS && Date.now() >= data.lastSeenAt;
 }
 
 async function workerIsV2(): Promise<boolean> {
+  if (poolEnabled()) return (await poolStatus()).connected;
   const data = (await firestore().collection(WORKER_STATE).doc('primary').get()).data();
   return !!data && data.version >= 2 && typeof data.lastSeenAt === 'number' &&
     Date.now() - data.lastSeenAt < WORKER_ONLINE_MS && Date.now() >= data.lastSeenAt;
@@ -70,6 +74,7 @@ export async function getSandboxStatus(grant: TokenGrant) {
   const auth = await getSandboxSessionsWorkerStatus();
   const interactive = auth.connected;
   const enforced = process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true';
+  const pool = poolEnabled() ? await poolStatus() : null;
   return { connected: online, state: online ? 'online' : data ? 'offline' : 'unverified',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
     busy: online && data?.busy === true,
@@ -78,10 +83,13 @@ export async function getSandboxStatus(grant: TokenGrant) {
     limitations: [enforced ? 'auth_runtime_isolation_unverified' : 'shared_uid_provider_credentials',
       'managed_dev_services_unverified', 'host_backup_not_remotely_verified'],
     max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
-    capabilities: [...(online && data?.version >= 2
+    capabilities: [...((pool?.connected || online && data?.version >= 2)
       ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation',
-          ...(data?.version >= 4 ? ['cancel_running', 'artifact_chunks'] : [])] : []),
-      ...(interactive ? ['interactive_auth_sessions'] : [])],
+          ...((pool?.connected || data?.version >= 4) ? ['cancel_running', 'artifact_chunks'] : [])] : []),
+      ...(interactive ? ['interactive_auth_sessions'] : []),
+      ...(pool ? ['parallel_execution', 'per_worker_diagnostics'] : [])],
+    ...(pool ? { ...pool, state: pool.connected ? 'online' : 'offline', worker_version: 5,
+      max_command_seconds: MAX_COMMAND_SECONDS } : {}),
   };
 }
 
@@ -162,6 +170,7 @@ const commandInput = z.object({
   cwd: z.string().min(10).max(300).regex(/^\/workspace(?:\/[A-Za-z0-9._/-]+)?$/).default('/workspace'),
   timeout_seconds: z.number().int().min(1).max(MAX_COMMAND_SECONDS).default(60),
   wait_seconds: z.number().int().min(0).max(15).default(0),
+  exclusive_workspace: z.boolean().default(false),
 }).strict();
 
 function configured() {
@@ -215,6 +224,7 @@ export async function submitSandboxCommand(grant: TokenGrant, input: unknown) {
   const ref = firestore().collection(JOBS).doc();
   await ref.create({
     ownerUid: grant.uid, command: args.command, cwd: args.cwd,
+    exclusiveWorkspace: args.exclusive_workspace,
     timeoutSeconds: args.timeout_seconds, status: 'queued',
     createdAt: now, expiresAt: now + JOB_MAX_AGE_MS,
     purgeAt: Timestamp.fromMillis(now + JOB_RETENTION_MS),
@@ -269,6 +279,7 @@ export async function getSandboxCommand(grant: TokenGrant, input: unknown) {
 
 export async function leaseSandboxJob(workerVersion: 2 | 3 | 4 = 2) {
   configured();
+  if (poolEnabled()) return null; // activation fences legacy dispatch; submissions stay unchanged
   const db = firestore();
   const jobs = db.collection(JOBS);
   // A single-field status index is enough; scan a bounded backlog for compatible jobs.
@@ -313,6 +324,7 @@ export async function completeSandboxJob(input: unknown) {
     stderr: z.string().max(MAX_OUTPUT),
     duration_ms: z.number().int().min(0).max((MAX_COMMAND_SECONDS + 60) * 1000),
     output_truncated: z.boolean(),
+    worker_id: z.string().regex(/^[a-f0-9]{32}$/).optional(),
   }).strict().parse(input);
   const ref = firestore().collection(JOBS).doc(args.job_id);
   return firestore().runTransaction(async tx => {
@@ -329,7 +341,8 @@ export async function completeSandboxJob(input: unknown) {
         constantEquals(data.completionHash, completionHash)) {
       return { acknowledged: true };
     }
-    if (!data || data.status !== 'leased' || typeof data.leaseTokenHash !== 'string' ||
+    if (!data || (data.workerVersion === 5 && data.workerId !== args.worker_id) ||
+        data.status !== 'leased' || typeof data.leaseTokenHash !== 'string' ||
         !constantEquals(data.leaseTokenHash, tokenHash(args.lease_token)) ||
         Date.now() > data.leaseExpiresAt) {
       throw new Error('INVALID_OR_EXPIRED_LEASE');
