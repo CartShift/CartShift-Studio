@@ -664,7 +664,7 @@ export type Testimonial = typeof testimonials[number];
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 min-[390px]:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <StatsCard
           icon={MessageSquareHeart}
           label={t('agency.testimonials.stats.total')}
