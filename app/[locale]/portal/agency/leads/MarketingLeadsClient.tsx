@@ -361,7 +361,39 @@ export default function MarketingLeadsClient() {
             </div>
           </div>
 
-          <PortalTable className="rounded-none border-0 bg-transparent shadow-none">
+
+          {/* A horizontal 980px table is not usable on a phone; keep its full detail on desktop. */}
+          <div className="grid gap-3 p-3 xl:hidden" aria-label={t('leads.title')}>
+            {filteredLeads.map(lead => (
+              <article key={lead.leadId} className="min-w-0 rounded-xl border border-surface-200 bg-white/80 p-4 dark:border-surface-800 dark:bg-surface-900/60">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="break-all font-semibold text-surface-900 dark:text-white">{lead.email}</p>
+                    <p className="mt-1 text-xs text-surface-500">{formatSource(lead.latestSource)} · {formatDate(lead.updatedAt)}</p>
+                  </div>
+                  <Badge variant={getScoreTone(lead.leadScore)}>{lead.leadScore || 0}</Badge>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                  <Badge variant="gray">{formatSource(lead.funnelStage)}</Badge>
+                  {lead.contactStatus === 'contacted' && <Badge variant="green">{t('leads.contacted')}</Badge>}
+                  {lead.platform && <span className="text-surface-500">{lead.platform}</span>}
+                  {lead.overallScore != null && <span className="text-surface-500">{lead.overallScore}/100</span>}
+                  {lead.storeUrl && <a href={lead.storeUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 text-primary-600 hover:underline">{t('leads.openStore')} <ArrowUpRight className="h-4 w-4" /></a>}
+                </div>
+                {lead.primaryRecommendation && <p className="mt-3 break-words text-sm text-surface-600 dark:text-surface-300">{lead.primaryRecommendation}{lead.analysisMetadata?.reportPartial === true && <span className="ms-2 text-amber-600 dark:text-amber-400">(partial audit)</span>}</p>}
+                {typeof lead.analysisMetadata?.topEvidence === 'string' && lead.analysisMetadata.topEvidence && <p className="mt-1 line-clamp-3 break-words text-xs text-surface-500">{lead.analysisMetadata.topEvidence}</p>}
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-surface-200 pt-3 dark:border-surface-800">
+                  <Button size="sm" variant="outline" className="min-h-11" title={t('actions.copyEmail')} aria-label={t('actions.copyEmail')} onClick={() => handleCopyEmail(lead.email)}><Copy className="h-4 w-4" /></Button>
+                  {canContactLead(lead) && <a href={buildMailto(lead)} aria-label={t('actions.emailLead')} title={t('actions.emailLead')} className="portal-focus-ring inline-flex h-11 w-11 items-center justify-center rounded-lg border border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-300"><Mail className="h-4 w-4" /></a>}
+                  <a href={buildCalendarUrl(lead)} target="_blank" rel="noopener noreferrer" aria-label={t('actions.openCalendar')} title={t('actions.openCalendar')} className="portal-focus-ring inline-flex h-11 w-11 items-center justify-center rounded-lg border border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-300"><Calendar className="h-4 w-4" /></a>
+                  {lead.contactStatus !== 'contacted' && <Button size="sm" variant="outline" className="min-h-11" title={t('actions.markContacted')} aria-label={t('actions.markContacted')} disabled={updateLead.isPending} onClick={() => handleMarkContacted(lead.leadId)}><Check className="h-4 w-4" /></Button>}
+                  <Button size="sm" variant="outline" className="min-h-11" title={t('actions.invite')} aria-label={t('actions.invite')} onClick={() => setInviteLead(lead)}><UserPlus className="h-4 w-4" /></Button>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <PortalTable className="hidden xl:block rounded-none border-0 bg-transparent shadow-none">
             <PortalTableScroll>
               <PortalTableElement className="min-w-[980px]">
                 <PortalTableHeader>
