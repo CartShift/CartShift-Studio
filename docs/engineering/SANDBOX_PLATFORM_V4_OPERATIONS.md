@@ -28,7 +28,7 @@ A fresh nonce maintenance barrier blocks new leases/session starts and waits for
 
 Initialize-SandboxBackupIdentity stores the age identity with owner DPAPI. Independently export it in an owner-visible console with Export-SandboxBackupIdentity, choosing a private recovery passphrase and passing the independent decryption probe. Never send key/passphrase in chat. A verified off-laptop archive AND usable recovery key, with the passphrase separately retained, are mandatory cutover gates. A local cloud-folder file alone is not proof of synchronization.
 
-Register-SandboxBackup schedules Sunday03:00 by default after owner login and verifies each archive. Review LastTaskResult and last-backup-status.json. Windows must be awake; StartWhenAvailable handles missed runs. No automatic archive deletion is configured. Keep an off-host copy and perform quarterly staging restores.
+Register-SandboxBackup schedules Sunday03:00 local wall time, including DST changes, after owner login and verifies each archive. Use an owner/SYSTEM-only USERPROFILE/.cartshift-sandbox folder for DPAPI files, configuration and watchdog leases; packaged-app AppData virtualization is not an unattended-task location. Resolve persistent installed ARM64 PowerShell instead of a Codex runtime cache. Workers wait while a container is paused. After streaming, certification inspects pause state and original start time without docker exec; a resumed/restarted source is refused. Review LastTaskResult and last-backup-status.json. Windows must be awake; StartWhenAvailable handles missed runs. No automatic archive deletion is configured. Keep an off-host copy and perform quarterly staging restores.
 
 ## Ordered rollout
 
@@ -49,3 +49,6 @@ Stop new supervisors BEFORE restoring names or credentials. Retain old sources/h
 Managed services require dependencies resolved inside the project subtree; project wrappers must accept Next/Vite argument conventions. Project .env remains readable by its own code. Loopback previews need a separately authorized authenticated tunnel for mobile access. Docker Desktop/logon tasks cannot provide availability while asleep/off or before owner login. No power policy is silently changed.
 
 Docker Desktop → ai-dev-workspace → Logs shows metadata health, connections, progress, results, timeouts and session activity. Rotation is three5MB files. Raw manual terminal sessions are separate; managed app logs may contain project data and should be viewed locally.
+## Recorded workstation evidence
+
+The compatible V4 backend is live; five existing CLI identities, command/PTY round trips, running and queued cancellation, timeout124 and a125-second command passed. The independently passphrase-tested recovery key and both original encrypted archives have matching local-copy hashes and Windows Cloud Files IN_SYNC confirmation in OneDrive/Documents/CartShiftSandboxBackups. Cloud synchronization status does not promise permanent provider grants. Current activation evidence is maintained in the deployment record; never infer isolated enforcement or Android acceptance from this paragraph.

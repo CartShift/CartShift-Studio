@@ -406,6 +406,7 @@ def backup_pause_requested(ready_path, *, idle):
         _backup_clear_ready(ready_path)
         fd = os.open(ready_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
         try:
+            os.fchmod(fd, 0o600)
             remaining = nonce
             while remaining:
                 written = os.write(fd, remaining)

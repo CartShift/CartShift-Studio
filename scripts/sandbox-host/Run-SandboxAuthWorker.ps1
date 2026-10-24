@@ -54,6 +54,7 @@ try {
    $spec=Get-SandboxSpec $AuthContainer
    $base=Get-SandboxSpec $BuildContainer
    Assert-SandboxRestrictions $spec
+   if ($spec.paused) { throw 'Container is paused for owner maintenance; wait before restarting.' }
    Assert-SandboxRestrictions $base
    if ($spec.image -ne $ImageId -or $base.image -ne $ImageId -or $spec.hostname -ne 'ai-auth-sandbox' -or $spec.host.NetworkMode -ne $base.host.NetworkMode -or $spec.labels.'io.cartshift.sandbox.auth' -ne 'isolated-v1' -or $spec.labels.'io.cartshift.sandbox.tools-manifest' -ne $ToolsManifestSha256) { throw 'Dedicated auth image or runtime identity mismatch.' }
    Assert-SandboxMount $spec '/workspace/.auth' $AuthVolume $true

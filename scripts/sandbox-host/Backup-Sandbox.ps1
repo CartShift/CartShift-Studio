@@ -14,6 +14,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . "$PSScriptRoot/Common-SandboxHost.ps1"
 . "$PSScriptRoot/Common-SandboxBackupBarrier.ps1"
+. "$PSScriptRoot/Common-SandboxTask.ps1"
 $age=(Get-Command $AgeExecutable -ErrorAction Stop).Source
 $BackupDir=[IO.Path]::GetFullPath($BackupDir)
 if (!(Test-Path -LiteralPath $BackupDir -PathType Container)) { throw 'Backup directory must already exist.' }
@@ -33,8 +34,8 @@ function Pipe([Diagnostics.Process]$producer,[Diagnostics.Process]$consumer,[str
   [void]$producer.StandardOutput.BaseStream.CopyToAsync($consumer.StandardInput.BaseStream).GetAwaiter().GetResult()
   $consumer.StandardInput.Close()
   $producer.WaitForExit();$consumer.WaitForExit()
-  [void]$ce.GetAwaiter().GetResult();[void]$pe.GetAwaiter().GetResult();[void]$co.GetAwaiter().GetResult()
-  if($producer.ExitCode -ne 0 -or $consumer.ExitCode -ne 0){throw 'Snapshot pipeline failed; no archive has been certified.'}
+  $consumerError=$ce.GetAwaiter().GetResult();$producerError=$pe.GetAwaiter().GetResult();[void]$co.GetAwaiter().GetResult()
+  if($producer.ExitCode -ne 0 -or $consumer.ExitCode -ne 0){throw ('Snapshot pipeline failed; producer exit '+$producer.ExitCode+', consumer exit '+$consumer.ExitCode+'; no archive certified.')}
  } finally {
   foreach($p in @($producer,$consumer)){try{if(!$p.HasExited){$p.Kill($true)}}catch [InvalidOperationException]{}finally{$p.Dispose()}}
  }
@@ -66,7 +67,7 @@ try {
   # Request cooperative barriers before pausing writers. A V3 worker cannot
   # acknowledge this protocol: its backup skips safely without freezing it.
   $running=@(Invoke-SandboxDocker @('ps','-q'))
-  $writers=@()
+  $writers=@();$writerStarted=@{}
   function Label($labels,[string]$key) {
    $property=$labels.PSObject.Properties[$key]
    if($property){return [string]$property.Value}
@@ -78,6 +79,7 @@ try {
     if((Label $c.Config.Labels 'sandbox.owner') -ne 'ai-dev-sandbox'){throw 'Unexpected writer shares sandbox volumes.'}
     if($c.State.Paused){throw 'A source writer was already paused; backup will not take over another maintenance operation.'}
     $writers+=$id
+    $writerStarted[$id]=$c.State.StartedAt
     if((Label $c.Config.Labels 'io.cartshift.sandbox.managed') -eq 'dev-service-v1'){continue}
     if((Label $c.Config.Labels 'io.cartshift.sandbox.auth') -eq 'isolated-v1'){$roles=@('auth')}
     elseif((Label $c.Config.Labels 'io.cartshift.sandbox.build') -eq 'credential-isolated-v1'){$roles=@('build')}
@@ -92,7 +94,7 @@ try {
   [IO.File]::WriteAllText($leaseFile,(@{endpoint=$endpoint;docker=$docker;ids=$writers;barriers=$barriers;expires=[DateTime]::UtcNow.AddSeconds($MaxPauseSeconds).ToString('o')}|ConvertTo-Json -Depth 8))
   Assert-SandboxBackupLeasePath $leaseFile
   $watchdog=Join-Path $PSScriptRoot 'Watch-SandboxBackupPause.ps1'
-  $pwsh=(Get-Command pwsh -ErrorAction Stop).Source
+  $pwsh=Resolve-SandboxPowerShell
   $watchdogProcess=Start-Process -FilePath $pwsh -WindowStyle Hidden -PassThru -ArgumentList @('-NoProfile','-NonInteractive','-WindowStyle','Hidden','-File',('"'+$watchdog+'"'),'-LeaseFile',('"'+$leaseFile+'"'))
   $started=[Diagnostics.Stopwatch]::StartNew()
   while(!(Test-Path -LiteralPath ($leaseFile+'.watching'))){
@@ -122,7 +124,7 @@ try {
    Enter-SandboxBackupLeaseMutex $leaseMutex
    try {
     $currentLease=Get-Content -LiteralPath $leaseFile -Raw|ConvertFrom-Json
-    if($watchdogProcess.HasExited -or (Test-Path -LiteralPath ($leaseFile+'.abort')) -or [DateTime]::UtcNow -ge [DateTime]::Parse($currentLease.expires).ToUniversalTime()){throw 'Backup maintenance lease no longer valid.'}
+    if($watchdogProcess.HasExited -or (Test-Path -LiteralPath ($leaseFile+'.abort')) -or [DateTime]::UtcNow -ge (Get-SandboxBackupExpiry $currentLease)){throw 'Backup maintenance lease no longer valid.'}
     $barrier=@($barriers|Where-Object {$_.id -eq $id})
     if($barrier.Count -and (Invoke-SandboxBackupMarker $id check $barrier[0].nonce $barrier[0].roles) -ne 'ready'){throw 'Maintenance nonce/readiness changed before pause.'}
     Invoke-SandboxBackupTimedDocker -Arguments @('pause',$id)|Out-Null
@@ -147,12 +149,13 @@ try {
   Enter-SandboxBackupLeaseMutex $leaseMutex
   try {
    $lease=Get-Content -LiteralPath $leaseFile -Raw|ConvertFrom-Json
-   if($watchdogProcess.HasExited -or (Test-Path -LiteralPath ($leaseFile+'.abort')) -or [DateTime]::UtcNow -ge [DateTime]::Parse($lease.expires).ToUniversalTime()){throw 'Backup exceeded quiescence deadline; archive not certified.'}
+   if($watchdogProcess.HasExited -or (Test-Path -LiteralPath ($leaseFile+'.abort')) -or [DateTime]::UtcNow -ge (Get-SandboxBackupExpiry $lease)){throw 'Backup exceeded quiescence deadline; archive not certified.'}
+   Assert-SandboxBackupWritersPaused -Ids @($paused) -Started $writerStarted
    foreach($id in $paused){Invoke-SandboxBackupTimedDocker -Arguments @('unpause',$id)|Out-Null}
    $paused.Clear()
    foreach($barrier in $barriers){[void](Invoke-SandboxBackupMarker $barrier.id cleanup $barrier.nonce $barrier.roles)}
    $barriers=@()
-   if([DateTime]::UtcNow -ge [DateTime]::Parse($lease.expires).ToUniversalTime()){throw 'Backup cleanup crossed the maintenance deadline; archive not certified.'}
+   if([DateTime]::UtcNow -ge (Get-SandboxBackupExpiry $lease)){throw 'Backup cleanup crossed the maintenance deadline; archive not certified.'}
    # A watchdog holding this mutex cannot issue a late abort after lease removal.
    Remove-Item -LiteralPath $leaseFile -Force
   } finally {$leaseMutex.ReleaseMutex()}
@@ -192,13 +195,13 @@ try {
  $unpauseFailed=$false
  foreach($id in $paused){
   try{
-   $isPaused=(Invoke-SandboxDocker @('inspect','--format','{{.State.Paused}}',$id) -join '').Trim()
+   $isPaused=((Invoke-SandboxDocker @('inspect','--format','{{.State.Paused}}',$id)) -join '').Trim()
    if($isPaused -eq 'true'){Invoke-SandboxBackupTimedDocker -Arguments @('unpause',$id)|Out-Null}
   }catch{$unpauseFailed=$true}
  }
  foreach($barrier in $barriers){
   try{
-   $isPaused=(Invoke-SandboxDocker @('inspect','--format','{{.State.Paused}}',$barrier.id) -join '').Trim()
+   $isPaused=((Invoke-SandboxDocker @('inspect','--format','{{.State.Paused}}',$barrier.id)) -join '').Trim()
    if($isPaused -eq 'true'){throw 'Do not exec marker cleanup in a still-paused container.'}
    [void](Invoke-SandboxBackupMarker $barrier.id cleanup $barrier.nonce $barrier.roles)
   }catch{$unpauseFailed=$true}

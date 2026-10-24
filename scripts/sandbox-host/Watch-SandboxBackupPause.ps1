@@ -27,7 +27,7 @@ try {
   foreach($barrier in $lease.barriers){if($barrier.id -notin $lease.ids -or $barrier.nonce -cnotmatch '^[a-f0-9]{32}$' -or @($barrier.roles|Where-Object {$_ -notin @('build','auth')}).Count){throw 'Invalid maintenance lease.'}}
   # Docker is resolved and pinned by Common-SandboxHost; JSON never selects an executable.
   [IO.File]::WriteAllText(($LeaseFile+'.watching'),'watching')
-  if([DateTime]::UtcNow -ge [DateTime]::Parse($lease.expires).ToUniversalTime()){
+  if([DateTime]::UtcNow -ge (Get-SandboxBackupExpiry $lease)){
    Enter-SandboxBackupLeaseMutex $mutex
    try {
     if(!(Test-Path -LiteralPath $LeaseFile)){break}

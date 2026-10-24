@@ -152,6 +152,62 @@ class BackupMaintenanceTests(unittest.TestCase):
     def request(self):
         worker.BACKUP_REQUEST.write_text(self.nonce+'\n')
         worker.BACKUP_REQUEST.chmod(0o600)
+    def embedded_host_program(self):
+        source=(ROOT/'scripts/sandbox-host/Common-SandboxBackupBarrier.ps1').read_text()
+        prefix="$script:SandboxBackupMarkerPython=@'"+chr(10)
+        self.assertEqual(source.count(prefix),1)
+        program=source.split(prefix,1)[1].split(chr(10)+"'@",1)[0]
+        root_open="root=os.open('/tmp',"
+        self.assertEqual(program.count(root_open),1)
+        return program.replace(root_open,'root=os.open('+repr(str(self.root))+',',1)
+    def host_marker(self,program,action,roles='build,auth'):
+        import subprocess,sys
+        result=subprocess.run([sys.executable,'-I','-c',program,action,self.nonce,roles],
+            capture_output=True,text=True,timeout=5)
+        self.assertEqual(result.returncode,0,result.stderr)
+        return result.stdout.strip()
+    def test_real_host_program_worker_barrier_roundtrip(self):
+        program=self.embedded_host_program()
+        with patch.object(worker,'BACKUP_REQUEST',self.root/'cartshift-backup-request'), \
+             patch.object(worker,'BACKUP_BUILD_READY',self.root/'cartshift-backup-build-ready'), \
+             patch.object(worker,'BACKUP_AUTH_READY',self.root/'cartshift-backup-auth-ready'):
+            self.assertEqual(self.host_marker(program,'request'),'requested')
+            request=worker.BACKUP_REQUEST.stat()
+            self.assertEqual(worker.BACKUP_REQUEST.read_bytes(),self.nonce.encode('ascii')+bytes([10]))
+            self.assertEqual(self.host_marker(program,'check'),'waiting')
+            self.assertTrue(worker.backup_pause_requested(worker.BACKUP_BUILD_READY,idle=True))
+            self.assertEqual(self.host_marker(program,'check'),'waiting')
+            self.assertTrue(worker.backup_pause_requested(worker.BACKUP_AUTH_READY,idle=False))
+            self.assertEqual(self.host_marker(program,'check'),'waiting')
+            self.assertTrue(worker.backup_pause_requested(worker.BACKUP_AUTH_READY,idle=True))
+            self.assertEqual(self.host_marker(program,'check'),'ready')
+            after=worker.BACKUP_REQUEST.stat()
+            self.assertEqual((request.st_dev,request.st_ino),(after.st_dev,after.st_ino))
+            self.assertEqual(self.host_marker(program,'cleanup'),'cleared')
+            self.assertFalse(worker.backup_pause_requested(worker.BACKUP_BUILD_READY,idle=True))
+            self.assertFalse(worker.backup_pause_requested(worker.BACKUP_AUTH_READY,idle=True))
+    def test_ready_file_mode_is_private_even_with_restrictive_umask(self):
+        self.request(); previous=os.umask(0o777)
+        try: self.assertTrue(worker.backup_pause_requested(worker.BACKUP_BUILD_READY,idle=True))
+        finally: os.umask(previous)
+        self.assertEqual(worker.BACKUP_BUILD_READY.stat().st_mode & 0o777,0o600)
+    def test_nonce_accepts_only_exact_hex_with_optional_real_lf(self):
+        for suffix,valid in ((b'',True),(bytes([10]),True),(bytes([13,10]),False),
+                (bytes([10,10]),False),(bytes([92,110]),False),(b' ',False)):
+            with self.subTest(suffix=suffix):
+                worker.BACKUP_REQUEST.write_bytes(self.nonce.encode('ascii')+suffix)
+                if valid:
+                    self.assertTrue(worker.backup_pause_requested(worker.BACKUP_BUILD_READY,idle=True))
+                    self.assertEqual(worker.BACKUP_BUILD_READY.read_bytes(),self.nonce.encode('ascii')+bytes([10]))
+                else:
+                    with self.assertRaises(RuntimeError): worker.backup_pause_requested(worker.BACKUP_BUILD_READY,idle=True)
+    def test_future_timestamp_and_hardlinked_request_fail_closed(self):
+        self.request(); future=time.time()+120
+        os.utime(worker.BACKUP_REQUEST,(future,future))
+        with self.assertRaises(RuntimeError): worker.backup_pause_requested(worker.BACKUP_AUTH_READY,idle=True)
+        os.utime(worker.BACKUP_REQUEST,None)
+        os.link(worker.BACKUP_REQUEST,self.root/'request-alias')
+        with self.assertRaises(RuntimeError): worker.backup_pause_requested(worker.BACKUP_AUTH_READY,idle=True)
     def test_readiness_only_when_idle_and_removed_on_resume(self):
         self.request()
         self.assertTrue(worker.backup_pause_requested(worker.BACKUP_AUTH_READY,idle=False))

@@ -2,7 +2,7 @@
 
 ## Current stage
 
-PR122 remains unmerged. Source/security fixes and Windows checks pass for compatible backend staging. Current main c4d39db3 was integrated, preserving Northflank and Apps Script support. Full credential-isolation cutover is gated on an independently recoverable off-laptop backup. No original container, volume, authentication home or working controller has been deleted or replaced by an isolated candidate.
+PR122 remains unmerged. Source/security fixes and Windows checks pass for compatible backend staging. Current main c4d39db3 was integrated, preserving Northflank and Apps Script support. Independent recovery-key verification and off-laptop synchronization passed on October24. Isolated-role activation is the next controlled stage. No original container, volume, authentication home or working controller has been deleted or replaced by an isolated candidate.
 
 ## Verified baseline and backups
 
@@ -23,7 +23,7 @@ Encrypted streaming backup covers all required volumes without plaintext staging
 ## Tests already run
 
 - 140 MCP tests passed across14 files, including full12000-byte binary completion/result/base64/hash round trip and mixed/stale lease regressions.
-- 80 Python checks after integrating current main, one optional real-provider login test skipped (79 passed). Includes four snapshot and ten nonce/ACL fixture tests.
+- 84 Python checks after integrating current main, one optional real-provider login test skipped (83 passed). Includes four snapshot and ten nonce/ACL fixture tests.
 - Production tsconfig.build.json typecheck passed after standard translation generation; generated translation files restored byte-for-byte. Broad developer typecheck still needs existing functions email dependencies; no sandbox production TS error remains.
 - Windows parsing, fixed native stdin/argv forwarding, mount/privilege refusal, normal Windows paths and mocked WhatIf checks passed.
 - Real managed dev container ai-dev-v4-managed-proof served only127.0.0.1:13004, mounted only its project subtree, ran nonroot/read-only/caps-dropped, and preserved restart-count state through Docker restart. It survived normal stateless command cleanup. It is now stopped; container/project preserved. This was a dependency-free server fixture, not a full Next/Vite application build.
@@ -36,4 +36,14 @@ The required recent-jobs index was deployed additively to cartshiftstudio/(defau
 
 ## Pending gates
 
-The owner-visible recovery-key console needs a private passphrase and independent verification. No key/passphrase is requested in chat. An external/NAS/cloud destination and proof of off-laptop copy are still required before migration. Isolated auth/build cutover, auth enforcement, dedicated task activation, physical reboot and actual Android acceptance must be explicitly recorded after completion; desktop/unit tests do not certify them.
+The owner completed the private passphrase console; the exported recovery key passed independent age decryption. Both original encrypted archives and the encrypted key were copied with matching SHA256 to the requested Documents folder, which resolves to OneDrive/Documents/CartShiftSandboxBackups. Windows Cloud Files returned PLACEHOLDER|IN_SYNC (state9) for every copied file. No passphrase or key was exposed. Isolated auth/build cutover, auth enforcement, dedicated task activation, physical reboot and actual Android acceptance must be explicitly recorded after completion; desktop/unit tests do not certify them.
+
+## October24 compatible production staging
+
+- Production deployment dpl_2WFJ9tG9v5Wsii1RDDi7H9Pfhj1F was promoted to portal.cart-shift.com and the existing aliases. A real command still passed on V3 before worker upgrade.
+- V4 legacy is active in the unchanged original three-volume runtime. Pinned worker SHA256 1f2fdf0799f5901df145088d21bbe908081dc5f7eed4d6e5e6511c7537d7230c; PTY SHA256 26c586f9b3c926b6164d2452851df30017eb031d63dc39873220c5c16ec053c9. Original controller retained as cartshift-worker-supervisor-before-v4.ps1. No token argument/environment or checksum override.
+- Actual CartShift commands preserved/read the preflight file after container restart, timed out with124, cancelled while leased with130, cancelled while queued, and completed a125-second command with0.
+- GitHub PTY d9793300-8eb9-482b-a7cc-a98147d56f84 completed0 by declining reauthentication; session2e0bcc35-b073-4a38-9a69-7d3d29811a79 stopped through the actual app. GitHub, Supabase, Vercel, Firebase and Shopify status wrappers authenticated. Northflank and Apps Script status did not confirm authentication/project access.
+- Actual host tests found and fixed: PowerShell join precedence in cleanup; DateTime reparse losing UTC kind; attempted exec during paused certification; paused-supervisor restart; private AppData virtualization invisible to scheduled tasks; restrictive umask on readiness files; DST-shifted weekly trigger. The rejected backup attempts certified no archive. A source-only host checkpoint now refuses resumed/restarted writers without exec. A real stop/start of the supervisor during pause preserved the same paused container/start time.
+- Stable private owner task state is USERPROFILE/.cartshift-sandbox. Existing AppData originals are preserved. Persistent installed native ARM64 PowerShell passes a real Task Scheduler write probe under RemoteSigned, without an added policy override. Sunday03:00 now resolves to October25 at03:00CET. The full scheduled snapshot sandbox-20261024-020446-25a25a61.tar.gz.age streamed2995625444 bytes and resumed its source; authenticated scheduled verification is in progress at this record point.
+- Pure Windows regression fixtures pass for UTC object/string leases, inspect-only paused certification, resumed/restarted refusal and native task argv. The existing Codex configuration also has a separately encrypted, hash-verified rollback copy.

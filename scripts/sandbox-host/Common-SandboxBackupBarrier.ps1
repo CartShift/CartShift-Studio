@@ -83,8 +83,13 @@ function Invoke-SandboxBackupTimedDocker([string[]]$Arguments,[ValidateRange(100
   [void]$process.Start()
   $stdout=$process.StandardOutput.ReadToEndAsync();$stderr=$process.StandardError.ReadToEndAsync()
   if(!$process.WaitForExit($TimeoutMilliseconds)){try{$process.Kill($true)}catch{};throw 'Backup Docker control operation timed out.'}
-  $result=$stdout.GetAwaiter().GetResult();[void]$stderr.GetAwaiter().GetResult()
-  if($process.ExitCode -ne 0){throw 'Backup Docker control operation failed.'}
+  $result=$stdout.GetAwaiter().GetResult();$controlError=$stderr.GetAwaiter().GetResult()
+  if($process.ExitCode -ne 0){
+   # Only fixed marker errors are safe to report; never relay arbitrary Docker output.
+   $reason=[regex]::Match($controlError,'(?m)^RuntimeError: ([A-Za-z ]{1,80})\r?$')
+   if($reason.Success){throw ('Backup Docker control operation failed: '+$reason.Groups[1].Value)}
+   throw ('Backup Docker control operation failed (exit '+$process.ExitCode+').')
+  }
   return $result
  } finally {$process.Dispose()}
 }
@@ -123,9 +128,9 @@ function Assert-SandboxBackupPrivatePath([string]$Path) {
  if(!$ownerAllowed -or !$systemAllowed){throw 'Backup state needs explicit owner and SYSTEM access.'}
 }
 function Get-SandboxBackupLeaseDirectory([switch]$Create) {
- $local=[Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
+ $local=[Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
  if(!$local -or ![IO.Path]::IsPathFullyQualified($local)){throw 'LocalAppData is unavailable.'}
- $root=Join-Path $local 'CartShiftSandbox'
+ $root=Join-Path $local '.cartshift-sandbox'
  Assert-SandboxBackupPrivatePath $root
  $directory=Join-Path $root 'backup-leases'
  if(!(Test-Path -LiteralPath $directory -PathType Container)){
@@ -149,4 +154,21 @@ function Assert-SandboxBackupLeasePath([string]$Path) {
  $full=[IO.Path]::GetFullPath($Path)
  if(![string]::Equals([IO.Path]::GetDirectoryName($full),$directory,[StringComparison]::OrdinalIgnoreCase) -or [IO.Path]::GetFileName($full) -cnotmatch '^backup-pause-[a-f0-9]{32}\.json$'){throw 'Backup lease must be in the private local lease directory.'}
  Assert-SandboxBackupPrivatePath $full
+}
+
+function Assert-SandboxBackupWritersPaused([string[]]$Ids,[hashtable]$Started) {
+ # Docker exec is prohibited while paused. Inspect immutable lifecycle state only.
+ foreach($id in $Ids){
+  if($id -cnotmatch '^[a-f0-9]{12,64}$' -or !$Started.ContainsKey($id)){throw 'Unknown paused writer identity.'}
+  $raw=Invoke-SandboxBackupTimedDocker -Arguments @('inspect','--format','{"paused":{{json .State.Paused}},"started":{{json .State.StartedAt}}}',$id)
+  $state=$raw|ConvertFrom-Json
+  if(!$state.paused -or ([DateTime]$state.started).ToUniversalTime() -ne ([DateTime]$Started[$id]).ToUniversalTime()){throw 'Snapshot writer lifecycle changed; no archive certified.'}
+ }
+}
+
+function Get-SandboxBackupExpiry($Lease) {
+ if(!$Lease.expires){throw 'Maintenance expiry required.'}
+ # PS7 may deserialize ISO strings as DateTime. Casting preserves its Kind;
+ # Parse(DateTime) would stringify and lose the original UTC offset.
+ return ([DateTime]$Lease.expires).ToUniversalTime()
 }

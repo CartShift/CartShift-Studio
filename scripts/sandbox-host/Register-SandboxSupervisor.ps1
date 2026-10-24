@@ -8,16 +8,17 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. "$PSScriptRoot/Common-SandboxTask.ps1"
 $script = [IO.Path]::GetFullPath($OwnerSupervisorScript)
 if (-not (Test-Path -LiteralPath $script -PathType Leaf) -or
     [IO.Path]::GetExtension($script) -ne '.ps1') {
   throw 'Point to the existing reviewed owner-side supervisor PowerShell script.'
 }
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-$pwsh = (Get-Command pwsh -ErrorAction Stop).Source
+
 # InteractiveToken uses the currently signed-in DPAPI identity; no password is
 # stored in Task Scheduler. This task will not run without owner logon.
-$action = New-ScheduledTaskAction -Execute $pwsh -Argument ('-NoProfile -NonInteractive -WindowStyle Hidden -File "' + $script.Replace('"','') + '"')
+$action=New-SandboxScheduledAction @('-NoProfile','-NonInteractive','-WindowStyle','Hidden','-File',$script)
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $currentUser
 $settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) `
   -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -AllowStartIfOnBatteries `

@@ -29,16 +29,18 @@ function Invoke-HostDocker {
 }
 function Get-SandboxSpec([string]$Name) {
   # Do not return Config.Env or full inspect output: those may contain secrets.
-  $format='{"image":{{json .Image}},"user":{{json .Config.User}},"hostname":{{json .Config.Hostname}},"labels":{{json .Config.Labels}},"host":{{json .HostConfig}},"mounts":{{json .Mounts}},"running":{{json .State.Running}}}'
+  $format='{"image":{{json .Image}},"user":{{json .Config.User}},"hostname":{{json .Config.Hostname}},"labels":{{json .Config.Labels}},"host":{{json .HostConfig}},"mounts":{{json .Mounts}},"running":{{json .State.Running}},"paused":{{json .State.Paused}}}'
   $raw=Invoke-HostDocker inspect --format $format $Name
   if ($LASTEXITCODE -ne 0) { throw 'Expected sandbox container absent.' }
   $spec=$raw | ConvertFrom-Json
   if ($spec.labels.'sandbox.owner' -ne 'ai-dev-sandbox' -or $spec.image -notmatch '^sha256:[a-f0-9]{64}$') { throw 'Sandbox owner or image identity mismatch.' }
   return $spec
 }
-function Assert-SandboxRestrictions($Spec) {
+function Assert-SandboxRestrictions($Spec,[switch]$AllowLoopbackPorts) {
+  if (!$AllowLoopbackPorts -and $Spec.host.PortBindings -and @($Spec.host.PortBindings.PSObject.Properties).Count) { throw 'Worker containers must not publish ports.' }
   if ($Spec.user -notin @('1000:1000','1000','node') -or -not $Spec.host.ReadonlyRootfs -or $Spec.host.Privileged -or
       @($Spec.host.CapDrop | Where-Object { $_ -eq 'ALL' }).Count -ne 1 -or @($Spec.host.CapAdd | Where-Object { $_ }).Count -gt 0 -or
+      ($Spec.host.PidMode -or $Spec.host.UTSMode -or $Spec.host.UsernsMode -or $Spec.host.IpcMode -ne 'private') -or
       ($Spec.host.NetworkMode -eq 'host' -or $Spec.host.NetworkMode -like 'container:*') -or
       -not @($Spec.host.SecurityOpt | Where-Object { $_ -match '^no-new-privileges(:true)?$' }).Count) { throw 'Sandbox privilege configuration mismatch.' }
   if (@($Spec.mounts | Where-Object { $_.Type -notin @('volume','tmpfs') -or $_.Destination -match 'docker.sock' }).Count) { throw 'Unexpected host or non-volume mount.' }

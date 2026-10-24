@@ -54,6 +54,7 @@ try {
    . (Join-Path $PSScriptRoot 'Common-SandboxHost.ps1')
    $spec=Get-SandboxSpec $Container
    Assert-SandboxRestrictions $spec
+   if ($spec.paused) { throw 'Container is paused for owner maintenance; wait before restarting.' }
    if ($spec.image -ne $ImageId -or $spec.labels.'io.cartshift.sandbox.build' -ne 'credential-isolated-v1' -or $spec.hostname -ne 'ai-docker-sandbox') { throw 'Only dedicated isolated build containers are supported.' }
    Assert-SandboxMount $spec '/workspace' $WorkspaceVolume $true
    Assert-SandboxMount $spec '/workspace/.auth' $ShadowVolume $false
@@ -67,6 +68,7 @@ try {
     Invoke-SandboxDocker restart --time 10 $Container | Out-Null
     $spec=Get-SandboxSpec $Container
    Assert-SandboxRestrictions $spec
+   if ($spec.paused) { throw 'Container is paused for owner maintenance; wait before restarting.' }
    if ($spec.image -ne $ImageId -or $spec.labels.'io.cartshift.sandbox.build' -ne 'credential-isolated-v1' -or $spec.hostname -ne 'ai-docker-sandbox') { throw 'Only dedicated isolated build containers are supported.' }
    Assert-SandboxMount $spec '/workspace' $WorkspaceVolume $true
    Assert-SandboxMount $spec '/workspace/.auth' $ShadowVolume $false

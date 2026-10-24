@@ -39,7 +39,7 @@ function Existing() {
   $owner = ((Docker @('inspect','--format','{{index .Config.Labels "io.cartshift.sandbox.managed"}}',$name)) -join '').Trim()
   if ($owner -ne 'dev-service-v1') { throw 'Refusing to manage an unrecognized container.' }
   $spec=Get-SandboxSpec $name
-  Assert-SandboxRestrictions $spec
+  Assert-SandboxRestrictions $spec -AllowLoopbackPorts
   Assert-SandboxMount $spec '/app' $WorkspaceVolume $true
   if (@($spec.mounts | Where-Object { $_.Type -eq 'volume' }).Count -ne 1) { throw 'Unexpected dev-service mount.' }
   $raw=Invoke-SandboxDocker inspect --format '{{json .HostConfig.Mounts}}' $name

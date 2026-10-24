@@ -9,4 +9,9 @@ try{
  if(@($archive).Count -ne 1){throw 'Expected exactly one encrypted archive.'}
  & "$PSScriptRoot/Backup-Sandbox.ps1" -Action Verify -BackupDir $config.backup_dir -Archive $archive -IdentityFile $config.identity_file -Container $config.container -AgeExecutable $config.age_executable | Out-Null
  $status.ok=$true;$status.archive=$archive
+}catch{
+ $status.error_type=$_.Exception.GetType().Name
+ $message=$_.Exception.Message
+ if($message -match '^[A-Za-z0-9 ,;:.()/-]{1,240}$'){$status.error=$message}
+ throw
 }finally{[IO.File]::WriteAllText($config.status_file,($status|ConvertTo-Json))}
