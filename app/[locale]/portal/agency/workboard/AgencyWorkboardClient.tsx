@@ -99,10 +99,15 @@ export default function AgencyWorkboardClient() {
     openRequestPreview(req.id, { orgId: req.orgId });
   };
 
+  // Keep the mobile tab counts in sync with the visible project-filtered cards.
+  const getVisibleRequestsForColumn = (column: Column) =>
+    getRequestsForColumn(column).filter(request =>
+      projectFilter === 'all' ||
+      (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
+
   // ── Column Rendering Helper ──────────────────────────────────
   const renderColumn = (column: Column, isHiddenOnMobile: boolean) => {
-    const columnRequests = getRequestsForColumn(column).filter(request =>
-      projectFilter === 'all' || (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
+    const columnRequests = getVisibleRequestsForColumn(column);
 
     return (
       <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden lg:block')}>
@@ -225,7 +230,7 @@ export default function AgencyWorkboardClient() {
       {/* Mobile Column Tabs */}
       <div className="flex lg:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide snap-x">
         {columns.map(col => {
-          const columnRequests = getRequestsForColumn(col);
+          const columnRequests = getVisibleRequestsForColumn(col);
           const isActive = activeMobileTab === col.id;
           return (
             <button
