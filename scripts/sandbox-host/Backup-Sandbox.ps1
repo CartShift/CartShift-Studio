@@ -5,7 +5,7 @@ param(
  [Parameter(Mandatory)][ValidateSet('Backup','Verify','Restore-Staging')][string]$Action,
  [Parameter(Mandatory)][string]$BackupDir,
  [string]$Recipient, [string]$IdentityFile, [string]$Archive,
- [string[]]$Volumes=@('ai-dev-sandbox-workspace','ai-dev-sandbox-home','ai-dev-sandbox-device-auth','ai-dev-sandbox-provider-auth','ai-dev-sandbox-auth-tools','ai-dev-sandbox-build-home','ai-dev-sandbox-build-device-auth','ai-dev-sandbox-empty-auth'),
+ [string[]]$Volumes=@('ai-dev-sandbox-workspace','ai-dev-sandbox-home','ai-dev-sandbox-device-auth','ai-dev-sandbox-provider-auth','ai-dev-sandbox-auth-tools','ai-dev-sandbox-build-home','ai-dev-sandbox-build-device-auth','ai-dev-sandbox-empty-auth','ai-dev-pool-home-1','ai-dev-pool-home-2','ai-dev-pool-empty-auth'),
  [string]$Container='ai-dev-workspace',
  [string]$AgeExecutable='age.exe',
  [ValidateRange(60,3600)][int]$MaxPauseSeconds=1200
@@ -83,6 +83,7 @@ try {
     if((Label $c.Config.Labels 'io.cartshift.sandbox.managed') -eq 'dev-service-v1'){continue}
     if((Label $c.Config.Labels 'io.cartshift.sandbox.auth') -eq 'isolated-v1'){$roles=@('auth')}
     elseif((Label $c.Config.Labels 'io.cartshift.sandbox.build') -eq 'credential-isolated-v1'){$roles=@('build')}
+    elseif((Label $c.Config.Labels 'io.cartshift.sandbox.pool-slot') -match '^[1-8]$'){$roles=@('build')}
     elseif($c.Config.Hostname -eq 'ai-docker-sandbox'){$roles=@('build','auth')}
     else{throw 'Unknown sandbox volume writer; no safe maintenance protocol.'}
     $barriers+=@{id=$id;nonce=[Guid]::NewGuid().ToString('N');roles=$roles}

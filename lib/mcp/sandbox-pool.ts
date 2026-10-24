@@ -60,8 +60,7 @@ export async function claimPoolJob(input: PoolIdentity) {
         data: (await tx.get(db.collection(JOBS).doc(s.jobId!))).data() })));
     const candidates = await Promise.all(queued.docs.map(async doc => ({ doc, data: (await tx.get(doc.ref)).data() })));
     for (const entry of active) {
-      if (entry.data?.status !== 'leased' || entry.slot.expiresAt <= now) {
-        if (entry.data?.status === 'leased') tx.update(entry.ref, { status: 'worker_lost', finishedAt: now });
+      if (entry.data?.status !== 'leased') {
         slots[entry.key] = { ...entry.slot, jobId: null, scope: '', expiresAt: 0 };
       }
     }
@@ -97,6 +96,36 @@ export async function claimPoolJob(input: PoolIdentity) {
   });
 }
 
+/** Host-only control protocol. The reviewed owner supervisor calls this only
+ * AFTER restarting its verified container. Expiry alone never frees a scope.
+ * General commands never receive the bearer used by this control transport.
+ */
+export async function confirmPoolFence(input: PoolIdentity, expectedWorkerId: string | null) {
+  const who = identity(input), db = firestore(), ref = db.collection(STATE).doc('pool');
+  return db.runTransaction(async tx => {
+    const pool = (await tx.get(ref)).data() as Pool | undefined;
+    const old = pool?.slots[String(who.slot)];
+    if (old?.workerId === who.worker_id) return { acknowledged: true };
+    if ((old?.workerId ?? null) !== expectedWorkerId) throw new Error('STALE_FENCE');
+    const jobRef = old?.jobId ? db.collection(JOBS).doc(old.jobId) : null;
+    const job = jobRef ? (await tx.get(jobRef)).data() : null;
+    if (job?.status === 'leased') tx.update(jobRef!, { status: 'worker_lost', finishedAt: Date.now() });
+    tx.set(ref, { slots: { ...pool?.slots, [String(who.slot)]: {
+      workerId: who.worker_id, jobId: null, scope: '', expiresAt: 0, lastSeenAt: Date.now(),
+    } } });
+    return { acknowledged: true };
+  });
+}
+
+export async function supervisePoolSlot(input: PoolIdentity) {
+  const who = identity(input);
+  const pool = (await firestore().collection(STATE).doc('pool').get()).data() as Pool | undefined;
+  const slot = pool?.slots[String(who.slot)];
+  if (!slot || slot.workerId !== who.worker_id) throw new Error('STALE_WORKER_IDENTITY');
+  return { acknowledged: true, job_id: slot.jobId, lease_expires_at: slot.expiresAt,
+    last_seen_at: slot.lastSeenAt, now: Date.now() };
+}
+
 export async function poolHeartbeat(input: PoolIdentity, jobId: string, leaseToken: string) {
   const who = identity(input), db = firestore(), ref = db.collection(STATE).doc('pool');
   return db.runTransaction(async tx => {
@@ -120,9 +149,16 @@ export async function poolStatus() {
     const s = data?.slots[String(i + 1)];
     const age = s ? now - s.lastSeenAt : Infinity;
     return { slot: i + 1, worker_id: s?.workerId ?? null, connected: age >= 0 && age < ONLINE_MS,
-      busy: !!s?.jobId && s.expiresAt > now, job_id: s?.jobId ?? null,
+      busy: !!s?.jobId, recovery_required: !!s?.jobId && s.expiresAt <= now, job_id: s?.jobId ?? null,
       last_seen_at: s?.lastSeenAt ?? null, lease_expires_at: s?.expiresAt || null };
   });
   return { connected: workers.some(w => w.connected), busy: workers.some(w => w.busy),
+    last_seen_at: Math.max(0, ...workers.map(w => w.last_seen_at ?? 0)) || null,
     execution_slots: capacity, busy_slots: workers.filter(w => w.busy).length, workers };
+}
+
+export async function inspectPoolSlot(input: PoolIdentity) {
+  const who = identity(input);
+  const pool = (await firestore().collection(STATE).doc('pool').get()).data() as Pool | undefined;
+  return { acknowledged: true, current_worker_id: pool?.slots[String(who.slot)]?.workerId ?? null };
 }

@@ -27,7 +27,7 @@ TOKEN = ""
 # activates dedicated build/auth workers. New roles never share OAuth homes.
 ROLE = os.environ.get("SANDBOX_WORKER_ROLE", "legacy")
 PARALLEL_SLOT = int(os.environ.get("SANDBOX_WORKER_SLOT", "0"))
-WORKER_ID = uuid.uuid4().hex
+WORKER_ID = os.environ.get('SANDBOX_WORKER_ID', uuid.uuid4().hex)
 WORKSPACE = Path("/workspace").resolve(strict=True)
 MAX_OUTPUT = 24_000
 POLL_INTERVAL_SECONDS = 3
@@ -114,6 +114,8 @@ def verify_identity():
             and platform.machine() == "aarch64" and WORKSPACE == Path("/workspace"))
     if PARALLEL_SLOT and (ROLE != "build" or not 1 <= PARALLEL_SLOT <= 8):
         raise RuntimeError("Parallel slots require isolated build role")
+    if PARALLEL_SLOT and re.fullmatch(r'[a-f0-9]{32}', WORKER_ID) is None:
+        raise RuntimeError("Invalid worker incarnation identity")
     if ROLE not in ('legacy', 'build', 'auth') or not base:
         raise RuntimeError("Invalid worker role or container identity")
     if ROLE == 'auth':

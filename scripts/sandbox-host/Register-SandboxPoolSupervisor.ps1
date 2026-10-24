@@ -17,12 +17,11 @@ foreach ($path in $paths) {
  if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or $path.IndexOfAny([char[]]@(34,10,13)) -ge 0) { throw 'Missing file or unsafe path.' }
 }
 $owner=[Security.Principal.WindowsIdentity]::GetCurrent().Name
-$pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source
+. (Join-Path $PSScriptRoot 'Common-SandboxTask.ps1')
 foreach ($i in 1..$Slots) {
  $name="CartShiftSandboxPool-$i"
  if (Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue) { throw 'Task already exists; refusing to overwrite owner configuration.' }
- $arguments='-NoProfile -NonInteractive -WindowStyle Hidden -File "{0}" -Slot {1} -WorkerSource "{2}" -DpapiTokenFile "{3}" -WorkerSha256 {4} -ImageId {5} -Prefix {6}' -f $paths[0],$i,$paths[1],$paths[2],$WorkerSha256,$ImageId,$Prefix
- $action=New-ScheduledTaskAction -Execute $pwsh -Argument $arguments
+ $action=New-SandboxScheduledAction @('-NoProfile','-NonInteractive','-WindowStyle','Hidden','-File',$paths[0],'-Slot',"$i",'-WorkerSource',$paths[1],'-DpapiTokenFile',$paths[2],'-WorkerSha256',$WorkerSha256,'-ImageId',$ImageId,'-Prefix',$Prefix)
  $trigger=New-ScheduledTaskTrigger -AtLogOn -User $owner
  $settings=New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
  $principal=New-ScheduledTaskPrincipal -UserId $owner -LogonType Interactive -RunLevel Limited

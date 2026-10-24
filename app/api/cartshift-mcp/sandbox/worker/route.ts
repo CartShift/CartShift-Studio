@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { claimPoolJob, poolHeartbeat, poolIdentity } from '@/lib/mcp/sandbox-pool';
+import { claimPoolJob, poolHeartbeat, poolIdentity, confirmPoolFence, supervisePoolSlot, inspectPoolSlot } from '@/lib/mcp/sandbox-pool';
 import {
   authorizeSandboxWorker, completeSandboxJob, leaseSandboxJob, recordSandboxHeartbeat,
   sandboxCancellationRequested,
@@ -48,6 +48,15 @@ export async function POST(request: Request) {
   const version = args.worker_version === undefined ? 2 : args.worker_version;
   if (version === 5) {
     try {
+      if (args.action === 'fenced') {
+        const parsed = poolIdentity.extend({ action: z.literal('fenced'), worker_version: z.literal(5),
+          expected_worker_id: z.string().regex(/^[a-f0-9]{32}$/).nullable() }).strict().parse(args);
+        return json(await confirmPoolFence(parsed, parsed.expected_worker_id));
+      }
+      if (args.action === 'inspect_slot' || args.action === 'supervise') {
+        const parsed = poolIdentity.extend({ action: z.enum(['inspect_slot', 'supervise']), worker_version: z.literal(5) }).strict().parse(args);
+        return json(await (parsed.action === 'inspect_slot' ? inspectPoolSlot(parsed) : supervisePoolSlot(parsed)));
+      }
       if (args.action === 'poll') {
         const parsed = poolIdentity.extend({ action: z.literal('poll'), worker_version: z.literal(5), heartbeat: z.boolean().optional() }).strict().parse(args);
         return json({ job: await claimPoolJob(parsed) });

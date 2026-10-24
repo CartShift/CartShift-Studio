@@ -19,6 +19,7 @@ root=pathlib.Path('/workspace/experiments/parallel-host-acceptance');root.mkdir(
 if mode=='survivor': command='sleep 4; printf survived'
 elif mode=='cancel': command='sleep 20'
 elif mode=='crash': command='sleep 20'
+elif mode=='stalled': command='kill -STOP "$PPID"; sleep 20; printf stale'
 else: command='sleep 10; printf parallel'
 cancel=threading.Event()
 if mode=='cancel': threading.Timer(.5,cancel.set).start()
@@ -64,3 +65,17 @@ Write-Output 'Independent container restart and persistent workspace: pass'
 $a=Start-Proof 1 'cancel';$ra=Finish-Proof $a
 if ($ra.exit_code -ne 130) { throw 'Restarted slot did not recover.' }
 Write-Output 'Restarted slot accepts and cleans new work: pass'
+
+# Exercise real parent SIGSTOP against host watchdog; synthetic lease metadata
+# avoids passing any backend credential to this host acceptance fixture.
+. (Join-Path $PSScriptRoot 'Common-SandboxPool.ps1')
+function Invoke-PoolControl([string]$Action,[string]$WorkerId,[string]$Token,[int]$Slot) {
+ return @{acknowledged=$true;job_id='stopped-parent-fixture';lease_expires_at=1;now=2;last_seen_at=2}
+}
+$a=Start-Proof 1 'stalled';$b=Start-Proof 2 'survivor'
+$watch=[Diagnostics.Stopwatch]::StartNew()
+$code=Wait-SandboxPoolWorker -Process $a -Slot 1 -WorkerId ('a'*32) -Token 'fixture' -Container "$Prefix-1"
+if (!$a.WaitForExit(5000)) { $a.Kill($true);throw 'Watchdog did not fence stopped worker.' }
+$a.Dispose();$rb=Finish-Proof $b
+if ($watch.Elapsed.TotalSeconds -gt 15 -or $rb.exit_code -ne 0 -or $rb.stdout -ne 'survived') { throw 'Independent watchdog isolation failed.' }
+Write-Output 'Stopped Python parent: host watchdog fenced its container; other slot survived'

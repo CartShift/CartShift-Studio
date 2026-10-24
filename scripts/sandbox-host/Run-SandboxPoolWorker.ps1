@@ -25,6 +25,7 @@ source=base64.b64decode(sys.stdin.buffer.readline(262145).strip(),validate=True)
 assert hashlib.sha256(source).hexdigest()==sys.argv[1]
 exec(compile(source,'<verified-pool-worker>','exec'),{'__name__':'__main__'})
 '@
+. (Join-Path $PSScriptRoot 'Common-SandboxPool.ps1')
 try {
  while ($true) {
   $worker=[IO.File]::ReadAllBytes($WorkerSource)
@@ -43,16 +44,30 @@ try {
    # A paused container is an owner backup barrier: never unpause/restart it.
    $paused=Invoke-SandboxDocker inspect --format '{{.State.Paused}}' $container
    if ($paused -eq 'true') { throw 'Slot paused for maintenance.' }
-   Invoke-SandboxDocker restart --time 10 $container | Out-Null
    $credential=(Get-Content -LiteralPath $DpapiTokenFile -Raw).Trim() | ConvertTo-SecureString
    $ptr=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($credential)
+   $process=$null
    try {
     $token=[Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
     if ($token -cnotmatch '^[A-Za-z0-9_-]{48,}$') { throw 'Invalid worker token.' }
+    $workerId=[Guid]::NewGuid().ToString('N')
+    # Backend releases the old reservation only after the restart above has
+    # fenced every process in this container, never merely on lease expiry.
+    $previous=Invoke-PoolControl 'inspect_slot' $workerId $token $Slot
+    $paused=Invoke-SandboxDocker inspect --format '{{.State.Paused}}' $container
+    if ($paused -eq 'true') { throw 'Slot paused for maintenance.' }
+    Invoke-SandboxDocker restart --time 10 $container | Out-Null
+    [void](Invoke-PoolControl 'fenced' $workerId $token $Slot $previous.current_worker_id)
     $encoded=[Convert]::ToBase64String($worker)
-    & { Write-Output $encoded; Write-Output $token } | Invoke-HostDocker exec -i -e SANDBOX_WORKER_ROLE=build -e "SANDBOX_WORKER_SLOT=$Slot" $container python3 -I -c $python $hash --token-stdin
-    $exit=$LASTEXITCODE
+    $si=[Diagnostics.ProcessStartInfo]::new($script:SandboxDockerExe)
+    $si.UseShellExecute=$false;$si.CreateNoWindow=$true
+    $si.RedirectStandardInput=$true;$si.RedirectStandardOutput=$true;$si.RedirectStandardError=$true
+    foreach ($argument in @('--host',$script:SandboxDockerEndpoint,'exec','-i','-e','SANDBOX_WORKER_ROLE=build','-e',"SANDBOX_WORKER_SLOT=$Slot",'-e',"SANDBOX_WORKER_ID=$workerId",$container,'python3','-I','-c',$python,$hash,'--token-stdin')) { [void]$si.ArgumentList.Add($argument) }
+    $process=[Diagnostics.Process]::Start($si)
+    $process.StandardInput.WriteLine($encoded);$process.StandardInput.WriteLine($token);$process.StandardInput.Close()
+    $exit=Wait-SandboxPoolWorker -Process $process -Slot $Slot -WorkerId $workerId -Token $token -Container $container
    } finally {
+    if ($process) { if (!$process.HasExited) { $process.Kill($true) };$process.Dispose() }
     [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr); $token=$null; $credential.Dispose()
    }
   } catch { Write-Warning "Slot $Slot unavailable; retrying only its verified container." }

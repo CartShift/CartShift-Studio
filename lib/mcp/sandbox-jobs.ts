@@ -158,7 +158,7 @@ async function awaitJob(ref: FirebaseFirestore.DocumentReference, jobId: string,
     const timer = setTimeout(() => finish({ job_id: jobId, status: 'running', pending: true }), seconds * 1000);
     unsubscribe = ref.onSnapshot(snap => {
       const data = snap.data();
-      if (data && ['completed', 'cancelled', 'expired'].includes(data.status)) finish(publicJobResult(jobId, data));
+      if (data && ['completed', 'cancelled', 'expired', 'worker_lost'].includes(data.status)) finish(publicJobResult(jobId, data));
     }, error => finish(undefined, error));
     if (stopped) unsubscribe?.();
   });
@@ -243,7 +243,8 @@ export async function getSandboxRecentJobs(grant: TokenGrant, input: unknown) {
     return { job_id: doc.id, kind: data.kind ?? 'command', status: jobStatus(data),
       cancel_requested: Boolean(data.cancelRequestedAt), created_at: data.createdAt,
       started_at: data.startedAt ?? null, finished_at: data.finishedAt ?? null,
-      duration_ms: data.durationMs ?? null, exit_code: data.exitCode ?? null };
+      duration_ms: data.durationMs ?? null, exit_code: data.exitCode ?? null,
+      worker_id: data.workerId ?? null, worker_slot: data.workerSlot ?? null };
   }) };
 }
 

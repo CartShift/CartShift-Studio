@@ -12,7 +12,7 @@ const db = vi.hoisted(() => {
       serial = result.catch(() => {}); return result; } } };
 });
 vi.mock('@/lib/mcp/connection', () => ({ firestore: () => db.instance, tokenHash: (s: string) => 'hashed:' + s }));
-import { claimPoolJob, poolHeartbeat, poolStatus } from '@/lib/mcp/sandbox-pool';
+import { claimPoolJob, poolHeartbeat, poolStatus, confirmPoolFence, supervisePoolSlot } from '@/lib/mcp/sandbox-pool';
 const a = { slot: 1, worker_id: 'a'.repeat(32) }, b = { slot: 2, worker_id: 'b'.repeat(32) };
 function job(id: number, cwd = '/workspace/experiments/task-' + id) {
   db.docs.set('sandbox_command_jobs/job-' + id, { ownerUid: 'owner', status: 'queued', command: 'sleep 10', cwd,
@@ -42,12 +42,21 @@ describe('atomic parallel pool', () => {
     expect(await claimPoolJob(b)).toMatchObject({ job_id: 'job-3' });
   });
   it('does not requeue uncertain jobs when a slot lease expires', async () => {
-    job(1); job(2); await claimPoolJob(a);
+    job(1, '/workspace/projects/shared'); job(2, '/workspace/projects/shared'); await claimPoolJob(a);
     const pool = db.docs.get('sandbox_worker_state/pool')!;
     pool.slots['1'].expiresAt = Date.now() - 1;
     pool.slots['1'].lastSeenAt = Date.now() - 91_000;
-    expect(await claimPoolJob({ ...a, worker_id: 'c'.repeat(32) })).toMatchObject({ job_id: 'job-2' });
+    expect(await claimPoolJob(b)).toBeNull(); // expiry is not physical fencing
+    expect(db.docs.get('sandbox_command_jobs/job-1')!.status).toBe('leased');
+    const replacement = { ...a, worker_id: 'c'.repeat(32) };
+    await confirmPoolFence(replacement, a.worker_id);
+    expect(await claimPoolJob(replacement)).toMatchObject({ job_id: 'job-2' });
     expect(db.docs.get('sandbox_command_jobs/job-1')!.status).toBe('worker_lost');
+    // An identical fence retry cannot clear work already started by this epoch.
+    await confirmPoolFence(replacement, a.worker_id);
+    expect((await supervisePoolSlot(replacement)).job_id).toBe('job-2');
+    await expect(confirmPoolFence({ ...a, worker_id: 'd'.repeat(32) }, a.worker_id)).rejects.toThrow('STALE_FENCE');
+    expect((await supervisePoolSlot(replacement)).job_id).toBe('job-2');
   });
   it('rejects stale heartbeat identities and invalid capacity', async () => {
     job(1); const claimed = await claimPoolJob(a);
