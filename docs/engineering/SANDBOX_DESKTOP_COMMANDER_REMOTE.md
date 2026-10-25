@@ -1,3 +1,5 @@
+> Owner decision, 2026-10-25: this hosted relay is stopped and retained. Use the existing CartShift MCP connector with the local open-source engine instead; see [SANDBOX_LOCAL_DESKTOP_COMMANDER.md](SANDBOX_LOCAL_DESKTOP_COMMANDER.md). Do not use Codex Remote or start the hosted service without a new owner request.
+
 # Remote Desktop Commander in the isolated sandbox
 
 ## Purpose

@@ -70,7 +70,7 @@ export const TOOL_DEFS = [
 
   {
     name: 'sandbox_run_command',
-    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active V2+ worker; running cancellation and artifacts require V4.',
+    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Local open-source Desktop Commander is available through node /workspace/scripts/sandbox_desktop_commander.mjs list, or its request command with JSON stdin {"op":"call","tool":"NAME","args":{}}. Use a quoted heredoc for JSON. Sessions persist in that local engine across jobs. No hosted Desktop Commander account or Codex Remote is needed. Timeouts above 120s require an active V2+ worker; running cancellation and artifacts require V4.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['command'], properties: {
       command: { type: 'string', minLength: 1, maxLength: 2000 },

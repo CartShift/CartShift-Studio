@@ -1,5 +1,5 @@
 #Requires -Version 7.3
-param([string[]]$Paths)
+param([Parameter(Mandatory)][ValidateNotNullOrEmpty()][string[]]$Paths)
 $ErrorActionPreference='Stop'
 $owner=$windowsOwner=[Security.Principal.WindowsIdentity]::GetCurrent().Name
 foreach($path in $Paths){
