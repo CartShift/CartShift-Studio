@@ -38,6 +38,7 @@ class RemoteDesktopCommanderBoundaryTests(unittest.TestCase):
         self.assertIn("target=/home/node", self.sidecar)
         self.assertIn("Assert-SandboxMount $spec '/workspace/.auth' $CredentialShadow $false", self.sidecar)
         self.assertIn("os.chmod(p,0o700)", self.sidecar)
+        self.assertEqual(self.sidecar.count("target=/home/node,volume-nocopy"), 2)
         self.assertIn("Refusing to replace or reuse pairing state.", self.sidecar)
 
     def test_uses_pinned_existing_package_only(self):
