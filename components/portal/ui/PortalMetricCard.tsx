@@ -86,7 +86,7 @@ export function PortalMetricCard({
           </p>
           <p
             className={cn(
-              'mt-3 font-outfit text-2xl font-semibold tracking-[-0.035em] tabular-nums',
+              'mt-3 font-outfit text-2xl font-semibold tracking-[-0.035em] tabular-nums break-words [overflow-wrap:anywhere]',
               styles.value
             )}
           >

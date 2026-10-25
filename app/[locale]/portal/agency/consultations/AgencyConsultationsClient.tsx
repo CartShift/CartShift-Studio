@@ -207,7 +207,7 @@ export default function AgencyConsultationsClient() {
       </AnimatePresence>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5 mb-5">
+      <div className="grid grid-cols-1 min-[390px]:grid-cols-2 xl:grid-cols-4 gap-3.5 mb-5">
         <div className="min-h-[96px] p-3.5 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">

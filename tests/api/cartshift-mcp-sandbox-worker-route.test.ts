@@ -36,7 +36,7 @@ describe('sandbox worker request boundaries', () => {
   });
   it('recognizes bounded periodic poll heartbeats without extra writes on ordinary polls', async () => {
     mocks.lease.mockResolvedValue(null);
-    const req = body => new Request('https://example.com', { method: 'POST',
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST',
       body: JSON.stringify(body) });
     expect((await POST(req({ action: 'poll' }))).status).toBe(200);
     expect(mocks.heartbeat).not.toHaveBeenCalled();

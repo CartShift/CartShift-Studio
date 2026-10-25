@@ -101,12 +101,30 @@ export function usePortalUIState({
   useEffect(() => {
     const checkMobile = () => {
       startTransition(() => {
-        setIsMobile(window.innerWidth < 768);
+        const mobile = window.innerWidth < 768;
+        setIsMobile(mobile);
+        // Prevent a mobile dialog/focus trap from persisting after rotation or resize.
+        if (!mobile) {
+          setIsMobileMenuOpen(false);
+          setIsMobileSearchOpen(false);
+        }
       });
     };
     requestAnimationFrame(checkMobile);
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Keep the permanent desktop sidebar compact on tablet-sized viewports.
+  // The user can still expand it manually after the initial responsive adjustment.
+  useEffect(() => {
+    const tablet = window.matchMedia('(min-width: 768px) and (max-width: 1199px)');
+    if (tablet.matches) setIsSidebarOpen(false);
+    const onTabletChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setIsSidebarOpen(false);
+    };
+    tablet.addEventListener('change', onTabletChange);
+    return () => tablet.removeEventListener('change', onTabletChange);
   }, []);
 
   // Body overflow effect

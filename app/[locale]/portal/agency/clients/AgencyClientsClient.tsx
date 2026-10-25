@@ -280,7 +280,7 @@ export default function AgencyClientsClient() {
       </div>
 
       {/* Revenue Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <Link href={getPortalPath('/agency/sales')} className="rounded-2xl">
           <PortalMetricCard
             icon={DollarSign}
@@ -389,7 +389,7 @@ export default function AgencyClientsClient() {
 
       {filteredOrgs.length > 0 ? (
         <>
-          <div className="hidden lg:block">
+          <div className="hidden xl:block">
             <ClientList
               clients={filteredOrgs}
               currentUserId={user?.uid}
@@ -398,7 +398,7 @@ export default function AgencyClientsClient() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 min-[1120px]:grid-cols-3 gap-5 lg:hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 min-[1120px]:grid-cols-3 gap-5 xl:hidden">
             {filteredOrgs.map(org => (
             <Card
               key={org.id}

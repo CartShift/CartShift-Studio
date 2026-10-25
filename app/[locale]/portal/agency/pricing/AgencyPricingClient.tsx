@@ -188,7 +188,7 @@ export default function AgencyPricingClient() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 min-[920px]:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 min-[390px]:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <Card className="min-h-[96px] p-3.5 bg-primary-50 dark:bg-primary-950/20 border-primary-200/50 dark:border-primary-800/30">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-primary-500/10 rounded-lg flex items-center justify-center">

@@ -86,7 +86,7 @@ export default function AgencyDashboardClient() {
         </div>
       )}
 
-      <div aria-busy={loading} className={'grid grid-cols-2 gap-3 ' + (canManagePricing ? 'lg:grid-cols-5' : 'lg:grid-cols-4')}>
+      <div aria-busy={loading} className={'grid grid-cols-1 min-[390px]:grid-cols-2 gap-3 ' + (canManagePricing ? 'min-[1100px]:grid-cols-3 min-[1600px]:grid-cols-5' : 'min-[1100px]:grid-cols-3 min-[1440px]:grid-cols-4')}>
         <PortalMetricCard icon={AlertCircle} label={t('attention')} value={loading ? '…' : attention.length} tone="warning" />
         <PortalMetricCard icon={FolderKanban} label={t('activeProjects')} value={loading ? '…' : activeProjects.length} tone="primary" />
         <PortalMetricCard icon={Users} label={portal('projects.proBono')} value={loading ? '…' : proBonoProjects} tone="neutral" />

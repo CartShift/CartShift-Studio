@@ -99,13 +99,18 @@ export default function AgencyWorkboardClient() {
     openRequestPreview(req.id, { orgId: req.orgId });
   };
 
+  // Keep the mobile tab counts in sync with the visible project-filtered cards.
+  const getVisibleRequestsForColumn = (column: Column) =>
+    getRequestsForColumn(column).filter(request =>
+      projectFilter === 'all' ||
+      (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
+
   // ── Column Rendering Helper ──────────────────────────────────
   const renderColumn = (column: Column, isHiddenOnMobile: boolean) => {
-    const columnRequests = getRequestsForColumn(column).filter(request =>
-      projectFilter === 'all' || (projectFilter === 'unassigned' ? !request.projectId : request.projectId === projectFilter));
+    const columnRequests = getVisibleRequestsForColumn(column);
 
     return (
-      <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden md:block')}>
+      <div key={column.id} className={cn('w-full', isHiddenOnMobile && 'hidden lg:block')}>
         <DroppableColumn
           id={column.id}
           title={column.title}
@@ -223,9 +228,9 @@ export default function AgencyWorkboardClient() {
       />
 
       {/* Mobile Column Tabs */}
-      <div className="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide snap-x">
+      <div className="flex lg:hidden items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide snap-x">
         {columns.map(col => {
-          const columnRequests = getRequestsForColumn(col);
+          const columnRequests = getVisibleRequestsForColumn(col);
           const isActive = activeMobileTab === col.id;
           return (
             <button
@@ -259,7 +264,7 @@ export default function AgencyWorkboardClient() {
       </div>
 
       {/* Columns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 min-[1040px]:grid-cols-3 min-[1440px]:grid-cols-5 gap-4 items-start pb-20 mt-4 md:mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-[1280px]:grid-cols-3 min-[1680px]:grid-cols-5 gap-4 items-start pb-20 mt-4 md:mt-6">
         {columns.map(column => renderColumn(column, activeMobileTab !== column.id))}
       </div>
 
