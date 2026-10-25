@@ -56,11 +56,14 @@ if ($Action -eq 'Prepare') {
  if ($allocated + 512MB -gt [long]$limits.MemTotal - 2GB -or $cpus + 1 -gt [double]$limits.NCPU) {
   throw 'Insufficient Docker resource budget.'
  }
+ # The pinned image must already contain the audited Desktop Commander package.
+ # Never download or execute an unpinned third-party package during Prepare.
+ Invoke-SandboxDocker run --rm --network none --read-only --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 128m $source.image python3 -I -c 'import os; assert os.path.isfile("/opt/dc/node_modules/@wonderwhy-er/desktop-commander/dist/index.js")' | Out-Null
  if ($PSCmdlet.ShouldProcess($Name,'Create isolated remote agent container and dedicated home')) {
   New-SandboxVolume $homeVolume
   # Initialize ONLY this new empty labelled volume. Never change workspace ownership.
   Invoke-SandboxDocker run --rm --network none --user 0:0 --read-only --cap-drop ALL --cap-add CHOWN --security-opt no-new-privileges --pids-limit 32 --memory 128m --mount "type=volume,source=$homeVolume,target=/home/node" $source.image python3 -I -c 'import os; p="/home/node"; assert os.listdir(p)==[]; os.chown(p,1000,1000)' | Out-Null
-  Invoke-SandboxDocker create --name $Name --hostname ai-docker-sandbox --network $source.host.NetworkMode --user 1000:1000 --read-only --restart unless-stopped --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 512m --memory-swap 512m --cpus 1 --tmpfs '/tmp:rw,nosuid,nodev,size=128m,mode=1777' --tmpfs '/run:rw,nosuid,nodev,noexec,size=16m,mode=755' --log-opt max-size=5m --log-opt max-file=3 --add-host host.docker.internal:127.0.0.1 --add-host gateway.docker.internal:127.0.0.1 --mount "type=volume,source=$WorkspaceVolume,target=/workspace" --mount "type=volume,source=$CredentialShadow,target=/workspace/.auth,readonly,volume-nocopy" --mount "type=volume,source=$homeVolume,target=/home/node" --label sandbox.owner=ai-dev-sandbox --label io.cartshift.sandbox.dc-role=remote --env HOME=/home/node --env XDG_CONFIG_HOME=/home/node/.config $source.image @expectedCmd | Out-Null
+  Invoke-SandboxDocker create --name $Name --workdir /workspace --hostname ai-docker-sandbox --network $source.host.NetworkMode --user 1000:1000 --read-only --restart unless-stopped --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 512m --memory-swap 512m --cpus 1 --tmpfs '/tmp:rw,nosuid,nodev,size=128m,mode=1777' --tmpfs '/run:rw,nosuid,nodev,noexec,size=16m,mode=755' --log-opt max-size=5m --log-opt max-file=3 --add-host host.docker.internal:127.0.0.1 --add-host gateway.docker.internal:127.0.0.1 --mount "type=volume,source=$WorkspaceVolume,target=/workspace" --mount "type=volume,source=$CredentialShadow,target=/workspace/.auth,readonly,volume-nocopy" --mount "type=volume,source=$homeVolume,target=/home/node" --label sandbox.owner=ai-dev-sandbox --label io.cartshift.sandbox.dc-role=remote --env HOME=/home/node --env XDG_CONFIG_HOME=/home/node/.config $source.image @expectedCmd | Out-Null
  }
  if ($WhatIfPreference) { return }
 }
