@@ -21,7 +21,8 @@ class SandboxV4Tests(unittest.TestCase):
         with patch.object(worker, 'TOKEN', 'a' * 48):
             with patch.object(worker, 'ROLE', 'legacy'):
                 worker.verify_identity()  # existing V3 compatible startup
-            with patch.object(worker, 'ROLE', 'build'):
+            # Model an unsegmented legacy mount table even when tests run in V4.
+            with patch.object(worker, 'ROLE', 'build'), patch.object(worker, 'is_mountpoint', return_value=False):
                 with self.assertRaisesRegex(RuntimeError, 'shadow mount'):
                     worker.verify_identity()
             with patch.object(worker, 'ROLE', 'auth'):
