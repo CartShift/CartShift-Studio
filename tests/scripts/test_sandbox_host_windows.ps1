@@ -26,3 +26,14 @@ $action=New-SandboxScheduledAction @('-NoProfile','-NonInteractive','-File','C:\
 if($action.Execute -match 'codex-runtimes' -or $action.Arguments -match 'ExecutionPolicy|EncodedCommand' -or $action.Arguments -notmatch '"C:\\fixture with spaces\\owner.ps1"'){throw 'Persistent task arguments changed.'}
 Assert-Refused {New-SandboxScheduledAction @('bad"argument')}
 Write-Output 'PASS: UTC lease round trips; paused inspection-only certification; resumed/restarted refusal; persistent native task argv.'
+
+$script:availabilityCalls=0;$script:startupCalls=0
+Wait-SandboxDockerForBackup -MaxWaitSeconds 5 -RetrySeconds 1 -Probe {
+ $script:availabilityCalls++;if($script:availabilityCalls -lt 3){throw [IO.IOException]::new('synthetic unavailable')}
+} -StartDocker {$script:startupCalls++}
+if($script:availabilityCalls -ne 3 -or $script:startupCalls -ne 1){throw 'Startup retry count incorrect.'}
+$script:startupCalls=0
+Assert-Refused {Wait-SandboxDockerForBackup -MaxWaitSeconds 0 -Probe {throw 'Synthetic wrong architecture or remote endpoint.'} -StartDocker {$script:startupCalls++}}
+if($script:startupCalls){throw 'Security mismatch incorrectly triggered startup.'}
+Assert-Refused {Wait-SandboxDockerForBackup -MaxWaitSeconds 0 -Probe {throw [IO.IOException]::new('synthetic unavailable')} -StartDocker {}}
+Write-Output 'PASS: Docker unavailable retries/start-once, timeout bound and fail-closed security mismatches.'

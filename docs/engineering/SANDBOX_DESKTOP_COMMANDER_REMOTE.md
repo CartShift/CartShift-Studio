@@ -79,6 +79,20 @@ name or home is already present. `Verify` checks exact image, command,
 container label, mount identities, privileges and resource caps. Never weaken
 these checks to bypass a failure.
 
+## Interrupted preparation
+
+Preparation helpers use an explicit Python entrypoint so the image's workspace
+initializer cannot write to an unmounted, read-only workspace. New-home mode is
+set before ownership is handed to UID 1000; no FOWNER capability is needed.
+`-WhatIf` starts no helper containers.
+
+If initialization was interrupted after ownership changed but before container
+creation, `Prepare -ResumeEmptyHome -AcknowledgeThirdPartyRelay` may finish it.
+This opt-in path requires the expected owner label, no attached container (even
+stopped), an empty directory and UID/GID 1000. It sets and verifies mode 0700 as
+UID 1000. A nonempty or paired home is refused; it never deletes state. Ordinary
+Prepare still refuses an existing destination.
+
 ## Pair the device
 
 The next steps are **real owner approvals** and cannot be claimed as done by a

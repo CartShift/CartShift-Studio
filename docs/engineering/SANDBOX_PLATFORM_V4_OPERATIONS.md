@@ -48,7 +48,22 @@ Stop new supervisors BEFORE restoring names or credentials. Retain old sources/h
 
 Managed services require dependencies resolved inside the project subtree; project wrappers must accept Next/Vite argument conventions. Project .env remains readable by its own code. Loopback previews need a separately authorized authenticated tunnel for mobile access. Docker Desktop/logon tasks cannot provide availability while asleep/off or before owner login. No power policy is silently changed.
 
-Docker Desktop → ai-dev-workspace → Logs shows metadata health, connections, progress, results, timeouts and session activity. Rotation is three5MB files. Raw manual terminal sessions are separate; managed app logs may contain project data and should be viewed locally.
+Docker Desktop → ai-dev-pool-1 / ai-dev-pool-2 → Logs shows command-worker health, connections, progress, results and timeouts. ai-auth-sandbox → Logs shows redacted auth-session metadata; ai-dev-workspace → Logs is the separate local MCP server. Rotation is three5MB files. Raw manual terminal sessions are separate; managed app logs may contain project data and should be viewed locally.
 ## Recorded workstation evidence
 
 The compatible V4 backend is live; five existing CLI identities, command/PTY round trips, running and queued cancellation, timeout124 and a125-second command passed. The independently passphrase-tested recovery key and both original encrypted archives have matching local-copy hashes and Windows Cloud Files IN_SYNC confirmation in OneDrive/Documents/CartShiftSandboxBackups. Cloud synchronization status does not promise permanent provider grants. Current activation evidence is maintained in the deployment record; never infer isolated enforcement or Android acceptance from this paragraph.
+
+
+## Active host state and October 25 corrections
+
+The isolated auth sidecar and credential-blind primary are active; the coordinated two-slot V5 command pool is also active. Auth enforcement is enabled in production. The retained original runtime must remain stopped. Current production and rollback IDs, pins and acceptance evidence are in `SANDBOX_PLATFORM_V4_DEPLOYMENT_2026-10-23.md` and `SANDBOX_PARALLEL_EXECUTION.md`.
+
+Managed project services now pin the actual `/app` kernel mount root before app execution. Docker follows symlink volume subpaths, so path-string validation alone is insufficient. The immutable launch guard reruns on restart. Existing services without `io.cartshift.sandbox.project-guard=mountinfo-v1` must be stopped/retained and replaced, never silently trusted.
+
+The scheduled backup wrapper requests the existing installed Docker Desktop once when the verified local daemon is unavailable, then retries for up to 300 seconds. It does not retry security/architecture mismatches. An owner can set `docker_wait_seconds` (0–1800) and `docker_retry_seconds` (1–60) in private `scheduled-backup.json`. `last-backup-status.json` describes the latest attempt; `last-backup-success.json` is replaced atomically only after a successful authenticated full archive verification and SHA-256 check. A failed attempt never destroys earlier archives or a successful receipt. Weekly scheduling is Sunday 03:00 local wall time, after owner logon. Existing Documents copies and OneDrive sync require separate verification; a local matching hash alone does not certify off-PC recovery.
+
+Firebase interactive login fixes `FIREBASE_DEBUG_PATH` to `/workspace/.auth/firebase/.cache/firebase-debug.log`, inside the private auth volume. Owner-only read-only status probes should also use a writable cwd or that fixed environment path; Firebase initializes its log before checking authentication. Do not publish raw provider debug logs. Reviewed guardian SHA-256: `336ab94c2da6cf0939fb1240ee5e482ef7363cdb4fdd76c07ce9c2a576af44e0`. Existing worker/tools pins are unchanged.
+
+A genuine Windows reboot/login, actual ChatGPT Android UI acceptance and any expired provider grant remain separate checks. Keep PR #122 draft until those checks and the newest encrypted backup's off-PC synchronization are recorded.
+
+For owner-driven source upgrades, stop the old scheduled supervisor and wait for it to exit before starting its replacement. Confirm a fresh handshake, inspect the running source hashes and perform a real session test. Updating the registered task action alone does not prove that an older Docker exec process was replaced.

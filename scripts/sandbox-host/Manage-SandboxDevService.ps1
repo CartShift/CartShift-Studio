@@ -25,12 +25,26 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Common-SandboxHost.ps1')
 $name = "ai-dev-$Project"
 $label = 'io.cartshift.sandbox.managed=dev-service-v1'
+$guardLabel = 'io.cartshift.sandbox.project-guard=mountinfo-v1'
 
 function Docker {
   $Arguments=@($args | ForEach-Object { $_ })
   $result = @(Invoke-HostDocker @Arguments 2>&1)
   if ($LASTEXITCODE -ne 0) { throw "Docker operation failed (exit $LASTEXITCODE)." }
   return $result
+}
+function Wait-ProjectMountGuard {
+  for($attempt=0;$attempt -lt 30;$attempt++){
+    $state=((Docker @('inspect','--format','{{json .State}}',$name)) -join '')|ConvertFrom-Json
+    if($state.Paused){throw 'Managed service paused for owner maintenance; verification deferred.'}
+    if($state.Running){
+      Invoke-HostDocker exec --user 1000:1000 $name /usr/bin/test -f /tmp/cartshift-project-mount-verified *> $null
+      if($LASTEXITCODE -eq 0){return}
+    }
+    Start-Sleep -Milliseconds 250
+  }
+  Docker @('stop','--time','5',$name)|Out-Null
+  throw 'Project mount guard or application startup failed; container retained stopped.'
 }
 function Existing() {
   $id = @(Invoke-HostDocker container ls -aq --filter "name=^/$name$" 2>$null)
@@ -81,10 +95,13 @@ switch ($Action) {
   }
   'Start' {
     if (Existing) {
+      $guard=((Docker @('inspect','--format','{{index .Config.Labels "io.cartshift.sandbox.project-guard"}}',$name)) -join '').Trim()
+      if($guard -ne 'mountinfo-v1'){throw 'Existing service predates project mount guard; preserve it and create a guarded replacement.'}
       $running = ((Docker @('inspect','--format','{{.State.Running}}',$name)) -join '').Trim()
       if ($running -eq 'true') { Write-Output "$name already running."; return }
       if ($PSCmdlet.ShouldProcess($name,'Restart managed dev container')) {
         Docker @('start',$name) | Out-Null
+        Wait-ProjectMountGuard
       }
       return
     }
@@ -96,8 +113,11 @@ switch ($Action) {
     $imageId=$source.image
     Assert-SandboxImage $imageId
     if ($imageId -notmatch '^sha256:[0-9a-f]{64}$') { throw 'Main sandbox image cannot be pinned.' }
-    # Validate project existence through an ephemeral process with NO network,
-    # only the target subtree mounted. Docker itself rejects a missing volume-subpath.
+    # Read the canonical kernel volume root from the verified primary runtime.
+    # Docker follows volume-subpath symlinks: only the actual pinned mount seen
+    # inside the new service can authorize execution, avoiding a preflight race.
+    $kernelRoot=((Docker @('exec','--user','1000:1000',$MainContainer,'/usr/bin/python3','-I','-c','from pathlib import Path; r=[x.split() for x in Path("/proc/self/mountinfo").read_text().splitlines() if x.split()[4]=="/workspace"]; assert len(r)==1; print(r[0][3])')) -join '').Trim()
+    if($kernelRoot -cnotmatch '^/[A-Za-z0-9_./-]+$'){throw 'Unsupported canonical workspace mount root.'}
     $subpath = "projects/$Project"
     $mount = "type=volume,source=$WorkspaceVolume,target=/app,volume-subpath=$subpath"
     $command = if ($Framework -eq 'Next') {
@@ -105,6 +125,9 @@ switch ($Action) {
     } else {
       "exec $PackageManager run dev -- --host 0.0.0.0 --port $ContainerPort"
     }
+    $expectedRoot=$kernelRoot.TrimEnd('/')+'/'+$subpath
+    $mountGuard = 'import os,pathlib,sys; r=[x.split() for x in pathlib.Path("/proc/self/mountinfo").read_text().splitlines() if len(x.split())>5 and x.split()[4]=="/app"]; assert len(r)==1 and r[0][3]==sys.argv[1], "Project mount mismatch"; fd=os.open("/tmp/cartshift-project-mount-verified",os.O_CREAT|os.O_WRONLY|os.O_TRUNC|os.O_NOFOLLOW,0o600); os.write(fd,b"v1"); os.close(fd)'
+    $command="/usr/bin/python3 -I -c '$mountGuard' '$expectedRoot' && $command"
     $args = @('run','--detach','--init','--name',$name,
       '--restart','unless-stopped','--user','1000:1000',
       '--read-only','--cap-drop','ALL','--security-opt','no-new-privileges',
@@ -116,10 +139,11 @@ switch ($Action) {
       '--publish',"127.0.0.1:${HostPort}:${ContainerPort}",
       '--label','sandbox.owner=ai-dev-sandbox','--log-opt','max-size=5m','--log-opt','max-file=3',
       '--add-host','host.docker.internal:127.0.0.1','--add-host','gateway.docker.internal:127.0.0.1',
-      '--label',$label,'--entrypoint','/bin/sh',$imageId,
+      '--label',$label,'--label',$guardLabel,'--entrypoint','/bin/sh',$imageId,
       '-c',$command)
     if ($PSCmdlet.ShouldProcess($name,"Create managed dev container with loopback-only preview port $HostPort")) {
       Docker $args | Out-Null
+      Wait-ProjectMountGuard
       Write-Output "$name started. Host-only URL: http://127.0.0.1:$HostPort"
       Write-Output 'No provider authentication volume or Docker socket was mounted.'
     }

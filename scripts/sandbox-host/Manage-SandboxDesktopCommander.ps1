@@ -15,7 +15,8 @@ param(
  [ValidatePattern('^[a-z][a-z0-9-]{2,60}$')][string]$SourceContainer='ai-dev-pool-1',
  [ValidatePattern('^[a-z][a-z0-9-]{2,60}$')][string]$WorkspaceVolume='ai-dev-sandbox-workspace',
  [ValidatePattern('^[a-z][a-z0-9-]{2,60}$')][string]$CredentialShadow='ai-dev-pool-empty-auth',
- [switch]$AcknowledgeThirdPartyRelay
+ [switch]$AcknowledgeThirdPartyRelay,
+ [switch]$ResumeEmptyHome
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
@@ -43,7 +44,14 @@ if ($Action -eq 'Prepare') {
  Invoke-HostDocker container inspect $Name *> $null
  if ($LASTEXITCODE -eq 0) { throw 'Container exists. Use Verify; never replace it through Prepare.' }
  Invoke-HostDocker volume inspect $homeVolume *> $null
- if ($LASTEXITCODE -eq 0) { throw 'Home exists. Refusing to replace or reuse pairing state.' }
+ $homeExists=$LASTEXITCODE -eq 0
+ if ($homeExists) {
+  if (!$ResumeEmptyHome) { throw 'Home exists. Refusing to replace or reuse pairing state.' }
+  Assert-SandboxVolumeOwner $homeVolume
+  Assert-SandboxVolumeQuiescent $homeVolume
+  $consumers=@(Invoke-SandboxDocker ps -a --filter "volume=$homeVolume" --format '{{.Names}}')
+  if ($consumers.Count) { throw 'Cannot resume a home attached to an existing container.' }
+ } elseif ($ResumeEmptyHome) { throw 'Resume requires an existing empty owner-labelled home.' }
  $limits=Invoke-SandboxDocker info --format '{{json .}}' | ConvertFrom-Json
  $allocated=[long]0
  $cpus=0.0
@@ -58,11 +66,16 @@ if ($Action -eq 'Prepare') {
  }
  # The pinned image must already contain the audited Desktop Commander package.
  # Never download or execute an unpinned third-party package during Prepare.
- Invoke-SandboxDocker run --rm --network none --read-only --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 128m $source.image python3 -I -c 'import os; assert os.path.isfile("/opt/dc/node_modules/@wonderwhy-er/desktop-commander/dist/index.js")' | Out-Null
  if ($PSCmdlet.ShouldProcess($Name,'Create isolated remote agent container and dedicated home')) {
+  Invoke-SandboxDocker run --rm --network none --read-only --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 128m --entrypoint python3 $source.image -I -c 'import os; assert os.path.isfile("/opt/dc/node_modules/@wonderwhy-er/desktop-commander/dist/index.js")' | Out-Null
+  if (!$homeExists) {
   New-SandboxVolume $homeVolume
   # Initialize ONLY this new empty labelled volume. Never change workspace ownership.
-  Invoke-SandboxDocker run --rm --network none --user 0:0 --read-only --cap-drop ALL --cap-add CHOWN --security-opt no-new-privileges --pids-limit 32 --memory 128m --mount "type=volume,source=$homeVolume,target=/home/node,volume-nocopy" $source.image python3 -I -c 'import os; p="/home/node"; assert os.listdir(p)==[]; os.chown(p,1000,1000); os.chmod(p,0o700)' | Out-Null
+  Invoke-SandboxDocker run --rm --network none --user 0:0 --read-only --cap-drop ALL --cap-add CHOWN --security-opt no-new-privileges --pids-limit 32 --memory 128m --mount "type=volume,source=$homeVolume,target=/home/node,volume-nocopy" --entrypoint python3 $source.image -I -c 'import os; p="/home/node"; assert os.listdir(p)==[]; os.chmod(p,0o700); os.chown(p,1000,1000)' | Out-Null
+  } else {
+   # Recover only an interrupted, empty initialization; never open paired state.
+   Invoke-SandboxDocker run --rm --network none --read-only --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 128m --mount "type=volume,source=$homeVolume,target=/home/node,volume-nocopy" --entrypoint python3 $source.image -I -c 'import os; p="/home/node"; st=os.lstat(p); assert st.st_uid==1000 and st.st_gid==1000; assert os.listdir(p)==[]; os.chmod(p,0o700); st=os.stat(p); assert st.st_mode & 0o777==0o700' | Out-Null
+  }
   Invoke-SandboxDocker create --name $Name --workdir /workspace --hostname ai-docker-sandbox --network $source.host.NetworkMode --user 1000:1000 --read-only --restart unless-stopped --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 1g --memory-swap 1g --cpus 1 --tmpfs '/tmp:rw,nosuid,nodev,size=128m,mode=1777' --tmpfs '/run:rw,nosuid,nodev,noexec,size=16m,mode=755' --log-opt max-size=5m --log-opt max-file=3 --add-host host.docker.internal:127.0.0.1 --add-host gateway.docker.internal:127.0.0.1 --mount "type=volume,source=$WorkspaceVolume,target=/workspace" --mount "type=volume,source=$CredentialShadow,target=/workspace/.auth,readonly,volume-nocopy" --mount "type=volume,source=$homeVolume,target=/home/node,volume-nocopy" --label sandbox.owner=ai-dev-sandbox --label io.cartshift.sandbox.dc-role=remote --env HOME=/home/node --env XDG_CONFIG_HOME=/home/node/.config $source.image @expectedCmd | Out-Null
  }
  if ($WhatIfPreference) { return }

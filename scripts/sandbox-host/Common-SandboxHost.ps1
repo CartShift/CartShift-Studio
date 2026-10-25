@@ -20,7 +20,8 @@ function Initialize-SandboxHost {
   if ($context.Count -ne 1 -or $context[0].Endpoints.docker.Host -cnotmatch '^npipe:/{4}[.]/pipe/[A-Za-z0-9_.-]+$') { throw 'Only local Docker Desktop named pipes are allowed.' }
   $script:SandboxDockerEndpoint=$context[0].Endpoints.docker.Host
   $info=Invoke-HostDocker info --format '{{json .}}' | ConvertFrom-Json
-  if ($LASTEXITCODE -ne 0 -or $info.OSType -ne 'linux' -or $info.Architecture -notin @('aarch64','arm64')) { throw 'Local Linux ARM64 Docker Desktop required.' }
+  if ($LASTEXITCODE -ne 0) { throw [IO.IOException]::new('Local Docker Desktop is unavailable.') }
+  if ($info.OSType -ne 'linux' -or $info.Architecture -notin @('aarch64','arm64')) { throw 'Local Linux ARM64 Docker Desktop required.' }
 }
 function Invoke-HostDocker {
   $output=$input | & $script:SandboxDockerExe --host $script:SandboxDockerEndpoint @args

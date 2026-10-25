@@ -273,6 +273,11 @@ class GuardianState:
         attrs[3] &= ~(termios.ECHO | termios.ECHONL)
         termios.tcsetattr(slave, termios.TCSANOW, attrs)
         env = {'HOME': '/home/node', 'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'USER': 'node', 'LOGNAME': 'node', 'TERM': 'dumb', 'BROWSER': 'echo', 'CI': 'false'}
+        # Firebase initializes its debug log before login; the isolated cwd is
+        # intentionally read-only. Keep that potentially sensitive log inside
+        # its existing private provider cache, never the shared project volume.
+        if provider == 'firebase':
+            env['FIREBASE_DEBUG_PATH'] = '/workspace/.auth/firebase/.cache/firebase-debug.log'
         command = self.fixture_command or ['/bin/bash', '--noprofile', '--norc', '/workspace/scripts/devctl', provider, 'login']
         guardian_pid = os.getpid()
         def setup_terminal():
