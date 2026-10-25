@@ -163,3 +163,65 @@ by hand while their containers may contain live processes.
 
 This ledger distinguishes staged Docker proof from live MCP acceptance. Do not
 claim Android or physical Windows reboot verification until actually performed.
+
+
+## Live activation and acceptance — October 25, 2026
+
+Production deployment `dpl_7r9hvbcbXHmnx751m9bGJLQb2pku` is READY and serves
+the existing portal aliases. Previous deployment
+`dpl_2WFJ9tG9v5Wsii1RDDi7H9Pfhj1F` is retained for rollback. Auth enforcement,
+parallel dispatch and two slots are enabled. The legacy task is disabled.
+
+- Actual unchanged MCP submissions `BKzOPCKqCxAyjyeTVcU0` and
+  `bAG1jipAXRh7jhZi8wGw` ran simultaneously on slots 1 and 2, each reporting
+  about 10 seconds execution. `JzoRL1Q0ukrqqVS6JnWU` was observed queued
+  while both were leased, then completed after capacity became available.
+  Backend polling/HTTPS added dispatch overhead: the first pair spanned 14.981
+  seconds from first lease to last stored result; the direct Docker benchmark
+  completed the pair in 10.570 seconds.
+- Actual CPU work `Yvap1jGWEkWBh4FtjMzF` and `enJ755RjJvJSV7nFdMeK`
+  each computed SHA-256 hashes for 10.000 seconds (5,874,865 and 5,802,713
+  hashes) on separate slots, with overlapping execution.
+- Running job `tN7X8YZGmRCSemkppVbc` cancelled with exit 130 while
+  `cwszhggUdnNDXo9vIcSI` was still leased; the peer completed exit 0.
+- Actual production command `GqA3xrCAjQtcdHI7YIAD` stopped its Python parent.
+  The independent Windows watchdog fenced only slot 1 and marked that command
+  `worker_lost`, never requeued. Slot 2 completed
+  `pNz53PkFARKXo0jzXfkz` after 110 seconds with exit 0. Slot 1 returned
+  automatically under a new boot identity.
+- Build bearer access to the auth-session endpoint returned HTTP 401.
+  The auth worker remains connected with the isolated credential and enforcement
+  true. Ordinary execution verified an empty read-only auth shadow and absent
+  Docker socket.
+- Primary local MCP was reversibly switched to the verified isolated build
+  container. Original is stopped as `ai-dev-workspace-retained`; all original
+  volumes/credentials remain. Current Codex configuration was encrypted and
+  authenticated-decrypted byte-for-byte before its launcher section changed.
+  Fresh local MCP identity, installed Node/Python, workspace and auth-shadow
+  checks passed.
+- An actual `docker desktop restart` completed. Both Windows pool supervisors
+  and the auth supervisor recovered automatically with new worker identities.
+  Post-restart command `8DaY1cZSpSe0RRiWHvh4` completed exit 0.
+- Artifact `parallel-acceptance-20261025.bin` retained all 1024 bytes across
+  Docker Desktop restart, SHA-256
+  `785b0751fc2c53dc14a4ce3d800e69ef9ce1009eb327ccf458afe09c242c26c9`.
+- The real stopped-parent host fixture also passed before production activation.
+  All pool tasks use installed native PowerShell and owner logon triggers.
+- Pool backup volume validation accepts owned `ai-dev-pool-*` volumes.
+  `local_mcp_containers: ["ai-dev-workspace"]` explicitly lists the isolated
+  local-only runtime for direct owner-controlled pause, without waiting for a
+  nonexistent remote worker there. Its isolated-build label is required.
+  Pool and auth workers still acknowledge their role-specific barriers.
+  Previous installed backup scripts/configuration were preserved.
+
+### Remaining owner acceptance
+
+- [ ] Perform a physical Windows reboot, log in, and confirm two pool workers plus
+  isolated auth recover. Docker Desktop restart was tested; Windows reboot was not.
+- [ ] From ChatGPT Android, run two unrelated jobs and confirm results/cancellation.
+  The same production MCP tools passed here; an actual Android device was not controlled.
+- [ ] If a wholly green repository CI is required, resolve the unrelated CV tests
+  and missing `resend` test dependency separately.
+
+Keep the installed owner host-script folder and reviewed worker source in place.
+Do not restart the retained shared-credential runtime as a general execution worker.
