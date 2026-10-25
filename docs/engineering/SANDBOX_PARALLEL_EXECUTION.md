@@ -225,3 +225,28 @@ parallel dispatch and two slots are enabled. The legacy task is disabled.
 
 Keep the installed owner host-script folder and reviewed worker source in place.
 Do not restart the retained shared-credential runtime as a general execution worker.
+
+
+## Final archive verification receipt — October 25
+
+Authenticated decryption and full tar archive verification passed without
+plaintext staging for `sandbox-20261025-011828-5aee50fc.tar.gz.age`
+(3,593,226,657 bytes), SHA-256
+`a956106f82b6e74e0744d4cad4f6525708cdc57b0360e1b76d7d104ca8895235`.
+Its manifest includes all eleven original/auth/build/pool volumes. The encrypted
+archive, checksum, manifest and independently verified Codex configuration
+rollback were copied into the existing OneDrive/Documents/CartShiftSandboxBackups
+folder. The archive copy's SHA-256 matches; completion of this newest large
+OneDrive upload has not been independently confirmed.
+
+During the initial verification interval Docker Desktop later stopped (cause
+not established). The 03:00 CET scheduled backup failed because the Docker
+endpoint was absent. Docker was started again; both execution supervisors and
+isolated auth recovered automatically. A separate repeated authenticated
+verification of the sealed archive then passed, exit 0. The coordinated V4
+host chat owns the remaining unattended Docker-unavailable backup retry work;
+do not misrepresent the failed scheduled run as successful.
+
+Before relying on the newest archive for off-PC recovery, confirm its OneDrive
+upload has completed. Previous independently recoverable encrypted backups and
+recovery-key copies remain preserved.
