@@ -62,6 +62,11 @@ class PTYTests(unittest.TestCase):
         time.sleep(.1); s=g.sync()
         self.assertNotIn('aabb0099',s['output']); self.assertNotIn('second=',s['output']); self.assertIn('token=False',s['output'])
         item['status']='stop_requested'; self.assertEqual(g.sync(item)['status'],'stopped')
+    def test_firebase_log_uses_private_provider_cache(self):
+        g=self.guardian("import os; print('log='+os.environ.get('FIREBASE_DEBUG_PATH','missing'))")
+        item=desired(); item['provider']='firebase'; g.sync(item)
+        s=self.wait(g,lambda s:s['status'] in pty.TERMINAL)
+        self.assertIn('log=/workspace/.auth/firebase/.cache/firebase-debug.log',s['output'])
     def test_stateless_cleanup_preserves_login(self):
         g=self.guardian("import time; print('alive'); time.sleep(30)")
         g.sync(desired()); self.wait(g,lambda s:'alive' in s['output'])
