@@ -7,6 +7,7 @@ param(
  [string]$Recipient, [string]$IdentityFile, [string]$Archive,
  [string[]]$Volumes=@('ai-dev-sandbox-workspace','ai-dev-sandbox-home','ai-dev-sandbox-device-auth','ai-dev-sandbox-provider-auth','ai-dev-sandbox-auth-tools','ai-dev-sandbox-build-home','ai-dev-sandbox-build-device-auth','ai-dev-sandbox-empty-auth','ai-dev-pool-home-1','ai-dev-pool-home-2','ai-dev-pool-empty-auth'),
  [string]$Container='ai-dev-workspace',
+ [string[]]$LocalMcpContainers=@(),
  [string]$AgeExecutable='age.exe',
  [ValidateRange(60,3600)][int]$MaxPauseSeconds=1200
 )
@@ -60,7 +61,7 @@ try {
   $selected=@($Volumes|Where-Object {$_ -in $available})
   foreach($required in @('ai-dev-sandbox-workspace','ai-dev-sandbox-home','ai-dev-sandbox-device-auth')){if($required -notin $selected){throw 'Required baseline volume absent.'}}
   foreach($v in $selected){
-   if($v -cnotmatch '^ai-dev-sandbox-[a-z0-9-]+$'){throw 'Unexpected volume name.'}
+   if($v -cnotmatch '^ai-dev-(?:sandbox|pool)-[a-z0-9-]+$'){throw 'Unexpected volume name.'}
    $owner=Invoke-SandboxDocker @('volume','inspect','--format','{{index .Labels "sandbox.owner"}}',$v)
    if(($owner -join '').Trim() -ne 'ai-dev-sandbox'){throw 'Unexpected volume ownership.'}
   }
@@ -81,6 +82,10 @@ try {
     $writers+=$id
     $writerStarted[$id]=$c.State.StartedAt
     if((Label $c.Config.Labels 'io.cartshift.sandbox.managed') -eq 'dev-service-v1'){continue}
+    if($c.Name.TrimStart('/') -in $LocalMcpContainers){
+     if((Label $c.Config.Labels 'io.cartshift.sandbox.build') -ne 'credential-isolated-v1'){throw 'Local MCP pause exemption requires an isolated build container.'}
+     continue # Owner-listed local-only runtime is frozen with all writers below.
+    }
     if((Label $c.Config.Labels 'io.cartshift.sandbox.auth') -eq 'isolated-v1'){$roles=@('auth')}
     elseif((Label $c.Config.Labels 'io.cartshift.sandbox.build') -eq 'credential-isolated-v1'){$roles=@('build')}
     elseif((Label $c.Config.Labels 'io.cartshift.sandbox.pool-slot') -match '^[1-8]$'){$roles=@('build')}
