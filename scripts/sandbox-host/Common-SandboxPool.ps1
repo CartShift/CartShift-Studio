@@ -19,7 +19,7 @@ function Wait-SandboxPoolWorker($Process,[int]$Slot,[string]$WorkerId,[string]$T
        # Worker diagnostics contain bounded metadata only; never relay arbitrary
        # exception messages or HTTP responses from the credential transport.
        if ($null -ne $pending.Result) {
-        if ($pending.Result -match '^(Sandbox worker started|A sandbox worker is already running|Worker poll error: [A-Za-z]+ ?[0-9]*$|Result not acknowledged|Sandbox worker refused to start: [A-Za-z]+$)') { Write-Output "Slot ${Slot}: $($pending.Result)" }
+        if ($pending.Result -match '^(Sandbox worker started|A sandbox worker is already running|Worker poll error: [A-Za-z]+ ?[0-9]*$|Result not acknowledged|Sandbox worker refused to start: [A-Za-z]+$)') { Write-Information "Slot ${Slot}: $($pending.Result)" -InformationAction Continue }
         $next=if ($stream -eq 'stdout') {$process.StandardOutput.ReadLineAsync()}else{$process.StandardError.ReadLineAsync()}
         Set-Variable -Name $stream -Value $next
        } else { Set-Variable -Name $stream -Value $null }
