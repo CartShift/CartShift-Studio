@@ -11,7 +11,7 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
  [ValidateSet('Prepare','Verify','Start','Stop','Logs')][string]$Action='Verify',
- [ValidatePattern('^[a-z][a-z0-9-]{2,40}$')][string]$Name='ai-dev-desktop-commander',
+ [ValidatePattern('^[a-z][a-z0-9-]{2,40}$')][string]$Name='ai-dev-sandbox-dc-remote',
  [ValidatePattern('^[a-z][a-z0-9-]{2,60}$')][string]$SourceContainer='ai-dev-pool-1',
  [ValidatePattern('^[a-z][a-z0-9-]{2,60}$')][string]$WorkspaceVolume='ai-dev-sandbox-workspace',
  [ValidatePattern('^[a-z][a-z0-9-]{2,60}$')][string]$CredentialShadow='ai-dev-pool-empty-auth',
