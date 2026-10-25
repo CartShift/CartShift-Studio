@@ -83,3 +83,8 @@ Remaining owner acceptance: renewed Vercel sign-in, a physical Windows reboot/lo
 ### Owner-confirmed Android connectivity
 
 On October25 the owner reported a successful fresh ChatGPT Android check: sandbox online, workerV5, two idle execution slots, UID1000/aarch64, proof write/read and recent-jobs listing. Independent production MCP job `TVKiVJqf3MhMugta05NE` completed0 and verified `/workspace/experiments/android-v4-proof.txt` contains `android-v4-20261025`. Basic Android connectivity/command/file/recent-jobs acceptance is now confirmed. Android-specific parallel-job, cancellation and provider-login UI checks remain separate and were not claimed by this test. A new Vercel device session was started after the previous code expired; approval/result is not yet confirmed.
+
+
+### Vercel isolated login renewed
+
+The owner approved device session `eacff1f8-5d31-471a-9b72-27baebd2055c`. The production MCP session completed with exit0 and the CLI confirmed sign-in. An independent fixed `devctl vercel status` probe in `ai-auth-sandbox` returned authenticated. No credential values were displayed or copied to execution containers. This resolves the earlier Vercel sign-in gate; Windows reboot/login, the remaining advanced Android checks and newest backup upload confirmation are separate outstanding checks.
