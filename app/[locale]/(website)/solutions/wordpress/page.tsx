@@ -18,11 +18,11 @@ export async function generateMetadata({
   return genMeta(
     {
       title: locale === 'he'
-        ? 'פיתוח WordPress ו־WooCommerce | אתרי תוכן ואתרים עסקיים'
-        : 'WordPress & WooCommerce Development | Content & Business Sites',
+        ? 'פיתוח ותחזוקת WordPress | אתרי תוכן ועסקים'
+        : 'WordPress Development & Maintenance | Content & Business Sites',
       description: locale === 'he'
-        ? 'פיתוח WordPress לאתרי תוכן ולעסקים, כולל WooCommerce במקרים המתאימים. התאמות תבנית, ביצועים, SEO טכני ותחזוקה בהתאם לצורכי האתר.'
-        : 'WordPress for content and business websites, plus WooCommerce where it fits. Custom themes, performance, technical SEO, and maintainable publishing workflows.',
+        ? 'פיתוח WordPress לאתרי תוכן, מגזינים ועסקים: התאמות תבנית, ביצועים, SEO טכני, אבטחה ותחזוקה.'
+        : 'WordPress for content-rich and business websites. Custom themes, performance, technical SEO, security maintenance and publishing workflows.',
       url: '/solutions/wordpress',
       keywords: [
         'WordPress development',
