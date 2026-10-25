@@ -55,6 +55,13 @@ a sleeping/offline Windows machine remains unreachable.
 cutover. The script refuses a source container without the expected read-only
 credential shadow. Review that the recorded backup/recovery key is usable.
 
+**Deployment dependency:** update the owner's installed `Backup-Sandbox.ps1`
+and `Invoke-SandboxScheduledBackup.ps1` from this reviewed change **before**
+starting the new sidecar. The older backup script does not recognize the
+device as an authorized writer and may safely refuse backups while it runs.
+Do not replace the host's currently working scripts without preserving their
+existing reviewed copies and configuration first.
+
 In `scripts/sandbox-host` on the **reviewed** branch, using native installed
 PowerShell 7.3+, perform:
 
