@@ -65,7 +65,7 @@ PowerShell 7.3+, perform:
 ```
 
 The first command is a plan only. The second creates one owner-labelled
-private device volume and one **stopped** container, capped at 1 CPU / 512 MiB
+private device volume and one **stopped** container, capped at 1 CPU / 1 GiB
 / 128 PIDs, with a read-only root, no elevated caps, no published ports and
 no host bind. It checks the existing Docker resource budget and fails if the
 name or home is already present. `Verify` checks exact image, command,
