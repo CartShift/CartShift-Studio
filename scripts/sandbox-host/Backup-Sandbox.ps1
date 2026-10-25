@@ -88,7 +88,13 @@ try {
     if((Label $c.Config.Labels 'io.cartshift.sandbox.dc-role') -eq 'remote'){
      if($c.Name.TrimStart('/') -ne 'ai-dev-sandbox-dc-remote' -or
         $c.Image -ne $image -or $c.Config.Hostname -ne 'ai-docker-sandbox' -or
-        @($c.Mounts|Where-Object {$_.Destination -eq '/workspace/.auth' -and $_.RW}).Count){
+        $c.Config.User -ne '1000:1000' -or !$c.HostConfig.ReadonlyRootfs -or
+        $c.HostConfig.Privileged -or
+        @($c.HostConfig.CapDrop|Where-Object {$_ -eq 'ALL'}).Count -ne 1 -or
+        @($c.Mounts).Count -ne 3 -or
+        @($c.Mounts|Where-Object {$_.Destination -eq '/workspace' -and $_.Name -eq 'ai-dev-sandbox-workspace' -and $_.RW}).Count -ne 1 -or
+        @($c.Mounts|Where-Object {$_.Destination -eq '/workspace/.auth' -and $_.Name -eq 'ai-dev-pool-empty-auth' -and !$_.RW}).Count -ne 1 -or
+        @($c.Mounts|Where-Object {$_.Destination -eq '/home/node' -and $_.Name -eq 'ai-dev-sandbox-dc-remote-home' -and $_.RW}).Count -ne 1){
       throw 'Unexpected remote MCP sidecar. Refusing to pause unverified writer.'
      }
      continue
