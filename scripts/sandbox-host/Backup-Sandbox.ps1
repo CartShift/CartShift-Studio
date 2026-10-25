@@ -5,7 +5,7 @@ param(
  [Parameter(Mandatory)][ValidateSet('Backup','Verify','Restore-Staging')][string]$Action,
  [Parameter(Mandatory)][string]$BackupDir,
  [string]$Recipient, [string]$IdentityFile, [string]$Archive,
- [string[]]$Volumes=@('ai-dev-sandbox-workspace','ai-dev-sandbox-home','ai-dev-sandbox-device-auth','ai-dev-sandbox-provider-auth','ai-dev-sandbox-auth-tools','ai-dev-sandbox-build-home','ai-dev-sandbox-build-device-auth','ai-dev-sandbox-empty-auth','ai-dev-pool-home-1','ai-dev-pool-home-2','ai-dev-pool-empty-auth'),
+ [string[]]$Volumes=@('ai-dev-sandbox-workspace','ai-dev-sandbox-home','ai-dev-sandbox-device-auth','ai-dev-sandbox-provider-auth','ai-dev-sandbox-auth-tools','ai-dev-sandbox-build-home','ai-dev-sandbox-build-device-auth','ai-dev-sandbox-empty-auth','ai-dev-pool-home-1','ai-dev-pool-home-2','ai-dev-pool-empty-auth','ai-dev-sandbox-dc-remote-home'),
  [string]$Container='ai-dev-workspace',
  [string[]]$LocalMcpContainers=@(),
  [string]$AgeExecutable='age.exe',
@@ -82,6 +82,23 @@ try {
     $writers+=$id
     $writerStarted[$id]=$c.State.StartedAt
     if((Label $c.Config.Labels 'io.cartshift.sandbox.managed') -eq 'dev-service-v1'){continue}
+    # The owner-approved remote agent cannot acknowledge MCP maintenance nonces.
+    # Pause it like an external managed server to capture a crash-consistent
+    # filesystem snapshot. Do not claim it was transactionally quiescent.
+    if((Label $c.Config.Labels 'io.cartshift.sandbox.dc-role') -eq 'remote'){
+     if($c.Name.TrimStart('/') -ne 'ai-dev-sandbox-dc-remote' -or
+        $c.Image -ne $image -or $c.Config.Hostname -ne 'ai-docker-sandbox' -or
+        $c.Config.User -ne '1000:1000' -or !$c.HostConfig.ReadonlyRootfs -or
+        $c.HostConfig.Privileged -or
+        @($c.HostConfig.CapDrop|Where-Object {$_ -eq 'ALL'}).Count -ne 1 -or
+        @($c.Mounts).Count -ne 3 -or
+        @($c.Mounts|Where-Object {$_.Destination -eq '/workspace' -and $_.Name -eq 'ai-dev-sandbox-workspace' -and $_.RW}).Count -ne 1 -or
+        @($c.Mounts|Where-Object {$_.Destination -eq '/workspace/.auth' -and $_.Name -eq 'ai-dev-pool-empty-auth' -and !$_.RW}).Count -ne 1 -or
+        @($c.Mounts|Where-Object {$_.Destination -eq '/home/node' -and $_.Name -eq 'ai-dev-sandbox-dc-remote-home' -and $_.RW}).Count -ne 1){
+      throw 'Unexpected remote MCP sidecar. Refusing to pause unverified writer.'
+     }
+     continue
+    }
     if($c.Name.TrimStart('/') -in $LocalMcpContainers){
      if((Label $c.Config.Labels 'io.cartshift.sandbox.build') -ne 'credential-isolated-v1'){throw 'Local MCP pause exemption requires an isolated build container.'}
      continue # Owner-listed local-only runtime is frozen with all writers below.
