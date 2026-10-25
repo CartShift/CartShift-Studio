@@ -204,7 +204,7 @@ export const WordPressPageContent: React.FC = () => {
             title={faqData?.title || t('wordpress.faq.title')}
             subtitle={
               faqData?.subtitle ||
-              'Everything you need to know about our WordPress e-commerce development services'
+              'Everything you need to know about WordPress development and maintenance'
             }
             className="mb-16"
           />

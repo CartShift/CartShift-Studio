@@ -89,6 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/services/shopify-b2b-integrations', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/services/shopify-performance-seo', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/solutions/wordpress', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/services/wordpress-security', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/solutions/seo', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/work', changeFrequency: 'weekly' as const, priority: 0.9 },
     // Pricing/maintenance visibility is decided client-side; keep them out of search
