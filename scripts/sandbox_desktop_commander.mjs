@@ -6,6 +6,8 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { constants as flags } from 'node:fs';
+import { spawn } from 'node:child_process';
 
 const MAX_REQUEST=32768, MAX_RESPONSE=524288;
 const socketPath=process.env.DC_BRIDGE_SOCKET || '/workspace/.desktop-commander-local/engine.sock';
@@ -89,8 +91,36 @@ function occupied(){
     socket.once('error',e=>{clearTimeout(timer);if(e.code==='ECONNREFUSED' || e.code==='ENOENT')resolve(false);else reject(e);});
   });
 }
+async function exclusiveStartup(){
+  const file=socketPath+'.lock';
+  try{const fd=await fs.open(file,flags.O_CREAT|flags.O_EXCL|flags.O_WRONLY|flags.O_NOFOLLOW,0o600);await fd.close();}catch(e){if(e.code!=='EEXIST')throw e;}
+  const st=await fs.lstat(file);
+  if(!st.isFile() || st.isSymbolicLink() || st.uid!==1000 || st.nlink!==1 || (st.mode & 0o777)!==0o600)fail('unsafe_startup_lock');
+  return new Promise((resolve,reject)=>{
+    // The kernel lock is shared across container namespaces and released on
+    // process death. EOF on this private pipe also releases an orphaned holder.
+    const child=spawn('/usr/bin/flock',['--exclusive','--nonblock',file,'/bin/sh','-c','printf "LOCKED\\n"; cat >/dev/null'],{stdio:['pipe','pipe','ignore']});
+    let output='',ready=false,releasing=false;
+    const release=()=>{releasing=true;child.stdin.end();};
+    child.stdin.on('error',()=>{});
+    const timer=setTimeout(()=>{release();reject(new Error('startup_lock_timeout'));},2000);
+    child.once('error',e=>{clearTimeout(timer);release();reject(e);});
+    child.stdout.on('data',chunk=>{
+      output+=chunk.toString('utf8');
+      if(!ready && output==='LOCKED\n'){ready=true;clearTimeout(timer);resolve({release});}
+      else if(output.length>64){release();reject(new Error('startup_lock_protocol_error'));}
+    });
+    child.once('exit',()=>{
+      clearTimeout(timer);
+      if(!ready)reject(new Error('bridge_already_running'));
+      else if(!releasing && !closing)process.exit(1); // Never serve without ownership.
+    });
+  });
+}
 async function serve(){
   await verifyRuntime();await socketDirectory();
+  const startup=await exclusiveStartup();
+  try{
   try{
     const before=await ownedSocket();
     if(await occupied())fail('bridge_already_running');
@@ -131,9 +161,10 @@ async function serve(){
     const deadline=setTimeout(()=>process.exit(1),5000);deadline.unref();
     await engine?.close().catch(()=>{});await transport?.close().catch(()=>{});
     try{const st=await ownedSocket();if(st.dev===created.dev && st.ino===created.ino)await fs.unlink(socketPath);}catch{}
-    server.close(()=>process.exit(0));
+    server.close(()=>{startup.release();process.exit(0);});
   };
   process.once('SIGTERM',shutdown);process.once('SIGINT',shutdown);
+  }catch(e){startup.release();throw e;}
 }
 async function send(request){
   validate(request);

@@ -54,11 +54,11 @@ Requests are never replayed automatically after a timeout, engine crash or disco
 
 ## Windows installation and recovery
 
-The owner installs the reviewed `Run-SandboxDesktopCommanderBridge.ps1`, `Register-SandboxDesktopCommanderBridge.ps1`, `Common-SandboxHost.ps1`, `Common-SandboxTask.ps1`, and the adapter source alongside the existing host scripts. Register with the reviewed adapter SHA-256 and existing pinned image ID. The fixed supervisor verifies the existing four-mount credential-isolated local MCP runtime and injects only hash-verified source as UID 1000. It never starts a personal Windows Desktop Commander server.
+The owner installs the reviewed `Run-SandboxDesktopCommanderBridge.ps1`, `Register-SandboxDesktopCommanderBridge.ps1`, `Common-SandboxHost.ps1`, `Common-SandboxTask.ps1`, and the adapter source alongside the existing host scripts. Register with the reviewed adapter SHA-256 and existing pinned image ID. The fixed supervisor verifies the existing four-mount credential-isolated local MCP runtime and hashes one byte buffer, strictly decodes that same buffer, and injects only that verified snapshot as UID 1000. It never starts a personal Windows Desktop Commander server.
 
 The task `CartShiftSandboxDesktopCommanderLocal` uses owner logon and one-minute recovery triggers, a limited interactive principal, IgnoreNew, a single-owner mutex and no credential arguments. It waits for the verified local Docker daemon, requests Docker Desktop startup when unavailable, and retries the verified engine after failure. The engine itself reconnects its local stdio child after a child crash; the failed action is not replayed. Active interactive processes may end when their engine/container restarts.
 
-An active socket is never removed by a duplicate daemon. An unchanged owned stale socket may be removed on startup; a regular file, symlink, changed inode or foreign ownership is refused. The existing worker and auth supervisors retain their one-minute recovery/logon triggers and separate credential boundaries.
+An exclusive kernel flock is held for the daemon lifetime, serializing stale-socket cleanup and binding across simultaneous starts. It is released on process death. An active socket is never removed by a duplicate daemon. An unchanged owned stale socket may be removed on startup; a regular file, symlink, changed inode or foreign ownership is refused. The existing worker and auth supervisors retain their one-minute recovery/logon triggers and separate credential boundaries.
 
 Keep the host plugged in, online and logged in. Plugged-in idle sleep is disabled; battery sleep remains three minutes. A physical Windows reboot/login remains a separate manual acceptance step.
 

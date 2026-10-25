@@ -48,6 +48,13 @@ async function launch() {
   }
   throw new Error('Bridge did not become available');
 }
+async function makeStaleSocket(file) {
+  const code='import net from "node:net";import fs from "node:fs";const s=net.createServer();s.listen(process.argv[1],()=>{fs.chmodSync(process.argv[1],0o600);console.log("ready")});';
+  const child=spawn('node',['--input-type=module','-e',code,file],{env,cwd:'/workspace',stdio:['ignore','pipe','ignore']});
+  await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Stale-socket fixture timeout')),3000);child.stdout.once('data',()=>{clearTimeout(timer);resolve();});child.once('error',reject);});
+  child.kill('SIGKILL');await new Promise(resolve=>child.once('exit',resolve));
+  assert.ok((await fs.lstat(file)).isSocket());
+}
 try {
   await test('persistent local engine behind private socket',async t=>{
     await launch();
@@ -79,8 +86,10 @@ try {
     await t.test('restarts a terminated stdio engine without replaying a tool action',async()=>{
       const before=await request({op:'ping'});
       const children=(await fs.readFile(`/proc/${daemon.pid}/task/${daemon.pid}/children`,'utf8')).trim().split(/\s+/).filter(Boolean).map(Number);
-      assert.equal(children.length,1);
-      process.kill(children[0],'SIGTERM');
+      const engines=[];
+      for(const pid of children)if((await fs.readFile(`/proc/${pid}/comm`,'utf8')).trim()==='tini')engines.push(pid);
+      assert.equal(engines.length,1);
+      process.kill(engines[0],'SIGTERM');
       let recovered;
       for(let i=0;i<30;i++){
         await new Promise(r=>setTimeout(r,100));
@@ -102,6 +111,35 @@ try {
       const duplicate=await run(['serve']);assert.notEqual(duplicate.code,0);
       assert.equal((await fs.stat(socket)).ino,before.ino);
       await request({op:'ping'});
+    });
+    await t.test('honors an exclusive startup lock before touching a stale socket',async()=>{
+      const file=path.join(directory,'locked-stale.sock');await makeStaleSocket(file);
+      const before=await fs.lstat(file);await fs.writeFile(file+'.lock','',{mode:0o600});
+      const lock=spawn('/usr/bin/flock',['--exclusive','--nonblock',file+'.lock','/bin/sh','-c','printf LOCKED; cat >/dev/null'],{stdio:['pipe','pipe','ignore']});
+      await new Promise((resolve,reject)=>{lock.stdout.once('data',resolve);lock.once('error',reject);});
+      try{
+        const result=await run(['serve'],2000,{...env,DC_BRIDGE_SOCKET:file});
+        assert.notEqual(result.code,0);
+        assert.equal((await fs.lstat(file)).ino,before.ino);
+      }finally{lock.stdin.end();await new Promise(resolve=>lock.once('exit',resolve));}
+    });
+    await t.test('simultaneous stale-socket starts leave exactly one reachable daemon',async()=>{
+      const file=path.join(directory,'concurrent-stale.sock');await makeStaleSocket(file);
+      const contenderEnv={...env,DC_BRIDGE_SOCKET:file};
+      const contenders=Array.from({length:8},()=>{
+        const child=spawn('node',[program,'serve'],{env:contenderEnv,cwd:'/workspace',stdio:['ignore','pipe','pipe']});
+        child.stdout.on('data',()=>{});child.stderr.on('data',()=>{});return child;
+      });
+      try{
+        await new Promise(resolve=>setTimeout(resolve,1500));
+        assert.equal(contenders.filter(child=>child.exitCode===null).length,1);
+        const response=await run(['request',Buffer.from('{"op":"ping"}').toString('base64')],5000,contenderEnv);
+        assert.equal(response.code,0,response.stdout);
+      }finally{
+        await Promise.all(contenders.filter(child=>child.exitCode===null).map(child=>new Promise(resolve=>{
+          child.once('exit',resolve);child.kill('SIGTERM');setTimeout(()=>{if(child.exitCode===null)child.kill('SIGKILL');resolve();},3000).unref();
+        })));
+      }
     });
     await t.test('rejects malformed and oversized requests',async()=>{
       for(const body of [{op:'call',tool:'../bad',args:{}},{op:'call',tool:'read_file',args:[]},{op:'unknown'}]){

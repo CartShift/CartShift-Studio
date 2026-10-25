@@ -17,8 +17,10 @@ try{$owns=$mutex.WaitOne(0)}catch [Threading.AbandonedMutexException]{$owns=$tru
 if(!$owns){$mutex.Dispose();throw 'Local Desktop Commander bridge already has an owner supervisor.'}
 try{
  while($true){
-  $source=[IO.File]::ReadAllText($BridgeSource)
-  if((Get-FileHash -LiteralPath $BridgeSource -Algorithm SHA256).Hash.ToLowerInvariant() -ne $BridgeSha256){throw 'Reviewed local bridge source changed; refusing startup.'}
+  $bytes=[IO.File]::ReadAllBytes($BridgeSource)
+  $hash=[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+  if($hash -ne $BridgeSha256){throw 'Reviewed local bridge source changed; refusing startup.'}
+  $source=[Text.UTF8Encoding]::new($false,$true).GetString($bytes)
   $process=$null;$exit=1
   try{
    Wait-SandboxDockerForBackup -MaxWaitSeconds 300 -Probe {
