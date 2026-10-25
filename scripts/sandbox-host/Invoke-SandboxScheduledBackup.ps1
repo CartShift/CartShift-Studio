@@ -29,7 +29,7 @@ try{
  $successFile=Join-Path (Split-Path $config.status_file) 'last-backup-success.json'
  $pending=$successFile+'.'+[Guid]::NewGuid().ToString('N')+'.pending'
  [IO.File]::WriteAllText($pending,($status|ConvertTo-Json))
- if(Test-Path -LiteralPath $successFile){[IO.File]::Replace($pending,$successFile,$null)}else{[IO.File]::Move($pending,$successFile)}
+ if(Test-Path -LiteralPath $successFile){[IO.File]::Replace($pending,$successFile,[NullString]::Value)}else{[IO.File]::Move($pending,$successFile)}
 }catch{
  $status.ok=$false
  $status.error_type=$_.Exception.GetType().Name

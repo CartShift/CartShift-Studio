@@ -37,3 +37,23 @@ Assert-Refused {Wait-SandboxDockerForBackup -MaxWaitSeconds 0 -Probe {throw 'Syn
 if($script:startupCalls){throw 'Security mismatch incorrectly triggered startup.'}
 Assert-Refused {Wait-SandboxDockerForBackup -MaxWaitSeconds 0 -Probe {throw [IO.IOException]::new('synthetic unavailable')} -StartDocker {}}
 Write-Output 'PASS: Docker unavailable retries/start-once, timeout bound and fail-closed security mismatches.'
+# Execute the receipt publication block from the actual scheduled-backup script.
+$source=Get-Content (Join-Path $HostScriptDirectory Invoke-SandboxScheduledBackup.ps1) -Raw
+$publication=[regex]::Match($source,'(?ms)^ \$pending=.+?(?=^\}catch)').Value
+if(!$publication){throw 'Receipt publication fixture could not find production block.'}
+$receiptDirectory=Join-Path ([IO.Path]::GetTempPath()) ('sandbox-receipt-'+[Guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory $receiptDirectory | Out-Null
+$successFile=Join-Path $receiptDirectory 'last-success.json'
+try {
+ foreach($generation in @(1,2)){
+  $status=@{ok=$true;generation=$generation}
+  & ([scriptblock]::Create($publication))
+  $stored=Get-Content $successFile -Raw | ConvertFrom-Json
+  if(!$stored.ok -or $stored.generation -ne $generation){throw 'Receipt generation was not atomically published.'}
+ }
+ if(@(Get-ChildItem $receiptDirectory -Filter '*.pending').Count){throw 'Published receipt left a pending file.'}
+} finally {
+ Get-ChildItem -LiteralPath $receiptDirectory -File | Remove-Item
+ Remove-Item -LiteralPath $receiptDirectory
+}
+Write-Output 'PASS: Initial and replacement success receipts publish atomically without pending files.'
