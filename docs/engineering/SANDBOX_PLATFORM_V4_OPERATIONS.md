@@ -48,7 +48,7 @@ Stop new supervisors BEFORE restoring names or credentials. Retain old sources/h
 
 Managed services require dependencies resolved inside the project subtree; project wrappers must accept Next/Vite argument conventions. Project .env remains readable by its own code. Loopback previews need a separately authorized authenticated tunnel for mobile access. Docker Desktop/logon tasks cannot provide availability while asleep/off or before owner login. No power policy is silently changed.
 
-Docker Desktop → ai-dev-workspace → Logs shows metadata health, connections, progress, results, timeouts and session activity. Rotation is three5MB files. Raw manual terminal sessions are separate; managed app logs may contain project data and should be viewed locally.
+Docker Desktop → ai-dev-pool-1 / ai-dev-pool-2 → Logs shows command-worker health, connections, progress, results and timeouts. ai-auth-sandbox → Logs shows redacted auth-session metadata; ai-dev-workspace → Logs is the separate local MCP server. Rotation is three5MB files. Raw manual terminal sessions are separate; managed app logs may contain project data and should be viewed locally.
 ## Recorded workstation evidence
 
 The compatible V4 backend is live; five existing CLI identities, command/PTY round trips, running and queued cancellation, timeout124 and a125-second command passed. The independently passphrase-tested recovery key and both original encrypted archives have matching local-copy hashes and Windows Cloud Files IN_SYNC confirmation in OneDrive/Documents/CartShiftSandboxBackups. Cloud synchronization status does not promise permanent provider grants. Current activation evidence is maintained in the deployment record; never infer isolated enforcement or Android acceptance from this paragraph.
@@ -65,3 +65,5 @@ The scheduled backup wrapper requests the existing installed Docker Desktop once
 Firebase interactive login fixes `FIREBASE_DEBUG_PATH` to `/workspace/.auth/firebase/.cache/firebase-debug.log`, inside the private auth volume. Owner-only read-only status probes should also use a writable cwd or that fixed environment path; Firebase initializes its log before checking authentication. Do not publish raw provider debug logs. Reviewed guardian SHA-256: `336ab94c2da6cf0939fb1240ee5e482ef7363cdb4fdd76c07ce9c2a576af44e0`. Existing worker/tools pins are unchanged.
 
 A genuine Windows reboot/login, actual ChatGPT Android UI acceptance and any expired provider grant remain separate checks. Keep PR #122 draft until those checks and the newest encrypted backup's off-PC synchronization are recorded.
+
+For owner-driven source upgrades, stop the old scheduled supervisor and wait for it to exit before starting its replacement. Confirm a fresh handshake, inspect the running source hashes and perform a real session test. Updating the registered task action alone does not prove that an older Docker exec process was replaced.
