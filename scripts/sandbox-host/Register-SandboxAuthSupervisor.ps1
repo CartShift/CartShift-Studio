@@ -27,7 +27,9 @@ foreach ($p in $paths) {
 
 $windowsOwner=[Security.Principal.WindowsIdentity]::GetCurrent().Name
 $action=New-SandboxScheduledAction @('-NoProfile','-NonInteractive','-WindowStyle','Hidden','-File',$paths[0],'-WorkerSource',$paths[1],'-GuardianSource',$paths[2],'-DpapiTokenFile',$paths[3],'-WorkerSha256',$WorkerSha256,'-GuardianSha256',$GuardianSha256,'-ImageId',$ImageId,'-ToolsManifestSha256',$ToolsManifestSha256)
-$trigger=New-ScheduledTaskTrigger -AtLogOn -User $windowsOwner
+# Periodic retries also recover externally terminated native supervisors.
+$trigger=@((New-ScheduledTaskTrigger -AtLogOn -User $windowsOwner),
+ (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)))
 $settings=New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) `
   -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $principal=New-ScheduledTaskPrincipal -UserId $windowsOwner -LogonType Interactive -RunLevel Limited

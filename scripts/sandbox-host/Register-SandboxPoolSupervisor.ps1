@@ -22,7 +22,9 @@ foreach ($i in 1..$Slots) {
  $name="CartShiftSandboxPool-$i"
  if (Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue) { throw 'Task already exists; refusing to overwrite owner configuration.' }
  $action=New-SandboxScheduledAction @('-NoProfile','-NonInteractive','-WindowStyle','Hidden','-File',$paths[0],'-Slot',"$i",'-WorkerSource',$paths[1],'-DpapiTokenFile',$paths[2],'-WorkerSha256',$WorkerSha256,'-ImageId',$ImageId,'-Prefix',$Prefix)
- $trigger=New-ScheduledTaskTrigger -AtLogOn -User $owner
+ # Periodic retries also recover externally terminated native supervisors.
+$trigger=@((New-ScheduledTaskTrigger -AtLogOn -User $owner),
+ (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)))
  $settings=New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
  $principal=New-ScheduledTaskPrincipal -UserId $owner -LogonType Interactive -RunLevel Limited
  if ($PSCmdlet.ShouldProcess($name,'Register independent owner-logon pool supervisor')) {
