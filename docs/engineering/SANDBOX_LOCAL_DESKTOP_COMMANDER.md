@@ -85,3 +85,16 @@ The connector-to-Docker workflow is verified by real MCP calls from this desktop
 ## Production continuity
 
 V5 worker routes must remain deployed. On October 25, a newer `main` website deployment replaced an unmerged V5 production deployment with V4 and returned `invalid_worker_version`. The reviewed repair merges the current website changes with the V5 backend; it preserves the website changes and does not downgrade workers or relax authentication. Merge the reviewed V5 changes into the production source branch before relying on future unrelated `main` deploys, otherwise that deployment drift can recur. PR review and merge remain owner decisions.
+
+## Owner-confirmed Android acceptance — 25 October 2026
+
+The owner confirmed a successful test from ordinary ChatGPT Android through the existing CartShift MCP connector: 25 native tools discovered, followed by native write/edit/read of `/workspace/experiments/android-native-dc-proof.txt`. Final contents:
+
+```text
+android-native-dc-proof
+bridge=local-desktop-commander
+phase=edited
+transport=sandbox_run_command
+```
+
+Independent native `read_file` job `AQ3CURIWznbdwzNRmU6F` completed with exit 0 and confirmed those bytes on bridge `c0d4ff0a-110c-4ae0-8168-8b0f689fbe82`, engine generation 1. Neither Codex Remote nor the hosted Desktop Commander service was used. Phone-side terminal sessions and concurrent operations have not yet been tested on the phone; those capabilities passed the separate desktop-to-existing-connector checks. Windows reboot/login, cloud-upload confirmation and owner review/merge remain separate gates.
