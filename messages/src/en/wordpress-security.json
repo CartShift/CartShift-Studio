@@ -1,0 +1,111 @@
+{
+  "wordpressSecurity": {
+    "seoTitle": "WordPress Security Check & PHP Updates | CartShift Studio",
+    "seoDescription": "A careful WordPress security and updates review: verify PHP2Shell patch status, audit WordPress plugins and themes, check backups, and apply approved fixes with regression checks.",
+    "eyebrow": "WORDPRESS SECURITY & MAINTENANCE",
+    "title": "Know where your WordPress site stands.",
+    "titleAccent": "Secure what matters.",
+    "subtitle": "Recent critical PHP vulnerabilities are a timely reason to check your hosting. We verify what is actually patched, review WordPress maintenance risks, and make only the changes your site needs.",
+    "primaryCta": "Request a security review",
+    "secondaryCta": "See what we check",
+    "trustNotes": [
+      "A real technical review, not an automated score",
+      "Approval before paid work",
+      "Careful updates and functional checks"
+    ],
+    "alertTitle": "October 2026 · PHP2Shell security advisory",
+    "alertText": "On 21 October 2026, PHP released fixes for CVE-2026-109618 and CVE-2026-109619. Vulnerable PHP installations may allow unauthenticated remote code execution. Not every WordPress site is still exposed: hosting providers may already have patched their servers.",
+    "alertLink": "Read the security advisory",
+    "whyTitle": "WordPress updates alone are not the PHP fix.",
+    "whyText": "These vulnerabilities are in the PHP runtime. Updating WordPress or installing a security plugin does not replace the PHP patch supplied by your server administrator or host. WordPress, plugins and themes still deserve a separate security and compatibility review.",
+    "serviceTitle": "A practical security check, from server to site",
+    "serviceIntro": "A defined, evidence-led review followed by approved, carefully scoped fixes.",
+    "features": [
+      {
+        "title": "PHP & hosting patch verification",
+        "description": "Confirm the PHP runtime and whether the hosting provider has applied the relevant security fixes, including supported backports."
+      },
+      {
+        "title": "WordPress & plugin review",
+        "description": "Check core, active plugins and themes for outdated, unsupported or security-relevant versions. Prioritize rather than update blindly."
+      },
+      {
+        "title": "Backup & recovery readiness",
+        "description": "Review available backups and recovery options before changing the site. Arrange a suitable backup before approved work."
+      },
+      {
+        "title": "Controlled updates",
+        "description": "Apply agreed routine updates with attention to compatibility and any custom functionality."
+      },
+      {
+        "title": "Functional regression checks",
+        "description": "Verify key pages, publishing, admin access, forms and site-specific workflows after the changes."
+      },
+      {
+        "title": "Clear findings & next steps",
+        "description": "Get a concise summary of confirmed issues, completed actions, outstanding risks and any separate work requiring approval."
+      }
+    ],
+    "processTitle": "How the review works",
+    "process": [
+      {
+        "title": "Share your site",
+        "description": "Tell us the URL and your main concern. We confirm fit and provide a scope and estimate before paid work."
+      },
+      {
+        "title": "Verify and prioritize",
+        "description": "With your authorization, we check hosting patch status, update needs and operational risks."
+      },
+      {
+        "title": "Fix, test and report",
+        "description": "We apply agreed changes, test critical flows and send a plain-language summary."
+      }
+    ],
+    "scopeTitle": "A security review, without exaggerated promises",
+    "scopeText": "This is a targeted WordPress and PHP maintenance engagement—not a penetration test, malware incident response, forensic investigation or a guarantee that no vulnerability exists. Complex upgrades, breaches and custom fixes are scoped separately.",
+    "faqTitle": "Questions worth asking",
+    "faq": [
+      {
+        "question": "Does every WordPress site have this PHP vulnerability?",
+        "answer": "No. Exposure depends on the PHP runtime and the hosting provider's patch status. Some providers ship backported fixes without changing the visible PHP version number, so we verify rather than guess."
+      },
+      {
+        "question": "Will updating WordPress fix PHP2Shell?",
+        "answer": "No. The PHP vulnerabilities require a patched PHP runtime from the host or server administrator. WordPress and plugin updates address separate risks."
+      },
+      {
+        "question": "Will you update all plugins automatically?",
+        "answer": "No. We first assess versions, compatibility and business-critical workflows. We back up before agreed updates and test afterward."
+      },
+      {
+        "question": "Can you review my online store?",
+        "answer": "This specific service is for standard WordPress sites, such as business websites, magazines and content portals. WooCommerce stores are outside the scope of this offer."
+      },
+      {
+        "question": "What will it cost?",
+        "answer": "We assess the site's scope and provide an estimate before beginning paid work. Unexpected or complex issues require a separate approval."
+      }
+    ],
+    "form": {
+      "title": "Request a WordPress security check",
+      "intro": "Tell us about your site. We'll respond personally with the recommended scope and an estimate—no work starts without approval.",
+      "name": "Your name",
+      "email": "Work email",
+      "website": "WordPress website URL",
+      "details": "Anything we should know? (optional)",
+      "namePlaceholder": "Full name",
+      "emailPlaceholder": "you@company.com",
+      "websitePlaceholder": "https://example.com",
+      "detailsPlaceholder": "Hosting provider, issues, last update…",
+      "submit": "Request an estimate",
+      "submitting": "Sending request…",
+      "successTitle": "Your request was received",
+      "successText": "Thanks. We'll review the details and reply with next steps and an estimate.",
+      "error": "We couldn't submit your request. Please try again or email hello@cart-shift.com.",
+      "invalidUrl": "Enter a valid public website URL.",
+      "privacy": "We use these details only to respond to your inquiry. Do not share passwords or administrator access in this form.",
+      "emailLink": "Or email us directly"
+    },
+    "navLabel": "WordPress Security Check"
+  }
+}
