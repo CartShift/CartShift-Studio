@@ -136,7 +136,10 @@ export default function ProjectsListClient({ initialClientFilter = 'all' }: { in
                     <span className="rounded-lg bg-primary-50 p-2 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400"><FolderKanban size={18}/></span>
                     <ArrowUpRight size={18} className="text-surface-400 group-hover:text-primary-600" />
                   </div>
-                  <h2 className="mt-4 text-lg font-bold">{p.title}</h2>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <h2 className="text-lg font-bold">{p.title}</h2>
+                    {p.workMode === 'pro_bono' && <span className="rounded-md border border-surface-200 px-2 py-0.5 text-xs font-semibold text-surface-500 dark:border-surface-700">Pro Bono</span>}
+                  </div>
                   {isAgency && <p className="mt-1 text-xs text-surface-500">{organizations.find(o => o.id === p.orgId)?.name || t('client')}</p>}
                   <p className="mt-2 line-clamp-2 min-h-10 text-sm text-surface-600 dark:text-surface-400">{p.summary || t('noSummary')}</p>
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-surface-100 pt-4 text-xs dark:border-surface-800">

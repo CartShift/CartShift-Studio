@@ -264,7 +264,6 @@ export function generateProfessionalServiceSchema() {
     knowsAbout: [
       'Shopify',
       'WordPress',
-      'WooCommerce',
       'E-commerce',
       'Web Development',
       'SEO',

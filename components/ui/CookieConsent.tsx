@@ -6,7 +6,7 @@ import { Button } from './Button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
-import { readCookieConsent, setCookieConsent } from '@/lib/analytics-consent';
+import { OPEN_COOKIE_PREFERENCES_EVENT, readCookieConsent, setCookieConsent } from '@/lib/analytics-consent';
 
 interface CookieConsentProps {
   variant?: 'default' | 'compact';
@@ -30,6 +30,12 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({
     }
     return undefined;
   }, [delayMs]);
+
+  useEffect(() => {
+    const reopen = () => setIsVisible(true);
+    window.addEventListener(OPEN_COOKIE_PREFERENCES_EVENT, reopen);
+    return () => window.removeEventListener(OPEN_COOKIE_PREFERENCES_EVENT, reopen);
+  }, []);
 
   const handleAccept = () => {
     setCookieConsent('accepted');

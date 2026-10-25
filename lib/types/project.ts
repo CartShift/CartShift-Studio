@@ -1,5 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
 
+import type { WorkMode } from '@/lib/domain/work-engagement';
+
 export type ProjectStatus =
   | 'planning'
   | 'in_progress'
@@ -73,6 +75,8 @@ export interface ClientProject {
   nextStep: string;
   status: ProjectStatus;
   template: ProjectTemplate;
+  /** Stored at project creation; changing client defaults never rewrites history. */
+  workMode?: WorkMode;
   stages: ProjectStage[];
   blockers: ProjectBlocker[];
   deliverables: ProjectDeliverable[];

@@ -73,6 +73,10 @@ jobs:
         if: steps.scope.outputs.frontend == 'true'
         run: pnpm i18n:merge
 
+      - name: Generate and validate PWA icons
+        if: steps.scope.outputs.frontend == 'true'
+        run: pnpm pwa:icons
+
       - name: Lint changed frontend code
         if: steps.scope.outputs.frontend == 'true'
         shell: bash

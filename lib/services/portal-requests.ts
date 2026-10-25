@@ -648,6 +648,29 @@ export async function addPricingToRequest(
   userName: string,
   data: AddPricingData
 ): Promise<void> {
+  // The Firestore rules also enforce this against direct SDK writes.
+  // Give the agency an actionable error before preparing a commercial quote.
+  await waitForAuth();
+  const store = getFirestoreDb();
+  const existing = await getDoc(doc(store, REQUESTS_COLLECTION, requestId));
+  if (!existing.exists() || existing.data()?.orgId !== orgId) throw new Error('NOT_FOUND');
+  const projectId = existing.data()?.projectId;
+  if (projectId) {
+    const project = await getDoc(doc(store, 'portal_projects', projectId));
+    if (project.data()?.orgId !== orgId || project.data()?.workMode === 'pro_bono') {
+      throw new Error('PRO_BONO_NO_BILLING');
+    }
+  } else {
+    const user = getFirebaseAuth().currentUser;
+    const token = await user?.getIdToken();
+    if (!token) throw new Error('UNAUTHENTICATED');
+    const response = await fetch('/api/portal/agency/client-work-modes?orgId=' + encodeURIComponent(orgId), {
+      headers: { Authorization: 'Bearer ' + token }, cache: 'no-store',
+    });
+    if (!response.ok) throw new Error('Could not validate client billing mode');
+    const mode = await response.json() as { defaultWorkMode?: string };
+    if (mode.defaultWorkMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+  }
   const subtotal = data.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
   const taxRate = data.taxRate ?? 0;
   const taxAmount = Math.round(subtotal * taxRate);

@@ -5,8 +5,11 @@ import { AUDIT, TokenGrant, firestore, may, tokenHash } from '@/lib/mcp/connecti
 import { EXTENDED_TOOL_DEFS, callExtendedTool } from '@/lib/mcp/extended-tools';
 import { COMMERCIAL_TOOL_DEFS, callCommercialTool } from '@/lib/mcp/commercial-tools';
 import { PROSPECT_TOOL_DEFS, callProspectTool } from '@/lib/mcp/prospect-tools';
+import { startSandboxSession, readSandboxSession, sendSandboxSessionInput, stopSandboxSession } from '@/lib/mcp/sandbox-sessions';
 import { sandboxPing } from '@/lib/mcp/sandbox-probe';
-import { submitSandboxCommand, getSandboxCommand } from '@/lib/mcp/sandbox-jobs';
+import { persistClientWorkMode, persistProjectWorkMode } from '@/lib/services/agency-work-modes-server';
+import { normalizeWorkMode } from '@/lib/domain/work-engagement';
+import { submitSandboxCommand, getSandboxCommand, getSandboxStatus, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -49,19 +52,50 @@ const requestFields = z.object({
 
 export const TOOL_DEFS = [
   {
+    name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh v3 worker handshake; only fixed provider login commands run.', scope: 'work:write',
+    inputSchema: { type: 'object', required: ['provider'], properties: { provider: { type: 'string', enum: ['supabase', 'github', 'vercel', 'firebase', 'shopify', 'northflank', 'apps-script'] }, cwd: { type: 'string', default: '/workspace' }, ttl_seconds: { type: 'integer', minimum: 60, maximum: 900, default: 600 }, idle_timeout_seconds: { type: 'integer', minimum: 30, maximum: 300, default: 180 } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_read_session', description: 'Read redacted login output since a code-point cursor. Reports output gaps; reads do not extend the idle timeout.', scope: 'work:read',
+    inputSchema: { type: 'object', required: ['session_id'], properties: { session_id: { type: 'string', format: 'uuid' }, cursor: { type: 'integer', minimum: 0, default: 0 } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_send_input', description: 'Send a bounded confirmation or provider verification code to an owned login session. Never accepts passwords or access tokens. Input is omitted from results and audit.', scope: 'work:write',
+    inputSchema: { type: 'object', required: ['session_id', 'input_type', 'input'], properties: { session_id: { type: 'string', format: 'uuid' }, input_type: { type: 'string', enum: ['confirm', 'verification_code'] }, input: { type: 'string', maxLength: 512 } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_stop_session', description: 'Stop an owned provider login session and erase pending input.', scope: 'work:write',
+    inputSchema: { type: 'object', required: ['session_id'], properties: { session_id: { type: 'string', format: 'uuid' } }, additionalProperties: false },
+  },
+
+  {
     name: 'sandbox_run_command',
-    description: 'Queue a shell command for execution ONLY in the owner\'s restricted Linux ARM64 Docker sandbox. Requires sandbox owner authorization and a separately connected sandbox worker; returns a job ID, not immediate command output.',
+    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active v2 worker.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['command'], properties: {
       command: { type: 'string', minLength: 1, maxLength: 2000 },
       cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace)' },
-      timeout_seconds: { type: 'integer', minimum: 1, maximum: 120 },
+      timeout_seconds: { type: 'integer', minimum: 1, maximum: 600 },
+      wait_seconds: { type: 'integer', minimum: 0, maximum: 15, description: 'Optional short wait for completed output; 0 queues without waiting.' },
     }, additionalProperties: false },
   },
   {
     name: 'sandbox_get_result',
     description: 'Read the status, stdout, stderr and exit code of a sandbox command job belonging to the specifically authorized sandbox owner.',
     scope: 'work:read',
+    inputSchema: { type: 'object', required: ['job_id'],
+      properties: { job_id: { type: 'string' } }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_status',
+    description: 'Check actual sandbox worker heartbeat, capabilities and last seen timestamp. Unlike sandbox_ping this reflects the authenticated Docker worker.',
+    scope: 'work:read',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_cancel_command',
+    description: 'Cancel an owner sandbox command ONLY if it has not yet been leased to the Docker worker; running commands are not cancelled.',
+    scope: 'work:write',
     inputSchema: { type: 'object', required: ['job_id'],
       properties: { job_id: { type: 'string' } }, additionalProperties: false },
   },
@@ -115,6 +149,35 @@ export const TOOL_DEFS = [
         }, additionalProperties: false },
       }, additionalProperties: false,
     },
+  },
+
+  {
+    name: 'get_client_work_mode',
+    description: 'Read the agency-only default work classification of one client. Relationship memo is returned only to owner/admin.',
+    scope: 'clients:read',
+    inputSchema: { type: 'object', required: ['org_id'], properties: {
+      org_id: { type: 'string' },
+    }, additionalProperties: false },
+  },
+  {
+    name: 'set_client_work_mode',
+    description: 'Owner/admin only: set the agency-private default commercial/pro-bono work mode. Does NOT change existing projects, payments or customer-facing biography.',
+    scope: 'clients:write',
+    inputSchema: { type: 'object', required: ['org_id', 'work_mode'], properties: {
+      org_id: { type: 'string' },
+      work_mode: { type: 'string', enum: ['commercial', 'pro_bono'] },
+      internal_relationship_note: { type: 'string', maxLength: 1500 },
+    }, additionalProperties: false },
+  },
+  {
+    name: 'set_project_work_mode',
+    description: 'Owner/admin only: explicitly classify an existing project, rejecting commercial records and non-zero rate on Pro Bono. Never changes payment ledger or work-item statuses.',
+    scope: 'work:write',
+    inputSchema: { type: 'object', required: ['org_id', 'project_id', 'work_mode'], properties: {
+      org_id: { type: 'string' },
+      project_id: { type: 'string' },
+      work_mode: { type: 'string', enum: ['commercial', 'pro_bono'] },
+    }, additionalProperties: false },
   },
   {
     name: 'list_work_items', description: 'Page through portal_requests for exactly one client organization. Use next_cursor to continue.',
@@ -185,8 +248,14 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (!tool) throw new Error('Unknown tool');
   may(grant, tool.scope);
   const args = getArgs(input);
+  if (name === 'sandbox_start_session') return startSandboxSession(grant, args);
+  if (name === 'sandbox_read_session') return readSandboxSession(grant, args);
+  if (name === 'sandbox_send_input') return sendSandboxSessionInput(grant, args);
+  if (name === 'sandbox_stop_session') return stopSandboxSession(grant, args);
   if (name === 'sandbox_run_command') return submitSandboxCommand(grant, args);
   if (name === 'sandbox_get_result') return getSandboxCommand(grant, args);
+  if (name === 'sandbox_status') { z.object({}).strict().parse(args); return getSandboxStatus(grant); }
+  if (name === 'sandbox_cancel_command') return cancelSandboxCommand(grant, args);
   if (name === 'sandbox_ping') {
     z.object({}).strict().parse(args);
     return sandboxPing();
@@ -283,6 +352,54 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
       tx.create(audits.doc(), auditRow(grant.uid, 'update_client', org_id));
     });
     return { updated: true, org_id, fields: Object.keys(patch) };
+  }
+
+
+  if (name === 'get_client_work_mode') {
+    const { org_id } = z.object({ org_id: id }).strict().parse(args);
+    await orgExists(org_id);
+    const [meta, actor] = await Promise.all([
+      db.collection('agency_client_metadata').doc(org_id).get(),
+      db.collection('portal_users').doc(grant.uid).get(),
+    ]);
+    const role = actor.data()?.agencyRole ?? 'owner';
+    return {
+      org_id,
+      work_mode: normalizeWorkMode(meta.data()?.defaultWorkMode),
+      ...(role === 'owner' || role === 'admin' ? {
+        internal_relationship_note: meta.data()?.internalRelationshipNote ?? '',
+      } : {}),
+    };
+  }
+
+  if (name === 'set_client_work_mode' || name === 'set_project_work_mode') {
+    const actor = await db.collection('portal_users').doc(grant.uid).get();
+    if (!['owner', 'admin'].includes(actor.data()?.agencyRole ?? 'owner')) {
+      throw new Error('FORBIDDEN');
+    }
+    if (name === 'set_client_work_mode') {
+      const input = z.object({
+        org_id: id,
+        work_mode: z.enum(['commercial', 'pro_bono']),
+        internal_relationship_note: z.string().max(1500).optional(),
+      }).strict().parse(args);
+      await orgExists(input.org_id);
+      return persistClientWorkMode(grant.uid, {
+        orgId: input.org_id,
+        defaultWorkMode: input.work_mode,
+        ...(input.internal_relationship_note !== undefined
+          ? { internalRelationshipNote: input.internal_relationship_note } : {}),
+      });
+    }
+    const input = z.object({
+      org_id: id, project_id: id,
+      work_mode: z.enum(['commercial', 'pro_bono']),
+    }).strict().parse(args);
+    await orgExists(input.org_id);
+    return persistProjectWorkMode(grant.uid, {
+      orgId: input.org_id, projectId: input.project_id,
+      workMode: input.work_mode,
+    });
   }
 
   if (name === 'list_work_items') {

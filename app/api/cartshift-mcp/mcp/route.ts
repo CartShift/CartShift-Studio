@@ -6,9 +6,14 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 const metadataUrl = MCP_ORIGIN + '/.well-known/oauth-protected-resource';
-function reply(id: unknown, result: unknown) {
+const supportedProtocols = ['2025-03-26', '2025-06-18', '2025-11-25'] as const;
+function protocolVersion(offered: unknown): string {
+  return typeof offered === 'string' && supportedProtocols.some(version => version === offered)
+    ? offered : '2025-11-25';
+}
+function reply(id: unknown, result: unknown, version = '2025-11-25') {
   return Response.json({ jsonrpc: '2.0', id, result }, {
-    headers: { 'Cache-Control': 'no-store', 'MCP-Protocol-Version': '2025-11-25' },
+    headers: { 'Cache-Control': 'no-store', 'MCP-Protocol-Version': version },
   });
 }
 function fail(id: unknown, code: number, message: string) {
@@ -17,7 +22,7 @@ function fail(id: unknown, code: number, message: string) {
   });
 }
 
-function authenticationRequired(id: unknown, error: 'invalid_token' | 'insufficient_scope', scope?: string) {
+function authenticationRequired(id: unknown, error: 'invalid_token' | 'insufficient_scope', scope?: string, version = '2025-11-25') {
   // ChatGPT scans tools before a user connects. Only tool invocations need
   // credentials; this challenge lets ChatGPT offer an OAuth sign-in UI.
   const challenge = 'Bearer resource_metadata="' + metadataUrl + '", error="' + error +
@@ -27,7 +32,7 @@ function authenticationRequired(id: unknown, error: 'invalid_token' | 'insuffici
     content: [{ type: 'text', text: 'CartShift authentication required.' }],
     isError: true,
     _meta: { 'mcp/www_authenticate': [challenge] },
-  });
+  }, version);
 }
 
 export async function POST(request: Request) {
@@ -40,23 +45,30 @@ export async function POST(request: Request) {
   if (!body || body.jsonrpc !== '2.0' || typeof body.method !== 'string') {
     return fail(body?.id ?? null, -32600, 'Invalid JSON-RPC request');
   }
+  const headerVersion = request.headers.get('MCP-Protocol-Version');
+  if (headerVersion !== null && !supportedProtocols.some(version => version === headerVersion)) {
+    return Response.json({ error: 'Unsupported MCP protocol version' }, {
+      status: 400, headers: { 'Cache-Control': 'no-store' },
+    });
+  }
   if (!('id' in body)) return new Response(null, { status: 202 });
 
+  const requestedVersion = headerVersion ?? '2025-03-26';
   switch (body.method) {
     case 'initialize':
       return reply(body.id, {
-        protocolVersion: '2025-11-25',
+        protocolVersion: protocolVersion(body.params?.protocolVersion),
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: 'cartshift', version: '1.0.0' },
         instructions: 'Read existing clients and work items before writing. Do not invent identifiers or completed statuses.',
-      });
+      }, protocolVersion(body.params?.protocolVersion));
     case 'ping':
-      return reply(body.id, {});
+      return reply(body.id, {}, requestedVersion);
     case 'tools/list':
       return reply(body.id, { tools: TOOL_DEFS.map(tool => ({
         name: tool.name, description: tool.description, inputSchema: tool.inputSchema,
         securitySchemes: [{ type: 'oauth2', scopes: [tool.scope] }],
-      })) });
+      })) }, requestedVersion);
     case 'tools/call': {
       const name = body.params?.name;
       if (typeof name !== 'string') return fail(body.id, -32602, 'Missing tool name');
@@ -66,26 +78,34 @@ export async function POST(request: Request) {
       // and mutations require an authenticated agency user and a matching scope.
       let grant;
       try { grant = await requireMcpToken(request.headers.get('authorization')); }
-      catch { return authenticationRequired(body.id, 'invalid_token', tool.scope); }
+      catch { return authenticationRequired(body.id, 'invalid_token', tool.scope, requestedVersion); }
       if (!grant.scope.includes(tool.scope)) {
-        return authenticationRequired(body.id, 'insufficient_scope', tool.scope);
+        return authenticationRequired(body.id, 'insufficient_scope', tool.scope, requestedVersion);
       }
       try {
         const result = await callTool(name, body.params?.arguments || {}, grant);
-        return reply(body.id, { content: [{ type: 'text', text: JSON.stringify(result) }], isError: false });
+        return reply(body.id, { content: [{ type: 'text', text: JSON.stringify(result) }], isError: false }, requestedVersion);
       } catch (error) {
         const sandboxErrors: Record<string, string> = {
           SANDBOX_NOT_CONFIGURED: 'SANDBOX_NOT_CONFIGURED: the sandbox owner or worker credential is missing on this deployment.',
           SANDBOX_FORBIDDEN: 'SANDBOX_FORBIDDEN: this account is not the configured sandbox owner.',
           INVALID_WORKDIR: 'INVALID_WORKDIR: choose a directory inside /workspace without traversal.',
+          SANDBOX_SESSIONS_WORKER_UNAVAILABLE: 'SANDBOX_SESSIONS_WORKER_UNAVAILABLE: a fresh interactive worker handshake is required.',
+          SANDBOX_SESSION_ACTIVE: 'SANDBOX_SESSION_ACTIVE: stop the active login session before starting another.',
+          SANDBOX_SESSION_NOT_FOUND: 'SANDBOX_SESSION_NOT_FOUND: no session is available for this owner and ID.',
+          SANDBOX_SESSION_CLOSED: 'SANDBOX_SESSION_CLOSED: this login session has ended or is stopping.',
+          SANDBOX_SESSION_INPUT_PENDING: 'SANDBOX_SESSION_INPUT_PENDING: wait for the previous input acknowledgement.',
+          SANDBOX_SESSION_INVALID_INPUT: 'SANDBOX_SESSION_INVALID_INPUT: provide only a supported confirmation or provider verification code.',
           JOB_NOT_FOUND: 'JOB_NOT_FOUND: no sandbox result is available for this owner and job ID.',
         };
         const sandboxMessage = name.startsWith('sandbox_') && error instanceof Error
           ? sandboxErrors[error.message] : undefined;
-        const safeMessage = sandboxMessage || (error instanceof Error &&
+        const sessionValidation = ['sandbox_start_session', 'sandbox_read_session', 'sandbox_send_input', 'sandbox_stop_session'].includes(name) && error instanceof Error && error.name === 'ZodError'
+          ? 'Invalid login session arguments.' : undefined;
+        const safeMessage = sessionValidation || sandboxMessage || (error instanceof Error &&
           (error.name === 'ZodError' || /^(Client not found|Organization not found|Work item not found|Empty |Too many work items|Unknown tool|Arguments)/.test(error.message))
           ? error.message : 'Operation could not be completed; review the client ID, permissions and server logs');
-        return reply(body.id, { content: [{ type: 'text', text: safeMessage }], isError: true });
+        return reply(body.id, { content: [{ type: 'text', text: safeMessage }], isError: true }, requestedVersion);
       }
     }
     default:

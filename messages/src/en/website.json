@@ -331,8 +331,8 @@
   "wordpress": {
     "hero": {
       "title": "WordPress Built Around Your Business",
-      "subtitle": "Content, business sites, and WooCommerce where it fits",
-      "description": "Maintainable sites built around publishing and business needs. For commerce, we assess WordPress versus Shopify.",
+      "subtitle": "Content sites, business websites and publishing platforms",
+      "description": "Maintainable WordPress sites built for publishing and business needs, including technical SEO, performance and ongoing support. For online stores, our focus is Shopify.",
       "badge": "Web Development Experts"
     },
     "services": {
@@ -428,11 +428,11 @@
       "items": [
         {
           "question": "What WordPress development services do you offer?",
-          "answer": "We build content sites, business sites, and suitable WooCommerce projects, including themes, plugins, technical SEO, performance, and maintenance."
+          "answer": "We build WordPress content sites, business websites and publishing platforms, including theme and plugin work, technical SEO, performance and maintenance."
         },
         {
           "question": "Do you build e-commerce sites with WordPress?",
-          "answer": "Yes, when WooCommerce suits the business model and existing systems. We have experience with WordPress and WooCommerce projects, while Shopify is our primary commerce specialty. Our recommendation depends on requirements, complexity, and long-term upkeep."
+          "answer": "Our WordPress services focus on business websites and content platforms. We do not currently offer WooCommerce store development; our online-store development specialization is Shopify."
         },
         {
           "question": "How long does it take to develop a WordPress site?",
@@ -456,11 +456,11 @@
         },
         {
           "question": "Do you help with WordPress security?",
-          "answer": "Yes, security is a top priority. We implement security best practices including SSL certificates, security plugins, regular updates, malware scanning, and secure hosting recommendations to protect your site from threats."
+          "answer": "We support security-focused maintenance such as WordPress and plugin updates, backup checks, configuration review and hosting recommendations. Active incident response and penetration testing are separate specialist services."
         },
         {
           "question": "What types of sites are best for WordPress?",
-          "answer": "WordPress suits publishing, news sites, business websites, portfolios, and custom content workflows. For commerce, WooCommerce or Shopify may be suitable depending on the requirements."
+          "answer": "WordPress suits publishing, news sites, business websites, portfolios and custom content workflows. For new online stores, we offer Shopify development services."
         },
         {
           "question": "How do I get started with your WordPress development services?",
@@ -1444,12 +1444,12 @@
       ]
     },
     "wordpress": {
-      "title": "WordPress & WooCommerce",
-      "description": "Maintainable content-rich and business websites. We assess whether WooCommerce or Shopify is the better fit for commerce.",
+      "title": "WordPress Development & Care",
+      "description": "Maintainable content sites, magazines and business websites. Performance, technical SEO, updates and security care.",
       "features": [
         "Custom Design",
         "Easy to Edit",
-        "WooCommerce Where It Fits",
+        "Maintenance & Security",
         "SEO Optimized"
       ]
     },

@@ -96,7 +96,7 @@ async function requestExists(orgId: string, requestId: string) {
 
 const projectFields = ['orgId', 'title', 'summary', 'nextStep', 'status', 'template',
   'stages', 'blockers', 'deliverables', 'launchChecks', 'inputs', 'workLogs', 'updates',
-  'changes', 'reviewRevisions', 'scope', 'createdBy', 'createdAt', 'updatedAt'] as const;
+  'changes', 'reviewRevisions', 'scope', 'workMode', 'createdBy', 'createdAt', 'updatedAt'] as const;
 
 export async function callExtendedTool(name: string, raw: unknown, grant: TokenGrant): Promise<unknown> {
   const def = EXTENDED_TOOL_DEFS.find(item => item.name === name);
@@ -115,7 +115,7 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
     const snap = await projects.where('orgId', '==', org_id).limit(200).get();
     return { projects: snap.docs.map(doc => {
       const p = doc.data();
-      return { id: doc.id, ...pick(p, ['title', 'template', 'summary', 'nextStep', 'status', 'scope', 'updatedAt']),
+      return { id: doc.id, ...pick(p, ['title', 'template', 'summary', 'nextStep', 'status', 'scope', 'workMode', 'updatedAt']),
         openBlockers: (p.blockers || []).filter((x: { resolved?: boolean }) => !x.resolved).length,
         stages: p.stages || [] };
     }), truncated: snap.size === 200 };
@@ -133,6 +133,8 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
       summary: z.string().trim().max(4000).optional(),
     }).strict().parse(input);
     const organization = await organizationExists(org_id);
+    const modeDoc = await database.collection('agency_client_metadata').doc(org_id).get();
+    const workMode = modeDoc.data()?.defaultWorkMode === 'pro_bono' ? 'pro_bono' : 'commercial';
     const preferredCurrency = organization.data()?.defaultCurrency;
     const currency = preferredCurrency === 'ILS' || preferredCurrency === 'USD' || preferredCurrency === 'EUR'
       ? preferredCurrency : 'ILS';
@@ -149,7 +151,7 @@ export async function callExtendedTool(name: string, raw: unknown, grant: TokenG
         return;
       }
       tx.create(ref, {
-        orgId: org_id, title, template, summary, nextStep: '', status: 'planning',
+        orgId: org_id, title, template, workMode, summary, nextStep: '', status: 'planning',
         ...buildProjectTemplate(template, locale), blockers: [], deliverables: [], workLogs: [],
         changes: [], updates: [], reviewRevisions: {},
         scope: { minHours: 0, maxHours: 0, rateCents: 0, currency },

@@ -1,0 +1,12 @@
+{
+  "session": {
+    "session_id": "33333333-3333-4333-8333-333333333333",
+    "provider": "supabase",
+    "cwd": "/workspace",
+    "ttl_seconds": 600,
+    "idle_timeout_seconds": 180,
+    "expires_at": 1800000600000,
+    "status": "pending",
+    "pending_input": null
+  }
+}

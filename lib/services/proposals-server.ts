@@ -635,6 +635,20 @@ export async function ensureProposalPublicToken(proposalId: string): Promise<str
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists) throw new Error('NOT_FOUND');
     const data = snapshot.data() as ProposalDocument;
+    const proposal = data;
+    if (proposal.projectId) {
+      const project = await transaction.get(db.collection('portal_projects').doc(proposal.projectId));
+      if (project.exists && project.data()?.orgId === proposal.orgId &&
+          project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+    } else {
+      const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
+      // Accepted historic commitments remain collectible when an agency changes
+      // its default for *future* standalone work to pro bono.
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
+    }
     if (data.publicToken) {
       if (data.publicAccessEnabled !== true) {
         transaction.update(ref, { publicAccessEnabled: true });
@@ -671,6 +685,17 @@ export async function queueProposalOfferEmail(
     const snapshot = await transaction.get(proposalRef);
     const proposal = snapshot.data() as ProposalDocument | undefined;
     if (!proposal) throw new Error('NOT_FOUND');
+    if (proposal.projectId) {
+      const project = await transaction.get(db.collection('portal_projects').doc(proposal.projectId));
+      if (project.exists && project.data()?.orgId === proposal.orgId &&
+          project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+    } else {
+      const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
+    }
     if (!['DRAFT', 'QUOTED', 'CHANGES_REQUESTED'].includes(proposal.status)) {
       throw new Error('NOT_SENDABLE');
     }
@@ -770,6 +795,17 @@ export async function createProposalInstallment(
     const snapshot = await transaction.get(proposalRef);
     if (!snapshot.exists) throw new Error('NOT_FOUND');
     const proposal = snapshot.data() as ProposalDocument;
+    if (proposal.projectId) {
+      const project = await transaction.get(db.collection('portal_projects').doc(proposal.projectId));
+      if (project.exists && project.data()?.orgId === proposal.orgId &&
+          project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+    } else {
+      const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
+    }
     if (proposal.status !== 'ACCEPTED') throw new Error('NOT_ACCEPTED');
 
     const available = (proposal.balanceDue ?? proposal.totalAmount) - (proposal.pendingAmount ?? 0);
@@ -820,6 +856,17 @@ export async function recordManualProposalPayment(
     const snapshot = await transaction.get(proposalRef);
     if (!snapshot.exists) throw new Error('NOT_FOUND');
     const proposal = snapshot.data() as ProposalDocument;
+    if (proposal.projectId) {
+      const project = await transaction.get(db.collection('portal_projects').doc(proposal.projectId));
+      if (project.exists && project.data()?.orgId === proposal.orgId &&
+          project.data()?.workMode === 'pro_bono') throw new Error('PRO_BONO_NO_BILLING');
+    } else {
+      const meta = await transaction.get(db.collection('agency_client_metadata').doc(proposal.orgId));
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'CLOSED'].includes(proposal.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
+    }
     if (proposal.status !== 'ACCEPTED' && proposal.status !== 'PAID') {
       throw new Error('NOT_ACCEPTED');
     }

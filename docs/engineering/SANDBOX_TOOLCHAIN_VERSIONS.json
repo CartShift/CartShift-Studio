@@ -1,0 +1,41 @@
+{
+  "verified_at": "2026-10-22",
+  "platform": "linux-arm64",
+  "npm_lockfile": "package-lock.json",
+  "providers": {
+    "supabase": {
+      "version": "2.121.0",
+      "path": "/workspace/toolchain/bin/supabase",
+      "sha256": "c68ff791b80491c7fb8a1676a1b1827436846f75487dd50dca8f244e6aad02cc",
+      "source": "official Supabase CLI release"
+    },
+    "github": {
+      "version": "2.23.0+dfsg1-1",
+      "path": "/usr/bin/gh",
+      "sha256": "b993beaeb63e8295059b6c224a24f91df4fcf4d6254941bfbdc4f5f7c40a0058",
+      "source": "Debian package; image-managed"
+    },
+    "vercel": {
+      "version": "65.1.0",
+      "package": "vercel"
+    },
+    "firebase": {
+      "version": "15.34.1",
+      "package": "firebase-tools"
+    },
+    "shopify": {
+      "version": "4.9.4",
+      "package": "@shopify/cli"
+    },
+    "northflank": {
+      "version": "0.13.0",
+      "package": "@northflank/cli",
+      "path": "/workspace/toolchain/whatsapp-admin/node_modules/.bin/northflank"
+    },
+    "apps-script": {
+      "version": "3.4.1",
+      "package": "@google/clasp",
+      "path": "/workspace/toolchain/whatsapp-admin/node_modules/.bin/clasp"
+    }
+  }
+}

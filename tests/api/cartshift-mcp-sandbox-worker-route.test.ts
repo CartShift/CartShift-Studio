@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn() }));
+const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn() }));
 vi.mock('@/lib/mcp/sandbox-jobs', () => ({ authorizeSandboxWorker: mocks.authorize,
-  leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete }));
+  leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete, recordSandboxHeartbeat: mocks.heartbeat }));
 import { POST } from '@/app/api/cartshift-mcp/sandbox/worker/route';
 
 describe('sandbox worker request boundaries', () => {
-  beforeEach(() => { vi.clearAllMocks(); mocks.authorize.mockReturnValue(true); mocks.complete.mockResolvedValue({ acknowledged: true }); });
+  beforeEach(() => { vi.clearAllMocks(); mocks.authorize.mockReturnValue(true); mocks.complete.mockResolvedValue({ acknowledged: true }); mocks.heartbeat.mockResolvedValue({ acknowledged: true }); });
   it('rejects unauthenticated callers before accepting payloads', async () => {
     mocks.authorize.mockReturnValue(false);
     const result = await POST(new Request('https://example.com', { method: 'POST', body: '{}' }));
@@ -24,4 +24,28 @@ describe('sandbox worker request boundaries', () => {
     expect(result.status).toBe(413);
     expect(mocks.complete).not.toHaveBeenCalled();
   });
+  it('accepts explicit v3 heartbeat while defaulting legacy workers to v2', async () => {
+    mocks.lease.mockResolvedValue(null);
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST', body: JSON.stringify(body) });
+    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3 }))).status).toBe(200);
+    expect(mocks.heartbeat).toHaveBeenCalledWith(false, 3);
+    expect((await POST(req({ action: 'heartbeat', busy: true, worker_version: 3 }))).status).toBe(200);
+    expect(mocks.heartbeat).toHaveBeenCalledWith(true, 3);
+    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 4 }))).status).toBe(400);
+    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3, arbitrary: true }))).status).toBe(400);
+  });
+  it('recognizes bounded periodic poll heartbeats without extra writes on ordinary polls', async () => {
+    mocks.lease.mockResolvedValue(null);
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST',
+      body: JSON.stringify(body) });
+    expect((await POST(req({ action: 'poll' }))).status).toBe(200);
+    expect(mocks.heartbeat).not.toHaveBeenCalled();
+    expect((await POST(req({ action: 'poll', heartbeat: true }))).status).toBe(200);
+    expect(mocks.heartbeat).toHaveBeenCalledOnce();
+    expect(mocks.heartbeat).toHaveBeenCalledWith(false, 2);
+    expect((await POST(req({ action: 'heartbeat', busy: true }))).status).toBe(200);
+    expect(mocks.heartbeat).toHaveBeenCalledWith(true, 2);
+    expect((await POST(req({ action: 'heartbeat', busy: false }))).status).toBe(400);
+  });
+
 });

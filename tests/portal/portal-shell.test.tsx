@@ -127,6 +127,10 @@ vi.mock('@/components/portal/ui/MobileSearch', () => ({
   MobileSearch: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="mobile-search">Mobile Search</div> : null,
 }));
+vi.mock('@/components/portal/requests/RequestPreviewModal', () => ({
+  RequestPreviewModal: () => null,
+}));
+
 vi.mock('@/components/portal/OnboardingTour', () => ({
   OnboardingTour: () => null,
 }));

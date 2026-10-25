@@ -41,7 +41,8 @@
       "message": "We use cookies to improve your browsing experience and analyze site usage.",
       "accept": "Accept",
       "decline": "Decline",
-      "learnMore": "Learn more"
+      "learnMore": "Learn more",
+      "settings": "Cookie settings"
     }
   },
   "navigation": {

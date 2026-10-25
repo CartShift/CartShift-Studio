@@ -47,7 +47,7 @@ export function usePortalShellState({
     (orgId: string) => {
       uiState.handleOrgSwitch(orgId, authState.switchOrg, authState.isAgency);
     },
-    [uiState, authState.switchOrg]
+    [uiState, authState.switchOrg, authState.isAgency]
   );
 
   // 6. Return combined state (maintaining backward compatibility)

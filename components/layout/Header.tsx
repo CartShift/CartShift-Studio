@@ -46,6 +46,7 @@ export const Header: React.FC = () => {
         submenu: [
           { name: t('servicesOverview.shopify.title'), href: '/solutions/shopify' },
           { name: t('servicesOverview.wordpress.title'), href: '/solutions/wordpress' },
+          { name: t('wordpressSecurity.navLabel'), href: '/services/wordpress-security' },
           { name: t('servicesOverview.seo.title'), href: '/solutions/seo' },
           ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
         ],

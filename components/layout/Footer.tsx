@@ -7,6 +7,7 @@ import { NewsletterSignupForm } from '@/components/forms/NewsletterSignupForm';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useSystemSettings } from '@/lib/hooks/useSystemSettings';
+import { openCookiePreferences } from '@/lib/analytics-consent';
 
 export const Footer: React.FC = () => {
   const t = useTranslations();
@@ -21,6 +22,7 @@ export const Footer: React.FC = () => {
     solutions: [
       { name: t('footer.links.shopify'), href: '/solutions/shopify' },
       { name: t('footer.links.wordpress'), href: '/solutions/wordpress' },
+      { name: t('wordpressSecurity.navLabel'), href: '/services/wordpress-security' },
       { name: t('footer.links.seo'), href: '/solutions/seo' },
       ...(isPricingVisible ? [{ name: t('nav.pricing'), href: '/pricing' }] : []),
       ...(isMaintenanceVisible ? [{ name: t('nav.maintenance'), href: '/maintenance' }] : []),
@@ -157,6 +159,14 @@ export const Footer: React.FC = () => {
                 >
                   {t('footer.links.terms')}
                 </Link>
+                <span aria-hidden="true" className="text-surface-300 dark:text-surface-700">|</span>
+                <button
+                  type="button"
+                  onClick={openCookiePreferences}
+                  className="text-surface-500 dark:text-surface-500 hover:text-accent-600 dark:hover:text-accent-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500 transition-colors"
+                >
+                  {t('common.cookieConsent.settings')}
+                </button>
               </div>
             </div>
             <div className="flex items-center gap-6 text-xs md:text-sm text-surface-500 dark:text-surface-500">

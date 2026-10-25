@@ -223,6 +223,18 @@ async function createPayment(input: {
     if (existingPayment.exists) return;
     const request = requestSnap.data() as RequestDoc | undefined;
     if (!request) throw new Error('NOT_FOUND');
+    if (request.projectId) {
+      const project = await transaction.get(database.collection('portal_projects').doc(request.projectId));
+      if (project.data()?.workMode === 'pro_bono' && project.data()?.orgId === request.orgId) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
+    } else {
+      const meta = await transaction.get(database.collection('agency_client_metadata').doc(request.orgId));
+      if (meta.data()?.defaultWorkMode === 'pro_bono' &&
+          !['ACCEPTED', 'PAID', 'IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'CLOSED'].includes(request.status)) {
+        throw new Error('PRO_BONO_NO_BILLING');
+      }
+    }
     if (request.publicToken && request.paymentRequired) throw new Error('PROPOSAL_MANAGED');
     if (!request.isBillable) throw new Error('NOT_BILLABLE');
     const existing = await transaction.get(database.collection(PAYMENTS).where('requestId', '==', input.requestId));

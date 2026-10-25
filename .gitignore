@@ -72,3 +72,11 @@ build_out/
 /data/social/*.json
 /data/social/*.log
 !/data/social/*.example.json
+
+# PWA icons are generated from approved public/images/CarShift-Icon-Colored.png
+/public/icon-192.png
+/public/icon-512.png
+/public/icon-maskable-512.png
+/public/favicon-16x16.png
+/public/favicon-32x32.png
+/public/apple-touch-icon-180.png

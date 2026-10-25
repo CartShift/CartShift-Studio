@@ -47,7 +47,23 @@ export function AgencySettingsNav({
   const tabById = new Map(tabs.map(tab => [tab.id, tab]));
 
   return (
-    <nav className="space-y-5" aria-label="Agency settings">
+    <>
+      <select
+        aria-label="Agency settings"
+        value={activeTab}
+        onChange={event => onSelect(event.target.value as AgencySettingsTabId)}
+        className="portal-focus-ring block h-12 w-full min-w-0 rounded-xl border border-surface-200 bg-white px-3 text-base text-surface-900 dark:border-surface-700 dark:bg-surface-900 dark:text-white lg:hidden"
+      >
+        {groups.map(group => (
+          <optgroup key={group.label} label={group.label}>
+            {group.tabIds.map(id => {
+              const tab = tabById.get(id);
+              return tab ? <option key={tab.id} value={tab.id}>{tab.label}</option> : null;
+            })}
+          </optgroup>
+        ))}
+      </select>
+      <nav className="hidden space-y-5 lg:block" aria-label="Agency settings">
       {groups.map(group => {
         const groupTabs = group.tabIds
           .map(id => tabById.get(id))
@@ -74,5 +90,6 @@ export function AgencySettingsNav({
         );
       })}
     </nav>
+    </>
   );
 }

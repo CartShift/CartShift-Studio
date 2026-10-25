@@ -48,7 +48,12 @@ describe('CartShift expanded MCP operations', () => {
       'list_work_item_comments']) {
       expect(TOOL_DEFS.find(tool => tool.name === name)?.scope).toMatch(/^work:(read|write)$/);
     }
-    expect(TOOL_DEFS).toHaveLength(40);
+    expect(TOOL_DEFS).toHaveLength(49);
+    for (const name of ['sandbox_start_session', 'sandbox_send_input', 'sandbox_stop_session']) expect(TOOL_DEFS.find(tool => tool.name === name)?.scope).toBe('work:write');
+    expect(TOOL_DEFS.find(tool => tool.name === 'sandbox_read_session')?.scope).toBe('work:read');
+    expect(TOOL_DEFS.find(tool => tool.name === 'get_client_work_mode')?.scope).toBe('clients:read');
+    expect(TOOL_DEFS.find(tool => tool.name === 'set_client_work_mode')?.scope).toBe('clients:write');
+    expect(TOOL_DEFS.find(tool => tool.name === 'set_project_work_mode')?.scope).toBe('work:write');
     expect(TOOL_DEFS.find(tool => tool.name === 'sandbox_ping')?.scope).toBe('clients:read');
     expect(TOOL_DEFS.find(tool => tool.name === 'create_client')?.scope).toBe('clients:write');
   });

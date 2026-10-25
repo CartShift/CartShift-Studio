@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Isolated, persisted per-provider CLI identities. Never print credentials.
+set -Eeuo pipefail
+umask 077
+if (( $# < 2 )); then echo 'Usage: devctl {supabase|github|vercel|firebase|shopify|northflank|apps-script} {status|version|login|run|help} [args...]' >&2; exit 2; fi
+provider="$1"; action="$2"; shift 2
+ROOT=/workspace
+BIN="$ROOT/toolchain/bin"
+NODEBIN="$ROOT/toolchain/node_modules/.bin"
+case "$provider" in
+  supabase) cli="$BIN/supabase" ;;
+  github) cli=/usr/bin/gh ;;
+  vercel) cli="$NODEBIN/vercel" ;;
+  firebase) cli="$NODEBIN/firebase" ;;
+  shopify) cli="$NODEBIN/shopify" ;;
+  northflank) cli="$ROOT/toolchain/whatsapp-admin/node_modules/.bin/northflank" ;;
+  apps-script) cli="$ROOT/toolchain/whatsapp-admin/node_modules/.bin/clasp" ;;
+  *) echo 'Unknown provider' >&2; exit 2 ;;
+esac
+[[ -x "$cli" ]] || { echo "CLI unavailable: $provider" >&2; exit 3; }
+export HOME="$ROOT/.auth/$provider"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export PATH="$BIN:$NODEBIN:$PATH"
+mkdir -p "$HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME"
+chmod 700 "$HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME"
+if [[ "$provider" == northflank ]]; then export NF_CONFIG_DIR="$HOME"; fi
+if [[ "$provider" == github ]]; then export GH_CONFIG_DIR="$HOME/.config/gh"; mkdir -p "$GH_CONFIG_DIR"; chmod 700 "$GH_CONFIG_DIR"; fi
+case "$action" in
+  login)
+    case "$provider" in
+      supabase) exec "$cli" login --no-browser "$@" ;;
+      github) exec "$cli" auth login --hostname github.com --git-protocol https --web "$@" ;;
+      vercel) exec "$cli" login "$@" ;;
+      firebase) exec "$cli" login --no-localhost "$@" ;;
+      shopify) exec "$cli" auth login "$@" ;;
+      northflank) exec "$cli" login --do-not-open-browser --name cartshift-whatsapp "$@" ;;
+      apps-script) exec "$cli" login --no-localhost "$@" ;;
+    esac ;;
+  status)
+    case "$provider" in
+      supabase) check=("$cli" projects list) ;;
+      github) check=("$cli" auth status) ;;
+      vercel) check=("$cli" whoami) ;;
+      firebase) check=("$cli" projects:list) ;;
+      shopify) check=("$cli" organization list --no-input --json) ;;
+      northflank) check=("$cli" list projects) ;;
+      apps-script) check=("$cli" list) ;;
+    esac
+    if "${check[@]}" >/dev/null 2>&1; then echo "$provider authenticated"; else echo "$provider not-authenticated-or-no-project-access"; exit 1; fi ;;
+  version) exec "$cli" --version ;;
+  run) exec "$cli" "$@" ;;
+  help) exec "$cli" --help ;;
+  *) echo "Unsupported action: $action" >&2; exit 2 ;;
+esac
