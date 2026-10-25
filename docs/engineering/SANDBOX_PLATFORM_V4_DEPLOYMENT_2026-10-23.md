@@ -78,3 +78,8 @@ The first attempted auth-task replacement exited before replacing the old Docker
 Actual Firebase CLI production query confirms **37 indexes**, with TTL enabled for `sandbox_auth_sessions.purgeAt`, `sandbox_command_jobs.purgeAt`, and `store_analysis_reports.expiresAt`. Post-maintenance production job `CfX5dJkBUH1veuGQMnzs` completed0, verified UID1000/aarch64 and the unchanged 25,600-byte artifact hash. Both execution slots and the isolated enforced auth channel are online. GitHub CI at `f3b66d01` passed; the full job is intentionally skipped for this draft.
 
 Remaining owner acceptance: renewed Vercel sign-in, a physical Windows reboot/login, actual ChatGPT Android checks, and latest OneDrive upload confirmation. PR remains draft and unmerged.
+
+
+### Owner-confirmed Android connectivity
+
+On October25 the owner reported a successful fresh ChatGPT Android check: sandbox online, workerV5, two idle execution slots, UID1000/aarch64, proof write/read and recent-jobs listing. Independent production MCP job `TVKiVJqf3MhMugta05NE` completed0 and verified `/workspace/experiments/android-v4-proof.txt` contains `android-v4-20261025`. Basic Android connectivity/command/file/recent-jobs acceptance is now confirmed. Android-specific parallel-job, cancellation and provider-login UI checks remain separate and were not claimed by this test. A new Vercel device session was started after the previous code expired; approval/result is not yet confirmed.
