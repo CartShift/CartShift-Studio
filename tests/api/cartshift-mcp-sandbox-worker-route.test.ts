@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn() }));
+const mocks = vi.hoisted(() => ({ authorize: vi.fn(), lease: vi.fn(), complete: vi.fn(), heartbeat: vi.fn(), cancel: vi.fn(), poolClaim: vi.fn(), poolBeat: vi.fn() }));
 vi.mock('@/lib/mcp/sandbox-jobs', () => ({ authorizeSandboxWorker: mocks.authorize,
-  leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete, recordSandboxHeartbeat: mocks.heartbeat }));
+  leaseSandboxJob: mocks.lease, completeSandboxJob: mocks.complete, recordSandboxHeartbeat: mocks.heartbeat, sandboxCancellationRequested: mocks.cancel }));
+vi.mock('@/lib/mcp/sandbox-pool', async importOriginal => ({
+  ...await importOriginal<typeof import('@/lib/mcp/sandbox-pool')>(), claimPoolJob: mocks.poolClaim, poolHeartbeat: mocks.poolBeat,
+}));
 import { POST } from '@/app/api/cartshift-mcp/sandbox/worker/route';
 
 describe('sandbox worker request boundaries', () => {
@@ -18,6 +21,16 @@ describe('sandbox worker request boundaries', () => {
     expect(result.status).toBe(200);
     expect(mocks.complete).toHaveBeenCalledOnce();
   });
+  it('accepts version-tagged completions without passing transport metadata to the strict result schema', async () => {
+    const payload = { action: 'complete', worker_version: 4, job_id: 'sandbox-job-12345678',
+      lease_token: 'l'.repeat(40), exit_code: 0, stdout: 'safe fixture', stderr: '',
+      duration_ms: 12, output_truncated: false };
+    const result = await POST(new Request('https://example.com', { method: 'POST', body: JSON.stringify(payload) }));
+    expect(result.status).toBe(200);
+    expect(mocks.complete.mock.calls[0][0]).not.toHaveProperty('worker_version');
+    expect(mocks.complete.mock.calls[0][0]).not.toHaveProperty('action');
+    expect(mocks.complete.mock.calls[0][0]).toMatchObject({ job_id: payload.job_id, stdout: payload.stdout });
+  });
   it('rejects oversized streamed bodies even without content-length', async () => {
     const body = JSON.stringify({ action: 'complete', stdout: 'x'.repeat(200001) });
     const result = await POST(new Request('https://example.com', { method: 'POST', body }));
@@ -29,14 +42,49 @@ describe('sandbox worker request boundaries', () => {
     const req = (body: unknown) => new Request('https://example.com', { method: 'POST', body: JSON.stringify(body) });
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3 }))).status).toBe(200);
     expect(mocks.heartbeat).toHaveBeenCalledWith(false, 3);
+    expect(mocks.lease).toHaveBeenCalledWith(3);
     expect((await POST(req({ action: 'heartbeat', busy: true, worker_version: 3 }))).status).toBe(200);
     expect(mocks.heartbeat).toHaveBeenCalledWith(true, 3);
-    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 4 }))).status).toBe(400);
+    expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 5 }))).status).toBe(400);
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3, arbitrary: true }))).status).toBe(400);
+  });
+  it('dispatches V5 identities and preserves lease-bound cancellation and completion', async () => {
+    const identity = { worker_version: 5, slot: 1, worker_id: 'a'.repeat(32) };
+    const request = (body: object) => new Request('https://example.com', { method: 'POST', body: JSON.stringify({ ...identity, ...body }) });
+    mocks.poolClaim.mockResolvedValue({ job_id: 'job-123456789' });
+    expect((await POST(request({ action: 'poll' }))).status).toBe(200);
+    expect(mocks.poolClaim).toHaveBeenCalledWith(expect.objectContaining(identity));
+    mocks.poolBeat.mockResolvedValue({ acknowledged: true, cancel_requested: true });
+    const response = await POST(request({ action: 'heartbeat', busy: true, job_id: 'job-123456789', lease_token: 'l'.repeat(40) }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ cancel_requested: true });
+    expect((await POST(request({ action: 'complete', job_id: 'job-123456789', lease_token: 'l'.repeat(40), exit_code: 0, stdout: '', stderr: '', duration_ms: 1, output_truncated: false }))).status).toBe(200);
+    expect(mocks.complete).toHaveBeenCalledWith(expect.objectContaining({ worker_id: identity.worker_id }));
+    expect(mocks.complete.mock.calls[0][0]).not.toHaveProperty('slot');
+  });
+  it('accepts lease-bound V4 cancellation queries only', async () => {
+    mocks.cancel.mockResolvedValue(true);
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST', body: JSON.stringify(body) });
+    const payload = { action: 'heartbeat', busy: true, worker_version: 4,
+      job_id: 'real-job', lease_token: 'lease-secret' };
+    const response = await POST(req(payload));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ cancel_requested: true });
+    expect(mocks.cancel).toHaveBeenCalledWith('real-job', 'lease-secret');
+    expect((await POST(req({ ...payload, extra: true }))).status).toBe(400);
+    expect((await POST(req({ ...payload, worker_version: 3 }))).status).toBe(400);
+  });
+  it('does not refresh status for an invalid lease heartbeat', async () => {
+    mocks.cancel.mockRejectedValueOnce(new Error('INVALID_OR_EXPIRED_LEASE'));
+    const response = await POST(new Request('https://example.com', { method: 'POST', body: JSON.stringify({
+      action: 'heartbeat', busy: true, worker_version: 4, job_id: 'stale-job', lease_token: 'wrong-token',
+    }) }));
+    expect(response.status).toBe(409);
+    expect(mocks.heartbeat).not.toHaveBeenCalled();
   });
   it('recognizes bounded periodic poll heartbeats without extra writes on ordinary polls', async () => {
     mocks.lease.mockResolvedValue(null);
-    const req = body => new Request('https://example.com', { method: 'POST',
+    const req = (body: unknown) => new Request('https://example.com', { method: 'POST',
       body: JSON.stringify(body) });
     expect((await POST(req({ action: 'poll' }))).status).toBe(200);
     expect(mocks.heartbeat).not.toHaveBeenCalled();

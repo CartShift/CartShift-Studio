@@ -9,7 +9,7 @@ import { startSandboxSession, readSandboxSession, sendSandboxSessionInput, stopS
 import { sandboxPing } from '@/lib/mcp/sandbox-probe';
 import { persistClientWorkMode, persistProjectWorkMode } from '@/lib/services/agency-work-modes-server';
 import { normalizeWorkMode } from '@/lib/domain/work-engagement';
-import { submitSandboxCommand, getSandboxCommand, getSandboxStatus, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
+import { submitSandboxCommand, submitSandboxArtifactRead, getSandboxCommand, getSandboxStatus, getSandboxRecentJobs, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -52,7 +52,7 @@ const requestFields = z.object({
 
 export const TOOL_DEFS = [
   {
-    name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh v3 worker handshake; only fixed provider login commands run.', scope: 'work:write',
+    name: 'sandbox_start_session', description: 'Start one owner-only persistent CLI login session. Requires a fresh auth-worker handshake; only fixed provider login commands run.', scope: 'work:write',
     inputSchema: { type: 'object', required: ['provider'], properties: { provider: { type: 'string', enum: ['supabase', 'github', 'vercel', 'firebase', 'shopify', 'northflank', 'apps-script'] }, cwd: { type: 'string', default: '/workspace' }, ttl_seconds: { type: 'integer', minimum: 60, maximum: 900, default: 600 }, idle_timeout_seconds: { type: 'integer', minimum: 30, maximum: 300, default: 180 } }, additionalProperties: false },
   },
   {
@@ -70,13 +70,25 @@ export const TOOL_DEFS = [
 
   {
     name: 'sandbox_run_command',
-    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active v2 worker.',
+    description: 'Queue a command in the owner-only Linux ARM64 Docker sandbox. Returns a job ID, or waits up to 15 seconds for quick commands when wait_seconds is set. Commands run only in the separate Docker worker. Timeouts above 120s require an active V2+ worker; running cancellation and artifacts require V4.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['command'], properties: {
       command: { type: 'string', minLength: 1, maxLength: 2000 },
-      cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace)' },
+      cwd: { type: 'string', description: 'Working directory inside /workspace (default /workspace). Independent task directories need no Git repository; overlapping task directories are serialized in V5.' },
+      exclusive_workspace: { type: 'boolean', default: false, description: 'V5: reserve the whole workspace for cross-task/shared tool modifications. Default-cwd commands run concurrently; scope writes with cwd or request this reservation.' },
       timeout_seconds: { type: 'integer', minimum: 1, maximum: 600 },
       wait_seconds: { type: 'integer', minimum: 0, maximum: 15, description: 'Optional short wait for completed output; 0 queues without waiting.' },
+    }, additionalProperties: false },
+  },
+  {
+    name: 'sandbox_read_artifact',
+    description: 'Queue a bounded binary-safe read of a file under /workspace/artifacts. Retrieve base64 and SHA-256 chunk metadata with sandbox_get_result; no arbitrary filesystem reads.',
+    scope: 'work:read',
+    inputSchema: { type: 'object', required: ['path'], properties: {
+      path: { type: 'string', description: 'Relative path under /workspace/artifacts' },
+      offset: { type: 'integer', minimum: 0, default: 0 },
+      length: { type: 'integer', minimum: 1, maximum: 12000, default: 12000 },
+      wait_seconds: { type: 'integer', minimum: 0, maximum: 15, default: 0 },
     }, additionalProperties: false },
   },
   {
@@ -87,6 +99,10 @@ export const TOOL_DEFS = [
       properties: { job_id: { type: 'string' } }, additionalProperties: false },
   },
   {
+    name: 'sandbox_recent_jobs', description: 'List up to 30 recent owner-only sandbox jobs with statuses and timings, never command text or output.', scope: 'work:read',
+    inputSchema: { type: 'object', properties: { limit: { type: 'integer', minimum: 1, maximum: 30, default: 15 } }, additionalProperties: false },
+  },
+  {
     name: 'sandbox_status',
     description: 'Check actual sandbox worker heartbeat, capabilities and last seen timestamp. Unlike sandbox_ping this reflects the authenticated Docker worker.',
     scope: 'work:read',
@@ -94,7 +110,7 @@ export const TOOL_DEFS = [
   },
   {
     name: 'sandbox_cancel_command',
-    description: 'Cancel an owner sandbox command ONLY if it has not yet been leased to the Docker worker; running commands are not cancelled.',
+    description: 'Cancel a queued job immediately or request cooperative cancellation of a running V4 worker job. Check the result for confirmation.',
     scope: 'work:write',
     inputSchema: { type: 'object', required: ['job_id'],
       properties: { job_id: { type: 'string' } }, additionalProperties: false },
@@ -253,7 +269,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (name === 'sandbox_send_input') return sendSandboxSessionInput(grant, args);
   if (name === 'sandbox_stop_session') return stopSandboxSession(grant, args);
   if (name === 'sandbox_run_command') return submitSandboxCommand(grant, args);
+  if (name === 'sandbox_read_artifact') return submitSandboxArtifactRead(grant, args);
   if (name === 'sandbox_get_result') return getSandboxCommand(grant, args);
+  if (name === 'sandbox_recent_jobs') return getSandboxRecentJobs(grant, args);
   if (name === 'sandbox_status') { z.object({}).strict().parse(args); return getSandboxStatus(grant); }
   if (name === 'sandbox_cancel_command') return cancelSandboxCommand(grant, args);
   if (name === 'sandbox_ping') {

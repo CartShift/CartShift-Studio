@@ -92,6 +92,7 @@ function refs() {
 function fresh(data: Data | undefined, now = Date.now()) {
   return (
     data?.version === 3 &&
+    (process.env.SANDBOX_AUTH_WORKER_ENFORCE !== 'true' || data.credentialClass === 'isolated') &&
     typeof data.epoch === 'string' &&
     typeof data.lastSeenAt === 'number' &&
     now >= data.lastSeenAt &&
@@ -135,6 +136,12 @@ function audit(tx: FirebaseFirestore.Transaction, uid: string, action: string, t
 }
 export async function hasFreshSandboxSessionsHandshake() {
   return fresh((await refs().control.get()).data());
+}
+export async function getSandboxSessionsWorkerStatus() {
+  const data = (await refs().control.get()).data();
+  return { connected: fresh(data),
+    credential: data?.credentialClass === 'isolated' ? 'isolated' as const
+      : data ? 'legacy' as const : null };
 }
 export function redactSessionOutput(value: string, oneTimeInput?: string): string {
   const mask = (s: string) => '*'.repeat([...s].length);
@@ -186,6 +193,9 @@ export async function startSandboxSession(grant: TokenGrant, input: unknown) {
   authorizeSandboxOwner(grant);
   may(grant, 'work:write');
   const args = startSchema.parse(input);
+  // The isolated authentication container intentionally has no project mount.
+  if (process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true' && args.cwd !== '/workspace')
+    throw new Error('SANDBOX_SESSION_INVALID_AUTH_CWD');
   if (args.cwd.split('/').some(s => s === '.' || s === '..')) throw new Error('INVALID_WORKDIR');
   const { db, sessions, control } = refs();
   const sessionId = randomUUID();
@@ -331,7 +341,7 @@ export async function stopSandboxSession(grant: TokenGrant, input: unknown) {
     return { session_id, status: terminal.has(data.status) ? data.status : 'stop_requested' };
   });
 }
-export async function syncSandboxSessions(input: unknown) {
+export async function syncSandboxSessions(input: unknown, credentialClass: 'legacy' | 'isolated' = 'legacy') {
   const args = syncSchema.parse(input);
   if (!process.env.SANDBOX_OWNER_UID) throw new Error('SANDBOX_NOT_CONFIGURED');
   const { db, sessions, control } = refs();
@@ -394,6 +404,7 @@ export async function syncSandboxSessions(input: unknown) {
       {
         epoch: args.epoch,
         version: 3,
+        credentialClass,
         lastSeenAt: now,
         activeSessionId: data && !terminal.has(data.status) ? activeId : null,
       },

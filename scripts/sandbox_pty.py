@@ -14,6 +14,7 @@ import socket
 import struct
 import subprocess
 import termios
+import threading
 import time
 
 PROVIDERS = frozenset(('supabase', 'github', 'vercel', 'firebase', 'shopify', 'northflank', 'apps-script'))
@@ -62,6 +63,29 @@ def reap_all():
         pathlib.Path('/tmp/cartshift-worker-unsafe').touch(mode=0o600)
         raise RuntimeError('Guardian cleanup failed')
 
+def recovery_tree(entries):
+    # Discover still-attached descendants before killing recorded parents. This
+    # narrows the snapshot gap; already-reparented, unrecorded children require
+    # container/cgroup cleanup and cannot be inferred safely from PID alone.
+    found = {entry['pid']: entry['ticks'] for entry in entries}
+    pending = list(found)
+    while pending:
+        pid = pending.pop()
+        expected = found[pid]
+        if ticks(pid) != expected: continue
+        try:
+            descendants = pathlib.Path(f'/proc/{pid}/task/{pid}/children').read_text().split()
+            for child in descendants:
+                child = int(child)
+                fields = pathlib.Path(f'/proc/{child}/stat').read_text().rsplit(')', 1)[1].split()
+                if int(fields[1]) != pid or ticks(pid) != expected: continue
+                if child not in found:
+                    found[child] = fields[19]
+                    pending.append(child)
+        except (OSError, ValueError, IndexError):
+            pass
+    return found
+
 def recover():
     META.mkdir(mode=0o700, exist_ok=True)
     if META.is_symlink() or META.stat().st_uid != os.getuid():
@@ -74,9 +98,9 @@ def recover():
         guardian = record['guardian']
         if ticks(guardian) == record['guardian_ticks']:
             raise RuntimeError('Another guardian is alive')
-        for entry in record['children']:
-            if ticks(entry['pid']) == entry['ticks']:
-                try: os.kill(entry['pid'], signal.SIGKILL)
+        for pid, expected in reversed(list(recovery_tree(record['children']).items())):
+            if ticks(pid) == expected:
+                try: os.kill(pid, signal.SIGKILL)
                 except ProcessLookupError: pass
         path.unlink()
 
@@ -176,6 +200,8 @@ class GuardianState:
         self.snapshot = None
         self.redactor = Redactor()
         self.seen_inputs = set()
+        self.pending_input_id = None
+        self.pending_input_bytes = bytearray()
         self.record = META / f'{os.getpid()}.json'
     def append(self, text):
         s = self.snapshot
@@ -214,6 +240,8 @@ class GuardianState:
         if self.snapshot:
             self.append(self.redactor.feed(b'', final=True))
             self.snapshot.update(status=status, reason=reason)
+        self.pending_input_bytes.clear()
+        self.pending_input_id = None
         self.record.unlink(missing_ok=True)
     def start(self, desired):
         provider = desired['provider']
@@ -226,6 +254,8 @@ class GuardianState:
         if not isinstance(sid, str) or not 1 <= len(sid) <= 128: raise ValueError('Invalid session')
         self.redactor = Redactor()
         self.seen_inputs.clear()
+        self.pending_input_id = None
+        self.pending_input_bytes.clear()
         self.terminal_queries = TerminalQueries()
         self.terminal_replies = bytearray()
         self.snapshot = dict(session_id=sid, status='running', output='', output_start=0, cursor=0, exit_code=None, reason=None, ack_input_id=None)
@@ -243,6 +273,11 @@ class GuardianState:
         attrs[3] &= ~(termios.ECHO | termios.ECHONL)
         termios.tcsetattr(slave, termios.TCSANOW, attrs)
         env = {'HOME': '/home/node', 'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'USER': 'node', 'LOGNAME': 'node', 'TERM': 'dumb', 'BROWSER': 'echo', 'CI': 'false'}
+        # Firebase initializes its debug log before login; the isolated cwd is
+        # intentionally read-only. Keep that potentially sensitive log inside
+        # its existing private provider cache, never the shared project volume.
+        if provider == 'firebase':
+            env['FIREBASE_DEBUG_PATH'] = '/workspace/.auth/firebase/.cache/firebase-debug.log'
         command = self.fixture_command or ['/bin/bash', '--noprofile', '--norc', '/workspace/scripts/devctl', provider, 'login']
         guardian_pid = os.getpid()
         def setup_terminal():
@@ -276,17 +311,33 @@ class GuardianState:
         if entry and self.process:
             iid = entry.get('input_id')
             if not isinstance(iid, str) or not 1 <= len(iid) <= 128: raise ValueError('Invalid input id')
-            if iid not in self.seen_inputs:
+            if self.pending_input_id is not None:
+                if iid != self.pending_input_id: raise ValueError('Input already pending')
+                self.flush_input()
+            elif iid in self.seen_inputs:
+                self.snapshot['ack_input_id'] = iid
+            else:
                 value = entry.get('input')
                 if not valid_input(self.provider, entry.get('input_type'), value): raise ValueError('Invalid input')
                 if len(self.seen_inputs) >= 100: raise ValueError('Input limit')
-                self.seen_inputs.add(iid) # Deduplicate before writing, including response loss.
                 if entry['input_type'] == 'verification_code': self.redactor.values.append(value)
-                # A terminal Enter sends CR: raw prompt UIs require it, while
-                # canonical ICRNL translates it to LF for line-based readers.
-                os.write(self.master, (value + '\r').encode())
-                self.activity = time.monotonic()
-            self.snapshot['ack_input_id'] = iid
+                # One bounded input is retained across nonblocking partial writes.
+                # CR supports raw prompts and canonical ICRNL line readers.
+                self.pending_input_bytes = bytearray((value + '\r').encode())
+                self.pending_input_id = iid
+                self.flush_input()
+    def flush_input(self):
+        if not self.pending_input_bytes: return
+        try:
+            written = os.write(self.master, self.pending_input_bytes)
+        except (BlockingIOError, InterruptedError):
+            return
+        del self.pending_input_bytes[:written]
+        if not self.pending_input_bytes:
+            self.seen_inputs.add(self.pending_input_id)
+            self.snapshot['ack_input_id'] = self.pending_input_id
+            self.pending_input_id = None
+            self.activity = time.monotonic()
     def flush_terminal_replies(self):
         if self.terminal_replies:
             try:
@@ -300,6 +351,7 @@ class GuardianState:
         if now - self.started >= self.ttl: self.finish('expired', 'ttl_expired'); return
         if now - self.activity >= self.idle: self.finish('expired', 'idle_expired'); return
         try:
+            self.flush_input()
             self.flush_terminal_replies()
             for _ in range(16):
                 chunk = os.read(self.master, 4096)
@@ -361,17 +413,20 @@ class Guardian:
         self.socket = parent
         self.socket.settimeout(5)
         self.buffer = b''
+        # Created only in the parent after fork; the guardian child never uses it.
+        self._sync_lock = threading.Lock()
     def sync(self, desired=UNSET):
-        message = {} if desired is UNSET else {'desired': desired}
-        self.socket.sendall(json.dumps(message).encode() + b'\n')
-        while b'\n' not in self.buffer:
-            chunk = self.socket.recv(65536)
-            if not chunk: raise RuntimeError('Guardian disconnected')
-            self.buffer += chunk
-        line, self.buffer = self.buffer.split(b'\n', 1)
-        result = json.loads(line)
-        if result.get('error'): raise ValueError('Invalid guardian request')
-        return result['session']
+        with self._sync_lock:
+            message = {} if desired is UNSET else {'desired': desired}
+            self.socket.sendall(json.dumps(message).encode() + b'\n')
+            while b'\n' not in self.buffer:
+                chunk = self.socket.recv(65536)
+                if not chunk: raise RuntimeError('Guardian disconnected')
+                self.buffer += chunk
+            line, self.buffer = self.buffer.split(b'\n', 1)
+            result = json.loads(line)
+            if result.get('error'): raise ValueError('Invalid guardian request')
+            return result['session']
     def close(self):
         self.socket.close()
         deadline = time.monotonic() + 4
