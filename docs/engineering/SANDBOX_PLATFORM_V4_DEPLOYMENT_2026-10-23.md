@@ -63,3 +63,18 @@ The coordinated parallel-worker deployment is live at `dpl_7r9hvbcbXHmnx751m9bGJ
 - The eleven-volume encrypted archive `sandbox-20261025-011828-5aee50fc.tar.gz.age` was independently authenticated/decrypted and fully tar-verified. Its 3,593,226,657-byte Documents copy has matching SHA-256 `a956106f82b6e74e0744d4cad4f6525708cdc57b0360e1b76d7d104ca8895235`. Native Windows Cloud Files confirms the encrypted recovery key is in sync, but does not yet report this newest archive in sync.
 
 Actual ChatGPT Android UI acceptance and a physical Windows reboot/login remain owner checks. Docker Desktop restart/recovery is already tested. Do not merge or mark those checks passed on the strength of desktop MCP or unit tests.
+
+
+### Final scheduled backup, restore and live checks
+
+The updated Windows scheduled task ran to completion with **LastTaskResult 0**. New archive `sandbox-20261025-030224-9e5674ec.tar.gz.age`: **3,828,261,337 bytes**, SHA-256 `bac47b4da99aa75b2ab30ae9718ebed221ac9c564533d8fdd81c484a87d1a184`. Authenticated decryption and full archive validation completed at `2026-10-25T03:14:48.5407230Z`; both last-attempt and atomic last-success receipts report verified success. Next run is Sunday November 1 at 03:00 local time. This real run exercised the complete updated wrapper with Docker already available; unavailable/start-once/timeout/security refusal were tested separately using controlled fixtures.
+
+A full eleven-volume restore of the earlier authenticated archive completed into **`ai-dev-sandbox-restore-f32eedc645a04cfe8ca6c5a62dc85083`**. Independent read-only inspection verified all 11 volume roots, README, and all seven dedicated provider homes at UID1000/mode0700. No original volume was overwritten and no restored credential copy was used for authentication. The staging volume remains preserved.
+
+A separate current owner configuration/task bundle, `owner-configuration-20261025-031606.tar.gz.age`, is 82,136 bytes with SHA-256 `5236a95db1aade7cfca967acd0185f68b84d254bd3fbcdc9a749c28850d9afc8`. It also passed authenticated decryption/archive validation without plaintext staging. Both new encrypted archives and checksum sidecars were copied to the requested Documents/CartShiftSandboxBackups folder with independently matching hashes. Cloud upload completion remains a separate pending check.
+
+The first attempted auth-task replacement exited before replacing the old Docker exec process. After waiting for the task to stop and restarting it, read-only process inspection confirmed the **running** guardian SHA-256 `336ab94c2da6cf0939fb1240ee5e482ef7363cdb4fdd76c07ce9c2a576af44e0`. Do not infer code activation solely from a registered task action. Actual Firebase PTY session `f20e6a5f-b764-44a5-9f58-023095f5785a` then completed0 with its existing login. GitHub, Supabase, Shopify and Firebase status probes all authenticated after the sidecar restart.
+
+Actual Firebase CLI production query confirms **37 indexes**, with TTL enabled for `sandbox_auth_sessions.purgeAt`, `sandbox_command_jobs.purgeAt`, and `store_analysis_reports.expiresAt`. Post-maintenance production job `CfX5dJkBUH1veuGQMnzs` completed0, verified UID1000/aarch64 and the unchanged 25,600-byte artifact hash. Both execution slots and the isolated enforced auth channel are online. GitHub CI at `f3b66d01` passed; the full job is intentionally skipped for this draft.
+
+Remaining owner acceptance: renewed Vercel sign-in, a physical Windows reboot/login, actual ChatGPT Android checks, and latest OneDrive upload confirmation. PR remains draft and unmerged.
