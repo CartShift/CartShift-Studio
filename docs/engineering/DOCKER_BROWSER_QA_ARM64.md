@@ -13,7 +13,15 @@ account; only the package installation requires root.
 
 ## One-time setup in the existing container
 
-On the **owner's Docker host** (not inside ChatGPT, not in the unprivileged command runner):
+From the current CartShift repository on the **owner's Windows Docker host**, the simplest command is:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/browser-qa/install-host.ps1
+```
+
+That script verifies the exact expected restricted Docker identity, performs the root-only Debian package installation, then invokes the real browser acceptance test as UID 1000. If the Docker container has a different name, use `-Container <name>`. The repository inside the container must already contain these new scripts.
+
+Manual equivalent on the **owner's Docker host** (not inside ChatGPT, not in the unprivileged command runner):
 
 ```sh
 docker ps --format '{{.Names}}'  # confirm the actual sandbox container name
