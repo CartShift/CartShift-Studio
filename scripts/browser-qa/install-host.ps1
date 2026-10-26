@@ -32,8 +32,12 @@ if ($identity[0].Trim() -ne "1000" -or $identity[1].Trim() -ne "aarch64" -or
 }
 
 $root = "/workspace/projects/cart-shift-studio"
-Invoke-Docker -Arguments @("exec", "--user", "1000", $Container, "test", "-f",
-    "$root/scripts/browser-qa/verify.mjs")
+$source = Join-Path $PSScriptRoot "verify.mjs"
+if (-not (Test-Path -LiteralPath $source)) {
+    throw "Host-side verifier not found: $source. Update the owner-host CartShift checkout."
+}
+Invoke-Docker -Arguments @("exec", "--user", "1000", $Container, "test", "-d",
+    "$root/node_modules")
 
 # This text comes from the owner-controlled HOST script. It does not load,
 # source or execute any container-writable /workspace file as root.
@@ -53,6 +57,19 @@ rm -rf /var/lib/apt/lists/*
 Write-Host "Installing Debian ARM64 Chromium inside $Container..."
 Invoke-Docker -Arguments @("exec", "--user", "root", $Container, "sh", "-lc", $install)
 Write-Host "Running screenshot, RTL and viewport acceptance as UID 1000..."
-Invoke-Docker -Arguments @("exec", "--user", "1000", $Container, "sh", "-lc",
-    "cd $root && node scripts/browser-qa/verify.mjs")
-Write-Host "Browser QA passed. Screenshots and report: /workspace/artifacts/browser-qa"
+# Copy the reviewed host-side verifier into the existing project so Node resolves
+# puppeteer-core without modifying or switching any checked-out Git branch.
+# This code executes ONLY as UID 1000 and is deleted afterwards.
+$target = "$root/.browser-qa-verify-$PID.mjs"
+try {
+    Invoke-Docker -Arguments @("cp", $source, "${Container}:$target")
+    Invoke-Docker -Arguments @("exec", "--user", "1000", $Container, "sh", "-lc",
+        "cd $root && node .browser-qa-verify-$PID.mjs")
+    Write-Host "Browser QA passed. Screenshots and report: /workspace/artifacts/browser-qa"
+}
+finally {
+    & docker exec --user 1000 $Container rm -f $target 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "Could not remove temporary verifier: $target"
+    }
+}

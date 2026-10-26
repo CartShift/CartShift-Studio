@@ -19,7 +19,7 @@ From the current CartShift repository on the **owner's Windows Docker host**, th
 powershell -ExecutionPolicy Bypass -File scripts/browser-qa/install-host.ps1
 ```
 
-That script verifies the exact expected restricted Docker identity, performs the root-only Debian package installation, then invokes the real browser acceptance test as UID 1000. If the Docker container has a different name, use `-Container <name>`. The repository inside the container must already contain the new verification script (update its checkout first).
+That script verifies the exact expected restricted Docker identity, performs the root-only Debian package installation, then invokes the real browser acceptance test as UID 1000. If the Docker container has a different name, use `-Container <name>`. The host script copies its own reviewed verifier into the container temporarily as UID 1000 code, uses the existing project's `node_modules` for Puppeteer, and removes the temporary copy afterward. It does not switch branches or overwrite work in the container. The host checkout must contain these scripts.
 
 The installer is intentionally a fixed command embedded in the owner-controlled
 **host** script. Never execute a file from the worker-writable `/workspace` as root:
