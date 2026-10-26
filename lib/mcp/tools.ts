@@ -10,6 +10,7 @@ import { sandboxPing } from '@/lib/mcp/sandbox-probe';
 import { persistClientWorkMode, persistProjectWorkMode } from '@/lib/services/agency-work-modes-server';
 import { normalizeWorkMode } from '@/lib/domain/work-engagement';
 import { submitSandboxCommand, submitSandboxArtifactRead, getSandboxCommand, getSandboxStatus, getSandboxRecentJobs, cancelSandboxCommand } from '@/lib/mcp/sandbox-jobs';
+import { CODESPACES_TOOL_DEFS, callCodespacesTool } from '@/lib/mcp/github-codespaces';
 
 const id = z.string().min(6).max(128).regex(/^[\w-]+$/);
 const text = z.string().trim().min(1).max(4000);
@@ -233,6 +234,7 @@ export const TOOL_DEFS = [
       }, additionalProperties: false },
     }, additionalProperties: false },
   },
+  ...CODESPACES_TOOL_DEFS,
   ...EXTENDED_TOOL_DEFS,
   ...PROSPECT_TOOL_DEFS,
   ...COMMERCIAL_TOOL_DEFS,
@@ -274,6 +276,9 @@ export async function callTool(name: string, input: unknown, grant: TokenGrant):
   if (name === 'sandbox_recent_jobs') return getSandboxRecentJobs(grant, args);
   if (name === 'sandbox_status') { z.object({}).strict().parse(args); return getSandboxStatus(grant); }
   if (name === 'sandbox_cancel_command') return cancelSandboxCommand(grant, args);
+  if (CODESPACES_TOOL_DEFS.some(item => item.name === name)) {
+    return callCodespacesTool(name, args, grant);
+  }
   if (name === 'sandbox_ping') {
     z.object({}).strict().parse(args);
     return sandboxPing();
