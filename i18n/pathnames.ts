@@ -20,6 +20,7 @@ const websitePathnames = [
   '/solutions/shopify',
   '/solutions/seo',
   '/services/[slug]',
+  '/services/shopify-subscriptions',
   '/solutions/wordpress',
   '/industries/[industry]',
   '/maintenance',
