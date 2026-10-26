@@ -45,6 +45,7 @@ export const Header: React.FC = () => {
         dropdownType: 'solutions' as DropdownType,
         submenu: [
           { name: t('servicesOverview.shopify.title'), href: '/solutions/shopify' },
+          { name: isRtl ? 'מנויים ואספקה חוזרת' : 'Subscriptions & Repeat Orders', href: '/services/shopify-subscriptions' },
           { name: t('servicesOverview.wordpress.title'), href: '/solutions/wordpress' },
           { name: t('wordpressSecurity.navLabel'), href: '/services/wordpress-security' },
           { name: t('servicesOverview.seo.title'), href: '/solutions/seo' },
@@ -76,7 +77,7 @@ export const Header: React.FC = () => {
       { name: t('nav.blog'), href: '/blog' },
       { name: t('nav.contact'), href: '/contact' },
     ],
-    [t, isPricingVisible, isMaintenanceVisible]
+    [t, isPricingVisible, isMaintenanceVisible, isRtl]
   );
 
   // Helper to get the correct ref based on dropdown type
