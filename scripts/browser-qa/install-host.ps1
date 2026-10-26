@@ -31,12 +31,12 @@ if ($identity[0].Trim() -ne "1000" -or $identity[1].Trim() -ne "aarch64" -or
 }
 
 $root = "/workspace/projects/cart-shift-studio"
-Invoke-Docker @("exec", "--user", "1000", $Container, "test", "-f",
+Invoke-Docker -Arguments @("exec", "--user", "1000", $Container, "test", "-f",
     "$root/scripts/browser-qa/install-debian.sh")
 Write-Host "Installing Debian ARM64 Chromium inside $Container..."
-Invoke-Docker @("exec", "--user", "root", $Container, "sh",
+Invoke-Docker -Arguments @("exec", "--user", "root", $Container, "sh",
     "$root/scripts/browser-qa/install-debian.sh")
 Write-Host "Running the actual screenshot, RTL and viewport acceptance test as UID 1000..."
-Invoke-Docker @("exec", "--user", "1000", $Container, "sh", "-lc",
+Invoke-Docker -Arguments @("exec", "--user", "1000", $Container, "sh", "-lc",
     "cd $root && node scripts/browser-qa/verify.mjs")
 Write-Host "Browser QA passed. Screenshots and report: /workspace/artifacts/browser-qa"
