@@ -90,6 +90,7 @@ export async function run(argv = process.argv.slice(2), env = process.env) {
   const outputDir = env.BROWSER_QA_OUTPUT_DIR ||
     (fs.existsSync('/workspace/artifacts') ? '/workspace/artifacts/browser-qa' : path.resolve('artifacts/browser-qa'));
   fs.mkdirSync(outputDir, { recursive: true, mode: 0o700 });
+  fs.chmodSync(outputDir, 0o700);
 
   // puppeteer-core does not download Chrome and must use the native OS binary.
   const puppeteer = (await import('puppeteer-core')).default;
@@ -130,7 +131,9 @@ export async function run(argv = process.argv.slice(2), env = process.env) {
             interactionPassed = await page.$eval('#response', el => getComputedStyle(el).display !== 'none');
           }
           const filename = `${direction || 'page'}-${width}.png`;
-          await page.screenshot({ path: path.join(outputDir, filename), fullPage: true });
+          const screenshotPath = path.join(outputDir, filename);
+          await page.screenshot({ path: screenshotPath, fullPage: true });
+          fs.chmodSync(screenshotPath, 0o600);
           const check = {
             direction: direction || metrics.direction, width, screenshot: filename,
             overflow: Math.max(metrics.documentWidth, metrics.bodyWidth) > width + 1,
