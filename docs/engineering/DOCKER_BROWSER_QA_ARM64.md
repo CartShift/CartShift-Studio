@@ -19,19 +19,15 @@ From the current CartShift repository on the **owner's Windows Docker host**, th
 powershell -ExecutionPolicy Bypass -File scripts/browser-qa/install-host.ps1
 ```
 
-That script verifies the exact expected restricted Docker identity, performs the root-only Debian package installation, then invokes the real browser acceptance test as UID 1000. If the Docker container has a different name, use `-Container <name>`. The repository inside the container must already contain these new scripts.
+That script verifies the exact expected restricted Docker identity, performs the root-only Debian package installation, then invokes the real browser acceptance test as UID 1000. If the Docker container has a different name, use `-Container <name>`. The repository inside the container must already contain the new verification script (update its checkout first).
 
-Manual equivalent on the **owner's Docker host** (not inside ChatGPT, not in the unprivileged command runner):
-
-```sh
-docker ps --format '{{.Names}}'  # confirm the actual sandbox container name
-docker exec --user root ai-dev-workspace sh \
-  /workspace/projects/cart-shift-studio/scripts/browser-qa/install-debian.sh
-```
-
-Replace `ai-dev-workspace` if Docker shows a different container name. The installer
-requires Debian arm64 and refuses other distributions/architectures. It installs Chromium,
-Hebrew-capable Noto fonts, emoji fonts and CA certificates.
+The installer is intentionally a fixed command embedded in the owner-controlled
+**host** script. Never execute a file from the worker-writable `/workspace` as root:
+that would create a privilege-escalation path. You can inspect the PowerShell
+script before executing it. Confirm the container name using `docker ps` and
+pass `-Container <name>` when needed. The script refuses unexpected UID,
+architecture or hostname, and installs Chromium, Hebrew-capable Noto fonts,
+emoji fonts and CA certificates.
 
 The owner-only CartShift command runner must **not** be given root, the Docker socket,
 privileged mode, or Windows host mounts just to run a browser.
