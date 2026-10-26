@@ -116,6 +116,25 @@ export const ShopifyPageContent: React.FC = () => {
             </motion.div>
           ))}
         </div>
+        <div className="mt-12 flex flex-col gap-5 rounded-2xl border border-primary-500/20 bg-primary-500/5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">
+              {isHe ? 'SHOPIFY SUBSCRIPTIONS' : 'SHOPIFY SUBSCRIPTIONS'}
+            </p>
+            <h3 className="mt-2 text-xl font-bold sm:text-2xl">
+              {isHe ? 'מנויים ואספקה חוזרת שמקלים על הלקוחות לחזור' : 'Make repeat purchases easier with Shopify subscriptions'}
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+              {isHe
+                ? 'מתכננים ומטמיעים תוכניות רכישה חוזרת, תוך בדיקת התאמה לסליקה, להזמנות ולמלאי.'
+                : 'Design recurring purchase journeys with payment eligibility, order handling and inventory considered from day one.'}
+            </p>
+          </div>
+          <Link href="/services/shopify-subscriptions" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-primary-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-700 sm:self-center">
+            {isHe ? 'לשירות המנויים' : 'Explore subscriptions'}
+            <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+          </Link>
+        </div>
       </Section>
 
       {/* Why Section */}
