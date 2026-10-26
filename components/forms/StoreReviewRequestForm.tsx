@@ -13,7 +13,7 @@ import type { StoreReviewFocus } from '@/lib/domain/store-review';
 
 const focuses: StoreReviewFocus[] = ['conversion','speed','seo','trust','checkout'];
 
-function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
+function InnerForm({ initialFocus, initialNotes }: { initialFocus?: StoreReviewFocus; initialNotes?: string }) {
   const t = useTranslations('storeReview');
   const locale = useLocale() as 'en' | 'he';
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -123,7 +123,7 @@ function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
     </fieldset>
     <label className="block space-y-2 text-sm font-medium text-surface-800 dark:text-surface-200">
       <span>{t('notes')}</span>
-      <textarea name="notes" maxLength={1000} rows={2} disabled={pending}
+      <textarea name="notes" maxLength={1000} rows={2} disabled={pending} defaultValue={initialNotes}
         placeholder={t('notesPlaceholder')}
         className="w-full resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-surface-900 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/15 dark:bg-surface-900 dark:text-white"/>
     </label>
@@ -140,8 +140,8 @@ function InnerForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
   </form>;
 }
 
-export function StoreReviewRequestForm({ initialFocus }: { initialFocus?: StoreReviewFocus }) {
+export function StoreReviewRequestForm({ initialFocus, initialNotes }: { initialFocus?: StoreReviewFocus; initialNotes?: string }) {
   return <GoogleReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
-    <InnerForm initialFocus={initialFocus} />
+    <InnerForm initialFocus={initialFocus} initialNotes={initialNotes} />
   </GoogleReCaptchaProvider>;
 }
