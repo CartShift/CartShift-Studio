@@ -98,6 +98,9 @@ describe('GitHub Codespaces MCP control plane', () => {
     mocks.fetch.mockImplementation(async (url: string, init: { method: string; body?: string }) => {
       if (url.endsWith('/user')) return ok({ login: 'yotamon', type: 'User' });
       if (url.includes('/user/codespaces?')) return ok({ total_count: 0, codespaces: [] });
+      if (url.endsWith('/repos/yotamon/WakeMyWay')) return ok({
+        owner: { login: 'yotamon', type: 'User' }, full_name: 'yotamon/WakeMyWay',
+      });
       if (url.endsWith('/codespaces/machines')) return ok({
         machines: [{ name: 'large', cpus: 4 }, { name: 'basicLinux32gb', cpus: 2 }],
       });
@@ -115,8 +118,7 @@ describe('GitHub Codespaces MCP control plane', () => {
       .resolves.toMatchObject({ codespace: { name: record.name }, execution_bridge_connected: false });
   });
 
-  it('stops a verified Codespace and never deletes its storage', async () => {
-    vi.stubEnv('GITHUB_CODESPACES_LIFECYCLE_ENABLED', 'true');
+  it('stops a verified Codespace even when new lifecycle spending is disabled', async () => {
     mocks.fetch.mockImplementation(async (url: string, init: { method: string }) => {
       if (url.endsWith('/user')) return ok({ login: 'yotamon', type: 'User' });
       if (url.endsWith('/' + record.name)) return ok({ ...record, state: 'Available' });
