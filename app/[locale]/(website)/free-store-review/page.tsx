@@ -28,10 +28,11 @@ export default async function FreeStoreReviewPage({
   params, searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ focus?: string }>;
+  searchParams: Promise<{ focus?: string; service?: string }>;
 }) {
   const { locale } = await params;
-  const { focus } = await searchParams;
+  const { focus, service } = await searchParams;
+  const subscriptionInterest = service === 'shopify-subscriptions';
   setRequestLocale(locale as 'en' | 'he');
   // All display copy, including the form and FAQ, shares the same translation source.
   const t = await getTranslations({ locale: locale as 'en' | 'he', namespace: 'storeReview' });
@@ -64,7 +65,14 @@ export default async function FreeStoreReviewPage({
         <div id="request-review" className="rounded-3xl border border-surface-200 bg-white p-5 shadow-2xl shadow-primary-900/10 dark:border-white/10 dark:bg-surface-900 sm:p-8">
           <h2 className="text-2xl font-bold">{t('formTitle')}</h2>
           <p className="mb-6 mt-2 text-sm leading-relaxed text-surface-500">{t('formDescription')}</p>
-          <StoreReviewRequestForm initialFocus={isAnalyzerIntent(focus) ? focus : undefined} />
+          <StoreReviewRequestForm
+            initialFocus={isAnalyzerIntent(focus) ? focus : undefined}
+            initialNotes={subscriptionInterest
+              ? (locale === 'he'
+                ? 'אני מעוניין/ת לבדוק הקמת מנויים ואספקה חוזרת בחנות Shopify שלי.'
+                : 'I would like to explore Shopify subscriptions and repeat-delivery options for my store.')
+              : undefined}
+          />
         </div>
       </div>
     </section>
