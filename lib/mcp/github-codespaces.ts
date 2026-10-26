@@ -169,10 +169,21 @@ export async function callCodespacesTool(name: string, input: unknown, grant: To
     return { codespaces: (await listOwned()).map(summary), execution_bridge_connected: false };
   }
   const config = settings();
-  if (!config.lifecycleEnabled) throw new Error('CODESPACES_LIFECYCLE_DISABLED');
+  // Stopping an owned instance is always allowed: disabling new spend must not
+  // prevent an owner from terminating already-running metered compute.
+  if (name !== 'sandbox_codespaces_stop' && !config.lifecycleEnabled) {
+    throw new Error('CODESPACES_LIFECYCLE_DISABLED');
+  }
   if (name === 'sandbox_codespaces_create') {
     z.object({}).strict().parse(input);
     if ((await listOwned()).length) throw new Error('CODESPACES_ALREADY_EXISTS');
+    const repoDetails = await api<{ owner?: { login?: string; type?: string }; full_name?: string }>(
+      '/repos/' + config.owner + '/' + config.repo);
+    if (repoDetails.owner?.type !== 'User' ||
+        repoDetails.owner.login?.toLowerCase() !== config.owner?.toLowerCase() ||
+        repoDetails.full_name?.toLowerCase() !== config.repository.toLowerCase()) {
+      throw new Error('CODESPACES_REPOSITORY_NOT_PERSONAL');
+    }
     const machines = await api<GithubMachines>('/repos/' + config.owner + '/' + config.repo + '/codespaces/machines');
     const machine = machines.machines?.find(item => item.cpus === 2);
     if (!machine) throw new Error('CODESPACES_NO_TWO_CORE_MACHINE');
