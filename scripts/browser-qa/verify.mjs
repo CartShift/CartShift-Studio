@@ -28,7 +28,7 @@ export function resolveExecutable(env = process.env, executable = p => {
   }
   const candidate = CANDIDATES.find(executable);
   if (!candidate) {
-    throw new Error('No native Chromium found. Install Debian arm64 chromium in the sandbox image; run scripts/browser-qa/install-debian.sh as root, then retry.');
+    throw new Error('No native Chromium found. Install Debian arm64 chromium using the owner-host scripts/browser-qa/install-host.ps1 or the sandbox Dockerfile, then retry.');
   }
   return candidate;
 }
