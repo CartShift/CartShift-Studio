@@ -45,7 +45,8 @@ The adapter:
 - Refuses to create a duplicate for the allowed repository.
 - Never automatically creates/starts Codespaces or performs fallback.
 - Does not delete Codespaces or uncommitted state.
-- Is disabled until an explicit lifecycle environment switch is set.
+- Create/start are disabled until an explicit lifecycle environment switch is set.
+- Stop remains owner-authorized even when new compute starts are disabled.
 
 ## Owner configuration (production, protected secrets)
 
@@ -92,7 +93,8 @@ general-purpose execution worker.
 6. From ChatGPT Android, call list, stop and start in response to explicit
    user requests. Confirm GitHub's live state in https://github.com/codespaces.
 7. Stop after the test and examine current charges in the GitHub billing UI.
-8. If incorrect, remove the lifecycle opt-in or the token. Local Docker
+8. If incorrect, remove the lifecycle opt-in to block create/start; retain
+   the ability to stop existing instances before revoking the token. Local Docker
    command tools must continue working without any Codespaces credentials.
 
 **No real Codespace was provisioned or executed by this PR.**
