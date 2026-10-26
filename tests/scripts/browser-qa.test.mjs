@@ -1,44 +1,37 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, expect, it } from 'vitest';
 import { parseArgs, resolveExecutable } from '../../scripts/browser-qa/verify.mjs';
 
-test('uses only explicitly installed native browser, never downloaded Lambda Chromium', () => {
-  const available = path => path === '/usr/bin/chromium';
-  assert.equal(resolveExecutable({}, available), '/usr/bin/chromium');
-  assert.throws(
-    () => resolveExecutable({}, () => false),
-    /No native Chromium found/
-  );
-});
+describe('Docker browser capability checker', () => {
+  it('uses an OS browser instead of downloaded Lambda/x86 Chromium', () => {
+    const available = path => path === '/usr/bin/chromium';
+    expect(resolveExecutable({}, available)).toBe('/usr/bin/chromium');
+    expect(() => resolveExecutable({}, () => false)).toThrow(/No native Chromium found/);
+  });
 
-test('configured path must be absolute and executable', () => {
-  assert.throws(
-    () => resolveExecutable({ BROWSER_EXECUTABLE_PATH: 'chromium' }, () => true),
-    /executable absolute path/
-  );
-  assert.throws(
-    () => resolveExecutable({ CHROMIUM_PATH: '/tmp/chromium' }, () => false),
-    /executable absolute path/
-  );
-  assert.equal(
-    resolveExecutable({ PUPPETEER_EXECUTABLE_PATH: '/usr/bin/chromium' }, () => true),
-    '/usr/bin/chromium'
-  );
-});
+  it('requires explicit executable paths to be absolute and runnable', () => {
+    expect(() => resolveExecutable({ BROWSER_EXECUTABLE_PATH: 'chromium' }, () => true))
+      .toThrow(/executable absolute path/);
+    expect(() => resolveExecutable({ CHROMIUM_PATH: '/tmp/chromium' }, () => false))
+      .toThrow(/executable absolute path/);
+    expect(resolveExecutable({ PUPPETEER_EXECUTABLE_PATH: '/usr/bin/chromium' }, () => true))
+      .toBe('/usr/bin/chromium');
+  });
 
-test('validates URLs, prevents embedded passwords and rejects unknown CLI options', () => {
-  assert.equal(parseArgs([]).url, null);
-  assert.equal(parseArgs(['--url', 'http://127.0.0.1:3000/he/portal/']).url,
-    'http://127.0.0.1:3000/he/portal/');
-  assert.throws(() => parseArgs(['--url', 'file:///tmp/index.html']), /HTTP\(S\)/);
-  assert.throws(() => parseArgs(['--url', 'https://u:p@example.com/']), /credentials/);
-  assert.throws(() => parseArgs(['--url']), /requires/);
-  assert.throws(() => parseArgs(['--unexpected']), /Unknown argument/);
-});
+  it('validates target URLs and never accepts embedded credentials', () => {
+    expect(parseArgs([]).url).toBe(null);
+    expect(parseArgs(['--url', 'http://127.0.0.1:3000/he/portal/']).url)
+      .toBe('http://127.0.0.1:3000/he/portal/');
+    expect(() => parseArgs(['--url', 'file:///tmp/index.html'])).toThrow(/HTTP\(S\)/);
+    expect(() => parseArgs(['--url', 'https://u:p@example.com/'])).toThrow(/credentials/);
+    expect(() => parseArgs(['--url'])).toThrow(/requires/);
+    expect(() => parseArgs(['--unexpected'])).toThrow(/Unknown argument/);
+  });
 
-test('accepts only bounded meaningful mobile and desktop viewport widths', () => {
-  assert.deepEqual(parseArgs(['--widths', '320,390,768,390']).widths, [320, 390, 768]);
-  for (const input of ['320,0', '100', '5000', 'foo', '320,375,390,400,500,600,700,800,900,1000,1100,1200,1300']) {
-    assert.throws(() => parseArgs(['--widths', input]), /Invalid viewport widths/);
-  }
+  it('limits and deduplicates viewport widths', () => {
+    expect(parseArgs(['--widths', '320,390,768,390']).widths).toEqual([320, 390, 768]);
+    for (const input of ['320,0', '100', '5000', 'foo',
+      '320,375,390,400,500,600,700,800,900,1000,1100,1200,1300']) {
+      expect(() => parseArgs(['--widths', input])).toThrow(/Invalid viewport widths/);
+    }
+  });
 });
