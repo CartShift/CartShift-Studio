@@ -202,7 +202,7 @@ export default async function ShopifySubscriptionsServicePage({
       { name: 'Shopify', url: '/solutions/shopify' },
       { name: p.navigationLabel, url },
     ], locale),
-    generateFAQPageSchema(p.faq),
+    generateFAQPageSchema(p.faq.map(({ question, answer }) => ({ question, answer }))),
   ];
 
   return (
