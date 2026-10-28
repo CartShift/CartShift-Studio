@@ -27,7 +27,7 @@ A Git repository synchronizes committed source, not uncommitted changes, ignored
 
 ## What must be done while the laptop is online again
 
-1. Inspect the ACTUAL live pool and Desktop Commander runtime, role mounts, volume manifests, named volumes, exact image and pinned worker/PTY sources. Do not guess mounts from the current Git repository: the live host setup contains owner-held files and Windows tasks.
+1. Inspect the ACTUAL live pool and Desktop Commander runtime, role mounts, volume manifests, named volumes, exact image and pinned worker/PTY sources. Do not guess mounts from the current Git repository: the live host setup contains owner-held files and Windows tasks. First run the read-only redacted inventory in the owner Windows PowerShell, with the reviewed PR branch checked out:\n\n    .\\scripts\\mobile-sandbox\\inventory-pc-sandbox.ps1 -OutputDirectory $env:USERPROFILE\\Documents\\SandboxMobileInventory\n\n   Inspect the output locally. It excludes environment values, tokens, host mount source paths, log content and volume contents. The inventory is NOT a verified backup and must not be treated as such.
 2. Quiesce all workload writers, inspect pending leases and ensure jobs finish or are explicitly resolved. The V5 watchdog must physically fence a worker before an uncertain old lease may be released. Never simply delete Firestore reservations or retry uncertain jobs.
 3. Verify a fresh encrypted whole-workspace backup, independent decryption test, staging restore, usable recovery key and successful off-host transfer. Preserve the existing 11/12-volume records and Windows task/config backup. Never paste the backup identity, raw credentials, or authorization tokens into chat.
 4. On Windows, in the reviewed repository directory, run:
