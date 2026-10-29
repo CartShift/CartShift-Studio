@@ -2,11 +2,11 @@
 
 ## Verified facts and boundaries
 
-The owner's Android Podroid VM runs Alpine Linux on ARM64 and passed Docker hello-world, with 4 vCPUs and about 3.8 GiB usable VM RAM. This proves Docker works locally, NOT that the Windows Docker sandbox (projects, tooling, auth, Desktop Commander, durable volumes) has been transferred. KVM/AVF backend has not been verified in this conversation.
+The owner's Android Podroid VM runs Alpine Linux on ARM64 and passed Docker hello-world, Compose, persistent named-volume restart, and Node.js CPU smoke tests. It has 4 vCPUs and about 3.8 GiB usable VM RAM. Its AVF diagnostic confirms **QEMU software emulation**, because the device only supports protected VMs. This proves Docker works locally, NOT that the Windows sandbox projects, tooling, auth, Desktop Commander, or durable volumes have been transferred.
 
-The Windows architecture is V5, not the old V3 single-worker setup: 2 concurrent build-only workers, isolated OAuth sidecar, credential-blind homes, private Desktop Commander socket and engine, authenticated owner-only CartShift MCP queue, pinned owner-supplied worker source, no inbound ports, plus independently encrypted age backups. Do not recreate it as a shared-credential all-in-one container.
+The repository describes a V5 parallel-capable architecture: isolated build-only workers, OAuth sidecar, credential-blind homes, private Desktop Commander socket and engine, owner-only CartShift MCP queue, pinned owner-supplied worker source, no inbound ports, and encrypted age backups. **Actual host review (October 29): the active Windows supervisor uses a pinned V3-compatible adapter, with the second supervisor disabled.** Do not infer a live V5 dual-worker deployment from an unmerged PR; verify the effective backend/host protocol before any mobile activation. Never recreate a shared-credential all-in-one container.
 
-This change supplies tested-oriented diagnostics and exact Docker image export/import ONLY. It does not start a worker, alter production, migrate secrets or workspace state, or provide automatic failover.
+The Windows ARM64 image was exported and its archive verified on Windows. The owner uploaded the 1,023,948,800-byte tar plus manifest to private Google Drive, transferred them to the Android Downloads share, obtained **SHA-256 OK** and ran `docker image load --platform linux/arm64` on Podroid. Docker returned source image digest `sha256:3000817362f55553501261f8cbe0ff421a1cbdefb34b759073a5bd574ba836ee`. This image includes **neither the workspace nor provider credentials**. New `scripts/mobile-sandbox/podroid-image-smoke.sh` tests the imported image without mounts, network, or worker registration. No running worker, production switch, workspace restore or automatic failover has occurred.
 
 ## Desired architecture
 
@@ -43,7 +43,7 @@ Run in Podroid terminal with values copied from the actual owner-generated manif
 
     sh scripts/mobile-sandbox/podroid-import-image.sh ./sandbox-arm64-TIMESTAMP.tar 64_HEX_SHA256 sha256:64_HEX_IMAGE_ID
 
-The importer checks the SHA256 before loading, checks the expected immutable image ID afterward and requires ARM64. It does NOT create worker containers, restore volumes, or connect to the production CartShift queue.
+The importer checks the SHA256 before loading, checks the expected immutable image ID afterward and requires ARM64. The actual owner already imported the image using direct Docker `image load --platform linux/arm64` and checked the archive hash separately. OCI-index image IDs can differ from local platform image IDs on other Docker engines; never bypass architecture verification or assume that the index digest is always inspectable. Nothing in this step starts a worker, restores volumes or connects to the CartShift queue.
 
 ## Mandatory gates BEFORE starting mobile work
 
@@ -51,7 +51,7 @@ The importer checks the SHA256 before loading, checks the expected immutable ima
 - Build a mobile Compose file from the actual V5 container specs, preserving UID1000, hostname ai-docker-sandbox, read-only root, cap_drop ALL, no-new-privileges, exact read-only empty .auth shadow, limits on CPU/RAM/PIDs, no personal host mounts, no Docker socket, and no published ports. Verify service roles and secrets are isolated. Do not use the Podroid root shell as the worker.
 - Use the exact reviewed version of worker.py and sandbox_pty.py with source integrity checks and provide the build-only worker bearer through an owner-controlled out-of-band secret channel, never a repo, environment dump, terminal history, screenshot, process arguments or chat. Do not import broad provider credentials into build workers.
 - Drained single-host handoff only: cleanly stop the laptop's build supervisors (including automatic restart tasks) before mobile activation. Verify no active remote job or live lease, and that the laptop cannot restart a worker. The current V5 pool tracks per-slot incarnations and fencing; a stale busy slot is a hard stop. For a clean idle slot, its previous heartbeat must be stale for >90 seconds before a new worker can claim it. Do not auto-steal.
-- Mobile first: one slot, no auth sidecar. Because the laptop had two active slots, all reservations on both must be reconciled before claiming the phone owns the logical workspace. Auth sidecar and local Desktop Commander must not be claimed as available until separately set up and tested.
+- Mobile first: one slot, no auth sidecar. Check every active/retained slot on the real host and reconcile its reservations before claiming that the phone owns the logical workspace. Auth sidecar and local Desktop Commander must not be claimed as available until separately set up and tested.
 - Acceptance through the EXISTING connector: sandbox_status must show a fresh worker; sandbox_run_command must return UID1000/Linux/aarch64/ai-docker-sandbox and /workspace. A unique write/edit/read proof must succeed against the restored mobile filesystem. Verify the actual mobile worker identity and volumes, not merely sandbox_ping or a completed remote job from the PC.
 - Reverse handoff: stop mobile workload writers and worker; take a verified mobile checkpoint, sync all state back, then resume Windows workers. Never allow two active hosts modifying divergent copies of /workspace.
 
@@ -59,4 +59,4 @@ The importer checks the SHA256 before loading, checks the expected immutable ima
 
 4 GiB in Podroid is a HOST budget; the PC's existing 2 x 2 GiB workers + auth + Desktop Commander cannot fit safely in the same allocation. Start only one small worker, measure RAM/CPU, and add components only after profiling. Android background termination and virtualisation performance may prevent unattended or long-running tasks.
 
-There is no completed phone migration, automatic cloud synchronization, worker credential provisioning, authentication migration, or measured ChatGPT mobile activation yet. Keep the original Windows instance and its PR #122 / #124 acceptance gates intact.
+**Windows recovery review (owner Codex, October 29):** Four selected containers and nine referenced volumes reconcile with twelve backup volumes. Authenticated decryption passed for the existing workspace and configuration backups; local OneDrive copies match. However, **off-host download and independent recovery are unverified**, and a **fresh migration checkpoint and refreshed configuration backup** remain necessary. Eleven existing containers, seven task definitions and volumes were preserved.\n\nThere is no completed phone workspace migration, automatic cloud synchronization, worker credential provisioning, authentication migration, or verified ChatGPT mobile activation yet. Keep the original Windows instance and its PR #122 / #124 acceptance gates intact.
