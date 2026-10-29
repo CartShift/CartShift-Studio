@@ -45,6 +45,24 @@ Run in Podroid terminal with values copied from the actual owner-generated manif
 
 The importer checks the SHA256 before loading, checks the expected immutable image ID afterward and requires ARM64. The actual owner already imported the image using direct Docker `image load --platform linux/arm64` and checked the archive hash separately. OCI-index image IDs can differ from local platform image IDs on other Docker engines; never bypass architecture verification or assume that the index digest is always inspectable. Nothing in this step starts a worker, restores volumes or connects to the CartShift queue.
 
+
+
+## Physical Android workspace restore and safe writable clone (2026-10-29)
+
+Owner-provided Android terminal screenshot confirms the **separately encrypted Android-recipient** workspace restored inside a NEW Docker named volume `podroid-workspace-mobile-20261029-024634`: manifest 22,165 / verified 22,165 files, 523,604,504 verified bytes, 20,365 text and 1,800 reviewed binary files, `errors: []`, `approved_for_android_restore: true`. The owner subsequently reported completing the read-only `podroid-workspace-smoke.sh` test; screenshot or full stdout for that particular smoke has not been independently supplied. This restoration is an offline source snapshot, **not** a running MCP worker.
+
+The approved archive excludes provider credentials, Git history, installed dependencies and some missing partial-clone objects. 745 source files were conservatively sanitized, so builds/tests and exact source equivalence are NOT certified.
+
+For an actual editable Android copy without modifying the verified staging source, run the reviewed `scripts/mobile-sandbox/podroid-prepare-offline-dev.sh` on Podroid. It:
+
+1. Refuses existing destination names; verifies the local verification helpers.
+2. Creates `podroid-workspace-dev-20261029-024634` and `podroid-mobile-empty-auth-20261029-024634`.
+3. Copies staged source offline through restricted containers into a fresh independent writable volume, then reruns the exact independent 22,165-file verifier.
+4. Mounts only `volume-subpath=ai-dev-sandbox-workspace` into `/workspace`, overlays an empty read-only `/workspace/.auth`, enforces UID 1000, hostname, no Docker socket, no network, read-only root, resource caps, and checks a harmless offline write/read proof.
+5. Stops all containers. Does NOT provision a bearer, connect a worker, migrate auth homes, or modify the Windows host.
+
+A successful local probe establishes only mount and file compatibility. To activate a worker later, reconcile the actual Windows **V3-compatible** supervisor and backend contract, prove independent off-host recovery, prepare a narrowly scoped bearer out-of-band, and physically fence all competing Windows supervisors before mobile connection. A connector status of offline is NOT sufficient evidence that Windows is fenced.
+
 ## Mandatory gates BEFORE starting mobile work
 
 - Restore only to NEW volumes, using the actual inspected Windows mount map and verified encrypted backup. Check for path symlinks, UID 1000, file integrity, workspace version, source revisions and excluded credentials. A new backup taken while PC is off cannot include unsynchronized PC changes.
