@@ -6,6 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { Timestamp } from 'firebase-admin/firestore';
 import { z } from 'zod';
 import { constantEquals, firestore, tokenHash, type TokenGrant } from '@/lib/mcp/connection';
+import { authorizeActiveWorkerHost } from '@/lib/mcp/sandbox-worker-host';
 
 const JOBS = 'sandbox_command_jobs';
 const JOB_MAX_AGE_MS = 10 * 60_000;
@@ -186,9 +187,7 @@ export function authorizeSandboxOwner(grant: TokenGrant) {
 }
 
 export function authorizeSandboxWorker(header: string | null): boolean {
-  const token = process.env.SANDBOX_WORKER_TOKEN;
-  const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header || '');
-  return Boolean(token && token.length >= 32 && match && constantEquals(match[1], token));
+  return authorizeActiveWorkerHost(header, process.env);
 }
 
 /** Separate HTTPS credential for the isolated auth-sidecar session channel.
