@@ -187,7 +187,14 @@ export function authorizeSandboxOwner(grant: TokenGrant) {
 }
 
 export function authorizeSandboxWorker(header: string | null): boolean {
-  return authorizeActiveWorkerHost(header, process.env);
+  return authorizeActiveWorkerHost(header, {
+    SANDBOX_WORKER_TOKEN: process.env.SANDBOX_WORKER_TOKEN,
+    SANDBOX_MOBILE_WORKER_TOKEN: process.env.SANDBOX_MOBILE_WORKER_TOKEN,
+    SANDBOX_AUTH_WORKER_TOKEN: process.env.SANDBOX_AUTH_WORKER_TOKEN,
+    SANDBOX_ACTIVE_WORKER_HOST: process.env.SANDBOX_ACTIVE_WORKER_HOST,
+    SANDBOX_AUTH_WORKER_ENFORCE: process.env.SANDBOX_AUTH_WORKER_ENFORCE,
+    SANDBOX_PARALLEL_ENABLED: process.env.SANDBOX_PARALLEL_ENABLED,
+  });
 }
 
 /** Separate HTTPS credential for the isolated auth-sidecar session channel.
