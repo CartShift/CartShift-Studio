@@ -12,6 +12,7 @@ export function authorizeActiveWorkerHost(
     SANDBOX_MOBILE_WORKER_TOKEN?: string;
     SANDBOX_ACTIVE_WORKER_HOST?: string;
     SANDBOX_AUTH_WORKER_ENFORCE?: string;
+    SANDBOX_PARALLEL_ENABLED?: string;
   },
 ): boolean {
   const mode = environment.SANDBOX_ACTIVE_WORKER_HOST || 'windows';
@@ -25,6 +26,7 @@ export function authorizeActiveWorkerHost(
     // The build-only Android bearer must never be accepted by the auth-session
     // channel or share the existing Windows bearer identity.
     if (environment.SANDBOX_AUTH_WORKER_ENFORCE !== 'true' ||
+        environment.SANDBOX_PARALLEL_ENABLED === 'true' ||
         windowsToken === token) return false;
   }
   const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
