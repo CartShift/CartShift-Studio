@@ -1,3 +1,4 @@
+import console from 'node:console';
 import { DesktopCommanderIntegration } from '/opt/dc/node_modules/@wonderwhy-er/desktop-commander/dist/remote-device/desktop-commander-integration.js';
 const dc = new DesktopCommanderIntegration();
 const file = '/workspace/experiments/dc-remote-engine-acceptance.txt';

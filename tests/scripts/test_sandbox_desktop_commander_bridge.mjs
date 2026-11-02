@@ -1,3 +1,6 @@
+import process from 'node:process';
+import { Buffer } from 'node:buffer';
+import { setTimeout, clearTimeout } from 'node:timers';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -43,7 +46,7 @@ async function launch() {
   daemon.stdout.on('data',()=>{});
   for(let i=0;i<80;i++){
     if(daemon.exitCode!==null)throw new Error(`Bridge exited before readiness: ${diagnostic}`);
-    try{const p=await run(['request',Buffer.from('{"op":"ping"}').toString('base64')],2000);if(p.code===0)return;}catch{}
+    try{const p=await run(['request',Buffer.from('{"op":"ping"}').toString('base64')],2000);if(p.code===0)return;}catch{ /* Readiness is retried until the bounded deadline. */ }
     await new Promise(r=>setTimeout(r,100));
   }
   throw new Error('Bridge did not become available');
