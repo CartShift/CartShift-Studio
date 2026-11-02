@@ -33,7 +33,7 @@ For THIS worker, use the guarded OpenRC service.
 Inside **Podroid**, as root:
 
     wget -O /root/podroid-install-worker-autostart.sh \
-      https://raw.githubusercontent.com/CartShift/CartShift-Studio/08803988d95cdfecce4391ab909e38527c91606e/scripts/mobile-sandbox/podroid-install-worker-autostart.sh
+      https://raw.githubusercontent.com/CartShift/CartShift-Studio/68460dec51be1d9090cce63a63836eeaf63aea81/scripts/mobile-sandbox/podroid-install-worker-autostart.sh
     sh /root/podroid-install-worker-autostart.sh
 
 This installs the service and runner but does **not** arm, enable, start,
