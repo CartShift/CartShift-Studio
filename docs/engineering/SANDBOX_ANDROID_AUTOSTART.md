@@ -66,7 +66,14 @@ Expected files:
   SANDBOX_MOBILE_WORKER_TOKEN to the distinct mobile bearer,
   SANDBOX_ACTIVE_WORKER_HOST=mobile, SANDBOX_AUTH_WORKER_ENFORCE=true,
   SANDBOX_PARALLEL_ENABLED=false. The backend must reject the Windows bearer
-  while accepting the mobile one. Reverting to Windows means another
+  while accepting the mobile one. **IMPORTANT: do not enable
+  SANDBOX_AUTH_WORKER_ENFORCE=true during Windows-active staging unless
+  the dedicated auth sidecar has already completed a verified fresh isolated
+  handshake.** Preserve the existing effective value during the Windows
+  deployment; a change from false/absent to true can invalidate legacy
+  authentication sessions and remove interactive authentication capability.
+  Switch enforcement to true only after Windows sessions are drained and
+  mobile cutover is approved. Reverting to Windows means another
   explicitly controlled server-side mode switch. Unmerged source changes
   do not affect the deployed server.
 - Fresh checkpoint and independent off-host restore verified. Stop/drain/fence
