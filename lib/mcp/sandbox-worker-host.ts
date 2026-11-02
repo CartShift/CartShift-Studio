@@ -10,6 +10,7 @@ export function authorizeActiveWorkerHost(
   environment: {
     SANDBOX_WORKER_TOKEN?: string;
     SANDBOX_MOBILE_WORKER_TOKEN?: string;
+    SANDBOX_AUTH_WORKER_TOKEN?: string;
     SANDBOX_ACTIVE_WORKER_HOST?: string;
     SANDBOX_AUTH_WORKER_ENFORCE?: string;
     SANDBOX_PARALLEL_ENABLED?: string;
@@ -27,7 +28,7 @@ export function authorizeActiveWorkerHost(
     // channel or share the existing Windows bearer identity.
     if (environment.SANDBOX_AUTH_WORKER_ENFORCE !== 'true' ||
         environment.SANDBOX_PARALLEL_ENABLED === 'true' ||
-        windowsToken === token) return false;
+        windowsToken === token || environment.SANDBOX_AUTH_WORKER_TOKEN === token) return false;
   }
   const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
   if (!match) return false;

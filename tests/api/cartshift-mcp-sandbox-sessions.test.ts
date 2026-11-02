@@ -116,6 +116,21 @@ describe('owner-only persistent sandbox authentication', () => {
       provider: 'github',
     });
   });
+  it('disables the Windows auth-session channel on the build-only mobile host', () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'b'.repeat(48));
+    vi.stubEnv('SANDBOX_MOBILE_WORKER_TOKEN', 'c'.repeat(48));
+    for (const token of ['a', 'b', 'c']) {
+      expect(authorizeSandboxSessionWorker('Bearer ' + token.repeat(48))).toBe(false);
+    }
+  });
+  it('does not advertise or start sessions from a cached Windows auth heartbeat on mobile', async () => {
+    await sync();
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    expect((await getSandboxStatus(owner)).capabilities).not.toContain('interactive_auth_sessions');
+    await expect(startSandboxSession(owner, { provider: 'github' })).rejects.toThrow('WORKER_UNAVAILABLE');
+  });
   it('requires owner, scope, fresh sessions handshake and one active session', async () => {
     await expect(
       startSandboxSession({ ...owner, uid: 'other' }, { provider: 'github' })

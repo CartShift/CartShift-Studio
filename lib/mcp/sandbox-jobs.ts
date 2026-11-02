@@ -195,6 +195,9 @@ export function authorizeSandboxWorker(header: string | null): boolean {
  * SANDBOX_AUTH_WORKER_ENFORCE=true revokes the build worker's session access.
  */
 export function sandboxSessionWorkerCredential(header: string | null): 'isolated' | 'legacy' | null {
+  // Android is build-only. A cached Windows sidecar or its bearer must not
+  // revive provider sessions after the explicit host handoff.
+  if ((process.env.SANDBOX_ACTIVE_WORKER_HOST || 'windows') !== 'windows') return null;
   const isolated = process.env.SANDBOX_AUTH_WORKER_TOKEN;
   const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
   const distinct = Boolean(isolated && isolated.length >= 32 &&

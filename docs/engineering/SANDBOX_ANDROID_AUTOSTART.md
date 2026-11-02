@@ -50,9 +50,9 @@ Expected files:
 - Confirm original screened and independently verified writable Android volume
   podroid-workspace-dev-20261029-024634 and empty auth shadow
   podroid-mobile-empty-auth-20261029-024634 remain correct.
-- Reconcile the actual Windows **pinned V3-compatible adapter** source with the
-  mobile Python **build-role** worker's expected V4 server protocol. Do not
-  blindly copy the unmerged branch candidate or assume V5 slot mode is active.
+- Use the reviewed V3 mobile wrapper built by `prepare-mobile-worker.py` from
+  the actual Windows source and adapter pins described below. The unwrapped
+  Python worker emits V4 requests; it is not the production V3 wire contract.
 - Provide /etc/cartshift-mobile/worker.py: pinned, reviewed worker source;
   root-owned, mode 0644; its exact approved file SHA-256 as lowercase 64-hex
   in /etc/cartshift-mobile/worker.sha256. The runner verifies the SHA before
@@ -132,3 +132,62 @@ Never simply assume a stale heartbeat means the phone was physically stopped.
 - The host-armed marker is an operator enable switch, not a cryptographic
   fence. The server's distinct-host bearer gate plus physical fencing are
   mandatory protections.
+
+## Laptop preparation and updating the already-installed disarmed service
+
+The Windows task inspection reconciles these immutable inputs:
+
+| Input | SHA-256 |
+|---|---|
+| Installed Python worker (LF bytes) | `3efdcaf5533383549aeae85488d78acce5a9ee2c8b1946a35f9735e978a9b4ff` |
+| Installed V3 transport adapter | `f7215b44c865ab463a4be285caa313b010ea471b1ed29490ffe976513398e289` |
+
+The repository worker matches the installed worker after LF normalization.
+A Windows CRLF checkout has a different byte hash; do not certify that file
+against the LF pin. Build from the actual owner-pinned bytes:
+
+```sh
+python3 scripts/mobile-sandbox/prepare-mobile-worker.py \
+  --worker /owner-reviewed/worker.py \
+  --worker-sha256 3efdcaf5533383549aeae85488d78acce5a9ee2c8b1946a35f9735e978a9b4ff \
+  --adapter /owner-reviewed/protocol_v3.py \
+  --adapter-sha256 f7215b44c865ab463a4be285caa313b010ea471b1ed29490ffe976513398e289 \
+  --output worker.py
+```
+
+The deterministic generated wrapper verifies both inputs, requires serial build
+role, applies the exact Windows V3 payload conversion and reports V3 activity.
+It never imports the auth guardian in build role. `--identity-only` performs the
+real mount/UID/architecture checks using a dummy credential without polling.
+The V3 adapter deliberately omits V4 running-cancellation/artifact capabilities.
+
+`podroid-provision-disarmed.sh` is the update path for the already installed
+service. The original installer intentionally refuses overwriting an existing
+installation and continues to pin its original immutable revision; rerunning
+it will not deliver this reviewed update. The owner-sealed provisioning bundle
+must contain the new worker, source pin, distinct mobile token, runner, init
+unit, this updater and checksums. Decrypt only into a new root-owned 0700 host
+directory, never into `/workspace` or a Docker volume. Run the updater there.
+It verifies the known installed unit/loop hashes, refuses any armed/running/
+enabled-in-any-runlevel service or reserved container, backs up the old boot
+files, installs root-owned provisioning and runs the non-launching check.
+It does not enable or start the service.
+
+The runner additionally requires root-owned 0700 configuration, 0644 source/pin,
+and a single valid token line in a root-owned 0600 file. It mounts a fresh,
+credential-blind tmpfs home and caps swap at the memory limit. A reserved
+container causes refusal rather than implicit deletion or adoption.
+
+The server host gate rejects a mobile token equal to either Windows build or
+auth token. Mobile mode disables the auth-session endpoint and fresh/cached
+auth-session advertisement. Prepare the new secret with active host still
+`windows`; do not deploy/switch as a side effect of preparing a credential.
+Existing Windows/auth tokens and owner configuration must remain untouched.
+
+Offline tests: `python -m unittest discover -s tests/scripts -p 'test_mobile*.py' -v`.
+The shell tests use fixture metadata and fake Docker, and the real-source loader
+test does not simulate a successful Linux mount identity. They prove parsing,
+pin/role/protocol behavior, duplicate refusal, stdin delivery and disarming,
+not physical Android acceptance. Run the actual network-disabled identity probe
+on Podroid before arming, then the existing connector proof and VM restart
+test only after the server switch and physical Windows fencing.

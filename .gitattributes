@@ -7,3 +7,6 @@ docs/** linguist-documentation=true
 scripts/** linguist-vendored=true
 functions/lib/** linguist-generated=true
 *.md linguist-documentation=true
+scripts/mobile-sandbox/*.sh text eol=lf
+scripts/mobile-sandbox/*.initd text eol=lf
+scripts/mobile-sandbox/*.py text eol=lf

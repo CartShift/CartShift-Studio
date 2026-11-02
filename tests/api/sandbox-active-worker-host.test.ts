@@ -25,6 +25,11 @@ describe('sandbox active-host credential gate', () => {
   it('rejects unknown active-host values rather than silently falling back', () => {
     expect(authorize('Bearer ' + windowsToken, { ...configured, SANDBOX_ACTIVE_WORKER_HOST: 'both' })).toBe(false);
   });
+  it('rejects a mobile credential shared with the separate auth sidecar', () => {
+    expect(authorize('Bearer ' + mobileToken, { ...configured,
+      SANDBOX_ACTIVE_WORKER_HOST: 'mobile', SANDBOX_AUTH_WORKER_TOKEN: mobileToken,
+    })).toBe(false);
+  });
   it('rejects malformed credentials and arbitrary token bytes', () => {
     expect(authorize(windowsToken, configured)).toBe(false);
     expect(authorize('Bearer '+ 'W'.repeat(42), configured)).toBe(false);
