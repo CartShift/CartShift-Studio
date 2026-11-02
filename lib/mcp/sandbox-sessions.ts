@@ -91,6 +91,7 @@ function refs() {
 }
 function fresh(data: Data | undefined, now = Date.now()) {
   return (
+    (process.env.SANDBOX_ACTIVE_WORKER_HOST || 'windows') === 'windows' &&
     data?.version === 3 &&
     (process.env.SANDBOX_AUTH_WORKER_ENFORCE !== 'true' || data.credentialClass === 'isolated') &&
     typeof data.epoch === 'string' &&

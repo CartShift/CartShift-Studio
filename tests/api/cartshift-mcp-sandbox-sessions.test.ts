@@ -106,6 +106,32 @@ describe('owner-only persistent sandbox authentication', () => {
     vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', '');
     expect(authorizeSandboxSessionWorker(isolated)).toBe(false);
   });
+  it('preserves Windows legacy auth-session continuity with enforcement explicitly disabled', async () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'windows');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'false');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', '');
+    vi.stubEnv('SANDBOX_MOBILE_WORKER_TOKEN', 'c'.repeat(48));
+    const windowsHeader = 'Bearer ' + 'a'.repeat(48);
+    const mobileHeader = 'Bearer ' + 'c'.repeat(48);
+    expect(authorizeSandboxSessionWorker(windowsHeader)).toBe(true);
+    expect(authorizeSandboxSessionWorker(mobileHeader)).toBe(false);
+    await sync();
+    expect((await getSandboxStatus(owner)).capabilities).toContain('interactive_auth_sessions');
+    const created = await startSandboxSession(owner, { provider: 'github', cwd: '/workspace/projects/demo' });
+    expect(created).toMatchObject({ provider: 'github' });
+    expect(row(created.session_id).cwd).toBe('/workspace/projects/demo');
+  });
+  it('refuses legacy sessions after explicit enforcement until an isolated handshake is fresh', async () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'windows');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'false');
+    await sync();
+    expect((await getSandboxStatus(owner)).capabilities).toContain('interactive_auth_sessions');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
+    expect((await getSandboxStatus(owner)).capabilities).not.toContain('interactive_auth_sessions');
+    await expect(startSandboxSession(owner, { provider: 'github' })).rejects.toThrow('WORKER_UNAVAILABLE');
+    await syncSandboxSessions({ action: 'sync', version: 3, epoch: nextEpoch, session: null }, 'isolated');
+    await expect(startSandboxSession(owner, { provider: 'github' })).resolves.toMatchObject({ provider: 'github' });
+  });
   it('rejects non-root workdirs after isolated-auth enforcement', async () => {
     await sync();
     vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
@@ -115,6 +141,21 @@ describe('owner-only persistent sandbox authentication', () => {
     await expect(startSandboxSession(owner, { provider: 'github' })).resolves.toMatchObject({
       provider: 'github',
     });
+  });
+  it('disables the Windows auth-session channel on the build-only mobile host', () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_ENFORCE', 'true');
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'b'.repeat(48));
+    vi.stubEnv('SANDBOX_MOBILE_WORKER_TOKEN', 'c'.repeat(48));
+    for (const token of ['a', 'b', 'c']) {
+      expect(authorizeSandboxSessionWorker('Bearer ' + token.repeat(48))).toBe(false);
+    }
+  });
+  it('does not advertise or start sessions from a cached Windows auth heartbeat on mobile', async () => {
+    await sync();
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    expect((await getSandboxStatus(owner)).capabilities).not.toContain('interactive_auth_sessions');
+    await expect(startSandboxSession(owner, { provider: 'github' })).rejects.toThrow('WORKER_UNAVAILABLE');
   });
   it('requires owner, scope, fresh sessions handshake and one active session', async () => {
     await expect(

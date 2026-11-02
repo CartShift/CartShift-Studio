@@ -6,6 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { Timestamp } from 'firebase-admin/firestore';
 import { z } from 'zod';
 import { constantEquals, firestore, tokenHash, type TokenGrant } from '@/lib/mcp/connection';
+import { authorizeActiveWorkerHost } from '@/lib/mcp/sandbox-worker-host';
 
 const JOBS = 'sandbox_command_jobs';
 const JOB_MAX_AGE_MS = 10 * 60_000;
@@ -186,9 +187,14 @@ export function authorizeSandboxOwner(grant: TokenGrant) {
 }
 
 export function authorizeSandboxWorker(header: string | null): boolean {
-  const token = process.env.SANDBOX_WORKER_TOKEN;
-  const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header || '');
-  return Boolean(token && token.length >= 32 && match && constantEquals(match[1], token));
+  return authorizeActiveWorkerHost(header, {
+    SANDBOX_WORKER_TOKEN: process.env.SANDBOX_WORKER_TOKEN,
+    SANDBOX_MOBILE_WORKER_TOKEN: process.env.SANDBOX_MOBILE_WORKER_TOKEN,
+    SANDBOX_AUTH_WORKER_TOKEN: process.env.SANDBOX_AUTH_WORKER_TOKEN,
+    SANDBOX_ACTIVE_WORKER_HOST: process.env.SANDBOX_ACTIVE_WORKER_HOST,
+    SANDBOX_AUTH_WORKER_ENFORCE: process.env.SANDBOX_AUTH_WORKER_ENFORCE,
+    SANDBOX_PARALLEL_ENABLED: process.env.SANDBOX_PARALLEL_ENABLED,
+  });
 }
 
 /** Separate HTTPS credential for the isolated auth-sidecar session channel.
@@ -196,6 +202,9 @@ export function authorizeSandboxWorker(header: string | null): boolean {
  * SANDBOX_AUTH_WORKER_ENFORCE=true revokes the build worker's session access.
  */
 export function sandboxSessionWorkerCredential(header: string | null): 'isolated' | 'legacy' | null {
+  // Android is build-only. A cached Windows sidecar or its bearer must not
+  // revive provider sessions after the explicit host handoff.
+  if ((process.env.SANDBOX_ACTIVE_WORKER_HOST || 'windows') !== 'windows') return null;
   const isolated = process.env.SANDBOX_AUTH_WORKER_TOKEN;
   const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header ?? '');
   const distinct = Boolean(isolated && isolated.length >= 32 &&
