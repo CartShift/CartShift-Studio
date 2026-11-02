@@ -1,0 +1,35 @@
+#!/sbin/openrc-run
+# Podroid ships Docker enabled in OpenRC's default runlevel.
+name='CartShift mobile sandbox worker'
+description='Run one host-fenced sandbox worker automatically whenever Podroid VM starts'
+command='/usr/local/sbin/cartshift-mobile-worker-loop'
+command_background='yes'
+pidfile='/run/cartshift-mobile-worker.pid'
+
+depend() {
+  need docker
+  after net
+}
+
+start_pre() {
+  if [ ! -f /etc/cartshift-mobile/host-armed ]; then
+    eerror 'Not armed: host fencing, distinct bearer, source pin and backend mode required.'
+    return 1
+  fi
+  if [ ! -x "$command" ]; then
+    eerror 'Missing worker launcher'
+    return 1
+  fi
+}
+
+stop() {
+  # Kill the restart loop first, or it could respawn the container on stop.
+  ebegin "Stopping $name"
+  start-stop-daemon --stop --pidfile "$pidfile" --retry TERM/10/KILL/5
+  result=$?
+  if docker container inspect cartshift-mobile-worker >/dev/null 2>&1; then
+    docker stop -t 10 cartshift-mobile-worker >/dev/null ||
+      { eerror 'Docker worker container stop failed'; result=1; }
+  fi
+  eend "$result"
+}

@@ -1,0 +1,104 @@
+name: Sandbox Android release gate (Linux, no deploy)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sandbox-android-release-gate.yml'
+      - 'app/**'
+      - 'lib/mcp/**'
+      - 'scripts/mobile-sandbox/**'
+      - 'scripts/browser-qa/**'
+      - 'tests/scripts/browser-qa.test.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'next.config.mjs'
+      - 'vitest.config.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sandbox-android-release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_FIREBASE_API_KEY: ci-stub-api-key
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ci-stub.firebaseapp.com
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: ci-stub-project
+  NEXT_PUBLIC_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000000000
+  NEXT_PUBLIC_FIREBASE_FUNCTION_URL: https://us-central1-ci-stub.cloudfunctions.net/contactForm
+  NEXT_PUBLIC_SITE_URL: https://example.com
+  NEXT_TELEMETRY_DISABLED: '1'
+  PUPPETEER_SKIP_DOWNLOAD: '1'
+  CI: 'true'
+
+jobs:
+  browser-qa-module:
+    name: Browser-QA suite import and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact integration commit includes current main
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          git fetch --no-tags origin main
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git merge-base --is-ancestor origin/main HEAD
+          printf 'VERIFIED_COMMIT=%s\n' "$(git rev-parse HEAD)"
+          printf 'VERIFIED_TREE=%s\n' "$(git rev-parse HEAD^{tree})"
+          git diff --exit-code
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check direct source import
+        run: node --input-type=module -e "import('./scripts/browser-qa/verify.mjs').then(m => { if (typeof m.parseArgs !== 'function' || typeof m.resolveExecutable !== 'function') process.exitCode = 1 })"
+      - name: Reproduce browser QA Vitest suite on clean Linux
+        run: pnpm exec vitest run tests/scripts/browser-qa.test.mjs --reporter=verbose
+      - name: Test V3 worker authorization, auth continuity and routing
+        run: |
+          pnpm exec vitest run \
+            tests/api/sandbox-active-worker-host.test.ts \
+            tests/api/cartshift-mcp-sandbox-sessions.test.ts \
+            tests/api/cartshift-mcp-sandbox-worker-route.test.ts \
+            --reporter=verbose
+
+  linux-build:
+    name: Next.js production build on supported Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact integration commit includes current main
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          git fetch --no-tags origin main
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git merge-base --is-ancestor origin/main HEAD
+          printf 'VERIFIED_COMMIT=%s\n' "$(git rev-parse HEAD)"
+          printf 'VERIFIED_TREE=%s\n' "$(git rev-parse HEAD^{tree})"
+          git diff --exit-code
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Chrome for required static CV PDF prebuild
+        run: pnpm exec puppeteer browsers install chrome
+      - name: Build without any production credentials
+        run: pnpm build

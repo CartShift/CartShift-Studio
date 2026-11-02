@@ -1,0 +1,26 @@
+name: Mobile sandbox offline checks
+on:
+  pull_request:
+    paths:
+      - 'scripts/mobile-sandbox/**'
+      - 'scripts/ai-docker-sandbox-worker.py'
+      - 'tests/scripts/test_mobile*.py'
+      - '.github/workflows/sandbox-mobile.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse shell scripts
+        run: |
+          for file in scripts/mobile-sandbox/*.sh scripts/mobile-sandbox/*.initd; do
+            sh -n "$file"
+          done
+      - name: Test pinned worker builder and fake-Docker service lifecycle
+        run: python -m unittest discover -s tests/scripts -p 'test_mobile*.py' -v

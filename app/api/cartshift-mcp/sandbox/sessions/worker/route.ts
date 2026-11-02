@@ -1,4 +1,4 @@
-import { authorizeSandboxWorker } from '@/lib/mcp/sandbox-jobs';
+import { sandboxSessionWorkerCredential } from '@/lib/mcp/sandbox-jobs';
 import { syncSandboxSessions } from '@/lib/mcp/sandbox-sessions';
 
 export const runtime = 'nodejs';
@@ -7,7 +7,8 @@ function json(body: unknown, status = 200) {
   return Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 }
 export async function POST(request: Request) {
-  if (!authorizeSandboxWorker(request.headers.get('authorization')))
+  const credential = sandboxSessionWorkerCredential(request.headers.get('authorization'));
+  if (!credential)
     return json({ error: 'unauthorized' }, 401);
   if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES)
     return json({ error: 'request_too_large' }, 413);
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     return json({ error: 'invalid_json' }, 400);
   }
   try {
-    return json(await syncSandboxSessions(body));
+    return json(await syncSandboxSessions(body, credential));
   } catch {
     return json({ error: 'session_operation_failed' }, 409);
   }
