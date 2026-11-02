@@ -42,6 +42,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Rehearse integration with current production main
+        run: |
+          git fetch --no-tags origin main
+          git -c user.name='CartShift CI' -c user.email='ci@users.noreply.github.com' merge --no-commit --no-ff origin/main
+          git status --short
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -61,11 +67,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Rehearse integration with current production main
+        run: |
+          git fetch --no-tags origin main
+          git -c user.name='CartShift CI' -c user.email='ci@users.noreply.github.com' merge --no-commit --no-ff origin/main
+          git status --short
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Install Chrome for required static CV PDF prebuild
+        run: pnpm exec puppeteer browsers install chrome
       - name: Build without any production credentials
         run: pnpm build
