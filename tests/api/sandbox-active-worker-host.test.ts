@@ -18,6 +18,7 @@ describe('sandbox active-host credential gate', () => {
   });
   it('fails closed on unset/reused mobile credential and missing auth enforcement', () => {
     expect(authorize('Bearer ' + mobileToken, { ...configured, SANDBOX_ACTIVE_WORKER_HOST: 'mobile', SANDBOX_AUTH_WORKER_ENFORCE: 'false' })).toBe(false);
+    expect(authorize('Bearer ' + mobileToken, { ...configured, SANDBOX_ACTIVE_WORKER_HOST: 'mobile', SANDBOX_PARALLEL_ENABLED: 'true' })).toBe(false);
     expect(authorize('Bearer ' + windowsToken, { ...configured, SANDBOX_ACTIVE_WORKER_HOST: 'mobile', SANDBOX_MOBILE_WORKER_TOKEN: windowsToken })).toBe(false);
     expect(authorize('Bearer ' + mobileToken, { ...configured, SANDBOX_ACTIVE_WORKER_HOST: 'mobile', SANDBOX_MOBILE_WORKER_TOKEN: '' })).toBe(false);
   });
