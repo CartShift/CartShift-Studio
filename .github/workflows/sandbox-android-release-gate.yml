@@ -58,6 +58,13 @@ jobs:
         run: node --input-type=module -e "import('./scripts/browser-qa/verify.mjs').then(m => { if (typeof m.parseArgs !== 'function' || typeof m.resolveExecutable !== 'function') process.exitCode = 1 })"
       - name: Reproduce browser QA Vitest suite on clean Linux
         run: pnpm exec vitest run tests/scripts/browser-qa.test.mjs --reporter=verbose
+      - name: Test V3 worker authorization, auth continuity and routing
+        run: |
+          pnpm exec vitest run \
+            tests/api/sandbox-active-worker-host.test.ts \
+            tests/api/cartshift-mcp-sandbox-sessions.test.ts \
+            tests/api/cartshift-mcp-sandbox-worker-route.test.ts \
+            --reporter=verbose
 
   linux-build:
     name: Next.js production build on supported Linux
