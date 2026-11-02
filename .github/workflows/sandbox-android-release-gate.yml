@@ -1,0 +1,71 @@
+name: Sandbox Android release gate (Linux, no deploy)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sandbox-android-release-gate.yml'
+      - 'app/**'
+      - 'lib/mcp/**'
+      - 'scripts/mobile-sandbox/**'
+      - 'scripts/browser-qa/**'
+      - 'tests/scripts/browser-qa.test.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'next.config.mjs'
+      - 'vitest.config.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sandbox-android-release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_FIREBASE_API_KEY: ci-stub-api-key
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ci-stub.firebaseapp.com
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: ci-stub-project
+  NEXT_PUBLIC_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000000000
+  NEXT_PUBLIC_FIREBASE_FUNCTION_URL: https://us-central1-ci-stub.cloudfunctions.net/contactForm
+  NEXT_PUBLIC_SITE_URL: https://example.com
+  NEXT_TELEMETRY_DISABLED: '1'
+  PUPPETEER_SKIP_DOWNLOAD: '1'
+  CI: 'true'
+
+jobs:
+  browser-qa-module:
+    name: Browser-QA suite import and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9e
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check direct source import
+        run: node --input-type=module -e "import('./scripts/browser-qa/verify.mjs').then(m => { if (typeof m.parseArgs !== 'function' || typeof m.resolveExecutable !== 'function') process.exitCode = 1 })"
+      - name: Reproduce browser QA Vitest suite on clean Linux
+        run: pnpm exec vitest run tests/scripts/browser-qa.test.mjs --reporter=verbose
+
+  linux-build:
+    name: Next.js production build on supported Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9e
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build without any production credentials
+        run: pnpm build
