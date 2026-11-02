@@ -117,9 +117,9 @@ describe('owner-only persistent sandbox authentication', () => {
     expect(authorizeSandboxSessionWorker(mobileHeader)).toBe(false);
     await sync();
     expect((await getSandboxStatus(owner)).capabilities).toContain('interactive_auth_sessions');
-    await expect(startSandboxSession(owner, { provider: 'github', cwd: '/workspace/projects/demo' })).resolves.toMatchObject({
-      provider: 'github', cwd: '/workspace/projects/demo',
-    });
+    const created = await startSandboxSession(owner, { provider: 'github', cwd: '/workspace/projects/demo' });
+    expect(created).toMatchObject({ provider: 'github' });
+    expect(row(created.session_id).cwd).toBe('/workspace/projects/demo');
   });
   it('refuses legacy sessions after explicit enforcement until an isolated handshake is fresh', async () => {
     vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'windows');
