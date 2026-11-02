@@ -14,6 +14,9 @@ trap 'rm -rf "$temp"' EXIT HUP INT TERM
 wget -q -O "$temp/loop.sh" "$ROOT/cartshift-mobile-worker-loop.sh"
 wget -q -O "$temp/service" "$ROOT/cartshift-mobile-worker.initd"
 sh -n "$temp/loop.sh" "$temp/service"
+# Minimal Podroid/Alpine images may omit this standard optional path.
+# Create the expected parent BEFORE installing the worker launcher.
+install -d -m 755 /usr/local/sbin
 install -d -m 700 /etc/cartshift-mobile
 install -m 700 "$temp/loop.sh" /usr/local/sbin/cartshift-mobile-worker-loop
 install -m 755 "$temp/service" /etc/init.d/cartshift-mobile-worker
