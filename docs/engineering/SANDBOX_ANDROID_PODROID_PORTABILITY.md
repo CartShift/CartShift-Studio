@@ -8,6 +8,13 @@ The repository describes a V5 parallel-capable architecture: isolated build-only
 
 The Windows ARM64 image was exported and its archive verified on Windows. The owner uploaded the 1,023,948,800-byte tar plus manifest to private Google Drive, transferred them to the Android Downloads share, obtained **SHA-256 OK** and ran `docker image load --platform linux/arm64` on Podroid. Docker returned source image digest `sha256:3000817362f55553501261f8cbe0ff421a1cbdefb34b759073a5bd574ba836ee`. This image includes **neither the workspace nor provider credentials**. New `scripts/mobile-sandbox/podroid-image-smoke.sh` tests the imported image without mounts, network, or worker registration. No running worker, production switch, workspace restore or automatic failover has occurred.
 
+
+## Automatic worker startup on Podroid VM boot
+
+**Implementation added Nov 2**: [SANDBOX_ANDROID_AUTOSTART.md](./SANDBOX_ANDROID_AUTOSTART.md) documents the root-owned OpenRC worker service. Podroid enables Docker on its default runlevel at VM boot; after one-time owner activation, the service launches one isolated Docker build worker automatically and retries on unexpected exit. The persistent bearer is **never** mounted into Docker or set as a container environment variable; the OpenRC runner provides it once on stdin at launch.
+
+The server now supports an optional, separately provisioned Android bearer selected only by explicit `SANDBOX_ACTIVE_WORKER_HOST=mobile` and `SANDBOX_MOBILE_WORKER_TOKEN` with auth isolation enabled and single-worker queue mode. Existing deployments default to the Windows bearer and remain unchanged until the updated server is deployed, the Windows host is physically fenced and the mobile host is explicitly armed. No tokens have been created, injected or exposed in Git. **Do not claim that the Android worker is already online.**
+
 ## Desired architecture
 
 ChatGPT Android or desktop -> the existing CartShift MCP -> its existing Firestore queue -> only one active HOST at a time. The active host runs the same verified ARM64 image and a verified, current workspace snapshot. The phone initially runs at most ONE isolated build worker; isolated auth and local Desktop Commander are separate later acceptance gates. Avoid a second MCP or hosted Desktop Commander service.
