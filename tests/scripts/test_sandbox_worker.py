@@ -214,5 +214,18 @@ class WorkerExecutionTests(unittest.TestCase):
             self.assertEqual(send.call_args_list[0].args, send.call_args_list[1].args)
 
 
+class WorkerExecutionFallbackTests(WorkerExecutionTests):
+    """Exercise real execution, timeouts and detached cleanup without PROC_CHILDREN."""
+    def setUp(self):
+        read = Path.read_text
+        def without_optional_file(path, *args, **kwargs):
+            if str(path) == f'/proc/self/task/{os.getpid()}/children':
+                raise FileNotFoundError()
+            return read(path, *args, **kwargs)
+        replacement = patch.object(Path, 'read_text', without_optional_file)
+        replacement.start()
+        self.addCleanup(replacement.stop)
+
+
 if __name__ == '__main__':
     unittest.main()
