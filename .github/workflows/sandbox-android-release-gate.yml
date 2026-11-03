@@ -7,6 +7,9 @@ on:
       - 'app/**'
       - 'lib/mcp/**'
       - 'scripts/mobile-sandbox/**'
+      - 'scripts/ai-docker-sandbox-worker.py'
+      - 'tests/scripts/test_mobile*.py'
+      - 'tests/scripts/test_sandbox_worker.py'
       - 'scripts/browser-qa/**'
       - 'tests/scripts/browser-qa.test.mjs'
       - 'package.json'
@@ -60,6 +63,8 @@ jobs:
           node-version: '24'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Test optional proc children compatibility without network or credentials
+        run: python3 -m unittest discover -s tests/scripts -p 'test_mobile_proc_children.py' -v
       - name: Check direct source import
         run: node --input-type=module -e "import('./scripts/browser-qa/verify.mjs').then(m => { if (typeof m.parseArgs !== 'function' || typeof m.resolveExecutable !== 'function') process.exitCode = 1 })"
       - name: Reproduce browser QA Vitest suite on clean Linux

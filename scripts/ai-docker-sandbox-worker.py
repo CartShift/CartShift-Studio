@@ -150,6 +150,8 @@ def verify_identity():
             or url.port not in (None, 443) or url.username or url.password or url.query or url.fragment
             or url.path != "/api/cartshift-mcp/sandbox/worker"):
         raise RuntimeError("Worker requires the production CartShift HTTPS endpoint")
+    if ROLE == "build":
+        verify_command_runtime()  # Offline identity checks must include execution prerequisites.
 
 
 def worker_payload(payload, endpoint=None):
@@ -190,8 +192,41 @@ def kill_group(process):
 
 
 def direct_children():
-    children = Path(f"/proc/self/task/{os.getpid()}/children")
-    return {int(pid) for pid in children.read_text().split()}
+    parent = os.getpid()
+    children = Path(f"/proc/self/task/{parent}/children")
+    try:
+        return {int(pid) for pid in children.read_text().split()}
+    except FileNotFoundError:
+        # CONFIG_PROC_CHILDREN is optional (including Podroid's kernel).
+        # Preserve subreaper cleanup by inspecting the same PID namespace's
+        # stat parent IDs. Never treat denied or malformed visibility as empty.
+        result, own_visible = set(), False
+        for entry in Path("/proc").iterdir():
+            if not entry.name.isdecimal():
+                continue
+            try:
+                data = (entry / "stat").read_text()
+            except FileNotFoundError:
+                continue  # A process may exit between enumeration and read.
+            pid, separator, rest = data.partition(" (")
+            _, closing, tail = rest.rpartition(") ")
+            fields = tail.split()
+            if (not separator or not closing or pid != entry.name or
+                    len(fields) < 2 or len(fields[0]) != 1 or
+                    not fields[1].isdecimal()):
+                raise RuntimeError("Cannot verify process parent metadata")
+            own_visible |= int(pid) == parent
+            if int(fields[1]) == parent:
+                result.add(int(pid))
+        if not own_visible:
+            raise RuntimeError("Cannot verify own process visibility")
+        return result
+
+
+def verify_command_runtime():
+    if ctypes.CDLL(None, use_errno=True).prctl(36, 1, 0, 0, 0) != 0:
+        raise RuntimeError("Cannot enforce command descendant cleanup")
+    return direct_children()
 
 
 def cleanup_adopted_children(baseline):
@@ -269,9 +304,7 @@ def execute_artifact(job):
 def execute(job, cancel_event=None):
     if job.get("kind") == "artifact_read":
         return execute_artifact(job)
-    if ctypes.CDLL(None, use_errno=True).prctl(36, 1, 0, 0, 0) != 0:
-        raise RuntimeError("Cannot enforce command descendant cleanup")
-    baseline_children = direct_children()
+    baseline_children = verify_command_runtime()
     started = time.monotonic()
     stdout, stderr = bytearray(), bytearray()
     truncated, timed_out, cancelled, exit_code, process = False, False, False, -1, None

@@ -53,9 +53,9 @@ class MobileBundleTests(unittest.TestCase):
         ns={'__name__':'__main__'}
         with patch.dict(os.environ,{'SANDBOX_WORKER_ROLE':'build','SANDBOX_WORKER_SLOT':'0'}),patch.object(sys,'argv',['mobile','--identity-only']):
             exec(compile(self.bundle(),'mobile','exec'),ns)
-    def test_real_normalized_repository_source_matches_windows_pin_and_loads_build_adapter(self):
+    def test_reviewed_source_matches_mobile_pin_and_loads_build_adapter(self):
         source=(ROOT/'scripts/ai-docker-sandbox-worker.py').read_text().replace('\r\n','\n').encode()
-        self.assertEqual(digest(source),'3efdcaf5533383549aeae85488d78acce5a9ee2c8b1946a35f9735e978a9b4ff')
+        self.assertEqual(digest(source),'4bc128b5db15f7bf87c34458f3919f6f825ae6fbfa87e6078bc4820b3667ba19')
         ns={'__name__':'test_real_worker'}
         wrapper=builder.build(source,digest(source),ADAPTER,digest(ADAPTER))
         resolve=Path.resolve
