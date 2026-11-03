@@ -7,11 +7,24 @@ from pathlib import Path
 
 TEMPLATE = '''#!/usr/bin/env python3
 # Generated from reviewed source pins; contains no credentials.
-import base64, hashlib, json, os, sys
+import base64, ctypes, hashlib, json, os, sys
 WORKER_PIN = {worker_pin!r}
 ADAPTER_PIN = {adapter_pin!r}
 WORKER_SOURCE = {worker_source!r}
 ADAPTER_SOURCE = {adapter_source!r}
+def sync_workspace():
+    # QEMU Stop can cut power without guest shutdown. Flush this filesystem
+    # before exposing a completed command to the owner; no credential is read.
+    fd = os.open('/workspace', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW)
+    try:
+        syncfs = ctypes.CDLL(None, use_errno=True).syncfs
+        syncfs.argtypes = [ctypes.c_int]
+        syncfs.restype = ctypes.c_int
+        if syncfs(fd) != 0:
+            raise OSError(ctypes.get_errno(), 'Workspace durability flush failed')
+    finally:
+        os.close(fd)
+
 def load_worker():
     if os.environ.get('SANDBOX_WORKER_ROLE') != 'build' or os.environ.get('SANDBOX_WORKER_SLOT', '0') != '0':
         raise RuntimeError('Mobile supports only the isolated serial build role')
@@ -26,6 +39,17 @@ def load_worker():
     if ns['ROLE'] != 'build' or ns['PARALLEL_SLOT']:
         raise RuntimeError('Unexpected worker role')
     ns['worker_payload'] = compat['worker_payload']
+    original_execute = ns['execute']
+    def durable_execute(job, cancel_event=None):
+        completion = original_execute(job, cancel_event)
+        try:
+            sync_workspace()
+        except (OSError, AttributeError):
+            # SystemExit is intentionally not retried by completion delivery or
+            # caught by the polling loop. Never acknowledge unflushed writes.
+            raise SystemExit('Workspace flush failed; completion refused') from None
+        return completion
+    ns['execute'] = durable_execute
     original_activity = ns['activity']
     def activity(event, **fields):
         if 'worker_version' in fields: fields['worker_version'] = 3

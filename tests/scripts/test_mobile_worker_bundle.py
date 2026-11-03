@@ -1,4 +1,5 @@
 """Portable, network-free tests; no Linux runtime, Docker or real bearer needed."""
+import ast
 import hashlib
 import importlib.util
 import os
@@ -17,6 +18,10 @@ WORKER = b'''import os
 ROLE=os.environ.get('SANDBOX_WORKER_ROLE')
 PARALLEL_SLOT=int(os.environ.get('SANDBOX_WORKER_SLOT','0'))
 TOKEN=''
+EVENTS=[]
+def execute(job, cancel_event=None):
+    EVENTS.append('execute')
+    return {'action':'complete','exit_code':job.get('exit_code',0)}
 def activity(event, **fields): return fields
 def verify_identity(): assert ROLE=='build' and len(TOKEN)>=32
 def main(): raise AssertionError('main must not run during identity probe')
@@ -47,6 +52,45 @@ class MobileBundleTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):payload({'action':'sync'},endpoint='auth')
         data={'action':'complete','worker_version':4,'job_id':'fixture','lease_token':'x'*40,'exit_code':0,'stdout':'','stderr':'','duration_ms':1,'output_truncated':False}
         self.assertNotIn('worker_version',payload(data))
+    def test_workspace_flush_precedes_returned_completion(self):
+        ns,worker=self.load();events=[];worker['EVENTS']=events
+        ns['sync_workspace']=lambda:events.append('flush')
+        result=worker['execute']({})
+        self.assertEqual(events,['execute','flush'])
+        self.assertEqual(result['exit_code'],0)
+    def test_flush_failure_stops_worker_without_returning_completion(self):
+        ns,worker=self.load()
+        def failed_flush():raise OSError('simulated storage error')
+        ns['sync_workspace']=failed_flush
+        with self.assertRaises(SystemExit):worker['execute']({})
+    def test_nonzero_exit_still_flushes_partial_workspace_changes(self):
+        ns,worker=self.load();events=[];worker['EVENTS']=events
+        ns['sync_workspace']=lambda:events.append('flush')
+        result=worker['execute']({'exit_code':7})
+        self.assertEqual(events,['execute','flush'])
+        self.assertEqual(result['exit_code'],7)
+    def sync_fixture(self, result=0, missing=False):
+        node=next(n for n in ast.parse(self.bundle()).body if isinstance(n,ast.FunctionDef) and n.name=='sync_workspace')
+        events=[]
+        def syncfs(fd):events.append(('sync',fd));return result
+        lib=types.SimpleNamespace() if missing else types.SimpleNamespace(syncfs=syncfs)
+        fake_os=types.SimpleNamespace(O_RDONLY=0,O_DIRECTORY=1,O_CLOEXEC=2,O_NOFOLLOW=4,
+            open=lambda path,flags:events.append(('open',path,flags)) or 9,
+            close=lambda fd:events.append(('close',fd)))
+        ns={'os':fake_os,'ctypes':types.SimpleNamespace(CDLL=lambda *a,**kw:lib,c_int=int,get_errno=lambda:5)}
+        exec(compile(ast.Module(body=[node],type_ignores=[]),'durability','exec'),ns)
+        return ns['sync_workspace'],events
+    def test_syncfs_closes_nofollow_directory_descriptor(self):
+        sync,events=self.sync_fixture();sync()
+        self.assertEqual(events,[('open','/workspace',7),('sync',9),('close',9)])
+    def test_syncfs_error_is_reported_and_descriptor_closed(self):
+        sync,events=self.sync_fixture(-1)
+        with self.assertRaises(OSError):sync()
+        self.assertEqual(events[-1],('close',9))
+    def test_missing_syncfs_is_not_silently_accepted(self):
+        sync,events=self.sync_fixture(missing=True)
+        with self.assertRaises(AttributeError):sync()
+        self.assertEqual(events[-1],('close',9))
     def test_activity_reports_actual_v3_protocol(self):
         _,ns=self.load();self.assertEqual(ns['activity']('worker_started',worker_version=4)['worker_version'],3)
     def test_identity_only_never_runs_main_or_consumes_credentials(self):
