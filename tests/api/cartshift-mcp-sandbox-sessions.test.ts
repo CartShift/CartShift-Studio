@@ -86,6 +86,7 @@ describe('owner-only persistent sandbox authentication', () => {
     mocks.rows.clear();
     vi.stubEnv('SANDBOX_OWNER_UID', 'owner');
     vi.stubEnv('SANDBOX_WORKER_TOKEN', 'a'.repeat(48));
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'b'.repeat(48));
     vi.useFakeTimers();
     vi.setSystemTime(1_800_000_000_000);
   });
@@ -358,11 +359,29 @@ describe('owner-only persistent sandbox authentication', () => {
     });
     await expect(sync()).rejects.toThrow('EPOCH_CONFLICT');
   });
+  it('keeps the isolated session channel inaccessible to command-worker credentials', async () => {
+    const request = (token: string) => new Request('https://example.test', {
+      method: 'POST', headers: { authorization: `Bearer ${token}` },
+      body: JSON.stringify({ action: 'sync', version: 3, epoch, session: null }),
+    });
+    expect((await POST(request('b'.repeat(48)))).status).toBe(200);
+    expect((await POST(request('a'.repeat(48)))).status).toBe(401);
+    expect((await POST(request('c'.repeat(48)))).status).toBe(401);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'a'.repeat(48));
+    expect((await POST(request('a'.repeat(48)))).status).toBe(401);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'c'.repeat(48));
+    vi.stubEnv('SANDBOX_MOBILE_WORKER_TOKEN', 'c'.repeat(48));
+    expect((await POST(request('c'.repeat(48)))).status).toBe(401);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', 'short');
+    expect((await POST(request('short'))).status).toBe(401);
+    vi.stubEnv('SANDBOX_AUTH_WORKER_TOKEN', '');
+    expect((await POST(request('a'.repeat(48)))).status).toBe(401);
+  });
   it('authenticates endpoint and caps actual stream bytes regardless of content-length', async () => {
     expect(
       (await POST(new Request('https://example.test', { method: 'POST', body: '{}' }))).status
     ).toBe(401);
-    const headers = { authorization: 'Bearer ' + 'a'.repeat(48), 'content-length': '1' };
+    const headers = { authorization: 'Bearer ' + 'b'.repeat(48), 'content-length': '1' };
     expect(
       (
         await POST(
