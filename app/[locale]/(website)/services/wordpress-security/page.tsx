@@ -152,7 +152,7 @@ export default async function WordPressSecurityPage({
               <p className="mt-4 text-center text-xs font-bold uppercase tracking-[0.18em] text-[#a4c7d4]">{t('visual.title')}</p>
               <div className="mt-5 grid gap-2">
                 {features.slice(0, 4).map((feature, index) => {
-                  const Icon = featureIcons[index];
+                  const Icon = featureIcons[index] ?? ShieldCheck;
                   return (
                     <div key={feature.title} className="flex min-h-14 items-center gap-3 rounded-xl border border-white/[0.09] bg-white/[0.045] px-4 py-2.5">
                       <span className="font-mono text-[11px] text-[#8db4c5]">{String(index + 1).padStart(2, '0')}</span>
@@ -160,7 +160,7 @@ export default async function WordPressSecurityPage({
                         <Icon className="h-[17px] w-[17px]" aria-hidden="true" />
                       </span>
                       <span className="text-sm font-semibold leading-5 text-slate-100">{feature.title}</span>
-                      <Check className="ms-auto h-4 w-4 shrink-0 text-[#b4d779]" aria-hidden="true" />
+                      <span className="ms-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#b4d779]/40" aria-hidden="true"><span className="h-1 w-1 rounded-full bg-[#b4d779]" /></span>
                     </div>
                   );
                 })}
@@ -215,7 +215,7 @@ export default async function WordPressSecurityPage({
 
           <div className="mt-12 grid gap-x-14 md:grid-cols-2">
             {features.map((feature, index) => {
-              const Icon = featureIcons[index];
+              const Icon = featureIcons[index] ?? ShieldCheck;
               return (
                 <article key={feature.title} className="group flex gap-5 border-t border-slate-200 py-7 dark:border-white/10 sm:gap-6 sm:py-8">
                   <div className="flex w-12 shrink-0 flex-col items-start gap-5">

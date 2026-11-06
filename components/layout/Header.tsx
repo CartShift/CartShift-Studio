@@ -34,7 +34,9 @@ export const Header: React.FC = () => {
   const { state, actions, refs } = useNavigationState();
   const router = useRouter();
   const isWorkItemPage = /^\/work\/[^/]+\/?$/.test(pathname);
-  const useSolidHeader = !state.isAtTop || isWorkItemPage;
+  // The WordPress security landing starts with a dark hero; use the legible solid navigation above it.
+  const isSecurityLandingPage = pathname === '/services/wordpress-security';
+  const useSolidHeader = !state.isAtTop || isWorkItemPage || isSecurityLandingPage;
 
   const navigation = useMemo(
     () => [
