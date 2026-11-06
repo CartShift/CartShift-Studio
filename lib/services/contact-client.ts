@@ -4,6 +4,7 @@ export interface ContactFormSubmitData {
   name: string;
   email: string;
   subject?: string;
+  interest?: string;
   message: string;
   company?: string;
   projectType?: string;
