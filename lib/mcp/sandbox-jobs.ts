@@ -141,6 +141,15 @@ export function authorizeSandboxWorker(header: string | null): boolean {
   return Boolean(token && token.length >= 32 && match && constantEquals(match[1], token));
 }
 
+/** Provider login sessions belong only to the isolated auth sidecar. */
+export function authorizeSandboxSessionWorker(header: string | null): boolean {
+  const token = process.env.SANDBOX_AUTH_WORKER_TOKEN;
+  const match = /^Bearer ([A-Za-z0-9_-]{32,})$/.exec(header || '');
+  const distinct = token && !constantEquals(token, process.env.SANDBOX_WORKER_TOKEN || '') &&
+    !constantEquals(token, process.env.SANDBOX_MOBILE_WORKER_TOKEN || '');
+  return Boolean(distinct && token.length >= 32 && match && constantEquals(match[1], token));
+}
+
 export async function submitSandboxCommand(grant: TokenGrant, input: unknown) {
   authorizeSandboxOwner(grant);
   const args = commandInput.parse(input);
