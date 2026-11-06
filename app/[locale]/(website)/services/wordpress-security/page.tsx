@@ -6,12 +6,12 @@ import {
   ArrowUpRight,
   CheckCircle2,
   ClipboardCheck,
-  FileCheck2,
   Layers3,
-  LockKeyhole,
   ServerCog,
   ShieldCheck,
-  Wrench,
+  UsersRound,
+  DatabaseBackup,
+  X,
 } from 'lucide-react';
 import { WordPressSecurityLeadForm } from '@/components/forms/WordPressSecurityLeadForm';
 import {
@@ -43,7 +43,7 @@ export async function generateMetadata({
   );
 }
 
-const featureIcons = [ServerCog, Layers3, LockKeyhole, Wrench, ClipboardCheck, FileCheck2] as const;
+const featureIcons = [ServerCog, Layers3, DatabaseBackup, UsersRound, ShieldCheck, ClipboardCheck] as const;
 
 export default async function WordPressSecurityPage({
   params,
@@ -58,11 +58,13 @@ export default async function WordPressSecurityPage({
   const process = t.raw('process') as { title: string; description: string }[];
   const faq = t.raw('faq') as { question: string; answer: string }[];
   const trustNotes = t.raw('trustNotes') as string[];
+  const offerIncluded = t.raw('offer.included') as string[];
+  const offerExcluded = t.raw('offer.excluded') as string[];
 
   const serviceSchema = generateServiceSchema(
-    activeLocale === 'he' ? 'בדיקת אבטחה ותחזוקת WordPress' : 'WordPress Security & Maintenance Review',
+    activeLocale === 'he' ? 'חבילת אבטחה ותחזוקת WordPress' : 'WordPress Security & Maintenance Package',
     t('seoDescription'),
-    { url: '/services/wordpress-security', locale: activeLocale }
+    { url: '/services/wordpress-security', locale: activeLocale, priceRange: 'ILS 890' }
   );
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
@@ -92,6 +94,18 @@ export default async function WordPressSecurityPage({
               <span className="mt-3 block text-primary-600 dark:text-primary-400">{t('titleAccent')}</span>
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-relaxed text-surface-600 dark:text-surface-300">{t('subtitle')}</p>
+            <div className="mt-8 max-w-xl rounded-2xl border border-primary-500/30 bg-primary-500/5 p-5 dark:bg-primary-500/10 sm:p-6">
+              <p className="text-xs font-semibold tracking-wide text-primary-700 dark:text-primary-300">{t('offer.label')}</p>
+              <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="text-sm font-medium text-surface-600 dark:text-surface-300">{t('offer.beforePrice')}</span>
+                <strong className="text-5xl font-black tabular-nums tracking-tight text-surface-900 dark:text-white" dir="ltr">{t('offer.price')}</strong>
+              </div>
+              <p className="mt-1 text-sm font-semibold text-surface-700 dark:text-surface-200">{t('offer.afterPrice')}</p>
+              <div className="mt-4 flex flex-col gap-2 border-t border-primary-500/15 pt-4 text-sm text-surface-600 dark:text-surface-300">
+                <p className="flex items-center gap-2"><CheckCircle2 className="size-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden="true" />{t('offer.detail')}</p>
+                <p className="flex items-center gap-2"><CheckCircle2 className="size-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden="true" />{t('offer.approval')}</p>
+              </div>
+            </div>
             <div className="mt-9 flex flex-wrap gap-3">
               <a href="#security-request" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-900/10 transition-colors hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
                 {t('primaryCta')} <ArrowDown className="h-4 w-4" aria-hidden="true" />
@@ -157,6 +171,29 @@ export default async function WordPressSecurityPage({
               );
             })}
           </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <div className="rounded-2xl border border-primary-500/25 bg-primary-500/5 p-6 dark:bg-primary-500/10">
+              <h3 className="text-lg font-bold">{t('offer.includedTitle')}</h3>
+              <ul className="mt-5 space-y-3">
+                {offerIncluded.map(text => (
+                  <li key={text} className="flex items-start gap-3 text-sm leading-relaxed text-surface-700 dark:text-surface-200">
+                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden="true" />{text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-surface-200 bg-white p-6 dark:border-white/10 dark:bg-surface-900">
+              <h3 className="text-lg font-bold">{t('offer.excludedTitle')}</h3>
+              <ul className="mt-5 space-y-3">
+                {offerExcluded.map(text => (
+                  <li key={text} className="flex items-start gap-3 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                    <X className="mt-0.5 size-4 shrink-0 text-surface-400" aria-hidden="true" />{text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <p className="mt-5 text-sm text-surface-600 dark:text-surface-300">{t('offer.fitNote')}</p>
         </div>
       </section>
 

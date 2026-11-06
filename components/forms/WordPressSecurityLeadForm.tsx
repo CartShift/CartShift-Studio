@@ -41,7 +41,17 @@ export function WordPressSecurityLeadForm() {
         company: siteUrl.slice(0, 200),
         projectType: 'wordpress',
         locale,
-        message: `[WordPress Security Check | PHP2Shell 2026 | source: wordpress-security-landing]\nWebsite: ${siteUrl}\nNotes: ${details.trim() || 'None'}`,
+        interest: 'wordpress_security_launch_890',
+        message: `[WordPress Security Launch Package | ILS 890 | up to 3 hours | source: wordpress-security-landing]\\nWebsite: ${siteUrl}\\nNotes: ${details.trim() || 'None'}\\nCampaign attribution: ${(() => {
+          const params = new URLSearchParams(window.location.search);
+          return ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
+            .map(key => {
+              const raw = params.get(key);
+              return raw ? `${key}=${raw.slice(0, 100).replace(/[\\r\\n]/g, ' ')}` : '';
+            })
+            .filter(Boolean)
+            .join(' | ') || 'direct';
+        })()}`,
       });
       if (!response.success) throw new Error('Submission failed');
       trackFormSubmission('wordpress-security');
@@ -67,6 +77,7 @@ export function WordPressSecurityLeadForm() {
       ) : (
         <>
           <h2 className="text-2xl font-bold tracking-tight">{t('wordpressSecurity.form.title')}</h2>
+          <p className="mt-3 inline-flex items-center rounded-lg bg-primary-500/10 px-3 py-1.5 text-sm font-bold text-primary-700 dark:text-primary-300">{t('wordpressSecurity.offer.price')} · {t('wordpressSecurity.offer.detail')}</p>
           <p className="mt-3 text-sm leading-relaxed text-surface-600 dark:text-surface-300">{t('wordpressSecurity.form.intro')}</p>
           <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
             <div>
@@ -91,6 +102,7 @@ export function WordPressSecurityLeadForm() {
               {isLoading ? t('wordpressSecurity.form.submitting') : t('wordpressSecurity.form.submit')}
             </button>
             <p className="text-xs leading-relaxed text-surface-500 dark:text-surface-400">{t('wordpressSecurity.form.privacy')}</p>
+            <p className="text-xs leading-relaxed text-surface-500 dark:text-surface-400">{t('wordpressSecurity.offer.disclosure')}</p>
           </form>
           <a href="mailto:hello@cart-shift.com?subject=WordPress%20Security%20Check" className="mt-5 block text-center text-sm font-medium text-primary-700 underline-offset-4 hover:underline dark:text-primary-300">
             {t('wordpressSecurity.form.emailLink')}

@@ -58,6 +58,20 @@ export const WordPressPageContent: React.FC = () => {
 
   return (
     <div className="bg-background dark:bg-black transition-colors duration-500">
+
+      <section className="px-4 pt-12 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 rounded-2xl border border-primary-500/25 bg-primary-500/5 p-6 dark:bg-primary-500/10 md:flex-row md:items-center md:justify-between md:p-8">
+          <div>
+            <p className="text-xs font-bold tracking-wide text-primary-700 dark:text-primary-300">{t('wordpressSecurity.offer.label')}</p>
+            <h2 className="mt-2 text-xl font-bold text-surface-900 dark:text-white md:text-2xl">{t('wordpressSecurity.titleAccent')}</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-surface-600 dark:text-surface-300">{t('wordpressSecurity.offer.fitNote')}</p>
+          </div>
+          <Link href="/services/wordpress-security" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-bold text-white hover:bg-primary-700">
+            {t('wordpressSecurity.primaryCta')} · {t('wordpressSecurity.offer.price')}
+            <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
       {/* Services Section */}
       <Section background="default" className="relative py-24 overflow-visible">
         <GlowBlob className="top-20 -start-20 w-[500px] h-[500px] bg-accent-500/20 dark:bg-accent-500/10" />

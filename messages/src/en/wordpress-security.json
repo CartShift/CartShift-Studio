@@ -1,111 +1,140 @@
 {
   "wordpressSecurity": {
-    "seoTitle": "WordPress Security Check & PHP Updates | CartShift Studio",
-    "seoDescription": "A careful WordPress security and updates review: verify PHP2Shell patch status, audit WordPress plugins and themes, check backups, and apply approved fixes with regression checks.",
-    "eyebrow": "WORDPRESS SECURITY & MAINTENANCE",
-    "title": "Know where your WordPress site stands.",
-    "titleAccent": "Secure what matters.",
-    "subtitle": "Recent critical PHP vulnerabilities are a timely reason to check your hosting. We verify what is actually patched, review WordPress maintenance risks, and make only the changes your site needs.",
-    "primaryCta": "Request a security review",
-    "secondaryCta": "See what we check",
+    "seoTitle": "WordPress Security Package – ILS 890 Launch Offer | CartShift Studio",
+    "seoDescription": "WordPress security and maintenance launch offer for standard content and business sites: PHP patch verification, plugin updates, backups, permissions and controlled fixes. ILS 890 per eligible site.",
+    "eyebrow": "PHP2Shell security update · launch offer",
+    "title": "Your WordPress site deserves more than guesswork.",
+    "titleAccent": "A practical security package.",
+    "subtitle": "Following the recent serious PHP vulnerabilities, CartShift is offering a focused WordPress security and maintenance package. Beyond checking the hosting patch, we'll review updates, backups, permissions and baseline safeguards.",
+    "primaryCta": "Request the security package",
+    "secondaryCta": "What's included?",
     "trustNotes": [
-      "A real technical review, not an automated score",
-      "Approval before paid work",
-      "Careful updates and functional checks"
+      "Human technical review, not an automated score",
+      "Updates only with prior approval",
+      "Documented checks and clear next steps"
     ],
-    "alertTitle": "October 2026 · PHP2Shell security advisory",
-    "alertText": "On 21 October 2026, PHP released fixes for CVE-2026-109618 and CVE-2026-109619. Vulnerable PHP installations may allow unauthenticated remote code execution. Not every WordPress site is still exposed: hosting providers may already have patched their servers.",
+    "alertTitle": "Why now? The PHP2Shell vulnerabilities",
+    "alertText": "On 21 October 2026, security fixes were released for two serious PHP vulnerabilities (CVE-2026-109618 and CVE-2026-109619). Not every WordPress site remains exposed, because many hosts have already patched their servers. This package pairs patch-status verification with a wider WordPress maintenance review.",
     "alertLink": "Read the security advisory",
-    "whyTitle": "WordPress updates alone are not the PHP fix.",
-    "whyText": "These vulnerabilities are in the PHP runtime. Updating WordPress or installing a security plugin does not replace the PHP patch supplied by your server administrator or host. WordPress, plugins and themes still deserve a separate security and compatibility review.",
-    "serviceTitle": "A practical security check, from server to site",
-    "serviceIntro": "A defined, evidence-led review followed by approved, carefully scoped fixes.",
+    "whyTitle": "Asking your host about PHP is only step one.",
+    "whyText": "Your hosting provider or server administrator typically applies the PHP patches. You can ask them directly about the patch status at no cost. The paid package goes further: WordPress and plugin versions, backups, user access, login safeguards, carefully controlled routine updates and follow-up checks.",
+    "serviceTitle": "What's in your security package?",
+    "serviceIntro": "Six practical checks and actions, tailored to the site's condition and the defined launch-package scope.",
     "features": [
       {
-        "title": "PHP & hosting patch verification",
-        "description": "Confirm the PHP runtime and whether the hosting provider has applied the relevant security fixes, including supported backports."
+        "title": "PHP & hosting patch check",
+        "description": "Check PHP and confirm with your hosting provider whether the relevant patches—including vendor backports—were applied."
       },
       {
         "title": "WordPress & plugin review",
-        "description": "Check core, active plugins and themes for outdated, unsupported or security-relevant versions. Prioritize rather than update blindly."
+        "description": "Review WordPress core, plugin and theme versions, flag unsupported components and prioritize relevant security updates."
       },
       {
-        "title": "Backup & recovery readiness",
-        "description": "Review available backups and recovery options before changing the site. Arrange a suitable backup before approved work."
+        "title": "Backups & recovery readiness",
+        "description": "Check available backups and recovery options; make an appropriate backup before approved routine updates."
       },
       {
-        "title": "Controlled updates",
-        "description": "Apply agreed routine updates with attention to compatibility and any custom functionality."
+        "title": "Users & login security",
+        "description": "Review administrator accounts, roles, two-factor authentication options and login protection."
       },
       {
-        "title": "Functional regression checks",
-        "description": "Verify key pages, publishing, admin access, forms and site-specific workflows after the changes."
+        "title": "Baseline safeguards & routine updates",
+        "description": "Review HTTPS and core security settings, and perform compatible routine updates within the agreed time and scope."
       },
       {
-        "title": "Clear findings & next steps",
-        "description": "Get a concise summary of confirmed issues, completed actions, outstanding risks and any separate work requiring approval."
+        "title": "Regression checks & summary",
+        "description": "Check key pages, forms and admin access after changes, then provide a short report of work done and follow-up recommendations."
       }
     ],
-    "processTitle": "How the review works",
+    "processTitle": "How to get the launch package",
     "process": [
       {
-        "title": "Share your site",
-        "description": "Tell us the URL and your main concern. We confirm fit and provide a scope and estimate before paid work."
+        "title": "Send us your website",
+        "description": "We'll check whether it's a standard WordPress site eligible for the ILS 890 offer. There's no charge to enquire."
       },
       {
-        "title": "Verify and prioritize",
-        "description": "With your authorization, we check hosting patch status, update needs and operational risks."
+        "title": "Confirm scope and access",
+        "description": "We'll agree the scope and price before any paid work and request only the access required."
       },
       {
-        "title": "Fix, test and report",
-        "description": "We apply agreed changes, test critical flows and send a plain-language summary."
+        "title": "Review, update and report",
+        "description": "We'll complete agreed checks and routine fixes, verify key functionality and share clear findings."
       }
     ],
-    "scopeTitle": "A security review, without exaggerated promises",
-    "scopeText": "This is a targeted WordPress and PHP maintenance engagement—not a penetration test, malware incident response, forensic investigation or a guarantee that no vulnerability exists. Complex upgrades, breaches and custom fixes are scoped separately.",
-    "faqTitle": "Questions worth asking",
+    "scopeTitle": "Clear scope. No inflated promises.",
+    "scopeText": "The offer covers one standard WordPress site and up to 3 hours of work. It includes the agreed security review and compatible routine updates in that time. WooCommerce stores, incident response, malware cleanup, penetration testing, paid licenses, code fixes and complex upgrades are not included. If a site needs more work, we'll provide a separate quote before proceeding. No security audit can guarantee an invulnerable site.",
+    "faqTitle": "Frequently asked questions",
     "faq": [
       {
-        "question": "Does every WordPress site have this PHP vulnerability?",
-        "answer": "No. Exposure depends on the PHP runtime and the hosting provider's patch status. Some providers ship backported fixes without changing the visible PHP version number, so we verify rather than guess."
+        "question": "Why pay when I can simply ask my hosting provider?",
+        "answer": "You can—and should—ask them about the PHP patch status. That step is often straightforward. The paid package is for a broader WordPress review: versions, plugins, roles, backups, safeguards, routine updates and post-update checks."
       },
       {
-        "question": "Will updating WordPress fix PHP2Shell?",
-        "answer": "No. The PHP vulnerabilities require a patched PHP runtime from the host or server administrator. WordPress and plugin updates address separate risks."
+        "question": "Does PHP2Shell affect every WordPress site?",
+        "answer": "No. Exposure depends on the PHP runtime and its patches. Some hosts backport fixes without changing the displayed version. We verify instead of guessing."
       },
       {
-        "question": "Will you update all plugins automatically?",
-        "answer": "No. We first assess versions, compatibility and business-critical workflows. We back up before agreed updates and test afterward."
+        "question": "Are all plugins updated for this price?",
+        "answer": "Compatible routine updates are included within the three-hour scope and only after approval and backup. Complex theme or plugin upgrades require a separate estimate."
       },
       {
-        "question": "Can you review my online store?",
-        "answer": "This specific service is for standard WordPress sites, such as business websites, magazines and content portals. WooCommerce stores are outside the scope of this offer."
+        "question": "Does this include WooCommerce stores?",
+        "answer": "No. This package is for standard WordPress sites, including business websites, blogs, content portals and magazines. WooCommerce stores are excluded."
       },
       {
-        "question": "What will it cost?",
-        "answer": "We assess the site's scope and provide an estimate before beginning paid work. Unexpected or complex issues require a separate approval."
+        "question": "How much does it cost?",
+        "answer": "The launch price is ILS 890 for one eligible standard WordPress site, covering up to three hours of agreed work. We confirm suitability and the final scope before any payment is required."
+      },
+      {
+        "question": "Does this guarantee that my site is secure?",
+        "answer": "No. This is a targeted maintenance and security review, not penetration testing or incident forensics. We'll document findings and recommend any additional work."
       }
     ],
     "form": {
-      "title": "Request a WordPress security check",
-      "intro": "Tell us about your site. We'll respond personally with the recommended scope and an estimate—no work starts without approval.",
+      "title": "Request the WordPress security package",
+      "intro": "Launch price: ILS 890 per eligible standard site. Tell us about your website and we'll confirm the scope before payment or work begins.",
       "name": "Your name",
-      "email": "Work email",
+      "email": "Email address",
       "website": "WordPress website URL",
       "details": "Anything we should know? (optional)",
       "namePlaceholder": "Full name",
       "emailPlaceholder": "you@company.com",
       "websitePlaceholder": "https://example.com",
-      "detailsPlaceholder": "Hosting provider, issues, last update…",
-      "submit": "Request an estimate",
+      "detailsPlaceholder": "Hosting provider, issues, date of last update…",
+      "submit": "Request the launch package",
       "submitting": "Sending request…",
-      "successTitle": "Your request was received",
-      "successText": "Thanks. We'll review the details and reply with next steps and an estimate.",
-      "error": "We couldn't submit your request. Please try again or email hello@cart-shift.com.",
-      "invalidUrl": "Enter a valid public website URL.",
-      "privacy": "We use these details only to respond to your inquiry. Do not share passwords or administrator access in this form.",
+      "successTitle": "Your security package request was received",
+      "successText": "Thank you. We'll check the site's fit and reply with a clear scope and estimate. There is no charge without your approval.",
+      "error": "We couldn't send your request. Please try again or email hello@cart-shift.com.",
+      "invalidUrl": "Enter a valid website URL.",
+      "privacy": "No payment is required to enquire. Your details are used only to respond. Please do not share passwords or administrator credentials.",
       "emailLink": "Or email us directly"
     },
-    "navLabel": "WordPress Security Check"
+    "navLabel": "WordPress Security Check",
+    "offer": {
+      "label": "WordPress security · launch offer",
+      "beforePrice": "Launch price",
+      "price": "₪890",
+      "afterPrice": "for one eligible WordPress site",
+      "detail": "Up to 3 hours · one website",
+      "approval": "Price and scope confirmed before work",
+      "fitNote": "For standard content and business websites; WooCommerce excluded.",
+      "includedTitle": "Included in the package",
+      "included": [
+        "PHP patch status check with the host",
+        "WordPress, plugin and theme review",
+        "Backup, access and baseline safeguard checks",
+        "Approved routine updates within the time allowance",
+        "Regression checks and a concise report"
+      ],
+      "excludedTitle": "Not included",
+      "excluded": [
+        "Compromise response or malware cleanup",
+        "Complex plugin/theme migrations or custom code fixes",
+        "Penetration testing and paid licenses",
+        "Work beyond 3 hours without a separate quote"
+      ],
+      "disclosure": "This is an enquiry, not a purchase or payment commitment."
+    }
   }
 }
