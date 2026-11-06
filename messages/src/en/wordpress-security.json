@@ -3,11 +3,11 @@
     "seoTitle": "WordPress Security Package – ILS 890 Launch Offer | CartShift Studio",
     "seoDescription": "WordPress security and maintenance launch offer for standard content and business sites: PHP patch verification, plugin updates, backups, permissions and controlled fixes. ILS 890 per eligible site.",
     "eyebrow": "PHP2Shell security update · launch offer",
-    "title": "Your WordPress site deserves more than guesswork.",
-    "titleAccent": "A practical security package.",
-    "subtitle": "Following the recent serious PHP vulnerabilities, CartShift is offering a focused WordPress security and maintenance package. Beyond checking the hosting patch, we'll review updates, backups, permissions and baseline safeguards.",
-    "primaryCta": "Request the security package",
-    "secondaryCta": "What's included?",
+    "title": "Running a WordPress site?",
+    "titleAccent": "Security shouldn't be guesswork.",
+    "subtitle": "In response to recent PHP vulnerabilities, we launched a focused security and maintenance package: hosting checks, updates, backups and access review — with controlled fixes and a clear report.",
+    "primaryCta": "Check package eligibility",
+    "secondaryCta": "See what's included",
     "trustNotes": [
       "Human technical review, not an automated score",
       "Updates only with prior approval",
@@ -16,10 +16,10 @@
     "alertTitle": "Why now? The PHP2Shell vulnerabilities",
     "alertText": "On 21 October 2026, security fixes were released for two serious PHP vulnerabilities (CVE-2026-109618 and CVE-2026-109619). Not every WordPress site remains exposed, because many hosts have already patched their servers. This package pairs patch-status verification with a wider WordPress maintenance review.",
     "alertLink": "Read the security advisory",
-    "whyTitle": "Asking your host about PHP is only step one.",
-    "whyText": "Your hosting provider or server administrator typically applies the PHP patches. You can ask them directly about the patch status at no cost. The paid package goes further: WordPress and plugin versions, backups, user access, login safeguards, carefully controlled routine updates and follow-up checks.",
-    "serviceTitle": "What's in your security package?",
-    "serviceIntro": "Six practical checks and actions, tailored to the site's condition and the defined launch-package scope.",
+    "whyTitle": "Patching the server matters. It isn't the whole story.",
+    "whyText": "Your hosting provider generally applies PHP security patches, and you can ask them about the status yourself. Our package goes further: WordPress and plugins, backups, access permissions and baseline safeguards, with safe routine updates when appropriate.",
+    "serviceTitle": "A thorough check. No fear tactics.",
+    "serviceIntro": "From the server to your plugins, we inspect what matters for practical WordPress maintenance and address routine issues within the agreed package.",
     "features": [
       {
         "title": "PHP & hosting patch check",
@@ -46,7 +46,7 @@
         "description": "Check key pages, forms and admin access after changes, then provide a short report of work done and follow-up recommendations."
       }
     ],
-    "processTitle": "How to get the launch package",
+    "processTitle": "Straightforward. No surprises.",
     "process": [
       {
         "title": "Send us your website",
@@ -63,7 +63,7 @@
     ],
     "scopeTitle": "Clear scope. No inflated promises.",
     "scopeText": "The offer covers one standard WordPress site and up to 3 hours of work. It includes the agreed security review and compatible routine updates in that time. WooCommerce stores, incident response, malware cleanup, penetration testing, paid licenses, code fixes and complex upgrades are not included. If a site needs more work, we'll provide a separate quote before proceeding. No security audit can guarantee an invulnerable site.",
-    "faqTitle": "Frequently asked questions",
+    "faqTitle": "Good questions, clear answers.",
     "faq": [
       {
         "question": "Why pay when I can simply ask my hosting provider?",
@@ -134,7 +134,24 @@
         "Penetration testing and paid licenses",
         "Work beyond 3 hours without a separate quote"
       ],
-      "disclosure": "This is an enquiry, not a purchase or payment commitment."
+      "disclosure": "This is an enquiry, not a purchase or payment commitment.",
+      "headline": "A smarter starting point for your site's security."
+    },
+    "sectionLabels": {
+      "context": "01 / The context",
+      "coverage": "02 / The review",
+      "process": "03 / The process",
+      "next": "04 / Get started",
+      "faq": "05 / Questions"
+    },
+    "visual": {
+      "title": "What we review",
+      "subline": "WordPress maintenance / security",
+      "illustration": "An illustration of the review scope, not a scan result for a specific site."
+    },
+    "conversion": {
+      "title": "Find out what your site really needs.",
+      "description": "Share your site URL and contact details. We'll confirm whether it fits the launch package and reply with an agreed scope and price — with no commitment yet."
     }
   }
 }
