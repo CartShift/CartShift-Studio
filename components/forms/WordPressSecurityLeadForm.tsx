@@ -42,12 +42,12 @@ export function WordPressSecurityLeadForm() {
         projectType: 'wordpress',
         locale,
         interest: 'wordpress_security_launch_890',
-        message: `[WordPress Security Launch Package | ILS 890 | up to 3 hours | source: wordpress-security-landing]\\nWebsite: ${siteUrl}\\nNotes: ${details.trim() || 'None'}\\nCampaign attribution: ${(() => {
+        message: `[WordPress Security Launch Package | ILS 890 | up to 3 hours | source: wordpress-security-landing]\nWebsite: ${siteUrl}\nNotes: ${details.trim() || 'None'}\nCampaign attribution: ${(() => {
           const params = new URLSearchParams(window.location.search);
           return ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
             .map(key => {
               const raw = params.get(key);
-              return raw ? `${key}=${raw.slice(0, 100).replace(/[\\r\\n]/g, ' ')}` : '';
+              return raw ? `${key}=${raw.slice(0, 100).replace(/[\\r\n]/g, ' ')}` : '';
             })
             .filter(Boolean)
             .join(' | ') || 'direct';
