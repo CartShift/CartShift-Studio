@@ -38,6 +38,7 @@ export async function generateMetadata({
     title: t('seoTitle'),
     description: t('seoDescription'),
     url: '/services/wordpress-security',
+    socialImage: '/og/wordpress-security-launch.png',
     keywords: locale === 'he'
       ? ['חבילת אבטחת WordPress', 'בדיקת אבטחה וורדפרס', 'תחזוקת וורדפרס', 'תיקוני אבטחה PHP', 'PHP2Shell']
       : ['WordPress security package', 'WordPress security check', 'WordPress maintenance', 'PHP security patches', 'PHP2Shell'],
@@ -66,7 +67,7 @@ export default async function WordPressSecurityPage({
   const serviceSchema = generateServiceSchema(
     activeLocale === 'he' ? 'חבילת אבטחה ותחזוקה לאתרי WordPress' : 'WordPress Security & Maintenance Package',
     t('seoDescription'),
-    { url: '/services/wordpress-security', locale: activeLocale, priceRange: 'ILS 890' }
+    { url: '/services/wordpress-security', locale: activeLocale, priceRange: 'ILS 890', image: 'https://cart-shift.com/og/wordpress-security-launch.png' }
   );
 
   const breadcrumbSchema = generateBreadcrumbSchema([
