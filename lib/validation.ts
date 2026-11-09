@@ -8,6 +8,12 @@ export const contactFormSchema = z.object({
   company: z.string().max(200, 'Company name must be less than 200 characters').optional(),
   projectType: z.string().optional(),
   locale: z.enum(['en', 'he', 'de']).optional(),
+  attribution: z.object({
+    utmSource: z.string().trim().max(160).optional(),
+    utmMedium: z.string().trim().max(160).optional(),
+    utmCampaign: z.string().trim().max(160).optional(),
+    partnerCode: z.string().trim().max(160).optional(),
+  }).optional(),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
