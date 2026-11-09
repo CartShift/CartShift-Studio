@@ -12,7 +12,8 @@ export function useLanguageSync() {
   const locale = useLocale();
 
   useEffect(() => {
-    if (!user) {
+    // The portal currently supports EN/HE only; never save a DE preference there.
+    if (!user || locale === 'de') {
       return;
     }
 
