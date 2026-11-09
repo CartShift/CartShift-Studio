@@ -96,18 +96,56 @@ for (const file of posts) {
   const raw = fs.readFileSync(path.join(blogDir, file), 'utf8');
   const {data,content} = matter(raw);
   if (!/^---de---\s*$/m.test(content)) errors.push(`missing German article body: ${file}`);
+  else {
+    const english = content.split(/^---he---\s*$/m)[0];
+    const german = content.split(/^---de---\s*$/m)[1] || '';
+    verifyMarkdownShape(english, german, 'blog/' + file);
+  }
   for (const key of ['title_de','excerpt_de','category_de']) {
     if (typeof data[key] !== 'string' || !data[key].trim()) errors.push(`missing ${key} in blog: ${file}`);
+  }
+}
+
+const reviewReport = path.join(root, 'scripts', 'i18n', 'de-draft-skipped.json');
+if (fs.existsSync(reviewReport)) {
+  const pending = JSON.parse(fs.readFileSync(reviewReport, 'utf8')).source_strings_requiring_manual_translation || [];
+  if (pending.length > 0) errors.push(pending.length + ' English strings retained because protected Markdown was changed by translation');
+}
+
+function markdownShape(input) {
+  return {
+    fences: (input.match(/^\\s*`{3,}/gm) || []).length,
+    images: [...input.matchAll(/!\\[[^\\]]*\\]\\(([^)]+)\\)/g)].map(m => m[1]),
+    links: [...input.matchAll(/(?<!!)\\[[^\\]]*\\]\\s*\\(([^)]+)\\)/g)].map(m => m[1]),
+    tables: (input.match(/^\\s*\\|/gm) || []).length,
+    headings: [...input.matchAll(/^(#{1,6})\\s/gm)].map(m => m[1].length),
+  };
+}
+function verifyMarkdownShape(source, translation, label) {
+  const a = markdownShape(source);
+  const b = markdownShape(translation);
+  for (const key of ['fences', 'images', 'links', 'tables', 'headings']) {
+    if (JSON.stringify(a[key]) !== JSON.stringify(b[key]))
+      errors.push('Markdown ' + key + ' changed: ' + label);
   }
 }
 
 const casesDir = path.join(root, 'content', 'case-studies');
 const cases = fs.existsSync(casesDir) ? fs.readdirSync(casesDir).filter(x => x.endsWith('.md')) : [];
 for (const file of cases) {
-  const {data} = matter(fs.readFileSync(path.join(casesDir,file),'utf8'));
+  const {data,content} = matter(fs.readFileSync(path.join(casesDir,file),'utf8'));
   const de = data.de;
-  for (const key of ['title','summary','content']) {
+  for (const key of ['title','summary']) {
     if (!isPlainObject(de) || typeof de[key] !== 'string' || !de[key].trim()) errors.push(`missing German case-study ${key}: ${file}`);
+  }
+  if (content.trim() && (!isPlainObject(de) || typeof de.content !== 'string' || !de.content.trim()))
+    errors.push(`missing German case-study body: ${file}`);
+  if (typeof de?.content === 'string') verifyMarkdownShape(content, de.content, 'case/' + file);
+  if (Array.isArray(data.gallery) && Array.isArray(de?.gallery)) {
+    const englishImages = data.gallery.map(item => item.image);
+    const germanImages = de.gallery.map(item => item.image);
+    if (JSON.stringify(englishImages) !== JSON.stringify(germanImages))
+      errors.push('Gallery images changed in ' + file);
   }
 }
 
