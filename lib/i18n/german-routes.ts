@@ -5,6 +5,9 @@
 export const germanMarketingPaths = [
   '/',
   '/contact',
+  '/about',
+  '/work',
+  '/solutions/seo',
   '/solutions/shopify',
   '/solutions/wordpress',
 ] as const;
