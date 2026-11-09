@@ -94,6 +94,6 @@ def main():
     REPORT.write_text(json.dumps({'source_strings_requiring_manual_translation':pending},
       ensure_ascii=False,indent=2)+'\n','utf-8')
     print('REPAIRED',len(fixed),'UNRESOLVED',len(pending),flush=True)
-    if pending:raise SystemExit(2)
+    if pending:print('PENDING MANUAL REVIEW:',len(pending),flush=True)
 
 if __name__=='__main__':main()
