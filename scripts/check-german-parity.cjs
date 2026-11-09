@@ -22,6 +22,9 @@ let sourceStrings = 0;
 let translatedStrings = 0;
 const excluded = /^(?:portal|cv|proposal)(?:\/|\.)/i;
 const isPlainObject = x => x != null && typeof x === 'object' && !Array.isArray(x);
+const countStrings = value => typeof value === 'string' ? 1 :
+  Array.isArray(value) ? value.reduce((total, item) => total + countStrings(item), 0) :
+  isPlainObject(value) ? Object.values(value).reduce((total, item) => total + countStrings(item), 0) : 0;
 
 function files(dir, prefix = '') {
   if (!fs.existsSync(dir)) return [];
@@ -57,6 +60,7 @@ function check(base, de, key) {
   if (Array.isArray(base)) {
     if (!Array.isArray(de) || base.length !== de.length) {
       errors.push(`array differs: ${key}`);
+      sourceStrings += countStrings(base);
       return;
     }
     base.forEach((x,i) => check(x, de[i], `${key}[${i}]`));
@@ -65,6 +69,7 @@ function check(base, de, key) {
   if (isPlainObject(base)) {
     if (!isPlainObject(de)) {
       errors.push(`missing object: ${key}`);
+      sourceStrings += countStrings(base);
       return;
     }
     for (const [k,value] of Object.entries(base)) {
@@ -79,6 +84,7 @@ for (const rel of relPaths) {
   const candidate = path.join(deDir, rel);
   if (!fs.existsSync(candidate)) {
     errors.push(`missing German source file: ${rel}`);
+    sourceStrings += countStrings(en);
   } else {
     check(en, readJson(candidate), rel);
   }
