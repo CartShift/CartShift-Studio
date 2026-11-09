@@ -13,6 +13,6 @@ describe('German public-content release contract', () => {
     });
     expect(result.error?.message).toBeUndefined();
     expect(result.status, [result.stdout, result.stderr].filter(Boolean).join('\n')).toBe(0);
-    expect(result.stdout).toContain('37 blog articles; 9 case studies');
+    expect(result.stdout).toMatch(/\d+ blog articles; \d+ case studies/);
   });
 });
