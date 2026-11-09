@@ -29,7 +29,7 @@ Excluded until fully localized: blog posts, full case-study details, tools, lega
 
 `NEXT_PUBLIC_GERMAN_MARKETING_ENABLED=true`
 
-Default: unset/false in production. The exact feature branch `feat/german-market-launch-20261109` is also enabled automatically in Vercel **Preview only**, provided Vercel's automatically exposed system environment variables are enabled; preview access must remain protected by Vercel SSO. This is a build-time public environment flag; redeploy after changing it. When off, `/de/*` temporarily redirects to the corresponding English path, is absent from sitemap/hreflang, and is hidden from the language selector.
+Default: unset/false in production. The exact feature branch `feat/german-market-launch-20261109` is also enabled automatically in Vercel **Preview only**, using the Vercel build environment and commit ref; `next.config.mjs` exposes a consistent, derived read-only toggle to the browser. Preview access must remain protected by Vercel SSO. This is a build-time public environment flag; redeploy after changing it. When off, `/de/*` temporarily redirects to the corresponding English path, is absent from sitemap/hreflang, and is hidden from the language selector.
 
 ## Required before public enablement
 
