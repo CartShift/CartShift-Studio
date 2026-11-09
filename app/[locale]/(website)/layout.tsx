@@ -4,7 +4,6 @@ import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { BaseClientProviders } from '@/components/providers/BaseClientProviders';
-import { GeoLocaleRedirect } from '@/components/providers/GeoLocaleRedirect';
 import { pickWebsiteMessages } from '@/lib/i18n/client-messages';
 import { generateOrganizationSchema } from '@/lib/seo';
 import { MarketingStatusToast } from '@/components/marketing/MarketingStatusToast';
@@ -17,7 +16,7 @@ export default async function WebsiteLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const activeLocale = locale as 'en' | 'he';
+  const activeLocale = locale as 'en' | 'he' | 'de';
   setRequestLocale(activeLocale);
 
   const messages = await getMessages();
@@ -34,7 +33,6 @@ export default async function WebsiteLayout({
         <Suspense fallback={null}>
           <MarketingStatusToast />
         </Suspense>
-        <GeoLocaleRedirect />
         <GoogleAnalytics />
         <AnalyticsProvider>
           <MainLayout>{children}</MainLayout>
