@@ -7,11 +7,11 @@
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
-type AppLocale = 'en' | 'he';
+type AppLocale = 'en' | 'he' | 'de';
 type PortalNamespace = 'portal' | `portal.${string}`;
 
 function toAppLocale(locale: string): AppLocale {
-  if (locale === 'en' || locale === 'he') return locale;
+  if (locale === 'en' || locale === 'he' || locale === 'de') return locale;
   throw new Error(`Unsupported locale: ${locale}`);
 }
 
