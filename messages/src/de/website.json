@@ -1,14 +1,202 @@
 {
-  "footer": {
-    "description": "Individuelle Websites und Onlineshops mit Shopify und WordPress – klar geplant, zuverlässig umgesetzt."
+  "hero": {
+    "tag": "Shopify-Entwicklung und Shop-Optimierung",
+    "titleLine1": "Mach deinen Shopify-Shop",
+    "titleLine2": "noch besser",
+    "description": "Produktseiten bleiben hinter den Erwartungen zurück? Dein Shop ist langsam? Die Lagerverwaltung braucht ständig manuelle Eingriffe? Wir finden die Hindernisse, priorisieren Lösungen und setzen sie ohne unnötigen Neuaufbau um.",
+    "primaryCta": "Kennenlerngespräch vereinbaren",
+    "secondaryCta": "Unsere Projekte ansehen",
+    "analyzerCta": "Kostenlose Expertenanalyse",
+    "scrollIndicator": "Scrollen und entdecken",
+    "intro": {
+      "title": "Shopify-Entwicklung mit geschäftlichem Verständnis",
+      "mission": "Erst analysieren. Dann das Richtige entwickeln.",
+      "features": {
+        "shopify": {
+          "label": "Shopify-Experten",
+          "desc": "Individuelle Themes und komplexe Integrationen für wachsende Shops."
+        },
+        "technical": {
+          "label": "Technische Exzellenz",
+          "desc": "Sauberer, wartbarer Code mit Fokus auf Geschwindigkeit und Stabilität."
+        },
+        "conversion": {
+          "label": "Fokus auf Conversion",
+          "desc": "Prioritäten auf Basis beobachteter Customer Journeys und verfügbarer Daten."
+        }
+      },
+      "paragraphs": [
+        "Nicht jedes Shop-Problem erfordert ein Redesign oder eine weitere App. Manchmal braucht eine Produktseite eine gezielte Anpassung, manchmal erschwert eine Integration die täglichen Abläufe. Wir beginnen mit dem, was für dein Unternehmen wirklich wichtig ist.",
+        "Wir betrachten Kaufprozesse, verfügbare Daten und technische Abläufe. Anschließend erklären wir Möglichkeiten, Einschränkungen und Prioritäten, bevor wir gemeinsam den Leistungsumfang festlegen.",
+        "Unsere Spezialität ist Shopify: Themes, Einkaufserlebnis, technisches SEO, B2B und Integrationen. Wir entwickeln auch WordPress- und individuelle Weblösungen, wenn sie zur Aufgabe passen."
+      ]
+    },
+    "platforms": {
+      "label": "Unser Fokus"
+    },
+    "illustration": {
+      "revenue": "Umsatz",
+      "conversion": "Conversion",
+      "activeUsers": "Aktive Nutzer",
+      "newOrder": "Neue Bestellung"
+    }
   },
-  "contact": {
-    "title": "Sprechen wir über Ihr Projekt",
-    "emailLabel": "E-Mail",
-    "quickResponseTitle": "Persönlicher Kontakt",
-    "quickResponseText": "Wir antworten individuell und besprechen mit Ihnen die nächsten Schritte.",
-    "scheduleTitle": "Ein Gespräch vereinbaren",
-    "scheduleText1": "Erzählen Sie uns von Ihrem Vorhaben.",
-    "scheduleNow": "Gespräch vereinbaren"
+  "heroForm": {
+    "title": "Kostenlose Beratung anfragen",
+    "subtitle": "Erzähl uns von deinem Projekt. Wir melden uns persönlich, je nach Verfügbarkeit.",
+    "successTitle": "Vielen Dank!",
+    "successText": "Wir haben deine Anfrage erhalten und melden uns entsprechend unserer Verfügbarkeit.",
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "Dein Name",
+      "nameRequired": "Bitte gib deinen Namen an",
+      "email": "E-Mail",
+      "emailPlaceholder": "deine@email.de",
+      "emailRequired": "Bitte gib deine E-Mail-Adresse an",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "interest": "Was möchtest du umsetzen?",
+      "interestRequired": "Bitte wähle eine Option",
+      "selectOption": "Option auswählen",
+      "options": {
+        "shopify": "Shopify-Shop (Neuaufbau oder Wachstum)",
+        "wordpress": "WordPress-Website (Content, News, individuell)",
+        "consultation": "Noch unsicher – ich brauche Beratung"
+      }
+    },
+    "submit": "Kostenlose Beratung anfragen",
+    "submitting": "Wird gesendet …",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut oder kontaktiere uns direkt."
+  },
+  "servicesOverview": {
+    "title": "Was könnte in deinem Shop besser funktionieren?",
+    "subtitle": "Erst das Geschäftsproblem verstehen, dann die technische Lösung wählen.",
+    "shopify": {
+      "title": "Shopify-Entwicklung und -Optimierung",
+      "description": "Wir verbessern bestehende Shops, Produktseiten, mobile Kaufprozesse sowie Bestell- und Lagerabläufe, ohne zu ersetzen, was bereits funktioniert.",
+      "features": [
+        "Shop-Einrichtung und Design",
+        "Individuelle Funktionen",
+        "Geschwindigkeit optimieren",
+        "Unterstützung beim Wachstum"
+      ]
+    },
+    "wordpress": {
+      "title": "WordPress-Entwicklung und -Betreuung",
+      "description": "Wartbare Content-Websites, Magazine und Unternehmensseiten. Performance, technisches SEO, Updates und Sicherheitsbetreuung.",
+      "features": [
+        "Individuelles Design",
+        "Einfach zu bearbeiten",
+        "Wartung und Sicherheit",
+        "SEO-optimiert"
+      ]
+    },
+    "seo": {
+      "title": "SEO und organisches Wachstum",
+      "description": "Technisches, lokales und Content-SEO – mit direkter Umsetzung und Messung anhand relevanter Geschäftsziele.",
+      "features": [
+        "Technisches, lokales und Content-SEO",
+        "Direkte Umsetzung",
+        "Such- und Conversion-Messung",
+        "Wachstum nach Wirkung priorisieren"
+      ]
+    }
+  },
+  "process": {
+    "title": "So arbeiten wir",
+    "subtitle": "Klare Entscheidungen, dokumentierte Arbeit und ein vereinbarter Leistungsumfang.",
+    "steps": {
+      "discovery": {
+        "title": "Das Problem verstehen",
+        "description": "Hindernisse für Kunden und Mitarbeitende erkennen und festlegen, was wir überprüfen können."
+      },
+      "design": {
+        "title": "Priorisieren und planen",
+        "description": "Voraussichtliche Wirkung, Aufwand und Risiken abwägen, bevor wir den Leistungsumfang vereinbaren."
+      },
+      "develop": {
+        "title": "Entwickeln und testen",
+        "description": "Die vereinbarten Änderungen umsetzen und die relevanten Nutzerwege testen."
+      },
+      "launch": {
+        "title": "Veröffentlichen und lernen",
+        "description": "Die Veröffentlichung koordinieren, Änderungen prüfen und gemeinsam die nächsten Verbesserungen festlegen."
+      }
+    }
+  },
+  "whyChoose": {
+    "title": "Warum CartShift?",
+    "subtitle": "Ein kleines Studio, das selbst anpackt – mit fundierter Entwicklungserfahrung.",
+    "items": [
+      {
+        "title": "Direkt mit den Entwicklern arbeiten",
+        "description": "Du arbeitest direkt mit den Menschen zusammen, die die Lösung planen und umsetzen.",
+        "icon": "target"
+      },
+      {
+        "title": "Erst denken, dann programmieren",
+        "description": "Wir hinterfragen unnötige Entwicklungen und suchen nach der kleinsten wartbaren Lösung.",
+        "icon": "handshake"
+      },
+      {
+        "title": "Technische Abwägungen transparent machen",
+        "description": "Wir erklären Optionen, Kosten, Einschränkungen und Risiken in verständlicher Sprache.",
+        "icon": "bolt"
+      },
+      {
+        "title": "Langfristig gedacht",
+        "description": "Performance, Barrierefreiheit, technisches SEO und Wartbarkeit berücksichtigen wir von Anfang an.",
+        "icon": "chart-up"
+      },
+      {
+        "title": "Sichtbare Fortschritte",
+        "description": "Klare Meilensteine, Dokumentation und Updates – ohne den geschäftlichen Kontext zu verlieren.",
+        "icon": "eye"
+      }
+    ]
+  },
+  "ctaBanner": {
+    "badge": "Mit einer Analyse beginnen",
+    "titlePart1": "Könnte in deinem Shop",
+    "titlePart2": "etwas besser laufen?",
+    "description": "Sag uns, wo es in deinem Shop hakt. Wir prüfen deine Anfrage und melden uns mit ersten priorisierten Erkenntnissen und praktischen Möglichkeiten – unverbindlich.",
+    "button": "Kostenlose Expertenanalyse anfragen"
+  },
+  "testimonials": {
+    "title": "Unsere Kunden",
+    "subtitle": "Was Kunden über die Zusammenarbeit sagen",
+    "items": [
+      {
+        "quote": "CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben einen Shop für uns entwickelt, der Kunden informiert und gleichzeitig das Einkaufen mühelos macht. Allein unser Produktquiz hat verändert, wie Kunden die passenden Produkte finden.",
+        "author": "Danielle Shamir",
+        "company": "I Love My Honeypot",
+        "role": "Gründerin",
+        "industry": "Gesundheit und Wellness",
+        "rating": 5
+      },
+      {
+        "quote": "CartShift Studio hat Alondon in einen anspruchsvollen, leistungsstarken Community-Hub verwandelt. Die neue Architektur bewältigt unsere komplexen Inhalte nahtlos und bietet gleichzeitig ein hochwertiges Leseerlebnis, das unsere Zielgruppe wirklich anspricht.",
+        "author": "Carmel Faraggi",
+        "company": "Alondon",
+        "role": "Redaktion",
+        "industry": "Digitales Publizieren",
+        "rating": 5
+      },
+      {
+        "quote": "Die Zusammenarbeit mit CartShift Studio war für unser Studio ein echter Wendepunkt. Sie haben einen eleganten, hochwertigen digitalen Katalog erstellt, der unsere Schmuckkollektion perfekt präsentiert. Die einfache Bedienung für unsere Kunden hat unsere Buchungseffizienz und Onlineverkäufe deutlich verbessert.",
+        "author": "Tom Robinson",
+        "company": "Stiletto Piercing",
+        "role": "Inhaber",
+        "industry": "Schmuck und Körperkunst",
+        "rating": 5
+      }
+    ],
+    "viewProject": "Projekt ansehen"
+  },
+  "featuredWork": {
+    "eyebrow": "Ausgewählte Projekte",
+    "title": "Was passiert, wenn wir mit dem richtigen Problem beginnen?",
+    "description": "Ausgewählte Projekte aus E-Commerce und Content: die Herausforderung, die Lösung und was sich tatsächlich verändert hat.",
+    "readMore": "Projekt ansehen",
+    "viewAll": "Alle Projekte ansehen"
   }
 }
