@@ -114,11 +114,11 @@ if (fs.existsSync(reviewReport)) {
 
 function markdownShape(input) {
   return {
-    fences: (input.match(/^\\s*`{3,}/gm) || []).length,
-    images: [...input.matchAll(/!\\[[^\\]]*\\]\\(([^)]+)\\)/g)].map(m => m[1]),
-    links: [...input.matchAll(/(?<!!)\\[[^\\]]*\\]\\s*\\(([^)]+)\\)/g)].map(m => m[1]),
-    tables: (input.match(/^\\s*\\|/gm) || []).length,
-    headings: [...input.matchAll(/^(#{1,6})\\s/gm)].map(m => m[1].length),
+    fences: (input.match(/^\s*`{3,}/gm) || []).length,
+    images: [...input.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1]),
+    links: [...input.matchAll(/(?<!!)\[[^\]]*\]\s*\(([^)]+)\)/g)].map(m => m[1]),
+    tables: (input.match(/^\s*\|/gm) || []).length,
+    headings: [...input.matchAll(/^(#{1,6})\s/gm)].map(m => m[1].length),
   };
 }
 function verifyMarkdownShape(source, translation, label) {
