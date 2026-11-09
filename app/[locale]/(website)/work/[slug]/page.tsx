@@ -14,7 +14,7 @@ import { CaseStudyDetailContent } from '@/components/sections/CaseStudyDetailCon
 export async function generateStaticParams() {
   const slugs = getCaseStudySlugs();
 
-  return routing.locales.flatMap(locale => slugs.map(slug => ({ locale, slug })));
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale => slugs.map(slug => ({ locale, slug })));
 }
 
 export async function generateMetadata({
