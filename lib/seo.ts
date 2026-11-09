@@ -57,7 +57,7 @@ export interface SEOConfig {
   noindex?: boolean;
 }
 
-export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metadata {
+export function generateMetadata(config: SEOConfig, locale?: Locale): Metadata {
   const imageUrl = toAbsoluteAssetUrl(config.socialImage || config.image) || defaultOgImage;
   const rawPath = config.url?.replace(siteUrl, '').replace(/^\/(en|he|de)(?=\/|$)/, '') || '';
   const pathOnly = rawPath === '/' ? '' : rawPath;
