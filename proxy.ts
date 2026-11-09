@@ -5,6 +5,7 @@ import {
   resolveRequestLocale,
 } from './lib/i18n/resolve-request-locale';
 import { routing } from './i18n/routing';
+import { germanMarketingEnabled, isGermanMarketingPath } from './lib/i18n/german-routes';
 
 const handleI18nRouting = createMiddleware({
   ...routing,
@@ -64,6 +65,17 @@ function redirectUnlocalizedBlog(request: NextRequest): NextResponse | null {
 export function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
+
+  // Public /de paths are an explicit, reviewed allowlist. The opt-in launch
+  // flag prevents unreviewed legal copy or English fallback from going live.
+  if (pathname === '/de' || pathname.startsWith('/de/')) {
+    const unlocalizedPath = pathname.slice(3) || '/';
+    if (!germanMarketingEnabled() || !isGermanMarketingPath(unlocalizedPath)) {
+      const target = request.nextUrl.clone();
+      target.pathname = `/en${unlocalizedPath === '/' ? '' : unlocalizedPath}`;
+      return NextResponse.redirect(target, 307);
+    }
+  }
 
   if (
     pathname.startsWith('/api') ||
