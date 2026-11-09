@@ -1,3 +1,4 @@
+import { GermanAboutPage } from '@/components/marketing/GermanAboutWork';
 import { setRequestLocale } from 'next-intl/server';
 import { AboutTemplate } from '@/components/templates/AboutTemplate';
 import {
@@ -16,6 +17,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isHebrew = locale === 'he';
+  if (locale === 'de') return genMeta({
+    title: 'Über uns | CartShift Studio',
+    description: 'Lernen Sie CartShift Studio kennen: erfahrene Full-Stack-Entwicklung und praxisnahe E-Commerce-Beratung für Unternehmen.',
+    url: '/about',
+  }, 'de');
 
   return genMeta(
     {
@@ -43,6 +49,10 @@ export async function generateMetadata({
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  if (locale === 'de') {
+    setRequestLocale('de');
+    return <GermanAboutPage />;
+  }
   const validLocale = locale as 'en' | 'he';
   const isHebrew = validLocale === 'he';
   setRequestLocale(validLocale);
