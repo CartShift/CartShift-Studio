@@ -1,3 +1,4 @@
+import { GermanWorkPage } from '@/components/marketing/GermanAboutWork';
 import { setRequestLocale } from 'next-intl/server';
 import { WorkPageContent } from '@/components/sections/WorkPageContent';
 import {
@@ -16,6 +17,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isHe = locale === 'he';
+  if (locale === 'de') return genMeta({
+    title: 'Projekte & Referenzen | CartShift Studio',
+    description: 'Ausgewählte Shopify-, E-Commerce- und Webprojekte von CartShift Studio – mit nachvollziehbarem Einblick in unsere Arbeit.',
+    url: '/work',
+  }, 'de');
   const featured = getAllCaseStudies(locale)[0];
 
   return genMeta(
@@ -53,6 +59,10 @@ export async function generateMetadata({
 
 export default async function WorkPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  if (locale === 'de') {
+    setRequestLocale('de');
+    return <GermanWorkPage />;
+  }
   setRequestLocale(locale as 'en' | 'he');
   const caseStudies = getAllCaseStudies(locale);
 
