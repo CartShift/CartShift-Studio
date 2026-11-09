@@ -44,7 +44,7 @@ export async function persistContactInquiry(input: ContactFormData): Promise<{ s
     const existing = leadSnapshot.data() || {};
     tx.create(submissionRef, {
       name, email, interest, message, company, projectType,
-      locale, timestamp: now,
+      locale, attribution: input.attribution || null, timestamp: now,
     });
 
     tx.set(leadRef, {
@@ -58,6 +58,7 @@ export async function persistContactInquiry(input: ContactFormData): Promise<{ s
       projectType: projectType || existing.projectType || null,
       primarySource: existing.primarySource || 'contact_form',
       latestSource: 'contact_form',
+      ...(input.attribution ? { latestAttribution: input.attribution } : {}),
       sources: FieldValue.arrayUnion('contact_form'),
       marketingConsent: existing.marketingConsent === true,
       subscribeNewsletter: existing.subscribeNewsletter === true,
@@ -72,7 +73,7 @@ export async function persistContactInquiry(input: ContactFormData): Promise<{ s
 
     tx.create(marketingEventRef, {
       leadId, type: 'project_inquiry_started', source: 'contact_form',
-      locale, createdAt: now,
+      locale, attribution: input.attribution || null, createdAt: now,
     });
 
     tx.create(emailRef, {
