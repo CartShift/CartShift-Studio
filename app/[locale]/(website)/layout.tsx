@@ -31,15 +31,13 @@ export default async function WebsiteLayout({
         dangerouslySetInnerHTML={{ __html: schemaJson }}
       />
       <BaseClientProviders locale={activeLocale} messages={pickWebsiteMessages(messages)}>
-        {activeLocale !== 'de' && (
-          <Suspense fallback={null}>
-            <MarketingStatusToast />
-          </Suspense>
-        )}
+        <Suspense fallback={null}>
+          <MarketingStatusToast />
+        </Suspense>
         {activeLocale !== 'de' && <GeoLocaleRedirect />}
         <GoogleAnalytics />
         <AnalyticsProvider>
-          <MainLayout locale={activeLocale}>{children}</MainLayout>
+          <MainLayout>{children}</MainLayout>
         </AnalyticsProvider>
       </BaseClientProviders>
     </>
