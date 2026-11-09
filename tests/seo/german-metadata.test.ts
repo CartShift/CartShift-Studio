@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { generateMetadata } from '@/lib/seo';
 
 const previousFlag = process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 afterEach(() => {
   if (previousFlag === undefined) delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
   else process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = previousFlag;
@@ -16,11 +17,11 @@ describe('German SEO metadata', () => {
       url: '/solutions/shopify',
     }, 'de');
 
-    expect(data.alternates?.canonical).toBe('https://cart-shift.com/de/solutions/shopify');
+    expect(data.alternates?.canonical).toBe(`${configuredSiteUrl}/de/solutions/shopify`);
     expect(data.alternates?.languages).toMatchObject({
-      de: 'https://cart-shift.com/de/solutions/shopify',
-      en: 'https://cart-shift.com/en/solutions/shopify',
-      he: 'https://cart-shift.com/he/solutions/shopify',
+      de: `${configuredSiteUrl}/de/solutions/shopify`,
+      en: `${configuredSiteUrl}/en/solutions/shopify`,
+      he: `${configuredSiteUrl}/he/solutions/shopify`,
     });
     expect(data.openGraph).toMatchObject({ locale: 'de_DE' });
   });
