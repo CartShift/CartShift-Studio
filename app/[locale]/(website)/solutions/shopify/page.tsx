@@ -1,4 +1,3 @@
-import { GermanMarketingPage } from '@/components/marketing/GermanMarketingPage';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ShopifyTemplate } from '@/components/templates/ShopifyTemplate';
 import {
@@ -17,7 +16,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isHe = locale === 'he';
-  if (locale === 'de') return genMeta({ title: 'Shopify Shop erstellen & optimieren | CartShift Studio', description: 'Shopify-Entwicklung für Unternehmen: Onlineshops erstellen, Performance und Conversion optimieren, Integrationen und technische SEO.', url: '/solutions/shopify' }, 'de');
   return genMeta(
     {
       title: isHe
@@ -56,8 +54,7 @@ export async function generateMetadata({
 
 export default async function ShopifyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he' | 'de');
-  if (locale === 'de') return <GermanMarketingPage kind="shopify" />;
+  setRequestLocale(locale as 'en' | 'he');
   const serviceSchema = generateServiceSchema(
     'Shopify Development',
     'Expert Shopify development services including store setup, custom features, performance optimization, and ongoing support.',
