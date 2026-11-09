@@ -140,7 +140,7 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
 };
 
 export async function generateStaticParams() {
-  return routing.locales.flatMap(locale => INDUSTRIES.map(industry => ({ locale, industry })));
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale => INDUSTRIES.map(industry => ({ locale, industry })));
 }
 
 export async function generateMetadata({ params }: IndustryPageProps): Promise<Metadata> {
