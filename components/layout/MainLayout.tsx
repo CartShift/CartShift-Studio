@@ -5,12 +5,18 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingActions } from '@/components/ui/FloatingActions';
 import { ExitIntentModal } from '@/components/ui/ExitIntentModal';
 import { CookieConsent } from '@/components/ui/CookieConsent';
+import { GermanChrome } from '@/components/marketing/GermanChrome';
 
 interface MainLayoutProps {
   children: React.ReactNode;
+  locale?: 'en' | 'he' | 'de';
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ children, locale }) => {
+  if (locale === 'de') {
+    return <GermanChrome>{children}</GermanChrome>;
+  }
+
   return (
     <ErrorBoundary>
       <div className="flex min-h-screen flex-col overflow-x-hidden">
