@@ -43,7 +43,6 @@ export async function generateMetadata({
       languages: {
         en: `${siteUrl}/en`,
         he: `${siteUrl}/he`,
-        ...(germanMarketingEnabled() ? { de: `${siteUrl}/de` } : {}),
         'x-default': `${siteUrl}/en`,
       },
     },
