@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "services": "Leistungen",
+    "company": "Über uns",
+    "contact": "Kontakt",
+    "work": "Projekte",
+    "blog": "Blog",
+    "tools": "Tools",
+    "clientPortal": "Kundenportal"
+  },
+  "common": {
+    "cookieConsent": {
+      "message": "Wir verwenden Cookies, um die Nutzung dieser Website zu analysieren. Optionale Analyse-Cookies werden erst nach Ihrer Einwilligung eingesetzt.",
+      "accept": "Akzeptieren",
+      "decline": "Ablehnen",
+      "learnMore": "Datenschutz",
+      "settings": "Cookie-Einstellungen"
+    }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Diese Seite existiert nicht oder wurde verschoben.",
+    "goBack": "Zurück",
+    "goHome": "Zur Startseite"
+  },
+  "floatingActions": {
+    "bookCall": "Gespräch vereinbaren",
+    "whatsapp": "WhatsApp",
+    "whatsappMessage": "Hallo! Ich möchte Kontakt aufnehmen.",
+    "openContact": "Kontaktmöglichkeiten öffnen"
+  }
+}
