@@ -1,5 +1,6 @@
-import { Link } from '@/i18n/navigation';
 'use client';
+
+import { Link } from '@/i18n/navigation';
 
 import { useState, type FormEvent } from 'react';
 import { submitContactForm } from '@/lib/services/contact-client';
