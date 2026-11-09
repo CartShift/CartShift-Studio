@@ -156,7 +156,7 @@ export function GeoLocaleRedirect() {
  * Call this function when the user manually changes the language
  * to store their preference and prevent geo-based redirects
  */
-export function setUserLocalePreference(locale: 'en' | 'he') {
+export function setUserLocalePreference(locale: 'en' | 'he' | 'de') {
   if (typeof window !== 'undefined') {
     localStorage.setItem(USER_LOCALE_PREFERENCE_KEY, locale);
   }
