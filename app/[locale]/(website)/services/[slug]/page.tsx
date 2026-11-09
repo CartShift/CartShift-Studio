@@ -253,7 +253,7 @@ const services: Record<ServiceSlug, Record<Locale, ServiceContent>> = {
 };
 
 export function generateStaticParams() {
-  return routing.locales.flatMap(locale => Object.keys(services).map(slug => ({ locale, slug })));
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale => Object.keys(services).map(slug => ({ locale, slug })));
 }
 
 function isServiceSlug(slug: string): slug is ServiceSlug {
