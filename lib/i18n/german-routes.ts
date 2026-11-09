@@ -24,6 +24,7 @@ export function isGermanMarketingPath(pathname: string): boolean {
  */
 export function germanMarketingEnabled(): boolean {
   if (process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED === 'true') return true;
+  if (process.env.NEXT_PUBLIC_CARTSHIFT_DE_PREVIEW === 'true') return true;
   return (
     process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' &&
     process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF === 'feat/german-market-launch-20261109'
