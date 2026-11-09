@@ -1,3 +1,4 @@
+import { Link } from '@/i18n/navigation';
 'use client';
 
 import { useState, type FormEvent } from 'react';
@@ -79,7 +80,7 @@ export function GermanContactForm() {
             <textarea id="de-message" className={inputClass} name="message" required rows={5} maxLength={5000} placeholder="Erzähl uns kurz von deiner Idee, den Herausforderungen und deinen Zielen." />
           </div>
           <p className="text-sm leading-relaxed text-surface-600 dark:text-surface-300">
-            Wir verwenden deine Angaben ausschließlich zur Bearbeitung deiner Anfrage. Weitere Informationen findest du in unserer <a href="/en/privacy" hrefLang="en" className="underline">Datenschutzerklärung (Englisch)</a>.
+            Wir verwenden deine Angaben ausschließlich zur Bearbeitung deiner Anfrage. Weitere Informationen findest du in unserer <Link href="/privacy" locale="en" hrefLang="en" className="underline">Datenschutzerklärung (Englisch)</Link>.
           </p>
           {error && <p role="alert" className="rounded-lg border border-red-300 p-3 text-sm text-red-700 dark:text-red-300">{error}</p>}
           <button disabled={state === 'sending'} type="submit" className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-primary-600 px-8 py-3 font-bold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60">
