@@ -24,11 +24,21 @@ export interface BlogPost {
   content: string;
   readingTime?: number;
   wordCount?: number;
+  /** Existing Hebrew editorial copy, retained for backwards compatibility. */
   translation?: {
     title: string;
     excerpt: string;
     category: string;
     content: string;
+  };
+  /** German editorial copy shares this record's slug, media and publishing data. */
+  translations?: {
+    de?: {
+      title: string;
+      excerpt: string;
+      category: string;
+      content: string;
+    };
   };
 }
 
@@ -66,7 +76,7 @@ function preprocessMarkdown(content: string): string {
  * - Adds semantic classes for styling
  * - Enhances accessibility
  */
-function postprocessHtml(htmlContent: string, slug?: string, locale: 'en' | 'he' = 'en'): string {
+function postprocessHtml(htmlContent: string, slug?: string, locale: 'en' | 'he' | 'de' = 'en'): string {
   let processed = htmlContent;
 
   // Add classes to tables for GFM styling
@@ -150,16 +160,20 @@ async function readPostBySlug(slug: string): Promise<BlogPost | null> {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { data, content } = matter(fileContents);
 
-    // Split content into English and Hebrew parts
-    const contentParts = content.split('---he---');
-    let contentEn = contentParts[0];
-    let contentHe = contentParts[1] || '';
-
-    // Pre-process markdown
-    contentEn = preprocessMarkdown(contentEn);
-    if (contentHe) {
-      contentHe = preprocessMarkdown(contentHe);
+    // All language versions belong to one editorial record. A language marker
+    // applies only to a line by itself, so normal Markdown rules remain intact.
+    const parts = content.split(/^---(he|de)---\s*$/m);
+    let contentEn = parts[0];
+    let contentHe = '';
+    let contentDe = '';
+    for (let i = 1; i < parts.length; i += 2) {
+      if (parts[i] === 'he') contentHe = parts[i + 1] || '';
+      if (parts[i] === 'de') contentDe = parts[i + 1] || '';
     }
+
+    contentEn = preprocessMarkdown(contentEn);
+    if (contentHe) contentHe = preprocessMarkdown(contentHe);
+    if (contentDe) contentDe = preprocessMarkdown(contentDe);
 
     // Process English content with GFM support
     const processedContentEn = await remark()
@@ -216,6 +230,29 @@ async function readPostBySlug(slug: string): Promise<BlogPost | null> {
       );
     }
 
+    // German articles receive the identical Markdown rendering and HTML
+    // sanitation as the existing English and Hebrew versions.
+    let contentHtmlDe = '';
+    if (contentDe) {
+      const renderedDe = await remark()
+        .use(remarkGfm, {
+          singleTilde: false,
+          tableCellPadding: true,
+          tablePipeAlign: true,
+          firstLineBlank: false,
+        })
+        .use(html, { sanitize: false, allowDangerousHtml: true })
+        .process(contentDe);
+      contentHtmlDe = sanitizeHtml(postprocessHtml(renderedDe.toString(), slug, 'de'));
+      contentHtmlDe = contentHtmlDe.replace(
+        /<input([^>]*type=["']?checkbox["']?[^>]*)\s+disabled([^>]*)>/gi,
+        '<input$1$2>'
+      ).replace(
+        /<input([^>]*)\s+disabled([^>]*type=["']?checkbox["']?[^>]*)>/gi,
+        '<input$1$2>'
+      );
+    }
+
     // Calculate reading time and word count
     const wordsPerMinute = 200;
     const wordCount = contentEn.split(/\s+/).filter(Boolean).length;
@@ -241,6 +278,16 @@ async function readPostBySlug(slug: string): Promise<BlogPost | null> {
         category: data.category_he || data.category || 'General',
         content: contentHtmlHe || contentHtmlEn,
       },
+      translations: contentHtmlDe && data.title_de && data.excerpt_de && data.category_de
+        ? {
+            de: {
+              title: String(data.title_de),
+              excerpt: String(data.excerpt_de),
+              category: String(data.category_de),
+              content: contentHtmlDe,
+            },
+          }
+        : undefined,
     };
   } catch (error) {
     logError(`Error reading post ${slug}`, error);
