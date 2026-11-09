@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { germanMarketingEnabled, isGermanMarketingPath } from '@/lib/i18n/german-routes';
 import { getAllPosts } from '@/lib/markdown';
 import { getAllCaseStudies } from '@/lib/case-studies';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
@@ -13,6 +14,9 @@ function generateAlternates(baseUrl: string, path: string): { languages: Record<
     languages: {
       en: `${baseUrl}/en${path}`,
       he: `${baseUrl}/he${path}`,
+      ...(germanMarketingEnabled() && isGermanMarketingPath(path)
+        ? { de: `${baseUrl}/de${path}` }
+        : {}),
       'x-default': `${baseUrl}/en${path}`,
     },
   };
@@ -25,7 +29,10 @@ function createLocalizedUrls(
   changeFrequency: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never',
   priority: number
 ) {
-  return locales.map(locale => ({
+  const availableLocales: readonly string[] = germanMarketingEnabled() && isGermanMarketingPath(path)
+    ? [...locales, 'de']
+    : locales;
+  return availableLocales.map(locale => ({
     url: `${baseUrl}/${locale}${path}`,
     ...(lastModified && { lastModified }),
     changeFrequency,
