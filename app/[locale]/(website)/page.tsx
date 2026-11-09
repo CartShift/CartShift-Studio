@@ -35,7 +35,7 @@ export async function generateMetadata({
         ? 'שותף ל-Shopify ול-SEO טכני | CartShift Studio'
         : 'Shopify Development and SEO Partner | CartShift Studio',
       description: locale === 'de'
-        ? 'CartShift Studio unterstützt E-Commerce-Teams mit Shopify-Entwicklung, technischem SEO, Migrationen, Performance-Optimierung und conversionorientierter Umsetzung auf Deutsch, Englisch und Hebräisch.'
+        ? 'CartShift Studio unterstützt E-Commerce-Teams mit Shopify-Entwicklung, technischem SEO, Migrationen, Performance-Optimierung und conversionorientierter Umsetzung auf Englisch und Hebräisch.'
         : isHe
         ? 'CartShift Studio עוזרת לצוותי ecommerce לצמוח דרך פיתוח Shopify, SEO טכני, מיגרציות, שיפור מהירות ואופטימיזציה ממוקדת המרות בעברית ובאנגלית.'
         : 'CartShift Studio helps ecommerce teams grow through Shopify development, technical SEO, migration support, speed optimization, and conversion-focused implementation in English and Hebrew.',
