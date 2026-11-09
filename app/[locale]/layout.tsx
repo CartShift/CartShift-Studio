@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { germanMarketingEnabled } from '@/lib/i18n/german-routes';
 import { RadixProvider } from '@/components/providers/RadixProvider';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
@@ -42,6 +43,7 @@ export async function generateMetadata({
       languages: {
         en: `${siteUrl}/en`,
         he: `${siteUrl}/he`,
+        ...(germanMarketingEnabled() ? { de: `${siteUrl}/de` } : {}),
         'x-default': `${siteUrl}/en`,
       },
     },
@@ -85,7 +87,7 @@ export async function generateMetadata({
       google: process.env.GOOGLE_SITE_VERIFICATION,
     },
     other: {
-      'og:locale:alternate': locale === 'he' ? 'en_US' : 'he_IL',
+      'og:locale:alternate': locale === 'he' ? 'en_US' : locale === 'de' ? 'en_US' : 'he_IL',
     },
     category: 'technology',
   };
