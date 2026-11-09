@@ -640,7 +640,7 @@ Hier wird ein Feature produktionsbereit und nicht für die Demo bereit.
 
 Erfassen Sie WordPress- und WooCommerce-Versionen, Hosting-Einschränkungen, Theme-Architektur, Checkout-Typ, aktive Erweiterungen, Bestellvolumenmuster, geplante Jobs, externe Systeme, Caching und Bereitstellungsprozess.
 
-Überprüfen Sie auch die [technischen SEO-Grundlagen] des Shops(/blog/wordpress-technical-seo). Benutzerdefinierte Filter, Kontorouten oder Produktstatus können versehentlich crawlbare Duplikate erstellen oder wichtige Katalogseiten ausblenden.
+Überprüfen Sie auch die [technischen SEO-Grundlagen des Shops](/blog/wordpress-technical-seo). Benutzerdefinierte Filter, Kontorouten oder Produktstatus können versehentlich crawlbare Duplikate erstellen oder wichtige Katalogseiten ausblenden.
 
 ### 4. Definieren Sie Eigentumsgrenzen
 
