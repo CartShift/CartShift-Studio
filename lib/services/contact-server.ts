@@ -26,7 +26,7 @@ export async function persistContactInquiry(input: ContactFormData): Promise<{ s
   const submissionRef = db.collection('contact_submissions').doc();
   const emailRef = db.collection('email_queue').doc(`contact_${submissionRef.id}`);
   const marketingEventRef = db.collection('marketing_events').doc();
-  const locale = input.locale === 'he' ? 'he' : 'en';
+  const locale = input.locale === 'he' ? 'he' : input.locale === 'de' ? 'de' : 'en';
   const now = FieldValue.serverTimestamp();
   const name = input.name;
   const interest = input.interest || null;
@@ -82,7 +82,7 @@ export async function persistContactInquiry(input: ContactFormData): Promise<{ s
       templateName: 'contact_form_notification',
       data: {
         name, email, company, projectType: projectType || interest,
-        message, locale, leadsUrl: `${portalBase}/${locale}/portal/agency/leads`,
+        message, locale, leadsUrl: `${portalBase}/${locale === 'de' ? 'en' : locale}/portal/agency/leads`,
       },
       tags: [{ name: 'type', value: 'contact_form_notification' }],
       createdAt: now,
