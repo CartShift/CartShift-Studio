@@ -1,3 +1,4 @@
+import { GermanContactPage } from '@/components/marketing/GermanContactPage';
 import { setRequestLocale } from 'next-intl/server';
 import { ContactTemplate } from '@/components/templates/ContactTemplate';
 import type { Metadata } from 'next';
@@ -15,6 +16,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isHe = locale === 'he';
+  if (locale === 'de') return genMeta({
+    title: 'Kontakt & Projektanfrage | CartShift Studio',
+    description: 'Ein neues E-Commerce-Projekt, Shopify-Optimierung oder eine WordPress-Website? Sprechen Sie mit CartShift Studio über Ihre Anforderungen.',
+    url: '/contact',
+  }, 'de');
   return genMeta(
     {
       title: isHe
@@ -42,7 +48,8 @@ export async function generateMetadata({
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
+  if (locale === 'de') return <GermanContactPage />;
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
       { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
