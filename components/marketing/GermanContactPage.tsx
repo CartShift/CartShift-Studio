@@ -23,6 +23,12 @@ export function GermanContactForm() {
         projectType: String(values.get('projectType') || 'consultation'),
         message: String(values.get('message') || '').trim(),
         locale: 'de',
+        attribution: {
+          utmSource: new URLSearchParams(window.location.search).get('utm_source')?.slice(0, 160) || undefined,
+          utmMedium: new URLSearchParams(window.location.search).get('utm_medium')?.slice(0, 160) || undefined,
+          utmCampaign: new URLSearchParams(window.location.search).get('utm_campaign')?.slice(0, 160) || undefined,
+          partnerCode: new URLSearchParams(window.location.search).get('partner')?.slice(0, 160) || undefined,
+        },
       });
       if (!result.success) throw new Error(result.error || 'Nachricht konnte nicht gesendet werden.');
       trackFormSubmission('contact-form-de');
