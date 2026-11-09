@@ -20,7 +20,7 @@ export function GermanChrome({ children }: { children: ReactNode }) {
       </a>
       <header className="sticky top-0 z-40 border-b border-surface-200/80 bg-white/95 backdrop-blur-xl dark:border-white/10 dark:bg-surface-950/95">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-8">
-          <Link href="/" aria-label="CartShift Studio – Startseite"><Logo size="sm" /></Link>
+          <Logo size="sm" />
           <nav aria-label="Hauptnavigation" className="order-3 flex w-full flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold md:order-none md:w-auto">
             {links.map(({href,label}) => (
               <Link key={href} href={href} className="transition-colors hover:text-primary-600 dark:hover:text-primary-300">{label}</Link>
