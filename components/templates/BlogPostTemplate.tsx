@@ -23,6 +23,7 @@ interface BlogPostTemplateProps {
       excerpt: string;
       category: string;
     };
+    translations?: { de?: { title: string; excerpt: string; category: string } };
   }>;
 }
 
@@ -30,18 +31,19 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
   const t = useTranslations();
   const locale = useLocale();
   const isHe = isRTLLocale(locale);
+  const de = locale === 'de' ? post.translations?.de : undefined;
 
-  const title = isHe && post.translation?.title ? post.translation.title : post.title;
-  const subtitle = isHe && post.translation?.category ? post.translation.category : post.category;
+  const title = de?.title || (isHe && post.translation?.title ? post.translation.title : post.title);
+  const subtitle = de?.category || (isHe && post.translation?.category ? post.translation.category : post.category);
 
-  const content = isHe && post.translation?.content ? post.translation.content : post.content;
+  const content = de?.content || (isHe && post.translation?.content ? post.translation.content : post.content);
 
   // Format date correctly based on locale
   const formattedDate = new Date(post.date).toLocaleDateString(getDateLocaleString(locale));
   const readingTimeText = post.readingTime
     ? isHe
       ? ` • ${post.readingTime} דקות קריאה`
-      : ` • ${post.readingTime} min read`
+      : locale === 'de' ? ` • ${post.readingTime} Min. Lesezeit` : ` • ${post.readingTime} min read`
     : '';
 
   const finalDescription = `${formattedDate}${readingTimeText}`;
@@ -49,13 +51,14 @@ export const BlogPostTemplate: React.FC<BlogPostTemplateProps> = ({ post, relate
   // Process related posts for current language
   const processedRelatedPosts = relatedPosts.map(p => ({
     slug: p.slug,
-    title: isHe && p.translation?.title ? p.translation.title : p.title,
-    excerpt: isHe && p.translation?.excerpt ? p.translation.excerpt : p.excerpt,
-    category: isHe && p.translation?.category ? p.translation.category : p.category,
+    title: (locale === 'de' && p.translations?.de?.title) || (isHe && p.translation?.title ? p.translation.title : p.title),
+    excerpt: (locale === 'de' && p.translations?.de?.excerpt) || (isHe && p.translation?.excerpt ? p.translation.excerpt : p.excerpt),
+    category: (locale === 'de' && p.translations?.de?.category) || (isHe && p.translation?.category ? p.translation.category : p.category),
     date: p.date,
     image: p.image,
     imageAlt: p.imageAlt,
     translation: p.translation,
+    translations: p.translations,
   }));
 
   const breadcrumbItems = [
