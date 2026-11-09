@@ -30,13 +30,24 @@ describe('German SEO metadata', () => {
     expect(data.openGraph).toMatchObject({ locale: 'de_DE' });
   });
 
-  it('never advertises untranslated German articles, even with the launch enabled', () => {
+  it('advertises German editorials only once the full-site launch gate is enabled', () => {
     process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
     process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
     const data = generateMetadata({
       title: 'Shopify technical audit',
       description: 'An article in English.',
       url: '/blog/shopify-technical-audit',
+    }, 'en');
+    expect(data.alternates?.languages).toHaveProperty('de', `${configuredSiteUrl}/de/blog/shopify-technical-audit`);
+  });
+
+  it('never advertises private analytics URLs in German', () => {
+    process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
+    process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
+    const data = generateMetadata({
+      title: 'Private report',
+      description: 'Not public',
+      url: '/tools/store-analyzer/report/private-token',
     }, 'en');
     expect(data.alternates?.languages).not.toHaveProperty('de');
   });
