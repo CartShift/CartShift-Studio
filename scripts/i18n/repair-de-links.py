@@ -60,7 +60,7 @@ def split_bodies(markdown):
 
 def get_english(markdown):
     tail=markdown.split('\n---\n',1)[1]
-    return DIVIDER.split(tail,maxsplit=1)[0]
+    return DIVIDER.split(tail,maxsplit=1)[0].lstrip('\r\n')
 
 def process(file,pending):
     text=file.read_text('utf-8')
