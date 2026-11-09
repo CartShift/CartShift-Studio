@@ -1,0 +1,48 @@
+name: German draft translation (one time)
+on:
+  push:
+    branches:
+      - feat/german-market-launch-20261109
+    paths:
+      - .github/workflows/generate-german-draft.yml
+      - scripts/i18n/generate-de-draft.py
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cartshift-de-draft
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    if: github.repository == 'CartShift/CartShift-Studio'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Install static Markdown authoring dependencies
+        run: python -m pip install 'PyYAML==6.0.2'
+      - name: Draft faithful German translations from existing public source files
+        run: python scripts/i18n/generate-de-draft.py --scope all
+      - name: Inspect and commit generated translation drafts to the feature branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add messages/src/de content/blog content/case-studies
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'No translation changes'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(de): draft original website, blog and case-study translations [machine review required]'
+          git push origin "HEAD:refs/heads/feat/german-market-launch-20261109"
+      - name: Notes
+        run: echo 'Never enable the German public release flags without native review, legally verified Impressum and E2E QA.'
