@@ -1,33 +1,91 @@
 {
   "nav": {
     "home": "Startseite",
+    "freeAudit": "Kostenlose Analyse",
+    "about": "Über uns",
     "services": "Leistungen",
-    "company": "Über uns",
+    "blog": "Blog",
     "contact": "Kontakt",
     "work": "Projekte",
-    "blog": "Blog",
+    "pricing": "Preise",
+    "maintenance": "Wartung",
+    "industries": "Branchen",
+    "company": "Unternehmen",
+    "login": "Anmelden",
+    "portal": "Portal",
+    "settings": "Einstellungen",
     "tools": "Tools",
     "clientPortal": "Kundenportal"
-  },
-  "common": {
-    "cookieConsent": {
-      "message": "Wir verwenden Cookies, um die Nutzung dieser Website zu analysieren. Optionale Analyse-Cookies werden erst nach Ihrer Einwilligung eingesetzt.",
-      "accept": "Akzeptieren",
-      "decline": "Ablehnen",
-      "learnMore": "Datenschutz",
-      "settings": "Cookie-Einstellungen"
-    }
-  },
-  "notFound": {
-    "title": "Seite nicht gefunden",
-    "description": "Diese Seite existiert nicht oder wurde verschoben.",
-    "goBack": "Zurück",
-    "goHome": "Zur Startseite"
   },
   "floatingActions": {
     "bookCall": "Gespräch vereinbaren",
     "whatsapp": "WhatsApp",
-    "whatsappMessage": "Hallo! Ich möchte Kontakt aufnehmen.",
+    "whatsappMessage": "Hallo! Ich möchte mit Ihnen Kontakt aufnehmen.",
     "openContact": "Kontaktmöglichkeiten öffnen"
+  },
+  "errorBoundary": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte laden Sie die Seite erneut.",
+    "details": "Fehlerdetails",
+    "tryAgain": "Erneut versuchen",
+    "refresh": "Seite neu laden"
+  },
+  "common": {
+    "learnMore": "Mehr erfahren",
+    "contactUs": "Kontakt aufnehmen",
+    "getStarted": "Jetzt starten",
+    "viewWork": "Unsere Projekte ansehen",
+    "hidden": "Ausgeblendet",
+    "dismiss": "Schließen",
+    "cookieConsent": {
+      "message": "Wir verwenden Cookies, um Ihr Nutzungserlebnis zu verbessern und die Nutzung unserer Website zu analysieren.",
+      "accept": "Akzeptieren",
+      "decline": "Ablehnen",
+      "learnMore": "Mehr erfahren",
+      "settings": "Cookie-Einstellungen"
+    }
+  },
+  "navigation": {
+    "home": "Startseite",
+    "solutions": "Lösungen",
+    "wordpress": "WordPress-Lösungen",
+    "shopify": "Shopify-Lösungen",
+    "clientPortal": "Kundenportal",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "blog": "Blog",
+    "blogPost": "Blogbeitrag"
+  },
+  "faq": {
+    "collapseAll": "Alle schließen",
+    "expandAll": "Alle öffnen"
+  },
+  "seo": {
+    "clientPortalH1": "Kundenportal für Projektmanagement | Schnell & transparent"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde möglicherweise verschoben.",
+    "goBack": "Zurück",
+    "goHome": "Zur Startseite",
+    "portalLogin": "Im Portal anmelden",
+    "needHelp": "Brauchen Sie Hilfe?",
+    "contactTeam": "Unser Team kontaktieren"
+  },
+  "stickyCta": {
+    "text": "Gespräch vereinbaren",
+    "textHe": "קבעו שיחה"
+  },
+  "exitIntent": {
+    "heading": "Bevor Sie gehen …",
+    "subheading": "Wir helfen Ihnen, Ihr Unternehmen auf die nächste Stufe zu bringen",
+    "feature1Title": "Ausführliche Shop-Analyse",
+    "feature1Description": "Wir prüfen die Leistung Ihres Shops und decken Wachstumschancen auf, die Ihnen bisher vielleicht entgangen sind.",
+    "feature2Title": "Beratung vom Fach",
+    "feature2Description": "Wir arbeiten gemeinsam daran, Ihren Shop zu verbessern, die Conversion zu optimieren und den Umsatz zu steigern.",
+    "description": "Wir würden gern mehr über Ihr Projekt erfahren und verstehen, wie wir Sie unterstützen können.",
+    "learnMore": "Mehr über unsere Leistungen erfahren",
+    "cta": "Kostenlose Shop-Analyse starten",
+    "secondaryCta": "Stattdessen ein Gespräch vereinbaren"
   }
 }
