@@ -2,15 +2,29 @@ import { describe, expect, it } from 'vitest';
 import { germanMarketingEnabled, germanMarketingPaths, isGermanMarketingPath } from '@/lib/i18n/german-routes';
 
 describe('German marketing route allowlist', () => {
-  it('only contains reviewed public paths', () => {
+  it('covers the same public page families as English and Hebrew', () => {
     expect(germanMarketingPaths).toEqual([
       '/',
-      '/contact',
       '/about',
+      '/contact',
       '/work',
+      '/blog',
       '/solutions/seo',
       '/solutions/shopify',
       '/solutions/wordpress',
+      '/services/shopify-conversion-optimization',
+      '/services/shopify-b2b-integrations',
+      '/services/shopify-performance-seo',
+      '/services/shopify-subscriptions',
+      '/services/wordpress-security',
+      '/free-store-review',
+      '/tools',
+      '/tools/client-portal',
+      '/tools/store-analyzer',
+      '/privacy',
+      '/terms',
+      '/pricing',
+      '/maintenance',
     ]);
   });
 
@@ -47,18 +61,24 @@ describe('German marketing route allowlist', () => {
     }
   });
 
-  it('excludes untranslated or private pages', () => {
+  it('keeps all published editorial and industry routes on the same page tree', () => {
     for (const path of [
-      '/blog',
       '/blog/shopify-seo',
       '/work/i-love-my-honeypot-eco-ecommerce',
+      '/industries/fashion',
+      '/services/shopify-b2b-integrations',
+      '/tools/store-analyzer/performance',
+    ]) expect(isGermanMarketingPath(path)).toBe(true);
+  });
+
+  it('excludes private accounts, reports, unreviewed insights and personal portfolios', () => {
+    for (const path of [
       '/portal',
       '/portal/login',
-      '/terms',
-      '/privacy',
+      '/tools/store-analyzer/report/private-token',
+      '/audit-insights/unreviewed-user-content',
       '/yotam',
-      '/free-store-review',
-      '/services/shopify-subscriptions',
+      '/portfolio/personal-project',
     ]) expect(isGermanMarketingPath(path)).toBe(false);
   });
 });
