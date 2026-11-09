@@ -1,5 +1,4 @@
 import { Hero } from '@/components/sections/Hero';
-import { GermanMarketingPage } from '@/components/marketing/GermanMarketingPage';
 import { HomepageIntro } from '@/components/sections/HomepageIntro';
 import { ServicesOverview } from '@/components/sections/ServicesOverview';
 import { WhyChoose } from '@/components/sections/WhyChoose';
@@ -28,12 +27,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isHe = locale === 'he';
-  if (locale === 'de') return genMeta({
-    title: 'Onlineshops & Websites für Unternehmen | CartShift Studio',
-    description: 'Professionelle Shopify-Onlineshops und WordPress-Websites. Individuelle Entwicklung, Performance, SEO und persönliche Beratung für Unternehmen in Deutschland.',
-    url: '/',
-    keywords: ['Onlineshop erstellen lassen', 'Shopify Agentur', 'WordPress Website erstellen', 'E-Commerce Entwicklung'],
-  }, 'de');
   return genMeta(
     {
       title: isHe
@@ -70,8 +63,7 @@ export async function generateMetadata({
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he' | 'de');
-  if (locale === 'de') return <GermanMarketingPage kind="home" />;
+  setRequestLocale(locale as 'en' | 'he');
   const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he');
   const professionalServiceSchema = generateProfessionalServiceSchema();
   const posts = await getAllPosts();
