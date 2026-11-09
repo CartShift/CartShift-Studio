@@ -68,7 +68,7 @@ try {
 // Use __dirname for predictable path resolution
 const messagesDir = path.join(__dirname, '..', 'messages');
 const srcDir = path.join(messagesDir, 'src');
-const locales = ['en', 'he'];
+const locales = ['en', 'he', 'de'];
 
 /**
  * Strip UTF-8 BOM if present
@@ -228,6 +228,25 @@ async function mergeTranslations(locale) {
       process.exit(1);
     }
     merged = newMerged;
+  }
+
+  // German marketing is launched incrementally. Other UI namespaces retain
+  // the existing English messages until their routes have approved translations.
+  // Never use the fallback alone as proof that a public route is localized.
+  if (locale === 'de') {
+    const enMessages = JSON.parse(fs.readFileSync(path.join(messagesDir, 'en.json'), 'utf8'));
+    delete enMessages._meta;
+    const applyOverrides = (base, overrides) => {
+      if (Array.isArray(overrides) || !overrides || typeof overrides !== 'object') return overrides;
+      const result = { ...base };
+      for (const [key, value] of Object.entries(overrides)) {
+        result[key] = value && typeof value === 'object' && !Array.isArray(value)
+          ? applyOverrides(base?.[key] && typeof base[key] === 'object' ? base[key] : {}, value)
+          : value;
+      }
+      return result;
+    };
+    merged = applyOverrides(enMessages, merged);
   }
 
   // Add metadata to indicate this is a generated file
