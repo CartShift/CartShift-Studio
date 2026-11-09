@@ -8,6 +8,9 @@ const links = [
   { href: '/', label: 'Startseite' },
   { href: '/solutions/shopify', label: 'Shopify' },
   { href: '/solutions/wordpress', label: 'WordPress' },
+  { href: '/solutions/seo', label: 'SEO' },
+  { href: '/work', label: 'Projekte' },
+  { href: '/about', label: 'Über uns' },
   { href: '/contact', label: 'Kontakt' },
 ] as const;
 
