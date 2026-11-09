@@ -1,4 +1,4 @@
-import { he, enUS } from 'date-fns/locale';
+import { he, enUS, de } from 'date-fns/locale';
 
 export interface LocaleConfig {
   /** Text direction for the locale */
@@ -22,6 +22,13 @@ export const LOCALE_CONFIG: Record<string, LocaleConfig> = {
     direction: 'ltr',
     dateLocale: enUS,
     dateLocaleString: 'en-US',
+    fontFamily: 'font-outfit',
+    isRTL: false,
+  },
+  de: {
+    direction: 'ltr',
+    dateLocale: de,
+    dateLocaleString: 'de-DE',
     fontFamily: 'font-outfit',
     isRTL: false,
   },
