@@ -21,26 +21,29 @@ describe('German marketing route allowlist', () => {
     expect(isGermanMarketingPath('/solutions/seo')).toBe(true);
   });
 
-  it('keeps German disabled by default and never enables it for production', () => {
-    const oldFlag = process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
+  it('requires both explicit readiness and enablement switches', () => {
+    const oldEnabled = process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
+    const oldReady = process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
     const oldEnv = process.env.NEXT_PUBLIC_VERCEL_ENV;
-    const oldRef = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF;
     try {
       delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
-      process.env.NEXT_PUBLIC_VERCEL_ENV = 'production';
-      process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF = 'feat/german-market-launch-20261109';
-      expect(germanMarketingEnabled()).toBe(false);
+      delete process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
       process.env.NEXT_PUBLIC_VERCEL_ENV = 'preview';
-      expect(germanMarketingEnabled()).toBe(true);
-      process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF = 'main';
       expect(germanMarketingEnabled()).toBe(false);
+      process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
+      expect(germanMarketingEnabled()).toBe(false);
+      process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'false';
+      process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
+      expect(germanMarketingEnabled()).toBe(false);
+      process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
+      expect(germanMarketingEnabled()).toBe(true);
     } finally {
-      if (oldFlag === undefined) delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
-      else process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = oldFlag;
+      if (oldEnabled === undefined) delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
+      else process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = oldEnabled;
+      if (oldReady === undefined) delete process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
+      else process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = oldReady;
       if (oldEnv === undefined) delete process.env.NEXT_PUBLIC_VERCEL_ENV;
       else process.env.NEXT_PUBLIC_VERCEL_ENV = oldEnv;
-      if (oldRef === undefined) delete process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF;
-      else process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF = oldRef;
     }
   });
 
