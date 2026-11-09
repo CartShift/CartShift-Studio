@@ -35,7 +35,7 @@ export default async function WebsiteLayout({
         </Suspense>
         <GoogleAnalytics />
         <AnalyticsProvider>
-          <MainLayout>{children}</MainLayout>
+          <MainLayout locale={activeLocale}>{children}</MainLayout>
         </AnalyticsProvider>
       </BaseClientProviders>
     </>
