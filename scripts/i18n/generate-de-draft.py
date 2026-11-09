@@ -188,7 +188,7 @@ def blog(limit):
         de_body=translated_markdown(english)
         front_append=''.join('%s_de: %s\n'%(k,json.dumps(v,ensure_ascii=False))
                              for k,v in zip(keys,translated))
-        revised=original[:marker.start(1)]+front+'\n'+front_append+'---\n'+body.rstrip()+'\n\n---de---\n'+de_body.lstrip('\n')
+        revised=original[:marker.start(1)]+front+'\n'+front_append+'---\n'+body.rstrip()+'\n\n---de---\n'+de_body.lstrip('\n').rstrip()+'\n'
         file.write_text(revised,'utf-8')
         print('BLOG',i,len(docs),file.name,'lines',de_body.count('\n'),flush=True)
 
