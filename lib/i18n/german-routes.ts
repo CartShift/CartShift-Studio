@@ -18,15 +18,13 @@ export function isGermanMarketingPath(pathname: string): boolean {
 }
 
 /**
- * Protected QA: Vercel's framework public system variables make the dedicated
- * feature-branch preview testable without writing team-level environment vars.
- * The branch-specific exception is never active in production or on main.
+ * An incomplete translation is not a German-language page.
+ * Both toggles must be explicitly enabled only after automated source parity
+ * and human review. Preview and production default to closed.
  */
 export function germanMarketingEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED === 'true') return true;
-  if (process.env.NEXT_PUBLIC_CARTSHIFT_DE_PREVIEW === 'true') return true;
   return (
-    process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' &&
-    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF === 'feat/german-market-launch-20261109'
+    process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED === 'true' &&
+    process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED === 'true'
   );
 }
