@@ -94,7 +94,9 @@ export async function generateMetadata({
 }
 
 export function generateStaticParams() {
-  return routing.locales.map(locale => ({ locale }));
+  return routing.locales
+    .filter(locale => locale !== 'de' || germanMarketingEnabled())
+    .map(locale => ({ locale }));
 }
 
 export default async function LocaleLayout({
