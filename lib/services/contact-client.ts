@@ -8,7 +8,7 @@ export interface ContactFormSubmitData {
   message: string;
   company?: string;
   projectType?: string;
-  locale?: 'en' | 'he';
+  locale?: 'en' | 'he' | 'de';
 }
 
 export async function submitContactForm(data: ContactFormSubmitData) {
