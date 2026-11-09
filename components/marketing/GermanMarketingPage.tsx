@@ -1,6 +1,6 @@
 import { Link } from '@/i18n/navigation';
 
-type PageKind = 'home' | 'shopify' | 'wordpress';
+type PageKind = 'home' | 'shopify' | 'wordpress' | 'seo';
 
 const pages = {
   home: {
@@ -25,6 +25,17 @@ const pages = {
       { title: 'Erweiterungen & Automatisierung', body: 'Individuelle Shopify-Funktionen, Integrationen und wiederkehrende Bestellungen – ohne unnötige Komplexität.', href: '/contact', action: 'Vorhaben besprechen' },
     ],
   },
+  seo: {
+    eyebrow: 'Technische SEO & Sichtbarkeit',
+    title: 'Besser gefunden werden. Mit einer Website, die technisch überzeugt.',
+    intro: 'Wir analysieren technische SEO-Probleme in Shopify- und WordPress-Projekten und setzen sinnvolle Verbesserungen um – von Indexierung und Seitengeschwindigkeit bis zu internen Links und strukturierten Daten.',
+    primary: 'SEO-Projekt besprechen',
+    features: [
+      { title: 'Technisches SEO-Audit', body: 'Wir prüfen Crawling, Indexierung, technische Fehler und die grundlegende Seitenstruktur.', href: '/contact', action: 'Audit anfragen' },
+      { title: 'Shopify & WordPress SEO', body: 'Individuelle Verbesserungen an Templates, Seitentypen, Ladezeiten und der internen Verlinkung.', href: '/contact', action: 'Optimierung besprechen' },
+      { title: 'Messbare Prioritäten', body: 'Statt SEO-Versprechen ohne Grundlage: konkrete Maßnahmen nach Wirkung, Aufwand und technischer Machbarkeit.', href: '/contact', action: 'Beratung anfragen' },
+    ],
+  },
   wordpress: {
     eyebrow: 'WordPress Websites & Entwicklung',
     title: 'WordPress-Websites, die mehr können als nur gut aussehen.',
@@ -43,6 +54,11 @@ const faqs = {
     ['Ist Shopify für mein Geschäft geeignet?', 'Das hängt von Sortiment, internen Abläufen und den gewünschten Funktionen ab. Wir prüfen gemeinsam, ob Shopify die richtige Grundlage ist.'],
     ['Kann ein bestehender Shop optimiert werden?', 'Ja. Wir können an Design, Performance, SEO, Navigation, Checkout-Nähe und individuellen Funktionen arbeiten, ohne direkt alles neu zu bauen.'],
     ['Bietet ihr auch Unterstützung nach dem Launch?', 'Ja. Je nach Projekt vereinbaren wir gezielte Weiterentwicklung und technische Unterstützung.'],
+  ],
+  seo: [
+    ['Was umfasst ein technisches SEO-Audit?', 'Wir untersuchen unter anderem Indexierung, Seitenstruktur, Geschwindigkeit und technische Suchmaschinen-Signale. Der genaue Umfang hängt von der Website ab.'],
+    ['Könnt ihr die Probleme auch direkt beheben?', 'Ja. Unser Schwerpunkt liegt auf technischer Umsetzung – nicht nur auf einem Bericht mit Empfehlungen.'],
+    ['Garantiert ihr bessere Google-Rankings?', 'Nein. Rankings hängen von vielen Faktoren ab. Wir arbeiten an nachvollziehbaren technischen Verbesserungen, nicht mit unrealistischen Garantien.'],
   ],
   wordpress: [
     ['Kann ich Inhalte später selbst ändern?', 'Ja. Wir planen die Inhaltsverwaltung so, dass regelmäßige Änderungen ohne Entwicklungsaufwand möglich sind.'],
