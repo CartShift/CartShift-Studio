@@ -59,7 +59,8 @@ export interface SEOConfig {
 
 export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metadata {
   const imageUrl = toAbsoluteAssetUrl(config.socialImage || config.image) || defaultOgImage;
-  const pathOnly = config.url?.replace(siteUrl, '').replace(/^\/(en|he|de)/, '') || '';
+  const rawPath = config.url?.replace(siteUrl, '').replace(/^\/(en|he|de)(?=\/|$)/, '') || '';
+  const pathOnly = rawPath === '/' ? '' : rawPath;
   const currentLocale = locale || 'en';
   const hasGermanAlternative = germanMarketingEnabled() && isGermanMarketingPath(pathOnly || '/');
   const canonicalUrl = `${siteUrl}/${currentLocale}${pathOnly}`;
@@ -185,7 +186,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      availableLanguage: ['English', 'Hebrew'],
+      availableLanguage: ['English', 'Hebrew', ...(germanMarketingEnabled() ? ['German'] : [])],
       url: `${siteUrl}/contact`,
     },
   };
@@ -475,7 +476,7 @@ export function generateLocalBusinessSchema() {
     priceRange: '$$',
     // Do not invent a local business address or service radius; those require verified details.
     areaServed: 'Worldwide',
-    knowsLanguage: ['English', 'Hebrew'],
+    knowsLanguage: ['English', 'Hebrew', ...(germanMarketingEnabled() ? ['German'] : [])],
   };
 }
 
