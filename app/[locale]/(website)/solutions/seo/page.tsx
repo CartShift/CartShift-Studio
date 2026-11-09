@@ -9,7 +9,7 @@ import {
   generateServiceSchema,
 } from '@/lib/seo';
 
-type Locale = 'en' | 'he';
+type Locale = 'en' | 'he' | 'de';
 
 interface SeoFaqItem {
   question: string;
