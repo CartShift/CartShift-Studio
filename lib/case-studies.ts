@@ -91,8 +91,8 @@ export interface CaseStudy extends CaseStudyMeta {
   content: string;
 }
 
-// Interface for Hebrew translations in frontmatter
-interface HebrewTranslation {
+// Same translated fields for every locale; core project/media data stays shared.
+interface LocalizedCaseStudyTranslation {
   title?: string;
   summary?: string;
   industry?: string;
@@ -136,7 +136,8 @@ interface CaseStudyFrontmatter {
   gallery?: CaseStudyGalleryItem[];
   evidence?: CaseStudyEvidence[];
   testimonial?: CaseStudyTestimonial;
-  he?: HebrewTranslation;
+  he?: LocalizedCaseStudyTranslation;
+  de?: LocalizedCaseStudyTranslation;
 }
 
 function normalizeGalleryWithHero(
@@ -218,29 +219,35 @@ export function normalizeCaseStudyRecord(
   slug: string
 ): CaseStudy {
   const isHebrew = locale === 'he';
-  const heTranslations: HebrewTranslation = data.he || {};
+  const isGerman = locale === 'de';
+  const isLocalized = isHebrew || isGerman;
+  const localizedTranslations: LocalizedCaseStudyTranslation = isHebrew
+    ? data.he || {}
+    : isGerman
+      ? data.de || {}
+      : {};
 
-  const title = (isHebrew && heTranslations.title) || data.title || '';
-  const summary = (isHebrew && heTranslations.summary) || data.summary || '';
-  const industry = (isHebrew && heTranslations.industry) || data.industry || '';
-  const duration = (isHebrew && heTranslations.duration) || data.duration || '';
-  const services = (isHebrew && heTranslations.services) || data.services || [];
-  const results = (isHebrew && heTranslations.results) || data.results || [];
-  const testimonial = (isHebrew && heTranslations.testimonial) || data.testimonial;
-  const attribution = (isHebrew && heTranslations.attribution) || data.attribution || '';
-  const projectStage = (isHebrew && heTranslations.projectStage) || data.projectStage || '';
-  const cta = (isHebrew && heTranslations.cta) || data.cta;
+  const title = (isLocalized && localizedTranslations.title) || data.title || '';
+  const summary = (isLocalized && localizedTranslations.summary) || data.summary || '';
+  const industry = (isLocalized && localizedTranslations.industry) || data.industry || '';
+  const duration = (isLocalized && localizedTranslations.duration) || data.duration || '';
+  const services = (isLocalized && localizedTranslations.services) || data.services || [];
+  const results = (isLocalized && localizedTranslations.results) || data.results || [];
+  const testimonial = (isLocalized && localizedTranslations.testimonial) || data.testimonial;
+  const attribution = (isLocalized && localizedTranslations.attribution) || data.attribution || '';
+  const projectStage = (isLocalized && localizedTranslations.projectStage) || data.projectStage || '';
+  const cta = (isLocalized && localizedTranslations.cta) || data.cta;
   const hero = mergeLocalizedObject<CaseStudyHero>(
     data.hero as CaseStudyHero | undefined,
-    isHebrew ? heTranslations.hero : undefined
+    isLocalized ? localizedTranslations.hero : undefined
   );
   const overview = mergeLocalizedObject<CaseStudyOverview>(
     data.overview as CaseStudyOverview | undefined,
-    isHebrew ? heTranslations.overview : undefined
+    isLocalized ? localizedTranslations.overview : undefined
   );
-  const deliverables = (isHebrew && heTranslations.deliverables) || data.deliverables || [];
-  const gallery = (isHebrew && heTranslations.gallery) || data.gallery || [];
-  const evidence = (isHebrew && heTranslations.evidence) || data.evidence || [];
+  const deliverables = (isLocalized && localizedTranslations.deliverables) || data.deliverables || [];
+  const gallery = (isLocalized && localizedTranslations.gallery) || data.gallery || [];
+  const evidence = (isLocalized && localizedTranslations.evidence) || data.evidence || [];
   const brand = {
     ...getFallbackBrand(data.platform || ''),
     ...(data.brand || {}),
@@ -249,7 +256,7 @@ export function normalizeCaseStudyRecord(
   const resolvedHeroImage = hero?.image || data.heroImage || data.thumbnail || '';
   const resolvedThumbnail = resolvedHeroImage || data.thumbnail || '';
   const resolvedOverview = overview || {
-    title: isHebrew ? 'תקציר הפרויקט' : 'Project Overview',
+    title: isHebrew ? 'תקציר הפרויקט' : isGerman ? 'Projektübersicht' : 'Project Overview',
     summary,
   };
   const resolvedHero = hero || {
@@ -286,7 +293,7 @@ export function normalizeCaseStudyRecord(
     gallery: resolvedGallery,
     evidence: resolvedEvidence,
     testimonial,
-    content: (isHebrew && heTranslations.content) || content,
+    content: (isLocalized && localizedTranslations.content) || content,
   };
 }
 
@@ -326,7 +333,7 @@ export function getCaseStudyBySlug(slug: string, locale: string = 'en'): CaseStu
 export function getAllCaseStudies(locale: string = 'en'): CaseStudyMeta[] {
   // Route segments and bot requests are untrusted. Never pass arbitrary values
   // to Intl localeCompare, which throws RangeError for malformed locale names.
-  const safeLocale = locale === 'he' ? 'he' : 'en';
+  const safeLocale = locale === 'he' ? 'he' : locale === 'de' ? 'de' : 'en';
   const slugs = getCaseStudySlugs();
   const caseStudies = slugs
     .map(slug => {
