@@ -6,8 +6,18 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
 
 const withNextIntl = createNextIntlPlugin();
 
+const isGermanPreviewBuild =
+  (process.env.VERCEL_ENV || process.env.NEXT_PUBLIC_VERCEL_ENV) === 'preview' &&
+  (process.env.VERCEL_GIT_COMMIT_REF || process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF) ===
+    'feat/german-market-launch-20261109';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Compile the preview-only DE gate into both server and client bundles.
+  // Production builds on main always default to false.
+  env: {
+    NEXT_PUBLIC_CARTSHIFT_DE_PREVIEW: isGermanPreviewBuild ? 'true' : 'false',
+  },
   outputFileTracingRoot: projectRoot,
   // Keep serverless Chromium outside the Turbopack server bundle so its
   // package-relative binary lookup remains valid at runtime.
