@@ -13,7 +13,7 @@ type Messages = NonNullable<ComponentProps<typeof NextIntlClientProvider>['messa
 
 interface BaseClientProvidersProps {
   children: ReactNode;
-  locale: 'en' | 'he';
+  locale: 'en' | 'he' | 'de';
   messages: Messages;
 }
 
