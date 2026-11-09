@@ -4,6 +4,7 @@ import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { BaseClientProviders } from '@/components/providers/BaseClientProviders';
+import { GeoLocaleRedirect } from '@/components/providers/GeoLocaleRedirect';
 import { pickWebsiteMessages } from '@/lib/i18n/client-messages';
 import { generateOrganizationSchema } from '@/lib/seo';
 import { MarketingStatusToast } from '@/components/marketing/MarketingStatusToast';
@@ -30,9 +31,12 @@ export default async function WebsiteLayout({
         dangerouslySetInnerHTML={{ __html: schemaJson }}
       />
       <BaseClientProviders locale={activeLocale} messages={pickWebsiteMessages(messages)}>
-        <Suspense fallback={null}>
-          <MarketingStatusToast />
-        </Suspense>
+        {activeLocale !== 'de' && (
+          <Suspense fallback={null}>
+            <MarketingStatusToast />
+          </Suspense>
+        )}
+        {activeLocale !== 'de' && <GeoLocaleRedirect />}
         <GoogleAnalytics />
         <AnalyticsProvider>
           <MainLayout locale={activeLocale}>{children}</MainLayout>
