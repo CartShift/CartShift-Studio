@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/generate-german-draft.yml
       - scripts/i18n/generate-de-draft.py
+      - scripts/i18n/repair-de-links.py
 
 permissions:
   contents: write
