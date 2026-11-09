@@ -16,6 +16,7 @@ describe('German marketing route allowlist', () => {
 
   it('supports trailing slashes on approved paths', () => {
     expect(isGermanMarketingPath('/')).toBe(true);
+    expect(isGermanMarketingPath('')).toBe(true);
     expect(isGermanMarketingPath('/contact/')).toBe(true);
     expect(isGermanMarketingPath('/solutions/seo')).toBe(true);
   });
