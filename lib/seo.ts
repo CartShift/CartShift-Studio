@@ -113,9 +113,6 @@ export function generateMetadata(config: SEOConfig, locale?: Locale): Metadata {
       site: '@cartshiftstudio',
     },
     alternates,
-    other: {
-      'og:locale:alternate': currentLocale === 'he' ? 'en_US' : 'he_IL',
-    },
   };
 }
 
