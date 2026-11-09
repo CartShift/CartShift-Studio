@@ -726,4 +726,4 @@ Die größten Checkout-Siege verlaufen oft ruhiger, als die Teams erwarten. Weni
 
 Dafür ist die Checkout-Optimierung wirklich da.
 
-If you want a sharper technical and conversion read before changing the flow, run the [expert store review](/free-store-review), read the [conversion audit checklist](/blog/conversion-audit-checklist), or explore our [Shopify services](/solutions/shopify).
+Wenn Sie sich vor der Änderung des Ablaufs genauer über die Technik und die Konvertierung informieren möchten, führen Sie die [fachmännische Store-Überprüfung](/free-store-review) durch, lesen Sie die [Konvertierungs-Audit-Checkliste](/blog/conversion-audit-checklist) oder erkunden Sie unsere [Shopify-Dienste](/solutions/shopify).

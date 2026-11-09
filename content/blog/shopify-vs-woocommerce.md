@@ -381,7 +381,7 @@ Die häufigsten WooCommerce-Probleme sind:
 - schwache technische SEO-Kontrollen
 - Updates, die benutzerdefiniertes Verhalten unterbrechen
 
-If you choose WooCommerce, performance and maintenance are not optional. Read [WordPress performance optimization](/blog/wordpress-performance-optimization) and [WordPress technical SEO checklist](/blog/wordpress-technical-seo) before committing.
+Wenn Sie sich für WooCommerce entscheiden, sind Leistung und Wartung nicht optional. Lesen Sie die [WordPress-Leistungsoptimierung](/blog/wordpress-performance-optimization) und die [technische SEO-Checkliste für WordPress](/blog/wordpress-technical-seo), bevor Sie sich verpflichten.
 
 ## Was ist mit BigCommerce, Magento und benutzerdefinierten Builds?
 
@@ -513,4 +513,4 @@ Wenn Sie sich nicht sicher sind, entscheiden Sie sich anhand von Einschränkunge
 4. Wie wichtig ist Content-SEO?
 5. Wie schnell müssen Sie starten?
 
-Need help choosing or migrating? Review our [Shopify services](/solutions/shopify), [WordPress and WooCommerce services](/solutions/wordpress), or [book a consultation](/contact).
+Benötigen Sie Hilfe bei der Auswahl oder Migration? Sehen Sie sich unsere [Shopify-Dienste](/solutions/shopify), [WordPress- und WooCommerce-Dienste](/solutions/wordpress) an oder [buchen Sie eine Beratung](/contact).

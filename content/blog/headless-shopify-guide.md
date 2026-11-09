@@ -695,7 +695,7 @@ Leistung kommt von:
 - gemessene Skripte von Drittanbietern
 - Tests auf echten Mobilgeräten
 
-If the current store is slow because of app bloat or weak media handling, read [Shopify apps optimization](/blog/shopify-apps-optimization-guide) and [how to speed up a Shopify store](/blog/speed-up-shopify-store) before planning a replatform.
+Wenn der aktuelle Store aufgrund von App-Aufblähung oder schwacher Medienverarbeitung langsam ist, lesen Sie [Shopify-Apps-Optimierung](/blog/shopify-apps-optimization-guide) und [So beschleunigen Sie einen Shopify-Shop](/blog/speed-up-shopify-store), bevor Sie eine neue Plattform planen.
 
 ### Konvertierung
 

@@ -671,4 +671,4 @@ Verwandeln Sie das Audit in einen 30-Tage-Verbesserungsplan:
 5. Schreiben Sie schwache Zielseiten neu.
 6. Messen Sie die Conversion-Rate erneut nach Gerät und Traffic-Quelle.
 
-If you want to combine conversion diagnostics with SEO and technical checks, start with the [free expert store review](/free-store-review), read [Why your store is not converting](/blog/why-your-store-isnt-converting), or review our [Shopify services page](/solutions/shopify).
+Wenn Sie Conversion-Diagnose mit SEO und technischen Prüfungen kombinieren möchten, beginnen Sie mit der [kostenlosen Experten-Shop-Bewertung](/free-store-review), lesen Sie [Warum Ihr Shop nicht konvertiert](/blog/why-your-store-isnt-converting) oder sehen Sie sich unsere [Shopify-Services-Seite](/solutions/shopify) an.

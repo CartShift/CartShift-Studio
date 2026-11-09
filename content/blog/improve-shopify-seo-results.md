@@ -694,4 +694,4 @@ Um die SEO-Ergebnisse von Shopify zu verbessern, bauen Sie ein System auf:
 5. saubere technische Grundlagen
 6. Konversionsmessung
 
-If your store is stuck and you want a faster diagnosis, start with the [free expert store review](/free-store-review), review our [Shopify SEO services](/solutions/shopify), or read [Why Shopify stores do not rank](/blog/why-shopify-stores-dont-rank).
+Wenn Ihr Shop nicht weiterkommt und Sie eine schnellere Diagnose wünschen, beginnen Sie mit der [kostenlosen Experten-Shop-Bewertung](/free-store-review), sehen Sie sich unsere [Shopify SEO-Dienste](/solutions/shopify) an oder lesen Sie [Warum Shopify-Shops kein Ranking erzielen](/blog/why-shopify-stores-dont-rank).

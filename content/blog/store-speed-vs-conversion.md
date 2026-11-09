@@ -625,4 +625,4 @@ Vergleichen Sie Leistung und Konvertierung miteinander. Vermerken Sie nach jeder
 
 Das Ziel besteht nicht darin, einen Screenshot einer perfekten Leistungsbewertung zu gewinnen. Das Ziel besteht darin, dass sich das Geschäft vertrauenswürdig anfühlt, schnell und einfach einzukaufen ist.
 
-If your store is visible but not converting, pair this with [Why your store is not converting](/blog/why-your-store-isnt-converting), request the [free expert store review](/free-store-review), or talk with us about [Shopify performance and conversion work](/solutions/shopify).
+Wenn Ihr Shop sichtbar ist, aber keine Conversions durchführt, verknüpfen Sie dies mit [Warum Ihr Shop nicht konvertiert](/blog/why-your-store-isnt-converting), fordern Sie die [kostenlose Store-Bewertung durch Experten](/free-store-review) an oder sprechen Sie mit uns über die [Shopify-Leistung und Conversion-Arbeit](/solutions/shopify).

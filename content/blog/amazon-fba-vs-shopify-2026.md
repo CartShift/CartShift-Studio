@@ -1367,7 +1367,7 @@ Shopify: **לקוח ממוצע מזמין 2.8 פעמים** (אימייל, רימ
 ---de---
 Amazon und Shopify lösen unterschiedliche Probleme. Amazon bietet Ihnen eine Marktplatznachfrage und eine Fulfillment-Maschine. Shopify bietet Ihnen ein Zuhause für die Marke, die Kundenbeziehung und die Margengeschichte. Sie als Feinde zu behandeln, führt normalerweise zu einer oberflächlichen Entscheidung.
 
-The practical question is: where should the first serious channel bet go, and what control are you willing to trade for speed? For costs, always check [Amazon's seller pricing page](https://sell.amazon.com/pricing) and [Shopify's pricing page](https://www.shopify.com/pricing), because fees change and small differences matter once volume grows.
+Die praktische Frage lautet: Wohin sollte die erste ernsthafte Kanalwette gehen und welche Kontrolle sind Sie bereit, gegen Geschwindigkeit einzutauschen? Informationen zu den Kosten finden Sie immer auf der [Preisseite für Verkäufer](https://sell.amazon.com/pricing) und der [Shopify-Preisseite](https://www.shopify.com/pricing), da sich die Gebühren ändern und kleine Unterschiede eine Rolle spielen, sobald das Volumen steigt.
 
 Wenn Shopify der Kanal ist, den Sie besitzen möchten, verwenden Sie unseren [Shopify SEO-Leitfaden](/blog/shopify-seo-complete-guide), um zu planen, wie dieser Shop Sichtbarkeit in der Suche erhält, anstatt sich nur auf bezahlte Akquisitionen zu verlassen.
 

@@ -605,7 +605,7 @@ Verwenden Sie diese Scorecard, bevor Sie Inhalte neu schreiben oder eine weitere
 | Überprüfungsbereich | Passsignal | Warnsignal | Erster Fix zum Testen |
 | ------------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
 | Abfrageanpassung | Die Seite wird für die Stelle eingestuft, für deren Beantwortung sie geschrieben wurde | Die Seite wird nach Überprüfung, Prüfung, Preisgestaltung oder Agenturabsicht eingestuft | Titel, Einleitung, Überschriften und Links zum nächsten Schritt klären |
-| CTR                | Positions 4-20 earn clicks that fit the page intent                        | Impressions rise while clicks stay flat                            | Rewrite the title and excerpt around the actual query  |
+| CTR | Die Positionen 4–20 generieren Klicks, die zur Seitenabsicht passen | Die Impressionen steigen, während die Klicks gleich bleiben | Schreiben Sie den Titel und den Auszug um die eigentliche Suchanfrage herum neu |
 | Zielseitenpfad | Leser wechseln zu Produkten, Dienstleistungen, Tools oder Vergleichsseiten | Organische Besucher lesen und gehen ohne sinnvollen nächsten Schritt | Fügen Sie kontextbezogene Links und einen zurückhaltenden CTA hinzu |
 | Technische Klarheit | Canonicals, Sitemap-Signale, Geschwindigkeit und strukturierte Daten stimmen überein | Google erkennt doppelte Pfade, langsame Vorlagen oder unklare Canonicals | Beheben Sie Crawling-/Indexsignale, bevor Sie weitere Inhalte veröffentlichen |
 | Umsatzverbindung | SEO-Seiten können mit Anfragen, unterstützten Verkäufen oder Produkterkundungen verknüpft werden | Rankings werden getrennt vom kommerziellen Verhalten gemeldet | Markieren Sie Seiten nach Absicht und überprüfen Sie nachgelagerte Aktionen |
@@ -840,7 +840,7 @@ Ziehen Sie einen technischen Partner hinzu, wenn die Bewertung Folgendes ergibt:
 - Der organische Traffic steigt, Leads oder Verkäufe jedoch nicht.
 - Das Team kennt das Problem, kann die Lösung jedoch nicht sicher implementieren.
 
-CartShift Studio works where SEO, performance, and ecommerce implementation overlap. If your review points to theme, app, structure, or conversion issues, start with the [expert store review](/free-store-review), review our [Shopify development services](/solutions/shopify), or see how we approach [technical and content SEO](/solutions/seo).
+CartShift Studio funktioniert dort, wo sich SEO, Leistung und E-Commerce-Implementierung überschneiden. Wenn Ihre Bewertung auf Themen-, App-, Struktur- oder Konvertierungsprobleme hinweist, beginnen Sie mit der [fachmännischen Store-Bewertung](/free-store-review), überprüfen Sie unsere [Shopify-Entwicklungsdienste](/solutions/shopify) oder sehen Sie sich an, wie wir [technisches und inhaltliches SEO](/solutions/seo) angehen.
 
 ## Letzter Imbiss
 

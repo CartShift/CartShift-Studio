@@ -679,7 +679,7 @@ Holen Sie sich Hilfe, wenn das Geschäft sehr komplex ist:
 
 Ein guter Partner sollte nicht nur „die Seite bewegen“. Sie sollten Umsatz, SEO, Nachverfolgung, Betrieb und die Fähigkeit des Teams schützen, den Shop nach dem Start zu verbessern.
 
-CartShift Studio works across Shopify, WooCommerce, migration planning, speed, SEO, and conversion paths. If you are evaluating a move, start with [Shopify development services](/solutions/shopify), review [WordPress and WooCommerce solutions](/solutions/wordpress), or [book a migration consultation](/contact).
+CartShift Studio funktioniert mit Shopify, WooCommerce, Migrationsplanung, Geschwindigkeit, SEO und Konvertierungspfaden. Wenn Sie über einen Umzug nachdenken, beginnen Sie mit [Shopify-Entwicklungsdiensten](/solutions/shopify), sehen Sie sich [WordPress- und WooCommerce-Lösungen](/solutions/wordpress) an oder [buchen Sie eine Migrationsberatung](/contact).
 
 ## Letzter Imbiss
 

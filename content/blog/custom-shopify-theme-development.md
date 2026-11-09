@@ -1137,4 +1137,4 @@ Erstellen Sie ein benutzerdefiniertes Shopify-Theme, wenn der Marken-, Katalog- 
 
 Entscheiden Sie sich nur dann für Headless, wenn die erforderliche Erfahrung den Besitz eines separaten Frontend-Produkts rechtfertigt.
 
-CartShift Studio designs and develops Shopify storefronts around the real constraint: conversion, performance, editing, integration, or scale. Explore our [Shopify development services](/solutions/shopify) or [book a storefront architecture review](/contact) before committing to a rebuild.
+CartShift Studio entwirft und entwickelt Shopify-Storefronts rund um die eigentlichen Einschränkungen: Konvertierung, Leistung, Bearbeitung, Integration oder Skalierung. Entdecken Sie unsere [Shopify-Entwicklungsdienste](/solutions/shopify) oder [buchen Sie eine Überprüfung der Storefront-Architektur](/contact), bevor Sie sich für einen Umbau entscheiden.
