@@ -18,7 +18,7 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
-  return routing.locales.flatMap(locale =>
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale =>
     posts.slice(0, PRERENDERED_POST_COUNT).map(post => ({
       locale,
       slug: post.slug,
