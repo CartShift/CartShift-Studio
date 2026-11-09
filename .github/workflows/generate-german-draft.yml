@@ -29,7 +29,14 @@ jobs:
       - name: Install static Markdown authoring dependencies
         run: python -m pip install 'PyYAML==6.0.2'
       - name: Draft faithful German translations from existing public source files
-        run: python scripts/i18n/generate-de-draft.py --scope all
+        run: |
+          if [ ! -f scripts/i18n/de-draft-skipped.json ]; then
+            python scripts/i18n/generate-de-draft.py --scope all
+          else
+            echo 'Draft already exists; preserving its pending-review manifest'
+          fi
+      - name: Repair only exact failed Markdown link paragraphs
+        run: python scripts/i18n/repair-de-links.py
       - name: Inspect and commit generated translation drafts to the feature branch only
         shell: bash
         run: |
