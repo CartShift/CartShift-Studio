@@ -43,6 +43,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'feat(de): draft original website, blog and case-study translations [machine review required]'
+          # Earlier PR updates may have landed while this long-running draft was built.
+          git fetch origin feat/german-market-launch-20261109
+          git rebase origin/feat/german-market-launch-20261109
           git push origin "HEAD:refs/heads/feat/german-market-launch-20261109"
       - name: Notes
         run: echo 'Never enable the German public release flags without native review, legally verified Impressum and E2E QA.'
