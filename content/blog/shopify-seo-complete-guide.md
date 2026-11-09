@@ -801,4 +801,4 @@ Beginnen Sie mit:
 
 Diese Reihenfolge übertrifft in der Regel jedes Mal die zufällige Veröffentlichung.
 
-> Want help with the implementation side? Start with our [Shopify services](/solutions/shopify), request the [free expert store review](/free-store-review), or [book a consultation](/contact).
+> Sie möchten Unterstützung bei der Umsetzung? Informieren Sie sich über unsere [Shopify-Leistungen](/solutions/shopify), fordern Sie eine [kostenlose Expertenanalyse Ihres Shops](/free-store-review) an oder [vereinbaren Sie ein Beratungsgespräch](/contact).
