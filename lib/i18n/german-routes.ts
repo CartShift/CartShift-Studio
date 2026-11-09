@@ -13,7 +13,7 @@ export const germanMarketingPaths = [
 ] as const;
 
 export function isGermanMarketingPath(pathname: string): boolean {
-  const normalized = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
+  const normalized = pathname === '/' || pathname === '' ? '/' : pathname.replace(/\/$/, '');
   return (germanMarketingPaths as readonly string[]).includes(normalized);
 }
 
