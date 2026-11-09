@@ -18,6 +18,15 @@ const brotliCompress = promisify(zlib.brotliCompress);
 
 const isSilent = process.argv.includes('--silent') || process.env.QUIET === '1';
 
+// A release with German enabled must not silently serve English fallbacks.
+if (process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED === 'true' &&
+    process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED === 'true') {
+  require('node:child_process').execFileSync(
+    process.execPath, [path.join(__dirname, 'check-german-parity.cjs')], { stdio: 'inherit' }
+  );
+}
+
+
 const RETRIABLE_FS_ERRORS = new Set(['EBUSY', 'EPERM', 'EACCES', 'UNKNOWN']);
 
 function sleepSync(ms) {
