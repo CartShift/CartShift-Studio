@@ -71,7 +71,7 @@ def process(file,pending):
     fixed=[]
     for i,line in enumerate(de_lines):
         source=line.rstrip('\r\n')
-        matches=[s for s in pending if source.startswith(s) and s]
+        matches=[s for s in pending if source.startswith(s[:80]) and s]
         if matches:
             if source.lstrip().startswith('|'):translated=translate_table_line(source)
             else:translated=translate_link_line(source)
@@ -80,17 +80,6 @@ def process(file,pending):
             ending='\r\n' if line.endswith('\r\n') else '\n' if line.endswith('\n') else ''
             de_lines[i]=translated+ending
             fixed.extend(matches)
-    # Repair a link that was rendered incorrectly even though it was not
-    # retained in the original-language review manifest.
-    enlines=get_english(text).splitlines()
-    for i,(source,target) in enumerate(zip(enlines,de_lines)):
-        urls=[m.group(2) for m in LINK.finditer(source)]
-        if urls and [m.group(2) for m in LINK.finditer(target)]!=urls:
-            translated=translate_link_line(source)
-            if [m.group(2) for m in LINK.finditer(translated)]!=urls:continue
-            ending='\r\n' if target.endswith('\r\n') else '\n' if target.endswith('\n') else ''
-            de_lines[i]=translated+ending
-            fixed.append('BROKEN_LINK:'+file.name+':'+str(i+1))
     if de_lines!=original_de:file.write_text(head+''.join(de_lines),'utf-8')
     return fixed
 
