@@ -1,4 +1,3 @@
-import { GermanMarketingPage } from '@/components/marketing/GermanMarketingPage';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { WordPressTemplate } from '@/components/templates/WordPressTemplate';
 import {
@@ -16,7 +15,6 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === 'de') return genMeta({ title: 'WordPress Website erstellen lassen | CartShift Studio', description: 'Individuelle WordPress-Websites mit modernem Design, technischer SEO, Performance und zuverlässiger Weiterentwicklung.', url: '/solutions/wordpress' }, 'de');
   return genMeta(
     {
       title: locale === 'he'
@@ -43,8 +41,7 @@ export async function generateMetadata({
 
 export default async function WordPressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he' | 'de');
-  if (locale === 'de') return <GermanMarketingPage kind="wordpress" />;
+  setRequestLocale(locale as 'en' | 'he');
   const serviceSchema = generateServiceSchema(
     'WordPress Development',
     'Expert WordPress development services for content sites, news platforms, and custom websites. Theme customization, performance optimization, and ongoing support.',
