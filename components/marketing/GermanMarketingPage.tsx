@@ -1,5 +1,6 @@
 import NextLink from 'next/link';
 import { Link } from '@/i18n/navigation';
+import { generateServiceSchema, generateWebSiteSchema } from '@/lib/seo';
 
 type PageKind = 'home' | 'shopify' | 'wordpress' | 'seo';
 
@@ -71,9 +72,20 @@ const faqs = {
 export function GermanMarketingPage({ kind }: { kind: PageKind }) {
   const data = pages[kind];
   const isHome = kind === 'home';
+  const schema = isHome
+    ? generateWebSiteSchema('de')
+    : generateServiceSchema(
+        kind === 'shopify' ? 'Shopify Entwicklung' : kind === 'wordpress' ? 'WordPress Entwicklung' : 'Technische SEO',
+        data.intro,
+        { locale: 'de', url: `/solutions/${kind}` }
+      );
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
+      />
       <section className="relative overflow-hidden bg-surface-950 px-5 py-24 text-white sm:py-32 md:px-8">
         <div className="pointer-events-none absolute -end-32 -top-44 h-[28rem] w-[28rem] rounded-full bg-primary-600/25 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-56 start-0 h-[28rem] w-[28rem] rounded-full bg-blue-600/20 blur-3xl" />
