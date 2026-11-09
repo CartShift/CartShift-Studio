@@ -181,4 +181,92 @@ he:
     - 'Frontend רספונסיבי'
     - 'פריסה על Vercel'
     - 'איסוף קהל לניוזלטר'
+de:
+  title: Atlas Irwin-Künstler-Website
+  summary: Eine Next.js-Künstler-Website für Atlas Irwin, die auffälliges Musik-Branding, veröffentlichungsgesteuerte Navigation, Plattform-Links, Kontaktpfade und Newsletter-Erfassung in einem schnellen, von Vercel gehosteten Erlebnis vereint.
+  industry: Musik- und Künstler-Branding
+  cta:
+    title: Brauchen Sie eine Künstlerseite, die Ihre Identität in ein veröffentlichungsbereites digitales Zuhause verwandelt?
+    description: Wir können Musik, Geschichte, Kontakt und Publikumseinbindung in einem fokussierten Erlebnis verbinden, das sich rund um den Künstler dreht.
+  hero:
+    image: /images/case-studies/atlas-irwin-music-identity/hero.jpg
+    alt: Atlas Irwin-Homepage mit auffälliger Künstlertypografie, kosmischen Kunstwerken und einem funkorientierten Call-to-Action
+    supportingCopy: Eine Filmkünstler-Website für Atlas Irwin, die Musik, Story, Kontakt, Plattform-Links und Fan-Erfassung in einer fokussierten digitalen Identität vereint.
+  overview:
+    title: Eine Künstleridentität in ein veröffentlichungsbereites digitales Zuhause verwandeln
+    summary: Atlas Irwin brauchte eine Website, die sich weniger wie ein allgemeiner Link-Hub, sondern eher wie eine Marken-Hörumgebung anfühlte. Im Mittelpunkt des Erlebnisses stehen der Name des Künstlers, die visuelle Welt, die Veröffentlichungsdynamik und klare Wege zu Musik, Geschichte, Kontakt und Fankonvertierung.
+  deliverables:
+  - title: Immersive Homepage-Identität
+    description: Das erste Viewport wurde rund um große Künstlertypografie, kosmische Kunstwerke, einen direkten Musik-CTA und einen starken visuellen Rhythmus aufgebaut, damit die Marke sofort ankommt.
+  - title: Von der Veröffentlichung geleitete Musikpräsentation
+    description: Die Funkable-Veröffentlichung wurde nach Titellisten, Player-Steuerelementen, Veröffentlichungsmetadaten und Plattformlinks strukturiert, damit Besucher ohne Reibungsverluste von der Entdeckung zum Hören übergehen können.
+  - title: Abschnitt über Künstlergeschichte und -prozess
+    description: Organisierte den About-Bereich rund um die Geschichte, kreative Prinzipien und verfügbare Formate für die Zusammenarbeit, anstatt die Seite als einfache Biografie zu belassen.
+  - title: Kontakt- und Lüftererfassungsfluss
+    description: Es wurden klare Kontaktpfade für die Zusammenarbeit und ein Newsletter-Bereich hinzugefügt, sodass Buchungen, Provisionen und Fan-Updates jeweils einen offensichtlichen nächsten Schritt haben.
+  - title: Schnelles, von Vercel gehostetes Frontend
+    description: Bereitstellung des Erlebnisses als responsive Next.js-Site mit einem fokussierten Bereitstellungspfad und visuellem Feinschliff, abgestimmt auf eine Musik-First-Marke.
+  gallery:
+  - image: /images/case-studies/atlas-irwin-music-identity/hero.jpg
+    alt: Atlas Irwin-Homepage-Held mit großem Künstlernamen, kosmischen Kunstwerken und Handlungsaufforderung
+    caption: Die Homepage öffnet sich wie ein digitales Albumposter und vereint die Identität des Künstlers, die Klangrichtung und die primäre Musikaktion in einer visuellen Aussage.
+  - image: /images/case-studies/atlas-irwin-music-identity/gallery-01.jpg
+    alt: Atlas Irwin-Veröffentlichungs-Widget mit Titelliste, Player-Steuerelementen und Links zur Streaming-Plattform
+    caption: Der Veröffentlichungsbereich vereint das Funkable EP-Artwork, die Titelliste, die Spieleraktionen und die Plattformziele in einem fokussierten Hörpfad.
+  - image: /images/case-studies/atlas-irwin-music-identity/gallery-02.jpg
+    alt: Atlas Irwin-Abschnitt mit Künstlergeschichte und kreativen Prozesskarten
+    caption: Der About-Abschnitt umrahmt den Künstler durch die Geschichte, den Prozess und die Sprache der Zusammenarbeit, anstatt sich auf einen flachen Profilblock zu verlassen.
+  - image: /images/case-studies/atlas-irwin-music-identity/gallery-03.jpg
+    alt: Kontakt- und Newsletterbereich von Atlas Irwin mit Buchungsformular und Fan-Anmeldung
+    caption: Der abschließende Abschnitt trennt den Kooperationskontakt von den Fan-Updates, sodass beide Konvertierungspfade klar und einfach zu handhaben sind.
+  evidence:
+  - title: Die Homepage stellt die Identität des Künstlers sofort fest
+    value: Marken-erster Held
+    description: Das erste Ansichtsfenster zeigt Atlas Irwin als Hauptprodukt und vereint Name, Bildmaterial, Slogan und CTA in einer unverwechselbaren Aussage.
+    before: Allgemeiner Künstlereintrag
+    after: Von der visuellen Identität geprägte Homepage
+    tone: qualitative
+  - title: Die Veröffentlichungsreise ist rund um die Musik organisiert
+    value: Release-Hub
+    description: Der Funkable-Bereich vereint Veröffentlichungsmetadaten, Titel, Wiedergabe und Plattformlinks, sodass Hörer nicht gezwungen sind, nach getrennten Links zu suchen.
+    before: Verstreute Musiklinks
+    after: Fokussierter Release-Pfad
+    tone: qualitative
+  - title: Die Künstlergeschichte unterstützt Entscheidungen zur Zusammenarbeit
+    value: Geschichte + Dienstleistungen
+    description: Die Website erklärt die kreative Welt und die verfügbaren Formate und hilft Buchern, Mitarbeitern und Auftraggebern zu verstehen, welche Art von Arbeit Atlas Irwin anbietet.
+    before: Nur-Bio-Rahmen
+    after: Eine für die Zusammenarbeit geeignete Erzählung
+    tone: qualitative
+  - title: Fan- und Business-Aktionen werden klar getrennt
+    value: Zwei Konvertierungspfade
+    description: Die Abschnitte „Kontakt“ und „Newsletter“ bedienen unterschiedliche Besucherabsichten und vermeiden ein überladenes einzelnes Formular, während die Seite dennoch fokussiert bleibt.
+    before: Ein vager nächster Schritt
+    after: Buchung plus Fan-Erfassung
+    tone: qualitative
+  results:
+  - metric: Künstlereintrag
+    before: Generische Landung
+    after: Homepage im Album-Poster-Stil
+    improvement: Markanter
+  - metric: Musikentdeckung
+    before: Nur externe Links
+    after: Release-Widget + Plattform-Links
+    improvement: Klarer
+  - metric: Geschichtenerzählen
+    before: Flache Biografie
+    after: Story, Prozess und verfügbare Formate
+    improvement: Stärker
+  - metric: Konvertierungspfade
+    before: Gemischte Absicht
+    after: Kontakt und Newsletter getrennt
+    improvement: Sauberer
+  services:
+  - Next.js-Entwicklung
+  - Künstler-Website-Design
+  - Landingpage für Musikveröffentlichungen
+  - Responsives Frontend
+  - Vercel-Bereitstellung
+  - Newsletter-Erfassung
+  content: ''
 ---

@@ -15,6 +15,9 @@ tags:
 title_he: 'Liquid Loom: פריימוורק מבוסס-מקור לפיתוח תבניות Shopify'
 excerpt_he: 'הכירו את Liquid Loom, פריימוורק קוד פתוח לתבניות Shopify שהופך קוד מקור מאורגן לפלט דטרמיניסטי ומוכן ל-Shopify, עם Vite, Tailwind CSS, מטמון והגנות build שנבדקו.'
 category_he: 'שופיפיי'
+title_de: "Liquid Loom: Ein Source-First-Framework für die Shopify-Themenentwicklung"
+excerpt_de: "Lernen Sie Liquid Loom kennen, ein Open-Source-Shopify-Theme-Framework, das organisierten Quellcode mit Vite, Tailwind CSS, Caching und getesteten Build-Schutzmaßnahmen in eine deterministische, Shopify-bereite Ausgabe umwandelt."
+category_de: "Shopify"
 ---
 
 This is the entire idea behind Liquid Loom:
@@ -456,3 +459,223 @@ Liquid Loom מתאים לצוותי תבניות Shopify שרוצים:
 בחנות production כדאי לשלב את בדיקות המאגר עם [סקירת מהירות והמרות](/blog/store-speed-vs-conversion). אם העבודה מתרחבת לארכיטקטורת תבנית, אינטגרציות או QA לחנות, [שירותי הפיתוח שלנו ל-Shopify](/solutions/shopify) יכולים לעזור להפוך את הפריימוורק לתבנית מוכנה לפריסה.
 
 היכנסו ל-[מאגר Liquid Loom ב-GitHub](https://github.com/yotamon/Liquid-Loom), הריצו את חבילת האימות ופתחו issue ממוקד או pull request כאשר תמצאו דרך להפוך את פיתוח תבניות Shopify לצפוי יותר.
+
+---de---
+Das ist die gesamte Idee hinter Liquid Loom:
+
+```text
+src/theme/sections/home/hero.liquid
+                    ↓
+dist/theme/sections/hero.liquid
+```
+
+Die Quelle bleibt dort, wo ein Entwickler danach suchen würde. Die Ausgabe landet dort, wo Shopify sie benötigt.
+
+Dieses kleine Mapping löst eine anhaltende Spannung in der Shopify-Theme-Entwicklung. [Shopify-Themen verwenden eine vorgeschriebene Verzeichnisstruktur](https://shopify.dev/docs/storefronts/themes/architecture), und die meisten bereitstellbaren Verzeichnisse unterstützen keine beliebigen Unterordner. Bei einer wachsenden Codebasis lässt sich jedoch leichter darüber nachdenken, wann verwandte Abschnitte, Snippets, Stile und Verhaltensweisen je nach Feature zusammenleben können.
+
+[Liquid Loom](https://github.com/yotamon/Liquid-Loom) ist ein Open-Source-Source-First-Framework, das um diese Grenze herum aufgebaut ist. Damit können Entwickler ein Online Store 2.0-Theme in einem organisierten Arbeitsbereich erstellen, moderne Frontend-Assets über Vite und Tailwind CSS kompilieren und ein herkömmliches `dist/theme/`-Verzeichnis generieren, das Shopify CLI in der Vorschau anzeigen oder direkt pushen kann.
+
+Es ersetzt nicht Liquid. Es wird keine Storefront-Laufzeitumgebung hinzugefügt. Es macht den Aufbau zwischen erstellter Quelle und Shopify-bereiter Ausgabe explizit, deterministisch und testbar.
+
+## Warum die quellenorientierte Themenentwicklung wichtig ist
+
+Der Laufzeitvertrag von Shopify ist gerade deshalb nützlich, weil er konventionell ist. Ein bereitstellbares Design verfügt über erkennbare Verzeichnisse wie `layout`, `sections`, `snippets`, `templates`, `config`, `locales` und `assets`. Die Plattform, der Theme-Editor, Theme Check und Shopify CLI verstehen diese Form.
+
+Teams, die sich noch zwischen einfacher Anpassung, einem nativen benutzerdefinierten Build und einer Headless-Bereitstellung entscheiden, sollten zunächst unseren [Entscheidungsleitfaden für die Entwicklung eines benutzerdefinierten Shopify-Themes](/blog/custom-shopify-theme-development) verwenden. Liquid Loom wurde bewusst für den Native-Theme-Bereich dieser Lösung entwickelt.
+
+Das Problem beginnt, wenn das Bereitstellungsformat auch zum Erstellungsformat wird.
+
+Stellen Sie sich ein Thema mit Dutzenden von Abschnitten vor. Ein Homepage-Held, eine vorgestellte Sammlung, eine Produktgalerie, Produktempfehlungen, eine Einkaufswagenschublade, eine Suchoberfläche und eine globale Navigation befinden sich alle nebeneinander in einem flachen `sections/`-Verzeichnis. Ihre zugehörigen Snippets werden in ein anderes flaches Verzeichnis aufgeteilt. JavaScript und CSS häufen sich oft um sie herum an, ohne dass es eine klare Eigentumsgrenze gibt.
+
+Das Thema ist gültig, aber der Quellbaum kommuniziert nicht mehr, wie das Produkt organisiert ist.
+
+Liquid Loom behandelt die Verzeichnisstruktur von Shopify als Build-Ziel und nicht als Einschränkung bei der Anordnung der Quellen. Entwickler können Dateien nach Anliegen gruppieren:
+
+```text
+src/
+├── entrypoints/
+│   └── theme.js
+├── public/
+│   └── icons/
+│       └── cart.svg
+├── styles/
+│   └── theme.css
+└── theme/
+    ├── sections/
+    │   ├── home/
+    │   │   └── hero.liquid
+    │   └── products/
+    │       └── main-product.liquid
+    └── snippets/
+        └── product/
+            └── price.liquid
+```
+
+Der Build erzeugt dann die erwartete Struktur von Shopify:
+
+```text
+dist/theme/
+├── assets/
+│   ├── cart.svg
+│   ├── style.css
+│   └── theme.js
+├── sections/
+│   ├── hero.liquid
+│   └── main-product.liquid
+└── snippets/
+    └── price.liquid
+```
+
+Das ist keine Abstraktion um ihrer selbst willen. Der Quellbaum sagt Entwicklern, wo eine Funktion hingehört, während der generierte Baum langweilig genug bleibt, damit Shopify ihn verstehen kann.
+
+## Der Mapping-Vertrag ist der Rahmen
+
+Liquid Loom trennt bewusst zwei Aufgaben.
+
+Der statische Mapper besitzt Liquid-, JSON- und öffentliche Dateien. Vite besitzt JavaScript und CSS. Beide schreiben in dasselbe generierte Theme, aber keiner gibt vor, dass die andere Art von Datei auf die gleiche Weise funktioniert.
+
+| Autorisierte Quelle | Generierte Ausgabe | Verhalten |
+| -------------------------------------------- | --------------------------------------------- | ------------------------------------------ |
+| `src/theme/sections/home/hero.liquid` | `dist/theme/sections/hero.liquid` | Reduziert den Feature-Ordner |
+| `src/theme/snippets/product/price.liquid` | `dist/theme/snippets/price.liquid` | Reduziert den Feature-Ordner |
+| `src/theme/templates/customers/account.json` | `dist/theme/templates/customers/account.json` | Behält einen unterstützten verschachtelten Vorlagenpfad | bei
+| `src/public/icons/cart.svg` | `dist/theme/assets/cart.svg` | Kopiert ein öffentliches Asset in Shopify-Assets |
+| `src/entrypoints/theme.js` | `dist/theme/assets/theme.js` | Bündelt und minimiert mit Vite |
+| `src/styles/theme.css` | `dist/theme/assets/style.css` | Kompiliert Tailwind und erstelltes CSS |
+
+Jeder unterstützte Quellpfad hat ein vorhersehbares Ziel. Nicht unterstützte Pfade schlagen fehl. Fehlende erforderliche Designdateien schlagen fehl. Ungültiges Theme-JSON schlägt fehl. Das generierte Verzeichnis ist verfügbar und sollte niemals manuell bearbeitet werden.
+
+Dieser Vertrag entspricht auch den eigenen Richtlinien von Shopify CLI. Shopify weist darauf hin, dass Theme-Befehle anhand der Standard-Theme-Verzeichnisstruktur ausgeführt werden müssen und dass Projekte, die Build-Tools verwenden, diese Befehle möglicherweise über ihre generierte Ausgabe ausführen müssen. Liquid Loom macht genau das: `shopify theme dev --path dist/theme`.
+
+## Das Abflachen erfordert eine Kollisionsstrategie
+
+Feature-Ordner stellen ein wichtiges Risiko dar.
+
+```text
+src/theme/sections/home/hero.liquid
+src/theme/sections/campaigns/hero.liquid
+```
+
+Beide Dateien würden zugeordnet werden zu:
+
+```text
+dist/theme/sections/hero.liquid
+```
+
+Ein unvorsichtiger Kopierer würde die letzte Datei gewinnen lassen. Der Build wäre erfolgreich, ein Abschnitt würde verschwinden und das Ergebnis könnte von der Reihenfolge des Dateisystems abhängen.
+
+Liquid Loom plant zunächst den kompletten Kopiervorgang. Wenn zwei Quelldateien zu einem Ziel aufgelöst werden, wird ein `BuildCollisionError` ausgelöst, bevor eine der Dateien kopiert wird. Der Fehler benennt das Ziel und beide konkurrierenden Quellen.
+
+Dieses Verhalten ist wichtiger als die verschachtelten Ordner selbst. Organisation ist nur dann sinnvoll, wenn der Prozess, der sie glättet, sicher ist.
+
+## Inkrementelle Builds ohne veraltete Ausgabe
+
+Liquid Loom führt ein Manifest unter `.cache/manifest.json`. Für jede statische Quelldatei speichert das Manifest einen SHA-256-Inhaltsfingerabdruck, seinen Ausgabepfad und seine Bytegröße.
+
+Beim nächsten Build wird eine Datei nur übersprungen, wenn drei Bedingungen zutreffen:
+
+1. sein Inhaltsfingerabdruck bleibt unverändert
+2. sein kartiertes Ziel bleibt unverändert
+3. Die erwartete Ausgabedatei ist noch vorhanden
+
+Geänderte Dateien werden erneut kopiert. Gelöschte Quelldateien entfernen ihre veraltete generierte Ausgabe. Eine umbenannte Datei kann kein altes bereitstellbares Artefakt zurücklassen.
+
+Das Manifest wird in eine prozessspezifische temporäre Datei geschrieben und erst umbenannt, nachdem der statische Build erfolgreich war. Ein unterbrochener Build kann daher keinen halbgeschriebenen Cache hinterlassen, der behauptet, die Ausgabe sei aktuell.
+
+Ein typischer unveränderter Build meldet nützliche Arbeit direkt:
+
+```text
+LIQUID LOOM · production build
+✓ 27 theme files · 0 copied · 27 cached · 0 removed · 21.4 KiB · 1.85s
+output dist/theme
+```
+
+Das Ziel ist kein Theaterterminal. Es handelt sich um einen Build-Bericht, der beantwortet, was sich geändert hat, was wiederverwendet wurde, was entfernt wurde und wo sich das bereitstellbare Theme jetzt befindet.
+
+## Saubere Befehle sollten defensiv sein
+
+Build-Tools löschen schließlich generierte Dateien. Damit ist die Pfadvalidierung Teil des Sicherheitsmodells des Frameworks.
+
+Bevor Liquid Loom einen sauberen Build ausführt oder seinen Cache entfernt, löst es das Projektstammverzeichnis, das Quellstammverzeichnis und das Ausgabestammverzeichnis auf. Es lehnt ein Ausgabeziel ab, wenn dieses Ziel:
+
+- das Projektstammverzeichnis selbst
+- das Quellverzeichnis oder eines seiner untergeordneten Verzeichnisse
+- irgendwo außerhalb des Repositorys
+
+Beim Lesen veralteter Ausgabepfade aus dem Cache-Manifest wird das gleiche Prinzip angewendet. Ein fehlerhafter oder manipulierter Cache-Eintrag kann nicht auf eine Bereinigung außerhalb von `dist/theme/` verweisen.
+
+Diese Prüfungen werden durch Tests abgedeckt, da ein sauberer Befehl bequem und nicht mutig sein sollte.
+
+## Ein echter OS 2.0-Starter, ohne vorzugeben, ein Store zu sein
+
+Das Repository enthält ein händlerneutrales Online Store 2.0-Referenzthema. Es deckt die Oberflächen ab, die zum Nachweis des Arbeitsablaufs erforderlich sind:
+
+- Startseite, Produkt, Sammlung, Warenkorb, Seite, Suche und 404-Vorlagen
+- JSON-Vorlagen und bearbeitbare Kopf- und Fußzeilenabschnittsgruppen
+- Designeinstellungen werden als benutzerdefinierte CSS-Eigenschaften angezeigt
+- semantische Navigation, sichtbare Fokuszustände, Skip-Links und Unterstützung für reduzierte Bewegung
+- Standard-Shopify-Produkt- und Warenkorbformulare, die auch ohne JavaScript funktionieren
+- kleine progressive Verbesserungen für die mobile Navigation und Mengensteuerung
+
+Dies ist wichtig, da sich ein Framework leichter anhand des tatsächlichen Theme-Verhaltens bewerten lässt als anhand eines leeren Ordners.
+
+Der Starter ist bewusst kein Schaufenster für die Produktion. Es umfasst keine Händlerdaten, privaten Integrationen, Analyseanbieter, Geschäftskennungen, Kundenworkflows oder branchenspezifischen visuellen Systeme. Seine Aufgabe ist es, den Bauvertrag und sinnvolle Vorgaben zu demonstrieren. Die Präsentation soll ersetzt werden.
+
+## Das Quality Gate ist ein Befehl
+
+`pnpm validate` reproduziert das CI-Gate des Repositorys lokal. Es läuft:
+
+```text
+test coverage
+→ formatting check
+→ clean production build
+→ project validation
+→ Shopify Theme Check
+→ public-readiness scan
+```
+
+Zum Zeitpunkt dieser Veröffentlichung meldet das Repository 15 bestandene Tests, 96,92 % Leitungsabdeckung, 91,67 % Filialabdeckung, 100 % Funktionsabdeckung und null Shopify Theme Check-Angriffe im generierten Starter. CI führt denselben Validierungsbefehl auf Knoten 24 aus.
+
+Der Public-Readiness-Scan fügt eine weniger häufige Release-Prüfung hinzu. Es untersucht Repository-Dateinamen und öffentliche Textdateien auf ausgeschlossene ältere Produkt- oder Markenbegriffe und vermeidet dabei Abhängigkeiten, generierte Ausgaben, Git-Interna und Cache-Daten. Es meldet den Ort eines Fundes, ohne den ausgeschlossenen Wert in CI-Protokollen zu wiederholen.
+
+Diese Prüfung spiegelt ein umfassenderes Prinzip wider: Ein Open-Source-Repository sollte nachweisen, dass es portierbar ist, und nicht nur behaupten, dass private Daten entfernt wurden.
+
+## Beginnen Sie mit dem Bauen mit Liquid Loom
+
+Liquid Loom ist unter der MIT-Lizenz öffentlich. Es erfordert Node.js 22.12 oder neuer, Corepack und pnpm. Ein Shopify-Entwicklungsshop ist nur für die Live-Theme-Vorschau und -Bereitstellung erforderlich.
+
+```bash
+git clone https://github.com/yotamon/Liquid-Loom.git liquid-loom
+cd liquid-loom
+
+corepack enable
+pnpm install
+pnpm build
+```
+
+Authentifizieren Sie sich einmal und starten Sie dann den Build Watcher und das Shopify-Entwicklungsthema zusammen:
+
+```bash
+pnpm exec shopify auth login
+pnpm dev
+```
+
+Für die lokale Kompilierung ohne Shopify-Vorschau verwenden Sie `pnpm watch`. Bevor Sie eine Pull-Anfrage öffnen, verwenden Sie `pnpm validate`.
+
+## Wozu Liquid Loom dient
+
+Liquid Loom eignet sich gut, wenn ein Shopify-Theme-Team Folgendes möchte:
+
+- natives Verhalten von Liquid und Online Store 2.0
+- funktionsorientierte Quellordner, ohne auf die standardmäßige Shopify-Ausgabe zu verzichten
+- moderne CSS- und JavaScript-Kompilierung durch Tailwind und Vite
+- deterministische Builds mit expliziten Fehlermodi
+- ein kleiner Starter, der Commerce-Oberflächen demonstriert, ohne eine Marke oder einen App-Stack aufzudrängen
+
+Es handelt sich nicht um eine Headless-Storefront, ein Anwendungs-Framework oder einen Ersatz für Shopify CLI. Es handelt sich um den Workshop rund um ein Thema: organisierte Eingaben, geschützte Transformationen und ein einsetzbares Ergebnis, das der Plattform nativ bleibt.
+
+Die nützlichsten Open-Source-Tools beseitigen oft keine Einschränkungen. Sie verwandeln Einschränkungen in Verträge, die Entwickler sehen, testen und denen sie vertrauen können.
+
+Kombinieren Sie für eine Produktions-Storefront die Repository-Prüfungen mit einer [Überprüfung der Ladengeschwindigkeit und Konvertierung](/blog/store-speed-vs-conversion). Wenn sich die Arbeit auf Theme-Architektur, Integrationen oder Storefront-QA erstreckt, kann [der Shopify-Entwicklungsservice von CartShift](/solutions/shopify) dabei helfen, das Framework in ein produktionsreifes Theme zu verwandeln.
+
+Erkunden Sie das [Liquid Loom-Repository auf GitHub](https://github.com/yotamon/Liquid-Loom), führen Sie die Validierungssuite aus und öffnen Sie ein gezieltes Problem oder eine Pull-Anfrage, wenn Sie eine Möglichkeit finden, die Shopify-Theme-Entwicklung vorhersehbarer zu machen.

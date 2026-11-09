@@ -1,0 +1,125 @@
+{
+  "storeReview": {
+    "badge": "PERSONAL STORE REVIEW",
+    "title": "Ihr Geschäft könnte härter arbeiten.",
+    "titleHighlight": "Lassen Sie uns herausfinden, wie.",
+    "subtitle": "Ein echter Experte schaut sich Ihren Online-Shop an, identifiziert umsetzbare Möglichkeiten und teilt klare Prioritäten mit. Keine allgemeine Sofortbewertung, keine Verpflichtung.",
+    "formTitle": "Fordern Sie Ihre kostenlose Expertenbewertung an",
+    "formDescription": "Sagen Sie uns, wo wir suchen müssen. Kein Konto oder Shopify-Zugriff erforderlich.",
+    "name": "Dein Name",
+    "namePlaceholder": "Dein Name",
+    "email": "Arbeits-E-Mail",
+    "emailPlaceholder": "you@company.com",
+    "storeUrl": "Shop-Website",
+    "storeUrlPlaceholder": "https://your-store.com",
+    "focusLabel": "Was möchten Sie verbessern?",
+    "focus": {
+      "conversion": "Konvertierungen",
+      "speed": "Geschwindigkeit",
+      "seo": "SEO",
+      "trust": "Kundenvertrauen",
+      "checkout": "Warenkorb und Kasse"
+    },
+    "notes": "Gibt es sonst noch etwas, was wir wissen sollten? (optional)",
+    "notesPlaceholder": "Das größte Hindernis für Ihr Geschäft...",
+    "optional": "Optional",
+    "marketing": "Senden Sie mir gelegentlich CartShift-Wachstumstipps. Dies ist optional.",
+    "privacy": "Wir werden Ihre Daten verwenden, um diese konkrete Anfrage zu beurteilen und zu beantworten. Marketing ist optional und separat. Lesen Sie unsere Datenschutzbestimmungen.",
+    "privacyLink": "Datenschutzrichtlinie",
+    "submit": "Fordern Sie meine kostenlose Rezension an",
+    "submitting": "Anfrage wird gesendet…",
+    "successTitle": "Ihre Bewertungsanfrage ist da!",
+    "successText": "Wir haben Ihre Geschäftsdaten erhalten. Unser Team wird Ihre Anfrage prüfen und Sie per E-Mail über die nächsten Schritte informieren. Es wurde kein Sofortbericht erstellt.",
+    "successReference": "Referenz",
+    "errorTitle": "Wir konnten Ihre Anfrage nicht senden.",
+    "errors": {
+      "INVALID_INPUT": "Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
+      "INVALID_STORE_URL": "Bitte geben Sie eine öffentliche Store-Website ein, z. B. https://your-store.com.",
+      "SECURITY_CHECK_FAILED": "Die Sicherheitsüberprüfung ist fehlgeschlagen. Bitte laden Sie es neu und versuchen Sie es erneut.",
+      "INTAKE_PAUSED": "Wir akzeptieren derzeit keine neuen Bewertungsanfragen. Bitte schauen Sie später noch einmal vorbei.",
+      "SERVICE_UNAVAILABLE": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später noch einmal.",
+      "SAVE_FAILED": "Wir konnten die Anfrage nicht sicher speichern. Bitte versuchen Sie es erneut.",
+      "ORIGIN_NOT_ALLOWED": "Diese Anfrage konnte nicht verifiziert werden.",
+      "GENERIC": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+      "RATE_LIMIT": "Zu viele Anfragen von dieser Verbindung. Bitte versuchen Sie es später noch einmal."
+    },
+    "whatTitle": "Was wir uns ansehen werden",
+    "whatDescription": "Eine gezielte Überprüfung der Teile Ihres Geschäfts, die das Kauferlebnis prägen.",
+    "areas": {
+      "ux": "Mobil- und Benutzererfahrung",
+      "product": "Produktseiten und Merchandising",
+      "checkout": "Reibungsverlust beim Kauf und Bezahlen",
+      "seo": "SEO und Auffindbarkeit",
+      "trust": "Vertrauen und Sicherheit",
+      "performance": "Leistungssignale"
+    },
+    "deliverTitle": "Eine Rezension, die man tatsächlich gebrauchen kann",
+    "deliverDescription": "Wir priorisieren die klarsten Chancen, anstatt Sie in automatisierten Bewertungen zu begraben.",
+    "deliverables": {
+      "findings": "3–5 priorisierte Ergebnisse",
+      "evidence": "Konkrete Beispiele aus Ihrem Shop",
+      "roadmap": "Praktische nächste Schritte",
+      "proposal": "Optionaler Implementierungsvorschlag"
+    },
+    "howTitle": "Einfach, persönlich, transparent",
+    "steps": {
+      "request": {
+        "title": "Erzählen Sie uns von Ihrem Geschäft",
+        "description": "Teilen Sie Ihre Shop-URL und die Herausforderung mit, die Sie am liebsten lösen würden."
+      },
+      "review": {
+        "title": "Wir überprüfen es persönlich",
+        "description": "Ein CartShift-Spezialist untersucht öffentliche Kundenreisen und validiert die Ergebnisse."
+      },
+      "next": {
+        "title": "Erhalten Sie nützliche nächste Schritte",
+        "description": "Wir folgen mit priorisierten Beobachtungen und einer optionalen Möglichkeit zur Zusammenarbeit."
+      }
+    },
+    "finePrint": "Eine gezielte Erstbewertung ist kostenlos. Es handelt sich nicht um eine Sicherheits-, Rechts-, Zugänglichkeits-Compliance- oder umfassende Prüfung der gesamten Website. Zusätzliche Zugänge oder tiefergehende Arbeiten werden gesondert vereinbart.",
+    "faqTitle": "Häufig gestellte Fragen",
+    "faq": {
+      "one": {
+        "q": "Ist die Rezension wirklich kostenlos?",
+        "a": "Ja. Die erste Expertenbewertung und die Priorisierung der Ergebnisse sind kostenlos und ohne Verpflichtung, uns zu beauftragen."
+      },
+      "two": {
+        "q": "Muss ich Ihnen Shopify-Zugriff gewähren?",
+        "a": "Nein. Wir beginnen nur mit öffentlichen Seiten. Wenn eine eingehendere Untersuchung hilfreich wäre, erklären wir Ihnen, was erforderlich ist, und bitten zunächst um Erlaubnis."
+      },
+      "three": {
+        "q": "Wann höre ich wieder?",
+        "a": "Wir werden uns nach Prüfung Ihrer Anfrage per E-Mail bei Ihnen melden. Der Zeitpunkt hängt von unserer Überprüfungskapazität ab; Wir behaupten nicht, dass ein Bericht gesendet wurde, bis dies tatsächlich der Fall ist."
+      },
+      "four": {
+        "q": "Arbeiten Sie nur mit Shopify?",
+        "a": "Shopify ist unsere Spezialität, aber wir können auch andere E-Commerce-Plattformen bewerten, wenn der Umfang zu unserem Fachwissen passt."
+      }
+    },
+    "ctaShort": "Kostenlose Store-Bewertung",
+    "trustBadges": [
+      "Von Menschen geführt",
+      "Keine Verpflichtung",
+      "Kostenlos"
+    ],
+    "workLink": "Entdecken Sie unsere Arbeit",
+    "scopeComparison": {
+      "title": "Welche Rezension passt zu Ihnen?",
+      "intro": "Die kostenlose Bewertung ist ein erster Einblick in Ihre öffentliche Kaufreise. Bei bezahlten Engagements handelt es sich um separate, ausführliche Einblicke – nicht um dieselbe Rezension mit einem Preisschild.",
+      "free": {
+        "title": "Kostenlose Expertenbewertung",
+        "description": "Ein gezielter erster Durchgang durch die Seiten öffentlicher Geschäfte mit 3–5 priorisierten Beobachtungen und vorgeschlagenen nächsten Schritten. Kein Administratorzugriff erforderlich."
+      },
+      "storeAudit": {
+        "title": "Bezahlte Vollfilialprüfung",
+        "description": "Eine umfassendere, separat in Auftrag gegebene Filialüberprüfung mit einem detaillierten Aktionsplan, einer eingehenderen Untersuchung und einer exemplarischen Vorgehensweise, wie im Vorschlag angegeben."
+      },
+      "seoAudit": {
+        "title": "Bezahltes SEO-Audit",
+        "description": "Eine suchorientierte technische Bewertung und Auffindbarkeitsbewertung mit dokumentierten Ergebnissen, einer Basislinie und einer priorisierten SEO-Roadmap."
+      },
+      "note": "Darüber hinausgehende Recherchen, Umsetzungen und etwaige Zugriffe auf private Unternehmensdaten bedürfen eines vereinbarten Umfangs.",
+      "seoLink": "Entdecken Sie SEO-Audit-Optionen"
+    }
+  }
+}

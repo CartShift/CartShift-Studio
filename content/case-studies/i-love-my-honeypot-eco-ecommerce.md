@@ -205,6 +205,128 @@ he:
     ## מה השתנה
     
     החנות עברה מחוויה שמתחילה בקטלוג למסע קנייה מונחה. ללקוחות יש היום דרכים ברורות יותר להבין את הקטגוריה, לצמצם אפשרויות ולהגיע לעמוד מוצר רלוונטי בלי להסתמך על ניחוש. מקרה הבוחן מתמקד בכוונה בשינויים שאפשר לראות במוצר וב-UX, ולא בטענות המרה שאין להן נתונים מוצגים.
+de:
+  title: Umweltfreundlicher E-Commerce-Shop für Menstruationspflege
+  summary: Komplette Shopify-Store-Entwicklung für eine umweltfreundliche Marke für Menstruationspflege, mit Produkt-Quiz-Integration, lokalisierten hebräischen Inhalten und einem zweckorientierten Einkaufserlebnis.
+  industry: Gesundheit und Wohlbefinden
+  duration: 10 Wochen
+  cta:
+    title: Benötigen Sie einen Shopify-Shop, der Kunden dabei hilft, sicher zu wählen?
+    description: Wir können Produktschulung, Lokalisierung und Merchandising in einen klareren Kaufprozess verwandeln.
+  hero:
+    image: /images/case-studies/i-love-my-honeypot-eco-ecommerce/hero.jpg?v=20260422b
+    alt: I Love My Honeypot-Homepage-Held mit Quiz-Einstiegspunkten, missionsorientierten Nachrichten und unten vorgestellten Produkten
+    supportingCopy: Ein geführtes Shopify-Erlebnis für eine missionsorientierte Wellness-Marke, das darauf ausgelegt ist, zunächst aufzuklären und Reibungsverluste in einem differenzierten Produktkatalog zu reduzieren.
+  overview:
+    title: Verwandeln Sie einen missionsorientierten Wellness-Katalog in ein geführtes Einkaufserlebnis
+    summary: Wir haben die Storefront im Hinblick auf Klarheit, Vertrauen und Produktaufklärung neu gestaltet, damit Kunden unbekannte Produkte verstehen, auf natürliche Weise in hebräischen RTL-Inhalten navigieren und das Richtige finden können, ohne sich überfordert zu fühlen.
+  deliverables:
+  - title: Geführter Produktabgleich
+    description: Planung und Integration eines Produktquizablaufs, der Käufern hilft, sich sicherer durch ein sensibles, hochpreisiges Produktsortiment zu bewegen.
+  - title: Vollständige hebräische Lokalisierung
+    description: Implementierung eines vollständigen RTL-fähigen Storefront-Erlebnisses mit lokalisierten Inhalten, Navigation und Produktschulung, die auf den israelischen Markt zugeschnitten sind.
+  - title: Bildungsinhaltssystem
+    description: Strukturierte den Shop nach Leitfäden, FAQs und Blog-Inhalten, sodass die Website Produktfragen beantworten konnte, bevor sie zu Kaufblockern wurden.
+  - title: Vertrauensvolles Merchandising
+    description: Bewertungen, Zertifizierungen, Wirkungsbotschaften und Vergleichslogik wurden vorangebracht, um der Marke ein glaubwürdiges Gefühl zu verleihen, ohne die Seite zu überfordern.
+  gallery:
+  - image: /images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-01.jpg?v=20260422b
+    alt: „I Love My Honeypot“-Sammlungsseite mit Produktvorteilen und einem Merchandise-Raster
+    caption: Die Shop-Ansicht kombiniert Vertrauenshinweise, lehrreichen Rahmen und ein klareres Produktraster, sodass der Katalog geführt und nicht überfordernd wirkt.
+  - image: /images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-02.jpg?v=20260422b
+    alt: Einführungsseite zum I Love My Honeypot-Menstruationstassen-Quiz mit einem gezielten Einstiegspunkt für die Produktanpassung
+    caption: Der Quiz-Flow ermöglicht Erstkäufern einen reibungslosen Einstieg in das Sortiment und macht Bildung zu einem aktiven Entscheidungsinstrument.
+  - image: /images/case-studies/i-love-my-honeypot-eco-ecommerce/gallery-03.jpg?v=20260422b
+    alt: I Love My Honeypot-Produktseite für die Hello Disc mit Produktmedien, Vorteilen und Kaufkontrollen
+    caption: Auf den Produktseiten werden die Mediengalerie, Vorteile und Kaufaktionen in einem übersichtlicheren Layout zusammengefasst, sodass Fragen zur Passform und zum Vertrauen näher an der Kasse beantwortet werden.
+  evidence:
+  - title: Produktquiz gestartet
+    value: Geführtes Quiz
+    description: Der Store verfügt jetzt über einen geführten Quizablauf, der Kunden dabei hilft, komplexe Produktauswahlen durch eine unterstützendere Entscheidungsfindung einzugrenzen.
+    before: Keine geführte Auswahl
+    after: Live-Quizablauf
+    tone: qualitative
+  - title: Hebräische Schaufenster geliefert
+    value: RTL komplett
+    description: Das Erlebnis wurde mit vollständiger Hebräisch- und RTL-Unterstützung neu aufgebaut, einschließlich Layout, Navigation und Bildungsinhalten, die auf das lokale Publikum zugeschnitten sind.
+    before: Teilweise Lokalisierung
+    after: Vollständige RTL-Storefront
+    tone: qualitative
+  - title: Bildung wurde Teil des Kaufstroms
+    value: Inhaltssystem
+    description: Leitfäden, FAQ-Struktur und Produkterklärungen sind in die Einkaufsreise integriert, sodass die Website lehren kann, ohne die Konvertierung zu beeinträchtigen.
+    before: Minimale Bildung
+    after: Geführte Inhalte im gesamten Storefront
+    tone: qualitative
+  - title: Das mobile Erlebnis wurde verbessert
+    value: Mobile-first
+    description: Das Browsing- und Produkterlebnis wurde für Mobilgeräte optimiert, sodass Entdeckungs-, Vergleichs- und Vertrauenshinweise auch auf kleineren Bildschirmen klar erkennbar bleiben.
+    before: Grundlegende mobile Handhabung
+    after: Mobile-First-Flow
+    tone: qualitative
+  results:
+  - metric: Produktquiz
+    before: N/A
+    after: Lebe
+    improvement: Neue Funktion
+  - metric: Hebräische Lokalisierung
+    before: Teilweise
+    after: Vollständiges RTL
+    improvement: Komplett
+  - metric: Bildungsinhalte
+    before: Keine
+    after: Blog + Anleitungen
+    improvement: Neu
+  - metric: Mobiles Erlebnis
+    before: Einfach
+    after: Optimiert
+    improvement: Verbessert
+  services:
+  - Shopify Store-Entwicklung
+  - Produkt-Quiz-Integration
+  - Hebräische Lokalisierung
+  - UX/UI-Design
+  - SEO-Optimierung
+  - Strategie für Bildungsinhalte
+  testimonial:
+    quote: CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben für uns ein Geschäft aufgebaut, das Kunden informiert und ihnen gleichzeitig ein müheloses Einkaufserlebnis ermöglicht. Allein unsere Quizfunktion hat die Art und Weise verändert, wie Kunden ihre perfekten Produkte finden.
+    author: Danielle Shamir
+    role: Gründer, ich liebe meinen Honeypot
+  content: '
+
+    ## Die Herausforderung
+
+
+    Wiederverwendbare Menstruationspflege ist eine Kategorie, die viel Beachtung findet. Kunden benötigen Hilfe beim Verständnis unbekannter Formate, beim Vergleich von Passform und Verwendung und beim Vertrauen in das Produkt, bevor sie zum Kauf bereit sind. Die israelische Storefront musste außerdem natürlich auf Hebräisch und RTL funktionieren, anstatt wie eine übersetzte Version eines englischen Stores zu wirken.
+
+
+    ## Der Ansatz
+
+
+    Wir haben die Erfahrung anhand von vier praktischen Entscheidungen organisiert:
+
+
+    - **Geführte Auswahl:** Ein Produktquiz bietet Erstkäufern einen klareren Weg zu Körbchen, Scheiben, Unterwäsche, Binden und Accessoires.
+
+    - **Produktschulung:** Anleitungen, FAQs, Größeninformationen und Nutzungsinhalte befinden sich direkt am Einkaufserlebnis und nicht in einer separaten Wissensebene.
+
+    - **Vollständige Lokalisierung:** Navigation, Layout, Inhalt und Reaktionsverhalten wurden für Hebräisch und RTL erstellt.
+
+    - **Vertrauen beim Kauf:** Bewertungen, Zertifizierungen, Vorteile und Produktberatung werden dort angezeigt, wo Kunden Entscheidungen treffen.
+
+
+    ## Die Umsetzung
+
+
+    Die Shopify-Storefront kombiniert ein benutzerdefiniertes RTL-fähiges Theme, die Integration von Typeform-Quizen, das Browsen von Produkten auf Mobilgeräten, lokalisierte Inhalte und eine Inhaltsstruktur, die fortlaufende Weiterbildung und SEO unterstützt.
+
+
+    ## Was sich geändert hat
+
+
+    Der Laden hat sich von einem katalogorientierten Erlebnis zu einer geführten Kaufreise entwickelt. Kunden haben jetzt klarere Möglichkeiten, die Kategorie zu verstehen, ihre Optionen einzugrenzen und eine relevante Produktseite zu erreichen, ohne sich auf Vermutungen verlassen zu müssen. Die Fallstudie konzentriert sich bewusst auf beobachtbare Produkt- und UX-Änderungen und nicht auf nicht unterstützte Konvertierungsansprüche.
+
+    '
 ---
 
 ## The Challenge

@@ -183,4 +183,92 @@ he:
     - 'עיצוב עמודי כרטיסים'
     - 'תרגום שפת מותג'
     - 'טפסי קהילה'
+de:
+  title: Colbo-Tekk-Label und kollektive Plattform
+  summary: Eine WordPress- und WooCommerce-Plattform für Colbo-Tekk, die Musikveröffentlichungen, Künstlerentdeckung, Events, Radio, Merch und Crew-/Community-Kontaktpunkte unter einem von Raves geleiteten visuellen System vereint.
+  industry: Musik, Events & Community
+  cta:
+    title: Benötigen Sie eine Plattform für Veröffentlichungen, Veranstaltungen, Community und Handel?
+    description: Wir können verschiedene Zielgruppenreisen zu einer kohärenten Website verbinden, ohne sie in eine generische Vorlage zu zwingen.
+  hero:
+    image: /images/case-studies/colbotekk-label-collective-platform/hero.jpg
+    alt: Colbo-Tekk-Homepage mit Neon-Rave-Identität, neuesten Drops und eingebettetem Player
+    supportingCopy: Eine dunkle, energiegeladene Plattform für ein Label und Kollektiv aus Tel Aviv, die Veröffentlichungen, Events, Radio, Merch und Community-Touchpoints in einem Markensystem vereint.
+  overview:
+    title: Eine Szeneidentität in eine vernetzte digitale Plattform verwandeln
+    summary: Colbo-Tekk ist nicht nur eine Musikseite. Die Live-Site fungiert als Veröffentlichungsarchiv, Veranstaltungskalender, Radiooberfläche, Merch-Storefront und Community-Trichter. Die Arbeit konzentrierte sich darauf, diese Welten wie ein einziges Erlebnis wirken zu lassen und nicht wie getrennte, unzusammenhängende Seiten.
+  deliverables:
+  - title: Einheitlicher Release- und Handelsablauf
+    description: Strukturierte den Musikshop nach Vorschaukarten und direkten Kaufpfaden, sodass Titel entdeckt und unterstützt werden können, ohne die Markenwelt zu verlassen.
+  - title: Event- und Ticketflächen
+    description: Bringt bevorstehende Veranstaltungen in eine stärkere visuelle Zeitleiste mit klaren Veranstaltungsorten, Countdowns und Buchungshinweisen für das Nachtleben-Publikum.
+  - title: Radio- und Rundfunkschicht
+    description: Die Plattform wurde über statische Seiten hinaus um eine spezielle Radiooberfläche erweitert, die das Label zwischen Veranstaltungen und Veröffentlichungen aktiv hält.
+  - title: Merch- und Labelidentität
+    description: Aufbau eines Merch-Erlebnisses, das sich wie ein Label anfühlt und nicht wie ein fester Laden, und dabei die gleiche visuelle Sprache wie die Musik- und Veranstaltungsseiten verwendet.
+  - title: Community-orientierte Einstiegspunkte
+    description: Formulare und Einreichungspfade für Helfer, Buchungen und Künstlerkontakte hinzugefügt, sodass die Plattform sowohl Teilnahme als auch Werbung unterstützt.
+  gallery:
+  - image: /images/case-studies/colbotekk-label-collective-platform/hero.jpg
+    alt: Colbo-Tekk-Homepage mit Helden-Artwork, Release-CTA und Global Player
+    caption: Die Homepage wirkt eher wie ein Plakat der Szene als wie eine generische Website, wobei die Markenidentität das Erlebnis prägt.
+  - image: /images/case-studies/colbotekk-label-collective-platform/gallery-01.jpg
+    alt: Colbo-Tekk-Music-Store-Raster mit Veröffentlichungs-Artwork und Preview-First-Track-Karten
+    caption: Das Veröffentlichungsarchiv verhält sich wie ein lebender Katalog, sodass sich Bildmaterial, Wiedergabe und Supportaktionen unmittelbar und verbunden anfühlen.
+  - image: /images/case-studies/colbotekk-label-collective-platform/gallery-02.jpg
+    alt: Colbo-Tekk-Veranstaltungsseite mit Details zur Eröffnungsparty, Countdown und Ticket-CTA
+    caption: Veranstaltungsseiten übersetzen die Energie des Nachtlebens in eine übersichtliche Buchungsoberfläche, ohne die visuelle Ausstrahlung des Labels zu verlieren.
+  - image: /images/case-studies/colbotekk-label-collective-platform/gallery-03.jpg
+    alt: Colbo-Tekk-Radioseite mit Broadcast-Schnittstelle und aktuellem Set-Panel
+    caption: Die Radioschicht hält die Plattform zwischen Drops und Partys am Leben, indem sie dem Kollektiv einen eigenen Senderaum bietet.
+  evidence:
+  - title: Veröffentlichungen, Tickets, Radio und Merch teilen sich jetzt ein System
+    value: Einheitliche Plattform
+    description: Die Live-Site präsentiert mehrere Zielgruppenreisen unter einer Marke, anstatt sie auf separate Tools oder getrennte Microsites zu verteilen.
+    before: Fragmentierte Zieltypen
+    after: Eine verbundene Plattform
+    tone: qualitative
+  - title: Beim Entdecken der Musik geht es zunächst um die Vorschau
+    value: Direkter Support
+    description: Auf den Veröffentlichungskarten werden Artwork, Wiedergabe und Kaufhinweise kombiniert, sodass Fans gleichzeitig den Katalog durchsuchen und Titel unterstützen können.
+    before: Statische Auflistungen
+    after: Spielbares Release-Raster
+    tone: qualitative
+  - title: Ereignisse werden wie Schlagzeilenmomente behandelt
+    value: Ticket bereit
+    description: Auf den Veranstaltungsseiten werden Datum, Veranstaltungsort, Countdown und Buchungs-CTAs auf eine Art und Weise angezeigt, die auf die Beteiligung ausgelegt und nicht in einem Beitrags-Feed vergraben ist.
+    before: Grundlegende Veranstaltungsverzeichnisse
+    after: Spezielle Ticketseiten
+    tone: qualitative
+  - title: Die Beteiligung der Gemeinschaft hat klare Ansatzpunkte
+    value: Crew-Trichter
+    description: Helfer, Buchungen und Künstlerkontaktformulare machen die Website zu einem aktiven kollektiven Knotenpunkt und nicht zu einer einseitigen Werbefläche.
+    before: Passive Publikumsseite
+    after: Beteiligungswege
+    tone: qualitative
+  results:
+  - metric: Plattformstruktur
+    before: Verstreute Berührungspunkte
+    after: Einheitliches Ökosystem
+    improvement: Verbunden
+  - metric: Release-Erfahrung
+    before: Statischer Katalog
+    after: Vorschau – erstes Raster
+    improvement: Geschärft
+  - metric: Veranstaltungspräsentation
+    before: Grundlegende Einträge
+    after: Spezielle Ticketoberflächen
+    improvement: Erhöht
+  - metric: Community-Flows
+    before: Passiv
+    after: Helfer + Buchungen + Einreichungen
+    improvement: Erweitert
+  services:
+  - WordPress-Entwicklung
+  - WooCommerce-Setup
+  - Musikveröffentlichung UX
+  - Event-Ticketing-Design
+  - Markensystemübersetzung
+  - Community-Formularflüsse
+  content: ''
 ---

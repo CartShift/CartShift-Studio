@@ -181,4 +181,92 @@ he:
     - 'UX לאודיו'
     - 'עיצוב עמודי מוצר'
     - 'תרגום מותג של אמן'
+de:
+  title: Pedro Music Digital Release Store
+  summary: Eine WordPress- und WooCommerce-Release-Storefront für Pedro Music, die beeindruckende Heldenvisualisierungen, Inline-Wiedergabe, Single-Track-Produkte und den Verkauf von Komplettalbum-Bundles kombiniert.
+  industry: Musik und digitaler Handel
+  cta:
+    title: Musik direkt verkaufen, ohne das Künstlererlebnis zu verlieren?
+    description: Wir können Zuhören, Release-Storytelling und digitalen Handel kombinieren, sodass sich der Kauf wie ein Teil der Veröffentlichung anfühlt und nicht wie ein separater Shop.
+  hero:
+    image: /images/case-studies/pedro-music-digital-release-store/hero.jpg
+    alt: Pedro Music-Homepage mit beeindruckendem Artwork, Einzelheld und integriertem Player
+    supportingCopy: Eine von Künstlern geführte digitale Veröffentlichungsseite, die immersive Kunstwerke, Inline-Wiedergabe und WooCommerce-Produktflüsse für den Verkauf von Singles und ganzen Alben vereint.
+  overview:
+    title: Erstellen Sie eine Veröffentlichungsseite, die sich teils wie ein Hörraum, teils wie ein digitales Schaufenster anfühlt
+    summary: Pedro Music stellt die Veröffentlichung selbst als visuelles Produkt in den Mittelpunkt. Die Homepage fungiert als immersive Launch-Leinwand, während WooCommerce die tieferen Produkt- und Checkout-Abläufe für Titel und Albumpakete übernimmt. Das Ergebnis erinnert eher an eine Künstlerumgebung als an einen allgemeinen Musikladen.
+  deliverables:
+  - title: Immersive Launch-Landingpage
+    description: Entwickelte die Homepage als starke visuelle Kampagnenoberfläche, auf der Grafik, Titelgestaltung und Wiedergabesteuerung zusammenarbeiten, um die Veröffentlichung zu umrahmen.
+  - title: Inline-Hörerlebnis
+    description: Integrierte dauerhafte Spielerverhaltens- und Vorschausteuerungen, damit Besucher die Veröffentlichung hören können, während sie innerhalb der Markenoberfläche bleiben.
+  - title: Single- und Album-Commerce-Flow
+    description: Der Store wurde so strukturiert, dass Fans einzelne Titel kaufen oder einen kompletten Album-Kaufpfad mit klarer Preisgestaltung nutzen können.
+  - title: Digitale Produktdetailseiten
+    description: Entworfene WooCommerce-Produktseiten, die Artwork, Preis, Format und Veröffentlichungsdetails für herunterladbare Musikprodukte übersichtlich darstellen.
+  - title: Konsistentes visuelles Künstlersystem
+    description: Die gleiche dunkle, atmosphärische Identität wurde von der Startseite auf die Produktseiten übertragen, damit die Storefront durchgängig kohärent bleibt.
+  gallery:
+  - image: /images/case-studies/pedro-music-digital-release-store/hero.jpg
+    alt: Pedro Music-Homepage-Held für die Single You’r Wrong
+    caption: Die Homepage verhält sich wie ein Veröffentlichungsplakat mit Bewegungs-, Player-UI- und Commerce-Hinweisen, die in die Grafik eingearbeitet sind.
+  - image: /images/case-studies/pedro-music-digital-release-store/gallery-01.jpg
+    alt: Pedro Music-Homepage-Bereich mit Call-to-Action zum Kauf von Singles und vollständigen Alben
+    caption: Die Startseite verbindet die vorgestellten Singles mit dem Albumpfad, sodass sich Entdeckung und Kauf wie ein kontinuierlicher Fluss anfühlen.
+  - image: /images/case-studies/pedro-music-digital-release-store/gallery-02.jpg
+    alt: Vollständige Produktseite des Pedro Music-Albums mit Details zum digitalen Format und Checkout-Aktionen
+    caption: Die Album-Bundle-Seite verleiht dem Angebot genügend Details und visuelles Gewicht, um den Eindruck eines digitalen Premiumprodukts und nicht eines einfachen Download-Links zu erwecken.
+  - image: /images/case-studies/pedro-music-digital-release-store/gallery-03.jpg
+    alt: Pedro Music-Single-Track-Produktseite mit Preis, Format und zugehörigem Veröffentlichungs-Merchandising
+    caption: Single-Track-Seiten bleiben schlank, enthalten aber dennoch genügend Grafiken, Metadaten und verwandte Produkthinweise, um den Direktvertrieb zu unterstützen.
+  evidence:
+  - title: Singles und Album-Bundles werden über einen übersichtlichen Veröffentlichungstrichter verkauft
+    value: Digitaler Shop
+    description: Das Live-Erlebnis unterstützt sowohl den Kauf einzelner Titel als auch einen höherwertigen Gesamtalbum-Pfad, anstatt ein starres Kaufmodell zu erzwingen.
+    before: Keine geschichtete Angebotsstruktur
+    after: Track plus Album-Trichter
+    tone: qualitative
+  - title: Zuhören und Kaufen finden im selben visuellen Raum statt
+    value: Inline-Player
+    description: Die Wiedergabesteuerung ist im Veröffentlichungsdesign integriert und verringert so die Lücke zwischen dem Hören der Musik und dem darauf reagierenden Handeln.
+    before: Getrennte Wiedergabe und Handel
+    after: Vorschaugeführte Storefront
+    tone: qualitative
+  - title: Digitale Produktseiten enthalten echten Release-Kontext
+    value: WAV + MP3
+    description: Auf den Produktseiten werden konkrete Details wie Format und Genre angezeigt, sodass sich Downloads vertrauenswürdiger anfühlen und vor dem Kauf leichter zu bewerten sind.
+    before: Minimaler Produktrahmen
+    after: Strukturierte digitale PDPs
+    tone: qualitative
+  - title: Die Identität des Künstlers bleibt vom Helden bis zur Kasse konsistent
+    value: Visuelles System
+    description: Die gleiche düstere, filmische Kunstrichtung folgt dem Benutzer auf der Homepage, den Trackcards und den Produktseiten, sodass sich die Veröffentlichung die ganze Zeit über gewollt anfühlt.
+    before: Nicht verbundene Vorlagen
+    after: Eine zusammenhängende Markenreise
+    tone: qualitative
+  results:
+  - metric: Angebotsstruktur
+    before: Einzelkaufpfad
+    after: Titel + Album-Paket
+    improvement: Erweitert
+  - metric: Wiedergabeablauf
+    before: Getrenntes Zuhören
+    after: Inline-Player
+    improvement: Integriert
+  - metric: Produktdetails
+    before: Minimal
+    after: Format + Genre + Bundle-Kontext
+    improvement: Klarer
+  - metric: Markenkonsistenz
+    before: Vorlagenartig
+    after: Von Künstlern geleitet
+    improvement: Stärker
+  services:
+  - WordPress-Entwicklung
+  - Digitale WooCommerce-Produkte
+  - Landingpage für Musikveröffentlichungen
+  - Benutzerdefinierte Audio-UX
+  - Produktseitendesign
+  - Künstlermarkenübersetzung
+  content: ''
 ---

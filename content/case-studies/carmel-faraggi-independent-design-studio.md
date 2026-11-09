@@ -197,6 +197,116 @@ he:
     ## מה השתנה
     
     האתר המוגמר מרגיש כמו Carmel כבר מהמסך הראשון. במקביל, קטגוריות הפרויקטים, המסלולים לקהלים השונים ופעולות הפנייה נשארים ברורים מספיק כדי שהזהות הוויזואלית לא תפריע למציאת העבודה הרלוונטית או לפתיחת שיחה.
+de:
+  title: Carmel Faraggi Unabhängiges Designstudio
+  summary: Ein mutiges Next.js-Portfolio für Carmel Faraggi, das übergroße Typografie, redaktionelle Projektlayouts, einen künstlerorientierten Servicepfad und einen klaren Anfrageablauf in einem reaktionsfähigen Studioerlebnis kombiniert.
+  industry: Markenidentität, Art Direction und Grafikdesign
+  cta:
+    title: Brauchen Sie ein Portfolio, das sich genauso unverwechselbar anfühlt wie die Arbeit?
+    description: Wir können eine visuelle Identität in eine schnelle, fokussierte Website umwandeln, die den richtigen Kunden hilft, die Arbeit zu verstehen und Kontakt aufzunehmen.
+  hero:
+    image: /images/case-studies/carmel-faraggi-independent-design-studio/hero.jpg
+    alt: Carmel Faraggi Studio-Homepage mit übergroßer schwarzer Wortmarke, roter geometrischer Ebene und unabhängiger Studiopositionierung
+    supportingCopy: Ein stark auf Kunst ausgerichtetes Portfolio für die Londoner Designerin Carmel Faraggi, das Markenidentität, Grafikdesign, Künstlervisualisierungen und Projektanfragen in einem unverwechselbaren digitalen Studio vereint.
+  overview:
+    title: Verwandeln Sie ein persönliches Designbüro in ein unvergessliches digitales Studio
+    summary: Carmel Faraggi brauchte ein Portfolio, das das Selbstvertrauen der Arbeit vermitteln konnte, ohne zu einer herkömmlichen Agenturvorlage zu werden. Die Website verwendet ein streng kontrolliertes Creme-, Schwarz- und Rotsystem, ausdrucksstarke Typografie und redaktionelle Kompositionen, um das Studio erkennbar zu machen und gleichzeitig die Entdeckung von Arbeiten und Projektanfragen direkt zu ermöglichen.
+  deliverables:
+  - title: Besitzbare Studioidentität
+    description: Übersetzte den Namen Carmel Faraggi in ein wirkungsvolles digitales Wortmarkensystem, unterstützt durch eine präzise Creme-, Schwarz- und Signalrot-Palette, die auf allen Wegen konsistent bleibt.
+  - title: Redaktionelle Portfolio-Architektur
+    description: Entwarf einen asymmetrischen Arbeitsindex, der große Projektbilder mit Kategorie-, Titel- und Richtungshinweisen kombiniert, sodass das Portfolio kuratiert wirkt und gleichzeitig ein schnelles Scannen gewährleistet ist.
+  - title: Spezielles Künstlerangebot
+    description: Erstellte eine gezielte Route für Cover-Art, Künstleridentitäten, Veröffentlichungsvisualisierungen, soziale Inhalte, Druck und Merchandise, mit Botschaften, die Musiker und ihren kreativen Prozess direkt ansprechen.
+  - title: Zeichengesteuertes Reaktionssystem
+    description: Angepasste übergroße Display-Typografie, abgewinkelte Farbfelder, Bildraster und Navigation für Desktop und Mobilgeräte, ohne die Bildsprache zu verflachen.
+  - title: Barrierefreie Anfragereise
+    description: Verknüpfung von Portfolio, Künstlerangebot, Studiogeschichte, E-Mail-Kontakt und strukturiertem Projektformular durch klare Handlungsaufforderungen und tastaturfreundliche Navigation.
+  gallery:
+  - image: /images/case-studies/carmel-faraggi-independent-design-studio/hero.jpg
+    alt: Carmel Faraggi Studio-Homepage mit übergroßer schwarzer Wortmarke, roter geometrischer Ebene und unabhängiger Studiopositionierung
+    caption: Die Homepage macht den Namen des Designers zum zentralen visuellen Ereignis und etabliert die Stimme des Studios, bevor die Besucher in das Werk geführt werden.
+  - image: /images/case-studies/carmel-faraggi-independent-design-studio/gallery-01.jpg
+    alt: Carmel Faraggi-Arbeitsseite mit redaktionellen Projektzeilen für Proof, Anna Vale und Tavla
+    caption: Der Arbeitsindex wechselt zwischen Projektbildern und kompakten Metadaten und schafft so einen redaktionellen Rhythmus über Projekte in den Bereichen Gastgewerbe, Schönheit, Wellness und Identität.
+  - image: /images/case-studies/carmel-faraggi-independent-design-studio/gallery-02.jpg
+    alt: Carmel Faraggi For Artists-Seite mit übergroßer Typografie, Künstler-Service-Kopie, roter Geometrie und vorgestellten Musikprojekten
+    caption: Die künstlerorientierte Landingpage kombiniert ein direktes Fachangebot mit vorgestellten Veröffentlichungen und einem klaren Weg zum Start eines Projekts.
+  - image: /images/case-studies/carmel-faraggi-independent-design-studio/gallery-03.jpg
+    alt: Carmel Faraggi-Überseite mit Studiogeschichte, Serviceliste, übergroßer Überschrift und rotem Grafikrand
+    caption: Die About-Seite hält die Studiogeschichte persönlich und prägnant und unterstreicht gleichzeitig die gleiche typografische und geometrische Identität.
+  evidence:
+  - title: Das Studio ist aus dem ersten Ansichtsfenster erkennbar
+    value: Identitätsgeführter Held
+    description: Die übergroße individuelle Wortmarke, die eingeschränkte Farbpalette und die abgewinkelte rote Fläche schaffen einen unverwechselbaren Auftritt, ohne sich auf eine generische Portfolio-Einführung zu verlassen.
+    before: Konventionelle Portfolio-Landung
+    after: Eigenständiges Studio-Statement
+    tone: qualitative
+  - title: Das Portfolio unterstützt die schnelle visuelle Entdeckung
+    value: Kuratierter Werkindex
+    description: Große Projektbilder, sichtbare Kategoriebezeichnungen, Projektnamen und richtungsweisende Aktionen ermöglichen es den Besuchern, den Arbeitsumfang zu verstehen und gleichzeitig schnell zwischen den Projekten zu wechseln.
+    before: Undifferenziertes Projektraster
+    after: Redaktioneller Entdeckungsablauf
+    tone: qualitative
+  - title: Künstler erhalten einen eigens dafür eingerichteten Einstiegspunkt
+    value: Spezielle Künstlerroute
+    description: Ein separater Künstlererlebnisrahmen deckt Kunst, Identitäten, Veröffentlichungsvisualisierungen und Kampagnenressourcen rund um die Bedürfnisse von Musikern ab, anstatt sie in einer allgemeinen Serviceliste zu begraben.
+    before: Umfassendes Service-Messaging
+    after: Zielgruppenspezifisches Angebot
+    tone: qualitative
+  - title: Jede Kernroute weist auf eine sinnvolle Aktion hin
+    value: Verbundener Anfragepfad
+    description: Arbeit, Studiopositionierung, Künstlerdienste, direkte E-Mail und ein strukturiertes Anfrageformular verbinden sich zu einem klaren Weg vom visuellen Beweis bis zum Projektgespräch.
+    before: Passives Portfolio-Browsing
+    after: Projektbereite Reise
+    tone: qualitative
+  results:
+  - metric: Studiopositionierung
+    before: Allgemeine Portfolio-Einführung
+    after: Ausgeprägte Independent-Studio-Identität
+    improvement: Geschärft
+  - metric: Arbeitsentdeckung
+    before: Flache Projektliste
+    after: Redaktioneller bildbasierter Index
+    improvement: Kuratiert
+  - metric: Künstlerdienste
+    before: Eingemischt in allgemeine Dienste
+    after: Spezielle Publikumsreise
+    improvement: Konzentriert
+  - metric: Projektanfragen
+    before: Unstrukturierter Kontakt
+    after: Geführte kurze und direkte E-Mail-Wege
+    improvement: Geklärt
+  services:
+  - Next.js-Entwicklung
+  - Portfolio-UX
+  - Responsives Frontend
+  - Art-Direction-System
+  - Barrierefreie Navigation
+  - Cloudflare-Bereitstellung
+  content: '
+
+    ## Die Herausforderung
+
+
+    Carmel Faraggi brauchte ein Portfolio, das eine starke grafische Identität tragen konnte, ohne mit dem Werk selbst zu konkurrieren. Es musste auch zwei verwandte Zielgruppen ansprechen, Marken, die nach Design suchten, und Musiker, die nach künstlerorientierter visueller Arbeit suchten, und gleichzeitig den Weg zu einer Anfrage einfach halten.
+
+
+    ## Design & Bau
+
+
+    Wir übersetzten die Studioidentität in ein zurückhaltendes Websystem, das auf übergroßer Typografie, einem warmen Cremefeld, scharfer roter Geometrie und großen Projektbildern basiert. Der Werkindex ist für ein schnelles visuelles Scannen optimiert, während die spezielle Künstlerroute Musikkunden ein spezifischeres Angebot zu Cover-Art, Identitäten, Veröffentlichungsbildern und Kampagnen bietet.
+
+
+    Die Next.js-Implementierung sorgt für ein schnelles und reaktionsfähiges Erlebnis, und der Kontaktfluss verwandelt das Portfolio von einer passiven Galerie in ein praktisches Geschäftstool.
+
+
+    ## Was sich geändert hat
+
+
+    Die fertige Website fühlt sich erkennbar Carmel an, bevor ein Besucher einen Absatz liest. Gleichzeitig bleiben Projektkategorien, zielgruppenspezifische Routen und Anfrageaktionen klar genug, dass die visuelle Identität niemals im Weg steht, die richtige Arbeit zu finden oder ein Gespräch zu beginnen.
+
+    '
 ---
 
 ## The Challenge
