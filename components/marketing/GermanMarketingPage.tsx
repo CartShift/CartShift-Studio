@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { Link } from '@/i18n/navigation';
 
 type PageKind = 'home' | 'shopify' | 'wordpress' | 'seo';
@@ -114,8 +115,8 @@ export function GermanMarketingPage({ kind }: { kind: PageKind }) {
               <p className="mt-5 max-w-xl leading-relaxed text-surface-600 dark:text-surface-300">Wir zeigen transparent, welche Probleme wir angegangen sind, wie wir Lösungen umgesetzt haben und was dokumentiert wurde. Unsere ausführlichen Projektberichte sind aktuell auf Englisch verfügbar.</p>
             </div>
             <div className="grid gap-4">
-              <a href="/en/work/i-love-my-honeypot-eco-ecommerce" hrefLang="en" className="rounded-2xl border border-surface-200 bg-white p-6 font-semibold transition-colors hover:border-primary-400 dark:border-white/10 dark:bg-surface-950">I Love My Honeypot · Shopify <span className="block pt-2 text-sm font-normal text-surface-500">Projektbericht auf Englisch ↗</span></a>
-              <a href="/en/work/stiletto-piercing-disposable-jewelry-supply" hrefLang="en" className="rounded-2xl border border-surface-200 bg-white p-6 font-semibold transition-colors hover:border-primary-400 dark:border-white/10 dark:bg-surface-950">Stiletto Piercing · E-Commerce <span className="block pt-2 text-sm font-normal text-surface-500">Projektbericht auf Englisch ↗</span></a>
+              <NextLink href="/en/work/i-love-my-honeypot-eco-ecommerce" hrefLang="en" className="rounded-2xl border border-surface-200 bg-white p-6 font-semibold transition-colors hover:border-primary-400 dark:border-white/10 dark:bg-surface-950">I Love My Honeypot · Shopify <span className="block pt-2 text-sm font-normal text-surface-500">Projektbericht auf Englisch ↗</span></NextLink>
+              <NextLink href="/en/work/stiletto-piercing-disposable-jewelry-supply" hrefLang="en" className="rounded-2xl border border-surface-200 bg-white p-6 font-semibold transition-colors hover:border-primary-400 dark:border-white/10 dark:bg-surface-950">Stiletto Piercing · E-Commerce <span className="block pt-2 text-sm font-normal text-surface-500">Projektbericht auf Englisch ↗</span></NextLink>
             </div>
           </div>
         </section>
