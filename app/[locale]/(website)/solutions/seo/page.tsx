@@ -1,4 +1,3 @@
-import { GermanMarketingPage } from '@/components/marketing/GermanMarketingPage';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -23,11 +22,6 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale: localeParam } = await params;
-  if (localeParam === 'de') return generateSeoMetadata({
-    title: 'Technische SEO für Shopify & WordPress | CartShift Studio',
-    description: 'Technisches SEO-Audit und Umsetzung für Onlineshops und Websites: Indexierung, Performance, Struktur und nachhaltige Optimierung.',
-    url: '/solutions/seo',
-  }, 'de');
   const locale = localeParam as Locale;
   const t = await getTranslations({ locale });
 
@@ -44,10 +38,6 @@ export async function generateMetadata({
 
 export default async function SeoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: localeParam } = await params;
-  if (localeParam === 'de') {
-    setRequestLocale('de');
-    return <GermanMarketingPage kind="seo" />;
-  }
   const locale = localeParam as Locale;
   setRequestLocale(locale);
 
