@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add messages/src/de content/blog content/case-studies
+          git add messages/src/de content/blog content/case-studies scripts/i18n/de-draft-skipped.json
           git diff --cached --check
           if git diff --cached --quiet; then
             echo 'No translation changes'
