@@ -11,7 +11,8 @@ DEDIR=ROOT/'messages/src/de'
 ENDPOINT='https://translate.googleapis.com/translate_a/single'
 LOCK=threading.RLock()
 CACHE={}
-STATS={'requests':0,'fallbacks':0,'translated':0}
+STATS={'requests':0,'fallbacks':0,'translated':0,'skipped':0}
+SKIPPED=[]
 PROTECTED_FIELDS={'icon','href','url','src','image','socialImage','siteUrl','id','slug','tone','platform','client','rating'}
 MARKER_RE=re.compile(r'^@@CSSEG(\d{4})@@[ \t]*\r?\n',re.M)
 
@@ -75,8 +76,20 @@ def translate_many(values):
                 try:translated=unprotect(txt,tokens,original)
                 except ValueError:
                     with LOCK:STATS['fallbacks']+=1
-                    translated=unprotect(request(masked),tokens,original)
-            else:translated=unprotect(request(masked),tokens,original)
+                    try:translated=unprotect(request(masked),tokens,original)
+                    except ValueError:
+                        # Do not corrupt a link, a number or code for a draft.
+                        with LOCK:
+                            STATS['skipped']+=1
+                            SKIPPED.append(original[:400])
+                        translated=original
+            else:
+                try:translated=unprotect(request(masked),tokens,original)
+                except ValueError:
+                    with LOCK:
+                        STATS['skipped']+=1
+                        SKIPPED.append(original[:400])
+                    translated=original
             result.append((original,translated))
         with LOCK:
             CACHE.update(result);STATS['translated']+=len(result)
@@ -207,6 +220,8 @@ def main():
     if parsed.scope in ('ui','all'):catalogs()
     if parsed.scope in ('cases','all'):cases()
     if parsed.scope in ('blog','all'):blog(parsed.max_posts)
+    report=ROOT/'scripts/i18n/de-draft-skipped.json'
+    report.write_text(json.dumps({'source_strings_requiring_manual_translation':SKIPPED},ensure_ascii=False,indent=2)+'\n','utf-8')
     print('STATS',json.dumps(STATS,sort_keys=True),flush=True)
     print('NOTE: draft translation; native and legal review required.',flush=True)
 
